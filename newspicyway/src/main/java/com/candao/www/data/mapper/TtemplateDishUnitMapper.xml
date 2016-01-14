@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TtemplateDishUnitlDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TtemplateDishUnit" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="menuid" property="menuid" jdbcType="VARCHAR" />
+    <result column="dishname" property="dishname" jdbcType="VARCHAR" />
+    <result column="dishintroduction" property="dishintroduction" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="vipprice" property="vipprice" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="DECIMAL" />
+    <result column="recommend" property="recommend" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap type="java.util.HashMap" id="findResultMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    id, dishid, menuid, dishname, dishintroduction, unit, price, vipprice,recommend,sort
+  </sql>
+  
+  
+  
+  <insert id="insertOnce" parameterType="java.util.ArrayList">
+		 insert into t_template_dishunit (id, dishid, menuid, 
+      dishname, dishintroduction, unit, 
+      price, vipprice,recommend,sort) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=VARCHAR}, #{item.dishid,jdbcType=VARCHAR}, #{item.menuid,jdbcType=VARCHAR}, 
+      #{item.dishname,jdbcType=VARCHAR}, #{item.dishintroduction,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR}, 
+      #{item.price,jdbcType=DECIMAL}, #{item.vipprice,jdbcType=DECIMAL},#{item.recommend,jdbcType=INTEGER},#{item.sort,jdbcType=INTEGER})
+		</foreach>
+	</insert>
+	<update id="delTtemplateDishUnit" parameterType="map">
+	delete from t_template_dishunit where menuid=#{menuid,jdbcType=VARCHAR}
+	</update>
+	<select id="getTtemplateDishUnitByparams" resultMap="BaseResultMap" parameterType="map" >
+	select 
+    <include refid="Base_Column_List" />
+    from t_template_dishunit
+	<where>
+	<if test="menuid != null ">
+	        and menuid=#{menuid}
+	</if>
+	<if test="dishid != null ">
+	        and dishid=#{dishid}
+	</if>
+	</where>
+	</select>
+	<select id="getTtemplatefishpotUnitByparams" resultMap="BaseResultMap" parameterType="map" >
+	select d.ispot,t.* from t_group_detail d,t_template_dishunit t 
+	<where>
+	t.dishid=d.contactdishid
+	<if test="menuid != null ">
+	        and t.menuid=#{menuid}
+	</if>
+	<if test="dishid != null ">
+	        and d.dishid=#{dishid}
+	</if>
+	</where>
+	</select>
+	<select id="getTtemplateDishUnitByparamsPad" resultMap="findResultMap" parameterType="map" >
+	select unit,price,vipprice from t_template_dishunit 
+	<where>
+	<if test="menuid != null ">
+	        and menuid=#{menuid}
+	</if>
+	<if test="dishid != null ">
+	        and dishid=#{dishid}
+	</if>
+	</where>
+	</select>
+	<update id="updateDishStatus" parameterType="map">
+	update t_template_dishunit set `status`=#{status} where menuid=#{menuid} and dishid=#{dishid}
+	</update>
+	<select id="findOneTtd" resultMap="findResultMap"	parameterType="map">
+		select id,dishid,menuid,dishname,dishintroduction,unit,price,vipprice ,status
+		from t_template_dishunit 
+		<where>
+		<if test="id != null ">
+		        and menuid=#{menuid}
+		</if>
+		<if test="dishid != null ">
+		        and dishid=#{dishid}
+		</if>
+		<if test="menuid != null ">
+		        and menuid=#{menuid}
+		</if>
+		<if test="dishname != null ">
+		        and dishname=#{dishname}
+		</if>
+		<if test="dishintroduction != null ">
+		        and dishintroduction=#{dishintroduction}
+		</if>
+		<if test="unit != null ">
+		        and unit=#{unit}
+		</if>
+		<if test="price != null ">
+		        and price=#{price}
+		</if>
+		<if test="vipprice != null ">
+		        and vipprice=#{vipprice}
+		</if>
+		<if test="status != null ">
+		        and status=#{status}
+		</if>
+		</where>
+	</select>
+</mapper>

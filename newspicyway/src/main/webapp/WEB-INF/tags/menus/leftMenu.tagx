@@ -1,0 +1,77 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:blue="/functions/blue"
+	xmlns:spring="http://www.springframework.org/tags" version="2.0">
+	<jsp:directive.tag body-content="empty" pageEncoding="utf-8" />
+	<jsp:output omit-xml-declaration="yes" />
+	<![CDATA[
+		<style type="text/css">
+			.ztree li a.curSelectedNode{padding-top:1px;}
+			.ztree li a.level0 {height: 20px; text-align: center; display:block; background-color: #1C86EE; border:1px silver solid;}
+			.ztree li a.level0 span {display: block; color: white; padding-top:3px; font-size:12px; font-weight: bold;word-spacing: 2px;}
+			.ztree li a.level0 span.button {float:right; margin-left: 10px; visibility: visible;display:none;}
+			.ztree li span.button.switch.level0 {display:none;}
+		</style>
+	]]>
+	
+	<![CDATA[
+		<script type="text/javascript">
+			var setting = {
+				view: {
+					showLine: true,
+					expandSpeed: "fast",
+					selectedMulti: false,
+					dblClickExpand: false
+				},
+				data: {
+					simpleData: {
+						enable: true
+					}
+				},
+				callback: {
+					onClick: menuClick
+				}
+			};
+			var zNodes =[
+		]]>
+		<c:forEach var="menu" items="${blue:menu() }" varStatus="m_index">
+				{id:'${menu.resourcesid }', pId:'${menu.resourcespid }', name:'${menu.resourcesname }',open:true<c:if test="${menu.resourcestype eq '2' }">, url:'${ pageContext.request.contextPath}${menu.resourcespath }', target:'mainframe' </c:if><c:if test="${m_index.first }">, open:true</c:if>}<c:if test="${not m_index.last }">,</c:if>
+		</c:forEach>
+	<![CDATA[
+	
+			];
+			
+			function menuClick(e, treeId, treeNode) {
+				if(treeNode.level === 0){
+					$.fn.zTree.getZTreeObj("menu_tree").expandNode(treeNode);
+				}
+			}
+			$(function(){
+				if(zNodes.length > 0){
+					$.fn.zTree.init($("#menu_tree"), setting, zNodes);
+				}
+			})
+			
+			function menu_expand(){
+				var menuTree = $.fn.zTree.getZTreeObj("menu_tree");
+				if(menuTree != null){
+					menuTree.expandAll(true);
+				}
+			}
+			
+			function menu_collapse(){
+				var menuTree = $.fn.zTree.getZTreeObj("menu_tree");
+				if(menuTree != null){
+					menuTree.expandAll(false);
+				}
+			}
+		</script>
+	]]>
+	<div class="easyui-panel" style="width:199px;text-align:center;padding:10px 0px;" data-options="noheader:true,doSize:false">  
+		<div>
+			<a href="###" onclick="menu_expand();">全部展开</a><![CDATA[&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;]]><a href="###" onclick="menu_collapse();">全部折叠</a>
+		</div>
+	</div>
+	<ul id="menu_tree" class="ztree"></ul>
+</jsp:root>

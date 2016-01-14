@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ 	用户角色关联-Mybatis Mapper文件
+ 	作者：lishoukun
+ 	日期：2015/04/21
+-->
+<mapper namespace="com.candao.www.data.dao.UserRoleDao">
+  <!-- ===================用户角色关联,开始======================== -->
+	
+  <!--  公用列,包含用户角色关联表所有字段     -->
+  <sql id="base_userRole_column_list" >
+   		ur.id as id,
+   		ur.user_id as userId,
+   		ur.role_id as roleId
+  </sql>
+  
+  <!--  公用查询条件，包含用户角色关联所有字段的查询条件     -->
+  <sql id="base_userRole_condition" >
+      <if test="id != null" >
+       		and ur.id = #{id}
+      </if>
+      <if test="userId != null" >
+       		and ur.user_id = #{userId}
+      </if>
+      <if test="roleId != null" >
+       		and ur.role_id = #{roleId}
+      </if>
+  </sql>
+  
+  <!--  获取一条用户角色关联，根据主键    -->
+  <select id="getUserRoleById" resultType="com.candao.www.data.model.UserRole" parameterType="java.lang.String" >
+    select 
+    <include refid="base_userRole_column_list" />
+    from t_b_user_role ur
+    where ur.id = #{id}
+  </select>
+  
+  <!--  获取一条用户角色关联，随机获取    -->
+  <select id="getUserRoleByRand" resultType="com.candao.www.data.model.UserRole" >
+    select 
+    <include refid="base_userRole_column_list" />
+    from t_b_user_role ur
+    order by rand() limit 1
+  </select>
+  
+  <!--  查询用户角色关联列表，根据条件    -->
+  <select id="queryUserRoleList" resultType="com.candao.www.data.model.UserRole" parameterType="java.util.Map" >
+    select 
+    <include refid="base_userRole_column_list" />
+    from t_b_user_role ur
+    <where>
+     	<include refid="base_userRole_condition" />
+    </where>
+  </select>
+  
+   <!--  获取用户角色关联总数量，根据条件    -->
+  <select id="getUserRoleTotal" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select 
+    count(ur.id)
+    from t_b_user_role ur
+    <where>
+      <include refid="base_userRole_condition" />
+    </where>
+  </select>
+  
+  <!--  添加一条用户角色关联记录  -->
+  <insert id="addUserRole" parameterType="com.candao.www.data.model.UserRole" >
+    insert into t_b_user_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+   			id,
+   			user_id,
+   			role_id,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+    		#{id},
+    		#{userId},
+    		#{roleId},
+    </trim>
+  </insert>
+  
+  <!--  修改一条用户角色关联记录  -->
+  <update id="updateUserRole" parameterType="com.candao.www.data.model.UserRole" >
+    update t_b_user_role
+    <set >
+    	<if test="id != null" >
+       		id = #{id},
+      	</if>
+    	<if test="userId != null" >
+       		user_id = #{userId},
+      	</if>
+    	<if test="roleId != null" >
+       		role_id = #{roleId},
+      	</if>
+    </set>
+   where id = #{id}
+  </update>
+  
+  <!--  删除一条用户角色关联记录 ，根据主键    -->
+  <delete id="deleteUserRoleById" parameterType="java.lang.String" >
+    delete from t_b_user_role
+    where id = #{id}
+  </delete>
+  
+  <!--  删除用户角色关联记录 ，根据条件    -->
+  <delete id="deleteUserRole" parameterType="java.util.Map" >
+    delete from t_b_user_role
+    <where>
+      <if test="id != null" >
+       		and id = #{id}
+      </if>
+      <if test="userId != null" >
+       		and user_id = #{userId}
+      </if>
+      <if test="roleId != null" >
+       		and role_id = #{roleId}
+      </if>
+    </where>
+  </delete>
+ 
+ <!-- ===================用户角色关联,结束======================== -->
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TReturnDishDetailDao">
+
+    <!-- 退菜明细表 -->
+    <parameterMap type="map" id="homeVO">
+        <parameter property="branchid" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="shiftid" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="beginTime" jdbcType="DATE" mode="IN"/>
+        <parameter property="endTime" jdbcType="DATE" mode="IN"/>
+        <parameter property="currPage" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="pageNums" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="result" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+
+    <select id="getReturnDishList" parameterMap="homeVO" statementType="CALLABLE" resultType="map">
+        {call p_report_tcmxb(
+        ?,?,?,?,?,?,?
+        )}
+    </select>
+
+</mapper>

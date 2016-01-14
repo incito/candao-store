@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.ComboDishDao" >
+  <resultMap id="GroupBaseResultMap" type="com.candao.www.data.model.TcomboDishGroup" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="insertime" property="insertime" jdbcType="TIMESTAMP" />
+    <result column="insertuserid" property="insertuserid" jdbcType="VARCHAR" />
+    <result column="ordernum" property="ordernum" jdbcType="INTEGER" />
+    <result column="selecttype" property="selecttype" jdbcType="VARCHAR" />
+    <result column="columnid" property="columnid" jdbcType="VARCHAR" />
+    <result column="startnum" property="startnum" jdbcType="INTEGER" />
+    <result column="endnum" property="endnum" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="DetailBaseResultMap" type="com.candao.www.data.model.TgroupDetail" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="groupid" property="groupid" jdbcType="VARCHAR" />
+    <result column="contactdishid" property="contactdishid" jdbcType="VARCHAR" />
+    <result column="inserttime" property="inserttime" jdbcType="TIMESTAMP" />
+    <result column="insertuserid" property="insertuserid" jdbcType="VARCHAR" />
+    <result column="ordernum" property="ordernum" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="dishunitid" property="dishunitid" jdbcType="VARCHAR" />
+    <result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="dishtype" property="dishtype" jdbcType="INTEGER" />
+    <result column="ispot" property="ispot" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="GroupfindResultMap"  type="java.util.HashMap" extends="GroupBaseResultMap"></resultMap>
+  <resultMap id="DetailfindResultMap" type="java.util.HashMap" extends="DetailBaseResultMap"></resultMap>
+  <sql id="DetailBase_Column_List" >
+    id, groupid, contactdishid, inserttime, insertuserid, ordernum, status, dishunitid, 
+    dishnum,dishid,dishtype,ispot
+  </sql>
+  <sql id="GroupBase_Column_List" >
+    id, dishid, status, insertime, insertuserid, ordernum, selecttype, columnid, startnum, 
+    endnum
+  </sql>
+  <select id="getTdishGroupList" resultMap="GroupfindResultMap" parameterType="map">
+  select t.*,b.itemDesc,b.itemDesc columnname  
+  from t_dish_group t,t_basicdata b
+  <where>
+  	t.dishid=#{dishid,jdbcType=VARCHAR}
+  	and b.id=t.columnid
+  </where>
+  order by t.ordernum asc
+  </select>
+  <select id="getTgroupDetailList" resultMap="DetailfindResultMap" parameterType="map">
+  	SELECT d.*,t.title contactdishname,u.price,u.vipprice,t.weigh FROM t_group_detail d,t_dish t,t_dish_unit  u  
+  	<where>
+  	d.contactdishid=t.dishid  
+	and d.groupid=#{groupid,jdbcType=VARCHAR}
+	and u.dishid=t.dishid
+	and u.unit=d.dishunitid
+  	</where> 
+  	order by d.ordernum asc
+  </select>
+  <select id="getFishPotDetailList" resultMap="DetailfindResultMap" parameterType="map">
+  	SELECT d.*,t.title contactdishname,u.price,t.headSort unitflag,u.vipprice FROM t_group_detail d,t_dish t,t_dish_unit  u  
+  	<where>
+  	d.contactdishid=t.dishid  
+	and u.dishid=t.dishid
+	and u.unit=d.dishunitid
+	<if test="dishid!=null and dishid!=''">
+	and d.dishid=#{dishid,jdbcType=VARCHAR}
+	</if>
+  	</where> 
+  	ORDER BY d.ispot asc
+  </select>
+  <select id="getFishPotDetailPad" resultMap="DetailfindResultMap" parameterType="map">
+  	SELECT t.dishid,u.dishname,u.dishintroduction,u.unit,u.price,u.vipprice,d.ispot,t.weigh FROM t_group_detail d,
+  	t_dish t,t_template_dishunit  u 
+  	<where>
+  	d.contactdishid=t.dishid  
+	and u.dishid=t.dishid
+	and u.unit=d.dishunitid
+  	<if test="dishid!=null">
+	and d.dishid=#{dishid}
+  	</if>
+  	<if test="menuid!=null">
+  	and u.menuid=#{menuid}
+  	</if>
+  	</where> 
+  </select>
+  
+  
+<insert id="saveGroup"   parameterType="com.candao.www.data.model.TcomboDishGroup" >
+        INSERT INTO  `t_dish_group` (`id`,`dishid`, `status`, `insertime`, 
+	    `insertuserid`, `ordernum`, `selecttype`, `columnid`, `startnum`, `endnum`) 
+	VALUES (#{id,jdbcType=VARCHAR},#{dishid,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},now(), 
+	#{insertuserid,jdbcType=VARCHAR}, 
+	#{ordernum,jdbcType=INTEGER}, #{selecttype,jdbcType=VARCHAR},
+	 #{columnid,jdbcType=VARCHAR},
+	 #{startnum,jdbcType=INTEGER},#{endnum,jdbcType=INTEGER})
+  </insert>
+  
+
+<insert id="saveGroupDetail"  parameterType="com.candao.www.data.model.TgroupDetail" >
+     INSERT INTO  `t_group_detail` (
+     `id`,`groupid`, `contactdishid`, `inserttime`, `insertuserid`,
+ `ordernum`, `status`, `dishunitid`, `dishnum`, `dishid`, `dishtype`,`ispot`) 
+ VALUES (#{id,jdbcType=VARCHAR},#{groupid,jdbcType=INTEGER}, 
+ #{contactdishid,jdbcType=VARCHAR},
+ now(), 
+  #{insertuserid,jdbcType=VARCHAR},
+  #{ordernum,jdbcType=INTEGER},
+ #{status,jdbcType=INTEGER}, 
+ #{dishunitid,jdbcType=VARCHAR},
+  #{dishnum,jdbcType=INTEGER},
+  #{dishid,jdbcType=VARCHAR},
+  #{dishtype,jdbcType=INTEGER},
+  #{ispot,jdbcType=INTEGER}
+  )
+  </insert>
+
+   	<delete id="deleteGroup" parameterType="map">
+	   delete from  t_dish_group
+	    where    dishid=#{id} 
+	</delete>
+	   	<delete id="deleteGroupDetail" parameterType="map">
+	   delete from  t_group_detail
+	    where    dishid=#{id} 
+	</delete>
+	<select id="ifDishesDetail" resultMap="DetailfindResultMap" parameterType="map">
+  	SELECT d.id, d.groupid, d.contactdishid, d.inserttime, d.insertuserid, d.ordernum, d.status, d.dishunitid, 
+    d.dishnum,d.dishid,d.dishtype,d.ispot FROM t_group_detail d,t_dish t,t_dish_dishtype  tdd  
+  	<where>
+	t.dishid = tdd.dishid
+	and d.dishid = tdd.dishid
+
+	<if test="dishid!=null and dishid!=''">
+	and d.contactdishid=#{dishid,jdbcType=VARCHAR}
+	</if>
+  	</where> 
+  </select>
+  
+</mapper>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Examples</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css">
+	<link rel="stylesheet" href="../css/shop.css">
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+
+
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../scripts/projectJs/index.js"></script>
+
+
+</head>
+<body>
+	<div class="ky-navbar ky-navbar-default">
+		<div class="ky-navbar-header">
+			<img src="../images/logo.png" alt="">
+			<p>新辣道后台管理平台</p>
+		</div>
+		<div class="ky-navbar-menu">
+			<ul class="ky-nav ky-nav-pills">
+				<li>
+					<a href="#" class="ky-menu-primary ky-menu-focus">门店管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-info">菜品管理</a>
+				</li>
+				<li class="ky-dropdown">
+					<a href="#" class="ky-menu-warning">餐台管理</a>
+					<ul class="ky-dropdown-menu ky-nav ky-nav-pills">
+						<li><a href="#" class="ky-menu-warning">区域管理</a></li>
+						<li><a href="#" class="ky-menu-warning">菜品管理</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-danger">打印管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-minor">优惠管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-success">报表分析</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="ky-container ">
+		<div class="ky-title">
+			<p>门店管理</p>
+			<div class="ky-title-right">
+		<!-- 		<form class="navbar-form navbar-left" role="search">
+			<div class="form-group">		
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon1"><i class="icon-search"></i></span>
+				  <input type="text" class="form-control" placeholder="搜索" aria-describedby="basic-addon1">
+				</div>
+			</div>
+		</form> -->
+				<img src="../images/user.png" alt="">
+				<span class="ky-user">李明</span>
+				<img src="../images/logout.png"></div>
+
+
+		</div>
+		<div class="ky-content">
+			<div class="shop-btn btn-add">
+				  <button type="button" class="btn  btn-first">新增门店</button>
+			
+			</div>
+			<div class="shop-search">
+				<div class="form-group">
+					<label class="control-label col-xs-2">门店名称：</label>
+					<div class="col-xs-3">
+						<input type="text" class="form-control"/>
+						
+					</div>
+					<label class="control-label col-xs-1">地址：</label>
+					<div class="col-xs-3">
+						<div class="input-group">
+							  <input type="text" class="form-control" placeholder="省 市 县" aria-describedby="basic-addon1">
+							   <span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+
+						</div>					
+					</div>	
+					<div class="col-xs-3 shop-search-btn ">
+						<button class="btn btn-default"><i class="icon-search"></i>    搜索</button>						
+					</div>
+		
+				</div>
+			</div>
+
+
+
+			<table class="table table-list">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>名称</th>
+						<th>地址</th>
+						<th>店长</th>
+						<th>电话</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="odd">
+						<td>1</td>
+						<td>新辣道北京世纪金源店</td>
+						<td>北京海淀区大东路</td>
+						<td>张朝阳</td>
+						<td>13477063134</td>
+						<td class="td-last">
+							<div class="operate">
+								<a>查看</a>
+								<a>修改</a>
+								<a>删除</a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>2</td>
+						<td>新辣道北京世纪金源店</td>
+						<td>北京海淀区大东路</td>
+						<td>张朝阳</td>
+						<td>13477063134</td>
+						<td  class="td-last">
+							<div class="operate">
+								<a>查看</a>
+								<a>修改</a>
+								<a>删除</a>
+							</div>
+						</td>
+					</tr>
+					<tr class="odd">
+						<td>3</td>
+						<td>新辣道北京世纪金源店</td>
+						<td>北京海淀区大东路</td>
+						<td>张朝阳</td>
+						<td>13477063134</td>
+						<td  class="td-last">
+							<div class="operate">
+								<a>查看</a>
+								<a>修改</a>
+								<a>删除</a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>4</td>
+						<td>新辣道北京世纪金源店</td>
+						<td>北京海淀区大东路</td>
+						<td>张朝阳</td>
+						<td>13477063134</td>
+						<td  class="td-last">
+							<div class="operate">
+								<a>查看</a>
+								<a>修改</a>
+								<a>删除</a>
+							</div>
+						</td>
+					</tr>
+		
+				</tbody>
+			</table>
+			<p class="paging">
+				<a class="prev"><</a>
+				<a>1</a>
+				<a>2</a>
+				<a class="active">3</a>
+				<a>4</a>
+				<a>5</a>
+				<a>...</a>
+				<a class="next">></a>
+
+			</p>
+		</div>
+
+	</div>
+		<!--点击按钮弹出添加界面 -->
+		<div class="modal fade shop-dialog in " id="shop-add" >
+			<div class="modal-dialog">
+				<div class="modal-content">	
+					<div class="modal-body">
+						<div class="row mt20">
+							<div class="col-xs-12">
+								<form action="" method="post" class="form-horizontal " name="">
+									<div class="form-group">
+										<label class="col-xs-3 control-label "><span class="required-span">*</span>门店名称：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label "><span class="required-span">*</span>地址：</label>
+										<div class="col-xs-8 ky-select-group">
+												<select class="form-control ky-group-radius"></select>
+									
+										</div>									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label "></label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control" placeholder="详细地址">
+										</div>					
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label "><span class="required-span">*</span>店长：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label "><span class="required-span">*</span>手机：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label "><span class="required-span">*</span>固定电话：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label "><span class="required-span">*</span>传真：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label ">联系人一：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label ">手机：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label ">联系人二：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="form-group">
+										<label class="col-xs-3 control-label ">手机：</label>
+										<div class="col-xs-8">
+											<input type="text"	value="" class="form-control">	
+										</div>
+									
+									</div>
+									<div class="btn-operate">
+										<button class="btn btn-cancel in-btn135">取消</button>
+										<div  class="btn-division"></div>
+										<button class="btn btn-save in-btn135 shop-btn-save" type="button" id="shop-save-btn">保存</button>
+									</div>
+
+
+
+
+								</form>
+							</div>
+						</div>						
+					</div>
+
+				</div>
+				
+			</div>
+		</div>
+			<div class="confirm-box hidden">
+				<div class="confirm-box-content">
+					<p><img src="../images/confirm-ok.png"></p>
+					<!--保存失败   confirm-fail.png-->
+					<p>保存成功</p>
+				</div>
+			</div>
+</body>
+</html>
+<script>
+$(document).ready(function(){
+	$(".btn-add").click(function(){
+		$("#shop-add").modal("show");
+	});
+	$("#shop-save-btn").click(function(){
+		$(".confirm-box").removeClass("hidden");
+		setTimeout(function(){
+			$(".confirm-box").addClass("hidden");
+
+		},2000);
+
+	});
+});
+
+
+
+
+	
+</script>

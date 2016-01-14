@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbResourceDao">
+
+	<resultMap id="tbResourceResultMap" type="com.candao.www.data.model.TbResource">
+		<id property="resourcesid" column="resourcesId" />
+		<result property="resourcespid" column="resourcesPid" />
+		<result property="resourcesname" column="resourcesName" />
+		<result property="resourcespath" column="resourcesPath" />
+		<result property="resourcesdesc" column="resourcesDesc" />
+		<result property="resourcestype" column="resourcesType" />
+		<result property="indexvalue" column="indexValue" />
+		<result property="status" column="status" />
+		<result property="createtime" column="createTime" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbResourceResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbResourceResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbResource">
+	   insert into t_resource (
+	     resourcesId,
+	     resourcesPid,
+	     resourcesName,
+	     resourcesPath,
+	     resourcesDesc,
+	     resourcesType,
+	     indexValue,
+	     status,
+	     createTime
+	   )values (
+	     #{resourcesid},
+	     #{resourcespid},
+	     #{resourcesname},
+	     #{resourcespath},
+	     #{resourcesdesc},
+	     #{resourcestype},
+	     #{indexvalue},
+	     #{status},
+	     #{createtime}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbResource">
+	   update t_resource set
+	     resourcesId=#{resourcesid},
+	     resourcesPid=#{resourcespid},
+	     resourcesName=#{resourcesname},
+	     resourcesPath=#{resourcespath},
+	     resourcesDesc=#{resourcesdesc},
+	     resourcesType=#{resourcestype},
+	     indexValue=#{indexvalue},
+	     status=#{status},
+	     createTime=#{createtime}
+	   where 
+	    resourcesId=#{resourcesid} 
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   delete from 
+	     t_resource 
+	   where 
+	    resourcesId=#{resourcesid} 
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbResourceResultMap">
+	   select 
+	    resourcesId,
+	    resourcesPid,
+	    resourcesName,
+	    resourcesPath,
+	    resourcesDesc,
+	    resourcesType,
+	    indexValue,
+	    status,
+	    createTime
+	   from t_resource
+	   where 
+	    resourcesId=#{resourcesid} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    resourcesId,
+	    resourcesPid,
+	    resourcesName,
+	    resourcesPath,
+	    resourcesDesc,
+	    resourcesType,
+	    indexValue,
+	    status,
+	    createTime
+	   from t_resource
+	   where 
+	    resourcesId=#{resourcesid} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     resourcesId,
+	     resourcesPid,
+	     resourcesName,
+	     resourcesPath,
+	     resourcesDesc,
+	     resourcesType,
+	     indexValue,
+	     status,
+	     createTime
+	   from t_resource
+	   <where>
+	     <if test="resourcesid != null">
+	        resourcesId=#{resourcesid}
+	     </if>
+	     <if test="resourcespid != null">
+	        and resourcesPid=#{resourcespid}
+	     </if>
+	     <if test="resourcesname != null">
+	        and resourcesName=#{resourcesname}
+	     </if>
+	     <if test="resourcespath != null">
+	        and resourcesPath=#{resourcespath}
+	     </if>
+	     <if test="resourcesdesc != null">
+	        and resourcesDesc=#{resourcesdesc}
+	     </if>
+	     <if test="resourcestype != null">
+	        and resourcesType=#{resourcestype}
+	     </if>
+	     <if test="indexvalue != null">
+	        and indexValue=#{indexvalue}
+	     </if>
+	     <if test="status != null">
+	        and status=#{status}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	   </where>
+	    order by indexValue asc
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	     resourcesId,
+	     resourcesPid,
+	     resourcesName,
+	     resourcesPath,
+	     resourcesDesc,
+	     resourcesType,
+	     indexValue,
+	     status,
+	     createTime
+	   from t_resource
+	   <where>
+	     <if test="resourcesid != null">
+	        resourcesId=#{resourcesid}
+	     </if>
+	     <if test="resourcespid != null">
+	        and resourcesPid=#{resourcespid}
+	     </if>
+	     <if test="resourcesname != null">
+	        and resourcesName=#{resourcesname}
+	     </if>
+	     <if test="resourcespath != null">
+	        and resourcesPath=#{resourcespath}
+	     </if>
+	     <if test="resourcesdesc != null">
+	        and resourcesDesc=#{resourcesdesc}
+	     </if>
+	     <if test="resourcestype != null">
+	        and resourcesType=#{resourcestype}
+	     </if>
+	     <if test="indexvalue != null">
+	        and indexValue=#{indexvalue}
+	     </if>
+	     <if test="status != null">
+	        and status=#{status}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	   </where>
+	</select>
+	
+ <select id="getLeftMenu" parameterType="map" resultMap="tbResourceResultMap">
+	select DISTINCT(trs.resourcesId),trs.* from t_user tu
+  join t_user_role tur on tu.userId=tur.userId
+  join t_role tr on tr.roleId=tur.roleId
+  join t_resource_role trr on tr.roleId=trr.roleId
+  join t_resource trs on trs.resourcesId=trr.resourceId
+   where tu.userId=#{userid}
+  and tu.`status`=1 and tr.`status`=1 and trs.`status`=1  and  trs.resourcesType<![CDATA[<>]]>3
+  order by trs.indexValue asc
+  </select>
+  
+  <select id="findAllPath"  resultType="String">
+	   select resourcesPath  from t_resource where status=1
+	</select>
+	
+  
+  <select id="findByRoleid" parameterType="map" resultMap="findResultMap">
+	   	   select 
+	      tr.resourcesId ,tr.resourcesPath
+	   from t_resource tr,
+          t_resource_role trr, 
+           t_user_role tu
+     where 
+        tu.roleId = trr.roleid
+        and trr.resourceId = tr.resourcesId
+	     and tu.userid = #{userid}
+	        and resourcesPath=#{resourcespath}
+	</select>
+	
+</mapper> 

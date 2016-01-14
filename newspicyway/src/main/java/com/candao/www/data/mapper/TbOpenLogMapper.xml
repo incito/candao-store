@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbOpenBizLogDao">
+
+	<resultMap id="tbOpenBizLogResultMap" type="com.candao.www.data.model.TbOpenBizLog">
+		<id property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="inserttime" column="inserttime" />
+		<result property="opendate" column="opendate" />
+		<result property="ipaddress" column="ipaddress" />
+	 
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbOpenBizLogResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbOpenBizLogResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbOpenBizLog">
+	   insert into t_open_log (
+	     id,
+	     username,
+	     inserttime,
+	     opendate,
+	     ipaddress
+	   )values (
+	     #{id},
+	     #{username},
+	     #{inserttime},
+	     #{opendate},
+	     #{ipaddress}
+	   )
+	</insert>
+ 
+	<delete id="delete" parameterType="map">
+	    delete from t_open_log
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbOpenBizLogResultMap">
+	   select
+	      id,
+	     username,
+	     inserttime,
+	     opendate,
+	     ipaddress
+	   from t_open_log 
+	</select>
+ 
+</mapper> 

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Exampleseadsdfdsafsfsf</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<title>laundry</title>
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css">
+	<link rel="stylesheet" href="../css/dishes.css">
+	<link rel="stylesheet" href="../mwindow/css/mwindow.css">
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../scripts/projectJs/index.js"></script>
+	<script src="../scripts/projectJs/dishes.js"></script>
+	<script src="../mwindow/mwindow.js"></script>
+
+
+
+
+</head>
+<body>
+	<div class="ky-navbar ky-navbar-default">
+		<div class="ky-navbar-header">
+			<img src="../images/logo.png" alt="">
+			<p>新辣道后台管理平台</p>
+		</div>
+		<div class="ky-navbar-menu">
+			<ul class="ky-nav ky-nav-pills">
+				<li>
+					<a href="#" class="ky-menu-primary">门店管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-info">菜品管理</a>
+				</li>
+				<li class="ky-dropdown">
+					<a href="#" class="ky-menu-warning">餐台管理</a>
+					<ul class="ky-dropdown-menu ky-nav ky-nav-pills">
+						<li><a href="#" class="ky-menu-warning">区域管理</a></li>
+						<li><a href="#" class="ky-menu-warning">菜品管理</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-danger">打印管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-minor">优惠管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-success">报表分析</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="ky-container ">
+		<div class="ky-title">
+			<p>菜品管理</p>
+			<div class="ky-title-right">
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">		
+						<div class="input-group">
+						  <span class="input-group-addon" id="basic-addon1"><i class="icon-search"></i></span>
+						  <input type="text" class="form-control" placeholder="搜索" aria-describedby="basic-addon1">
+						</div>
+					</div>
+				</form> 
+				<img src="../images/user.png" alt="">
+				<span class="ky-user">李明</span>
+				<img src="../images/logout.png"></div>
+
+
+		</div>
+		<div class="ky-content">
+			<div class="dishes-content">
+				<p class="dishes-content-title">最新菜品
+					<button class="btn btn-default dishes-type-add"  type="button" id="dishes-type-add"><i class="icon-plus"></i> 添加菜品分类</button>
+				</p>
+
+				<div class="nav-dishes-prev"><i class="icon-chevron-left"></i></div>
+					<!--菜品分类导航条修复-->
+				<ul class="nav-dishes" id="nav-dishes">
+					<li class="nav-dishes-type active" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button1" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">鱼锅1<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="button2"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">热菜1<i class="icon-remove hidden"></i>
+					</li>			
+					<li class="nav-dishes-type" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button3" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">凉菜1<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type active" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button4" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">鱼锅2<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="button5"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">热菜2<i class="icon-remove hidden"></i>
+					</li>			
+					<li class="nav-dishes-type" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button6" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">凉菜2<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type active" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button7" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">鱼锅3<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="button8"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">热菜3<i class="icon-remove hidden"></i>
+					</li>			
+					<li class="nav-dishes-type" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button9" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">凉菜3<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type active" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button10" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">鱼锅4<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="button11"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">热菜4<i class="icon-remove hidden"></i>
+					</li>			
+					<li class="nav-dishes-type" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button12" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">凉菜4<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type active" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button13" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">鱼锅5<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="button14"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">热菜5<i class="icon-remove hidden"></i>
+					</li>			
+					<li class="nav-dishes-type" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button15" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">凉菜5<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type active" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button16" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">鱼锅6<i class="icon-remove hidden"></i>						
+					</li>
+					<li class="nav-dishes-type" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="button17"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">热菜6<i class="icon-remove hidden"></i>
+					</li>			
+					<li class="nav-dishes-type" draggable="true" ondragstart="drag(event)"  ondrop="drop(event)" ondragover="allowDrop(event)" id="button18" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">凉菜6<i class="icon-remove hidden"></i>						
+					</li>
+
+				</ul>
+				<div class="nav-dishes-next"><i class="icon-chevron-right"></i></div>
+				<ul class="dishes-right-tab right-tab hidden">
+					<li id="dishes-right-tab1"><i class="icon-plus-sign"></i><span>添加菜品分类</span></li>
+					<li id="dishes-right-tab2"><i class="icon-edit"></i><span>编辑菜品分类</span></li>
+					<li id="dishes-right-tab3"><i class="icon-minus-sign"></i><span>删除菜品分类</span></li>
+				</ul>
+				<div class="nav-dishes-tab">
+				
+					<div class="dishes-detail-box"  onmouseover="delDisplay(this)"  onmouseout="delHidden(this)">
+						<p class="dishes-detail-name">红汤梭边鱼锅</p>
+						<i class="icon-remove hidden" onclick="delDishesDetail(this)"></i>
+					</div>
+					<div class="dishes-detail-box"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">
+						<p class="dishes-detail-name">红汤梭边鱼锅1</p>
+						<i class="icon-remove hidden" onclick="delDishesDetail(this)"></i>
+					</div>
+					<div class="btn-group dishes-detail-add" role="group" aria-label="...">
+					  <button type="button" class="btn btn-default" id="dishes-detailMain-Add"><i class="icon-plus"></i> 菜品</button>
+					  <button type="button" class="btn btn-default" id="dishes-detailOther-Add"><i class="icon-plus"></i> 其他</button>
+					  	<ul class="dishes-other-right right-tab hidden">
+							<li id="dishes-other-tab1" ><i class="icon-plus-sign"></i><span>添加套餐</span></li>
+							<li id="dishes-other-tab2" ><i class="icon-plus-sign"></i><span>添加火锅</span></li>
+							<li id="dishes-other-tab3" ><i class="icon-circle-arrow-right"></i><span>添加已有菜品至该分类</span></li>						
+						</ul>	
+				
+					</div>	
+
+				</div>				
+			</div>
+		</div>
+
+	</div>
+		<!--添加菜品分类框 -->
+		<div class="modal fade dishes-add-dialog in " id="dishes-add-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">	
+					<div class="modal-header">				  
+				        <h4 class="modal-title">添加分类</h4>
+				        <img src="../images/close.png" class="img-close"  data-dismiss="modal">
+				    </div>
+				    <hr class="dishes-dialog-hr">	
+					<div class="modal-body">			
+						<form action="" method="post" class="form-horizontal " name="">
+							<div class="form-group">
+								<label class="col-xs-3 control-label">分类名称：</label>
+								<div class="col-xs-5">
+									<input type="text"	value="" class="form-control" name="dish-type">	
+								</div>
+								<span class="col-xs-4 dishes-add-tip"><i class="icon-warning-sign"></i>该分类已经存在</span>
+							</div>
+
+						
+							<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-type-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+					
+
+				</div>
+				
+			</div>
+		</div>
+		<!--添加菜品详情框 -->
+		<div class="modal fade dishes-detailAdd-dialog in " id="dishes-detailAdd-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">	
+					<div class="modal-header">				  
+				        <h4 class="modal-title">添加菜品</h4>
+				         <img src="../images/close.png" class="img-close" data-dismiss="modal">
+				    </div>
+				    <hr class="dishes-dialog-hr">
+					<div class="modal-body">
+						<form action="" method="post" class="form-horizontal " name="">
+							<div class="form-group">
+								<label class="col-xs-2 control-label">菜品编号：</label>
+								<div class="col-xs-2">
+									<input type="text"	value="" class="form-control" name="dishesCode">	
+								</div>
+								<label class="col-xs-2 control-label">菜品名称：</label>
+								<div class="col-xs-2">
+									<input type="text"	value="" class="form-control" name="dishesName">	
+								</div>
+								<label class="col-xs-2 control-label">菜品分类：</label>
+								<div class="col-xs-2">
+									<div class="input-group select-box">
+										<input type="text" class="form-control" aria-describedby="basic-addon1">
+										<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+									</div>		
+									  <div class="select-content hidden select-multi">
+							               <span class="select-content-detail">鱼锅<input type="checkbox"></span><br/>
+							               <span class="select-content-detail">热菜<input type="checkbox"></span><br/>
+							               <span class="select-content-detail">凉菜<input type="checkbox"></span><br/>
+
+						    		  </div>	
+								</div>
+							</div>
+							<div class="dishes-charge-unit">
+								<div class="form-group">
+									<label class="col-xs-2 control-label">计价单位：</label>
+									<div class="col-xs-2">
+										<input type="text"	value="" class="form-control">	
+									</div>
+									<label class="col-xs-2 control-label">价格：</label>
+									<div class="col-xs-2">
+										<input type="text"	value="" class="form-control">	
+									</div>
+									<label class="col-xs-2 control-label">会员价：</label>
+									<div class="col-xs-2">
+										<input type="text"	value="" class="form-control">	
+									</div>
+								</div>
+								<hr>
+								<div class="form-group">
+									<div class="charge-unit-addBtn">
+										<i class="icon-plus-sign"></i>添加一组计价单位
+										
+									</div>
+					
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-2 control-label">菜品口味：</label>
+								<div class="col-xs-2 dishes-taste">
+									<button class="btn btn-default" type="button" id="dishes-taste-add"><i class="icon-plus-sign"></i></button>
+								</div>
+								<label class="col-xs-2 control-label">菜品标签：</label>
+								<div class="col-xs-4 dishes-checkbox">
+									<label class="checkbox-inline"><input type="checkbox"	value="" >	推荐</label>
+									<label class="checkbox-inline"><input type="checkbox"	value="" >	推荐</label>
+									<label class="checkbox-inline"><input type="checkbox"	value="" >	推荐</label>
+									<label class="checkbox-inline"><input type="checkbox"	value="" >	推荐</label>
+									<label class="checkbox-inline"><input type="checkbox"	value="" >	推荐</label>
+								</div>
+								<div class="col-xs-2 dishes-flag-btn">
+									<button type="button" id="dishes-label-add"><i class="icon-plus"></i> 自定义</button>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-2 control-label">菜品介绍：</label>
+								<div class="col-xs-7 dishes-introduce">
+									<textarea class="form-control"></textarea>	
+									<p class="dishes-introduce-tip">继续可以输入100字</p>
+								</div>
+								<div class="col-xs-3 dishes-upload-box">
+									<img src="../images/upload-img.png">
+								
+								</div>
+					
+							</div>						
+							<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-detail-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+					
+
+				</div>
+				
+			</div>
+		</div>
+		<!--添加菜品口味 -->
+		<div class="modal fade dishes-tasteAdd-dialog in " id="dishes-tasteAdd-dialog" data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">	
+					<div class="modal-header">				  
+				        <h4 class="modal-title">菜品口味</h4>
+				        <img src="../images/close.png" class="img-close" data-dismiss="modal">
+				    </div>
+				    <hr class="dishes-dialog-hr">
+					<div class="modal-body">
+						<form action="" method="post" class="form-horizontal " name="">
+							<p class="dishes-tag-select" id="dishes-tag-select1">
+								<button class="btn btn-default" type="button" onclick="removeTag(this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">微辣1<i class="icon-remove hidden"  id="1" ></i></button>
+								<button class="btn btn-default" type="button" onclick="removeTag(this)"   onmouseover="delDisplay(this)"  onmouseout="delHidden(this)">微辣2<i class="icon-remove hidden" id="2" onclick="removeTag(this)"></i></button>
+								<button class="btn btn-default" type="button" onclick="removeTag(this)"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">微辣3<i class="icon-remove hidden "></i></button>
+								<button class="btn btn-default" type="button" onclick="removeTag(this)"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)">微辣4<i class="icon-remove hidden"></i></button>
+							</p>
+							<div class="dishes-tag-box">
+								<div class="form-group">
+									<div class="col-xs-6">
+										<input type="text" class="form-control" id="tagName1" placeholder="自定义口味" name="tagName">
+									</div>
+									<div class="col-xs-2 tagAdd-btn" id="tagAdd-btn1">
+										<button class="btn btn-default" type="button">添加</button>
+									</div>
+									<div class="col-xs-4 tagAdd-tip">
+										<i class="icon-warning-sign"></i>该分类已经存在
+									</div>								
+								</div>
+								<div class="dishes-tag-table" id="dishes-tag-table1">
+									<div><button  onclick="addTag(this)" class="btn btn-default" type="button">微辣</button></div>
+									<div><button  onclick="addTag(this)" class="btn btn-default" type="button">微辣</button></div>									
+									<div><button  onclick="addTag(this)" class="btn btn-default" type="button">微辣</button></div>									
+									<div><button  onclick="addTag(this)" class="btn btn-default" type="button">微辣</button></div>					
+								</div>
+							</div>
+				
+
+						
+							<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-taste-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+					
+
+				</div>
+				
+			</div>
+		</div>
+		<!--添加菜品标签 -->
+		<div class="modal fade dishes-labelAdd-dialog in " id="dishes-labelAdd-dialog" data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">	
+					<div class="modal-header">				  
+				        <h4 class="modal-title">菜品标签</h4>
+				        <img src="../images/close.png" class="img-close" data-dismiss="modal">
+				    </div>
+				    <hr class="dishes-dialog-hr">
+					<div class="modal-body">
+						<form action="" method="post" class="form-horizontal " name="">
+							<p class="dishes-tag-select" id="dishes-tag-select2">
+								<button class="btn btn-default" type="button" onclick="removeTag(this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">推荐<i class="icon-remove hidden"  id="1" ></i></button>
+								<button class="btn btn-default" type="button"  onclick="removeTag(this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)">特色<i class="icon-remove hidden" id="2"></i></button>
+							
+							</p>
+							<div class="dishes-tag-box">
+								<div class="form-group">
+									<div class="col-xs-6">
+										<input type="text" class="form-control" id="tagName2" placeholder="自定义口味" name="labelName">
+									</div>
+									<div class="col-xs-2 tagAdd-btn" id="tagAdd-btn2">
+										<button class="btn btn-default" type="button">添加</button>
+									</div>
+									<div class="col-xs-4 tagAdd-tip">
+										<i class="icon-warning-sign"></i>该分类已经存在
+									</div>								
+								</div>
+								<div class="dishes-tag-table" id="dishes-tag-table2">
+									<div><button  onclick="addTag(this)" class="btn btn-default" type="button">推荐</button></div>
+									<div><button  onclick="addTag(this)" class="btn btn-default" type="button">特色</button></div>							
+				
+								</div>
+							</div>
+				
+
+						
+							<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-label-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+					
+
+				</div>
+				
+			</div>
+		</div>
+		<!--删除弹出框-->
+		<div class="modal fade dishes-detailDel-dialog in " id="dishes-detailDel-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">	
+					<div class="modal-header">				  
+				        <h4 class="modal-title">确认删除</h4>
+				        <img src="../images/close.png" class="img-close" data-dismiss="modal">
+				    </div>
+				    <hr class="dishes-dialog-hr">
+					<div class="modal-body">
+						<form action="" method="post" class="form-horizontal " name="">
+							<!-- 仅存在一个分类中-->
+							<p class="dishes-del-p1"><img src="../images/del-warn.png"></i>确认删除“红汤锁边鱼锅吗？”</p>
+							 <!-- 存在多个分类中-->
+			 <!-- 				<p class="dishes-del-p2">	<label class="checkbox-inline"><input type="checkbox"	value="" >彻底删除“红汤梭边鱼锅”</label>
+			 												</p>					
+			 												<p class="dishes-del-p2">	<label class="checkbox-inline"><input type="checkbox"	value="" >在 “鱼锅” 分类中删除 “红汤梭边鱼锅” </label>
+			 												</p>	 -->					
+							<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-type-save" type="button">确认</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--添加套餐-->
+		<div class="modal fade" id="dishes-combo-dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="dishes-combo-title">添加套餐</div>
+						<img src="../images/close.png" class="img-close">
+						<hr class="ky-hr">
+						<form class="form-horizontal ky-form">
+							<div class="form-group">
+								<label for="" class="control-label">套餐编号：</label>
+								<div class="ky-inputW">
+									<input type="text" class="form-control" id="" placeholder=""></div>
+								<label for="" class="control-label">菜品名称：</label>
+								<div class="ky-inputW">
+									<input type="text" class="form-control" id="" placeholder=""></div>
+								<label for="" class="control-label">菜品分类：</label>
+								<div class="ky-inputW">
+									<input type="text" class="form-control" id="" placeholder=""></div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label">价格：</label>
+								<div class="ky-inputW">
+									<input type="text" class="form-control" id="" placeholder=""></div>
+								<label for="" class="control-label">会员价：</label>
+								<div class="ky-inputW">
+									<input type="text" class="form-control" id="" placeholder=""></div>
+								<label for="" class="control-label">套餐标签：</label>
+								<div class="ky-inputW">
+									<input type="text" class="form-control" id="" placeholder=""></div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label">套餐介绍：</label>
+								<div class="dishes-textareaW">
+									<textarea name="" id="" cols="30" rows="4" class="form-control"></textarea>
+									<p class="help-block text-right">继续可以输入100字体</p>
+								</div>
+								<div class="dishes-fileup"><img src="../images/combo-fileup.png" alt=""></div>
+							</div>
+							<div class="form-group">
+								<div class="dishes-comboDetail">
+									<div class="dishes-comboDetail-title">
+										套餐明细 <i class="glyphicon glyphicon-edit"></i>
+									</div>
+									<!-- <img src="../images/combo_add.png" alt="" class="dishes-comboAdd"> -->
+									<span class="glyphicon glyphicon-chevron-left dishes-roll-left"></span>
+									<div class="dishes-comboDetail-content">
+										<div class="dishes-comboList">
+											<div class="dishes-comboList-title">
+												鱼锅（4）
+											</div>
+											<ul class="dishes-comboList-content">
+												<li class="dishes-conboList-stip">
+													1.古坛梭边鱼
+													<span class="pull-right dishes-conboList-tip">2选1</span>
+												</li>
+												<li  class="dishes-conboList-stip">
+													2.古坛梭边鱼
+													<span class="pull-right dishes-conboList-tip">2选1</span>
+												</li>
+												<li>
+													3.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													4.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+											</ul>
+											<div class="dishes-comboList-bottom">
+												设置规则
+											</div>
+										</div>
+										<div class="dishes-comboList">
+											<div class="dishes-comboList-title">
+												鱼锅（4）
+											</div>
+											<ul class="dishes-comboList-content">
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+											</ul>
+											<div class="dishes-comboList-bottom">
+												设置规则
+											</div>
+										</div>
+										<div class="dishes-comboList">
+											<div class="dishes-comboList-title">
+												鱼锅（4）
+											</div>
+											<ul class="dishes-comboList-content">
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+											</ul>
+											<div class="dishes-comboList-bottom">
+												设置规则
+											</div>
+										</div>
+										<div class="dishes-comboList">
+											<div class="dishes-comboList-title">
+												鱼锅（4）
+											</div>
+											<ul class="dishes-comboList-content">
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+											</ul>
+											<div class="dishes-comboList-bottom">
+												设置规则
+											</div>
+										</div>
+										<div class="dishes-comboList">
+											<div class="dishes-comboList-title">
+												鱼锅（4）
+											</div>
+											<ul class="dishes-comboList-content">
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+											</ul>
+											<div class="dishes-comboList-bottom">
+												设置规则
+											</div>
+										</div>
+										<div class="dishes-comboList">
+											<div class="dishes-comboList-title">
+												鱼锅（5）
+											</div>
+											<ul class="dishes-comboList-content">
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+												<li>
+													1.古坛梭边鱼
+													<span class="pull-right">1</span>
+												</li>
+											</ul>
+											<div class="dishes-comboList-bottom">
+												设置规则
+											</div>
+										</div>
+									</div>
+									<span class="glyphicon glyphicon-chevron-right dishes-roll-right"></span>
+								</div>
+							</div>
+							<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-detail-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--套餐明细-->
+		<div class="modal fade" id="dishes-comboEdit-dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="dishes-comboEdit-title">鱼锅</div>
+						<img src="../images/close.png" class="img-close">
+						<hr class="ky-hr">
+						<button type="button" class="btn btn-comboS">二选一</button>
+						<div class="dishes-comboEdit-line"></div>
+						<div class="dishes-comboEdit-box">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value=""><span class="dishes-comboEdit-boxi">1</span>红汤梭边鱼
+								</label>
+							</div>
+							<div class="dishes-panBottom">
+								<span class="dishes-panBottom-name">红汤锅底</span>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+							<div class="dishes-panBottom">
+								<span class="dishes-panBottom-name">红汤锅底</span>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+						</div>
+						<div class="dishes-comboEdit-box dishes-combo-single">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value=""><span class="dishes-comboEdit-boxi">1</span>红汤梭边鱼
+								</label>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+						</div>
+						<div class="dishes-combined">
+							以下菜品二选一
+							<button type="button" class="btn-combined pull-right">重新组合</button>
+						</div>
+						<div class="dishes-comboEdit-box  dishes-checked">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value=""><span class="dishes-comboEdit-boxi">1</span>红汤梭边鱼
+								</label>
+							</div>
+							<div class="dishes-panBottom">
+								<span class="dishes-panBottom-name">红汤锅底</span>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+							<div class="dishes-panBottom">
+								<span class="dishes-panBottom-name">红汤锅底</span>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+						</div>
+						<div class="dishes-comboEdit-box  dishes-checked">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value=""><span class="dishes-comboEdit-boxi">1</span>红汤梭边鱼
+								</label>
+							</div>
+							<div class="dishes-panBottom">
+								<span class="dishes-panBottom-name">红汤锅底</span>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+							<div class="dishes-panBottom">
+								<span class="dishes-panBottom-name">红汤锅底</span>
+								<span class="dishes-panBottom-num"><input type="text" class="form-control"><span class="dishes-unit">份</span></span>
+								<span class="dishes-panBottom-price">48元</span>
+							</div>
+						</div>
+
+					</div>
+					<div class="btn-operate btn-operate-dishes">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="dishes-detail-save" type="button">确认</button>
+							</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		$(document).ready(function(){
+			$('#dishes-combo-dialog').modal('show');
+			$('#dishes-comboEdit-dialog').modal('show');
+// 			$('#dishes-existAdd-dialog').modal('show');
+		});
+		</script>
+
+		<!--添加已有菜品至该分类-->
+		<div class="modal fade dishes-existAdd-dialog" data-backdrop="static" id="dishes-existAdd-dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="ky-addDishes-title">
+							<span>添加已有菜品至该分类</span>
+							<span class="radio ky-addDishes-empty">
+								<label>
+									<input type="radio" name="" id="" value="" >全不选</label>
+							</span>
+							<img src="../images/close.png" class="img-close" data-dismiss="modal">
+
+						</div>
+						<hr class="ky-hr">
+						<div class="ky-addDishes-content">
+							<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingOne">
+										<div class="panel-title">
+											<span>鱼锅类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="pull-right"> <i class="glyphicon glyphicon-chevron-up"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingTwo">
+										<div class="panel-title">
+											<span>小料类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingThree">
+										<div class="panel-title">
+											<span>凉菜类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingFour">
+										<div class="panel-title">
+											<span>丸滑类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingFive">
+										<div class="panel-title">
+											<span>肉类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingSix">
+										<div class="panel-title">
+											<span>菌类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="true" aria-controls="collapseSix" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingSeven">
+										<div class="panel-title">
+											<span>根茎类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingEight">
+										<div class="panel-title">
+											<span>叶菜类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="true" aria-controls="collapseEight" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEight">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingNine">
+										<div class="panel-title">
+											<span>饮品</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseNine" aria-expanded="true" aria-controls="collapseNine" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingNine">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ky-addDishes-footer">
+							<div class="btn-operate">
+								<button class="btn btn-cancel in-btn135">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135 addDishes-btn-bgcolor" id="store-select-confirm">确认</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+		<!-- /.modal-dialog -->
+		</div>
+		<button type="button" onclick="dotest()">ssss</button>
+
+		<script>
+		function dotest(){
+			_open("http://www.baidu.com",'title',500,600,null);
+		}
+		var count=0;
+		$('.dishes-roll-left').click(function(){
+			var marginl = -147.5*(++count)+'px';
+			$('.dishes-comboList:eq(0)').css('margin-left',marginl);
+		});
+		$('.dishes-roll-right').click(function(){
+			var marginl = -147.5*(--count)+'px';
+			$('.dishes-comboList:eq(0)').css('margin-left',marginl);
+		});
+		</script>
+</body>
+</html>

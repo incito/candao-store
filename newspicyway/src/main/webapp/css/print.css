@@ -1,0 +1,193 @@
+/* 閹垫挸宓冪粻锛勬倞閺嶅嘲绱�*/
+body{
+	font-family:Microsoft Yahei;
+}
+.print-content{
+	margin-top:20px;
+}
+.print-detail-box{
+	margin:0 15px 0 15px;
+	display: inline-block;
+	text-align: center;
+	font-size:12px;
+	position: relative;
+}
+.print-detail-box p.print-img{
+	border:1px solid #fff;
+}
+.print-detail-box:hover p.print-img{
+ 	border:1px solid #d1e7ff; 
+	background: #e5f3fb;
+} 
+.print-detail-box i.icon-remove{
+	position:absolute;
+	top:0;
+	left:85%;
+	color:#c8c8c8;
+}
+.print-detail-box i.icon-remove:hover{
+	width:13px;
+	height:15px;
+	border-radius:20px;
+	background: #000;
+	cursor: pointer;
+}
+
+.printConfig-btn{
+	vertical-align: top;
+	display: inline-block;
+	margin:30px 0 0 0;
+}
+.printConfig-btn:hover{
+	cursor: pointer;
+}
+
+/* 濞ｈ濮為幍鎾冲祪闁板秶鐤嗗鐟板毉濡楋拷*/
+.printConfig-add-dialog .modal-header{
+	padding:3px 20px;
+	font-size: 16px;
+	
+}
+.printConfig-add-dialog{
+	margin-bottom: 40px;
+	
+}
+.printConfig-add-dialog .modal-content{
+	margin:100px auto;
+	width:340px;
+}
+.printConfig-add-dialog .form-group{
+/* 	text-align: center; */
+}
+.printConfig-add-dialog .control-label{
+	width:130px;
+	padding-right:0px;
+	font-weight: normal;
+	text-align: right;
+	font-size:14px;
+}
+.printConfig-add-dialog .col-xs-7{
+	padding-left:0px;
+}
+.printConfig-add-dialog .btn-operate button{
+	width:80px;
+}
+#print-area button,
+#print-dishes button{
+	width:170px;
+	border-radius: 0px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow:ellipsis ;
+	font-size:12px;
+	margin: 0 0 0 0;
+ 
+}
+/* 閹垫挸宓冮懣婊冩惂閿涘本澧﹂崡鏉垮隘閸╃喎鑴婇崙鐑橆攱 */
+/* 濞ｈ濮炲鍙夋箒閼挎粌鎼х拠銉ュ瀻缁拷*/
+.ky-print-empty{
+	float: right;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.ky-hr{
+	margin-top: 5px;
+	margin-bottom: 10px;
+}
+.ky-print-content .checkbox-inline{
+	margin:0;
+}
+.ky-print-content .panel-heading{
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.ky-print-content .panel-title{
+	font-size: 14px;
+}
+.ky-print-content input[type="checkbox"]{
+	margin-top:0px;
+}
+.ky-print-title{
+	font-size:16px;
+	margin-top:-15px;
+}
+li{
+	float:left;
+	width:100px;
+}
+.popover-content{
+	width:500px;
+}
+.popover {
+ position: absolute;
+ top: 0;
+ left: 0;
+ z-index: 1010;
+ display: none;
+ max-width: 460px;
+ padding: 1px;
+ text-align: left;
+ white-space: normal;
+ background-color: #ffffff;
+ border: 1px solid #ccc;
+ border: 1px solid rgba(0, 0, 0, 0.2);
+ -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+   border-radius: 6px;
+ -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+ -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+   background-clip: padding-box;
+}
+.tableOrdiah-detail-box{
+	float: left;
+    margin: 5px 6px;
+    overflow: hidden;
+    width: 140px;
+    font-size: 12px;
+}
+.popover-content,.tableOrdiah-detail-box{
+	list-style: outside none none;
+	margin: 5px 5px 5px 5px;
+	padding: 5px 5px 5px 5px;	
+}
+
+#printernameShow{
+	width:80px;
+}
+.modal-title{
+	font-size:16px;
+}
+.form-control{
+	font-size:12px;
+}
+.radio-inline{
+	font-size:12px;
+}
+.btn {
+	width:100px;
+	height:30px;
+}
+.storesDiv {
+	font-size:12px;
+	margin-bottom:200px;
+}
+.storesDiv li {
+    float: left;
+    height: 38px;
+    margin: 5px 6px;
+    overflow: hidden;
+    width: 120px;
+}
+#print-area-add:hover,#print-dishes-add:hover{
+	color:#00C4E9;
+	cursor: pointer;
+}
+
+ #printConfig-add:hover {
+    color: #00C4E9;
+    cursor: pointer;
+    background: none repeat scroll 0% 0% #FFF;
+}

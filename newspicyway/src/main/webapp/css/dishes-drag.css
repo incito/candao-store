@@ -1,0 +1,652 @@
+.dishes-type-add{
+	margin-top:-10px;
+	border:1px dashed #ececec;
+	color:#c8c8c8;
+	float:right;
+}
+.dishes-content{
+	margin-top:20px;
+	font-size: 16px;
+	position: relative;
+}
+.dishes-content-title{
+	color:#ff765d;
+}
+.dishes-content-hr{
+	margin:10px 0px;
+}
+.dishes-dialog-hr{
+	margin:0px 15px;
+}
+/* 鐐瑰嚮鍙抽敭寮瑰嚭妗�*/
+.right-tab{
+	padding:0px;
+	position: absolute;
+	z-index: 1000;
+	top:21%;
+	left:16%;
+	background: #f0f0f0;
+}
+.right-tab li{
+	padding:0px 10px;
+	list-style: none;
+	text-align: left;
+	line-height:40px;
+	color:#282828;
+}
+.right-tab li.active,
+.right-tab li:hover{
+	background: #ff765d;
+	color:#fff;
+}
+.right-tab  i.icon-edit{
+	margin-right:5px;
+}
+.right-tab  i.icon-plus-sign,.right-tab  i.icon-minus-sign,.right-tab  i.icon-circle-arrow-right{
+	margin-right:7px;
+}
+.right-tab span{
+	display: inline-block;
+}
+/* 鑿滃搧鍒嗙被瀵艰埅鏉�*/
+.nav-dishes-prev .icon-chevron-left,
+.nav-dishes-next .icon-chevron-right
+{
+	color:#ff765d;
+}
+.nav-dishes-prev .icon-chevron-left:hover,
+.nav-dishes-next .icon-chevron-right:hover
+{
+	cursor: pointer;
+}
+.nav-dishes-prev{
+	width:12px;
+	margin-left:-18px;
+	margin-top:15px;
+	display: inline-block;
+	float:left;
+}
+.nav-dishes-next{
+	width:12px;
+ 	margin-right:-18px;
+	margin-top:15px;
+	display: inline-block;
+	float:right; 
+}
+/* 鑿滃搧鍒嗙被瀵艰埅鏍峰紡鏇存柊 20150324 */
+.nav-dishes{
+	padding:0px;
+	height: 41px;
+	width:99%;	
+	white-space: nowrap;
+	overflow: hidden;
+	display: inline-block;
+	font-size: 18px;
+}
+.nav-dishes li{
+	margin-right:10px;
+	float:left;
+	line-height:40px;
+	list-style: none;
+	border:1px solid #cecece;
+	border-top:none;
+	text-align: center;
+	width:9%;
+	position: relative;
+}
+.nav-dishes li.active,.nav-dishes li.active:hover{
+	border:1px solid #ff765d;
+	background: #ff765d;
+	color:#fff;
+}
+.nav-dishes li:hover{
+	border-bottom-color:#ff765d;
+	background:#fff;
+	cursor:pointer;
+}
+
+.nav-dishes li i.icon-remove{
+	position:absolute;
+	right:0px;
+	top:0px;
+	border:1px solid #cecece;
+	color:#ff765d;
+}
+.nav-dishes li.active i.icon-remove{
+	color:#fff;
+}
+
+/* 姣忎釜鑿滃搧鍒嗙被鐨勫叿浣撳唴瀹�*/
+.nav-dishes-tab{
+	padding:15px 20px;
+	border:1px solid #ececec;
+	min-height:400px;
+}
+/* .nav-dishes-tab>span {
+	position: absolute;
+	top: -20px;
+	left:5%;
+	width: 0px;
+	height: 0px;
+	border-width: 10px;
+	border-color: transparent transparent #b7b7b7;
+	border-style:  dashed dashed solid;
+	font-size: 0;
+	line-height: 0;
+}
+.nav-dishes-tab em{
+	position: absolute;
+	top:-20px;
+	left:5%;
+	width: 0px;
+	height: 0px;
+	border-width: 10px;
+	border-color: transparent transparent #fff transparent;
+	border-style: dashed dashed solid dashed;
+	font-size: 0;
+	line-height: 0;
+} */
+/* 娣诲姞鑿滃搧鍒嗙被寮瑰嚭妗�*/
+.dishes-add-dialog{
+	font-size: 16px;
+}
+.dishes-add-dialog label.control-label{
+	padding-right:0px;
+	font-weight: normal;
+}
+.dishes-add-dialog .btn-operate-dishes{
+	margin-top:100px;
+}
+.btn-operate-dishes .btn-save{
+	 background-color: rgb(255, 106, 77);
+}
+.dishes-add-dialog .modal-header{
+	border-bottom:none;
+}
+.dishes-add-dialog .dishes-add-tip{
+	padding-top:7px;
+	font-size:12px;
+	color:#969696;		
+}
+.dishes-add-dialog .dishes-add-tip .icon-warning-sign{
+	margin-left:-10px;
+	margin-right:15px;
+	font-size:14px;
+}
+/* 鑿滃搧鍒嗙被鍙抽敭寮瑰嚭妗�*/
+.right-tab.dishes-right-tab {
+	top:10%;
+	left:8%;
+}
+.right-tab.dishes-right-tab li {
+	white-space: nowrap;
+	overflow: hidden;
+}
+/* 鑿滃搧璇︽儏娣诲姞 */
+.dishes-detailAdd-dialog .modal-header{
+	border-bottom: none;
+}
+.dishes-detailAdd-dialog .modal-dialog{
+	width:820px;
+	font-size: 16px;
+}
+.dishes-detailAdd-dialog .form-group{
+	text-align: center;
+}
+
+.dishes-detailAdd-dialog .col-xs-2{
+	padding-left:0px;
+	padding-right:0px;
+	width:155px;
+}
+.dishes-detailAdd-dialog .control-label.col-xs-2{
+	font-weight: normal;
+	padding-right:0px;
+	width:100px;
+}
+.dishes-charge-unit{
+	background:#f4f4f4;
+	padding:5px 10px;
+	margin:0 -10px 10px;
+}
+.dishes-charge-unit hr{
+	border-color:#dcdcdc;	
+	margin:5px 0px;
+}
+.charge-unit-addBtn{
+	color:#ff765d;
+	margin-top:10px;
+}
+.charge-unit-addBtn:hover{
+	cursor: pointer;
+}
+.charge-unit-addBtn i{
+	width:23px;
+	height:23px;
+	margin-right:10px;
+}
+.dishes-checkbox{
+	width:330px;
+	padding-left:0px;
+	padding-right:0px;
+	text-align:left;
+}
+.dishes-detailAdd-dialog .col-xs-2.dishes-flag-btn{
+	width:85px;
+	margin-left:-5px;
+	margin-top:-3px;
+}
+.dishes-flag-btn button{
+	margin-top:7px;
+	border:1px dashed #cccccc;
+	background: #f0f0f0;
+	color:#c8c8c8;
+}
+
+.dishes-detail-add button{
+	border:1px dashed #cccccc;
+	background: #f0f0f0;
+	color:#c8c8c8;
+	font-size:18px;
+}
+.dishes-taste button{
+	width:100%;
+}
+.dishes-taste button >i.icon-plus-sign{
+	color:#ff765d;
+
+}
+.dishes-introduce {
+	padding-left:0px;
+	padding-right:0px;
+
+}
+.dishes-introduce textarea{
+	height:180px;
+}
+.dishes-introduce-tip{
+	text-align: left;
+	color:#c9c9c9;
+	font-size: 12px;
+
+}
+.dishes-upload-box{
+	margin-left:10px;
+}
+/* 鑿滃搧鍙ｅ懗,锛岃彍鍝佹爣绛句腑椤甸潰鏍峰紡 */
+.dishes-tag-box{
+	background: #f4f4f4;
+	padding:10px 10px;
+	margin:0px -10px;
+}
+.dishes-tag-box .form-group{
+	margin-bottom:0px;
+}
+.dishes-tag-table{
+	width:100%;	
+}
+.dishes-tag-table div{
+	display: inline-block;
+	margin:10px 5px 0px 0px ;
+}
+.dishes-tag-table div>button{	
+	width:80px;
+}
+.dishes-tag-table div>button:hover{
+	background: #ff765d;
+	color:#fff;
+}
+.dishes-tag-select button,.dishes-tag-select button:hover{
+	width:80px;
+	background: #ff765d;
+	color:#fff; 
+	position:relative;
+}
+.dishes-tag-select i.icon-remove{
+	position:absolute;
+	top:0;
+	right:0;
+	border:1px solid #e66b55;
+	color:#fff;
+}
+
+.tagAdd-btn{
+	padding:0px;
+}
+.tagAdd-btn button{
+	background: #ff765d;
+	color:#fff;
+}
+.tagAdd-tip{
+	margin-left:-40px;
+	padding-top:10px;
+	font-size:12px;
+	color:#969696;	
+}
+/* 鑿滃搧鍙ｅ懗 */
+.dishes-tasteAdd-dialog .modal-header,
+.dishes-labelAdd-dialog .modal-header{
+	border-bottom: none;
+}
+.dishes-tasteAdd-dialog .btn-operate-dishes,
+.dishes-labelAdd-dialog .btn-operate-dishes{
+	margin-top:20px;
+}
+
+
+/* 鑿滃搧璇︽儏妗�*/
+ .dishes-detail-add{
+	vertical-align: top;
+} 
+.dishes-detail-add button#dishes-detailOther-Add{
+	background:#fff;
+}
+.dishes-detail-box{
+	margin-right:5px;
+	margin-bottom:20px;
+	border:1px solid #cecece;
+	border-top:none;
+	display: inline-block;
+	width:12%;
+	font-size:12px;
+	height:39px;
+}
+.dishes-detail-box:hover{
+	cursor: pointer;
+}
+.dishes-detail-box i.icon-remove{
+	margin-top:-40px;
+	padding:1px;
+	border:1px solid #cecece;
+	float:right;
+}
+.dishes-detail-box p{
+	margin:0;
+	text-align: center;
+}
+/* 鑿滃搧璇︽儏鍙抽敭鐐瑰嚮寮瑰嚭妗�*/
+.dishes-other-right.right-tab {
+	width:210px;
+	top:1%;
+	left:96%;
+}
+/* 鍒犻櫎寮瑰嚭妗�*/
+.dishes-detailDel-dialog .modal-header{
+	border-bottom: none;
+}
+.dishes-detailDel-dialog .modal-body{
+	padding-top:50px;
+	text-align: center;
+}
+.dishes-detailDel-dialog .btn-operate-dishes{
+	margin-top:90px;
+}
+.dishes-del-p1{
+	font-size: 28px;
+}
+.dishes-del-p1 img{
+	margin-right:20px;
+	margin-top:-8px;
+}
+.dishes-del-p2{
+	margin-left:50px;
+	text-align: left;
+	font-size: 20px;
+}
+.dishes-del-p2 input[type='checkbox']{
+	margin-top:8px;
+}
+
+#dishes-combo-dialog .modal-dialog{
+	width: 820px;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#dishes-combo-dialog .modal-content{
+	border: none;
+}
+
+.form-inline .form-control{
+	width: auto;
+	vertical-align: middle;
+}
+
+.dishes-textareaW{
+	float: left;
+	width: 535px;
+	margin-right: 10px;
+}
+
+.dishes-textareaW > textarea{
+	height: 100px;
+}
+
+.dishes-comboDetail-title{
+	background-color: #fd7762;
+	border:1px solid #fd7762;
+	margin-left: -1px;
+	margin-right: -1px;
+	text-align: center;
+}
+
+.dishes-textareaW > p{
+	margin-bottom: -10px;
+}
+
+.dishes-comboDetail{
+	border:1px solid #dcdcdc;
+	border-top: none;
+	margin-left: 15px;
+	margin-right: 15px;
+	height: 215px;
+}
+
+.dishes-comboDetail-title{
+	padding-top: 5px;
+	padding-bottom: 5px;
+	color: #fff;
+}
+
+.dishes-comboDetail-content{
+	padding: 10px 0px;
+	display: inline-block;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 740px;
+}
+
+.dishes-comboList{
+	border:1px solid #dcdcdc;
+	margin-left: 2.5px;
+	margin-right: 2.5px;
+	width: 140px;
+	display: inline-block;
+}
+
+.dishes-comboList-title{
+	text-align: center;
+	background-color: #f4f4f4;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.dishes-comboList-content{
+	height: 100px;
+	padding: 5px 0;
+	list-style: none;
+}
+
+.dishes-comboList-content > li{
+	padding: 0 3px;
+}
+
+.dishes-comboList-bottom{
+	background-color: #fd7762;
+	text-align: center;
+	color: #fff;
+	height: 20px;
+	border:1px solid #fd7762;
+}
+
+.dishes-roll-left,
+.dishes-roll-right{
+	position: relative;
+	top:-80px;
+	color: #fd7762;
+}
+
+#dishes-comboEdit-dialog .modal-dialog{
+	width: 580px;
+}
+
+#dishes-comboEdit-dialog .modal-content{
+	height: 598px;
+}
+
+#dishes-comboEdit-dialog .modal-body{
+	height: 508px;
+}
+
+.dishes-comboEdit-line{
+	border-top:1px solid #f4f4f4;
+	margin-left: -20px;
+	margin-right: -20px;
+}
+
+.dishes-comboEdit-box{
+	padding: 5px 20px 0;
+	border-bottom: 1px solid #c8c8c8;
+	margin-left: -20px;
+	margin-right: -20px;
+}
+
+.dishes-comboEdit-box .checkbox{
+	margin-top:0;
+	margin-bottom: 0;
+}
+
+.dishes-comboEdit-boxi{
+	margin-left: 10px;
+	margin-right: 15px;
+}
+
+.dishes-panBottom-name{
+	padding-left: 80px;
+	width: 250px;
+	display: inline-block;
+}
+
+.dishes-panBottom-num > input{
+	width: 60px;
+	display: inline-block;
+	text-align: center;
+	height: 28px;
+}
+
+.dishes-unit{
+	padding: 4px;
+}
+
+.dishes-panBottom-price{
+	float: right;
+	margin-top: 4px;
+}
+
+.dishes-panBottom{
+	margin-bottom: 5px;
+}
+
+.dishes-conboList-tip{
+	background-color: #fd7762;
+	color: #fff;
+	padding: 0 2px;
+	font-size: 12px;
+	margin: 1px;
+}
+
+.dishes-conboList-stip{
+	background-color: #dcdcdc;
+}
+
+.checkbox .dishes-panBottom-num{
+	position: absolute;
+	left: 274px;
+	margin-top: -4px;
+}
+
+.dishes-combo-single{
+	height: 40px;
+	padding-top: 9px;
+}
+
+.dishes-checked{
+	background-color: #dcdcdc;
+}
+
+.dishes-combined{
+	background-color: #fd7762;
+	text-align: center;
+	margin-left: -20px;
+	margin-right: -20px;
+	padding: 5px;
+	color: #fff;
+}
+
+.btn-combined{
+	background-color: #fff;
+	border: none;
+	color:  #fd7762;
+	height: 20px;
+	font-size: 14px;
+	padding: 1px 10px;
+}
+
+.dishes-comboAdd{
+	margin-top: 36px;
+	margin-left: -55px;
+	position: relative;
+	left: 50%;
+}
+
+.btn-comboS{
+	background-color: #fd7762;
+	color: #fff;
+	height: 30px;
+	padding: 4px 10px;
+	margin-bottom: 10px;
+}
+
+.btn-comboS:hover,
+.btn-comboS:focus{
+	color: #fff;
+}
+/* 娣诲姞宸叉湁鑿滃搧璇ュ垎绫�*/
+.ky-addDishes-empty{
+	float: right;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.ky-hr{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.ky-addDishes-content .checkbox-inline{
+	margin:0;
+}
+.ky-addDishes-content .panel-heading{
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.ky-addDishes-content .panel-title{
+	font-size: 14px;
+}
+.addDishes-btn-bgcolor{
+	background-color: #ff5500;
+}
+.dishes-existAdd-checked{
+	margin-left:10px;
+}
+.dishTypeSelect{
+	
+}

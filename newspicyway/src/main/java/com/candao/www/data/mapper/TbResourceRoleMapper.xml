@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbResourceRoleDao">
+
+	<resultMap id="tbResourceRoleResultMap" type="com.candao.www.data.model.TbResourceRole">
+		<id property="roleid" column="roleId" />
+		<id property="resourceid" column="resourceId" />
+		<result property="resourceid" column="resourceId" />
+		<result property="roleid" column="roleId" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbResourceRoleResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbResourceRoleResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbResourceRole">
+	   insert into t_resource_role (
+	     resourceId,
+	     roleId
+	   )values (
+	     #{resourceid},
+	     #{roleid}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbResourceRole">
+	   update t_resource_role set
+	     resourceId=#{resourceid},
+	     roleId=#{roleid}
+	   where 
+	    roleId=#{roleid} 
+	    and resourceId=#{resourceid} 
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   delete from 
+	     t_resource_role 
+	   where 
+	    roleId=#{roleid} 
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbResourceRoleResultMap">
+	   select 
+	    resourceId,
+	    roleId
+	   from t_resource_role
+	   where 
+	    roleId=#{roleid} 
+	    and resourceId=#{resourceid} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    resourceId,
+	    roleId
+	   from t_resource_role
+	   where 
+	    roleId=#{roleid} 
+	    and resourceId=#{resourceid} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     resourceId,
+	     roleId
+	   from t_resource_role
+	   <where>
+	     <if test="resourceid != null">
+	        resourceId=#{resourceid}
+	     </if>
+	     <if test="roleid != null">
+	        and roleId=#{roleid}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	     resourceId,
+	     roleId
+	   from t_resource_role
+	   <where>
+	     <if test="resourceid != null">
+	        resourceId=#{resourceid}
+	     </if>
+	     <if test="roleid != null">
+	        and roleId=#{roleid}
+	     </if>
+	   </where>
+	</select>
+	
+	<insert id="inserts" parameterType="map">
+	   insert into t_resource_role (
+	     resourceId,
+	     roleId
+	   )values 
+	   <foreach collection="resourceids" item="resourceid" separator=",">
+	   (
+	     #{resourceid},
+	     #{roleid}
+	   )
+	   </foreach>
+	</insert>
+	
+	<select id="getRoleResource" parameterType="map" resultMap="findResultMap">
+	   select 
+	     resourceId 
+	   from t_resource_role
+	    where  roleId=#{roleid} 
+	</select>
+</mapper> 

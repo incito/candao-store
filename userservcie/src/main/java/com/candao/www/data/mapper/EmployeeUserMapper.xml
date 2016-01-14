@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.dao.EmployeeUserDao">
+
+	<resultMap id="employeeResultMap" type="com.candao.www.data.model.EmployeeUser">
+		<id property="id" column="id" jdbcType="VARCHAR"/>
+		<result property="userId" column="user_id" jdbcType="VARCHAR"/>
+		<result property="sex" column="sex" jdbcType="VARCHAR"/>
+		<result property="birthdate" column="birthdate" jdbcType="TIMESTAMP" />
+		<result property="paymentPassword" column="payment_password" jdbcType="VARCHAR"/>
+		<result property="jobNumber" column="job_number" jdbcType="VARCHAR"/>
+	    <result property="position" column="position" jdbcType="VARCHAR"/>
+		<result property="homeAddress" column="home_address" jdbcType="VARCHAR"/>
+		<result property="branchId" column="branch_id" jdbcType="INTEGER"/>
+		<result property="branchName" column="branch_name" jdbcType="VARCHAR"/>
+		<result property="creator" column="creator" jdbcType="VARCHAR"/>
+		<result property="createTime" column="createtime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="employeeResultMap"></resultMap>
+	
+	
+	<!-- 以下用于联合查询，直接封装user对象 -->
+	
+	<resultMap type="com.candao.www.data.model.User" id="userMap2">
+		<id property="id" column="id" jdbcType="VARCHAR" /> 
+		<result property="account" column="account" jdbcType="VARCHAR" />
+		<result property="password" column="password" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="email" column="email" jdbcType="VARCHAR" />
+		<result property="mobile" column="mobile" jdbcType="VARCHAR" />
+		<result property="areaCode" column="area_code" jdbcType="VARCHAR" />
+		<result property="telephone" column="telephone" jdbcType="VARCHAR" />
+		<result property="status" column="status" jdbcType="VARCHAR" />
+		<result property="userType" column="user_type" jdbcType="VARCHAR" />
+		<result property="createtime" column="createtime" jdbcType="TIMESTAMP" />
+		<result property="orderNum" column="order_num" jdbcType="INTEGER" />
+		<result property="lastlogintime" column="lastlogintime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="employeeResultMap2" type="com.candao.www.data.model.EmployeeUser">
+		<id property="id" column="id" jdbcType="VARCHAR"/>
+		<result property="userId" column="user_id" jdbcType="VARCHAR"/>
+		<result property="sex" column="sex" jdbcType="VARCHAR"/>
+		<result property="birthdate" column="birthdate" jdbcType="TIMESTAMP" />
+		<result property="paymentPassword" column="payment_password" jdbcType="VARCHAR"/>
+		<result property="jobNumber" column="job_number" jdbcType="VARCHAR"/>
+	    <result property="position" column="position" jdbcType="VARCHAR"/>
+		<result property="homeAddress" column="home_address" jdbcType="VARCHAR"/>
+		<result property="branchId" column="branch_id" jdbcType="INTEGER"/>
+		<result property="branchName" column="branch_name" jdbcType="VARCHAR"/>
+		<result property="creator" column="creator" jdbcType="VARCHAR"/>
+		<result property="createTime" column="createtime" jdbcType="TIMESTAMP"/>
+		<association property="user" column="user_id"   select="queryUser" javaType="com.candao.www.data.model.User" ></association> 
+	</resultMap>
+	<select id="queryUser" resultType="com.candao.www.data.model.User" parameterType="java.lang.String" >  
+		select * from t_b_user where id=#{id} 
+	</select> 
+	
+
+	<!--  公用列,包含用户表和企业用户表所有字段     -->
+	<sql id="base_user_column_list">
+		SELECT
+			id,
+			user_id,
+			sex,
+			birthdate,
+			payment_password,
+			job_number,
+			position,
+			home_address,
+			createtime,
+			creator,
+			branch_id,
+			branch_name 
+		FROM t_b_employee 
+	</sql>
+  
+  	<!--  公用查询条件，包含用户所有字段的查询条件     -->
+  	<sql id="base_user_condition" >
+  	  <if test="id != null" >
+       		and id = #{id}
+      </if>
+      <if test="paymentPassword != null" >
+       		and payment_password = #{paymentPassword}
+      </if>
+      <if test="sex != null" >
+       		and sex = #{sex}
+      </if>
+      <if test="job_number != null" >
+       		and job_number = #{job_number}
+      </if>
+      <if test="branch_id != null" >
+       		and branch_id = #{branch_id}
+      </if>
+      <if test="user_id != null" >
+       		and user_id = #{user_id}
+      </if>
+    </sql>
+	<!-- 插入数据 -->
+	<insert id="insert" parameterType="com.candao.www.data.model.EmployeeUser" >
+		insert into t_b_employee (
+		 id,
+	     user_id,
+	     sex,
+	     birthdate,
+	     payment_password,
+	     job_number,
+	     position,
+	     home_address,
+	     createtime,
+	     creator,
+	     branch_id,
+	     branch_name
+	   )values (
+	     #{id},
+	     #{userId},
+	     #{sex},
+	     #{birthdate},
+	     #{paymentPassword},
+	     #{jobNumber},
+	     #{position},
+	     #{homeAddress},
+	     now(),
+	     #{creator},
+	     #{branchId},
+	     #{branchName}
+	   )
+	</insert>
+	
+	<select id="getAll" parameterType="java.util.Map" resultMap="employeeResultMap2">
+		SELECT  * FROM t_b_employee 
+	</select>
+	
+	<select id="pageUser" resultMap="employeeResultMap" parameterType="java.util.Map">
+		SELECT
+			e.id,
+			e.user_id,
+			e.sex,
+			e.birthdate,
+			e.payment_password,
+			e.job_number,
+			e.position,
+			e.home_address,
+			e.createtime,
+			e.creator,
+			e.branch_id,
+			e.branch_name 
+		FROM t_b_employee e
+		left join t_b_user u on e.user_id = u.id
+	    <where>
+	     	<if test="id != null" >
+       		and e.id = #{id}
+      		</if>
+     	 	<if test="sex != null" >
+       		and e.sex = #{sex}
+      		</if>
+      		<if test="job_number != null" >
+       		and e.job_number = #{job_number}
+      		</if>
+      		<if test="branch_id != null" >
+       		and e.branch_id = #{branch_id}
+      		</if>
+      		<if test="user_id != null" >
+       		and e.user_id = #{user_id}
+      		</if>
+	     	<if test="searchText != null and searchText != '' " >
+       		and (
+       		e.job_number like '%${searchText}%' 
+       		or e.position like '%${searchText}%' 
+       		or u.name like '%${searchText}%' 
+       		or u.email like '%${searchText}%' 
+       		or u.mobile like '%${searchText}%' 
+       		)
+     		</if>
+	     	and e.branch_id= #{branch_id}
+	    </where>
+	    order by createtime 
+	</select>
+	
+	<!-- 查询 -->
+	<select id="get" resultMap="employeeResultMap" parameterType="java.util.Map">
+		<include refid="base_user_column_list" />
+		<where>
+	     	<include refid="base_user_condition" />
+	    </where>
+	</select>
+	
+	<!-- 更新员工的状态。 启用/禁用 -->
+	<update id="updateUserStatus" parameterType="java.util.Map">
+		update t_b_user
+			set status=#{status}
+			where id=#{user_id}
+	</update>
+	
+	<update id="update" parameterType="com.candao.www.data.model.EmployeeUser" >
+		update t_b_employee 
+			
+		<set >
+		 <if test=" null != userId"> user_id=#{userId},</if>
+		 <if test=" null != sex"> sex=#{sex},</if>
+		 <if test=" null != birthdate"> birthdate=#{birthdate},</if>
+		 <if test=" null != paymentPassword"> payment_password=#{paymentPassword},</if>
+		 <if test=" null != jobNumber"> job_number=#{jobNumber},</if>
+		 <if test=" null != position"> position=#{position},</if>
+		 <if test=" null != homeAddress"> home_address=#{homeAddress},</if>
+		 <if test=" null != branchId and branchId!=0"> branch_id=#{branchId},</if>
+		 <if test=" null != branchName"> branch_name=#{branchName},</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<!-- 此删除需要 在逻辑中调用 删除 用户-角色对应信息，然后删除员工表，然后删除用户表。 -->
+	<delete id="deleteById">
+		delete from t_b_employee where id=#{id}
+	</delete>
+	
+	<select id="getBranchById"  resultType="java.util.Map" parameterType="java.util.Map">
+			select  branchid,branchcode,branchname from t_branch_info where branchid=#{branch_id}
+	</select>
+	
+	<!-- 根据角色与门店ID获取 门店下有指定权限角色的 员工列表 -->
+	<select id="getEmployeeUserByRoles4Store" parameterType="java.util.Map" resultMap="employeeResultMap2">
+		SELECT DISTINCT  e.* FROM 
+		    t_b_employee e,
+		    t_b_user u, 
+		    t_b_user_role ur 
+		  WHERE e.user_id=u.id 
+		        and u.id=ur.user_id
+		        and ur.role_id in ( 
+		        <foreach collection="roles" item="item" index="index" open="" close="" separator=",">
+					#{item.id}
+				</foreach>
+		        )
+		        and e.branch_id=#{branchId}
+		        and u.status='01'
+		  order by u.order_num desc
+	</select>
+	
+	<!-- 根据门店ID，获取门店下的员工列表 -->
+	<select id="getEmployeeUser4Store" parameterType="java.util.Map" resultMap="employeeResultMap2">
+		select * from t_b_employee where branch_id=#{branch_id}
+	</select>
+	
+	
+	
+</mapper>

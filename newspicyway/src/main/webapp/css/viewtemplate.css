@@ -1,0 +1,148 @@
+@charset "utf-8";
+/* CSS Document */
+.viewtempalteTopA{
+	 border:1px solid #bebebe;
+	 overflow:hidden;
+}
+.viewtempalteTopA #viewA1 {
+	border:1px solid #bebebe;
+	height: 150px;  
+    margin:-1px; 
+    text-align:center;
+    overflow:hidden;
+}
+
+
+.viewtempalteTopA #viewA2, .viewtempalteTopA #viewA3{
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:-1px; 
+     text-align:center;
+     overflow:hidden;
+}
+.viewtempalteTopA #viewA4, .viewtempalteTopA #viewA5{
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:-1px; 
+     text-align:center;
+     overflow:hidden;
+}
+ .viewtempalteTopA #viewA2A4 {
+     width:50%; 
+	 float:left;
+	 overflow:hidden;
+}
+.viewtempalteTopA #viewA3A5 {
+	 width:50%; 
+	 float:left;
+/* 	 overflow:hidden; */
+}
+
+.viewtempalteTopC{
+	 border:1px solid #bebebe;
+	  overflow:hidden;
+}
+.viewtempalteTopC #viewC1 {
+	border:1px solid #bebebe;
+	height: 150px;  
+	 margin:-1px; 
+	 text-align:center;
+	  overflow:hidden;
+}
+.viewtempalteTopC #viewC2 {
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:-1px; 
+     text-align:center;
+      overflow:hidden;
+}
+.viewtempalteTopC #viewC3 {
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:-1px; 
+     text-align:center;
+      overflow:hidden;
+}
+.viewtempalteTopC #viewC4 {
+	border: 1px solid #BEBEBE;
+    height: 306px;
+    width: 50%;
+    margin:-1px; 
+    float: left;
+    text-align:center;
+     overflow:hidden;
+}
+.viewtempalteTopC #viewC2C3 {
+	 width:50%; 
+	 float:left;
+}
+
+.viewtempalteTopB{
+	 border:1px solid #bebebe;
+	  overflow:hidden;
+}
+.viewtempalteTopB #viewB1 {
+	border:1px solid #bebebe;
+	height: 150px;  
+	 margin:-1px; 
+	 text-align:center;
+	  overflow:hidden;
+}
+
+.viewtempalteTopB #viewB2 {
+	border: 1px solid #BEBEBE;
+    height: 306px;
+    width: 50%;
+    margin:-1px; 
+    float: left;
+    text-align:center;
+     overflow:hidden;
+}
+
+.viewtempalteTopB #viewB3, .viewtempalteTopB #viewB4{
+	 border:1px solid #bebebe;
+	 height: 150px;  
+	 margin:-1px; 
+	 text-align:center;
+	 overflow:hidden;
+}
+
+.viewtempalteTopB #viewB3B4 {
+	 width:50%; 
+	 float:left;
+}
+
+
+.viewtempalteTopD{
+	 border:1px solid #bebebe;
+	  overflow:hidden;
+}
+.viewtempalteTopD #viewD1 {
+	border:1px solid #bebebe;
+	height: 150px;  
+    margin:-1px; 
+    text-align:center;
+     overflow:hidden;
+}
+.viewtempalteTopD #viewD2, .viewtempalteTopD #viewD3 {
+	border: 1px solid #BEBEBE;
+    height: 306px;
+    width: 50%; 
+    margin:-1px; 
+    float: left;
+    text-align:center;
+     overflow:hidden;
+}
+
+
+.images-content{
+z-index: 1;
+width: 100%;
+color: white;
+background: rgba(0,0,0,0.4);
+height: 54px;
+line-height: 13px; 
+overflow: hidden;
+position: relative;
+top: 97px;
+}

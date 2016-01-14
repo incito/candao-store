@@ -1,0 +1,349 @@
+/* 椁愬彴澶撮儴淇℃伅 */
+body{
+	font-family:Microsoft Yahei;
+	font-size: 0px;
+}
+.in-btn135 {
+    width: 80px;
+}
+
+
+.counter-content{
+	margin-top:20px;
+	position:relative;
+}
+.counter-content-title{
+	color:#ffce52;
+	height:30px;
+}
+.counter-add{
+	border:1px solid #ececec;
+	color:#c8c8c8;
+	padding:4px 12px;
+	vertical-align: top;
+	margin: 5px 1px;
+}
+.counter-add:hover,#counter-type-add:hover{
+	border:1px solid #ECECEC;
+	color:#ffce52;
+	cursor: pointer;
+	background: #fff;
+}
+.counter-add.counter-type-add{
+	margin-top:-10px;
+	border:1px solid #ececec;
+	color:#c8c8c8;
+	float:right;
+}
+
+/* 鑿滃搧鍒嗙被瀵艰埅鏉�*/
+.nav-counter{
+	padding:0px;
+	height: 32px;
+	width:99%;	
+	white-space: nowrap;
+	overflow: hidden;
+	display: inline-block;
+	font-size: 14px;
+	box-sizing:inherit;
+}
+.nav-counter li{
+	float:left;
+	line-height:30px;
+	list-style: none;
+	border:1px solid #cecece;
+	text-align: center;
+/*	width:10%;*/
+	position: relative;
+	width: 8.33%;
+/* 	页面小数运算，存在偏差 */
+/* box-sizing: border-box;有时会对其有影响？ */
+} 
+
+ul.nav-counter li:not(:last-child) {
+	border-right:none;
+}
+
+.nav-counter li.active{
+ 	color:#ffce52;
+ 	border-bottom:none;
+ 	background:url(../images/counter-type.png) repeat-x,url(../images/counter-arrow.png) no-repeat 50% 8%;
+ 	background-size: auto 30px,auto auto;
+ 	cursor: pointer;
+ }
+ 
+  
+ 
+.nav-counter li i.icon-remove{
+	position:absolute;
+	right:0;
+	top:30%;
+}
+.nav-counter li:hover i.icon-remove{
+	color:#cac9c9;
+}
+.nav-counter li i.icon-remove:hover{
+	background: #000;
+	color:#fff;
+	border-radius: 30px;
+	cursor: pointer;
+	height:15px;
+	width:15px;
+}
+
+.nav-counter-prev .icon-chevron-left,
+.nav-counter-next .icon-chevron-right
+{
+	color:#ffce52;
+}
+.nav-counter-prev .icon-chevron-left:hover,
+.nav-counter-next .icon-chevron-right:hover
+{
+	cursor: pointer;
+}
+.nav-counter-prev{
+	width:12px;
+	margin-left:-15px;
+	margin-top:8px;
+	display: inline-block;
+	float:left;
+	font-size:14px;
+}
+.nav-counter-next{
+	width:12px;
+	margin-top:8px;
+	display: inline-block;
+	float:right; 
+	font-size:14px;
+}
+/* 姣忎釜鑿滃搧鍒嗙被鐨勫叿浣撳唴瀹�*/
+.counter-detail-add{
+	vertical-align: top;
+} 
+.counter-detail-box{
+	margin:5px 1px;
+	border:1px solid #f4f4f4;
+	display: inline-block;
+	height:30px;
+	width:100px;
+	background-color:#f4f4f4;
+	font-size: 12px;
+}
+.counter-detail-box:hover{
+	border:1px solid #ffce52;
+	color:#ffce52;
+	cursor: pointer;
+	background-color:#fff;
+}
+.counter-detail-box i.icon-remove{
+	margin-top:-16px;
+	float:right;
+}
+.counter-detail-box:hover i.icon-remove{
+	color:#cac9c9;
+}
+.counter-detail-box i.icon-remove:hover{
+	background: #000;
+	color:#fff;
+	border-radius: 30px;
+	cursor: pointer;
+	height:15px;
+	width:15px;
+	padding:0px 0 0 3px;
+
+}
+
+
+.counter-detail-box p{
+	height:12px;
+	margin:0;
+	text-align: center;
+}
+
+/* 娣诲姞鑿滃搧鍒嗙被寮瑰嚭妗�*/
+.counter-dialog{
+	font-size: 14px;
+}
+.counter-dialog-header{
+	margin-top:-15px;
+	margin-bottom:-5px;
+	font-size:16px;
+}
+.counter-dialog label.control-label{
+	padding:0 0 0 0;
+	font-weight: normal;
+}
+.counter-dialog .counter-add-tip{
+	padding-top:7px;
+	font-size:12px;
+	color:#969696;		
+}
+.counter-dialog .counter-add-tip .icon-warning-sign{
+	margin-left:-10px;
+	margin-right:15px;
+	font-size:14px;
+}
+.counter-dialog .form-group{
+	margin-left:auto;
+}
+.counter-dialog .col-xs-5{
+	padding-left: 0px;
+}
+/* 娣诲姞鍒嗗尯 */
+#counter-add-dialog .modal-content{
+	width:295px;
+	height:180px;
+	margin:200px auto;
+}
+
+#areas-detailAdd-dialog .modal-content{
+	width:295px;
+	height:180px;
+	margin:200px auto;
+}
+
+#areas-detailAdd-dialog .btn-operate button{
+	width:80px;
+}
+
+#areas-detailAdd-dialog .btn-operate{
+	margin-top:40px;
+} 
+
+#counter-add-dialog .btn-operate button{
+	width:80px;
+}
+
+#counter-add-dialog .btn-operate{
+	margin-top:50px;
+} 
+/* 鏍规嵁鎯呭喌閫夋嫨鏄惁杈撳叆 */
+.counter-input-select{
+	font-size:14px;
+}
+.counter-input-select input{
+	border-right:#fff;
+
+}
+.counter-input-select .input-group-addon{
+	background: #fff;
+	color:#cecece;
+}
+#min-expense-checkbox{
+	margin-right:15px;
+}
+.disabled-input .control-label{
+	color:#cecece;
+}
+.disabled-input input{
+	 
+}
+.disabled-input.disabled-input .input-group-addon{
+	
+	
+}
+/* 鍒犻櫎妗�*/
+.counter-dialog.counter-dialog-del .modal-content{
+	width:295px;
+	height:180px;
+	margin:200px auto;
+}
+.counter-dialog.counter-dialog-del .del-info{
+	margin:30px 0px;
+	font-size: 14px;
+}
+.counter-dialog.counter-dialog-del .btn-operate button{
+	width:80px;
+}
+.counter-del-p1{
+	text-align: center;
+} 
+.counter-del-p1 img{
+	margin-right:20px;
+	margin-top:-5px;
+}
+/* 鍒犻櫎鎴愬姛寮瑰嚭妗�*/
+.counterDel-success{
+	padding:35px 0px;
+ 	width:240px;
+	height:110px;
+	border:2px solid #cecece;
+	border-radius: 4px;
+	box-shadow: 2px 2px 6px #cecece;
+	text-align: center;
+	position: fixed;
+	top:30%;
+	left:40%;
+	font-size: 28px;
+	color:#e9241c;
+	background: #fff;
+	z-index:9999;
+}
+
+.counterDel-success-content i{
+	margin-right:10px;
+}
+
+.right-tab.tables-right-tab {
+	top:14.7%;
+	left:8%;
+	font-size:14px;
+}
+.right-tab.tables-right-tab li {
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.right-tab{
+	padding:0px;
+	position: absolute;
+	z-index: 1000;
+	top:21%;
+	left:16%;
+	background: #f0f0f0;
+}
+
+
+.right-tab li{
+	padding:0px 10px;
+	list-style: none;
+	text-align: left;
+	line-height:40px;
+	color:#282828;
+}
+.right-tab li.active,
+.right-tab li:hover{
+	background: #FFCE52;
+	color:#fff;
+}
+.right-tab  i.icon-edit{
+	margin-right:5px;
+}
+.right-tab  i.icon-plus,.right-tab  i.icon-plus-sign,.right-tab  i.icon-minus,.right-tab  i.icon-arrow-right{
+	margin-right:7px;
+}
+.right-tab span{
+	display: inline-block;
+}
+
+
+.unit-style .input-group-addon{
+	background: #fff;
+	font-size: 12px;
+	border-left: 1px solid #e1e1e1;
+}
+.unit-style .form-control{
+	border-right:none;
+}
+.modal-content{
+	width:360px;
+}
+.modal-dialog{
+	width:360px;
+}
+.form-control,.tables-detailMain-Add{
+	font-size:12px;
+}
+.nav-counter-tab{
+	height:400px;
+}

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbPicturesDao">
+
+	<resultMap id="tbPicturesResultMap" type="com.candao.www.data.model.TbPictures">
+		<id property="picid" column="picid" />
+		<result property="picname" column="picname" />
+		<result property="orderNo" column="orderNo" />
+		<result property="status" column="status" />
+		<result property="picpath" column="picpath" />
+		<result property="detail" column="detail" />
+		
+		
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbPicturesResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbPicturesResultMap"></resultMap>
+	
+	 <sql id="Base_Column_List" >
+           picid
+		 ,picname
+		 ,orderNo
+		 ,status
+		 ,picpath
+		 ,detail
+		 
+  </sql>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbPictures">
+	    
+<!-- 	       <selectKey resultType="String" keyProperty="picid" order="BEFORE" > -->
+<!--                SELECT cast(picturesseqno('picid')   as char) -->
+<!--          </selectKey> -->
+         
+		insert into t_pictures (
+	<include refid="Base_Column_List"/>
+	     
+	   )values (
+	      #{picid},
+	     #{picname},
+	     #{orderNo},
+	     #{status},
+	     #{picpath},
+	     #{detail}
+	   )
+	
+	   
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbPictures">
+	   update t_pictures
+	   <set>
+	     <if test="picid != null">
+	     picid=#{picid},
+	     </if>
+	     <if test="picname != null ">
+	     picname=#{picname},
+	     </if>
+	     <if test="orderNo != null ">
+	     orderNo=#{orderNo},
+	     </if>
+	     <if test="status != null">
+	     status=#{status},
+	     </if>
+	     <if test="picpath != null">
+	     picpath=#{picpath},
+	      </if>
+	     <if test="detail != null">
+	     detail=#{detail},
+	      </if>
+	     		     
+	    </set> 
+	   where 
+	    picid=#{picid} 
+	</update>
+	<delete id="delete" parameterType="com.candao.www.data.model.TbPictures">
+	   update t_pictures
+	   set status = 0
+	   where 
+	    picid=#{id} 
+	</delete>
+
+	
+	<select id="get" parameterType="map" resultMap="tbPicturesResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_pictures
+	   where 
+	    picid=#{id} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_pictures
+	   where 
+	    picid=#{id} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     <include refid="Base_Column_List"/>
+	   from t_pictures
+	   <where>
+	   		status != 0
+	     <if test="picid != null and picid != ''">
+	        picid=#{picid}
+	     </if>
+	     <if test="picname != null and picname != ''">
+	        and picname=#{picname}
+	     </if>
+	     <if test="orderNo != null and orderNo != ''">
+	        and orderNo=#{orderNo}
+	     </if>
+	     <if test="status != null and status != ''">
+	        and status=#{status}
+	     </if>
+	     <if test="picpath != null and picpath != ''">
+	        and picpath=#{picpath}
+	     </if>
+	     <if test="detail != null and detail != ''">
+	        and detail=#{detail}
+	     </if>
+	     
+	   </where>
+	     order by  CAST( orderNo as SIGNED) asc
+	   
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+		select
+	     <include refid="Base_Column_List"/>
+	     from t_pictures
+	    <where>
+	   <!-- ??? -->
+	    status != 0 
+	     <if test="picname != null and picname != ''">
+	        and picname=#{picname}
+	     </if>
+	     <if test="orderNo != null and orderNo != ''">
+	        and orderNo=#{orderNo}
+	     </if>
+	     <if test="picpath != null and picpath != ''">
+	        and picpath=#{picpath}
+	     </if>
+	      <if test="detail != null and detail != ''">
+	        and detail=#{detail}
+	     </if>
+	    
+	     </where>
+	     order by  CAST( orderNo as SIGNED) asc
+	</select>
+	
+
+	
+</mapper> 

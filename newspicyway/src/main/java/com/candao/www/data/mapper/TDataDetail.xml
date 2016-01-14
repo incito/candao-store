@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TDataDetailDao">
+     <select id="findDataStatistics" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+            {
+                 call p_report_xxsjtjb 
+                      (
+                        #{pi_branchid,jdbcType=INTEGER,mode=IN},
+                        #{pi_sb,jdbcType=SMALLINT,mode=IN},
+                        #{pi_ksrq,jdbcType=DATE,mode=IN},
+                        #{pi_jsrq,jdbcType=DATE,mode=IN},
+                        #{pi_cxlx,jdbcType=SMALLINT,mode=IN},
+                        #{pi_qy,jdbcType=VARCHAR,mode=IN},
+                        #{po_errmsg,jdbcType=VARCHAR,mode=OUT}
+                      )
+             }  
+    </select>
+</mapper>

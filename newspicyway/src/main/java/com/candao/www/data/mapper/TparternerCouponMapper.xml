@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TparternerCouponDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TparternerCoupon" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="couponid" property="couponid" jdbcType="VARCHAR" />
+    <result column="parternerid" property="parternerid" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="discountamount" property="discountamount" jdbcType="DECIMAL" />
+    <result column="discountrate" property="discountrate" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="pageResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  <resultMap id="findResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    id, couponid, parternerid, dishid, discountamount, discountrate
+  </sql>
+  <select id="find" resultMap="findResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_parterner_coupon
+    <where>
+      <if test="id != null and id !=''" >
+       and couponid = #{id,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+   <delete id="delete" parameterType="map" >
+    delete from t_parterner_coupon
+    where couponid = #{couponid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="java.util.ArrayList" >
+    insert into t_parterner_coupon (id, couponid, parternerid, 
+      dishid, discountamount, discountrate
+      )
+    values 
+     <foreach collection="list" item="item" index="index" separator=",">
+    ( #{item.id,jdbcType=VARCHAR},     #{item.couponid,jdbcType=VARCHAR},   #{item.parternerid,jdbcType=VARCHAR}, 
+      #{item.dishid,jdbcType=VARCHAR}, #{item.discountamount,jdbcType=DECIMAL}, #{item.discountrate,jdbcType=DECIMAL}
+      )
+      </foreach>
+  </insert>
+</mapper>

@@ -1,0 +1,48 @@
+package com.candao.www.webroom.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.candao.www.data.model.ToperationLog;
+import com.candao.www.data.model.TorderDetail;
+import com.candao.www.webroom.model.Order;
+import com.candao.www.webroom.model.Table;
+import com.candao.www.webroom.model.UrgeDish;
+
+public interface OrderDetailService {
+
+//	public String saveOrderDetails(Order order );
+	public String saveOrderDetailList(Order order,ToperationLog toperationLog );
+	
+	
+	public void discardOrderDetail(TorderDetail orderDetail,String discardUserId,String discardReason);
+	
+	
+//	public int addDishOnOrderDetail(TorderDetail orderDetail);
+	
+//	public int reduceDishOnOrderDetail(TorderDetail orderDetail);
+	
+//	public String startOrderDetail(TorderDetail order);
+
+//	public String discardDish( UrgeDish urgeDish);
+	public String discardDishList( UrgeDish urgeDish,ToperationLog toperationLog);
+
+ 
+	public String urgeDishList(UrgeDish urgeDish);
+ 
+	public String cookiedishList(UrgeDish urgeDish);
+
+//	public TorderDetail findByOrderNoAndDishNo(Map<String, String> mapDetail);
+	
+	public List<TorderDetail> find(Map<String, String> mapDetail);
+
+	public String cleantable(Table table);
+
+
+	public String updateorderprice(Order order);
+
+
+	public String getOrderDetailByOrderId(String orderid);
+	
+ 
+}

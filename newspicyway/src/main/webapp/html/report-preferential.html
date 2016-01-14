@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Examples</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css"></head>
+	<link rel="stylesheet" href="../css/report.css"></head>
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+
+<body>
+	<div class="ky-navbar ky-navbar-default">
+		<div class="ky-navbar-header">
+			<img src="../images/logo.png" alt="">
+			<p>新辣道后台管理平台</p>
+		</div>
+		<div class="ky-navbar-menu">
+			<ul class="ky-nav ky-nav-pills">
+				<li>
+					<a href="#" class="ky-menu-primary">门店管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-info">菜品管理</a>
+				</li>
+				<li class="ky-dropdown">
+					<a href="#" class="ky-menu-warning">餐台管理</a>
+					<ul class="ky-dropdown-menu ky-nav ky-nav-pills">
+						<li><a href="#" class="ky-menu-warning">区域管理</a></li>
+						<li><a href="#" class="ky-menu-warning">菜品管理</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-danger">打印管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-minor">优惠管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-success">报表分析</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="ky-container">
+		<div class="ky-title">
+			<p>菜单管理</p>
+			<div class="ky-title-right">
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+				<!-- 		<span class="ky-group-btn">
+					<i class="icon-search"></i>
+				</span>
+				<input type="text" class="form-control" placeholder="Search"> -->
+
+						<div class="input-group">
+						  <span class="input-group-addon" id="basic-addon1"><i class="icon-search"></i></span>
+						  <input type="text" class="form-control" placeholder="search" aria-describedby="basic-addon1">
+						</div>
+
+					</div>
+				</form>
+				<img src="../images/user.png" alt="">
+				<span class="ky-user">李明</span>
+				<img src="../images/logout.png"></div>
+		</div>
+		<div class="ky-content">
+			<div class="report-title">
+				<span>优惠活动明细表</span>
+				<img src="../images/download.png" alt="">
+
+			</div>
+			<div class="report-search-box">
+				<div class="form-group">
+					<div class="col-xs-4 long-search">
+						<div class="btn-group ">
+						  <button type="button" class="btn btn-default active" >今日</button>
+						  <button type="button" class="btn btn-default" > 本周</button>		
+						  <button type="button" class="btn btn-default">本月</button>
+						  <button type="button" class="btn btn-default" > 时间段</button>			
+						</div>	
+					</div>
+					<div class="col-xs-2">
+						<div class="input-group">
+							<input type="text" class="form-control" aria-describedby="basic-addon1">
+							<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+						</div>
+					</div>	
+					<div class="col-xs-1 report-search-span">至</div>
+					<div class="col-xs-2">	
+						<div class="input-group">
+							<input type="text" class="form-control" aria-describedby="basic-addon1">
+							<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+						</div>
+					</div>
+					<div class="col-xs-1 report-confirm-btn">
+						<button class="btn btn-default">确认</button>
+					</div>
+					<div class="col-xs-2 short-search">
+						<div class="btn-group ">
+						  <button type="button" class="btn btn-default active">全天</button>
+						  <button type="button" class="btn btn-default"> 午市</button>		
+						  <button type="button" class="btn btn-default">晚市</button>
+						</div>	
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-1 control-label">活动类型:</label>
+					<div class="col-xs-2">				
+						<div class="input-group select-box">
+							<input type="text" class="form-control" aria-describedby="basic-addon1">
+							<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+						</div>		
+						  <div class="select-content hidden">
+				               <span class="select-content-detail">团购券</span><br/>
+				          </div>			
+					</div>	
+					<label class="col-xs-1 control-label">活动类型:</label>
+					<div class="col-xs-2">				
+						<div class="input-group select-box">
+							<input type="text" class="form-control" aria-describedby="basic-addon1">
+							<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+						</div>		
+						  <div class="select-content hidden">
+				               <span class="select-content-detail">全部</span><br/>
+				          </div>			
+					</div>	
+					<label class="col-xs-1 control-label">活动类型:</label>
+					<div class="col-xs-2">				
+						<div class="input-group select-box">
+							<input type="text" class="form-control" aria-describedby="basic-addon1">
+							<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+						</div>		
+						  <div class="select-content hidden">
+				               <span class="select-content-detail">挂账</span><br/>
+				          </div>			
+					</div>	
+				</div>		
+				
+			</div>
+			<table class="table  ky-table">
+				<thead>
+					<tr>
+						<th>结算方式</th>
+						<th>活动名称</th>
+						<th>结算方式</th>
+						<th>笔数</th>
+						<th>发生金额</th>
+						<th>拉动应收</th>
+						<th>实收</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="ky-table-title">
+						<td><i class="icon-chevron-down"></i>团购券</td>
+						<td>点评88元抵100</td>
+						<td>挂账</td>
+						<td>3</td>
+						<td>260</td>
+						<td>260</td>
+						<td>260</td>
+					</tr>
+					<tr  class="hidden">
+						<td>发生时间</td>
+						<td>订单号</td>
+						<td>结算金额</td>
+						<td>笔数</td>
+						<td>发送金额</td>
+						<td>拉动应收</td>
+						<td>拉动实收</td>
+					</tr>
+					<tr  class="hidden">
+						<td>2012/12/12</td>
+						<td>H123123123123</td>
+						<td>88</td>
+						<td>2</td>
+						<td>176(88*2)</td>
+						<td>400（当单消费）</td>
+						<td>376</td>
+					</tr>
+					<tr  class="hidden">
+						<td>2012/12/12</td>
+						<td>H123123123123</td>
+						<td>88</td>
+						<td>2</td>
+						<td>176(88*2)</td>
+						<td>400（当单消费）</td>
+						<td>376</td>
+					</tr>
+					<tr class="ky-table-title">
+						<td><i class="icon-chevron-down"></i>团购券</td>
+						<td>点评88元抵100</td>
+						<td>挂账</td>
+						<td>3</td>
+						<td>260</td>
+						<td>260</td>
+						<td>260</td>
+					</tr>
+					<tr class="hidden">
+						<td>发生时间</td>
+						<td>订单号</td>
+						<td>结算金额</td>
+						<td>笔数</td>
+						<td>发送金额</td>
+						<td>拉动应收</td>
+						<td>拉动实收</td>
+					</tr>
+					<tr class="hidden">
+						<td>2012/12/12</td>
+						<td>H123123123123</td>
+						<td>88</td>
+						<td>2</td>
+						<td>176(88*2)</td>
+						<td>400（当单消费）</td>
+						<td>376</td>
+					</tr>
+					<tr class="hidden">
+						<td>2012/12/12</td>
+						<td>H123123123123</td>
+						<td>88</td>
+						<td>2</td>
+						<td>176(88*2)</td>
+						<td>400（当单消费）</td>
+						<td>376</td>
+					</tr>
+				
+				</tbody>
+			</table>
+			<!-- 营业报表 -->
+		<table class="ky-table">
+			<tr>
+				<th colspan="2">营业收入统计栏</th>
+			</tr>
+			<tr class="ky-table-title">
+				<td class="text-left">应收总额</td>
+				<td class="text-right">21345.00</td>
+			</tr>
+			<tr class="ky-table-title">
+				<td class="text-left">实收总额</td>
+				<td class="text-right">5.00</td>
+			</tr>
+			<tr>
+				<td class="text-left">人民币</td>
+				<td class="text-right">8665.00</td>
+			</tr>
+			<tr>
+				<td class="text-left">人民币</td>
+				<td class="text-right">8665.00</td>
+			</tr>
+			<tr>
+				<td class="text-left">人民币</td>
+				<td class="text-right">8665.00</td>
+			</tr>
+			<tr class="ky-table-title">
+				<td class="text-left">折扣总额（元）</td>
+				<td class="text-right">1995.00</td>
+			</tr>
+			<tr>
+				<td class="text-left">优免</td>
+				<td class="text-right">4.00</td>
+			</tr>
+			<tr>
+				<td class="text-left">优免</td>
+				<td class="text-right">4.00</td>
+			</tr>
+			<tr>
+				<td class="text-left">优免</td>
+				<td class="text-right">4.00</td>
+			</tr>
+			<tr class="ky-table-title">
+				<td class="text-left">会员统计数据栏</td>
+				<td class="text-right"></td>
+			</tr>
+			<tr>
+				<td class="text-left">会员券消费</td>
+				<td class="text-right">1894.10</td>
+			</tr>
+		</table>
+
+		<!-- 品项销售明细表 -->
+		<table class="ky-table">
+			<tr>
+				<th>品类</th>
+				<th>品项编号</th>
+				<th>品项名称</th>
+				<th>单价</th>
+				<th>单位</th>
+				<th>数量</th>
+				<th>份额（%）</th>
+			</tr>
+			<tr>
+				<td>丸滑</td>
+				<td>S0007S</td>
+				<td>手工牛肉丸</td>
+				<td>24.00</td>
+				<td>大份</td>
+				<td>24</td>
+				<td>24</td>
+			</tr>
+			<tr>
+				<td>丸滑</td>
+				<td>S0007S</td>
+				<td>手工牛肉丸</td>
+				<td>24.00</td>
+				<td>大份</td>
+				<td>24</td>
+				<td>24</td>
+			</tr>
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th>合计</th>
+				<th>24</th>
+				<th>24</th>
+			</tr>
+			<tr>
+				<td>套餐</td>
+				<td>S0007S</td>
+				<td>手工牛肉丸</td>
+				<td>24.00</td>
+				<td>大份</td>
+				<td>24</td>
+				<td>24</td>
+			</tr>
+			<tr>
+				<td>套餐</td>
+				<td>S0007S</td>
+				<td>手工牛肉丸</td>
+				<td>24.00</td>
+				<td>大份</td>
+				<td>24</td>
+				<td>24</td>
+			</tr>
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th>合计</th>
+				<th>24</th>
+				<th>24</th>
+			</tr>
+		</table>
+
+		<!-- 结算方式明细表 -->
+		<table class="ky-table">
+			<tr>
+				<th>结算方式</th>
+				<th>笔数</th>
+				<th>金额</th>
+			</tr>
+			<tr class="ky-table-title">
+				<td>现金</td>
+				<td>12333</td>
+				<td>23456.00</td>
+			</tr>
+			<tr class="ky-table-title">
+				<td>银行卡</td>
+				<td>12333</td>
+				<td>23456.00</td>
+			</tr>
+			<tr>
+				<td>挂账</td>
+				<td>123</td>
+				<td>456.00</td>
+			</tr>
+			<tr>
+				<td>挂账</td>
+				<td>123</td>
+				<td>456.00</td>
+			</tr>
+			<tr>
+				<td>挂账</td>
+				<td>123</td>
+				<td>456.00</td>
+			</tr>
+		</table>
+		</div>
+	</div>
+</body>
+
+</html>
+<script type="text/javascript">
+	$(".ky-table-title i").click(function(){
+		var obj = $(this).parent().parent();
+		if($(this).hasClass("icon-chevron-down"))
+		{
+			$(this).removeClass("icon-chevron-down");
+			$(this).addClass("icon-chevron-up");
+			obj.nextAll().each(function(){
+				if($(this).hasClass("ky-table-title") == false)
+				{
+					$(this).removeClass("hidden");
+				}else{
+					return false;
+
+				}
+			});
+
+		}else{
+			$(this).addClass("icon-chevron-down");
+			$(this).removeClass("icon-chevron-up");
+			obj.nextAll().each(function(){
+				if($(this).hasClass("ky-table-title") == false)
+				{
+					$(this).addClass("hidden");
+				}else{
+					return false;
+
+				}
+			});
+
+		}
+	})
+	$(".long-search button").click(function(){
+		$(this).parent().find("button").removeClass("active");
+		$(this).addClass("active");
+	});
+	$(".short-search button").click(function(){
+		$(this).parent().find("button").removeClass("active");
+		$(this).addClass("active");
+	});
+	$(".select-box").click(function(){
+		$(this).next().toggleClass("hidden");
+	});
+	$(".select-content-detail").click(function(){
+		$(this).parent().prev().find("input").val($(this).text());
+		$(this).parent().toggleClass("hidden");
+
+	})
+</script>

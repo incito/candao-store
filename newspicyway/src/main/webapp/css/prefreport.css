@@ -1,0 +1,45 @@
+.report_head .active {
+	background-color: #ff6c77;
+	color: white;
+}
+
+label.legend {
+	display: inline-block;
+	font-weight: normal;
+	margin-right: 5px;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+label.legend.disabled {
+	color: #d3d3d3 !important;
+}
+
+label.legend.disabled .label {
+	background-color: #d3d3d3 !important;
+}
+
+label.legend .label {
+	width: 12px;
+	height: 8px;
+	margin-right: 5px;
+	vertical-align: middle;
+	margin-bottom: 2px;
+}
+
+label.legend .label:empty {
+	display: inline-block;
+}
+.p-main{
+	width: 50%;
+	height: auto;
+}
+.lf{
+	float: left;
+}
+.rt{
+	float: right;
+}
+.graphic{
+	height: 88%;
+}

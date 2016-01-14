@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ 	用户门店关联-Mybatis Mapper文件
+ 	作者：lishoukun
+ 	日期：2015/04/21
+-->
+<mapper namespace="com.candao.www.data.dao.UserBranchDao">
+  <!-- ===================用户门店关联,开始======================== -->
+	
+  <!--  公用列,包含用户门店关联表所有字段     -->
+  <sql id="base_userBranch_column_list" >
+   		ub.id as id,
+   		ub.user_id as userId,
+   		ub.branch_id as branchId,
+   		ub.branch_name as branchName
+  </sql>
+  
+  <!--  公用查询条件，包含用户门店关联所有字段的查询条件     -->
+  <sql id="base_userBranch_condition" >
+      <if test="id != null" >
+       		and ub.id = #{id}
+      </if>
+      <if test="userId != null" >
+       		and ub.user_id = #{userId}
+      </if>
+      <if test="branchId != null" >
+       		and ub.branch_id = #{branchId}
+      </if>
+      <if test="branchName != null" >
+       		and ub.branch_name = #{branchName}
+      </if>
+  </sql>
+  
+  <!--  获取一条用户门店关联，根据主键    -->
+  <select id="getUserBranchById" resultType="com.candao.www.data.model.UserBranch" parameterType="java.lang.String" >
+    select 
+    <include refid="base_userBranch_column_list" />
+    from t_b_user_branch ub
+    where ub.id = #{id}
+  </select>
+  
+  <!--  获取一条用户门店关联，随机获取    -->
+  <select id="getUserBranchByRand" resultType="com.candao.www.data.model.UserBranch" >
+    select 
+    <include refid="base_userBranch_column_list" />
+    from t_b_user_branch ub
+    order by rand() limit 1
+  </select>
+  
+  <!--  查询用户门店关联列表，根据条件    -->
+  <select id="queryUserBranchList" resultType="com.candao.www.data.model.UserBranch" parameterType="java.util.Map" >
+    select 
+    <include refid="base_userBranch_column_list" />
+    from t_b_user_branch ub
+    <where>
+     	<include refid="base_userBranch_condition" />
+    </where>
+  </select>
+  
+   <!--  获取用户门店关联总数量，根据条件    -->
+  <select id="getUserBranchTotal" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select 
+    count(ub.id)
+    from t_b_user_branch ub
+    <where>
+      <include refid="base_userBranch_condition" />
+    </where>
+  </select>
+  
+  <!--  添加一条用户门店关联记录  -->
+  <insert id="addUserBranch" parameterType="com.candao.www.data.model.UserBranch" >
+    insert into t_b_user_branch
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+   			id,
+   			user_id,
+   			branch_id,
+   			branch_name,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+    		#{id},
+    		#{userId},
+    		#{branchId},
+    		#{branchName},
+    </trim>
+  </insert>
+  
+  <!--  修改一条用户门店关联记录  -->
+  <update id="updateUserBranch" parameterType="com.candao.www.data.model.UserBranch" >
+    update t_b_user_branch
+    <set >
+    	<if test="id != null" >
+       		id = #{id},
+      	</if>
+    	<if test="userId != null" >
+       		user_id = #{userId},
+      	</if>
+    	<if test="branchId != null" >
+       		branch_id = #{branchId},
+      	</if>
+    	<if test="branchName != null" >
+       		branch_name = #{branchName},
+      	</if>
+    </set>
+   where id = #{id}
+  </update>
+  
+  <!--  删除一条用户门店关联记录 ，根据主键    -->
+  <delete id="deleteUserBranchById" parameterType="java.lang.String" >
+    delete from t_b_user_branch
+    where id = #{id}
+  </delete>
+  
+  <!--  删除用户门店关联记录 ，根据条件    -->
+  <delete id="deleteUserBranch" parameterType="java.util.Map" >
+    delete from t_b_user_branch
+    <where>
+      <if test="id != null" >
+       		and id = #{id}
+      </if>
+      <if test="userId != null" >
+       		and user_id = #{userId}
+      </if>
+      <if test="branchId != null" >
+       		and branch_id = #{branchId}
+      </if>
+      <if test="branchName != null" >
+       		and branch_name = #{branchName}
+      </if>
+    </where>
+  </delete>
+ 
+ <!-- ===================用户门店关联,结束======================== -->
+</mapper>

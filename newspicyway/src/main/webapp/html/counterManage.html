@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Examples</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css">
+	<link rel="stylesheet" href="../css/counter.css">
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../scripts/projectJs/index.js"></script>
+	<script src="../scripts/projectJs/counter.js"></script>
+
+
+
+
+</head>
+<body>
+	<div class="ky-navbar ky-navbar-default">
+		<div class="ky-navbar-header">
+			<img src="../images/logo.png" alt="">
+			<p>新辣道后台管理平台</p>
+		</div>
+		<div class="ky-navbar-menu">
+			<ul class="ky-nav ky-nav-pills">
+				<li>
+					<a href="#" class="ky-menu-primary">门店管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-info">菜品管理</a>
+				</li>
+				<li class="ky-dropdown">
+					<a href="#" class="ky-menu-warning">餐台管理</a>
+					<ul class="ky-dropdown-menu ky-nav ky-nav-pills">
+						<li><a href="#" class="ky-menu-warning">区域管理</a></li>
+						<li><a href="#" class="ky-menu-warning">菜品管理</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-danger">打印管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-minor">优惠管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-success">报表分析</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="ky-container ">
+		<div class="ky-title">
+			<p>菜品管理</p>
+			<div class="ky-title-right">
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">		
+						<div class="input-group">
+						  <span class="input-group-addon" id="basic-addon1"><i class="icon-search"></i></span>
+						  <input type="text" class="form-control" placeholder="搜索" aria-describedby="basic-addon1">
+						</div>
+					</div>
+				</form> 
+				<img src="../images/user.png" alt="">
+				<span class="ky-user">李明</span>
+				<img src="../images/logout.png"></div>
+
+
+		</div>
+		<div class="ky-content">
+			<div class="counter-content">
+				<p class="counter-content-title">
+					<button class="btn btn-default counter-type-add counter-add"  type="button" id="counter-type-add"><i class="icon-plus"></i> 添加餐厅分区</button>
+				</p>
+				<div class="nav-counter-prev"><i class="icon-chevron-left"></i></div>
+				<ul class="nav-counter" >
+					<li class="active" onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">一楼大堂<i class="icon-remove hidden" onclick="delCounterType(this)"></i>						
+					</li>
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">一楼包间<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>				
+					</li>			
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">二楼大堂<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>
+					</li>			
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">二楼包间<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>				
+					</li>			
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">三楼大堂<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>
+					</li>				
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">三楼包间<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>				
+					</li>			
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">四楼大堂<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>
+					</li>				
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">四楼包间<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>				
+					</li>			
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">五楼大堂<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>
+					</li>				
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">五楼包间<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>				
+					</li>			
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">六楼大堂<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>
+					</li>				
+					<li onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblclick="editCounterType(this)">六楼包间<i class="icon-remove hidden"  onclick="delCounterType(this)"></i>				
+					</li>			
+				
+				</ul>
+				<div class="nav-counter-next"><i class="icon-chevron-right"></i></div>	
+				<div class="nav-counter-tab">
+				
+					<div class="counter-detail-box"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblClick="editCounterTable(this)">
+						<p>001</p>
+						<p>（2人桌）</p>
+						<i class="icon-remove hidden" onclick="delCounterTable(this)"></i>
+					</div>
+					<div class="counter-detail-box"  onmouseover="delDisplay(this)" onmouseout="delHidden(this)" ondblClick="editCounterTable(this)">
+						<p>002</p>
+						<p>（2人桌）</p>
+						<i class="icon-remove hidden" onclick="delCounterTable(this)"></i>
+					</div>
+					<button class="btn btn-default counter-add"  type="button" id="counter-table-add"><i class="icon-plus"></i> 添加餐台</button>
+				</div>				
+			</div>
+		</div>
+
+	</div>
+		<!--添加分区-->
+		<div class="modal fade counter-dialog in" id="counter-add-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">			
+					<div class="modal-body">	
+						<div class="counter-dialog-header">				  
+					        <span>添加分区</span>
+					        <img src="../images/close-sm.png" class="img-close"  data-dismiss="modal">
+					    </div>
+					    <hr class="ky-hr">			
+						<form action="" method="post" class="form-horizontal " name="">
+							<div class="form-group">
+								<label class="col-xs-4 control-label">分区名称：</label>
+								<div class="col-xs-8">
+									<input type="text"	value="" class="form-control" name="counter-type">	
+								</div>
+<!-- 								<span class="col-xs-4 counter-add-tip"><i class="icon-warning-sign"></i>该分区已经存在</span>
+							 -->							</div>
+						
+							<div class="btn-operate">
+								<button class="btn btn-cancel" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save" id="counter-type-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+					
+
+				</div>
+				
+			</div>
+		</div>
+		<!--添加餐台-->
+		<div class="modal fade counter-dialog in " id="counter-table-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">			
+					<div class="modal-body">	
+						<div class="counter-dialog-header">				  
+					        <span>添加餐台</span>
+					        <img src="../images/close.png" class="img-close"  data-dismiss="modal">
+					    </div>
+					    <hr class="ky-hr">			
+						<form action="" method="post" class="form-horizontal " name="">
+							<div class="form-group">
+								<label class="col-xs-3 control-label"><span class="required-span">*</span>餐台名称：</label>
+								<div class="col-xs-5">
+									<input type="text"	value="" class="form-control" id="counter-name" >	
+								</div>
+								<span class="col-xs-4 counter-add-tip"><i class="icon-warning-sign"></i>该分区已经存在</span>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label"><span class="required-span">*</span>餐台类型：</label>
+								<div class="col-xs-5">
+									<div class="input-group select-box">
+										<input type="text" class="form-control" aria-describedby="basic-addon1">
+										<span class="input-group-addon arrow-down" id="basic-addon1"><i class="icon-chevron-down"></i></span>
+									</div>		
+									  <div class="select-content hidden">
+							               <span class="select-content-detail">土贡梅煎</span><br/>
+							               <span class="select-content-detail">22222222222222222</span><br/>
+							          </div>	
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label"><span class="required-span">*</span>就餐人数：</label>
+								<div class="col-xs-5">
+									<input type="text"	value="" class="form-control" id="counter-sits" >	
+								</div>
+							</div>
+							<div class="form-group disabled-input counter-input-select">
+								<label class="col-xs-3 control-label"><input type="checkbox" name="enableCheck" id="min-expense-checkbox">最低消费：</label>
+								<div class="col-xs-5">
+									<div class="input-group unit-style">
+										  <input type="text" class="form-control" aria-describedby="basic-addon1">
+										   <span class="input-group-addon">元</span>
+
+									</div>		
+								</div>
+							</div>
+							<div class="form-group disabled-input counter-input-select">
+								<label class="col-xs-3 control-label"><input type="checkbox" name="enableCheck">固定使用费：</label>
+								<div class="col-xs-5">
+									<div class="input-group unit-style">
+										  <input type="text" class="form-control" aria-describedby="basic-addon1">
+										   <span class="input-group-addon">元</span>
+
+									</div>					
+								</div>
+							</div>
+					
+						
+							<div class="btn-operate">
+								<button class="btn btn-cancel in-btn135" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="counter-table-save" type="button">确认</button>
+							</div>
+						</form>
+					</div>
+					
+
+				</div>
+				
+			</div>
+		</div>
+		<!--删除分区-->
+		<div class="modal fade counter-dialog in counter-dialog-del " id="counter-typeDel-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">				
+					<div class="modal-body">
+						<div class="counter-dialog-header">				  
+					        <span>确认删除</span>
+					        <img src="../images/close-sm.png" class="img-close"  data-dismiss="modal">
+					    </div>
+					    <hr class="ky-hr">			
+						<form action="" method="post" class="form-horizontal " name="">
+							<div class="del-info">
+								<p class="counter-del-p1"><img src="../images/del-tip.png"></i>确认删除该分区？</p>	
+							</div>
+							<div class="btn-operate">
+								<button class="btn btn-cancel" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save" id="counter-type-del" type="button">确认</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--删除餐台-->
+		<div class="modal fade counter-dialog in counter-dialog-del" id="counter-tableDel-dialog"  data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">				
+					<div class="modal-body">
+						<div class="counter-dialog-header">				  
+					        <span>确认删除</span>
+					        <img src="../images/close-sm.png" class="img-close"  data-dismiss="modal">
+					    </div>
+					    <hr class="ky-hr">			
+						<form action="" method="post" class="form-horizontal " name="">
+							<div class="del-info">
+								<p class="counter-del-p1"><img src="../images/del-tip.png"></i>确认删除该餐台？</p>	
+							</div>
+							<div class="btn-operate">
+								<button class="btn btn-cancel" type="button">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save" id="counter-type-del" type="button">确认</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+					<!--删除成功弹框-->
+		<div class="counterDel-success hidden ">
+			<div class="counterDel-success-content">
+				<i class="icon-ok"></i>保存成功
+			</div>
+		</div>
+
+
+</body>
+</html>

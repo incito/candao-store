@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.InvoiceDao" >
+  <resultMap id="tinvoiceResultMap" type="com.candao.www.data.model.Tinvoice">
+		<id property="id" column="id" />
+		<result property="cardno" column="cardno" />
+		<result property="invoice_title" column="invoice_title" />
+		<result property="device_no" column="device_no" />
+		<result property="orderid" column="orderid" />
+		<result property="status" column="status" />
+		<result property="invoiceType" column="invoicetype" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tinvoiceResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tinvoiceResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.Tinvoice">
+	   insert into t_invoice (
+	     id,
+	     cardno,
+	     invoice_title,
+	     device_no,
+	     orderid,
+	     status,
+	     invoiceType,
+	     inserttime
+	   )values (
+	     #{id},
+	     #{cardno},
+	     #{invoice_title},
+	     #{device_no},
+	     #{orderid},
+	     0,
+	     #{invoiceType},
+	     now()
+	   )
+	</insert>
+	<!-- 根据会员卡号查询发票名称 -->
+	<select id="findTinvoice" parameterType="map" resultType="map">
+        select DISTINCT cardno,invoice_title from t_invoice where cardno= #{memberNo}
+    </select>
+    <!--查询最大的编号-->
+	<select id="findTinvoiceLimit1" parameterType="map" resultType="map">
+        select id from t_invoice where  1=1 ORDER BY CAST(id AS SIGNED) desc LIMIT 1
+    </select>
+	<update id="updateInvoiceid" parameterType="java.util.Map">
+	    <if test="orderid != null" >
+	         update t_order set 
+		         status = '1',modifytime = now()
+	       where   orderid = #{orderid} and (status = '0' or status = null)
+	    </if>
+    </update>
+    
+     <select id="findInvoiceByOrderid" parameterType="map" resultType="com.candao.www.data.model.Tinvoice">
+        select DISTINCT cardno,invoice_title,orderid from t_invoice where orderid= #{orderid}
+    </select>
+    
+     <update id="updateInvoice" parameterType="java.util.Map">
+	    update t_invoice set 
+		     status  = '1',
+		     modifytime = now()
+		    <if test="_parameter.containsKey('remark1')">  
+		      ,remark1 = #{remark1}
+		     </if>
+		     <if test="_parameter.containsKey('cardno')">  
+		      ,cardno = #{cardno}
+		     </if>
+		      <if test="_parameter.containsKey('remark2')">  
+		      ,remark2 = #{remark2}
+		     </if>
+		      <if test="_parameter.containsKey('remark3')">  
+		      ,remark3 = #{remark3}
+		     </if>
+		      <if test="_parameter.containsKey('remark4')">  
+		      ,remark4 = #{remark4}
+		     </if> 
+		      <if test="_parameter.containsKey('invoice_amount')">  
+		      ,invoice_amount = #{invoice_amount}
+		     </if> 
+	       where   orderid = #{orderid} and (status = '0' or status = null)
+	     
+    </update>
+    
+</mapper>

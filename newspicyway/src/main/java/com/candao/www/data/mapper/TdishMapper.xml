@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TdishDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tdish" >
+    <id column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="columnId" property="columnid" jdbcType="INTEGER" />
+    <result column="userId" property="userid" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="label" property="label" jdbcType="VARCHAR" />
+    <result column="introduction" property="introduction" jdbcType="VARCHAR" />
+    <result column="source" property="source" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="imageTitle" property="imagetitle" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="isDisplay" property="isdisplay" jdbcType="INTEGER" />
+    <result column="isHead" property="ishead" jdbcType="INTEGER" />
+    <result column="headSort" property="headsort" jdbcType="INTEGER" />
+    <result column="isSelect" property="isselect" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="releaseTime" property="releasetime" jdbcType="TIMESTAMP" />
+    <result column="modifyTime" property="modifytime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="vipprice" property="vipprice" jdbcType="VARCHAR" />
+    <result column="dishNo" property="dishno" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="VARCHAR" />
+    <result column="printer" property="printer" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="abbrdesc" property="abbrdesc" jdbcType="VARCHAR" />
+    <result column="dishtype" property="dishtype" jdbcType="INTEGER" />
+    <result column="orderNum" property="orderNum" jdbcType="INTEGER" />
+    <result column="recommend" property="recommend" jdbcType="INTEGER" />
+    <result column="weigh" property="weigh" jdbcType="INTEGER" />
+    
+  </resultMap>
+  <resultMap id="pageResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    dishid, columnId, userId, title, label, introduction, source, author, image, imageTitle, 
+    content, isDisplay, isHead, headSort, isSelect, createTime, releaseTime, modifyTime, 
+    status, price,vipprice, dishNo, level, printer, unit, abbrdesc, dishtype,orderNum,recommend,weigh
+  </sql>
+  	<select id="page" parameterType="map" resultMap="pageResultMap">
+	select d.dishid, d.columnId,t.itemDesc, d.userId, d.title, d.label, d.introduction, d.source, d.author, 
+	d.image, d.imageTitle, d.content, d.isDisplay, d.isHead, d.headSort, d.isSelect, d.createTime, 
+	d.releaseTime, d.modifyTime, d.status, d.price,d.vipprice, d.dishNo, d.level, p.printername printer, d.unit, 
+	d.abbrdesc, d.dishtype,d.orderNum from t_dish d LEFT JOIN t_basicdata t on d.columnId=t.id 
+	LEFT JOIN t_printer p on d.printer=p.printerid
+	<where>
+		 and d.status=1
+	     <if test="source != null and source!='0'.toString()">
+	       and source=#{source}
+	     </if>
+	     <if test="title != null and title !=''">
+	        and title like CONCAT('%',#{title},'%')
+	     </if>
+	     <if test="isselect != null and isselect !=''">
+	        and isSelect=#{isselect}
+	     </if>
+	   </where>
+	</select>
+	<select id="find" resultMap="findResultMap"
+		parameterType="map">
+		select tb.itemDesc fitemDesc,  t.dishid, t.columnId, t.userId, t.title, t.label,t. introduction, t.source, t.author,t. image, t.imageTitle,    
+  t.content,t. isDisplay, t.isHead, t.headSort, t.isSelect,t. createTime,t. releaseTime,t. modifyTime,     
+ t.status,t. price,t.vipprice,t. dishNo, t.level, t.printer, t.unit, t.abbrdesc, t.dishtype       
+from t_dish t ,t_basicdata tb where t.source=tb.id and t.status=1 and t.dishtype=0
+	</select>
+  	<select id="findDishes"  resultMap="findResultMap"	parameterType="map">
+		SELECT t.* , td.columnid,tb.itemDesc from t_dish t,t_dish_dishtype td ,t_basicdata tb
+	
+<!--     ORDER BY t.createTime asc -->
+	<where>
+ 		and t.dishid=td.dishid AND td.columnid = tb.id and tb.status = 1
+	  <if test="dishid != null and dishid != ''" >
+       and dishid = #{dishid}
+      </if>
+      <if test="columnid != null and columnid != ''" >
+        and columnId = #{columnId}
+      </if>
+      <if test="userid != null and userid != ''" >
+        and userId = #{userId}
+      </if>
+      <if test="title != null and title != ''" >
+        and title = #{title}
+      </if>
+      <if test="label != null and label != ''" >
+        and label = #{label}
+      </if>
+      <if test="introduction != null and introduction != ''" >
+        and introduction = #{introduction}
+      </if>
+      <if test="source != null and source != ''" >
+        and source = #{source}
+      </if>
+      <if test="author != null and author != ''" >
+        and author = #{author}
+      </if>
+      <if test="image != null and image != ''" >
+        and image = #{image}
+      </if>
+      <if test="imagetitle != null and imagetitle != ''" >
+       and imageTitle = #{imageTitle}
+      </if>
+      <if test="content != null and content != ''" >
+        and content = #{content}
+      </if>
+      <if test="isdisplay != null and isdisplay != ''" >
+        and isDisplay = #{isDisplay}
+      </if>
+      <if test="ishead != null and ishead != ''" >
+        and isHead = #{isHead}
+      </if>
+      <if test="headsort != null and headsort != ''" >
+        and headSort = #{headSort}
+      </if>
+      <if test="isselect != null and isselect != ''" >
+        and isSelect = #{isSelect}
+      </if>
+      <if test="createtime != null and createtime != ''" >
+        and createTime = #{createTime}
+      </if>
+      <if test="releasetime != null and releasetime != ''" >
+        and releaseTime = #{releaseTime}
+      </if>
+      <if test="modifytime != null and modifytime != ''" >
+        and modifyTime = #{modifyTime}
+      </if>
+      <if test="status != null and status != ''" >
+        and status = #{status}
+      </if>
+      <if test="price != null and price != ''" >
+        and price = #{price}
+      </if>
+      <if test="vipprice != null and vipprice != ''" >
+        and vipprice = #{vipprice}
+      </if>
+      <if test="dishno != null and dishno != ''" >
+        and dishNo = #{dishNo}
+      </if>
+      <if test="level != null and level != ''" >
+        and level = #{level}
+      </if>
+      <if test="printer != null and printer != ''" >
+        and printer = #{printer}
+      </if>
+      <if test="unit != null and unit != ''" >
+        and unit = #{unit}
+      </if>
+      <if test="abbrdesc != null and abbrdesc != ''" >
+        and abbrdesc = #{abbrdesc}
+      </if>
+      <if test="dishtype != null and dishtype != ''" >
+        and dishtype = #{dishtype}
+      </if>
+      <if test="orderNum != null and orderNum != ''" >
+        and orderNum = #{orderNum}
+      </if>
+	</where>
+	</select>
+	
+  	<select id="getMap" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_dish
+    where dishid = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <select id="get" resultMap="BaseResultMap" parameterType="com.candao.www.data.model.Tdish" >
+	select t.printer,t.dishid, t.columnId, t.userId, t.title, t.label, t.introduction, t.source, t.author, t.image, t.imageTitle, t.content, t.isDisplay, t.isHead, t.headSort, 
+	t.isSelect, t.createTime, t.releaseTime, t.modifyTime, t.status, t.price,t.vipprice, t.dishNo, t.level, t.unit, t.abbrdesc, t.dishtype,t.orderNum,t.recommend,t.weigh 
+	from t_dish t  where t.dishid = #{id,jdbcType=VARCHAR}
+  </select>
+  	<delete id="delete" parameterType="map">
+	   update t_dish
+	   set status = 0 
+	   where 
+	    dishid=#{id} 
+	</delete>
+  <insert id="insert" parameterType="com.candao.www.data.model.Tdish" >
+ 		 <selectKey resultType="String" keyProperty="dishno" order="BEFORE" >
+               SELECT cast(tableseqno(#{dishno,jdbcType=VARCHAR})   as char)
+         </selectKey>
+    insert into t_dish (dishid, columnId, userId, 
+      title, label, introduction, 
+      source, author, image, 
+      imageTitle, content, isDisplay, 
+      isHead, headSort, isSelect, 
+      createTime, releaseTime, modifyTime, 
+      status, price,vipprice, dishNo, 
+      level, printer, unit, 
+      abbrdesc, dishtype,weigh,recommend)
+    values (#{dishid,jdbcType=VARCHAR}, #{columnid,jdbcType=INTEGER}, #{userid,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{label,jdbcType=VARCHAR}, #{introduction,jdbcType=VARCHAR}, 
+      #{source,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, 
+      #{imagetitle,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{isdisplay,jdbcType=INTEGER}, 
+      #{ishead,jdbcType=INTEGER}, #{headsort,jdbcType=INTEGER}, #{isselect,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{releasetime,jdbcType=TIMESTAMP}, #{modifytime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL},#{vipprice,jdbcType=VARCHAR}, #{dishno,jdbcType=VARCHAR}, 
+      #{level,jdbcType=VARCHAR}, #{printer,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, 
+      #{abbrdesc,jdbcType=VARCHAR}, #{dishtype,jdbcType=INTEGER}, #{weigh,jdbcType=INTEGER}, #{recommend,jdbcType=INTEGER})
+  </insert>
+  
+  <!--  插入火锅 -->
+    <insert id="saveDishSet" parameterType="com.candao.www.data.model.Tdish" >
+ 		 <selectKey resultType="String" keyProperty="dishno" order="BEFORE" >
+               SELECT cast(tableseqno('dishSetNo')   as char)
+         </selectKey>
+	    INSERT INTO  `t_dish_group` (`dishid`, `status`, `insertime`, 
+	    `insertuserid`, `ordernum`, `selecttype`, `columnId`, `startnum`, `endnum`) 
+	VALUES (#{dishid,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},now(), 
+	#{insertuserid,jdbcType=VARCHAR}, 
+	#{ordernum,jdbcType=INTEGER}, #{selecttype,jdbcType=VARCHAR},
+	 #{columnId,jdbcType=VARCHAR},
+	 #{startnum,jdbcType=INTEGER},#{endnum,jdbcType=INTEGER})
+  </insert>
+  
+    
+  <insert id="insertSelective" parameterType="com.candao.www.data.model.Tdish" >
+    insert into t_dish
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dishid != null" >
+        dishid,
+      </if>
+      <if test="columnid != null" >
+        columnId,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="label != null" >
+        label,
+      </if>
+      <if test="introduction != null" >
+        introduction,
+      </if>
+      <if test="source != null" >
+        source,
+      </if>
+      <if test="author != null" >
+        author,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="imagetitle != null" >
+        imageTitle,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="isdisplay != null" >
+        isDisplay,
+      </if>
+      <if test="ishead != null" >
+        isHead,
+      </if>
+      <if test="headsort != null" >
+        headSort,
+      </if>
+      <if test="isselect != null" >
+        isSelect,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="releasetime != null" >
+        releaseTime,
+      </if>
+      <if test="modifytime != null" >
+        modifyTime,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="vipprice != null" >
+        vipprice,
+      </if>
+      <if test="dishno != null" >
+        dishNo,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="printer != null" >
+        printer,
+      </if>
+      <if test="unit != null" >
+        unit,
+      </if>
+      <if test="abbrdesc != null" >
+        abbrdesc,
+      </if>
+      <if test="dishtype != null" >
+        dishtype,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dishid != null" >
+        #{dishid,jdbcType=VARCHAR},
+      </if>
+      <if test="columnid != null" >
+        #{columnid,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="label != null" >
+        #{label,jdbcType=VARCHAR},
+      </if>
+      <if test="introduction != null" >
+        #{introduction,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="imagetitle != null" >
+        #{imagetitle,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="isdisplay != null" >
+        #{isdisplay,jdbcType=INTEGER},
+      </if>
+      <if test="ishead != null" >
+        #{ishead,jdbcType=INTEGER},
+      </if>
+      <if test="headsort != null" >
+        #{headsort,jdbcType=INTEGER},
+      </if>
+      <if test="isselect != null" >
+        #{isselect,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releasetime != null" >
+        #{releasetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null" >
+        #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="vipprice != null" >
+        #{vipprice,jdbcType=VARCHAR},
+      </if>
+      <if test="dishno != null" >
+        #{dishno,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="printer != null" >
+        #{printer,jdbcType=VARCHAR},
+      </if>
+      <if test="unit != null" >
+        #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="abbrdesc != null" >
+        #{abbrdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="dishtype != null" >
+        #{dishtype,jdbcType=INTEGER},
+      </if>
+    </trim>
+    
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.Tdish" >
+    update t_dish
+    <set >
+      <if test="columnid != null" >
+        columnId = #{columnid,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="label != null" >
+        label = #{label,jdbcType=VARCHAR},
+      </if>
+      <if test="introduction != null" >
+        introduction = #{introduction,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        author = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="imagetitle != null" >
+        imageTitle = #{imagetitle,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="isdisplay != null" >
+        isDisplay = #{isdisplay,jdbcType=INTEGER},
+      </if>
+      <if test="ishead != null" >
+        isHead = #{ishead,jdbcType=INTEGER},
+      </if>
+      <if test="headsort != null" >
+        headSort = #{headsort,jdbcType=INTEGER},
+      </if>
+      <if test="isselect != null" >
+        isSelect = #{isselect,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="releasetime != null" >
+        releaseTime = #{releasetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null" >
+        modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="vipprice != null" >
+        vipprice = #{vipprice,jdbcType=VARCHAR},
+      </if>
+      <if test="dishno != null" >
+        dishNo = #{dishno,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="printer != null" >
+        printer = #{printer,jdbcType=VARCHAR},
+      </if>
+      <if test="unit != null" >
+        unit = #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="abbrdesc != null" >
+        abbrdesc = #{abbrdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="dishtype != null" >
+        dishtype = #{dishtype,jdbcType=INTEGER},
+      </if>
+    </set>
+    where dishid = #{dishid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.Tdish" >
+    update t_dish
+    set columnId = #{columnid,jdbcType=INTEGER},
+      userId = #{userid,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      label = #{label,jdbcType=VARCHAR},
+      introduction = #{introduction,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      imageTitle = #{imagetitle,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      isDisplay = #{isdisplay,jdbcType=INTEGER},
+      isHead = #{ishead,jdbcType=INTEGER},
+      headSort = #{headsort,jdbcType=INTEGER},
+      isSelect = #{isselect,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      releaseTime = #{releasetime,jdbcType=TIMESTAMP},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      price = #{price,jdbcType=VARCHAR},
+      vipprice = #{vipprice,jdbcType=VARCHAR},
+      dishNo = #{dishno,jdbcType=VARCHAR},
+      level = #{level,jdbcType=VARCHAR},
+      printer = #{printer,jdbcType=VARCHAR},
+      unit = #{unit,jdbcType=VARCHAR},
+      abbrdesc = #{abbrdesc,jdbcType=VARCHAR},
+      dishtype = #{dishtype,jdbcType=INTEGER},
+      recommend = #{recommend,jdbcType=INTEGER},
+      weigh = #{weigh,jdbcType=INTEGER}
+    where dishid = #{dishid,jdbcType=VARCHAR}
+  </update>
+  
+   <update id="updateOrderNum" parameterType="com.candao.www.data.model.Tdish" >
+    update t_dish
+    set     ordernum = #{orderNum,jdbcType=VARCHAR} + ifnull(ordernum,0)
+    where dishid = #{dishid,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 	批量更改是否显示状态 -->
+	<update id="updateArticleStatus" parameterType="com.candao.www.data.model.Tdish">
+	   update t_dish set
+	     isSelect=#{isselect}
+	   where 
+	    dishid in (
+	    <foreach collection="articleids" item="articleid" separator=",">
+	    #{articleid}
+	    </foreach>
+	    
+	     )
+	</update>
+	
+ <select id="findAllByIds" resultMap = "BaseResultMap" parameterType="com.candao.www.data.model.Tdish">
+	   select 
+	   td.dishid ,td.ishead, 
+	   CONCAT_WS('#',tp.ipaddress,tp.port) content,
+        td.title 
+        from t_printer tp ,t_dish td
+        where tp.printerid = td.printer
+	   and td.dishid in (
+	    <foreach collection="ids" item="articleid" separator=",">
+	    #{articleid}
+	    </foreach>
+	     )
+ </select>
+	
+	
+	
+<!-- 	 <update id="updateDishComsumer" parameterType="java.util.Map"> -->
+<!-- 	     <if test="ids != null and ids.size !=0"> -->
+<!-- 	          update t_dish set -->
+<!-- 	           orderNum = ifnull(ordernum,0) +1 -->
+<!-- 	         where  -->
+<!-- 	         dishid in  -->
+<!-- 	       <foreach item="item" index="index" collection="ids"  -->
+<!--                          open="(" separator="," close=")"> -->
+<!--                         #{item} -->
+<!--           </foreach> -->
+<!--           </if> -->
+<!-- 	</update> -->
+	 <update id="updateDishSetComsumer" parameterType="java.util.Map">
+	     <if test="ids != null and ids.size !=0">
+	          update t_dish_unit set
+	           orderNum = ifnull(ordernum,0) +1
+	         where 
+	         id in 
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+          </if>
+	</update>
+	
+	 	 <update id="updateDishComsumerReduce" parameterType="java.util.Map">
+	     <if test="ids != null and ids.size !=0">
+	          update t_dish set
+	           orderNum = (CASE WHEN ifnull(orderNum,0) = 0 THEN 0 ELSE orderNum-1 END)
+	         where 
+	         dishid in 
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+          </if>
+	</update>
+	 <update id="updateDishSetComsumerReduce" parameterType="java.util.Map">
+	     <if test="ids != null and ids.size !=0">
+	          update t_dish_unit set
+	           orderNum = (CASE WHEN ifnull(orderNum,0)= 0 THEN 0 ELSE orderNum-1 END)
+	         where 
+	         id in 
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+          </if>
+	</update>
+	
+ <select id="findAllDish" resultMap = "BaseResultMap" >
+	   select  td.*
+		from  t_dish td
+		 
+ </select>
+ 
+  <select id="getAllDishSet" resultMap = "BaseResultMap" >
+	   select  td.*
+		from  t_dish td where  td.dishtype ='1' and td.content != '' and td.status = '1'
+		 
+ </select>
+ 
+   	<select id="findD" resultMap="findResultMap"
+		parameterType="map">
+		select u.id,t.dishid,t.title,t.content,u.price,u.vipprice,u.unit,b.itemDesc AS fitemDesc,td.itemDesc AS fitemDesc1,t.dishtype
+        from t_dish t,t_basicdata b,t_dish_unit u LEFT JOIN t_dictionary td on u.unit=td.dictid
+        where t.dishid=u.dishid and t.columnId=b.id and b.isShow=1 and b.status=1 and t.status=1
+	</select>	
+	
+   	<select id="getDishListByType" resultMap="findResultMap"
+	parameterType="map">
+	SELECT t.dishid,t.title,t.dishNo,b.itemDesc,t.dishtype,u.price,u.vipprice,u.unit,t.headSort unitflag  
+	FROM t_basicdata b ,t_dish t,t_dish_dishtype ty LEFT JOIN t_dish_unit u on ty.dishid=u.dishid
+	 where ty.columnId=#{columnid,jdbcType=VARCHAR} 
+	and ty.dishid=t.dishid 
+	<if test="flag != null and flag=='1'.toString()">
+	and t.dishtype!='1'
+	</if>
+	<if test="flag != null and flag=='2'.toString()">
+	and t.dishtype!='2'
+	</if>
+	<if test="flag != null and flag=='3'.toString()">
+	and t.dishtype not in('1','2')
+	</if>
+	and b.id=ty.columnId   order by t.dishNo 
+
+	</select>
+   	<select id="getDishMapByType" resultMap="findResultMap"
+	parameterType="map">
+	SELECT t.dishid,t.title,t.dishNo,b.itemDesc
+	FROM t_basicdata b ,t_dish t,t_dish_dishtype ty 
+	where ty.columnId=#{columnid,jdbcType=VARCHAR} 
+	and ty.dishid=t.dishid and b.id=ty.columnId order by t.dishNo 
+
+	</select>
+	<select id="getDishesByDishType" resultMap="BaseResultMap"
+	parameterType="map">
+	SELECT t.* from t_dish t,t_dish_dishtype td where td.columnid=#{columnid,jdbcType=VARCHAR}
+	and t.dishid=td.dishid
+    ORDER BY t.createTime asc
+	</select>
+	
+	<select id="pageSearch" parameterType="map" resultMap="pageResultMap">
+   	
+	SELECT t.dishid, t.columnId, t.userId, t.title, t.label, t.introduction, t.source,
+	 t.author, t.image, t.imageTitle,t.content, t.isDisplay, t.isHead, t.headSort,
+	  t.isSelect, t.createTime, t.releaseTime, t.modifyTime,t.status, t.price,t.vipprice,
+	   t.dishNo, t.level, t.printer, t.unit, t.abbrdesc, t.dishtype,t.orderNum,tb.itemDesc
+     from t_dish t,t_dish_dishtype td,t_basicdata tb
+	 <where> 
+	and t.dishid=td.dishid and tb.status = 1 and t.source = tb.id
+	<if test="columnid != null and columnid !=''">
+	and td.columnid=#{columnid,jdbcType=VARCHAR}
+	</if>
+	<if test="dishid != null and dishid !=''">
+	and td.dishid=#{dishid,jdbcType=VARCHAR}
+	</if>
+	<if test="fullName != null and fullName != ''">
+	and (t.title like '%${fullName}%' )
+	</if>
+	</where>
+    ORDER BY t.createTime asc
+	</select>
+	<select id="getdishCol" resultMap="findResultMap"
+	parameterType="map">
+	select t.id,t.dishid,d.itemDesc,t.columnid from t_dish_dishtype t ,t_basicdata d where 
+	t.dishid=#{dishid,jdbcType=VARCHAR} and t.columnid=d.id
+	
+	</select>
+	<update id="deletepa" parameterType="map">
+	delete from t_dish_dishtype 
+	<where>
+	<if test="dishid!=null and dishid!=''">
+	 and dishid=#{dishid}
+	</if>
+	<if test="columnid!=null and columnid!=''">
+	 and columnid=#{columnid}
+	</if>
+	</where>
+	</update>
+	<select id="comfirmDelDish" resultMap="findResultMap"
+	parameterType="map">
+	SELECT a.id,a.templateid,a.menuid,a.location,a.sortnum,a.redishid,a.image from t_template_detail a,t_menu b
+	<where>
+		a.menuid=b.menuid and b.status!=3
+		<if test="id!=null and id!=''">
+		 and a.id=#{id}
+		</if>
+		<if test="templateid!=null and templateid!=''">
+		 and a.templateid=#{templateid}
+		</if>
+		<if test="menuid!=null and menuid!=''">
+		 and a.menuid=#{menuid}
+		</if>
+		<if test="location!=null and location!=''">
+		 and a.location=#{location}
+		</if>
+		<if test="sortnum!=null and sortnum!=''">
+		 and a.sortnum=#{sortnum}
+		</if>
+		<if test="redishid!=null and redishid!=''">
+		 and a.redishid=#{redishid}
+		</if>
+		<if test="image!=null and image!=''">
+		 and a.image=#{image}
+		</if>
+	</where>
+	
+	</select>
+	
+  <update id="updateDishNum" parameterType="java.lang.String" >
+     UPDATE t_dish td SET orderNum = IFNULL(orderNum,0) + 1
+	  WHERE td.dishid IN (
+	    SELECT  dishid FROM t_order_detail tod
+	    WHERE tod.orderid = #{orderid}
+	      AND (tod.dishtype ='0' OR (tod.dishtype='1' AND tod.ismaster ='1') 
+	            OR (tod.dishtype ='2' AND tod.ismaster ='1'))
+	
+	  )
+  </update>
+  
+</mapper>

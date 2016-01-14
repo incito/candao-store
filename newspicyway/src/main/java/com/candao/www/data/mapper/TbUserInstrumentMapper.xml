@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbUserInstrumentDao">
+
+	<resultMap id="tbUserInstrumentResultMap" type="com.candao.www.data.model.TbUserInstrument">
+		<id property="id" column="id" />
+		<result property="userid" column="userid" />
+		<result property="instrumentid" column="instrumentid" />
+		<result property="inserttime" column="inserttime" />
+		<result property="logintime" column="logintime" />
+		<result property="logouttime" column="logouttime" />
+		<result property="status" column="status" />
+		<result property="tableno" column="tableno" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbUserInstrumentResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbUserInstrumentResultMap"></resultMap>
+
+	<sql id="Base_Column_List" >
+	id,
+	userid,
+	instrumentid,
+	inserttime,
+	logintime,
+	logouttime,
+	status,
+	tableno
+	</sql>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbUserInstrument">
+
+         
+		insert into t_user_instrument (
+	    id,
+		userid,
+		instrumentid,
+		inserttime,
+		logintime,
+		logouttime,
+		status,
+		tableno
+	     
+	   )values (
+	     #{id},
+	     #{userid},
+	     #{instrumentid},
+	     now(),
+	     now(),
+	     #{logouttime},
+		 #{status},
+		 #{tableno}
+	   )
+	
+	   
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbUserInstrument">
+	   update t_user_instrument
+	   <set>
+
+	       <if test="userid != null">
+	     userid=#{userid},
+	      </if>
+	      <if test="instrumentid != null">
+	     instrumentid=#{instrumentid},
+	      </if>
+	       <if test="inserttime != null">
+	     inserttime=#{inserttime},
+	      </if>
+	       <if test="logintime != null">
+	     logintime=#{logintime},
+	      </if>
+	       <if test="logouttime != null">
+	     logouttime=#{logouttime},
+	      </if>
+	      <if test="status != null">
+	      status=#{status},
+	      </if>	 
+	      <if test="tableno != null">
+	     tableno=#{tableno},
+	      </if> 
+	    </set> 
+	   where 
+	    userid=#{userid} 
+	   
+<!-- 	    and instrumentid=#{instrumentid} -->
+	</update>
+	
+	<update id="updateByid" parameterType="com.candao.www.data.model.TbUserInstrument">
+	   update t_user_instrument
+	   <set>
+
+	       <if test="userid != null">
+	     userid=#{userid},
+	      </if>
+	      <if test="instrumentid != null">
+	     instrumentid=#{instrumentid},
+	      </if>
+	       <if test="inserttime != null">
+	     inserttime=#{inserttime},
+	      </if>
+	       <if test="logintime != null">
+	     logintime=#{logintime},
+	      </if>
+	       <if test="logouttime != null">
+	     logouttime=#{logouttime},
+	      </if>
+	      <if test="status != null">
+	      status=#{status},
+	      </if>	 
+	      <if test="tableno != null">
+	     tableno=#{tableno},
+	      </if> 
+	    </set> 
+	   where 
+	    id=#{id} 
+	   
+<!-- 	    and instrumentid=#{instrumentid} -->
+	</update>
+	<delete id="delete" parameterType="map">
+
+	</delete>
+
+	
+	<select id="get" parameterType="map" resultMap="tbUserInstrumentResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_user_instrument
+	   where 
+	    id=#{id} 
+	</select>
+	
+
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_user_instrument
+	   where 
+	    id=#{id} 
+	</select>
+	
+
+
+
+
+	<select id="findByParams" parameterType="map" resultMap="tbUserInstrumentResultMap">
+	   select 
+	   	 <include refid="Base_Column_List"/>
+		    from t_user_instrument 
+	   <where>
+	   		
+	     <if test="id != null and id != ''">
+	        id=#{id}
+	     </if>
+	     <if test="userid != null and userid != ''">
+	        and userid=#{userid}
+	     </if>
+	     <if test="instrumentid != null and instrumentid != ''">
+	        and instrumentid=#{instrumentid}
+	     </if>
+	     <if test="inserttime != null and inserttime != ''">
+	        and inserttime=#{inserttime}
+	     </if>
+	     <if test="logintime != null and logintime != ''">
+	        and logintime=#{logintime}
+	     </if>
+	     <if test="logouttime != null and logouttime != ''">
+	        and logouttime=#{logouttime}
+	     </if>
+	     <if test="status != null and status != ''">
+	        and status=#{status}
+	     </if>
+	    </where>
+	    order by inserttime desc
+	   
+	</select>
+	<select id="findUseridByParams" parameterType="map" resultMap="findResultMap">
+	   select 
+	   	 distinct userid
+		    from t_user_instrument 
+	   <where>
+	     <if test="id != null and id != ''">
+	        id=#{id}
+	     </if>
+	     <if test="userid != null and userid != ''">
+	        and userid=#{userid}
+	     </if>
+	     <if test="instrumentid != null and instrumentid != ''">
+	        and instrumentid=#{instrumentid}
+	     </if>
+	     <if test="inserttime != null and inserttime != ''">
+	        and inserttime=#{inserttime}
+	     </if>
+	     <if test="logintime != null and logintime != ''">
+	        and logintime=#{logintime}
+	     </if>
+	     <if test="logouttime != null and logouttime != ''">
+	        and logouttime=#{logouttime}
+	     </if>
+	     <if test="status != null and status != ''">
+	        and status=#{status}
+	     </if>
+	     <if test="tableno != null and tableno != ''">
+	        and tableno=#{tableno}
+	     </if>
+
+	    </where>
+	    order by rand()
+	   	 <if test="limit != null and limit != ''">
+	        limit #{limit}
+	     </if>
+	     
+	</select>
+
+ <update id="updateStatus" parameterType="com.candao.www.data.model.TbUserInstrument">
+<!-- 	   update t_user_instrument set instrumentid = #{instrumentid},orderid =#{orderid} where    id=#{id} -->
+ </update>
+
+</mapper>

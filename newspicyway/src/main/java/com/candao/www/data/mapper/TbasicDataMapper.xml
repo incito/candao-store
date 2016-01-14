@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbasicDataDao">
+	<resultMap id="BaseResultMap" type="com.candao.www.data.model.TbasicData">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="itemid" property="itemid" jdbcType="VARCHAR" />
+		<result column="itemDesc" property="itemdesc" jdbcType="VARCHAR" />
+		<result column="itemSort" property="itemsort" jdbcType="INTEGER" />
+		<result column="isShow" property="isShow" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="fid" property="fid" jdbcType="VARCHAR" />
+		<result column="depthnum" property="depthnum" jdbcType="INTEGER" />
+		<result column="itemType" property="itemtype" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="CHAR" />
+	</resultMap>
+	<resultMap id="pageResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+<!-- 		select -->
+<!-- 		<include refid="Base_Column_List" /> -->
+<!-- 		from t_basicdata -->
+<!-- 		<where> -->
+<!-- 			and status = 1 and itemType=#{itemtype} and  depthnum=1 -->
+<!-- 		</where> -->
+		select t.id, t.itemid, t.itemDesc, t.itemSort,t.isShow, t.status, t.fid, t.depthnum, t.itemType,
+		t.create_time, t.update_time,t.remark,ft.itemDesc fitemDesc
+		from  t_basicdata t 
+		left JOIN t_basicdata ft on t.fid=ft.id 
+		<where>
+			and t.status = 1 and t.itemType=#{itemtype} and  t.depthnum=1
+		</where> 
+	</select>
+	<sql id="Base_Column_List">
+		id, itemid, itemDesc, itemSort,isShow, status, fid, depthnum, itemType,
+		create_time, update_time,
+		remark
+	</sql>
+	<select id="get" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_basicdata
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+		<select id="find" resultMap="findResultMap"
+		parameterType="map">
+	select t.id, t.itemid, t.itemDesc, t.itemSort,t.isShow, t.status, t.fid, t.depthnum, t.itemType,
+		t.create_time, t.update_time,t.remark,t.itemSort
+, count(tdd.id) countDish
+		from  t_basicdata t LEFT JOIN t_dish_dishtype tdd ON t.id = tdd.columnid
+<!-- 		left JOIN t_basicdata ft on t.fid=ft.id  -->
+		<where>
+		t.fid = #{id,jdbcType=VARCHAR}
+			and t.status = 1 
+		</where> 
+		GROUP BY t.id
+	       order by itemSort asc 
+	</select>
+	
+ <select id="findCategory" resultMap="findResultMap"
+		parameterType="map">
+		select t.id itemid,t.itemDesc, t.itemSort,t.isShow
+		from  t_basicdata t  
+		<where>
+		t.fid = #{id,jdbcType=VARCHAR}
+		and t.status = 1  
+<!-- 		and t.isShow=1 -->
+		</where> 
+	       order by itemSort desc 
+	</select>
+		 
+		 
+	<delete id="delete" parameterType="map">
+	   update t_basicdata
+	   set status = 0 
+	   where 
+	    id=#{id} 
+	</delete>
+	<delete id="deleteDishTaste" parameterType="map">
+	   delete from t_basicdata
+	    
+	   where 
+	    id=#{dishTasteId} 
+	</delete>
+	<insert id="insert" parameterType="com.candao.www.data.model.TbasicData">
+		insert into t_basicdata (id, itemid, itemDesc,
+		itemSort,isShow, status, fid,
+		depthnum, itemType, create_time,
+		update_time, remark)
+		values (#{id,jdbcType=VARCHAR}, #{itemid,jdbcType=VARCHAR},
+		#{itemdesc,jdbcType=VARCHAR},
+		#{itemsort,jdbcType=INTEGER},
+		#{isShow,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER}, #{fid,jdbcType=VARCHAR},
+		#{depthnum,jdbcType=INTEGER}, #{itemtype,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.candao.www.data.model.TbasicData">
+		insert into t_basicdata
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="itemid != null">
+				itemid,
+			</if>
+			<if test="itemdesc != null">
+				itemDesc,
+			</if>
+			<if test="itemsort != null">
+				itemSort,
+			</if>
+			<if test="isShow != null">
+				isShow,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="depthnum != null">
+				depthnum,
+			</if>
+			<if test="itemtype != null">
+				itemType,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="itemid != null">
+				#{itemid,jdbcType=VARCHAR},
+			</if>
+			<if test="itemdesc != null">
+				#{itemdesc,jdbcType=VARCHAR},
+			</if>
+			<if test="itemsort != null">
+				#{itemsort,jdbcType=INTEGER},
+			</if>
+			<if test="isShow != null">
+				#{isShow,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="fid != null">
+				#{fid,jdbcType=VARCHAR},
+			</if>
+			<if test="depthnum != null">
+				#{depthnum,jdbcType=INTEGER},
+			</if>
+			<if test="itemtype != null">
+				#{itemtype,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.TbasicData">
+		update t_basicdata
+		<set>
+			<if test="itemid != null">
+				itemid = #{itemid,jdbcType=VARCHAR},
+			</if>
+			<if test="itemdesc != null">
+				itemDesc = #{itemdesc,jdbcType=VARCHAR},
+			</if>
+			<if test="itemsort != null and itemsort!=''">
+				itemSort = #{itemsort,jdbcType=INTEGER},
+			</if>
+			<if test="isShow != null">
+				isShow = #{isShow,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="fid != null">
+				fid = #{fid,jdbcType=VARCHAR},
+			</if>
+			<if test="depthnum != null">
+				depthnum = #{depthnum,jdbcType=INTEGER},
+			</if>
+			<if test="itemtype != null">
+				itemType = #{itemtype,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=CHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TbasicData">
+		update t_basicdata
+		set itemid = #{itemid,jdbcType=VARCHAR},
+		itemDesc = #{itemdesc,jdbcType=VARCHAR},
+		itemSort = #{itemsort,jdbcType=INTEGER},
+		isShow = #{isShow,jdbcType=INTEGER},
+		status = #{status,jdbcType=INTEGER},
+		fid = #{fid,jdbcType=VARCHAR},
+		depthnum = #{depthnum,jdbcType=INTEGER},
+		itemType = #{itemtype,jdbcType=VARCHAR},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		remark = #{remark,jdbcType=CHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<select id="getDataDictionaryTag"  resultMap="findResultMap" parameterType="map">
+	   select id,itemDesc from t_basicdata where status=1  and itemType= #{itemtype}
+	</select>
+	 <select id="getListByparams" resultMap="findResultMap"	parameterType="map">
+		select t.itemid,t.itemDesc, t.itemSort,t.isShow
+		from  t_basicdata t  
+		<where>
+		 t.status = 1
+		<if test="itemDesc!=null and itemDesc!=''">
+		and t.itemDesc=#{itemDesc,jdbcType=VARCHAR}
+		</if>
+		</where> 
+	       order by itemSort desc 
+	</select>
+	
+	<!-- pad 端获取所有的菜品分类信息，包括模板数据 -->
+	 <select id="findAll" resultMap="findResultMap"		parameterType="map">
+		select t.id , t.itemDesc,tt.data datas,tt.type,tt.templateid
+		from  t_basicdata t ,  t_template tt
+		<where>
+		   t.fid = #{id,jdbcType=VARCHAR}
+			and t.status = 1  
+<!-- 			and tt.status = 1 -->
+			and t.id = tt.columnid
+<!-- 			and t.isShow=1 -->
+		</where>
+<!-- 		order by t.itemSort desc ,tt.sort desc -->
+	</select>
+	 <select id="getMenuColumn" resultMap="findResultMap"		parameterType="map">
+	 select distinct b.itemDesc itemdesc,t.columnsort itemsort,b.id itemid,b.isShow from t_basicdata b,t_template t 
+	where t.menuid=#{menuid} and t.columnid=b.id and b.fid=#{id}
+	order by t.columnsort asc
+	</select>
+	 <select id="findTempByItemId" resultMap="findResultMap"		parameterType="map">
+		select t.itemid , t.itemDesc,tt.data datas,tt.type
+		from  t_basicdata t ,  t_template tt
+		<where>
+		   t.fid = #{id,jdbcType=VARCHAR}
+		   and t.itemid = #{itemid ,jdbcType=VARCHAR}
+			and t.status = 1  
+			and tt.status = 1
+			and t.id = tt.dishtype
+		</where> 
+	</select>
+	<update id="updateListOrder" parameterType="java.util.ArrayList">
+	UPDATE t_basicdata
+	SET itemSort = CASE id
+	<foreach collection="list" item="item" index="index" open="">
+	WHEN #{item.id} THEN #{item.itemsort}
+	</foreach>
+	END
+	WHERE id IN 
+	<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+	#{item.id} 
+	</foreach>
+	</update>
+<!-- 	<update id="updateListOrder" parameterType="java.util.ArrayList"> -->
+<!-- 		<foreach collection="list" item="item" index="index" open="" -->
+<!-- 			close="" separator=";"> -->
+<!-- 			update t_basicdata -->
+<!-- 			<set> -->
+<!-- 				itemSort=#{item.itemsort} -->
+<!-- 			</set> -->
+<!-- 			where id = #{item.id,jdbcType=VARCHAR} -->
+<!-- 		</foreach> -->
+<!-- 	</update> -->
+   <update id="updateDishTagListOrder" parameterType="java.util.ArrayList">
+	UPDATE t_dictionary
+	SET itemSort = CASE dictid
+	<foreach collection="list" item="item" index="index" open="">
+	WHEN #{item.dictid} THEN #{item.itemSort}
+	</foreach>
+	END
+	WHERE dictid IN 
+	<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+	#{item.dictid} 
+	</foreach>
+	</update>
+</mapper>

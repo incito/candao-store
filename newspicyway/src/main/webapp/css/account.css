@@ -1,0 +1,186 @@
+body {
+	font-family: Microsoft YaHei;
+}
+label {
+	font-weight:normal;
+}
+h1,h2,h3 {
+	font-family: Microsoft YaHei;
+}
+ul, li, dl, dt, dd {
+	margin:0;
+	padding:0;
+	list-style:none;
+	font-weight: normal;
+}
+.myAccount .ky-panel {
+    background-color: #fff;
+    border: 1px solid #f4f3f3;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+.myAccount .ky-panel-title {
+    background: none repeat scroll 0 0 #f4f4f4;
+    height: 32px;
+    line-height: 32px;
+    padding-left: 15px;
+}
+.myAccount .ky-panel-content {
+    font-size:12px;
+    color:#505050;
+}
+.myAccount .form-group {
+    margin-bottom: 5px;
+}
+.myAccount .control-label {
+    text-align: left;
+    float:left;
+    margin-left:30px;
+}
+.myAccount .accountSafe .smaller {
+    color:#c8c8c8;
+}
+.myAccount .accountSafe .control-label {
+    width:80px;
+}
+.myAccount .accountSafe .form-group {
+    height:48px;
+}
+.myAccount .control-label {
+    text-align: left;
+    float:left;
+    margin-left:30px;
+}
+.myAccount .col-sm-10 {
+	padding-left:5px;
+}
+.a-operate {
+	float: left;
+    margin-top: 10px;
+    color:#505050;
+    
+}
+.a-operate:hover {
+	color:#505050;
+}
+.myAccount .form-horizontal {
+	margin:15px;
+}
+.accountSafe .btn {
+	border-radius:2px;
+	width:100px;
+}
+.accountSafe .btn-operate {
+    margin: 0 104px;
+    text-align:left;
+}
+.accountSafe .retrieveForm {
+	background-color: #f8f8f8;
+    border-color: #f0f0f0;
+    border-style: solid;
+    border-width: 1px 0;
+    padding: 15px 0;
+}
+.retrieveForm .row {
+	margin:20px 0;
+}
+.retrieveForm label {
+	width:100px;
+	text-align:right;
+	display:inline-block;
+}
+.retrieveForm input, .retrieveForm select  {
+	color: #505050;
+    font-family: Microsoft Yahei;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    text-indent: 20px;
+    width: 300px;
+    font-size:12px;
+    border:1px solid #dfdfdf;
+}
+.retrieveForm select {
+	text-indent: 10px;
+}
+.retrieveForm .checkCode {
+	width:170px;
+}
+.retrieveForm .getCheckCode {
+	margin-top: 0;
+    width: 125px;
+    position: relative;
+    top: 1px;
+}
+.btnNext {
+	width:300px;
+}
+
+.pwdAlt {
+	left: 420px;
+    position: absolute;
+    top: 6px;
+    width: 200px;
+    color:
+}
+.submitLogin {
+	background-color: #8cc253;
+    border: medium none;
+    border-radius: 2px;
+    color: #fff;
+    font-family: Microsoft YaHei;
+    height: 30px;
+    width: 100%;
+    margin-top: 20px;
+}
+.submitLogin:hover {
+	background-color: #78ba32;
+	cursor:pointer;
+}
+.active {
+	border: 1px solid #99c3ef !important;
+    box-shadow: 0 0 2px 0 #99c3ef;
+}
+.error {
+	border: 1px solid #ff0000 !important;
+    box-shadow: 0 0 2px 0 #ff0000;
+}
+.margin15 {
+	margin: 0 -15px;
+}
+.accountSafe .retrieveForm .title {
+	color: #505050;
+    font-size: 14px;
+    text-align: center;
+}
+.btn-operate .in-btn263 {
+	width:263px;
+	color:#fff;
+}
+.allWrap {
+	width:263px;
+	margin:0 auto;
+}
+.goEmail {
+	color:red;
+	text-decoration: underline;
+}
+.goEmail:hover {
+	color:red;
+}
+#checkCode .tenantInfo {
+	font-size:14px;
+}
+.icon-safeLevel {
+	background:url("../images/safeLevel.png") no-repeat scroll 50% center rgba(0, 0, 0, 0);
+	width:30px;
+	height:30px;
+	float:left;
+}
+.safeLevelNum {
+	float:left;
+}
+.safeLevel {
+	float: right;
+    margin-right: 100px;
+}

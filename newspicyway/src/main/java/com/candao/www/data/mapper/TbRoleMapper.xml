@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbRoleDao">
+
+	<resultMap id="tbRoleResultMap" type="com.candao.www.data.model.TbRole">
+		<id property="roleid" column="roleId" />
+		<result property="userid" column="createuserId" />
+		<result property="rolename" column="roleName" />
+		<result property="roledesc" column="roleDesc" />
+		<result property="roletype" column="roleType" />
+		<result property="createtime" column="createTime" />
+		<result property="status" column="status" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbRoleResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbRoleResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbRole">
+	   insert into t_role (
+	     roleId,
+	     createuserId,
+	     roleName,
+	     roleDesc,
+	     roleType,
+	     createTime,
+	     status
+	   )values (
+	     #{roleid},
+	     #{userid},
+	     #{rolename},
+	     #{roledesc},
+	     #{roletype},
+	     now(),
+	     #{status}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbRole">
+	   update t_role set
+	     roleId=#{roleid},
+	     createuserId=#{userid},
+	     roleName=#{rolename},
+	     roleDesc=#{roledesc},
+	     roleType=#{roletype},
+	     status=#{status}
+	   where 
+	    roleId=#{roleid} 
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   update  t_role set status=#{status}  where  roleId=#{roleid} 
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbRoleResultMap">
+	   select 
+	    roleId,
+	    createuserId,
+	    roleName,
+	    roleDesc,
+	    roleType,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	    status
+	   from t_role
+	   where 
+	    roleId=#{roleid} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    roleId,
+	    createuserId,
+	    roleName,
+	    roleDesc,
+	    roleType,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	    status
+	   from t_role
+	   where 
+	    roleId=#{roleid} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     roleId,
+	     createuserId,
+	     roleName,
+	     roleDesc,
+	     roleType,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     status
+	   from t_role
+	   <where>
+	     <if test="roleid != null">
+	        roleId=#{roleid}
+	     </if>
+	     <if test="userid != null">
+	        and createuserId=#{userid}
+	     </if>
+	     <if test="rolename != null">
+	        and roleName=#{rolename}
+	     </if>
+	     <if test="roledesc != null">
+	        and roleDesc=#{roledesc}
+	     </if>
+	     <if test="roletype != null">
+	        and roleType=#{roletype}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	     <if test="status != null">
+	        and status=#{status}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	     roleId,
+	     createuserId,
+	     roleName,
+	     roleDesc,
+	     roleType,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     status
+	   from t_role
+	   <where>
+	     <if test="roleid != null">
+	        roleId=#{roleid}
+	     </if>
+	     <if test="userid != null">
+	        and createuserId=#{userid}
+	     </if>
+	     <if test="rolename != null">
+	        and roleName=#{rolename}
+	     </if>
+	     <if test="roledesc != null">
+	        and roleDesc=#{roledesc}
+	     </if>
+	     <if test="roletype != null">
+	        and roleType=#{roletype}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	     <if test="status != null and status!=''">
+	        and status=#{status}
+	     </if>
+	   </where>
+	</select>
+	<!-- 获取角色列表 -->
+	<select id="getRoleList"  resultType="map">
+	   select 
+	     roleId,
+	     createuserId,
+	     roleName,
+	     roleDesc,
+	     roleType,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     status
+	   from t_role
+	   where status=1
+	</select>
+</mapper> 

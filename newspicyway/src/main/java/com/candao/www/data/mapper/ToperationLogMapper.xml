@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.dao.ToperationLogDao">
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.ToperationLog">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="tableno" jdbcType="VARCHAR" property="tableno" />
+    <result column="operationType" jdbcType="INTEGER" property="operationtype" />
+    <result column="sequence" jdbcType="VARCHAR" property="sequence" />
+  </resultMap>
+  <insert id="insert" parameterType="com.candao.www.data.model.ToperationLog">
+    insert into t_operation_log (id, tableno, operationType, 
+      sequence)
+    values (#{id,jdbcType=VARCHAR}, #{tableno,jdbcType=VARCHAR}, #{operationtype,jdbcType=INTEGER}, 
+      #{sequence,jdbcType=VARCHAR})
+  </insert>
+  <select id="findByparams" parameterType="map" resultMap="BaseResultMap">
+	    select id, tableno, operationType,Max(sequence) sequence
+	   from t_operation_log
+	   <where>
+	     <if test="id != null and id != ''">
+	        and   id=#{id}
+	     </if>
+	    <if test="tableno != null and tableno != ''">
+	        and  tableno=#{tableno}
+	     </if>
+	     <if test="operationType != null and operationType != ''">
+	        and operationType=#{operationType}
+	     </if>
+	   </where>
+	</select>
+	<update id="update" parameterType="map">
+	delete from t_operation_log  
+	<where>
+	 <if test="orderid != null and orderid != ''">
+	        tableno in 
+	(select tableno  from t_table  where orderid=#{orderid})
+	 </if>
+	 <if test="tableno != null and tableno != ''">
+	        and   tableno=#{tableno}
+	  </if>
+	</where>
+	</update>
+	<update id="deleteToperationLogByTableNo" parameterType="string">
+	delete from t_operation_log  where tableno=#{tableNO}
+	</update>
+</mapper>

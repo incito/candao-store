@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.GiftLogDao">
+	<resultMap id="base_result_map" type="com.candao.www.data.model.TGiftLog">
+		<id property="id" column="id" />
+		<result property="giftId" column="gift_id" />
+		<result property="giftTypeId" column="gift_type_id" />
+		<result property="giveTableNo" column="give_table_no" />
+		<result property="receiveTableNo" column="receive_table_no" />
+		<result property="receiveOrderId" column="receive_orderid" />
+		<result property="giftNo" column="gift_no" />
+		<result property="giftStatus" column="gift_status" />
+		<result property="orderId" column="order_id" />
+		<result property="insertTime" column="insert_time" />
+		<result property="giftName" column="gift_name" />
+		<result property="giftNum" column="gift_num" />
+		<result property="giftUnit" column="gift_unit" />
+		<result property="giftPrice" column="gift_price" />
+		<result property="giftAmount" column="gift_amount" />
+		<result property="isAnonymous" column="is_anonymous" />
+	</resultMap>
+	<resultMap id="find_result_map" type="java.util.HashMap" extends="base_result_map"></resultMap>
+	
+	<!-- 保存赠送礼物信息 -->
+	<insert id="saveGiftLogInfo" parameterType="com.candao.www.data.model.TGiftLog">
+	    insert into t_gift_log (id,gift_id,gift_type_id,give_table_no,receive_table_no,gift_no,gift_status,order_id,insert_time,gift_name,gift_num,gift_unit,gift_price,gift_amount,is_anonymous,receive_orderid) values 
+	    (#{id},#{giftId},#{giftTypeId},#{giveTableNo},#{receiveTableNo},#{giftNo},#{giftStatus},#{orderId},#{insertTime},#{giftName},#{giftNum},#{giftUnit},#{giftPrice},#{giftAmount},#{isAnonymous},#{receiveOrderId})
+	</insert>
+	
+	<!-- 按照订单信息查询赠送礼物记录 -->
+    <select id="getGiftLogByOrder" parameterType="java.util.Map" resultMap="base_result_map">
+	    select id,gift_id,gift_type_id,give_table_no,receive_table_no,gift_no,gift_status,order_id from t_gift_log
+	    where order_id = #{orderid}
+	</select>
+	<!-- 按照订单信息查询赠送礼物记录 -->
+    <select id="getGiftLogByRecOrder" parameterType="java.util.Map" resultMap="base_result_map">
+	    select id,gift_id,gift_type_id,give_table_no,receive_table_no,gift_no,gift_status,order_id from t_gift_log
+	    where receive_orderid = #{orderid}
+	</select>
+	
+	<!-- 按照记录信息ID 信息查询赠送礼物记录 -->
+    <select id="getGiftLogByid" parameterType="java.util.Map" resultMap="base_result_map">
+	    select id,gift_id,gift_type_id,give_table_no,receive_table_no,gift_no,gift_status,order_id,insert_time,gift_name,gift_num,gift_unit,gift_price,gift_amount,receive_orderid from t_gift_log
+	    where id = #{id}
+	</select>
+
+    <!-- 更新赠送礼物 -->
+	<update id="updateGiftLogInfo" parameterType="com.candao.www.data.model.TGiftLog">
+	    update t_gift_log set gift_status = #{giftStatus}  where id = #{id}
+	</update>
+	
+	   <!--查询礼物详细信息-->
+	<select id="getGiftInfo" parameterType="java.lang.String"  resultMap="find_result_map">
+	   select id, gift_no giftNo,gift_type_id typeId,gift_name gname,gift_unit gunit,gift_price gprice,member_price mprice,image_url image from t_gift where id = #{id}
+	</select>
+  	<!--查询订单状态信息-->
+	<select id="getOrderStatus" parameterType="java.lang.String"  resultMap="find_result_map">
+	   select gift_status from t_order where orderid = #{orderid}
+	</select>
+    <!--更新-->
+	<update id="updateOrderStatus" parameterType="java.lang.String">
+	    update t_order set gift_status = '-1'  where orderid = #{orderid}
+	</update>
+</mapper>

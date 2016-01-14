@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbranchshopDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tbranchshop" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="shopname" property="shopname" jdbcType="VARCHAR" />
+    <result column="areaid" property="areaid" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="district" property="district" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="storeManager" property="storemanager" jdbcType="VARCHAR" />
+    <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+    <result column="mobilephone" property="mobilephone" jdbcType="VARCHAR" />
+    <result column="fax" property="fax" jdbcType="VARCHAR" />
+     <result column="linkman" property="linkman" jdbcType="VARCHAR" />
+     <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    id, shopname, areaid, province, city, district, address, storeManager, telphone, 
+    mobilephone, fax,linkman,status
+  </sql>
+  <select id="get" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_branchshop
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="delete" parameterType="map" >
+    update  t_branchshop
+    set status=1
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.candao.www.data.model.Tbranchshop" >
+    insert into t_branchshop (id, shopname, areaid, 
+      province, city, district, 
+      address, storeManager, telphone, 
+      mobilephone, fax, linkman,status
+      )
+    values (#{id,jdbcType=VARCHAR}, #{shopname,jdbcType=VARCHAR}, #{areaid,jdbcType=VARCHAR}, 
+      #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{district,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{storemanager,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR}, 
+      #{mobilephone,jdbcType=VARCHAR}, #{fax,jdbcType=VARCHAR}, #{linkman,jdbcType=VARCHAR},#{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="update" parameterType="com.candao.www.data.model.Tbranchshop" >
+    update t_branchshop
+    <set>
+     shopname = #{shopname,jdbcType=VARCHAR},
+      areaid = #{areaid,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      district = #{district,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      storeManager = #{storemanager,jdbcType=VARCHAR},
+      telphone = #{telphone,jdbcType=VARCHAR}, 
+      mobilephone = #{mobilephone,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      linkman = #{linkman,jdbcType=VARCHAR},
+      <if test="status != null and status !=''" >
+        status = #{status,jdbcType=INTEGER}
+      </if>
+     </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  	<select id="page" parameterType="map" resultMap="pageResultMap">
+       select    
+       <include refid="Base_Column_List" />
+       from t_branchshop
+	    <where>
+	    status=0
+      <if test="shopname != null and shopname!=''" >
+         and shopname like CONCAT('%',#{shopname},'%')
+      </if>
+      <if test="areaid != null and areaid!=''"  >
+        and areaid=#{areaid,jdbcType=VARCHAR}
+      </if>
+      <if test="province != null and province!=''" >
+        and province=#{province,jdbcType=VARCHAR}
+      </if>
+      <if test="city != null and city!=''" >
+        and city=#{city,jdbcType=VARCHAR}
+      </if>
+      <if test="district != null and district!=''" >
+        and district=#{district,jdbcType=VARCHAR}
+      </if>
+	</where>
+	</select>
+	
+  	<select id="getAll" parameterType="map" resultMap="findResultMap">
+  	     select 
+  	     <include refid="Base_Column_List"></include>
+  	     from t_branchshop 
+  	     where 
+    </select>
+</mapper>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbPrinterDao">
+
+	<resultMap id="tbTableResultMap" type="com.candao.print.entity.TbPrinter">
+		<id property="printerid" column="printerid" />
+		<result property="printerNo" column="printerNo" />
+		<result property="printername" column="printername" />
+		<result property="printertype" column="printertype" />
+		<result property="createuserid" column="createuserid" />
+		<result property="inserttime" column="inserttime" />
+		<result property="ipaddress" column="ipaddress" />
+		<result property="port" column="port" />
+		<result property="status" column="status" />
+       <result property="printNum" column="printNum" />
+
+	</resultMap>
+	<resultMap id="pageResultMap" type="java.util.HashMap"
+		extends="tbTableResultMap"></resultMap>
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="tbTableResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.print.entity.TbPrinter">
+		insert into t_printer (
+		printerid,
+		printerNo,
+		printername,
+		printertype,
+		createuserid,
+		inserttime,
+		ipaddress,
+		port,
+		status
+
+
+
+		)values (
+		#{printerid},
+		#{printerNo},
+		#{printername},
+		#{printertype},
+		#{createuserid},
+		#{inserttime},
+		#{ipaddress},
+		#{port},
+		#{status}
+
+		)
+
+
+	</insert>
+
+	<update id="update" parameterType="com.candao.print.entity.TbPrinter">
+		update t_printer
+
+
+		<set>
+			<if test="printerid != null">
+				printerid=#{printerid},
+			</if>
+			<if test="printerNo != null ">
+				printerNo=#{printerNo},
+			</if>
+			<if test="printername != null ">
+				printername=#{printername},
+			</if>
+			<if test="printertype != null ">
+				printertype=#{printertype},
+			</if>
+			<if test="createuserid != null">
+				createuserid=#{createuserid},
+			</if>
+			<if test="inserttime != null ">
+				inserttime=#{inserttime},
+			</if>
+			<if test="ipaddress != null">
+				ipaddress=#{ipaddress},
+			</if>
+			<if test="port != null ">
+				port=#{port},
+			</if>
+			<if test="status != null">
+				status=#{status}
+			</if>
+		    <if test="printNum != null">
+				printNum = IFNULL(printnum,0) + #{printNum}
+			</if>
+		</set>
+		where
+		printerid=#{printerid}
+	</update>
+
+	<delete id="delete" parameterType="map">
+		update t_printer set `status` =0 WHERE printerid =#{id}
+
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbTableResultMap">
+		select
+		printerid,
+		printerNo,
+		printername,
+		printertype,
+		createuserid,
+		inserttime,
+		ipaddress,
+		port,
+		status,printNum
+		from t_printer
+		where
+		printerid=#{id}
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="tbTableResultMap">
+	select
+		printerid,
+		printerNo,
+		printername,
+		printertype,
+		createuserid,
+		inserttime,
+		ipaddress,
+		port,
+		status,
+		printNum
+		from t_printer
+		where
+		printerNo=#{id}
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+		select
+			printerid,
+			printerNo,
+			printername,
+			printertype,
+			createuserid,
+			inserttime,
+			ipaddress,
+			port,
+			status,
+			printNum
+			from t_printer
+			
+			 <where>
+	   		status=1
+	     <if test="printerid != null and printerid != ''">
+	        printerid=#{printerid}
+	     </if>
+	     <if test="printerNo != null and printerNo != ''">
+	        and printerNo=#{printerNo}
+	     </if>
+	     <if test="printername != null and printername != ''">
+	        and printername=#{printername}
+	     </if>
+	     <if test="printertype != null and printertype != ''">
+	        and printertype=#{printertype}
+	     </if>
+	     <if test="createuserid != null and createuserid != ''">
+	        and createuserid=#{createuserid}
+	     </if>
+	     <if test="inserttime != null and inserttime != ''">
+	        and inserttime=#{inserttime}
+	     </if>
+	     <if test="ipaddress != null and ipaddress != ''">
+	        and ipaddress=#{ipaddress}
+	     </if>
+	     <if test="port != null and port != ''">
+	        and port=#{port}
+	     </if>
+	     
+	     <if test="status != null and status != ''">
+	        and status=#{status}
+	     </if>
+	   </where>
+			order by printerNo asc
+	</select>
+
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+		select
+		printerid,
+		printerNo,
+		printername,
+		printertype,
+		createuserid,
+		inserttime,
+		ipaddress,
+		port,
+		status,
+		printNum
+		from t_printer
+		<where>
+			<if test="printerid != null and printerid != ''">
+				and printerid=#{printerid}
+			</if>
+			<if test="printerNo != null and printerNo != ''">
+				and printerNo=#{printerNo}
+			</if>
+			<if test="printername != null and printername != ''">
+				and printername=#{printername}
+			</if>
+			<if test="printertype != null and printertype != ''">
+				and printertype=#{printertype}
+			</if>
+			<if test="createuserid != null and createuserid != ''">
+				and createuserid=#{createuserid}
+			</if>
+			<if test="inserttime != null and inserttime != ''">
+				and inserttime=#{inserttime}
+			</if>
+			<if test="ipaddress != null and ipaddress != ''">
+				and ipaddress=#{ipaddress}
+			</if>
+			<if test="port != null and port != ''">
+				and port=#{port}
+			</if>
+			<if test="status != null and status != ''">
+				and status=#{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="getTableTag" resultMap="findResultMap">
+		select distinct printerid from t_printer
+		<where>
+			and status = 1
+		</where>
+	</select>
+
+	
+</mapper> 

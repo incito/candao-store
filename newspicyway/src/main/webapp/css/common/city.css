@@ -1,0 +1,175 @@
+/*选择城市*/
+.citySelect {
+	padding: 10px;
+	background-color: #FFFFFF;
+	border: #72a140 solid 2px;
+	color: #282828;
+	width: 700px;
+	min-height: 300px;
+	display: none;
+	left: 50%;
+	margin-left: -350px;
+	position: absolute;
+	z-index: 9999;
+	color: #282828;
+	font-size: 14px;
+	font-family: "微软雅黑",Arial;
+}
+
+.cityTitle {
+	font-weight: 800;
+	color: #282828;
+}
+
+.cityTitBac {
+	background-color: #B7E2D8;
+	margin: -10px;
+	padding: 10px;
+}
+
+.cityContent {
+	font-weight: 500;
+	color: #666666;
+}
+
+.city-spacing:hover {
+	cursor: pointer;
+	color: #FF5500;
+}
+
+.city-btn {
+	padding: 2px 8px;
+	margin-top: -35px;
+}
+
+.sCity {
+	padding: 2px 8px;
+	margin-right: 5px;
+}
+
+.cityR {
+	text-align: right;
+	width: 70px;
+}
+
+.city-spacing {
+	margin-left: 10px;
+}
+
+.cityColor {
+	color: #FF5500;
+}
+
+.proDiv {
+	float: left;
+}
+
+.lenFont {
+	font-weight: 600;
+	color: #FF6600;
+}
+
+.proDiv p {
+	clear: both;
+	margin-right: 10px;
+}
+
+.proDiv p span {
+	float: left;
+	display: block;
+}
+
+.letter {
+	letter-spacing: 7.5px;
+	margin-right: -8px;
+}
+
+label.error {
+	color: red;
+	white-space: nowrap;
+}
+
+.no-lr-padding {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+.mt20 {
+	margin-top: 20px !important;
+}
+.mt0{
+	margin-top:0;
+}
+
+/*常用按钮样式
+ **btn-major针对确定类型
+ **btn-minor针对取消类型
+*/
+.btn-major{
+	background-color: #8cc253;
+	border-color: #8cc253;
+	color: #FFF;
+}
+.btn-minor{
+	background-color: #DAC3AE;
+	border-color: #eecbb4;
+	color: #FFF;
+}
+.in-btn-warning{
+	background-color: #fff9b4;
+	border-color: #fff9b4;
+	color: #666;
+}
+.btn-major:hover,
+.btn-major:focus,
+.btn-major:active,
+.btn-major.active,
+.open .dropdown-toggle.btn-major {
+  color: #ffffff;
+  background-color: #4BE47B;
+  border-color: #4BE47B;
+}
+
+.btn-major:active,
+.btn-major.active,
+.open .dropdown-toggle.btn-major {
+  background-image: none;
+}
+
+
+.myInfo-select-addrW{
+	width:100px;
+	display: inline-block;
+}
+.myInfo-require-span{
+	color:#ff5500;
+	padding-right:10px;
+}
+.myInfo-upload-tip{
+	margin-left:120px;
+	margin-top:20px;
+}
+.myInfo-auth-tip{
+	margin:10px 10px;
+	padding:10px 20px 5px ;
+	font-size: 14px;
+	background: #e3e0e0;
+}
+.myInfo-auth-tip p{
+	margin-bottom:5px;
+}
+.myInfo-tip{
+	margin-left:60px;
+}
+ .myInfo-inputAddr{
+ 	margin-left:120px;
+ 	width:370px;
+ }
+ .myInfo-addr-span{
+	display: inline-block;
+	margin:0px 10px;
+ }
+  .myInfo-upload-img img{
+  	margin-right:10px;
+  }
+  

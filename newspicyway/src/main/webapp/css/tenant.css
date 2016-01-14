@@ -1,0 +1,647 @@
+body {
+	font-family: Microsoft YaHei;
+	font-size:12px;
+}
+label {
+	font-weight:normal;
+}
+h1,h2,h3 {
+	font-family: Microsoft YaHei;
+}
+ul, li, dl, dt, dd {
+	margin:0;
+	padding:0;
+	list-style:none;
+	font-weight: normal;
+}
+ul.role-ul{
+	max-height: 400px;
+	overflow-y: auto;
+}
+.employees-content .roleList{
+	width: 220px;
+}
+.error {
+	border-color:red !important;
+	font-size:12px;
+}
+/*tenant*/
+.btn-add {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+.table-list {
+	margin-top:0;
+}
+.table-list tbody tr td {
+	text-align:left;
+	padding-left:20px;
+	font-size: 12px;
+}
+.td-last .operate a {
+	margin: 0 5px;
+}
+.tenant-btn .btn-first {
+    background: none repeat scroll 0 0 #34495e;
+}
+.ky-content {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.tenant-table th {
+	color:#000;
+}
+.tenant-table th.count {
+	min-width: 40px;
+    width: 4%;
+}
+.tenant-table tr td:nth-of-type(1) {
+	padding-left:0;
+	text-align:center;
+}
+.tenant-table tr td:nth-of-type(9) {
+	padding-left:0;
+	text-align:center;
+}
+.tenant-table th.code {
+	min-width: 70;
+    width: 6%;
+}
+.tenant-table th.companyName {
+	min-width: 140px;
+    width: 14%;
+}
+.tenant-table th.name {
+	min-width: 70px;
+    width: 7%;
+}
+.tenant-table th.email {
+	min-width: 150px;
+    width: 15%;
+}
+.tenant-table th.phone {
+	min-width: 100px;
+    width: 10%;
+}
+.tenant-table th.call {
+	min-width: 100px;
+    width: 10%;
+}
+.tenant-table th.address {
+	min-width: 200px;
+    width: 20%;
+}
+.tenant-table th.opera {
+	min-width: 180px;
+    width: 18%;
+}
+.tenant-dialog .form-control {
+	font-size: 12px;
+}
+label.control-label {
+	font-size:14px;
+}
+.codeLabel {
+	float:left;
+	width:70px;
+}
+.sendBtn {
+	float:left;
+	color:#fff;
+}
+.tenantInfo {
+	font-size: 16px;
+	padding:10px;
+}
+.sendMsgState .pop-div-content i {
+	width:40px;
+	height:40px;
+ 	margin: 0 auto;
+ 	display:block;
+	
+}
+.sendMsgState .pop-div-content .tipP {
+	text-align: center;
+	color: #fff;
+}
+.sendMsgState .modal-content {
+	background-color: #000;
+    opacity: 0.6;
+    width: 310px;
+}
+.icon-success {
+	background:url("../images/success.png");
+}
+.icon-fail {
+	background:url("../images/fail.png");
+}
+.icon-sendSuccess {
+	background:url("../images/sendSuccess.png");
+	display: inline-block;
+    height: 16px;
+    left: -10px;
+    position: relative;
+    top: 3px;
+    width: 16px;
+}
+.btn {
+	border-radius:2px;
+}
+.in-btn200 {
+	width:230px;
+	background-color:#f0f0f0;
+}
+
+.btn-operate .in-btn263 {
+	width:263px;
+	color:#fff;
+}
+.allWrap {
+	width:263px;
+	margin:0 auto;
+}
+.checkCodeTitle {
+	margin-bottom:10px;
+	margin-top:-15px;
+	color:#505050;
+	font-size: 14px;
+}
+.checkCodeText {
+	border: 1px solid #dfdfdf;
+    box-shadow: none;
+    width: 163px;
+    float:left;
+}
+.sendType button {
+	color:#505050;
+}
+.btn-operate button {
+    padding: 5px 12px;
+}
+.in-btn200:hover {
+	background-color:#8cc253 !important;
+	color:#fff;
+}
+.errorTips {
+	color: #ff0000;
+    height: 17px;
+}
+.checkCoedImg {
+	border: 1px solid #dfdfdf;
+    float: left;
+    height: 30px;
+    margin-left: -1px;
+    width: 101px;
+}
+
+/*employees*/
+.employees-btn .btn-first {
+    background: none repeat scroll 0 0 #3498db;
+}
+.employees-table th.count {
+	min-width: 80px;
+    width: 8%;
+}
+.employees-table th.name {
+	min-width: 100px;
+    width: 10%;
+}
+.employees-table th.number {
+	min-width: 100px;
+    width: 10%;
+}
+.employees-table th.sex {
+	min-width: 70px;
+    width: 7%;
+}
+.employees-table th.title {
+	min-width: 100px;
+    width: 10%;
+}
+.employees-table th.call {
+	min-width: 130px;
+    width: 11%;
+}
+.employees-table th.off {
+	min-width: 100px;
+    width: 10%;
+}
+.employees-table th.opera {
+	min-width: 200px;
+    width: 20%;
+}
+.role {
+	color:#505050;
+	float: right;
+    font-size: 14px;
+    height: 19px;
+    line-height: 20px;
+    margin-right: 80px;
+    margin-top: 11px;
+    padding-left: 25px;
+    width: 59px;
+}
+.employees-btn .role {
+	background:url("../images/employeeRole.png") no-repeat;
+	
+}
+.employee-dialog h3 {
+	padding:0;
+	margin:0;
+	font-size:16px;
+}
+.employee_add_table tr {
+	height:40px;
+}
+.employee_add_table td.labelText {
+	text-align:right;
+	width:75px;
+	font-size: 14px;
+}
+.employee_add_table input {
+	border:1px solid #dfdfdf;
+	height:28px;
+	font-size:12px;
+	color:#505050;
+	text-indent:5px;
+	vertical-align: middle;
+	margin:0;
+	
+}
+.employee_add_table input[type='text']{
+	width:100%;
+}
+.employee_add_table input[type='radio']{
+	margin-right:5px;
+}
+.employee_add_table label {
+	margin-right:10px;
+}
+.employee_add_table .role_select {
+	width:260px;
+	border:1px solid #dfdfdf;
+	height:28px;
+	font-size:12px;
+	color:#505050;
+	text-indent:5px;
+	vertical-align: middle;
+	margin:0;
+}
+.employee_add_table .in-btn200 {
+	font-size: 12px;
+    height: 28px;
+    width: 70px;
+	background-color:#f0f0f0;
+}
+.employee_add_table .in-btn200.send {
+    width: 106px !important;
+    display:none;
+    margin-left:5px;
+}
+.employee_add_line {
+	border: 1px solid #dfdfdf;
+    margin: 20px 0;
+}
+#seeLimite {
+	margin:0 5px;
+}
+.employee-dialog .modal-body{
+	padding:10px;
+}
+.limiteInner {
+	padding:10px;
+	background-color:#f8f8f8;
+}
+dt, dd {
+	display:inline-block;
+}
+dt {
+	font-size:14px;
+	width: 80px;
+}
+dd {
+	color:#505050;
+	width: 150px;
+}
+dd input {
+    position: relative;
+    top: 1px;
+}
+dd label {
+	margin-left: 10px;
+}
+
+/*role*/
+h3.title{
+	font-size:16px;
+}
+.roleList {
+	height: auto;
+    width: 200px;
+    border:1px solid #dfdfdf;
+    float: left;
+    position: relative;
+}
+.roleList p {
+	background-color: #dfdfdf;
+    font-size: 14px;
+    line-height: 30px;
+    text-align: center;
+    margin:0;
+}
+.roleList li {
+	height:30px;
+	line-height:30px;
+	color:#505050;
+}
+
+.roleList li:hover, .roleList li.active {
+	background-color:#3498db;
+	color:#fff;
+}
+.tenant-content .roleList li:hover, .tenant-content .roleList li.active {
+	background-color:#34495e;
+	color:#fff;
+}
+.roleList span.num {
+	display: inline-block;
+    text-align: center;
+    width: 40px;
+}
+.roleList span.roleName {
+	display: inline-block;
+    text-align: left;
+    width: 120px;
+	cursor: pointer;
+}
+.roleList div.delete {
+	float: right;
+    text-align: center;
+    width: 30px;
+    color:#fff;
+    display:none;
+}
+.roleList div.delete:hover {
+	cursor:pointer;
+}
+.roleList li:hover div.delete {
+	display:block;
+}
+.limiteInfo {
+	font-size: 14px;
+    padding: 15px;
+    text-align: center;
+}
+.limiteInfo input {
+	width:350px;
+	border:1px solid #dfdfdf;
+	text-indent:5px;
+	height:30px;
+}
+.modal-content {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+}
+.icon-arr {
+	background: url("../images/role_arr.png") no-repeat;
+	display: block;
+    height: 14px;
+    left: -13px;
+    position: absolute;
+    top: 100px;
+    width: 14px;
+}
+
+#roleLimite {
+	float: left;
+    margin-left: 10px;
+    margin-top: -30px;
+    z-index:auto;
+}
+
+
+/*�˺Ź���*/
+.account-table th.count {
+	min-width: 90px;
+    width: 9%;
+}
+.account-table th.code {
+	min-width: 130px;
+    width: 13%;
+}
+.account-table th.name {
+	min-width: 120px;
+    width: 12%;
+}
+.account-table th.phone {
+	min-width: 150px;
+    width: 15%;
+}
+.account-table th.email {
+	min-width: 200px;
+    width: 20%;
+}
+.account-table th.status {
+	min-width: 100px;
+    width: 10%;
+}
+.account-table tr td:nth-of-type(1) {
+ 	padding-left: 10px;
+    text-align: center;
+}
+.account-table tr td:nth-of-type(6) {
+ 	padding-left: 10px;
+    text-align: center;
+}
+.account-table th.opera {
+	min-width: 240px;
+    width: 24%;
+}
+.account-table tbody tr td {
+    padding-left: 40px;
+ }
+.tenant-btn .role {
+	background:url("../images/accountRole.png") no-repeat;
+	
+}
+.accountRoleList {
+	 border: 1px solid #dfdfdf;
+    float: left;
+    height: 28px;
+    line-height: 28px;
+    margin-right: 5px;
+    
+    position: relative;
+    width: 230px;
+}
+.selectedText {
+	display: block;
+    overflow: hidden;
+    width: 230px;
+    height:28px;
+    padding: 2px 30px 2px 10px;
+    font-size:14px;
+}
+.accountRoleList ul {
+	 background-color: #fff;
+    border: 1px solid #dfdfdf;
+    left: -1px;
+    position: absolute;
+    width: 230px;
+    display:none;
+    z-index: 1000;
+    font-size:14px;
+}
+.accountRoleList li {
+	height: 28px;
+    line-height: 28px;
+    padding-left: 10px;
+}
+.accountRoleList li input {
+	
+}
+.accountRoleList li label {
+	color: #505050;
+    margin-right: 10px;
+}
+.icon-listArr {
+    border-color: #dfdfdf transparent transparent;
+    border-style: solid dashed dashed;
+    border-width: 10px 5px;
+    height: 0;
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    width: 0;
+}
+i.reverse {
+	border-color: transparent transparent #dfdfdf ;
+    border-style: dashed dashed solid ;
+    border-width: 0 5px 10px;
+}
+.add-shop-select {
+	border: 1px dashed #dfdfdf;
+    height: 28px;
+    padding-top: 4px;
+    text-align: center;
+    width: 100%;
+}
+.add-shop-select:hover{
+	cursor:pointer;
+}
+.store-select-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+#store-count {
+    color: #ff5500;
+}
+.pull-right {
+    float: right;
+}
+.radio-inline {
+    color: #666;
+    font-size: 12px;
+}
+.radio-inline input {
+    margin-top: 2px;
+}
+.storeSelect-dialog .modal-dialog {
+    font-size: 14px;
+    width: 822px;
+}
+.storeSelect-dialog .modal-header {
+    border-bottom: medium none;
+    margin-top: -20px;
+    padding: 0;
+}
+.employee_add_table {
+	margin:0 20px;
+}
+
+ul.paging {
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+    width: 400px;
+}
+ul.paging li {
+    display: inline-block;
+    list-style: outside none none;
+}
+.page.active a {
+    background-color: #646464;
+    color: #fff;
+}
+.store-select-content label {
+	height: 25px;
+    margin: 5px 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 170px;
+}
+
+.employee-dialog .modal-header label {
+	font-size:16px;
+}
+
+/* �ŵ�ѡ�� */
+.storesDiv {
+    font-size: 12px;
+}
+.storesDiv li {
+    float: left;
+    height: 38px;
+    margin: 5px 6px;
+    overflow: hidden;
+    width: 140px;
+}
+.popover {
+    max-width: 460px;
+    min-width: 150px;
+}
+
+#valicodeImg {
+	height: 30px;
+    width: 99px;
+}
+.viewAccountWrap {
+	width: 210px;
+	float: left;
+	margin-right:5px;
+}
+#sendAcc {
+	width:90px;
+}
+.accountRoleList ul{
+	max-height: 200px;
+    overflow-y: auto;
+}
+.roleNameWrap {
+	border-bottom: 2px solid #dfdfdf;
+    font-size: 14px;
+    margin: 0 10px 10px 0;
+    padding-bottom: 7px;
+}
+.roleTypeWrap {
+	float: left;
+    font-size: 14px;
+    width: 80px;
+}
+.roleDetailWrap {
+	float: left;
+    width: 470px;
+}
+.switch.demo3 {
+    text-align: center;
+}
+.btn-division {
+    background: none repeat scroll 0 0 #756f7c;
+    display: inline-block;
+    height: 34px;
+    margin: 0 20px -15px;
+    width: 1px;
+}
+.btn-operate{
+	margin: 20px 0px 0px;
+}

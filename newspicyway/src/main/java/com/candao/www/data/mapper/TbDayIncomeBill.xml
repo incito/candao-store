@@ -1,0 +1,2307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbDayIncomeBillDao" >
+    <!-- 營業日報表 -->
+    <select id="find" parameterType="map" resultType="map">
+        SELECT IFNULL(SUM(orignalprice*dishnum),0) AS Money, '应收总额（元）' AS columnDetial  FROM t_order_detail tod,t_order too
+        WHERE tod.orderid = too.orderid  and too.orderstatus='3'  and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION select (	SELECT  IFNULL(SUM(tsd.payamount),0)
+        FROM t_settlement_detail tsd,t_order too
+        WHERE  (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and too.orderid = tsd.orderid
+        AND tsd.payway IN (0,1,5,8)
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        )-
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd,t_order too,t_order_member tom
+        WHERE
+        tsd.orderid=tom.orderid
+        and tsd.payway = '8'
+        and too.orderstatus='3'
+        and tsd.payamount>0
+        and tsd.orderid = too.orderid
+        and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        ) as Money,  '实收总额（元）' AS columnDetial  from dual
+
+        union  SELECT (SELECT IFNULL(SUM(orignalprice*dishnum),0) FROM t_order_detail tod,t_order too
+        WHERE tod.orderid = too.orderid
+        and too.orderstatus='3'
+        and (too.begintime  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        ) - (
+        select (	SELECT  IFNULL(SUM(tsd.payamount),0)
+        FROM t_settlement_detail tsd,t_order too
+        WHERE  (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and too.orderid = tsd.orderid
+        AND tsd.payway IN (0,1,5,8)
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        )-
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd,t_order too,t_order_member tom
+        WHERE
+        tsd.orderid=tom.orderid
+        and tsd.payway = '8'
+        and too.orderstatus='3'
+        and tsd.payamount>0
+        and tsd.orderid = too.orderid
+        and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        )  from dual
+        )as Money,'折扣总额（元）' AS columnDetial  from dual
+
+    </select>
+
+    <select id="findO" parameterType="map" resultType="map">
+        SELECT IFNULL(SUM(payamount),0) AS Money,'人民币（元）' AS columnDetial FROM t_settlement_detail tsd,t_order too WHERE tsd.payamount>0 and  tsd.payway =0  and   tsd.orderid = too.orderid and too.orderstatus='3'
+        and (too.begintime   BETWEEN  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'挂账（元）' FROM t_settlement_detail tsd,t_order too WHERE tsd.payway =5  and tsd.payamount>0
+        and   tsd.orderid = too.orderid
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'刷卡（元）-工商银行' FROM t_settlement_detail   tsd,t_order too WHERE tsd.payway =1 AND membercardno = '1'
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and   tsd.orderid = too.orderid
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        union
+        SELECT IFNULL(SUM(payamount),0),'刷卡（元）-其他银行' FROM t_settlement_detail tsd,t_order too WHERE tsd.payway =1 AND membercardno != '1'
+        and   tsd.orderid = too.orderid
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+
+        UNION
+        SELECT IFNULL(SUM(tom.netvalue),0),'会员储值消费净值（元）' FROM t_settlement_detail  tsd,t_order too,t_order_member tom
+        WHERE
+        tsd.orderid=tom.orderid
+        and tsd.payway = '8'
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and tsd.orderid = too.orderid and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'合计（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE  tsd.orderid = too.orderid  and tsd.payamount>0 and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        AND tsd.payway IN (0,1,5,8)
+        and too.orderstatus='3'
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+    </select>
+
+
+    <select id="findT" parameterType="map" resultType="map">
+        SELECT COUNT(*) AS num,'桌数（桌）' AS columnDetial FROM t_order too WHERE   (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))  AND orderstatus='3'
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(mannum+womanNum+childNum),0),'结算人数（个）' FROM t_order too WHERE   (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )  AND orderstatus='3'
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT ROUND(IFNULL(((SUM(UNIX_TIMESTAMP(IFNULL(endtime,0)))-SUM(UNIX_TIMESTAMP(IFNULL(begintime,0))))/COUNT(*))/60,0)),'平均消费时间（分）' FROM t_order too WHERE   (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )  AND orderstatus='3'
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT ROUND(IFNULL(a.num/dayc.daynum/b.nums,0),4),'上座率（%）' FROM (SELECT IFNULL(SUM(mannum+womanNum+childNum),0) AS num FROM t_order too
+        WHERE  (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        AND orderstatus='3'
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        ) a,
+        (SELECT IFNULL(SUM(personNum),0) AS nums FROM t_table WHERE  STATUS not in('5')) b,
+        <!-- (select (to_days(#{endTime}) - to_days(#{beginTime})) as daynum FROM dual)c -->
+        (select  case when c.daynum = 0 then 1 else c.daynum end as daynum from (
+        (select to_days(#{endTime}) - to_days(#{beginTime})+1 as daynum FROM dual))c)dayc
+    </select>
+
+    <select id="findTh" parameterType="map" resultType="map">
+        SELECT IFNULL(SUM(payamount),0) AS Money,'会员券消费（元）' AS columnDetial FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        AND tsd.payway ='12'
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'会员积分消费（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        AND tsd.payway ='11'
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(tom.netvalue),0),'会员储值消费净值（元）' FROM t_settlement_detail  tsd,t_order too,t_order_member tom
+        WHERE
+        tsd.orderid=tom.orderid
+        and tsd.payway = '8'
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and tsd.orderid = too.orderid and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        <!-- SELECT '0','会员储值消费虚增（元）'  FROM  dual  -->
+        SELECT IFNULL(SUM(tom.inflated),0),'会员储值消费虚增（元）' FROM t_settlement_detail  tsd,t_order too,t_order_member tom
+        WHERE
+        tsd.orderid=tom.orderid
+        and tsd.payway = '8'
+        and too.orderstatus='3'
+        and tsd.payamount>0
+        and tsd.orderid = too.orderid and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'会员消费汇总（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        AND tsd.payway IN (8,11,12)
+        and tsd.payamount>0
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT '0','会员卡销售（张）' FROM dual UNION
+        SELECT '0','会员卡赠送（张）' FROM dual UNION
+        SELECT '0','会员卡总计（张）' FROM dual
+    </select>
+
+    <!-- 优惠分析报表 -->
+    <select id="findF" parameterType="map" resultType="map">
+        SELECT IFNULL(SUM(payamount),0) AS Money,'优免（元）' AS columnDetial FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        AND tsd.payway in ('6','13')
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'会员积分消费（元）' FROM t_settlement_detail  tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =11
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'会员券消费（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway ='12'
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        <!-- SELECT '0','会员储值消费虚增（元）' FROM dual  -->
+        SELECT IFNULL(SUM(tom.inflated),0),'会员储值消费虚增（元）' FROM t_settlement_detail  tsd,t_order too,t_order_member tom
+        WHERE
+        tsd.orderid=tom.orderid
+        and tsd.payway = '8'
+        and too.orderstatus='3'
+        and tsd.payamount>0
+        and tsd.orderid = too.orderid and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'折扣优惠（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =6
+        and too.orderstatus='3'
+        and tsd.bankcardno in (select name from t_p_preferential_activity where type=2)
+        and (too.begintime   BETWEEN  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'抹零收入（元）' FROM t_settlement_detail  tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =7
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'折扣总额（元）' FROM t_settlement_detail tsd ,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway IN (4,6,7,11,12,13)
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+    </select>
+
+    <select id="findFv" parameterType="map" resultType="map">
+        SELECT IFNULL(SUM(payamount),0) AS Money,'工商银行刷卡（元）' AS columnDetial FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =1
+        AND membercardno = '1'
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'工行应收账款（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =1
+        AND membercardno = '1'
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'其他银行刷卡（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =1
+        AND  membercardno != '1'
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+        UNION
+        SELECT IFNULL(SUM(payamount),0),'他行应收账款（元）' FROM t_settlement_detail tsd,t_order too
+        WHERE
+        tsd.orderid = too.orderid
+        and tsd.payamount>0
+        AND tsd.payway =1
+        AND membercardno != '1'
+        and too.orderstatus='3'
+        and (too.begintime   BETWEEN   str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s') )
+        <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+            and too.shiftid =#{shiftid}
+        </if>
+    </select>
+    <!-- 品项销售明细 -->
+    <select id="itemDetail" parameterType="map" resultType="map">
+        select orderTbel.parentType as parentType,
+        orderTbel.childType as childType,
+        orderTbel.pinNum as pinNum,
+        orderTbel.pinName as pinName,
+        orderTbel.couponBefore as couponBefore,
+        orderTbel.couponAfter as couponAfter,
+        orderTbel.price as price,
+        orderTbel.unit as unit,
+        sum(orderTbel.nums) as nums,
+        orderTbel.pingjun as pingjun,
+        orderTbel.coupons as coupons,
+        ROUND((sum(orderTbel.nums)/ (
+        select sum(orderTbel1.nums) from(
+        SELECT distinct
+        tod1.orderdetailid as orderdetailid,
+        tod1.orderid as orderid,
+        tb1.itemDesc AS parentType,
+        tb1.itemDesc AS childType,
+        td1.dishNo AS pinNum,
+        td1.title AS pinName,
+        IFNULL(tod1.orderprice,0) AS couponBefore,
+        IFNULL(tod1.orderprice,0) AS couponAfter,
+        IFNULL(td1.price,0) AS price,
+        IFNULL(tod1.dishunit,0) AS unit,
+        IFNULL(tod1.dishnum,0) AS nums,
+        IFNULL(tod1.orderprice,0) AS pingjun,
+        0 AS coupons
+        FROM t_dish td1,t_order_detail tod1,t_basicdata tb1,t_settlement_detail tsd1,t_order too1
+        <where>
+            tsd1.orderid = too1.orderid
+            and td1.dishid = tod1.dishid
+            AND td1.columnId = tb1.id AND tod1.orderid = tsd1.orderid
+            and tsd1.payamount > 0
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too1.shiftid =#{shiftid}
+            </if>
+            <if test="dishtype!=null and dishtype!='0'.toString() and dishtype!=''">
+                AND tb1.id = #{dishtype,jdbcType=VARCHAR}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and tsd1.inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+        )orderTbel1
+        ))*100,2) as share
+        from
+        (
+        SELECT distinct
+        tod.orderdetailid as orderdetailid,
+        tod.orderid as orderid,
+        tb.itemDesc AS parentType,
+        tb.itemDesc AS childType,
+        td.dishNo AS pinNum,
+        td.title AS pinName,
+        IFNULL(tod.orderprice,0) AS couponBefore,
+        IFNULL(tod.orderprice,0) AS couponAfter,
+        IFNULL(td.price,0) AS price,
+        IFNULL(tod.dishunit,0) AS unit,
+        IFNULL(tod.dishnum,0) AS nums,
+        IFNULL(tod.orderprice,0) AS pingjun,
+        0 AS coupons
+        FROM t_dish td,t_order_detail tod,t_basicdata tb,t_settlement_detail tsd,t_order too
+        <where>
+            tsd.orderid = too.orderid
+            and td.dishid = tod.dishid
+            AND td.columnId = tb.id AND tod.orderid = tsd.orderid
+            and tsd.payamount > 0
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too.shiftid =#{shiftid}
+            </if>
+            <if test="dishtype!=null and dishtype!='0'.toString() and dishtype!=''">
+                AND tb.id = #{dishtype,jdbcType=VARCHAR}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and tsd.inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>) orderTbel GROUP BY orderTbel.pinName,orderTbel.unit
+    </select>
+    <!-- 品项销售 -->
+    <select id="page" parameterType="map" resultType="map">
+        select '合计',childType,'*','*', '*','*','*','*',sum(nums) as nums,'*','*', sum(share) as share from (
+        select orderTbel.parentType as parentType,
+        orderTbel.childType as childType,
+        orderTbel.pinNum as pinNum,
+        orderTbel.pinName as pinName,
+        orderTbel.couponBefore as couponBefore,
+        orderTbel.couponAfter as couponAfter,
+        orderTbel.price as price,
+        orderTbel.unit as unit,
+        sum(orderTbel.nums) as nums,
+        orderTbel.pingjun as pingjun,
+        orderTbel.coupons as coupons,
+        ROUND((sum(orderTbel.nums)/ (
+        select sum(orderTbel1.nums) from(
+        SELECT distinct
+        tod1.orderdetailid  as orderdetailid,
+        tod1.orderid as orderid,
+        tb1.itemDesc AS parentType,
+        tb1.itemDesc AS childType,
+        td1.dishNo AS pinNum,
+        td1.title AS pinName,
+        IFNULL(tod1.orderprice,0) AS couponBefore,
+        IFNULL(tod1.orderprice,0) AS couponAfter,
+        IFNULL(td1.price,0) AS price,
+        IFNULL(tod1.dishunit,0) AS unit,
+        IFNULL(tod1.dishnum,0) AS nums,
+        IFNULL(tod1.orderprice,0) AS pingjun,
+        0 AS coupons
+        FROM t_dish td1,t_order_detail tod1,t_basicdata tb1,t_settlement_detail tsd1,t_order too1
+        <where>
+            tsd1.orderid = too1.orderid
+            and td1.dishid = tod1.dishid
+            AND td1.columnId = tb1.id AND tod1.orderid = tsd1.orderid
+            and tsd1.payamount > 0
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too1.shiftid =#{shiftid}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and tsd1.inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+        )orderTbel1
+        ))*100,2) as share
+        from
+        (
+        SELECT distinct
+        tod.orderdetailid as orderdetailid,
+        tod.orderid as orderid,
+        tb.itemDesc AS parentType,
+        tb.itemDesc AS childType,
+        td.dishNo AS pinNum,
+        td.title AS pinName,
+        IFNULL(tod.orderprice,0) AS couponBefore,
+        IFNULL(tod.orderprice,0) AS couponAfter,
+        IFNULL(td.price,0) AS price,
+        IFNULL(tod.dishunit,0) AS unit,
+        IFNULL(tod.dishnum,0) AS nums,
+        IFNULL(tod.orderprice,0) AS pingjun,
+        0 AS coupons
+        FROM t_dish td,t_order_detail tod,t_basicdata tb,t_settlement_detail tsd,t_order too
+        <where>
+            tsd.orderid = too.orderid
+            and td.dishid = tod.dishid
+            AND td.columnId = tb.id AND tod.orderid = tsd.orderid
+            and tsd.payamount > 0
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too.shiftid =#{shiftid}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and tsd.inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>) orderTbel  GROUP BY orderTbel.pinName,orderTbel.unit
+        ) as tmptable
+        group by childType  order by childType desc, nums asc,pingjun desc
+    </select>
+
+    <!-- 暫時不用 -->
+    <select id="pageB" parameterType="map" resultType="map">
+        SELECT '北京城区' AS company,'新辣道北京惠新店' AS shop,'600030' AS shopNum,'外部结算方式 ' AS paylei,
+        bankcardno AS payways,
+        (CASE payway WHEN 3 THEN '优惠券'
+        WHEN 4 THEN '折扣'
+        WHEN 5 THEN '挂账'
+        WHEN 6 THEN '优免'
+        WHEN 12 THEN '雅座优惠券'
+        WHEN 13 THEN '挂账2'
+        WHEN 15 THEN '挂账调整' END) AS paytype,COUNT(1) AS num,IFNULL(sum(payamount),0) AS total FROM t_settlement_detail
+        <where>
+            payway IN(3,4,5,6,12,13,15)
+            <if test="settlementWay !=null and settlementWay!=''">
+                AND payway= #{settlementWay,jdbcType=VARCHAR}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and  begintime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+        GROUP BY bankcardno,payway
+    </select>
+
+    <!--  结算方式报表 -->
+    <select id="pageC" parameterType="map" resultType="map">
+        SELECT '新辣道' AS pinpai,'华北市场' AS shichang,'北京区域' AS department,'新辣道北京惠新店' AS shopName ,
+        (CASE tsd.payway WHEN 0 THEN '现金' ELSE '其他' END  )     AS paytype,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS  payway ,
+        (case tsd.payway when '0' then  '现金'
+        when '1' then '银行卡'
+        when '2' then '会员储值'
+        when '3' then '优惠券'
+        when '4' then '折扣'
+        when '5' then  if(tsd.membercardno ='', '挂账' , tsd.membercardno  )
+        when '6' then  if (tsd.bankcardno ='' ,  '优免' ,  tsd.bankcardno )
+        when '7' then '抹零'
+        when '8' then '会员卡消费'
+        when '9' then '会员卡销售'
+        when '10' then '会员卡赠送'
+        when '11' then '会员积分消费'
+        when '12' then ifNull(tsd.bankcardno,'雅座优惠券')
+        when '13' then if(tsd.membercardno ='', '金总挂账' , tsd.membercardno  )
+        else
+        tsd.bankcardno
+        end
+        ) AS payLei,
+        count(1) AS nums,
+        IFNULL(sum(tsd.payamount),0) AS prices,
+        (select ( t.orignalprice* t.dishnum) from t_order_detail t where t.orderid = tsd.orderid group by t.orderid) AS yingshou,
+        IFNULL(sum(tsd.payamount),0) AS shishou
+        FROM t_settlement_detail tsd,t_settlement ts ,t_order too
+        <where>
+            tsd.orderid = too.orderid
+            and tsd.orderid = ts.orderid
+            and tsd.payamount > 0
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too.shiftid =#{shiftid}
+            </if>
+            <if test="settlementWay !=null and settlementWay!=''">
+                and  tsd.payway= #{settlementWay,jdbcType=VARCHAR}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and ts.inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+        GROUP BY tsd.payway
+    </select>
+
+    <!-- 优惠活动统计 -->
+    <select id="pageCoupons" parameterType="map" resultType="map">
+        select couponsname,paytype,payway,payamount,sum(z_payamount)as total,sum(num) as num,sum(yinshou) as yinshou,sum(shishou) as shishou,type,typeName,code from
+        (select a.inserttime as inserttime, a.orderid as orderid, a.payway as payway, a.couponsname as couponsname, a.payamount as payamount, a.num as num, a.paytype as paytype, a.yinshou as yinshou, a.z_payamount as z_payamount,(a.shouldAmount-a.inflated) as shishou, a.type as type ,
+        a.typeName as typeName,a.code as code
+        from (
+        SELECT tsd.inserttime as inserttime,tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  vtpa.name) couponsname,
+        tsd.payamount as payamount,
+        sum(tsd.payamount) as z_payamount,IFNULL(sum(tsd.couponNum),0) AS num,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype,
+        (select sum(tod.orignalprice * tod.dishnum) from t_order_detail tod where tod.orderid = tsd.orderid group by tsd.orderid) yinshou,
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )as tq,
+        sum((select distinct
+        (case when tt.payway = 5
+        then
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )
+
+        when tt.payway = 7
+        then
+        (select distinct 0.00  as payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid  and payway=7)
+        else tt.payamount end)as t
+
+        from t_settlement_detail tt where tt.orderid=tsd.orderid and tt.bankcardno=tsd.bankcardno and tt.payamount>0 and payway IN(3,4,5,6,7,12,13,15)))total,
+        (case when vtpa.type = 06
+        then vtpa.sub_type
+        else vtpa.type end
+        )as type,
+        (case when vtpa.type = 06
+        then vtpa.sub_type_name
+        else vtpa.type_name end
+        )as typeName,
+        (SELECT  IFNULL(SUM(tsd1.payamount),0)
+        FROM t_settlement_detail tsd1,t_order too1
+        WHERE  tsd1.payamount>0
+        and too1.orderstatus='3'
+        and tsd1.orderid = tsd.orderid
+        and too1.orderid = tsd.orderid
+        and too1.orderid = too.orderid
+        AND tsd1.payway IN (0,1,5,8)
+        ) as shouldAmount,
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd2,t_order too2,t_order_member tom
+        WHERE
+        tsd2.orderid=tom.orderid
+        and tsd2.payway = '8'
+        and too2.orderstatus='3'
+        and tsd2.payamount>0
+        and tsd2.orderid = too2.orderid
+        and tsd2.orderid = tsd.orderid
+        ) as inflated,
+        vtpa.id as code
+        FROM t_settlement_detail tsd ,t_order too,v_t_p_preferential_activity vtpa
+        <where>
+            tsd.orderid = too.orderid
+            and vtpa.id = tsd.coupondetailid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too.shiftid =#{shiftid}
+            </if>
+            <if test="bankcardno !=null and bankcardno !='' ">
+                and  vtpa.id =#{bankcardno}
+            </if>
+            <if test="settlementWay !=null and settlementWay!=''">
+                AND tsd.payway= #{settlementWay,jdbcType=VARCHAR}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            GROUP BY  payway,couponsname,orderid
+        </where>
+        )a <where>
+        1=1
+        <if test="type !=null and type !='' ">
+            and type =#{type}
+        </if>
+    </where>
+        )as tmptable
+        GROUP BY  paytype,couponsname
+    </select>
+    <!-- 优惠活动明细统计 -->
+    <select id="pageCouponsDtail" parameterType="map" resultType="map">
+        select a.inserttime, a.orderid, a.payway, a.couponsname, a.payamount, a.num, a.paytype, a.yinshou, a.z_payamount,(a.shouldAmount-a.inflated) as shishou,
+        a.type as type ,a.typeName as typeName,a.code
+        from (
+        SELECT tsd.inserttime as inserttime,tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',vtpa.name) couponsname,
+        tsd.payamount as payamount,
+        sum(tsd.payamount) as z_payamount,IFNULL(sum(tsd.couponNum),0) AS num,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype,
+        (select sum(tod.orignalprice * tod.dishnum) from t_order_detail tod where tod.orderid = tsd.orderid group by tsd.orderid) yinshou,
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0)as tq,
+        sum((select distinct
+        (case when tt.payway = 5
+        then
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0)
+
+        when tt.payway = 7
+        then
+        (select distinct 0.00  as payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid  and payway=7)
+        else tt.payamount end)as t
+
+        from t_settlement_detail tt where tt.orderid=tsd.orderid and tt.bankcardno=tsd.bankcardno and tt.payamount>0 and payway IN(3,4,5,6,7,12,13,15)))total,
+        (case when vtpa.type = 06
+        then vtpa.sub_type
+        else vtpa.type end
+        )as type,
+        (case when vtpa.type = 06
+        then vtpa.sub_type_name
+        else vtpa.type_name end
+        )as typeName,
+        (SELECT  IFNULL(SUM(tsd1.payamount),0)
+        FROM t_settlement_detail tsd1,t_order too1
+        WHERE  tsd1.payamount>0
+        and too1.orderstatus='3'
+        and tsd1.orderid = tsd.orderid
+        and too1.orderid = tsd.orderid
+        and too1.orderid = too.orderid
+        AND tsd1.payway IN (0,1,5,8)
+        ) as shouldAmount,
+        (SELECT IFNULL(SUM(tom.inflated),0)
+        FROM t_settlement_detail  tsd2,t_order too2,t_order_member tom
+        WHERE
+        tsd2.orderid=tom.orderid
+        and tsd2.payway = '8'
+        and too2.orderstatus='3'
+        and tsd2.payamount>0
+        and tsd2.orderid = too2.orderid
+        and tsd2.orderid = tsd.orderid
+        ) as inflated,
+        vtpa.id as code
+        FROM t_settlement_detail tsd , t_order too,v_t_p_preferential_activity vtpa
+        <where>
+            tsd.orderid = too.orderid
+            and vtpa.id = tsd.coupondetailid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+                and too.shiftid =#{shiftid}
+            </if>
+            <if test="bankcardno !=null and bankcardno !='' ">
+                and vtpa.id =#{bankcardno}
+            </if>
+            <if test="payway !=null and payway!=''">
+                AND tsd.payway= #{payway}
+            </if>
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+        GROUP BY  payway,couponsname,orderid
+        )a <where>
+        1=1
+        <if test="type !=null and type !='' ">
+            and type =#{type}
+        </if>
+    </where>
+    </select>
+    <!-- 营业图标数据查询 -->
+    <select id="findBusinessReport" parameterType="map" resultType="map">
+        select sum(Shouldamount) as Shouldamount,sum(Paidinamount) as Paidinamount,sum(Discountamount) as Discountamount,sum(Discount) as Discount,sum(Money) as Money,sum(Card) as Card,sum(ICBC) as ICBC,sum(otherbank) as otherbank,sum(Merbervaluenet) as Merbervaluenet,
+        sum(Total) as Total,sum(MeberTicket) as MeberTicket,sum(Integralconsum) as Integralconsum,sum(Mebervalueadd) as Mebervalueadd,sum(Mebercousumcollet) as Mebercousumcollet,sum(Tablenum) as Tablenum,sum(Settlementnum) as Settlementnum,sum(Avgconsumtime) as Avgconsumtime,sum(Attendance) as Attendance,sum(Shouldaverage) as Shouldaverage,
+        sum(Paidinaverage) as Paidinaverage,sum(tableconsumption) as tableconsumption,sum(Overtaiwan) as Overtaiwan,sum(Bastfree) as Bastfree,sum(Discountmoney) as Discountmoney,sum(Malingincom) as Malingincom,Statistictime,Datetype from  t_business_report
+        <where>
+            1=1
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and Statistictime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and Datetype = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            GROUP BY Statistictime
+        </where>
+    </select>
+    <!-- 优惠分析饼图数根据活动名称分组据查询 -->
+    <select id="findGroupByNmaeReport" parameterType="map" resultType="map">
+        <!--  select activity_type,activity_name,pay_way,pay_type,sum(num) as num,sum(amount)as amount,sum(should_amount) as should_amount,sum(paidin_amount) as paidin_amount,statistic_time,date_type from t_preferential_report
+          <where>
+                1=1
+                <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                    and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype!=null and Datetype!=''">
+                    and date_type = #{Datetype,jdbcType=VARCHAR}
+                </if>
+                group by activity_name
+          </where> -->
+        select  couponsname as activity_name,
+        typeName as activity_type,
+        sum(z_payamount)as amount,
+        sum(num) as num,
+        sum(yinshou) as should_amount,
+        sum(shishou) as paidin_amount from
+        (select a.inserttime as inserttime, a.orderid as orderid, a.payway as payway, a.couponsname as couponsname, a.payamount as payamount, a.num as num, a.paytype as paytype, a.yinshou as yinshou, a.z_payamount as z_payamount,(a.shouldAmount-a.inflated) as shishou, a.type as type ,
+        a.typeName as typeName,a.code as code
+        from (
+        SELECT tsd.inserttime as inserttime,tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        tsd.payamount as payamount,
+        <!-- sum(tsd.payamount) as z_payamount,
+        COUNT(1) AS num, -->
+        (select  sum(tste.payamount) from t_settlement_detail tste  where tste.orderid=tsd.orderid and  payway=6) as z_payamount,
+        <!-- (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6) AS num, -->
+        (case when (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) = 0
+        then (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6)
+        else (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) end)AS num,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype,
+        (select sum(tod.orignalprice * tod.dishnum) from t_order_detail tod where tod.orderid = tsd.orderid group by tsd.orderid) yinshou,
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )as tq,
+        sum((select distinct
+        (case when tt.payway = 5
+        then
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )
+
+        when tt.payway = 7
+        then
+        (select distinct 0.00  as payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid  and payway=7)
+        else tt.payamount end)as t
+
+        from t_settlement_detail tt where tt.orderid=tsd.orderid and tt.bankcardno=tsd.bankcardno and tt.payamount>0 and payway IN(3,4,5,6,7,12,13,15)))total,
+        tpa.type as type,
+        (case when tpa.type = 06
+        then tpa.sub_type_name
+        else tpa.type_name end
+        )as typeName,
+        (SELECT  IFNULL(SUM(tsd1.payamount),0)
+        FROM t_settlement_detail tsd1,t_order too1
+        WHERE  tsd1.payamount>0
+        and too1.orderstatus='3'
+        and tsd1.orderid = tsd.orderid
+        and too1.orderid = tsd.orderid
+        and too1.orderid = too.orderid
+        AND tsd1.payway IN (0,1,5,8)
+        ) as shouldAmount,
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd2,t_order too2,t_order_member tom
+        WHERE
+        tsd2.orderid=tom.orderid
+        and tsd2.payway = '8'
+        and too2.orderstatus='3'
+        and tsd2.payamount>0
+        and tsd2.orderid = too2.orderid
+        and tsd2.orderid = tsd.orderid
+        ) as inflated,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) as code
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            GROUP BY  couponsname,orderid
+        </where>
+        )a
+        )as tmptable
+        GROUP BY  activity_name
+    </select>
+    <!-- 优惠分析饼图数根据支付类型、活动名称分组据查询(发生金额) -->
+    <select id="findGroupByPaywayandName" parameterType="map" resultType="map">
+        select couponsname as activity_name,
+        sum(z_payamount)as amount,
+        payway as payway,
+        paytype as paytype,
+        inserttime as statistic_time from
+        (select  a.payway as payway, a.couponsname as couponsname, a.z_payamount as z_payamount,a.paytype as paytype,a.inserttime as inserttime
+        from (
+        SELECT
+        tsd.inserttime as inserttime,
+        tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        sum(tsd.payamount) as z_payamount,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            GROUP BY payway,couponsname,orderid
+        </where>
+        )a
+        )as tmptable GROUP BY payway, activity_name
+    </select>
+    <!-- 优惠分析趋势图数根据活动名称，日期分组据查询 -->
+    <select id="findGroupByNmaeAndTimeReport" parameterType="map" resultType="map">
+        <!-- select activity_type,activity_name,pay_way,pay_type,sum(num) as num,sum(amount)as amount,sum(should_amount) as should_amount,sum(paidin_amount) as paidin_amount,statistic_time,date_type from t_preferential_report
+         <where>
+               1=1
+               <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                   and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+               </if>
+               <if test="Datetype!=null and Datetype!=''">
+                   and date_type = #{Datetype,jdbcType=VARCHAR}
+               </if>
+               <if test="activity_name!=null and activity_name!=''">
+                   and activity_name = #{activity_name,jdbcType=VARCHAR}
+               </if>
+               group by activity_name,statistic_time
+         </where> -->
+        select
+        couponsname as activity_name,
+        typeName as activity_type,
+        sum(z_payamount)as amount,
+        sum(num) as num,
+        sum(yinshou) as should_amount,
+        sum(shishou) as paidin_amount,
+        inserttime as statistic_time
+        from
+        (select a.inserttime as inserttime, a.orderid as orderid, a.payway as payway, a.couponsname as couponsname, a.payamount as payamount, a.num as num, a.paytype as paytype, a.yinshou as yinshou, a.z_payamount as z_payamount,(a.shouldAmount-a.inflated) as shishou, a.type as type ,
+        a.typeName as typeName,a.code as code
+        from (
+        SELECT tsd.inserttime as inserttime,tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        tsd.payamount as payamount,
+        <!-- sum(tsd.payamount) as z_payamount,
+        COUNT(1) AS num, -->
+        (select  sum(tste.payamount) from t_settlement_detail tste  where tste.orderid=tsd.orderid and  payway=6) as z_payamount,
+        <!-- (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6) AS num, -->
+        (case when (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) = 0
+        then (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6)
+        else (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) end)AS num,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype,
+        (select sum(tod.orignalprice * tod.dishnum) from t_order_detail tod where tod.orderid = tsd.orderid group by tsd.orderid) yinshou,
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )as tq,
+        sum((select distinct
+        (case when tt.payway = 5
+        then
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )
+
+        when tt.payway = 7
+        then
+        (select distinct 0.00  as payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid  and payway=7)
+        else tt.payamount end)as t
+
+        from t_settlement_detail tt where tt.orderid=tsd.orderid and tt.bankcardno=tsd.bankcardno and tt.payamount>0 and payway IN(3,4,5,6,7,12,13,15)))total,
+        tpa.type as type,
+        (case when tpa.type = 06
+        then tpa.sub_type_name
+        else tpa.type_name end
+        )as typeName,
+        (SELECT  IFNULL(SUM(tsd1.payamount),0)
+        FROM t_settlement_detail tsd1,t_order too1
+        WHERE  tsd1.payamount>0
+        and too1.orderstatus='3'
+        and tsd1.orderid = tsd.orderid
+        and too1.orderid = tsd.orderid
+        and too1.orderid = too.orderid
+        AND tsd1.payway IN (0,1,5,8)
+        ) as shouldAmount,
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd2,t_order too2,t_order_member tom
+        WHERE
+        tsd2.orderid=tom.orderid
+        and tsd2.payway = '8'
+        and too2.orderstatus='3'
+        and tsd2.payamount>0
+        and tsd2.orderid = too2.orderid
+        and tsd2.orderid = tsd.orderid
+        ) as inflated,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) as code
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            <if test="activity_name!=null and activity_name!=''">
+                and tsd.bankcardno = #{activity_name,jdbcType=VARCHAR}
+            </if>
+            GROUP BY  couponsname,orderid
+        </where>
+        )a
+        )as tmptable
+        <if test="Datetype == 'D'.toString()">
+            GROUP BY activity_name,date(statistic_time)
+        </if>
+        <if test="Datetype == 'M'.toString()">
+            GROUP BY activity_name,month(statistic_time)
+        </if>
+        <if test="Datetype == 'Y'.toString()">
+            GROUP BY activity_name,year(statistic_time)
+        </if>
+    </select>
+    <!-- 优惠分析饼图数根据支付类型、活动名称、日期分组据查询(发生金额) -->
+    <select id="findGroupByPaywayandNameandtiem" parameterType="map" resultType="map">
+        select  couponsname as activity_name,
+        sum(z_payamount)as amount,
+        payway as payway,
+        paytype as paytype,
+        inserttime as statistic_time from
+        (select  a.payway as payway, a.couponsname as couponsname, a.z_payamount as z_payamount,a.paytype as paytype,a.inserttime as inserttime
+        from (
+        SELECT
+        tsd.inserttime as inserttime,
+        tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        sum(tsd.payamount) as z_payamount,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            <if test="activity_name!=null and activity_name!=''">
+                and tsd.bankcardno = #{activity_name,jdbcType=VARCHAR}
+            </if>
+            <if test="payway!=null and payway!=''">
+                and tsd.payway = #{payway,jdbcType=VARCHAR}
+            </if>
+            GROUP BY payway,couponsname,orderid
+        </where>
+        )a
+        )as tmptable
+        <if test="Datetype == 'D'.toString()">
+            GROUP BY  payway, activity_name,date(statistic_time)
+        </if>
+        <if test="Datetype == 'M'.toString()">
+            GROUP BY payway, activity_name,month(statistic_time)
+        </if>
+        <if test="Datetype == 'Y'.toString()">
+            GROUP BY payway, activity_name,year(statistic_time)
+        </if>
+    </select>
+    <!-- 优惠分析饼图数根据活动类别分组据查询 -->
+    <select id="findGroupBytypeReport" parameterType="map" resultType="map">
+        <!-- select activity_type,activity_name,pay_way,pay_type,sum(num) as num,sum(amount)as amount,sum(should_amount) as should_amount,sum(paidin_amount) as paidin_amount,statistic_time,date_type from t_preferential_report
+         <where>
+               1=1
+               <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                   and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+               </if>
+               <if test="Datetype!=null and Datetype!=''">
+                   and date_type = #{Datetype,jdbcType=VARCHAR}
+               </if>
+               group by activity_type
+         </where> -->
+        select  couponsname as activity_name,
+        typeName as activity_type,
+        sum(z_payamount)as amount,
+        sum(num) as num,
+        sum(yinshou) as should_amount,
+        sum(shishou) as paidin_amount from
+        (select a.inserttime as inserttime, a.orderid as orderid, a.payway as payway, a.couponsname as couponsname, a.payamount as payamount, a.num as num, a.paytype as paytype, a.yinshou as yinshou, a.z_payamount as z_payamount,(a.shouldAmount-a.inflated) as shishou, a.type as type ,
+        a.typeName as typeName,a.code as code
+        from (
+        SELECT tsd.inserttime as inserttime,tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        tsd.payamount as payamount,
+        <!-- sum(tsd.payamount) as z_payamount,
+        COUNT(1) AS num, -->
+        (select  sum(tste.payamount) from t_settlement_detail tste  where tste.orderid=tsd.orderid and  payway=6) as z_payamount,
+        <!-- (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6) AS num, -->
+        (case when (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) = 0
+        then (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6)
+        else (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) end)AS num,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype,
+        (select sum(tod.orignalprice * tod.dishnum) from t_order_detail tod where tod.orderid = tsd.orderid group by tsd.orderid) yinshou,
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )as tq,
+        sum((select distinct
+        (case when tt.payway = 5
+        then
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )
+
+        when tt.payway = 7
+        then
+        (select distinct 0.00  as payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid  and payway=7)
+        else tt.payamount end)as t
+
+        from t_settlement_detail tt where tt.orderid=tsd.orderid and tt.bankcardno=tsd.bankcardno and tt.payamount>0 and payway IN(3,4,5,6,7,12,13,15)))total,
+        tpa.type as type,
+        (case when tpa.type = 06
+        then tpa.sub_type_name
+        else tpa.type_name end
+        )as typeName,
+        (SELECT  IFNULL(SUM(tsd1.payamount),0)
+        FROM t_settlement_detail tsd1,t_order too1
+        WHERE  tsd1.payamount>0
+        and too1.orderstatus='3'
+        and tsd1.orderid = tsd.orderid
+        and too1.orderid = tsd.orderid
+        and too1.orderid = too.orderid
+        AND tsd1.payway IN (0,1,5,8)
+        ) as shouldAmount,
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd2,t_order too2,t_order_member tom
+        WHERE
+        tsd2.orderid=tom.orderid
+        and tsd2.payway = '8'
+        and too2.orderstatus='3'
+        and tsd2.payamount>0
+        and tsd2.orderid = too2.orderid
+        and tsd2.orderid = tsd.orderid
+        ) as inflated,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) as code
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            GROUP BY  couponsname,orderid
+        </where>
+        )a
+        )as tmptable
+        GROUP BY  activity_type
+    </select>
+    <!-- 优惠分析饼图数根据支付类型、活动类型分组据查询(发生金额) -->
+    <select id="findGroupByPaywayandType" parameterType="map" resultType="map">
+        select  couponsname as activity_name,
+        sum(z_payamount)as amount,
+        payway as payway,
+        paytype as paytype,
+        typeName as  activity_type,
+        inserttime as statistic_time from
+        (select  a.payway as payway, a.couponsname as couponsname, a.z_payamount as z_payamount,a.paytype as paytype,a.inserttime as inserttime,
+        a.typeName as typeName
+        from (
+        SELECT
+        (case when tpa.type = 06
+        then tpa.sub_type_name
+        else tpa.type_name end
+        )as typeName,
+        tsd.inserttime as inserttime,
+        tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        sum(tsd.payamount) as z_payamount,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            GROUP BY payway,couponsname,orderid
+        </where>
+        )a
+        )as tmptable GROUP BY payway, activity_type
+    </select>
+    <!-- 优惠分析趋势图数根据活动类别，日期分组据查询 -->
+    <select id="findGroupBytypeAndTimeReport" parameterType="map" resultType="map">
+        <!-- select activity_type,activity_name,pay_way,pay_type,sum(num) as num,sum(amount)as amount,sum(should_amount) as should_amount,sum(paidin_amount) as paidin_amount,statistic_time,date_type from t_preferential_report
+         <where>
+               1=1
+               <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                   and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+               </if>
+               <if test="Datetype!=null and Datetype!=''">
+                   and date_type = #{Datetype,jdbcType=VARCHAR}
+               </if>
+               <if test="activity_type!=null and activity_type!=''">
+                   and activity_type = #{activity_type,jdbcType=VARCHAR}
+               </if>
+               group by activity_type,statistic_time
+         </where> -->
+        select  couponsname as activity_name,
+        typeName as activity_type,
+        sum(z_payamount)as amount,
+        sum(num) as num,
+        sum(yinshou) as should_amount,
+        sum(shishou) as paidin_amount,
+        inserttime as statistic_time
+        from
+        (select a.inserttime as inserttime, a.orderid as orderid, a.payway as payway, a.couponsname as couponsname, a.payamount as payamount, a.num as num, a.paytype as paytype, a.yinshou as yinshou, a.z_payamount as z_payamount,(a.shouldAmount-a.inflated) as shishou, a.type as type ,
+        a.typeName as typeName,a.code as code
+        from (
+        SELECT tsd.inserttime as inserttime,tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        tsd.payamount as payamount,
+        <!-- sum(tsd.payamount) as z_payamount,
+        COUNT(1) AS num, -->
+        (select  sum(tste.payamount) from t_settlement_detail tste  where tste.orderid=tsd.orderid and  payway=6) as z_payamount,
+        <!-- (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6) AS num, -->
+        (case when (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) = 0
+        then (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=6)
+        else (select  COUNT(1) from t_settlement_detail tst  where tst.orderid=tsd.orderid and  payway=5) end)AS num,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype,
+        (select sum(tod.orignalprice * tod.dishnum) from t_order_detail tod where tod.orderid = tsd.orderid group by tsd.orderid) yinshou,
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )as tq,
+        sum((select distinct
+        (case when tt.payway = 5
+        then
+        (select distinct payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid and ttt.bankcardno=tsd.bankcardno and payway=6 and ttt.payamount>0 )
+
+        when tt.payway = 7
+        then
+        (select distinct 0.00  as payamount from t_settlement_detail ttt where ttt.orderid=tsd.orderid  and payway=7)
+        else tt.payamount end)as t
+
+        from t_settlement_detail tt where tt.orderid=tsd.orderid and tt.bankcardno=tsd.bankcardno and tt.payamount>0 and payway IN(3,4,5,6,7,12,13,15)))total,
+        tpa.type as type,
+        (case when tpa.type = 06
+        then tpa.sub_type_name
+        else tpa.type_name end
+        )as typeName,
+        (SELECT  IFNULL(SUM(tsd1.payamount),0)
+        FROM t_settlement_detail tsd1,t_order too1
+        WHERE  tsd1.payamount>0
+        and too1.orderstatus='3'
+        and tsd1.orderid = tsd.orderid
+        and too1.orderid = tsd.orderid
+        and too1.orderid = too.orderid
+        AND tsd1.payway IN (0,1,5,8)
+        ) as shouldAmount,
+        (SELECT IFNULL(SUM(tom.inflated),0) FROM t_settlement_detail  tsd2,t_order too2,t_order_member tom
+        WHERE
+        tsd2.orderid=tom.orderid
+        and tsd2.payway = '8'
+        and too2.orderstatus='3'
+        and tsd2.payamount>0
+        and tsd2.orderid = too2.orderid
+        and tsd2.orderid = tsd.orderid
+        ) as inflated,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) as code
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            GROUP BY  couponsname,orderid
+        </where>
+        )a where 1=1
+        <if test="activity_type!=null and activity_type!=''">
+            and typeName = #{activity_type,jdbcType=VARCHAR}
+        </if>
+        )as tmptable
+        <if test="Datetype == 'D'.toString()">
+            GROUP BY activity_type,date(statistic_time)
+        </if>
+        <if test="Datetype == 'M'.toString()">
+            GROUP BY activity_type,month(statistic_time)
+        </if>
+        <if test="Datetype == 'Y'.toString()">
+            GROUP BY activity_type,year(statistic_time)
+        </if>
+    </select>
+
+    <!-- 优惠分析饼图数根据支付类型、活动类型、日期分组据查询(发生金额) -->
+    <select id="findGroupByPaywayandTypeandTime" parameterType="map" resultType="map">
+        select  couponsname as activity_name,
+        sum(z_payamount)as amount,
+        payway as payway,
+        paytype as paytype,
+        typeName as  activity_type,
+        inserttime as statistic_time from
+        (select  a.payway as payway, a.couponsname as couponsname, a.z_payamount as z_payamount,a.paytype as paytype,a.inserttime as inserttime,
+        a.typeName as typeName
+        from (
+        SELECT
+        (case when tpa.type = 06
+        then tpa.sub_type_name
+        else tpa.type_name end
+        )as typeName,
+        tsd.inserttime as inserttime,
+        tsd.orderid as orderid, tsd.payway as payway,
+        IF(tsd.payway = '13','金总挂账',  tsd.bankcardno) couponsname,
+        sum(tsd.payamount) as z_payamount,
+        (SELECT itemdesc from t_dictionary td WHERE td.type='PAYWAY' AND td.itemid = tsd.payway) AS paytype
+        FROM t_settlement_detail tsd ,t_order too,t_p_preferential_activity tpa
+        <where>
+            tsd.orderid = too.orderid
+            and tpa.id = tsd.couponid
+            and tsd.payamount > 0
+            and tsd.payway IN(3,4,5,6,12,13,15)
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                <if test="Datetype == 'D'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+                </if>
+                <if test="Datetype == 'M'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y-%m')  BETWEEN str_to_date(#{beginTime},'%Y-%m') AND str_to_date(#{endTime},'%Y-%m')
+                </if>
+                <if test="Datetype == 'Y'.toString()">
+                    and  str_to_date(tsd.inserttime,'%Y')  BETWEEN str_to_date(#{beginTime},'%Y') AND str_to_date(#{endTime},'%Y')
+                </if>
+            </if>
+            GROUP BY payway,couponsname,orderid
+        </where>
+        )a where 1=1
+        <if test="activity_type!=null and activity_type!=''">
+            and typeName = #{activity_type,jdbcType=VARCHAR}
+        </if>
+        )as tmptable
+        <if test="Datetype == 'D'.toString()">
+            GROUP BY payway, activity_type,date(statistic_time)
+        </if>
+        <if test="Datetype == 'M'.toString()">
+            GROUP BY payway, activity_type,month(statistic_time)
+        </if>
+        <if test="Datetype == 'Y'.toString()">
+            GROUP BY payway, activity_type,year(statistic_time)
+        </if>
+    </select>
+    <!-- 品项明细图售卖数量柱状图标数据查询 -->
+    <select id="findItemReport" parameterType="map" resultType="map">
+        select Category as Category,item_id,item_desc,sum(Num) as Num,sum(Share) as Share,statistic_date,date_type from  t_item_report
+        <where>
+            1=1
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_date BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            group by item_desc order by Num  desc limit 10
+        </where>
+    </select>
+    <!-- 品项明细图售卖数量趋势图标数据查询 -->
+    <select id="findItemNumQushiReport" parameterType="map" resultType="map">
+        select Category as Category,item_id,item_desc,sum(Num) as Num,sum(Share) as Share,statistic_date,date_type from  t_item_report
+        <where>
+            1=1
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_date BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            <if test="item_id!=null and item_id!=''">
+                and item_id = #{item_id,jdbcType=VARCHAR}
+            </if>
+            group by statistic_date
+        </where>
+    </select>
+    <!-- 品项明细图售卖金额柱状图标数据查询 -->
+    <select id="findItemSharezhuzhuangReport" parameterType="map" resultType="map">
+        select Category as Category,item_id,item_desc,sum(Num) as Num,sum(Share) as Share,statistic_date,date_type from  t_item_report
+        <where>
+            1=1
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_date BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            group by item_desc order by Share  desc limit 10
+        </where>
+    </select>
+    <!-- 品项明细图售卖金额趋势图标数据查询 -->
+    <select id="findItemShareQushiReport" parameterType="map" resultType="map">
+        select Category as Category,item_id,item_desc,sum(Num) as Num,sum(Share) as Share,statistic_date,date_type from  t_item_report
+        <where>
+            1=1
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_date BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            <if test="item_id!=null and item_id!=''">
+                and item_id = #{item_id,jdbcType=VARCHAR}
+            </if>
+            group by statistic_date
+        </where>
+    </select>
+    <!-- 结算方式标数据查询 -->
+    <select id="findSettlementReport" parameterType="map" resultType="map">
+        select  pay_way,pay_type,sum(Num),sum(amount),statistic_time,date_type from t_settlement_report
+        <where>
+            1=1
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            group by pay_way
+        </where>
+    </select>
+    <!-- 品项销售列表明细查询 -->
+    <select id="pageItemDetail" parameterType="map" resultType="map">
+        SELECT
+        id,
+        title,
+        itemDesc,
+        dishType,
+        dishnum,
+        begintime,
+        endtime,
+        shiftid,
+        dishid,
+        dishNo,
+        price,
+        unit
+        FROM
+        (
+        SELECT
+        it.itemDesc AS itemDesc,
+        it.title as title,
+        tod.dishType AS dishType,
+        sum(tod.dishnum) AS dishnum,
+        tod.dishunit AS unit,
+        too.begintime AS begintime,
+        too.endtime AS endtime,
+        ts.shiftid AS shiftid,
+        it.id AS id,
+        it.dishid AS dishid,
+        it.dishNo AS dishNo,
+        IFNULL(it.price,0) AS price
+        FROM
+        t_order_detail tod,
+        t_settlement ts,
+        t_order too,
+        (
+        SELECT
+        td.dishid AS dishid,
+        tb.id As id,
+        tb.itemdesc AS itemDesc,
+        td.title as title,
+        td.price AS price,
+        td.dishNo AS dishNo
+        FROM
+        t_basicdata tb,
+        t_dish td,
+        t_dish_dishtype tdd
+        WHERE
+        td.dishid = tdd.dishid
+        and tb.id = tdd.columnid
+        ) it
+        <where>
+            tod.dishid = it.dishid
+            AND tod.orderid = ts.orderid
+            AND too.orderid = tod.orderid
+            <if test="shiftid != null and shiftid != ''">
+                and ts.shiftid = #{shiftId}
+            </if>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                and too.begintime >= #{beginTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and too.endTime <![CDATA[ <= ]]>#{endTime}
+            </if>
+            <if test="dishType != null and dishType != ''">
+                and dishType = #{dishType}
+            </if>
+        </where>
+        group by unit
+        )AS item
+    </select>
+
+    <!-- 查询品类 -->
+    <select id="getItemDescList" resultType="map">
+        select id,itemDesc from t_basicdata where status = 1 group by id
+    </select>
+
+    <!-- 查询菜品的总的数量 -->
+    <select id="getDishidCount" parameterType="map" resultType="Integer">
+        select count(tod.dishid)  from t_order tor,t_order_detail tod
+        <where>
+            tor.orderid=tod.orderid
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            <if test="dishid!=null and dishid!=''">
+                and dishid = #{Datetype,jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </select>
+
+    <!-- 查询菜品的总的数量 -->
+    <select id="getDishidCountbydishid" parameterType="map" resultType="map">
+        select  count(tod.dishid) as  dishidnum,tod.dishid  from t_order tor,t_order_detail tod
+        <where>
+            tor.orderid=tod.orderid
+            <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                and statistic_time BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i')
+            </if>
+            <if test="Datetype!=null and Datetype!=''">
+                and date_type = #{Datetype,jdbcType=VARCHAR}
+            </if>
+            <if test="dishid!=null and dishid!=''">
+                and dishid = #{Datetype,jdbcType=VARCHAR}
+            </if>
+        </where>
+        group by tod.dishid
+
+    </select>
+
+    <!--营业数据分析统计(午市、晚市 ) DataStatisticsHalf-->
+     <select id="getDataStatisticsHalf" parameterType="map" resultType="map">
+         <if test="dataType =='2'.toString()">
+      select a.shiftid as shiftid,a.areaid as areaid,a.areaname as areaname,a.tableNo as tableNo,a.begintime as begintime,
+             	(sum(a.datavalues)-sum(a.inflated)) as datavalues from (
+                 SELECT too.shiftid as shiftid, tta.areaid as areaid ,tta.areaname as areaname,
+             		tt.tableNo, DATE(too.begintime) as begintime,
+             		SUM(tsd.payamount) as datavalues,
+             		(select IFNULL(sum(tom.Inflated),0) from t_order_member tom where tom.orderid=tsd.orderid) as inflated
+             	    FROM t_settlement_detail tsd,t_order too ,t_table tt, t_tablearea tta
+					WHERE  
+						tsd.payamount>0 
+						and too.orderstatus='3'
+						and too.orderid = tsd.orderid  
+                        and too.currenttableid =  tt.tableid
+                        and tt.areaid = tta.areaid
+                        AND tsd.payway IN (0,1,5,8) 
+                        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                             and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+                        </if>
+                        <if test="shiftId == '1'.toString() or shiftId =='0'.toString()">
+	         				 and too.shiftid = #{shiftId}
+	     				</if>
+	     				<if test="areaid!= null and  areaid!= ''">
+	         				 and tta.areaid = #{areaid}
+	     				</if>
+                        GROUP BY tsd.orderid,too.shiftid,tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY too.shiftid,tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+                   )a  GROUP BY shiftid,areaid,tableNo,DATE(begintime) ORDER BY shiftid,areaid,DATE(begintime),CONVERT(tableNo,SIGNED) asc
+         </if>
+         <if test="dataType =='1'.toString()">
+             		SELECT too.shiftid as shiftid,tta.areaid as areaid, tta.areaname as areaname,tt.tableNo, DATE(too.begintime) as begintime,IFNULL(SUM(orignalprice*dishnum),0) as datavalues 
+ 						FROM t_order_detail tod,t_order too,t_table tt, t_tablearea tta   
+								     where
+									    tod.orderid = too.orderid 
+									    and too.orderstatus='3'
+										and too.currenttableid =  tt.tableid
+                         				and tt.areaid = tta.areaid
+                         				<if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                             				and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+                        				</if>
+                       					<if test="shiftId != null and shiftId != ''">
+	         				 				and too.shiftid = #{shiftId}
+	     								</if>
+	     								<if test="areaid!= null and  areaid!= ''">
+	         				 				and tta.areaid = #{areaid}
+	     								</if>
+										GROUP BY too.shiftid,tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY too.shiftid,tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+         </if>
+         <if test="dataType =='3'.toString()">
+              		SELECT too.shiftid as shiftid,tta.areaid as areaid, tta.areaname as areaname,tt.tableNo, DATE(too.begintime) as begintime,IFNULL(SUM(mannum+womanNum+childNum),0) as datavalues 
+							FROM t_order too ,t_table tt, t_tablearea tta  
+									WHERE   
+									too.orderstatus='3'
+									and too.currenttableid =  tt.tableid
+                  					and tt.areaid = tta.areaid
+			                        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+			                             and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+			                        </if>
+			                        <if test="shiftId != null and shiftId != ''">
+				         				 and too.shiftid = #{shiftId}
+				     				</if>
+				     				<if test="areaid!= null and  areaid!= ''">
+				         				 and tta.areaid = #{areaid}
+				     				</if>
+			                        GROUP BY too.shiftid,tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY too.shiftid,tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+         </if>
+          <if test="dataType =='4'.toString()">
+              SELECT too.shiftid as shiftid,tta.areaid as areaid, tta.areaname as areaname,tt.tableNo, DATE(too.begintime) as begintime,COUNT(*)  as  datavalues 
+						FROM t_order too ,t_table tt, t_tablearea tta 
+               						where  
+	               				    too.orderstatus='3'
+								    and too.currenttableid =  tt.tableid
+	              				    and tt.areaid = tta.areaid
+			                        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+			                             and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+			                        </if>
+			                        <if test="shiftId != null and shiftId != ''">
+				         				 and too.shiftid = #{shiftId}
+				     				</if>
+				     				<if test="areaid!= null and  areaid!= ''">
+				         				 and tta.areaid = #{areaid}
+				     				</if>
+			                        GROUP BY too.shiftid,tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY too.shiftid,tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+         </if>
+     </select>
+       
+      <!--营业数据分析统计(全天)DataStatisticsDay-->
+     <select id="getDataStatisticsDay" parameterType="map" resultType="map">
+           <if test="dataType == '1'.toString()">
+               SELECT  tta.areaname as areaname,tta.areaid as areaid,tt.tableNo, DATE(too.begintime) as begintime,IFNULL(SUM(orignalprice*dishnum),0) as datavalues 
+ 						FROM t_order_detail tod,t_order too,t_table tt, t_tablearea tta   
+								     where
+									    tod.orderid = too.orderid 
+									    and too.orderstatus='3'
+										and too.currenttableid =  tt.tableid
+                         				and tt.areaid = tta.areaid
+                         				<if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                             				and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+                        				</if>
+                       					<if test="shiftId != null and shiftId != ''">
+	         				 				and too.shiftid = #{shiftId}
+	     								</if>
+	     								<if test="areaid!= null and  areaid!= ''">
+	         				 				and tta.areaid = #{areaid}
+	     								</if>
+										GROUP BY tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+           </if>
+            <if test="dataType == '2'.toString()">
+             select a.areaid as areaid,a.areaname as areaname,a.tableNo as tableNo,a.begintime as begintime,
+ 			     (sum(a.datavalues)-sum(a.inflated)) as datavalues from (
+                	SELECT tta.areaname as areaname,tta.areaid as areaid,
+                       tt.tableNo, DATE(too.begintime) as begintime,
+                       SUM(tsd.payamount) as datavalues,
+             		   (select IFNULL(sum(tom.Inflated),0) from t_order_member tom where tom.orderid=tsd.orderid) as inflated
+                       FROM t_settlement_detail tsd,t_order too ,t_table tt, t_tablearea tta
+					WHERE  
+						tsd.payamount>0 
+						and too.orderstatus='3'
+						and too.orderid = tsd.orderid  
+                        and too.currenttableid =  tt.tableid
+                        and tt.areaid = tta.areaid
+                        AND tsd.payway IN (0,1,5,8) 
+                        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+                             and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+                        </if>
+                        <if test="shiftId == '1'.toString() or shiftId =='0'.toString()">
+				         	 and too.shiftid = #{shiftId}
+				     	</if>
+                        <if test="areaid!= null and  areaid!= ''">
+	         				 and tta.areaid = #{areaid}
+	     				</if>
+                        GROUP BY tsd.orderid,tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+                     )a GROUP BY areaid,tableNo,DATE(begintime) ORDER BY areaid,DATE(begintime),CONVERT(tableNo,SIGNED) asc
+           </if>
+           <if test="dataType =='3'.toString()">
+                SELECT  tta.areaname as areaname,tta.areaid as areaid,tt.tableNo, DATE(too.begintime) as begintime,IFNULL(SUM(mannum+womanNum+childNum),0) as datavalues 
+							FROM t_order too ,t_table tt, t_tablearea tta  
+									WHERE   
+									too.orderstatus='3'
+									and too.currenttableid =  tt.tableid
+                  					and tt.areaid = tta.areaid
+			                        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+			                             and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+			                        </if>
+			                        <if test="shiftId != null and shiftId != ''">
+				         				 and too.shiftid = #{shiftId}
+				     				</if>
+				     				<if test="areaid!= null and  areaid!= ''">
+				         				 and tta.areaid = #{areaid}
+				     				</if>
+			                        GROUP BY tta.areaid,tt.tableNo,DATE(too.begintime) ORDER BY tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+           </if>
+           <if test="dataType =='4'.toString()">
+                SELECT  tta.areaname as areaname,tta.areaid as areaid,tt.tableNo, DATE(too.begintime) as begintime,COUNT(*)  as  datavalues 
+						FROM t_order too ,t_table tt, t_tablearea tta 
+               						where  
+	               				    too.orderstatus='3'
+								    and too.currenttableid =  tt.tableid
+	              				    and tt.areaid = tta.areaid
+			                        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+			                             and (too.begintime   BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s'))
+			                        </if>
+			                        <if test="shiftId != null and shiftId != ''">
+				         				 and too.shiftid = #{shiftId}
+				     				</if>
+				     				<if test="areaid!= null and  areaid!= ''">
+				         				 and tta.areaid = #{areaid}
+				     				</if>
+			                    GROUP BY tta.areaid,tt.tableNo,DATE(too.begintime)ORDER BY tta.areaid,DATE(too.begintime),CONVERT(tt.tableNo,SIGNED) asc
+			                        
+           </if> 
+       </select>
+    <!--查询所有的区域tablearea-->
+    <select id="getTablearea" parameterType="map" resultType="map">
+            select areaid as areaNo,areaname as areaname from  t_tablearea where status='1'
+       </select>
+    <!--查询营业数据查询的类型-->
+    <select id="getCode" parameterType="map" resultType="map">
+       		 SELECT itemid,itemDesc from t_dictionary where type='Statistics'
+       </select>
+    <!--查询优惠活动的类型-->
+    <select id="getPreferentialTypeDict" parameterType="map" resultType="map">
+       		 select code,name from t_p_preferential_type_dict where code not in('06')
+       </select>
+    <!--查询优惠活动的名称-->
+    <select id="getPreferentialActivity" parameterType="map" resultType="map">
+        select vtpa.id as code ,vtpa.name as name  from v_t_p_preferential_activity vtpa
+        <!--  select distinct name as code, name as name from t_p_preferential_activity where  name is not null
+      UNION
+      select distinct company_name as code, company_name as name from t_p_preferential_detail where  company_name is not null  -->
+    </select>
+    <!--查询总桌数-->
+    <select id="getTableNum" parameterType="map" resultType="map">
+       		 select count(*) as nums from t_table WHERE  STATUS not in('5')
+       </select>
+    <!--查询所有的桌子编号-->
+    <select id="getTableNo" parameterType="map" resultType="map">
+       		  select tt.tableNo,area.areaname,area.areaid from  t_table tt,t_tablearea area where tt.areaid=area.areaid ORDER BY CONVERT(tt.tableNo,SIGNED) asc
+       </select>
+    <!-- 退菜明细表 -->
+    <select id="getReturnDishList" parameterType="map" resultType="map">
+        SELECT
+	        beginTime,
+	        endtime,
+	        orderid,
+	        title,
+	        unit,
+	        price,
+	        num,
+	        amount,
+	        waiter,
+	        sperequire,
+	        shiftid,
+	        discardreason,
+	        discardusername
+	    FROM
+	        (
+	        SELECT
+		        date_format(too.begintime,'%Y-%m-%d %H:%i') AS beginTime,
+		        date_format(too.endtime,'%Y-%m-%d %H:%i') AS endtime,
+		        tod.orderid AS orderid,
+		        td.title AS title,
+		        tod.dishunit AS unit,
+		        tod.orderprice AS price,
+		        tod.dishnum AS num,
+		        tod.orderprice * tod.dishnum AS amount,
+		        tbu. NAME AS waiter,
+		        tod.sperequire AS sperequire,
+		        too.shiftid AS shiftid,
+		        tod.discardreason,
+		        '' as discardusername
+		    FROM
+		        t_order_detail_discard tod,
+		        t_dish td,
+		        t_order too,
+		        t_b_user tbu,
+		        t_b_employee tbe
+        <where>
+            td.dishid = tod.dishid
+            AND tod.orderid = too.orderid
+            AND tbe.job_number = too.userid
+            AND tbu.id = tbe.user_id
+            AND td.dishtype = 0
+            <if test="shiftid != null and shiftid != ''">
+                and too.shiftid = #{shiftid}
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                and str_to_date(too.begintime,'%Y-%m-%d  %H:%i') >=  str_to_date(#{beginTime},'%Y-%m-%d  %H:%i')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and str_to_date(too.endtime,'%Y-%m-%d  %H:%i') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i')
+            </if>
+            order by beginTime desc
+            ) tbl
+        </where>
+    </select>
+    <!-- 查询品项列表数据 -->
+    <select id="getItemReportForList" parameterType="map" resultType="map">
+    SELECT
+        tb.id AS id,
+        tb.itemdesc AS itemDesc,
+        tod.dishType AS dishType,
+        IFNULL(sum(tod.dishnum),0) AS dishnum,
+        tod.begintime AS begintime,
+        tod.endtime AS endtime,
+        too.shiftid as shiftid,
+        td.dishid as dishid
+    FROM
+        t_basicdata tb,
+        t_dish td,
+        t_dish_dishtype tdd,
+        t_order_detail tod,
+        t_order too
+        <where>
+            td.dishid = tdd.dishid
+            AND tb.id = tdd.columnid
+            AND tod.dishid = td.dishid
+            and too.orderid = tod.orderid
+            and too.orderstatus = 3
+            AND td.dishtype = 0
+            <if test="shiftid != null and shiftid != ''">
+                and too.shiftid = #{shiftid}
+            </if>
+            <if test="id != null and id != ''">
+                and tb.id = #{id}
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                and str_to_date(too.begintime,'%Y-%m-%d %H:%i:%s') >=  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and str_to_date(too.endtime,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="dishType != null and dishType != ''">
+                and tod.dishType = #{dishType}
+            </if>
+        </where>
+        group by tb.id,tod.dishtype
+        ORDER BY  NULL
+    </select>
+    <!-- 品项销售列表查询餐具 -->
+    <select id="getDishesList" parameterType="map" resultType="map">
+        SELECT
+        'DISHES_98' AS id,
+		'餐具' AS itemDesc,
+		tod.dishType,
+		sum(tod.dishnum) AS number,
+		too.begintime,
+		"0.0" AS share,
+  		td.title,
+  		tod.orignalprice AS price,
+  		td.dishNo,
+  		tod.dishunit AS unit,
+  		too.shiftid AS shiftid
+	FROM
+		t_order_detail tod,
+		t_settlement_detail tsd,
+		t_order too,
+		t_dish td
+	<where>
+		too.orderid = tsd.orderid
+		AND too.orderid = tod.orderid
+		and td.dishid = tod.dishid
+	    AND tod.dishid = 'DISHES_98'
+	    <if test="shiftid != null and shiftid != ''">
+	        and too.shiftid = #{shiftid}
+	    </if>
+	    <if test="beginTime != null and beginTime != ''">
+         	and str_to_date(too.begintime,'%Y-%m-%d %H:%i:%s') >=  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+         <if test="endTime != null and endTime != ''">
+         	and str_to_date(too.endtime,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+	    <if test="dishType != null and dishType != ''">
+	        and tod.dishType = #{dishType}
+	    </if>
+	</where>
+    GROUP BY id, tod.dishtype
+    </select>
+    <!-- 查询菜品的数量总和 -->
+    <select id="getAllItemReportCout" parameterType="map" resultType="Double">
+    SELECT
+        IFNULL(sum(tod.dishnum),0) AS dishnum
+        FROM
+        t_basicdata tb,
+        t_dish td,
+        t_dish_dishtype tdd,
+        t_order_detail tod,
+        t_order too
+    <where>
+        td.dishid = tdd.dishid
+        AND tb.id = tdd.columnid
+        AND tod.dishid = td.dishid
+        and too.orderid = tod.orderid
+        and too.orderstatus = 3
+        AND td.dishtype = 0
+        <if test="beginTime != null and beginTime != ''">
+            and str_to_date(too.begintime,'%Y-%m-%d %H:%i:%s') >=  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and str_to_date(too.endtime,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+    </where>
+    ORDER BY NULL
+    </select>
+
+
+    <select id="getreportbuiss" parameterType="map" resultType="map" >
+        select  Shouldamount,Paidinamount,Discountamount,Discount,Money,Card,otherbank,Merbervaluenet,Total,MeberTicket,
+        Integralconsum,Mebervalueadd,Mebercousumcollet,Tablenum,Settlementnum,Avgconsumtime,Attendance,Shouldaverage,
+        Paidinaverage,tableconsumption,Overtaiwan,Bastfree,Discountmoney,Malingincom,#{beginTime} as Statistictime
+        from
+        (select * from
+        (select sum(tod.orignalprice*tod.dishnum) as shouldamount,'0' as Paidinamount ,'0' as Discountamount,'' as Discount from t_order_detail tod,t_order too where tod.orderid = too.orderid
+        and too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) as a,
+        (select  *
+        from
+        (select sum(payamount) as Money from t_settlement_detail tsd   ,t_order too where tsd.orderid = too.orderid and tsd.payway = '0'
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+
+        )  Money,
+        (select sum(payamount)  as Card from t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '5' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        )   Card,
+        (select sum(payamount) as otherbank from t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '1' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        )   otherbank,
+        (SELECT SUM(payamount) as Total FROM t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid   and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        AND tsd.payway IN (0,1,5,8)) Total ,
+        (select sum(payamount) as MeberTicket from t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '12' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) MeberTicket,
+        (select sum(payamount)  as Integralconsum from t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '11' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) Integralconsum,
+        (select IFNULL(0,sum(netvalue)) as Merbervaluenet from t_order_member tom,t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '8' and too.orderstatus=3    and tom.orderid=too.orderid
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        )  Merbervaluenet,
+        (select IFNULL(0,sum(Inflated)) as Mebervalueadd from t_order_member tom,t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '8' and too.orderstatus=3    and tom.orderid=too.orderid
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d') BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) Mebervalueadd,
+        (select sum(payamount) as Bastfree from t_settlement_detail tsd,t_order too where tsd.orderid = too.orderid and tsd.payway = '13' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) Bastfree,
+        (select sum(payamount)   as Discountmoney from t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '14' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) Discountmoney,
+        (select sum(payamount) as Malingincom from t_settlement_detail tsd ,t_order too where tsd.orderid = too.orderid and tsd.payway = '7' and too.orderstatus=3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) Malingincom
+        ) as c,
+        (select
+        sum(payamount)    as Mebercousumcollet
+        from t_order too, t_settlement_detail tsd
+        WHERE
+        too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        and tsd.orderid = too.orderid  ) as b,
+        (SELECT
+        IFNULL(COUNT(orderid),null) as Tablenum,
+        (sum(b.mannum)+SUM(b.womanNum)+SUM(b.childNum)) as Settlementnum,
+        ROUND(((SUM(UNIX_TIMESTAMP(IFNULL(b.endtime,0)))-SUM(UNIX_TIMESTAMP(b.begintime)))/COUNT(b.orderid))/60) as Avgconsumtime
+        FROM
+        (
+        SELECT
+        SUM(mannum + womanNum + childNum) AS Attendance
+        FROM
+        t_order too
+        WHERE
+        orderstatus = '3'
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) as a,t_order b
+        where
+        b.orderstatus = '3') as d,
+        (select
+        sum(tod.payamount)/SUM(too.mannum+too.womanNum+too.childNum) as Shouldaverage,
+        sum(tod.orderprice)/SUM(too.mannum+too.womanNum+too.childNum) as Paidinaverage,
+        sum(tod.payamount)/count(too.orderid) as tableconsumption
+        from t_order too,t_order_detail tod where too.orderid = tod.orderid and too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) as e,
+        (  select  (sum(too.childNum)+sum(too.womanNum)+sum(mannum))/
+        if((TO_DAYS(max(endtime))-TO_DAYS(min(endtime)))=0 ,1,(TO_DAYS(max(endtime))-TO_DAYS(min(endtime)))) as Attendance from t_order  too
+        where too.endtime is not null
+        and too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) as f
+        ,
+        ( select  ( count(DISTINCT too.orderid))/
+        if((TO_DAYS(max(endtime))-TO_DAYS(min(endtime)))=0 ,1,(TO_DAYS(max(endtime))-TO_DAYS(min(endtime))))  as Overtaiwan from t_order  too
+        where too.endtime is not null and too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+        ) as g
+        ) business;
+    </select>
+    <!-- 查询品项售卖份数top10 -->
+    <select id="getItemDishNumTop10" parameterType="map" resultType="map" >
+    SELECT
+        dishid,
+        itemdesc,
+        num,
+        dishunit,
+        begintime,
+        share
+    FROM
+        (
+	        SELECT
+	        tod.dishid,
+	        td.title AS itemdesc,
+	        IFNULL(sum(tod.dishnum), 0) AS num,
+	        tod.dishunit as dishunit,
+	        IFNULL(sum(tod.orignalprice * tod.dishnum),0) AS share,
+	        tod.begintime AS begintime
+	        FROM
+	        t_dish td,
+	        t_order_detail tod,
+	        t_order too,
+	        t_settlement ts
+        <where>
+            tod.dishid = td.dishid
+            AND too.orderid = tod.orderid
+            AND ts.orderid = too.orderid
+            and tod.dishid != 'DISHES_98'
+            AND td.dishtype = 0
+            <if test="beginTime != null and beginTime != ''">
+                and str_to_date(too.begintime,'%Y-%m-%d') >=  str_to_date(#{beginTime},'%Y-%m-%d')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and str_to_date(too.endtime,'%Y-%m-%d') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+        </where>
+        GROUP BY td.dishid,tod.dishunit) item
+        ORDER BY num DESC LIMIT 10
+    </select>
+    <!-- 查询品项售卖金额top10 -->
+    <select id="getItemAmountTop10" parameterType="map" resultType="map">
+    SELECT
+        dishid,
+        itemdesc,
+        num,
+        dishunit,
+        begintime,
+        share
+    FROM
+        (
+	        SELECT
+	        tod.dishid,
+	        td.title AS itemdesc,
+	        IFNULL(sum(tod.dishnum), 0) AS num,
+	        tod.dishunit as dishunit,
+	        IFNULL(sum(tod.orignalprice * tod.dishnum),0) AS share,
+	        tod.begintime AS begintime
+	        FROM
+	        t_dish td,
+	        t_order_detail tod,
+	        t_order too,
+	        t_settlement ts
+        <where>
+            tod.dishid = td.dishid
+            AND too.orderid = tod.orderid
+            AND ts.orderid = too.orderid
+            and tod.dishid != 'DISHES_98'
+            AND td.dishtype = 0
+            <if test="beginTime != null and beginTime != ''">
+                and str_to_date(too.begintime,'%Y-%m-%d') >=  str_to_date(#{beginTime},'%Y-%m-%d')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and str_to_date(too.endtime,'%Y-%m-%d') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+        </where>
+        GROUP BY td.dishid,tod.dishunit) item
+        ORDER BY share DESC LIMIT 10
+    </select>
+    <!-- 查询品项售卖份数top10趋势图 -->
+    <select id="getItemDishNumTop10Trend" parameterType="map" resultType="map">
+    SELECT
+        dishid,
+        itemdesc,
+        num,
+        dishunit,
+        begintime as statistictime,
+        share
+    FROM
+        (
+	        SELECT
+	        tod.dishid,
+	        td.title AS itemdesc,
+	        IFNULL(sum(tod.dishnum), 0) AS num,
+	        tod.dishunit AS dishunit,
+	        tod.begintime AS begintime,
+	        IFNULL(sum(tod.orignalprice * tod.dishnum),0) AS SHARE
+	        FROM
+	        t_dish td,
+	        t_order_detail tod,
+	        t_order too,
+	        t_settlement ts
+        <where>
+            tod.dishid = td.dishid
+            AND too.orderid = tod.orderid
+            AND ts.orderid = too.orderid
+            <if test="dishid != null and dishid != ''">
+                and tod.dishid = #{dishid}
+            </if>
+            <if test="dishunit != null and dishunit != ''">
+                and tod.dishunit = #{dishunit}
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                and str_to_date(too.begintime,'%Y-%m-%d') >=  str_to_date(#{beginTime},'%Y-%m-%d')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and str_to_date(too.endtime,'%Y-%m-%d') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+        </where>
+        <if test='Datetype == "D"'>
+            GROUP BY date(too.begintime),tod.dishunit
+        </if>
+        <if test='Datetype == "M"'>
+            GROUP BY month(too.begintime),tod.dishunit
+        </if>
+        <if test='Datetype == "Y"'>
+            GROUP BY year(too.begintime),tod.dishunit
+        </if>
+        ) item
+    </select>
+    <!-- 查询品项销售金额top10趋势图 -->
+    <select id="getItemAmountTop10trend" parameterType="map" resultType="map">
+    SELECT
+        dishid,
+        itemdesc,
+        num,
+        dishunit,
+        share,
+        too.begintime as statistictime
+    FROM
+        t_order too,
+        (
+	    SELECT
+	        td.dishid,
+	        td.title AS itemdesc,
+	        IFNULL(sum(tod.dishnum), 0) AS num,
+	        IFNULL(
+	        sum(tod.orignalprice * dishnum),
+	        0
+	        ) AS SHARE,
+	        tod.dishunit,
+	        tod.orderid
+	    FROM
+	        t_dish td,
+	        t_order_detail tod
+	        WHERE
+	        td.dishid = tod.dishid
+	        GROUP BY
+	        td.dishid,
+	        tod.dishunit
+        ) tod
+        <where>
+            too.orderid = tod.orderid
+            <if test="dishid != null and dishid != ''">
+                and dishid = #{dishid}
+            </if>
+            <if test="dishunit != null and dishunit != ''">
+                and tod.dishunit = #{dishunit}
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                and str_to_date(too.begintime,'%Y-%m-%d') >=  str_to_date(#{beginTime},'%Y-%m-%d')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and str_to_date(too.endtime,'%Y-%m-%d') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d')
+            </if>
+        </where>
+        <if test='Datetype == "D"'>
+            GROUP BY date(too.begintime)
+        </if>
+        <if test='Datetype == "M"'>
+            GROUP BY month(too.begintime)
+        </if>
+        <if test='Datetype == "Y"'>
+            GROUP BY year(too.begintime)
+        </if>
+    </select>
+
+
+    <!-- 单位时间竞增和需增的添加 -->
+    <select id="getorderMembervalue" parameterType="map" resultType="map">
+        SELECT
+        sum(settlement.shishou) AS Paidinamount
+        FROM
+        (
+        SELECT
+        (
+        SELECT
+        sum(tsd.payamount)
+        FROM
+        t_settlement_detail tsd
+        WHERE
+        tsd.orderid = too.orderid
+        AND tsd.payway IN (0, 1, 5, 8)
+        ) AS shishou
+        FROM
+        t_order too
+        WHERE
+        1 = 1
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+
+        ) settlement
+    </select>
+    <!-- 查询品项销售明细表 -->
+    <select id="getItemDetailForDishid" parameterType="map" resultType="map">
+    SELECT
+        tb.id,
+        td.title,
+        tod.dishtype,
+        IFNULL(sum(tod.dishnum),0) AS dishnum,
+        tod.begintime AS begintime,
+        tod.endtime AS endtime,
+        too.shiftid AS shiftid,
+        td.dishid,
+        td.dishNo,
+        IFNULL(tod.orignalprice,0) AS price,
+        tod.dishunit AS unit,
+        tb.itemdesc AS itemDesc,
+        IFNULL(sum(tod.orignalprice*tod.dishnum),0) AS share
+    FROM
+        t_basicdata tb,
+        t_dish td,
+        t_dish_dishtype tdd,
+        t_order_detail tod,
+        t_order too
+        <where>
+        td.dishid = tdd.dishid
+        AND tb.id = tdd.columnid
+        AND tod.dishid = td.dishid
+        AND too.orderid = tod.orderid
+        and too.orderstatus = 3
+        AND td.dishtype = 0
+        <if test="shiftid != null and shiftid != ''">
+            and too.shiftid = #{shiftid}
+        </if>
+        <if test="id != null and id != ''">
+            and tb.id = #{id}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and str_to_date(too.begintime,'%Y-%m-%d %H:%i:%s') >=  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and str_to_date(too.endtime,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="dishType != null and dishType != ''">
+            and tod.dishType = #{dishType}
+        </if>
+        </where>
+        GROUP BY
+        td.dishid,
+        tod.dishtype,
+        tod.dishunit
+        ORDER BY  NULL
+    </select>
+
+    <!-- 单位时间竞增和需增的添加 -->
+    <select id="getxuzheng" parameterType="map" resultType="map">
+        SELECT
+        IFNULL(sum(netvalue),0) AS netvalue,
+        IFNULL(sum(Inflated),0) AS Inflated
+        FROM
+        t_order_member tom,
+        t_order too
+        WHERE
+        tom.orderid = too.orderid
+        AND too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            and  str_to_date(too.endtime,'%Y-%m-%d')  BETWEEN str_to_date(#{beginTime},'%Y-%m-%d') AND str_to_date(#{endTime},'%Y-%m-%d')
+        </if>
+    </select>
+    <select id="findUserNameBydiscarduserid" parameterType="map" resultType="String">
+        SELECT tbu.name FROM t_b_employee tbe ,t_b_user tbu WHERE tbe.user_id= tbu.id
+        <if test="discarduserid != null and discarduserid != ''">
+            AND tbe.job_number =  = #{discarduserid}
+        </if>
+    </select>
+</mapper>

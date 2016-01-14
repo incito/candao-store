@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TdishUnitDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TdishUnit" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="vipprice" property="vipprice" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="orderNum" property="ordernum" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, dishid, unit, price, vipprice, status, orderNum
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_dish_unit
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="getUnitHistorylist"   resultType="String">
+   select DISTINCT unit from t_dish_unit where unit!=''
+  </select>
+  <select id="getUnitsBydishId" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_dish_unit
+    where dishid = #{dishid,jdbcType=VARCHAR}
+    order by orderNum asc
+  </select>
+  <delete id="delDishUnit" parameterType="map" >
+    delete from t_dish_unit
+    where dishid = #{dishid,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insertOnce" parameterType="java.util.ArrayList">
+		insert into t_dish_unit (id, dishid, unit, price, vipprice, status,orderNum) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		  (#{item.id,jdbcType=VARCHAR}, #{item.dishid,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR}, 
+      	  #{item.price,jdbcType=DECIMAL}, #{item.vipprice,jdbcType=DECIMAL}, #{item.status,jdbcType=INTEGER}, 
+          #{item.ordernum,jdbcType=INTEGER})
+		</foreach>
+ 
+</insert>
+  <insert id="insert" parameterType="com.candao.www.data.model.TdishUnit" >
+    insert into t_dish_unit (id, dishid, unit, 
+      price, vipprice, status, 
+      orderNum)
+    values (#{id,jdbcType=VARCHAR}, #{dishid,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, 
+      #{price,jdbcType=DECIMAL}, #{vipprice,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER}, 
+      #{ordernum,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TdishUnit" >
+    update t_dish_unit
+    set dishid = #{dishid,jdbcType=VARCHAR},
+      unit = #{unit,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      vipprice = #{vipprice,jdbcType=DECIMAL},
+      status = #{status,jdbcType=INTEGER},
+      orderNum = #{ordernum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

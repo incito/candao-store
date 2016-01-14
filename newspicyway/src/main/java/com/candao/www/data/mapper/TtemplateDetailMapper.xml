@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TtemplateDetailDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TtemplateDetail" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="templateid" property="templateid" jdbcType="VARCHAR" />
+    <result column="menuid" property="menuid" jdbcType="VARCHAR" />
+    <result column="location" property="location" jdbcType="VARCHAR" />
+    <result column="sortnum" property="sortnum" jdbcType="INTEGER" />
+    <result column="redishid" property="redishid" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.util.HashMap" id="findResultMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    id, templateid, menuid, location, sortnum, redishid, image
+  </sql>
+  
+  	<insert id="insertOnce" parameterType="java.util.ArrayList">
+		insert into t_template_detail (id, templateid, menuid, 
+      location, sortnum, redishid, 
+      image) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=VARCHAR}, #{item.templateid,jdbcType=VARCHAR}, #{item.menuid,jdbcType=VARCHAR}, 
+      #{item.location,jdbcType=VARCHAR}, #{item.sortnum,jdbcType=INTEGER}, #{item.redishid,jdbcType=VARCHAR}, 
+      #{item.image,jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+	<update id="delTtemplateDetail" parameterType="map">
+	delete from t_template_detail where menuid=#{menuid,jdbcType=VARCHAR}
+	</update>
+	<select id="findTempalteDetailList" resultMap="BaseResultMap" parameterType="map" >
+	select  t.*,d.dishtype,d.level,d.image originalImage from t_template_detail t,t_dish d
+	<where>
+	t.redishid=d.dishid 
+	<if test="menuid != null ">
+	        and t.menuid=#{menuid}
+	</if>
+	<if test="templateid != null ">
+	        and t.templateid=#{templateid}
+	</if>
+	</where>
+	</select>
+	<select id="findTempalteDetailListPad" resultMap="findResultMap" parameterType="map" >
+	select  distinct  d.level,t.location,t.redishid,d.dishNo,t.image,u.dishname,u.dishintroduction,d.columnId,d.abbrdesc tag,d.dishtype,d.imagetitle special,u.status,u.recommend,d.weigh
+ 	from t_template_detail t,t_dish d,t_template_dishunit u 
+ 	<where>
+ 	u.menuid=t.menuid and d.dishid=t.redishid and u.dishid=t.redishid
+ 	<if test="menuid != null ">
+ 	and t.menuid=#{menuid}
+ 	</if>
+ 	<if test="templateid != null ">
+	        and t.templateid=#{templateid}
+	</if>
+ 	</where>
+	</select>
+</mapper>

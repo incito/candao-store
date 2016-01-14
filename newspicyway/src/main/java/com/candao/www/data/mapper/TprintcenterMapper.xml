@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TprintcenterMapper" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tprintcenter" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
+    <result column="printcount" property="printcount" jdbcType="INTEGER" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="printtype" property="printtype" jdbcType="INTEGER" />
+    <result column="printstatus" property="printstatus" jdbcType="INTEGER" />
+    <result column="printcontent" property="printcontent" jdbcType="VARCHAR" />
+    <result column="printtime" property="printtime" jdbcType="TIMESTAMP" />
+    <result column="printipdress" property="printipdress" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  	<resultMap id="findResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  	
+  	
+  <sql id="Base_Column_List" >
+    id, orderid, printcount, userid, printtype, printstatus, printcontent, printtime, 
+    printipdress
+  </sql>
+  
+<select id="findByCode" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_printcenter
+    where printerno = #{printerno,jdbcType=VARCHAR}
+ </select>
+  
+    
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_printcenter
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_printcenter
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.candao.www.data.model.Tprintcenter" >
+    insert into t_printcenter (id, orderid, printcount, 
+      userid, printtype, printstatus, 
+      printcontent, printtime, printipdress
+      )
+    values (#{id,jdbcType=VARCHAR}, #{orderid,jdbcType=VARCHAR}, #{printcount,jdbcType=INTEGER}, 
+      #{userid,jdbcType=VARCHAR}, #{printtype,jdbcType=INTEGER}, #{printstatus,jdbcType=INTEGER}, 
+      #{printcontent,jdbcType=VARCHAR}, #{printtime,jdbcType=TIMESTAMP}, #{printipdress,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.candao.www.data.model.Tprintcenter" >
+    insert into t_printcenter
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderid != null" >
+        orderid,
+      </if>
+      <if test="printcount != null" >
+        printcount,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="printtype != null" >
+        printtype,
+      </if>
+      <if test="printstatus != null" >
+        printstatus,
+      </if>
+      <if test="printcontent != null" >
+        printcontent,
+      </if>
+      <if test="printtime != null" >
+        printtime,
+      </if>
+      <if test="printipdress != null" >
+        printipdress,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="orderid != null" >
+        #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="printcount != null" >
+        #{printcount,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="printtype != null" >
+        #{printtype,jdbcType=INTEGER},
+      </if>
+      <if test="printstatus != null" >
+        #{printstatus,jdbcType=INTEGER},
+      </if>
+      <if test="printcontent != null" >
+        #{printcontent,jdbcType=VARCHAR},
+      </if>
+      <if test="printtime != null" >
+        #{printtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="printipdress != null" >
+        #{printipdress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.Tprintcenter" >
+    update t_printcenter
+    <set >
+      <if test="orderid != null" >
+        orderid = #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="printcount != null" >
+        printcount = #{printcount,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="printtype != null" >
+        printtype = #{printtype,jdbcType=INTEGER},
+      </if>
+      <if test="printstatus != null" >
+        printstatus = #{printstatus,jdbcType=INTEGER},
+      </if>
+      <if test="printcontent != null" >
+        printcontent = #{printcontent,jdbcType=VARCHAR},
+      </if>
+      <if test="printtime != null" >
+        printtime = #{printtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="printipdress != null" >
+        printipdress = #{printipdress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.Tprintcenter" >
+    update t_printcenter
+    set orderid = #{orderid,jdbcType=VARCHAR},
+      printcount = #{printcount,jdbcType=INTEGER},
+      userid = #{userid,jdbcType=VARCHAR},
+      printtype = #{printtype,jdbcType=INTEGER},
+      printstatus = #{printstatus,jdbcType=INTEGER},
+      printcontent = #{printcontent,jdbcType=VARCHAR},
+      printtime = #{printtime,jdbcType=TIMESTAMP},
+      printipdress = #{printipdress,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  	<select id ="findNoDishPrinter" parameterType="map" resultMap="BaseResultMap">
+	      select  distinct printertype,ipaddress,port 
+			from t_printer tp ,t_printer_area tpa  ,t_table tt
+			where tp.printerid = tpa.printerid 
+			AND tt.areaid = tpa.areaid
+			and tp.status =#{status}
+			and tp.printertype = #{printertype}
+			and tt.tableid = #{tableid}
+	</select>
+	
+	 <select id ="findDishPrinter" parameterType="map" resultMap="BaseResultMap">
+			SELECT DISTINCT  tp.ipaddress,tp.port FROM 
+			  t_table tt , t_printer_area tpa,t_printer tp,t_printer_detail tpd
+			WHERE tt.tableid = tpa.tableid
+			    AND tpa.printerid = tp.printerid
+			   AND tp.printerid = tpd.printerid
+			   AND tt.areaid = tpa.areaid
+			and tp.status =#{status}
+			and tp.printertype = #{printertype}
+			   AND tt.tableid =#{tableid}
+			and tpd.dishid = #{dishid}
+			
+	</select>
+</mapper>

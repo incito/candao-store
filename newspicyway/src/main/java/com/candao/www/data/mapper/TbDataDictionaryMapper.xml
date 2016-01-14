@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbDataDictionaryDao">
+
+    <resultMap id="tbDataDictionaryResultMap" type="com.candao.www.data.model.TbDataDictionary">
+        <id property="id" column="dictid" />
+        <result property="itemid" column="itemid" />
+        <result property="itemDesc" column="itemDesc" />
+        <result property="itemSort" column="itemSort" />
+        <result property="status" column="status" />
+        <result property="type" column="type" />
+        <result property="typename" column="typename" />
+        <result property="price" column="price" />
+        <result property="datetype" column="date_type" />
+        <result property="memberprice" column="memberprice" />
+        <result property="chargesstatus" column="chargesstatus" />
+        <result property="endtime" column="end_time" />
+        <result property="begintime" column="begin_time" />
+    </resultMap>
+    <resultMap id="pageResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>
+    <resultMap id="findResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>
+
+    <insert id="insert" parameterType="com.candao.www.data.model.TbDataDictionary">
+	   insert into t_dictionary (
+	     dictid,
+	     itemid,
+	     itemDesc,
+	     itemSort,
+	     status,
+	     type,typename ,
+	     date_type  ,  begin_time,end_time
+	   )values (
+	     #{id},
+	     #{itemid},
+	     #{itemDesc},
+	     #{itemSort},
+	     #{status},
+	     #{type},
+	     #{typename},#{datetype},#{begintime},#{endtime}
+	   )
+	</insert>
+	<insert id="insertDish" parameterType="com.candao.www.data.model.Tdish">
+	   insert into t_dish (
+	     dishid,
+		 price,
+         vipprice
+	   )values (
+	     #{dishid},
+	     #{price},
+	     #{vipprice}
+	   )
+	</insert>
+	<insert id="insertDishUnit" parameterType="com.candao.www.data.model.TdishUnit">
+	    insert into t_template_dishunit (
+	         id,
+			 dishid,
+       		 price,
+             vipprice 
+	     )values (
+			 #{id},
+	     	 #{dishid},
+	     	 #{price},
+	     	 #{vipprice}
+	   	 )
+	</insert>
+    <update id="updatetDish" parameterType="com.candao.www.data.model.Tdish">
+        update t_dish  set price=#{price},vipprice=#{vipprice} where dishid=#{dishid}
+    </update>
+     <select id="getDish" parameterType="map" resultMap="findResultMap">
+	   select  dishid from t_dish	where dishid=#{id} 
+	</select>
+	 <select id="getDishUnit" parameterType="map" resultMap="findResultMap">
+	  select  id from t_template_dishunit	where id=#{id}
+	</select>
+     <update id="updatetDishUnit" parameterType="com.candao.www.data.model.TdishUnit">
+        update t_template_dishunit  set dishname= #{unit}, price=#{price},vipprice=#{vipprice} where id=#{id}
+    </update>
+    
+    <update id="update" parameterType="com.candao.www.data.model.TbDataDictionary">
+        update t_dictionary
+        <set>
+            <if test="id != null">
+                dictid=#{id},
+            </if>
+            <if test="itemid != null ">
+                itemid=#{itemid},
+            </if>
+            <if test="itemDesc != null ">
+                itemDesc=#{itemDesc},
+            </if>
+            <if test="itemSort != null ">
+                itemSort=#{itemSort},
+            </if>
+            <if test="status != null ">
+                status=#{status},
+            </if>
+            <if test="type != null ">
+                type=#{type},
+            </if>
+            <if test="price != null ">
+                price=#{price},
+            </if>
+           <if test="chargesstatus != null ">
+               charges_status=#{chargesstatus},
+            </if>
+            <if test="memberprice != null ">
+                member_price=#{memberprice},
+            </if>
+            <if test="begintime != null ">
+                begin_time=#{begintime},
+            </if>
+            <if test="endtime != null ">
+                end_time=#{endtime},
+            </if>
+
+            <if test="datetype != null ">
+                date_type=#{datetype},
+            </if>
+        </set>
+        where
+        dictid=#{id}
+    </update>
+
+    <delete id="delete" parameterType="map">
+	   update t_dictionary
+	   set status = 0 
+	   where 
+	    dictid=#{id} 
+	</delete>
+    <delete id="deleteTasteId" parameterType="map">
+	   delete from t_dictionary
+	   
+	   where 
+	    dictid=#{dishTasteId} 
+	</delete>
+
+    <select id="get" parameterType="map" resultMap="tbDataDictionaryResultMap">
+	   select 
+	    dictid,
+	    itemid,
+	    itemDesc,
+	    itemSort,
+	    status,
+	    type,
+	    typename
+	   from t_dictionary
+	   where 
+	    dictid=#{id} 
+	</select>
+    <select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    dictid,
+	    itemid,
+	    itemDesc,
+	    itemSort,
+	    status,
+	    type,
+	    typename
+	   from t_dictionary
+	   where 
+	    dictid=#{id} 
+	</select>
+
+    <select id="find" parameterType="map" resultMap="findResultMap">
+        select
+        dictid,
+        itemid,
+        itemDesc,
+        itemSort,
+        status,
+        type,
+        typename,
+        item_value
+        from t_dictionary
+        <where>
+            <if test="id != null and id != ''">
+                dictid=#{id}
+            </if>
+            <if test="itemid != null and itemid != ''">
+                and itemid=#{itemid}
+            </if>
+            <if test="itemDesc != null and itemDesc != ''">
+                and itemDesc=#{itemDesc}
+            </if>
+            <if test="itemSort != null and itemSort != ''">
+                and itemSort=#{itemSort}
+            </if>
+            <if test="status != null and status != ''">
+                and status=#{status}
+            </if>
+            <if test="type != null and type != ''">
+                and type=#{type}
+            </if>
+            <if test="typename != null and typename != ''">
+                and typename=#{typename}
+            </if>
+        </where>
+    </select>
+
+    <select id="page" parameterType="map" resultMap="pageResultMap">
+        select
+        dictid,
+        itemid,
+        itemDesc,
+        itemSort,
+        status,
+        type,
+        typename
+        from t_dictionary
+        <where>
+            and status = 1
+            <if test="id != null and id != ''">
+                and dictid=#{id}
+            </if>
+            <if test="itemid != null and itemid != ''">
+                and itemid=#{itemid}
+            </if>
+            <if test="itemDesc != null and itemDesc != ''">
+                and itemDesc=#{itemDesc}
+            </if>
+            <if test="itemSort != null and itemSort != ''">
+                and itemSort=#{itemSort}
+            </if>
+            <if test="type != null and type != ''">
+                and type=#{type}
+            </if>
+            <if test="typename != null and typename != ''">
+                and typename=#{typename}
+            </if>
+            order by type asc ,itemid asc
+        </where>
+    </select>
+
+    <select id="getDataDictionaryTag" resultMap="findResultMap">
+        select distinct itemid from t_dictionary where status=1
+        <!-- 	   一定要去重 -->
+    </select>
+    <select id="getTypeandTypename" resultMap="findResultMap">
+	   select distinct type,typename from t_dictionary where status=1 
+	</select>
+    <!--查询分类下的子项  -->
+    <select id="getDatasByType" resultMap="findResultMap" parameterType="map">
+        select * from t_dictionary
+        <where>
+             status = 1
+            <if test="type != null and type != ''">
+                and type=#{type}
+            </if>
+            order by itemSort asc
+        </where>
+    </select>
+    
+        <!--查询分类下的子项  -->
+    <select id="getDicListByType" resultMap="findResultMap" parameterType="map">
+        select dictid,itemid,itemDesc,itemSort,type,typename,item_value from t_dictionary
+        <where>
+             status = 1
+            <if test="type != null and type != ''">
+                and type=#{type}
+            </if>
+            order by itemSort asc
+        </where>
+    </select>
+
+    <!--获取所有系统设置的列表-->
+    <select id="getAllSystem" resultMap="findResultMap" parameterType="map">
+  SELECT
+	t.dictid,
+	t.itemid,
+	t.itemDesc,
+	t.itemSort,
+	t.`status`,
+	t.type,
+	t.typename,
+	t.begin_time,
+	t.end_time,
+	t.charges_status,
+	t.member_price,
+	t.price ,t.date_type
+FROM
+	t_dictionary t
+
+
+where type in ('SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY")
+order by t.type, 
+t.itemSort ASC
+
+    </select>
+    <update id="updataDicItemDesc"  parameterType="java.util.Map">
+         update t_dictionary set itemDesc = #{itemDesc}  where dictid = #{dictid}
+    </update>
+        <update id="updataCallTimeSet"  parameterType="java.util.Map">
+         update t_dictionary set item_value = #{itemDesc}  where dictid = #{dictid}
+    </update>
+</mapper> 

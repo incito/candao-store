@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv=content-type>
+<meta name=author content="Laruence(www.laruence.com)">
+<title>即时显示缩略图</title>
+<script src="../scripts/jquery.js"></script>
+</head>
+<body>
+<div>
+   头相：<input  id="head_image" name="headimage" type="file" onchange="showpic()"><label id="prompt_image">*</label>
+ </div>
+ <img src="" id="show_img">
+<script type="text/javascript">
+	 var allowExt = ['jpg', 'gif', 'bmp', 'png', 'jpeg'];
+	 function ss(){
+			 if(allowExt.indexOf(self.ext) !== -1){
+				 throw 'the ext is not allowed to upload';
+				 return false;
+			 }
+		 }
+	 function getObjectURL(file) {
+		    var url = null ;
+		    if (window.createObjectURL!=undefined) { // basic
+		        url = window.createObjectURL(file) ;
+		    } else if (window.URL!=undefined) { // mozilla(firefox)
+		        url = window.URL.createObjectURL(file) ;
+		    } else if (window.webkitURL!=undefined) { // webkit or chrome
+		        url = window.webkitURL.createObjectURL(file) ;
+		    }
+		    return url ;
+		}
+	 function showpic(){
+		 alert($("#head_image").val());
+		 var strsrc=getObjectURL(document.getElementById("head_image").files[0]);
+		 $("#show_img").attr("src",strsrc);
+	 }
+	
+     </script>
+</body>
+</html>

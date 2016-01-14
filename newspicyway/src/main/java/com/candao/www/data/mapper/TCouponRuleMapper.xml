@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TCouponRuleDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TCouponRule" >
+    <id column="ruleid" property="ruleid" jdbcType="VARCHAR" />
+    <result column="couponid" property="couponid" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="dishnum" property="dishnum" jdbcType="INTEGER" />
+    <result column="freedishid" property="freedishid" jdbcType="VARCHAR" />
+    <result column="freedishnum" property="freedishnum" jdbcType="INTEGER" />
+    <result column="couponway" property="couponway" jdbcType="INTEGER" />
+    <result column="comsumeway" property="comsumeway" jdbcType="INTEGER" />
+    <result column="couponrate" property="couponrate" jdbcType="DECIMAL" />
+    <result column="couponamount" property="couponamount" jdbcType="DECIMAL" />
+    <result column="totalamount" property="totalamount" jdbcType="DECIMAL" />
+    <result column="couponcash" property="couponcash" jdbcType="DECIMAL" />
+    <result column="couponnum" property="couponnum" jdbcType="INTEGER" />
+    <result column="freeamount" property="freeamount" jdbcType="DECIMAL" />
+    <result column="banktype" property="banktype" jdbcType="VARCHAR" />
+    <result column="partnername" property="partnername" jdbcType="VARCHAR" />
+    <result column="groupweb" property="groupweb" jdbcType="VARCHAR" />
+    <result column="unitid" property="unitid" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="pageResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  <resultMap id="findResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  
+  <sql id="Base_Column_List" >
+    ruleid, couponid, dishid, dishnum, freedishid, freedishnum, couponway, comsumeway, 
+    couponrate, couponamount, totalamount, couponcash, couponnum, freeamount, banktype,partnername,groupweb,unitid,debitamount
+  </sql>
+   <select id="find" resultMap="findResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_rule
+    <where>
+      <if test="ruleid != null" >
+       ruleid = #{ruleid,jdbcType=VARCHAR}
+      </if>
+      <if test="id != null and id !=''" >
+       and couponid = #{id,jdbcType=VARCHAR}
+      </if>
+      <if test="dishid != null" >
+       and dishid = #{dishid,jdbcType=VARCHAR}
+      </if>
+      <if test="dishnum != null" >
+       and dishnum = #{dishnum,jdbcType=INTEGER}
+      </if>
+      <if test="freedishid != null" >
+       and freedishid = #{freedishid,jdbcType=VARCHAR}
+      </if>
+      <if test="freedishnum != null" >
+       and freedishnum = #{freedishnum,jdbcType=INTEGER}
+      </if>
+      <if test="couponway != null" >
+       and couponway = #{couponway,jdbcType=INTEGER}
+      </if>
+      <if test="comsumeway != null" >
+       and comsumeway = #{comsumeway,jdbcType=INTEGER}
+      </if>
+      <if test="couponrate != null" >
+       and couponrate = #{couponrate,jdbcType=DECIMAL}
+      </if>
+      <if test="couponamount != null" >
+       and couponamount = #{couponamount,jdbcType=DECIMAL}
+      </if>
+      <if test="totalamount != null" >
+       and totalamount = #{totalamount,jdbcType=DECIMAL}
+      </if>
+      <if test="couponcash != null" >
+       and couponcash = #{couponcash,jdbcType=DECIMAL}
+      </if>
+      <if test="couponnum != null" >
+       and couponnum = #{couponnum,jdbcType=INTEGER}
+      </if>
+      <if test="freeamount != null" >
+        and freeamount = #{freeamount,jdbcType=DECIMAL}
+      </if>
+      <if test="banktype != null" >
+        and banktype = #{banktype,jdbcType=VARCHAR}        
+      </if>
+      <if test="partnername != null" >
+        and partnername = #{partnername,jdbcType=VARCHAR}        
+      </if>
+      <if test="groupweb != null" >
+        and groupweb = #{groupweb,jdbcType=VARCHAR}        
+      </if>
+      <if test="unitid != null" >
+        and unitid = #{unitid,jdbcType=VARCHAR}        
+      </if>
+      <if test="debitamount != null" >
+        and debitamount = #{debitamount,jdbcType=VARCHAR}        
+      </if>
+      
+    </where>
+  </select>
+  
+   <select id="page" resultMap="pageResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_coupon_rule
+    <where>
+      <if test="ruleid != null" >
+       ruleid = #{ruleid,jdbcType=VARCHAR}
+      </if>
+      <if test="couponid != null" >
+       and couponid = #{couponid,jdbcType=VARCHAR}
+      </if>
+      <if test="dishid != null" >
+       and dishid = #{dishid,jdbcType=VARCHAR}
+      </if>
+      <if test="dishnum != null" >
+       and dishnum = #{dishnum,jdbcType=INTEGER}
+      </if>
+      <if test="freedishid != null" >
+       and freedishid = #{freedishid,jdbcType=VARCHAR}
+      </if>
+      <if test="freedishnum != null" >
+       and freedishnum = #{freedishnum,jdbcType=INTEGER}
+      </if>
+      <if test="couponway != null" >
+       and couponway = #{couponway,jdbcType=INTEGER}
+      </if>
+      <if test="comsumeway != null" >
+       and comsumeway = #{comsumeway,jdbcType=INTEGER}
+      </if>
+      <if test="couponrate != null" >
+       and couponrate = #{couponrate,jdbcType=DECIMAL}
+      </if>
+      <if test="couponamount != null" >
+       and couponamount = #{couponamount,jdbcType=DECIMAL}
+      </if>
+      <if test="totalamount != null" >
+       and totalamount = #{totalamount,jdbcType=DECIMAL}
+      </if>
+      <if test="couponcash != null" >
+       and couponcash = #{couponcash,jdbcType=DECIMAL}
+      </if>
+      <if test="couponnum != null" >
+       and couponnum = #{couponnum,jdbcType=INTEGER}
+      </if>
+      <if test="freeamount != null" >
+        and freeamount = #{freeamount,jdbcType=DECIMAL}
+      </if>
+      <if test="banktype != null" >
+        and banktype = #{banktype,jdbcType=VARCHAR}        
+      </if>
+      <if test="partnername != null" >
+        and partnername = #{partnername,jdbcType=VARCHAR}        
+      </if>
+      <if test="groupweb != null" >
+        and groupweb = #{groupweb,jdbcType=VARCHAR}        
+      </if>
+      <if test="unitid != null" >
+        and unitid = #{unitid,jdbcType=VARCHAR}        
+      </if>
+       <if test="debitamount != null" >
+        and debitamount = #{debitamount,jdbcType=DECIMAL}        
+      </if>
+      
+      
+    </where>
+  </select>
+  
+  <delete id="delete" parameterType="map" >
+    delete from t_coupon_rule
+    where couponid = #{couponid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="java.util.ArrayList" >
+    insert into t_coupon_rule (ruleid, couponid, dishid, 
+      dishnum, freedishid, freedishnum, 
+      couponway, comsumeway, couponrate, 
+      couponamount, totalamount, couponcash, 
+      couponnum, freeamount, banktype,partnername,groupweb,unitid,debitamount
+      )values
+      <foreach collection="list" item="item" index="index" separator=",">
+     (#{item.ruleid,jdbcType=VARCHAR},       #{item.couponid,jdbcType=VARCHAR},    #{item.dishid,jdbcType=VARCHAR}, 
+      #{item.dishnum,jdbcType=INTEGER},      #{item.freedishid,jdbcType=VARCHAR},  #{item.freedishnum,jdbcType=INTEGER}, 
+      #{item.couponway,jdbcType=INTEGER},    #{item.comsumeway,jdbcType=INTEGER},  #{item.couponrate,jdbcType=DECIMAL}, 
+      #{item.couponamount,jdbcType=DECIMAL}, #{item.totalamount,jdbcType=DECIMAL}, #{item.couponcash,jdbcType=DECIMAL}, 
+      #{item.couponnum,jdbcType=INTEGER},    #{item.freeamount,jdbcType=DECIMAL},  #{item.banktype,jdbcType=VARCHAR},
+      #{item.partnername,jdbcType=VARCHAR},  #{item.groupweb,jdbcType=VARCHAR},    #{item.unitid,jdbcType=VARCHAR},
+      #{item.debitamount,jdbcType=DECIMAL}
+      )
+      </foreach>
+  </insert>
+  
+  	<select id="findRuleByDishId" resultMap="BaseResultMap" parameterType="java.util.Map">
+	  select  
+		tcr.dishnum,
+		tc.couponname,
+		tcr.freedishid,
+		tcr.freedishnum,
+		tcr.couponway,
+		tcr.couponrate
+		from t_coupon_rule tcr,t_coupons tc
+		where tcr.couponid = tc.couponid
+		and tc.couponparent ='1'
+		and tcr.dishid = #{dishid}
+	</select>
+	
+
+	
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbMessageInstrumentDao">
+
+	<resultMap id="tbMessageInstrumentResultMap" type="com.candao.www.data.model.TbMessageInstrument">
+		<id property="id" column="id" />
+		<result property="msg_type" column="msg_type" />
+		<result property="inserttime" column="inserttime" />
+		<result property="status" column="status" />
+		<result property="reply_time" column="reply_time" />
+		<result property="sent_time" column="sent_time" />
+		<result property="tableno" column="tableno" />
+		<result property="userid" column="userid" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbMessageInstrumentResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbMessageInstrumentResultMap"></resultMap>
+
+	<sql id="Base_Column_List" >
+	id,
+	msg_type,
+	inserttime,
+	status,
+	reply_time,
+	sent_time,
+	tableno,
+	userid
+	</sql>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbMessageInstrument">
+
+         
+		insert into t_message (
+	    id,
+		msg_type,
+		inserttime,
+		status,
+		reply_time,
+		sent_time,
+		tableno,
+		userid
+	     
+	   )values (
+	     #{id},
+	     #{msg_type},
+	     now(),
+	     #{status},
+	     #{reply_time},
+	     now(),
+		 #{tableno},
+		 #{userid}
+	   )
+	
+	   
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbMessageInstrument">
+	   update t_message set status='1'
+	   where 
+	    id=#{id} 
+	</update>
+	<delete id="delete" parameterType="map">
+
+	</delete>
+
+	
+	<select id="get" parameterType="map" resultMap="tbMessageInstrumentResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_message
+	   where 
+	    id=#{id} 
+	</select>
+	
+
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_message
+	   where 
+	    id=#{id} 
+	</select>
+	
+
+
+
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   
+	</select>
+
+ <update id="updateStatus" parameterType="com.candao.www.data.model.TbMessageInstrument">
+<!-- 	   update t_message set inserttime = #{inserttime},orderid =#{orderid} where    id=#{id} -->
+ </update>
+
+</mapper>

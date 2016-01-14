@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TorderMapper" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.Torder" >
+    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="begintime" property="begintime" jdbcType="TIMESTAMP" />
+    <result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
+    <result column="orderstatus" property="orderstatus" jdbcType="INTEGER" />
+    <result column="custnum" property="custnum" jdbcType="INTEGER" />
+    <result column="tableIds" property="tableids" jdbcType="VARCHAR" />
+    <result column="currenttableid" property="currenttableid" jdbcType="INTEGER" />
+    <result column="manNum" property="manNum" jdbcType="INTEGER" />
+     <result column="womanNum" property="womanNum" jdbcType="INTEGER" />
+     <result column="childNum" property="childNum" jdbcType="INTEGER" />
+     <result column="specialrequied" property="specialrequied" jdbcType="VARCHAR" />
+    <result column="shiftid" property="shiftid" jdbcType="INTEGER" />
+      <result column="ageperiod" property="ageperiod" jdbcType="VARCHAR" />
+      <result column="memberno" property="memberno" jdbcType="VARCHAR" />
+      <result column="meid" property="meid" jdbcType="VARCHAR" />
+      <result column="invoice_id" property="invoice_id" jdbcType="VARCHAR" />
+  </resultMap>
+  
+ 
+  <resultMap id="ResultMap" type="com.candao.www.webroom.model.TableStatus">
+    <result column="result" property="result" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  
+  <sql id="Base_Column_List" >
+    orderid, userid, begintime, 
+      endtime, orderstatus, custnum, womannum,mannum,childnum,
+      tableIds, currenttableid, specialrequied,shiftid,ageperiod,memberno,meid,invoice_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_order
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_order
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </delete>
+  
+ <select id="getPrimaryKey" resultType="String"  >
+       select getseqno('one') 
+ </select>
+  
+  <insert id="insert" parameterType="com.candao.www.data.model.Torder" >
+    insert into t_order (orderid, userid, begintime, 
+      endtime, orderstatus, custnum,  womannum,mannum,childnum,specialrequied,
+      tableIds, currenttableid,shiftid,ageperiod,meid,branchid)
+    values (#{orderid,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, current_timestamp(), 
+      #{endtime,jdbcType=TIMESTAMP}, #{orderstatus,jdbcType=INTEGER}, #{custnum,jdbcType=INTEGER}, 
+      #{womanNum,jdbcType=INTEGER}, 
+      #{manNum,jdbcType=INTEGER}, 
+      #{childNum,jdbcType=INTEGER}, 
+      #{specialrequied,jdbcType=VARCHAR}, 
+      #{tableids,jdbcType=VARCHAR}, 
+      #{currenttableid,jdbcType=INTEGER},
+      #{shiftid,jdbcType=INTEGER},
+      #{ageperiod,jdbcType=VARCHAR},
+      #{meid,jdbcType=VARCHAR},
+      #{branchid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.candao.www.data.model.Torder" >
+    insert into t_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orderid != null" >
+        orderid,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="begintime != null" >
+        begintime,
+      </if>
+      <if test="endtime != null" >
+        endtime,
+      </if>
+      <if test="orderstatus != null" >
+        orderstatus,
+      </if>
+      <if test="custnum != null" >
+        custnum,
+      </if>
+      <if test="tableids != null" >
+        tableIds,
+      </if>
+      <if test="currenttableid != null" >
+        currenttableid,
+      </if>
+     <if test="manNum != null" >
+        manNum,
+      </if>
+    <if test="womanNum != null" >
+        womanNum,
+      </if>
+     <if test="childNum != null" >
+        childNum,
+      </if>
+    <if test="specialrequied != null" >
+        specialrequied,
+      </if>
+     <if test="shiftid != null" >
+        shiftid,
+      </if>
+     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orderid != null" >
+        #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="begintime != null" >
+        #{begintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+        #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderstatus != null" >
+        #{orderstatus,jdbcType=INTEGER},
+      </if>
+      <if test="custnum != null" >
+        #{custnum,jdbcType=INTEGER},
+      </if>
+      <if test="tableids != null" >
+        #{tableids,jdbcType=VARCHAR},
+      </if>
+      <if test="currenttableid != null" >
+        #{currenttableid,jdbcType=INTEGER},
+      </if>
+        <if test="manNum != null" >
+         #{manNum,jdbcType=INTEGER},
+      </if>
+    <if test="womanNum != null" >
+         #{womanNum,jdbcType=INTEGER},
+      </if>
+     <if test="childNum != null" >
+         #{childNum,jdbcType=INTEGER},
+      </if>
+    <if test="specialrequied != null" >
+        #{specialrequied,jdbcType=VARCHAR},
+      </if>
+      
+    <if test="shiftid != null" >
+       #{shiftid,jdbcType=INTEGER},
+      </if>
+      
+    </trim>
+  </insert>
+  
+
+   
+  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.Torder" >
+    update t_order
+    <set >
+      <if test="orderid != null" >
+       orderid = #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+       userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="begintime != null" >
+      begintime =  #{begintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+       endtime = #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderstatus != null" >
+       orderstatus =  #{orderstatus,jdbcType=INTEGER},
+      </if>
+      <if test="custnum != null" >
+       custnum =  #{custnum,jdbcType=INTEGER},
+      </if>
+      <if test="tableids != null" >
+      tableids =   #{tableids,jdbcType=VARCHAR},
+      </if>
+      <if test="currenttableid != null" >
+       currenttableid = #{currenttableid,jdbcType=INTEGER},
+      </if>
+        <if test="manNum != null" >
+       manNum =   #{manNum,jdbcType=INTEGER},
+      </if>
+    <if test="womanNum != null" >
+       womanNum =   #{womanNum,jdbcType=INTEGER},
+      </if>
+     <if test="childNum != null" >
+        childNum = #{childNum,jdbcType=INTEGER},
+      </if>
+    <if test="specialrequied != null" >
+       specialrequied =  #{specialrequied,jdbcType=VARCHAR},
+      </if>
+<!--        <if test="shiftid != null" > -->
+<!--          shiftid = #{shiftid,jdbcType=INTEGER}, -->
+<!--       </if> -->
+        <if test="meid != null" >
+         meid = #{meid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+  <!-- 开发票 -->
+  <update id="updateInvoiceid" parameterType="com.candao.www.data.model.Torder">
+	         update t_order set 
+		      invoice_id = #{invoice_id,jdbcType=VARCHAR}
+	          where orderid = #{orderid,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- <select id="selectByorderId" resultMap="BaseResultMap" parameterType="map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_order
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </select> -->
+  
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.Torder" >
+    update t_order
+    set position = #{position,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      restaurantId = #{restaurantid,jdbcType=BIGINT},
+      isVip = #{isvip,jdbcType=INTEGER},
+      iscompartment = #{iscompartment,jdbcType=INTEGER},
+      isavailable = #{isavailable,jdbcType=BIGINT}
+    where tableid = #{tableid,jdbcType=BIGINT}
+  </update>
+  
+ 
+   
+  <update id="update" parameterType="com.candao.www.data.model.Torder" >
+    update t_order
+    <set >
+      <if test="orderid != null" >
+       orderid = #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+       userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="begintime != null" >
+      begintime =  #{begintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+       endtime = #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderstatus != null" >
+       orderstatus =  #{orderstatus,jdbcType=INTEGER},
+      </if>
+      <if test="custnum != null" >
+       custnum =  #{custnum,jdbcType=INTEGER},
+      </if>
+      <if test="tableids != null" >
+      tableids =   #{tableids,jdbcType=VARCHAR},
+      </if>
+      <if test="currenttableid != null" >
+       currenttableid = #{currenttableid,jdbcType=INTEGER},
+      </if>
+        <if test="manNum != null" >
+       manNum =   #{manNum,jdbcType=INTEGER},
+      </if>
+    <if test="womanNum != null" >
+       womanNum =   #{womanNum,jdbcType=INTEGER},
+      </if>
+     <if test="childNum != null" >
+        childNum = #{childNum,jdbcType=INTEGER},
+      </if>
+    <if test="specialrequied != null" >
+       specialrequied =  #{specialrequied,jdbcType=VARCHAR},
+      </if>
+<!--        <if test="shiftid != null" > -->
+<!--          shiftid = #{shiftid,jdbcType=INTEGER}, -->
+<!--       </if> -->
+        <if test="meid != null" >
+         meid = #{meid,jdbcType=VARCHAR},
+      </if>
+     <if test="ageperiod != null" >
+         ageperiod = #{ageperiod,jdbcType=VARCHAR},
+      </if>
+       <if test="memberno != null" >
+         memberno =  #{memberno,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </update>
+
+	<delete id="delete" parameterType="map">
+		delete 
+		from 
+		t_order where 
+		orderid=#{orderid}
+	 </delete>
+
+	<select id="get" parameterType="map" resultMap="BaseResultMap">
+	   
+	   select 
+    <include refid="Base_Column_List" />
+	     from t_order
+	   where 
+	    orderid=#{id} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	  select 
+    <include refid="Base_Column_List" />
+    from t_order 	   where 	    orderid=#{id} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="BaseResultMap">
+	   select 
+    <include refid="Base_Column_List" />
+	    from t_order
+	   <where>
+	     <if test="orderid != null" >
+       orderid = #{orderid,jdbcType=VARCHAR}
+      </if>
+      <if test="userid != null" >
+       userid = #{userid,jdbcType=VARCHAR}
+      </if>
+      <if test="begintime != null" >
+      begintime =  #{begintime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="endtime != null" >
+       endtime = #{endtime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="orderstatus != null" >
+       orderstatus =  #{orderstatus,jdbcType=INTEGER}
+      </if>
+      <if test="custnum != null" >
+       custnum =  #{custnum,jdbcType=INTEGER}
+      </if>
+      <if test="tableids != null" >
+      tableids =   #{tableids,jdbcType=VARCHAR}
+      </if>
+      <if test="currenttableid != null" >
+       currenttableid = #{currenttableid,jdbcType=VARCHAR}
+      </if>
+        <if test="manNum != null" >
+       manNum =   #{manNum,jdbcType=INTEGER}
+      </if>
+    <if test="womanNum != null" >
+       womanNum =   #{womanNum,jdbcType=INTEGER}
+      </if>
+     <if test="childNum != null" >
+        childNum = #{childNum,jdbcType=INTEGER}
+      </if>
+    <if test="specialrequied != null" >
+       specialrequied =  #{specialrequied,jdbcType=VARCHAR}
+      </if>
+	    </where>
+	</select>
+	
+	<select id="findByOrderNo" parameterType="map" resultMap="BaseResultMap">
+	   select 
+    <include refid="Base_Column_List" />
+	    from t_order where  
+	    orderid = #{orderid,jdbcType=VARCHAR}
+	    and currenttableid = #{currenttableid,jdbcType=VARCHAR}
+	   <where>
+	    </where>
+	</select>
+	
+ <update id="updateAllTableNo" parameterType="java.util.Map">
+	    <if test="ids != null and ids.size !=0">
+	      update t_order set 
+		      tableids = #{tableids} ,
+		      orderstatus = #{orderstatus},
+		      payway = #{payway},
+		      relateorderid = #{relateorderid},
+		      currenttableid = #{currenttableid}
+	       where   orderstatus != '3' and 
+	        currenttableid in 	   
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+       </if>
+ </update>
+ 
+ 
+ <select id="findOrdersByTableids" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   select 
+    <include refid="Base_Column_List" />
+	     from t_order
+	   where  currenttableid in 	   
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+ </select>
+ 
+  <select id="findontimeOrdersByTableids" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   select 
+    <include refid="Base_Column_List" />
+	     from t_order
+	   where orderstatus = 0 and currenttableid in 	   
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+ </select>
+ 
+  <select   id="selectSwitchTable" parameterType="java.util.Map" statementType="CALLABLE"   >  
+	  {  
+	    call   p_switch(  
+	       #{targetTableNo,jdbcType=VARCHAR,mode=IN},
+	       #{orginalTableNo,jdbcType=VARCHAR,mode=IN},  
+	       #{result,jdbcType=VARCHAR,mode=INOUT}
+	    )
+	   }  
+ 
+  </select>
+  
+    <select   id="selectMergeTable" parameterType="java.util.Map" statementType="CALLABLE"    >  
+	  {  
+	      call  p_mergetable(  
+	       #{targetTableNo,jdbcType=VARCHAR,mode=IN},
+	       #{orginalTableNo,jdbcType=VARCHAR,mode=IN},  
+	       #{result,jdbcType=VARCHAR,mode=INOUT}
+	    )
+	   }  
+ 
+  </select>
+  
+ <select   id="setOrderDish" parameterType="java.util.Map" statementType="CALLABLE"    >  
+	  {  
+	      call  p_setOrderDish(  
+	       #{orderid,jdbcType=VARCHAR,mode=IN},
+	       #{result,jdbcType=VARCHAR,mode=INOUT}
+	    )
+	   }  
+ 
+  </select>
+  
+  <select   id="setOrderMember" parameterType="java.util.Map" statementType="CALLABLE"    >  
+	  {  
+	      call  p_setordermember(#{orderid,jdbcType=VARCHAR,mode=IN},#{pricetype,jdbcType=INTEGER,mode=IN})
+	   }  
+ 
+  </select>
+  
+ <select id="getMaxOrderNum" parameterType="java.util.Map" resultMap="BaseResultMap">
+     
+     SELECT COUNT(1) +1 as custnum FROM t_order   WHERE  orderid LIKE CONCAT('','${orderDateStr}','%' ) 
+ </select>
+ <update id="updateOrderMeid" parameterType="com.candao.www.data.model.Torder">
+        update t_order set meid=#{meid} where orderid=#{orderid}
+ </update>
+ 
+  <select id="verifyAllOrder" resultMap="BaseResultMap">
+	 select * from (
+		select count(1) custnum,'order' orderid  from t_order where  begintime>=CURRENT_DATE() and orderstatus=0 
+		union all
+		select count(1) custnum,'teller' orderid  from t_teller_cash where opendate= DATE_FORMAT((select opendate from t_open_log),'%Y-%m-%d')  and status=0
+		union all 
+		 select count(1) custnum,'table'  orderid   from  t_table where status='1'
+		) t group by t.orderid having sum(custnum) > 0
+	    
+ </select>
+ 
+  <select   id="callEndWork" parameterType="java.util.Map" statementType="CALLABLE"    >  
+	  {  
+	      call  p_endwork_java(  
+	       #{userName,jdbcType=VARCHAR,mode=IN},
+	       #{flag,jdbcType=VARCHAR,mode=INOUT}
+	    )
+	   }  
+ 
+  </select>
+ 
+</mapper>

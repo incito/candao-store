@@ -1,0 +1,136 @@
+@charset "utf-8";
+/* CSS Document */
+.tempalteTopA{
+	 border:1px solid #bebebe;
+	 margin-top: 20px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopA #A1 {
+	border:1px solid #bebebe;
+	height: 120px;  
+	margin:4px;
+	overflow:scroll;
+}
+
+
+.tempalteTopA #A2, .tempalteTopA #A3{
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:4px; 
+     overflow:scroll;
+}
+.tempalteTopA #A4, .tempalteTopA #A5{
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:4px; 
+     overflow:scroll;
+}
+ .tempalteTopA #A2A4 {
+     width:50%; 
+	 float:left;
+}
+.tempalteTopA #A3A5 {
+	 width:50%; 
+	 float:left;
+}
+
+
+
+.tempalteTopC{
+	 border:1px solid #bebebe;
+	 margin-top: 20px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopC #C1 {
+	border:1px solid #bebebe;
+	height: 120px;  
+	margin:4px;
+	overflow:scroll;
+}
+.tempalteTopC #C2 {
+	 border:1px solid #bebebe;
+	 height: 150px;  
+	 margin:4px; 
+	 overflow:scroll;
+}
+.tempalteTopC #C3 {
+	 border:1px solid #bebebe;
+	 height: 150px;  
+     margin:4px; 
+     overflow:scroll;
+}
+.tempalteTopC #C4 {
+	border: 1px solid #BEBEBE;
+    height: 306px;
+    width: 50%;
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+}
+.tempalteTopC #C2C3 {
+	 width:48%; 
+	 float:left;
+}
+
+.tempalteTopB{
+	 border:1px solid #bebebe;
+	 margin-top: 20px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopB #B1 {
+	border:1px solid #bebebe;
+	height: 120px;  
+	margin:4px;
+	overflow:scroll;
+}
+
+.tempalteTopB #B2 {
+	border: 1px solid #BEBEBE;
+    height: 306px;
+    width: 50%;
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+}
+
+.tempalteTopB #B3, .tempalteTopB #B4{
+	 border:1px solid #bebebe;
+	 height: 150px;  
+	 margin:4px; 
+	 overflow:scroll;
+}
+
+.tempalteTopB #B3B4 {
+	 width:48%; 
+	 float:left;
+}
+
+
+.tempalteTopD{
+	 border:1px solid #bebebe;
+	 margin-top: 20px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopD #D1 {
+	border:1px solid #bebebe;
+	height: 120px;  
+	margin:4px;
+	overflow:scroll;
+}
+.tempalteTopD #D2, .tempalteTopD #D3 {
+	border: 1px solid #BEBEBE;
+    height: 306px;
+/*     width: 313px; */
+    width: 48%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+}

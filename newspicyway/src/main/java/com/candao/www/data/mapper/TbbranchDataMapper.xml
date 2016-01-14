@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbBranchDao">
+    
+ <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tbranchshop" >
+    <id column="branchid" property="branchid" jdbcType="INTEGER" />
+    <result column="branchname" property="branchname" jdbcType="VARCHAR" />
+  </resultMap>
+  	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    branchid,branchname
+  </sql>
+  <insert id="insert" parameterType="map">
+		 INSERT INTO  t_branch
+            (branchid,
+             branchname,
+             branchnamepingying,
+             branchnamepyfirstchar,
+             tenantid,
+             province,city,region,
+             addressdetail,
+             manager,
+             cellphone,
+             telphone,
+             taxphone,
+             contact1,
+             contact1_tel,
+             contact2,
+             contact2_tel)
+		VALUES (#{branchid},     
+		        #{branchname},   
+		        #{branchnamepingying},
+                #{branchnamepyfirstchar},
+		        #{tenantid},     
+		        #{province},#{city},#{region},
+		        #{addressdetail},
+		        #{manager},      
+		        #{cellphone},    
+		        #{telphone},     
+		        #{taxphone},     
+		        #{contact1},     
+		        #{contact1_tel}, 
+		        #{contact2},     
+		        #{contact2_tel}); 
+	</insert>
+	
+	
+	<select id="page" parameterType="map"  resultType="java.util.HashMap" >
+		select * from  t_branch 
+		<where>
+			status =0
+			<if test="branchname != null and branchname !='' ">
+			and ( branchname like CONCAT('%',#{branchname},'%')
+				or branchnamepingying like CONCAT('%',#{branchnamepingying},'%') 
+				or branchnamepyfirstchar like CONCAT('%',#{branchnamepyfirstchar},'%')  
+			)
+			</if>
+			<if test="address != null and address !=''"   >
+			and (region like CONCAT('%',#{addressquery},'%')
+				or city like CONCAT('%',#{addressquery},'%')
+				or province like CONCAT('%',#{addressquery},'%')
+			)
+			</if>
+		</where> 
+		order by generatetime 
+	</select>
+	
+	<select id="getone" parameterType="map"  resultType="java.util.HashMap" >
+		select   branchid,
+		  branchname,
+		  tenantid,
+		  province province_,
+		  city city_,
+		  region region_,
+		  addresscitycode,
+		  addressdetail,
+		  manager,
+		  cellphone,
+		  telphone,
+		  taxphone,
+		  contact1,
+		  contact1_tel,
+		  contact2,
+		  contact2_tel 
+		  from  t_branch where branchid=#{branchid}
+	</select>
+	
+	
+<!-- 	<update id="update" parameterType="map"> -->
+<!-- 	    UPDATE  t_branch  -->
+<!-- 		SET -->
+<!-- 			branchname = #{branchname}, -->
+<!-- 			branchnamepingying= #{branchnamepingying}, -->
+<!-- 	        branchnamepyfirstchar= #{branchnamepyfirstchar}, -->
+<!-- 		  addresscitycode = #{addresscitycode}, -->
+<!-- 		  addressdetail = #{addressdetail}, -->
+<!-- 		  manager = #{manager}, -->
+<!-- 		  cellphone = #{cellphone}, -->
+<!-- 		  telphone = #{telphone}, -->
+<!-- 		  taxphone = #{taxphone}, -->
+<!-- 		  contact1 = #{contact1}, -->
+<!-- 		  contact1_tel = #{contact1_tel}, -->
+<!-- 		  contact2 = #{contact2}, -->
+<!-- 		  contact2_tel = #{contact2_tel}, -->
+<!-- 		  province =#{province}, -->
+<!-- 		  city=#{city}, -->
+<!-- 		  region=#{region} -->
+<!-- 		WHERE branchid = #{branchid} -->
+<!-- 	</update> -->
+	  <update id="update" parameterType="map">
+    update t_branch
+    <set>
+      <if test="branchname != null">
+        branchname = #{branchname,jdbcType=VARCHAR},
+      </if>
+      <if test="branchnamepingying != null">
+        branchnamepingying = #{branchnamepingying,jdbcType=VARCHAR},
+      </if>
+      <if test="branchnamepyfirstchar != null">
+        branchnamepyfirstchar = #{branchnamepyfirstchar,jdbcType=VARCHAR},
+      </if>
+      <if test="tenantid != null">
+        tenantid = #{tenantid,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null">
+        region = #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="addresscitycode != null">
+        addresscitycode = #{addresscitycode,jdbcType=VARCHAR},
+      </if>
+      <if test="addressdetail != null">
+        addressdetail = #{addressdetail,jdbcType=VARCHAR},
+      </if>
+      <if test="manager != null">
+        manager = #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="cellphone != null">
+        cellphone = #{cellphone,jdbcType=VARCHAR},
+      </if>
+      <if test="telphone != null">
+        telphone = #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="taxphone != null">
+        taxphone = #{taxphone,jdbcType=VARCHAR},
+      </if>
+      <if test="contact1 != null">
+        contact1 = #{contact1,jdbcType=VARCHAR},
+      </if>
+      <if test="contact1_tel != null">
+        contact1_tel = #{contact1_tel,jdbcType=VARCHAR},
+      </if>
+      <if test="contact2 != null">
+        contact2 = #{contact2,jdbcType=VARCHAR},
+      </if>
+      <if test="contact2_tel != null">
+        contact2_tel = #{contact2_tel,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="generatetime != null">
+        generatetime = #{generatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where branchid = #{branchid,jdbcType=INTEGER}
+  </update>
+	
+	<!-- delete -->
+	<update id="update_del" parameterType="map">
+	    UPDATE  t_branch 
+		SET		  status = 1
+		WHERE branchid = #{branchid}
+	</update>
+	
+	<select id="getAll" parameterType="map" resultMap="findResultMap">
+	    select 
+	    <include refid="Base_Column_List"></include>
+	    from t_branch
+	    where status = '0'
+	</select>
+	<select id="getBranchidList" resultType="java.lang.Integer" parameterType="map">
+	    select branchid
+	    from t_branch
+	    where status = '0'
+	</select>
+	
+	<!-- 获取门店 -->
+	<select id="getBranchInfo" resultType="java.util.HashMap">
+		select 
+			id,branchcode,branchid,branchname,branchaddress,managerid,managername,managertel,serverversion,padversion,insertime,updatetime,tenantid
+		from t_branch_info limit 1
+	</select>
+	
+		<!-- 根据店名及地址查询店的数量	 -->
+	<select id="getCountByNameAddress" parameterType="map"  resultType="java.lang.Integer" >
+		select    count(*) num 
+		  from  t_branch 
+		  <where>
+			status =0
+			and branchname =#{branchname}
+			<if test="region != null and region !=''"   >
+			and  region =#{region}
+			</if>
+			<if test="city != null and region !=''"   >
+			and  city =#{city}
+			</if>
+			<if test="branchid != null and branchid !=''"   >
+			and  branchid !=#{branchid}
+			</if>
+		</where>
+	</select>
+	<select id="findByParams" parameterType="map" resultMap="findResultMap">
+		select   branchid,
+		  branchname,
+		  tenantid,
+		  province province_,
+		  city city_,
+		  region region_,
+		  addresscitycode,
+		  addressdetail,
+		  manager,
+		  cellphone,
+		  telphone,
+		  taxphone,
+		  contact1,
+		  contact1_tel,
+		  contact2,
+		  contact2_tel 
+		  from  t_branch 
+		  <where>
+		      <if test="branchname != null">
+		      and  branchname = #{branchname,jdbcType=VARCHAR}
+		      </if>
+		      <if test="branchnamepingying != null">
+		      and  branchnamepingying = #{branchnamepingying,jdbcType=VARCHAR}
+		      </if>
+		      <if test="branchnamepyfirstchar != null">
+		      and  branchnamepyfirstchar = #{branchnamepyfirstchar,jdbcType=VARCHAR}
+		      </if>
+		      <if test="tenantid != null">
+		      and  tenantid = #{tenantid,jdbcType=VARCHAR}
+		      </if>
+		      <if test="province != null">
+		      and  province = #{province,jdbcType=VARCHAR}
+		      </if>
+		      <if test="city != null">
+		      and  city = #{city,jdbcType=VARCHAR}
+		      </if>
+		      <if test="region != null">
+		      and  region = #{region,jdbcType=VARCHAR}
+		      </if>
+		      <if test="addresscitycode != null">
+		     and   addresscitycode = #{addresscitycode,jdbcType=VARCHAR}
+		      </if>
+		      <if test="addressdetail != null">
+		      and  addressdetail = #{addressdetail,jdbcType=VARCHAR}
+		      </if>
+		      <if test="manager != null">
+		      and  manager = #{manager,jdbcType=VARCHAR}
+		      </if>
+		      <if test="cellphone != null">
+		      and  cellphone = #{cellphone,jdbcType=VARCHAR}
+		      </if>
+		      <if test="telphone != null">
+		      and  telphone = #{telphone,jdbcType=VARCHAR}
+		      </if>
+		      <if test="taxphone != null">
+		     and   taxphone = #{taxphone,jdbcType=VARCHAR}
+		      </if>
+		      <if test="contact1 != null">
+		      and  contact1 = #{contact1,jdbcType=VARCHAR}
+		      </if>
+		      <if test="contact1_tel != null">
+		     and   contact1_tel = #{contact1_tel,jdbcType=VARCHAR}
+		      </if>
+		      <if test="contact2 != null">
+		      and  contact2 = #{contact2,jdbcType=VARCHAR}
+		      </if>
+		      <if test="contact2_tel != null">
+		     and   contact2_tel = #{contact2_tel,jdbcType=VARCHAR}
+		      </if>
+		      <if test="status != null">
+		     and   status = #{status,jdbcType=INTEGER}
+		      </if>
+		      <if test="generatetime != null">
+		     and   generatetime = #{generatetime,jdbcType=TIMESTAMP}
+		      </if>
+		  
+		  </where>
+		
+	</select>
+</mapper>

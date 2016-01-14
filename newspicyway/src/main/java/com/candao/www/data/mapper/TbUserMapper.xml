@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbUserDao">
+
+	<resultMap id="tbUserResultMap" type="com.candao.www.data.model.TbUser">
+		<id property="userid" column="userId" />
+		<result property="username" column="userName" />
+		<result property="password" column="password" />
+		<result property="fullname" column="fullName" />
+		<result property="phone" column="phone" />
+	    <result property="usertype" column="userType" />
+		<result property="createtime" column="createTime" />
+		<result property="status" column="status" />
+		<result property="lastlogintime" column="lastlogintime" />
+		<result property="ordernum" column="ordernum" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbUserResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbUserResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbUser">
+	   insert into t_user (
+	     userId,
+	     userName,
+	     password,
+	     fullName,
+	     phone,
+	     userType,
+	     createTime,
+	     status
+	   )values (
+	     #{userid},
+	     #{username},
+	     #{password},
+	     #{fullname},
+	     #{phone},
+	     #{usertype},
+	     now(),
+	     #{status}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbUser">
+	   update t_user set
+	     userId=#{userid},
+	     userName=#{username},
+	     password=#{password},
+	     fullName=#{fullname},
+	     phone=#{phone},
+	     userType=#{usertype},
+	     status=#{status}
+	   where 
+	    userId=#{userid} 
+	</update>
+	
+    <update id="updateLoginTime" parameterType="map">
+	   update t_user set
+	      lastlogintime = now()
+	   where 
+	    username=#{userid} 
+	</update>
+	
+
+	<delete id="delete" parameterType="map">
+	   update t_user  set status=#{status} where userId=#{userid} 
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbUserResultMap">
+	   select 
+	    userId,
+	    userName,
+	    password,
+	    fullName,
+	    phone,
+	    userType,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	    status
+	   from t_user
+	   where 
+	    userId=#{userid} 
+	</select>
+	
+ <select id="findByName" parameterType="map" resultMap="tbUserResultMap">
+	   select 
+	    userId,
+	    userName, 
+	    fullName,
+	    phone,
+	    userType,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime 
+	   from t_user
+	   where 
+	    username=#{username}
+	    and status = '1' 
+	</select>
+	
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    userId,
+	    userName,
+	    password,
+	    fullName,
+	    phone,
+	    userType,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	    status
+	   from t_user
+	   where 
+	    userId=#{userid} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     userId,
+	     userName,
+	     password,
+	     fullName,
+	     phone,
+	     userType,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     status
+	   from t_user
+	   <where>
+	     <if test="userid != null">
+	        userId=#{userid}
+	     </if>
+	     <if test="username != null">
+	        and userName=#{username}
+	     </if>
+	     <if test="password != null">
+	        and password=#{password}
+	     </if>
+	     <if test="fullname != null">
+	        and fullName=#{fullname}
+	     </if>
+	     <if test="phone != null">
+	        and phone=#{phone}
+	     </if>
+	     <if test="usertype != null">
+	       and userType=#{usertype}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	      <if test="status != null">
+	        and status=#{status}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	     userId,
+	     userName,
+	     password,
+	     fullName,
+	     phone,
+	     userType,
+	     (select tbdd.itemDesc from t_dictionary  tbdd where tbdd.dictid=userType) as usertypename,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     status
+	   from t_user
+	   <where>
+	     <if test="userid != null">
+	        userId=#{userid}
+	     </if>
+	     <if test="username != null and username !=''">
+	        and userName like CONCAT('%',#{username},'%')
+	     </if>
+	     <if test="password != null">
+	        and password=#{password}
+	     </if>
+	     <if test="fullname != null">
+	        and fullName=#{fullname}
+	     </if>
+	     <if test="phone != null">
+	        and phone=#{phone}
+	     </if>
+	     <if test="usertype != null">
+	       and userType=#{usertype}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	      <if test="status != null">
+	        and status=#{status}
+	     </if>
+	   </where>
+	   order by  createTime desc
+	</select>
+	
+	
+	<!-- 		   AND userType<>3      -->
+	<select id="getCurrentUser" parameterType="map"  resultMap="tbUserResultMap">
+	   <![CDATA[
+		   SELECT userId, userName, password, fullName, phone,  userType,createTime,status
+		   FROM t_user
+		   WHERE userName = #{username}
+		   AND password = #{userPassword}
+		   AND status <> #{status}   
+	    ]]>
+	</select>
+	
+	<select id="getUserTat" parameterType="int" resultType="map">
+	   select 
+	     dictid,
+	     itemDesc as itemdesc
+	   from t_dictionary 
+	   where itemId=#{itemid} and status=1 order by itemSort asc 
+	</select>
+	
+	<select id="getAllowAccessUrl" parameterType="map" resultType="String">
+	     select trs.resourcesPath from t_user tu
+		  join t_user_role tur on tu.userId=tur.userId
+		  join t_role tr on tr.roleId=tur.roleId
+		  join t_resource_role trr on tr.roleId=trr.roleId
+		  join t_resource trs on trs.resourcesId=trr.resourceId
+		   where tu.userId=#{userid} and tu.`status`=1 and tr.`status`=1 and trs.`status`=1
+		  order by trs.indexValue asc
+	 </select>
+	
+	  <select id="getAllowAccessButton" parameterType="map" resultType="String"> 
+		select trs.resourcesPath from t_user_role  tbr
+		INNER JOIN t_role tr on tr.roleId=tbr.roleId
+		INNER JOIN t_resource_role trr on trr.roleId=tr.roleId
+		INNER JOIN t_resource trs on trs.resourcesId=trr.resourceId and trs.resourcesType='3'
+		where tbr.userId=#{userid}
+	  </select>
+	  
+	  <select id = "findAllServiceUser" resultMap="tbUserResultMap" >
+	      select  
+		      tu.userId,
+		     tu.userName,
+		     tu.fullName,
+		     tu.phone,
+		     tu.userType,
+		     tu.createTime,
+		     tu.status,
+		     tu.lastlogintime
+	       from t_user tu,t_user_role tur
+			where tu.userId = tur.userid
+			and tu.`status` = '1'
+			and tur.roleId = 'e0e4e376-77c3-4bfe-89ce-b51a819945f7'
+			order by tu.ordernum desc 
+	  </select>
+	  
+	  <select id="findMaxOrderNum" parameterType="map" resultMap="tbUserResultMap">
+	      select max(ifnull(ordernum,0)) ordernum  from t_user
+	  </select>
+	  
+	 <update id="updateUserOrderNum" parameterType="map">
+	   update t_user set
+	      ordernum = #{ordernum} + 1 ,lastlogintime = now()
+	   where 
+	    username=#{userid} 
+	</update>
+	
+	      
+</mapper> 

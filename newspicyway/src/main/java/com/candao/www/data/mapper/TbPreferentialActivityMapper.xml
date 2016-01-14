@@ -1,0 +1,832 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbPreferentialActivityDao">
+	<resultMap id="base_result_map" type="com.candao.www.data.model.TbPreferentialActivity">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="CHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="name_first_letter" property="nameFirstLetter" jdbcType="CHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="type_name" property="typeName" jdbcType="VARCHAR" />
+		<result column="subtable_name" property="subtableName" jdbcType="VARCHAR" />
+		<result column="sub_type" property="subType" jdbcType="VARCHAR" />
+		<result column="sub_type_name" property="subTypeName" jdbcType="VARCHAR" />
+		<result column="color" property="color" jdbcType="VARCHAR" />
+		<result column="starttime" property="starttime" jdbcType="TIMESTAMP" />
+		<result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="apply_all" property="applyAll" jdbcType="BOOLEAN" />
+		<result column="activity_introduction" property="activityIntroduction" jdbcType="VARCHAR" />
+		<result column="use_notice" property="useNotice" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="creator" property="creator" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="page_result_map" type="java.util.HashMap" extends="base_result_map"></resultMap>
+	<resultMap id="find_result_map" type="java.util.HashMap" extends="base_result_map"></resultMap>
+	
+	<sql id="base_column_list">
+		SELECT
+		tpa.id,
+		tpa.code,
+		tpa.name,
+		tpa.name_first_letter,
+		tpa.type,
+		tpa.type_name,
+		tpa.subtable_name,
+		tpa.sub_type,
+		tpa.sub_type_name,
+		tpa.color,
+		tpa.starttime,
+		tpa.endtime,
+		tpa.apply_all,
+		tpa.activity_introduction,
+		tpa.use_notice,
+		tpa.createtime,
+		tpa.creator
+		FROM t_p_preferential_activity tpa
+	</sql>
+	<sql id="base_condition">
+         (`status` is null or status !='1')
+		<if test="id != null">
+			AND tpa.id = #{id}
+		</if>
+		<if test="code != null">
+			AND tpa.code = #{code}
+		</if>
+		<if test="name != null and name != ''">
+			AND tpa.name = #{name}
+		</if>
+		<if test="nameFirstLetter != null and nameFirstLetter != ''">
+			AND tpa.name_first_letter LIKE '%${nameFirstLetter}%'
+		</if>
+		<if test="fullName != null and fullName != ''">
+			and (tpa.name like '%${fullName}%' or tpa.name_first_letter like '%${fullName}%')
+		</if>
+		<if test="type != null">
+			AND tpa.type = #{type} 
+		</if>
+		<if test="subType != null">
+			AND tpa.sub_type = #{subType} 
+		</if>
+		<if test="color != null">
+			AND tpa.color = #{color}
+		</if>
+		<if test="currentTime != null">
+			AND <![CDATA[ tpa.starttime <= #{currentTime} AND tpa.endtime >= #{currentTime} ]]>
+		</if>
+		<if test="starttime != null">
+			AND <![CDATA[ tpa.starttime <= #{starttime} ]]>
+		</if>
+		<if test="endtime != null">
+			AND <![CDATA[ tpa.endtime <= #{endtime} ]]>
+		</if>
+	</sql>
+	
+	<sql id="preferential_detail_column_list">
+		SELECT 
+			det.id,
+			det.preferential,
+			det.dish,
+			det.dish_title,
+			det.price,
+			det.sequence,
+			det.unit,
+			det.unitflag,
+			det.discount,
+			det.amount,
+			det.bill_amount,
+			det.free_reason,
+			det.company_name,
+			det.company_first_letter,
+			det.can_credit,
+			det.starttime,
+			det.endtime
+		FROM t_p_preferential_detail det  
+	</sql>
+	<sql id="preferential_detail_condition">
+
+        det.preferential not in (
+        select id from t_p_preferential_activity where `status` ='1')
+
+		<if test="id != null">
+			AND det.id = #{id} 
+		</if>
+		<if test="preferential != null">
+			AND det.preferential = #{preferential} 
+		</if>
+		<if test="dish != null">
+			AND det.dish = #{dish} 
+		</if>
+		<if test="dish_title != null">
+			AND det.dish_title = #{dish_title} 
+		</if>
+		<if test="free_reason != null">
+			AND det.free_reason = #{free_reason} 
+		</if>
+		<if test="starttime != null">
+			AND <![CDATA[ det.starttime <= #{starttime} ]]>
+		</if>
+		<if test="endtime != null">
+			AND <![CDATA[ det.endtime <= #{endtime} ]]>
+		</if>
+	</sql>
+	
+ 	<select id="page" parameterType="map" resultMap="page_result_map">
+		<include refid="base_column_list" />
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+		ORDER BY tpa.code
+	</select>
+	<!-- 需要根据门店权限读取。如果是门店，读取门店的；如果是云端用户，根据云端用户拥有的门店权限读取。 -->
+	<select id="pageForBranchs" parameterType="map" resultMap="page_result_map">
+		SELECT
+			id,
+			code,
+			name,
+			name_first_letter,
+			type,
+			type_name,
+			subtable_name,
+			sub_type,
+			sub_type_name,
+			color,
+			starttime,
+			endtime,
+			apply_all,
+			activity_introduction,
+			use_notice,
+			createtime,
+			creator
+		FROM (
+			SELECT
+				*
+			FROM t_p_preferential_activity tpa
+				where tpa.apply_all='1' 
+			UNION
+			SELECT
+				* 
+			FROM t_p_preferential_activity tpa2
+				where tpa2.apply_all='0'
+				and tpa2.id in (
+					select preferential from  t_p_preferential_branch where branch in ( #{branch_ids})
+				)
+		)	AS newtpa 
+		<where>
+		(newtpa.`status` is null or newtpa.status !='1')
+			<if test="id != null">
+				AND newtpa.id = #{id}
+			</if>
+			<if test="code != null">
+				AND newtpa.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND newtpa.name = #{name}
+			</if>
+			<if test="nameFirstLetter != null and nameFirstLetter != ''">
+				AND newtpa.name_first_letter LIKE '%${nameFirstLetter}%'
+			</if>
+			<if test="fullName != null and fullName != ''">
+				and (newtpa.name like '%${fullName}%' or newtpa.name_first_letter like '%${fullName}%')
+			</if>
+			<if test="type != null">
+				AND newtpa.type = #{type} 
+			</if>
+			<if test="subType != null">
+				AND newtpa.sub_type = #{subType} 
+			</if>
+			<if test="color != null">
+				AND newtpa.color = #{color}
+			</if>
+			<if test="currentTime != null">
+				AND <![CDATA[ newtpa.starttime <= #{currentTime} AND newtpa.endtime >= #{currentTime} ]]>
+			</if>
+			<if test="starttime != null">
+				AND <![CDATA[ newtpa.starttime <= #{starttime} ]]>
+			</if>
+			<if test="endtime != null">
+				AND <![CDATA[ newtpa.endtime <= #{endtime} ]]>
+			</if>
+		</where>
+		ORDER BY  code
+	</select>
+	
+	<select id="get" resultMap="base_result_map" parameterType="java.lang.String">
+		<include refid="base_column_list" />
+		WHERE id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="find" resultMap="find_result_map" parameterType="map">
+		<include refid="base_column_list" />
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+		ORDER BY tpa.code
+	</select>
+
+	<delete id="delete" parameterType="map">
+		DELETE FROM t_p_preferential_activity
+		WHERE
+		id=#{id}
+	</delete>
+	
+	<insert id="insert" parameterType="com.candao.www.data.model.TbPreferentialActivity">
+		INSERT INTO t_p_preferential_activity
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			<if test="code != null">
+				code,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="nameFirstLetter != null">
+				name_first_letter,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="typeName != null">
+				type_name,
+			</if>
+			<if test="subtableName != null">
+				subtable_name,
+			</if>
+			<if test="subType != null">
+				sub_type,
+			</if>
+			<if test="subTypeName != null">
+				sub_type_name,
+			</if>
+			<if test="color != null">
+				color,
+			</if>
+			<if test="starttime != null">
+				starttime,
+			</if>
+			<if test="endtime != null">
+				endtime,
+			</if>
+			<if test="applyAll != null">
+				apply_all,
+			</if>
+			<if test="activityIntroduction != null">
+				activity_introduction,
+			</if>
+			<if test="useNotice != null">
+				use_notice,
+			</if>
+			createtime,
+			<if test="creator != null">
+				creator,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{code,jdbcType=CHAR},
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="nameFirstLetter != null">
+				#{nameFirstLetter,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=CHAR},
+			</if>
+			<if test="typeName != null">
+				#{typeName,jdbcType=VARCHAR},
+			</if>
+			<if test="subtableName != null">
+				#{subtableName,jdbcType=VARCHAR},
+			</if>
+			<if test="subType != null">
+				#{subType,jdbcType=CHAR},
+			</if>
+			<if test="subTypeName != null">
+				#{subTypeName,jdbcType=VARCHAR},
+			</if>
+			<if test="color != null">
+				#{color,jdbcType=CHAR},
+			</if>
+			<if test="starttime != null">
+				#{starttime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				#{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="applyAll != null">
+				#{applyAll,jdbcType=BOOLEAN},
+			</if>
+			<if test="activityIntroduction != null">
+				#{activityIntroduction,jdbcType=VARCHAR},
+			</if>
+			<if test="useNotice != null">
+				#{useNotice,jdbcType=VARCHAR},
+			</if>
+			now(),
+			<if test="creator != null">
+				#{creator,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateBySelective" parameterType="com.candao.www.data.model.TbPreferentialActivity">
+		UPDATE t_p_preferential_activity
+		<set>
+			<if test="code != null">
+				code = #{code,jdbcType=CHAR},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="nameFirstLetter != null">
+				name_first_letter = #{nameFirstLetter,jdbcType=VARCHAR},
+			</if>
+			<if test="color != null">
+				color = #{color,jdbcType=CHAR},
+			</if>
+			<if test="starttime != null">
+				starttime = #{starttime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				endtime = #{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="applyAll != null">
+				apply_all = #{applyAll,jdbcType=BOOLEAN},
+			</if>
+			<if test="activityIntroduction != null">
+				activity_introduction = #{activityIntroduction,jdbcType=VARCHAR},
+			</if>
+			<if test="useNotice != null">
+				use-_notice = #{useNotice,jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TbPreferentialActivity">
+		UPDATE t_p_preferential_activity
+		<set>
+			<if test="code != null">
+				code = #{code,jdbcType=CHAR},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="nameFirstLetter != null">
+				name_first_letter = #{nameFirstLetter,jdbcType=VARCHAR},
+			</if>
+			<if test="color != null">
+				color = #{color,jdbcType=CHAR},
+			</if>
+			<!--2015-03-27 根据需求，时间可以为空。代表长期有效
+			  <if test="starttime != null">
+				starttime = #{starttime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				endtime = #{endtime,jdbcType=TIMESTAMP},
+			</if>
+			 -->
+			 starttime = #{starttime,jdbcType=TIMESTAMP},
+			 endtime = #{endtime,jdbcType=TIMESTAMP},
+			<if test="applyAll != null">
+				apply_all = #{applyAll,jdbcType=BOOLEAN},
+			</if>
+			<if test="activityIntroduction != null">
+				activity_introduction = #{activityIntroduction,jdbcType=VARCHAR},
+			</if>
+			<if test="useNotice != null">
+				use_notice = #{useNotice,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getLastCode" resultType="java.lang.String">
+		SELECT code FROM t_p_preferential_activity
+		ORDER BY code DESC
+		LIMIT 1
+	</select>
+	
+	<delete id="deleteSubCoupon" parameterType="map" statementType="STATEMENT">
+		${sql}
+	</delete>
+	
+	<select id="findPreferentialType" parameterType="map" resultType="com.candao.www.data.model.TbPreferentialTypeDict">
+		SELECT code, name, is_subtype, parent_type
+		FROM t_p_preferential_type_dict
+		<where>
+			<if test="isSubType != null">
+				AND is_subtype = #{isSubType}
+			</if>
+			<if test="parentType != null">
+				AND parent_type = #{parentType}
+			</if>
+		</where>
+		ORDER BY code
+	</select>
+	
+	<select id="getPreferentialType" parameterType="map" resultType="com.candao.www.data.model.TbPreferentialTypeDict">
+		SELECT code, name, is_subtype as isSubType, parent_type as parentType, subtable_name as subtableName
+		FROM t_p_preferential_type_dict
+		WHERE code = #{code}
+	</select>
+	
+	
+	<!-- 批量保存优惠门店  -->
+	<insert id="batchSavePreferentialBranch" parameterType="java.util.List">
+		<if test=" null !=list and list.size >0 ">
+			insert into t_p_preferential_branch (preferential , branch , branch_name ) 
+			values 
+			<foreach collection="list" item="item" index="index" separator=",">
+				(#{item.preferential},#{item.branch},#{item.branch_name})
+			</foreach>
+		</if>
+	</insert>
+	
+	<!-- 批量保存 优惠券->特价券 -->
+	 <insert id="batchSavePreferentialSpecialStamp" parameterType="java.util.List">
+		<if test=" null !=list and list.size >0 ">
+			insert into t_p_preferential_detail (id,preferential , dish , dish_title ,price, sequence, unit, unitflag) 
+			values 
+			<foreach collection="list" item="item" index="index" separator=",">
+				(#{item.id} , #{item.preferential},#{item.dish},#{item.dish_title},#{item.price},#{item.sequence},#{item.unit},#{item.unitflag})
+			</foreach>
+		</if>
+	</insert>
+	
+	<!-- 根据优惠券ID，删除该优惠券对应的优惠门店 -->
+	<delete id="deleteBranch" parameterType="map">
+		DELETE FROM t_p_preferential_branch
+		WHERE
+		preferential=#{preferential}
+	</delete>
+	
+	<!-- 根据优惠券ID，获取该优惠券对应的 优惠门店列表 -->
+	<select id="findPreferentialBranchs" parameterType="map" resultType="com.candao.www.data.model.TbPreferentialActivityBranch">
+		SELECT preferential ,branch , branch_name  
+		FROM t_p_preferential_branch
+		WHERE 
+			preferential=#{preferential_id} 
+	</select>
+	
+	<!-- 根据优惠券ID，获取该优惠券对应的  特价券列表信息 -->
+	<select id="findPreferentialSpecialStamps" parameterType="map" resultType="com.candao.www.data.model.TbPreferentialActivitySpecialStamp">
+		SELECT id , preferential , dish ,dish_title , price, sequence, unit, unitflag  
+		FROM t_p_preferential_detail
+			WHERE 
+			preferential=#{preferential_id} 
+			order by sequence asc
+	</select>
+	
+	<!-- 根据优惠券ID 获取团购信息 -->
+	<select id="findPreferentialGroupon" parameterType="map" resultType="com.candao.www.data.model.TbGroupon">
+		SELECT id,preferential,bill_amount,amount as token_amount 
+		FROM t_p_preferential_detail
+		WHERE preferential=#{preferential_id} 
+	</select>
+	
+	<!-- 保存优惠券->团购券 -->
+	<insert id="insertGroupon" parameterType="com.candao.www.data.model.TbGroupon">
+		insert into t_p_preferential_detail  ( id,preferential ,bill_amount ,amount )
+		values (#{id},#{preferential},#{bill_amount},#{token_amount} )
+		
+	</insert>
+	
+	<!-- 保存内部减免/合作单位优惠 -->
+	<insert id="insertInnerfree" parameterType="com.candao.www.data.model.TbInnerFree">
+		insert into t_p_preferential_detail  ( 
+			id,
+			preferential ,
+			company_name ,
+			company_first_letter ,
+			sequence , 
+			discount , 
+			can_credit,
+			starttime,
+			endtime,
+			createtime
+			 )
+		values (
+			#{id},
+			#{preferential} ,
+			#{company_name} ,
+			#{company_first_letter} ,
+			#{sequence} , 
+			#{discount} , 
+			#{can_credit} ,
+			#{starttime},
+			#{endtime},
+			now()
+			 )
+	</insert>
+	<!-- 分页查询内部减免/合作单位优惠 -->
+	<select id="pageInnerfree" parameterType="map" resultType="java.util.HashMap">
+		select id, preferential , company_name , company_first_letter , sequence ,  discount ,  can_credit, starttime, endtime, createtime
+		from  t_p_preferential_detail
+		where 1=1
+		<if test="preferential != null">
+			and preferential=#{preferential}
+		</if>
+		<if test="id != null">
+			and id=#{id}
+		</if>
+		<if test="name != null">
+			and company_name like '%${name}%'
+		</if>
+		<if test="nameFirstLetter != null">
+			and company_first_letter like '%${nameFirstLetter}%'
+		</if>
+		<if test="fullName != null and fullName != ''">
+			and (company_name like '%${fullName}%' or company_first_letter like '%${fullName}%')
+		</if>
+		ORDER BY createtime
+	</select>
+	
+	<!-- 条件查询内部减免/合作单位优惠 主要是根据ID查询-->
+	<select id="getInnerfree" parameterType="map" resultType="com.candao.www.data.model.TbInnerFree">
+		select id, preferential , company_name , company_first_letter , sequence ,  discount ,  can_credit, starttime, endtime
+		from  t_p_preferential_detail
+		where 1=1 
+		<if test="id != null">
+			and id=#{id}
+		</if>
+	</select>
+	<!-- 更新内部减免/合作单位优惠 -->
+	<update id="updateInnerfree" parameterType="com.candao.www.data.model.TbInnerFree">
+		UPDATE t_p_preferential_detail
+		<set>
+			<if test="preferential != null">
+				preferential = #{preferential,jdbcType=VARCHAR},
+			</if>
+			<if test="company_name != null">
+				company_name = #{company_name,jdbcType=VARCHAR},
+			</if>
+			<if test="company_first_letter != null">
+				company_first_letter = #{company_first_letter,jdbcType=VARCHAR},
+			</if>
+			sequence=#{sequence},
+			<if test="discount != null">
+				discount = #{discount,jdbcType=DECIMAL},
+			</if>
+			<if test="can_credit != null">
+				can_credit = #{can_credit,jdbcType=BOOLEAN},
+			</if>
+			<if test="starttime != null">
+				starttime = #{starttime,jdbcType=TIMESTAMP},
+			</if>
+			 <if test="endtime != null">
+				endtime = #{endtime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		WHERE id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除内部减免/合作单位优惠 -->
+	<delete id="deleteInnerfree" parameterType="map">
+		DELETE FROM t_p_preferential_detail
+		WHERE
+		id=#{id}
+	</delete>
+	
+	<!-- 删除优惠活动对应的分类的具体的信息 -->
+	<delete id="deletePreferentialDetail" parameterType="map">
+		DELETE FROM t_p_preferential_detail
+		WHERE
+		preferential=#{preferential}
+	</delete>
+	<!-- 删除优惠活动对应的分类的具体的信息 -->
+	<update id="deletePreferentialDetailforStatus" parameterType="map">
+		DELETE FROM t_p_preferential_detail
+		WHERE
+		preferential=#{preferential}
+	</update>
+
+	
+	<!-- 获取优惠列表信息。特价券与其他优惠（手工优免、内部优惠）单独处理。这里是其他优惠。其中ID，采用 detail表的ID 为主 -->
+	<!-- 获取优惠的时候，如果参数传递了 branchid (门店id)，那么需要查询 适合该门店的优惠（优惠部分门店且选择了当前门店、对所有门店有优惠） -->
+	<select id="findPreferentialDetail" parameterType="map" resultType="java.util.HashMap">
+		<choose>
+			<when test="type=='0601' || type=='0602'">
+				SELECT 
+					det.id,
+					det.preferential,
+					det.dish,
+					det.dish_title,
+					det.price,
+					det.sequence,
+					det.unit,
+					det.unitflag,
+					det.discount,
+					det.amount,
+					det.bill_amount,
+					det.free_reason,
+					det.company_name,
+					det.company_first_letter,
+					det.can_credit,
+					det.starttime,
+					det.endtime,
+					#{type} as sub_type ,
+					'06' as type 
+				FROM t_p_preferential_detail det  
+				<where>
+					<include refid="preferential_detail_condition"></include>
+				</where>
+				ORDER BY det.preferential ,det.sequence 
+			</when>
+			<when test="type=='01'">
+				SELECT
+					tpa.id,
+					tpa.id as preferential,
+					tpa.code,
+					tpa.name,
+					tpa.name_first_letter,
+					tpa.type,
+					tpa.type_name,
+					tpa.subtable_name,
+					tpa.sub_type,
+					tpa.sub_type_name,
+					tpa.color,
+					tpa.starttime,
+					tpa.endtime,
+					tpa.apply_all,
+					tpa.activity_introduction,
+					tpa.use_notice,
+					tpa.createtime,
+					tpa.creator
+				FROM t_p_preferential_activity tpa 
+				<where>
+					<include refid="base_condition"></include>
+					and tpa.apply_all=1 
+				</where>
+				<if test=" branchid !=null">
+					UNION
+					SELECT
+						tpa.id,
+						tpa.id as preferential,
+						tpa.code,
+						tpa.name,
+						tpa.name_first_letter,
+						tpa.type,
+						tpa.type_name,
+						tpa.subtable_name,
+						tpa.sub_type,
+						tpa.sub_type_name,
+						tpa.color,
+						tpa.starttime,
+						tpa.endtime,
+						tpa.apply_all,
+						tpa.activity_introduction,
+						tpa.use_notice,
+						tpa.createtime,
+						tpa.creator
+					FROM t_p_preferential_activity tpa 
+					<where>
+						<include refid="base_condition"></include>
+						and tpa.apply_all=0
+						and exists (
+							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
+						) 
+					</where>
+				</if>
+				 ORDER BY code 
+			</when>
+			<otherwise>
+				SELECT 
+				det.id,
+				det.preferential,
+				det.dish,
+				det.dish_title,
+				det.price,
+				det.sequence,
+				det.unit,
+				det.unitflag,
+				det.discount,
+				det.amount,
+				det.bill_amount,
+				det.free_reason,
+				det.company_name,
+				det.company_first_letter,
+				det.can_credit, 
+				tpa.code,
+				tpa.name,
+				tpa.name_first_letter,
+				tpa.type,
+				tpa.type_name,
+				tpa.subtable_name,
+				tpa.sub_type,
+				tpa.sub_type_name,
+				tpa.color,
+				tpa.apply_all,
+				tpa.activity_introduction,
+				tpa.use_notice,
+				tpa.starttime,
+				tpa.endtime 
+			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
+			WHERE 1=1 and
+			(tpa.`status` is null or tpa.status !='1')
+				<if test=" type !=null">
+					AND tpa.type = #{type}
+				</if>
+				
+				and tpa.apply_all=1 
+				
+				<if test="preferential != null">
+					and det.preferential=#{preferential}
+				</if>
+				AND det.preferential = tpa.id 
+				
+			<if test=" branchid !=null">
+				UNION
+				SELECT 
+						det.id,
+						det.preferential,
+						det.dish,
+						det.dish_title,
+						det.price,
+						det.sequence,
+						det.unit,
+						det.unitflag,
+						det.discount,
+						det.amount,
+						det.bill_amount,
+						det.free_reason,
+						det.company_name,
+						det.company_first_letter,
+						det.can_credit, 
+						tpa.code,
+						tpa.name,
+						tpa.name_first_letter,
+						tpa.type,
+						tpa.type_name,
+						tpa.subtable_name,
+						tpa.sub_type,
+						tpa.sub_type_name,
+						tpa.color,
+						tpa.apply_all,
+						tpa.activity_introduction,
+						tpa.use_notice,
+						tpa.starttime,
+						tpa.endtime 
+				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
+				WHERE 1=1 
+				and
+				(tpa.`status` is null or tpa.status !='1')
+						AND det.preferential = tpa.id 
+						<if test=" type !=null">
+							AND tpa.type = #{type}
+						</if>
+						<if test="preferential != null">
+							and det.preferential=#{preferential}
+						</if>
+						and tpa.apply_all=0
+						and exists (
+							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
+						) 
+				</if> 
+				ORDER BY  preferential , sequence 
+			</otherwise>
+		</choose>
+		
+	</select>
+	
+	<!-- 删除优惠活动对应的分类的具体的信息 -->
+	<delete id="deletePreferential" parameterType="map">
+		DELETE FROM t_p_preferential
+		WHERE
+		<include refid="base_condition"></include>
+	</delete>
+	
+	<!-- 分页查询内部减免/合作单位优惠 -->
+	<select id="findInnerfree" parameterType="map" resultType="com.candao.www.data.model.TbInnerFree">
+		select id, preferential , company_name , company_first_letter , sequence ,  discount ,  can_credit, starttime, endtime, createtime
+		from  t_p_preferential_detail
+		<where>
+			<if test="preferential != null">
+				and preferential=#{preferential}
+			</if>
+			<if test="id != null">
+				and id=#{id}
+			</if>
+			<if test="name != null">
+				and company_name like '%${name}%'
+			</if>
+			<if test="nameFirstLetter != null">
+				and company_first_letter like '%${nameFirstLetter}%'
+			</if>
+			<if test="fullName != null and fullName != ''">
+				and (company_name like '%${fullName}%' or company_first_letter like '%${fullName}%')
+			</if>
+		</where>
+		ORDER BY createtime
+	</select>
+	<update id="deleteByPreferenStatus" parameterType="java.lang.String">
+	    update t_p_preferential_activity 
+	    <set>
+	            status ='1'
+	        WHERE id = #{id,jdbcType=VARCHAR}
+	    </set> 
+	</update>
+</mapper>

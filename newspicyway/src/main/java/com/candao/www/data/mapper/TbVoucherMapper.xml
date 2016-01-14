@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbVoucherDao">
+	<resultMap id="base_result_map" type="com.candao.www.data.model.TbVoucher">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="preferential" property="preferential" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+	</resultMap>
+	<resultMap id="find_result_map" type="java.util.HashMap" extends="base_result_map"></resultMap>
+	
+	<sql id="base_column_list">
+		SELECT
+		tv.id,
+		tv.preferential,
+		tv.amount
+		FROM t_p_preferential_detail tv
+	</sql>
+	<sql id="base_condition">
+		<if test="id != null">
+			AND tv.id = #{id}
+		</if>
+		<if test="preferential != null">
+			AND tv.preferential = #{preferential}
+		</if>
+		<if test="amount != null">
+			AND tv.amount = #{amount}
+		</if>
+	</sql>
+	
+	<select id="get" resultMap="base_result_map" parameterType="java.lang.String">
+		<include refid="base_column_list" />
+		WHERE id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="find" resultMap="base_result_map" parameterType="map">
+		<include refid="base_column_list" />
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+	</select>
+
+	<delete id="delete" parameterType="map">
+		DELETE FROM t_p_preferential_detail
+		WHERE
+		id=#{id}
+	</delete>
+	
+	<insert id="insert" parameterType="com.candao.www.data.model.TbVoucher">
+		INSERT INTO t_p_preferential_detail
+		(id, preferential, amount)
+		VALUES (#{id,jdbcType=VARCHAR}, #{preferential,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL})
+	</insert>
+	
+	<update id="updateBySelective" parameterType="com.candao.www.data.model.TbVoucher">
+		UPDATE t_p_preferential_detail
+		SET amount = #{amount,jdbcType=DECIMAL}
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TbVoucher">
+		UPDATE t_p_preferential_detail
+		SET amount = #{amount,jdbcType=DECIMAL}
+		WHERE id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

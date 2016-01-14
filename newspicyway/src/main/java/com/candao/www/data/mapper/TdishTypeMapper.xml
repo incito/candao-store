@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TdishTypeDao" >
+  	<delete id="delDishType" parameterType="map" >
+    delete from t_dish_dishtype
+    where dishid = #{dishid,jdbcType=VARCHAR}
+  	</delete>
+    <insert id="insertOnce" parameterType="java.util.ArrayList">
+		insert into t_dish_dishtype (id, columnid,dishid) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		  (#{item.id,jdbcType=VARCHAR},#{item.columnid,jdbcType=VARCHAR}, #{item.dishid,jdbcType=VARCHAR})
+		</foreach>
+ 
+	</insert>
+</mapper>

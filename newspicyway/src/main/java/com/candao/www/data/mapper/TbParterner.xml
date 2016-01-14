@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbparternerDao">
+
+	<resultMap id="tbParternerResultMap" type="com.candao.www.data.model.TbParterner">
+		<id property="parternerId" column="parternerId" />
+		<result property="code" column="code" />
+		<result property="type" column="type" />
+		<result property="name" column="name" />
+		<result property="telephone" column="telephone" />
+		<result property="relaperson" column="relaperson" />
+		<result property="address" column="address" />
+		<result property="status" column="status" />
+	</resultMap>
+	
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbParternerResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbParternerResultMap"></resultMap>
+
+ <sql id="Base_Column_List" >
+         code,
+		  type,
+		  name,
+		  parternerId , 
+		  telephone ,
+		  relaperson ,
+		  address,
+		  status
+  </sql>
+ <insert id="insert" parameterType="com.candao.www.data.model.TbParterner">
+	       <selectKey resultType="String" keyProperty="parternerId" order="BEFORE" >
+               SELECT cast(tableseqno('parternerid')   as char)
+         </selectKey>
+	 insert into t_parterner (
+	  	  code,
+		  type,
+		  name,
+		  parternerId , 
+		  telephone ,
+		  relaperson ,
+		  address,
+		  status
+	   ) values (
+	          #{code},
+			  #{type},
+			  #{name},
+			  #{parternerId} , 
+			  #{telephone} ,
+			  #{relaperson} ,
+			  #{address},
+			  #{status}
+	   )
+	</insert>
+	<update id="update" parameterType="com.candao.www.data.model.TbParterner">
+	   update t_parterner
+	   <set>
+	     <if test="code != null">
+	     code=#{code},
+	     </if>
+	     <if test="type != null ">
+	     type=#{type},
+	     </if>
+	     <if test="name != null ">
+	     name=#{name},
+	     </if>
+	     <if test="telephone != null">
+	     telephone=#{telephone},
+	     </if>
+	     <if test="relaperson != null">
+	     relaperson=#{relaperson},
+	      </if>
+	     <if test="address != null">
+	     address=#{address},
+	      </if>
+	     <if test="status != null ">
+	     status=#{status},
+	      </if>	
+	    </set> 
+	   where 
+	    parternerId=#{parternerId} 
+	</update>
+	<delete id="delete" parameterType="map">
+	   update t_parterner
+	   set status = 2
+	   where 
+	    parternerId=#{id} 
+	</delete>
+	<select id="get" parameterType="map" resultMap="tbParternerResultMap">
+	   select 
+	 <include refid="Base_Column_List"/>
+	   from t_parterner
+	   where 
+	   parternerId=#{id} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	 <include refid="Base_Column_List"/>
+	   from t_parterner
+	   where 
+	   parternerId=#{parternerId} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	    select 
+	 <include refid="Base_Column_List"/>
+	   from t_parterner
+	   <where>
+	   		status!= 2
+	     <if test="code != null and code != ''">
+	        and   code=#{code}
+	     </if>
+	    <if test="parternerId != null and parternerId != ''">
+	        and  parternerId=#{parternerId}
+	     </if>
+	     <if test="type != null and type != ''">
+	        and type=#{type}
+	     </if>
+	     <if test="name != null and name != ''">
+	        and name=#{name}
+	     </if>
+	     <if test="telephone != null and telephone != ''">
+	        and telephone=#{telephone}
+	     </if>
+	     <if test="relaperson != null and relaperson != ''">
+	        and relaperson=#{relaperson}
+	     </if>
+	     <if test="address != null and address != ''">
+	        and address=#{address}
+	     </if>
+	     <if test="status != null and status != ''">
+	        and status=#{status}
+	     </if>
+	   </where>
+	    order by code asc
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+       select    t.code ,    t.type,d.itemDesc typename  ,   t.name,     t.parternerId ,      t.telephone ,    
+	 t.relaperson ,     t.address,     t.status         from t_parterner t ,t_dictionary d
+	    <where>
+	    t.type=d.dictid and t.status!=2
+	    <if test="code != null and code != ''">
+	       and t.code=#{code}
+	     </if>
+	    <if test="parternerId != null and parternerId != ''">
+	       and  t.parternerId=#{parternerId}
+	     </if>
+	     <if test="type != null and type != ''">
+	        and t.type=#{type}
+	     </if>
+	     <if test="name != null and name != ''">
+	        and t.name like CONCAT('%',#{name},'%')
+	     </if>
+	     <if test="telephone != null and telephone != ''">
+	        and t.telephone=#{telephone}
+	     </if>
+	     <if test="relaperson != null and relaperson != ''">
+	        and t.relaperson=#{relaperson}
+	     </if>
+	     <if test="address != null and address != ''">
+	        and t.address=#{address}
+	     </if>
+	     <if test="status != null and status != ''">
+	        and t.status=#{status}
+	     </if>
+	     </where>
+	     order by t.code asc
+	</select>
+</mapper> 

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.dao.RoleDao">
+ 
+	<insert id="insertRole" parameterType="com.candao.www.data.model.Role" >
+		INSERT INTO
+		t_b_role(id,code,name,scope_code,description,createtime)
+		VALUES
+		(#{id},#{code},#{name},#{scopeCode},#{description},now())
+	</insert>
+
+	<update id="updateRole" parameterType="com.candao.www.data.model.Role">
+		UPDATE
+		t_b_role
+		SET
+		name=#{name},code=#{code},description=#{description} 
+		WHERE
+		id = #{id}
+	</update>
+
+	<delete id="deleteRole" parameterType="java.lang.String">
+		DELETE FROM t_b_role WHERE
+		id = #{id}
+	</delete>
+	
+	<select id="getRoleById" resultType="com.candao.www.data.model.Role" parameterType="java.lang.String" >
+		SELECT
+		id,code,name,type,scope_code,scope_name,status,description,createtime,creator
+		FROM
+		t_b_role
+		where id=#{id}
+	</select>
+	<!-- 判断角色名称唯一 -->
+	<select id="getRoleByName" parameterType="map" resultType="map" >
+		select count(*) as count from  t_b_role 
+		where 
+		name=#{name}
+	</select>
+	
+	<select id="getRoleList" resultType="com.candao.www.data.model.Role">
+		SELECT
+		id,code,name,type,scope_code,scope_name,status,description,createtime,creator
+		FROM
+		t_b_role
+		<where>
+			1=1
+			<if test="role != null">
+				<if test="role.id != null and role.id !=''">
+					AND id=#{role.id}
+				</if>
+				<if test="role.name != null and role.name !=''">
+					AND name LIKE '%${role.name}%'
+				</if>
+				<if test="role.scopeCode != null and role.scopeCode !=''">
+					AND scope_code=#{role.scopeCode}
+				</if>
+			</if>
+		</where>
+		ORDER BY createtime asc
+	</select>
+     <!--进行角色判断-->
+	<select id="getRoletbrolebranchList" resultType="com.candao.www.data.model.Role">
+        SELECT
+        tbr.id,tbr.code,tbr.name,tbr.type,tbr.scope_code,tbr.scope_name,tbr.status,tbr.description,tbr.createtime,tbr.creator
+        FROM
+                    t_b_role tbr,
+                    t_b_role_branch trb
+                WHERE
+                    tbr.id = trb.role
+
+        <if test="role != null">
+            <if test="role.id != null and role.id !=''">
+                AND tbr.id=#{role.id}
+            </if>
+            <if test="role.name != null and role.name !=''">
+                AND tbr.name = #{role.name}
+            </if>
+            <if test="role.scopeCode != null and role.scopeCode !=''">
+                AND tbr.scope_code=#{role.scopeCode}
+            </if>
+            <if test="role.branch_id != null and role.branch_id !=''">
+                AND trb.branch_id=#{role.branch_id}
+            </if>
+        </if>
+
+	</select>
+	
+	<!-- 获取当前门店的角色权限 -->
+	<select id="getRoleListForCurrentStore" resultType="com.candao.www.data.model.Role" parameterType="java.util.HashMap">
+		SELECT
+			id,code,name,type,scope_code,scope_name,status,description,createtime,creator
+		FROM
+			t_b_role
+		WHERE 
+			id in (
+				select rb.role
+				from  t_b_role_branch rb
+				where rb.branch_id=#{branch_id}
+			)
+		ORDER BY createtime
+	</select>
+	
+	<!-- 删除 当前门店-角色 映射的记录。 -->
+	<delete id="deleteRoleForCurrentStore" parameterType="java.util.HashMap">
+		delete from t_b_role_branch where role=#{role_id} and  branch_id=#{branch_id}
+	</delete>
+	
+	<!-- 获取当前默认的门店信息 -->
+	<select id="getCurrentStoreInfo"  resultType="java.util.HashMap">
+		select 
+			id,branchcode,branchid,branchname,branchaddress,managerid,managername,managertel,serverversion,padversion,insertime,updatetime 
+		from t_branch_info limit 1
+	</select>
+	
+	<!-- 
+	<select id="getRoleListPage" resultType="com.incito.bsp.permit.entity.Role">
+		SELECT
+		id,code,name,description,createtime,modifytime
+		FROM
+		role
+		<where>
+			<if test="role != null">
+				<if test="role.id != null and role.id !=''">
+					AND id=#{role.id}
+				</if>
+				<if test="role.name != null and role.name !=''">
+					AND name LIKE "%"#{role.name}"%"
+				</if>
+			</if>
+		</where>
+		ORDER BY
+		id
+		LIMIT #{start}, #{pageSize}
+	</select>
+	-->
+	<select id="getRoleFunction" resultType="com.candao.www.data.model.Function">
+		SELECT f.id,
+		f.name,
+		f.code,
+		f.application,
+		f.level,
+		f.parent_fun as parentFun,
+		f.is_leaf as isLeaf ,
+		f.operation_type as operationType,
+		f.description,
+		f.createtime,
+		f.creator,
+		f.scope_code as scopeCode,
+		f.scope_name  as scopeName 
+		FROM t_b_function f, t_b_role_function rf
+		<where>
+			rf.role=#{role.id} 
+			AND
+			rf.function=f.id
+			<if test="application != null and application != ''">
+			AND f.application=#{application}
+			</if>
+		</where>
+		ORDER BY 
+		f.id, f.level
+	</select>
+	<!-- 
+	<select id="countRoleList" resultType="int">
+		SELECT
+		count(id)
+		FROM
+		role
+		<where>
+			<if test="role != null">
+				<if test="role.id != null and role.id !=''">
+					AND id=#{role.id}
+				</if>
+				<if test="role.name != null and role.name !=''">
+					AND name LIKE "%"#{role.name}"%"
+				</if>
+			</if>
+		</where>
+	</select>
+		-->
+	<delete id="deleteRoleFunction">
+		DELETE FROM t_b_role_function WHERE
+		role = #{roleId}
+	</delete>
+
+
+	<insert id="batchInsertRoleFunction" useGeneratedKeys="true" keyProperty="id">
+<!-- 		<selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id"> 
+	        	SELECT uuid()
+	    </selectKey> -->
+	    INSERT INTO
+			t_b_role_function(id,role, function)
+		VALUES
+		<foreach collection="functions" item="item" index="index" open="" close="" separator=",">
+			(#{uuids[${index}]},#{roleId}, #{item.id})
+		</foreach>
+	</insert>
+	<select id="getUserCountOfRole" resultType="java.lang.Integer">
+		select count(*) from t_b_user_role where role_id=#{role_id}
+	</select>
+	
+	<!-- 插入当前门店关联的角色 -->
+	<insert id="insertRoleForCurrentStore" parameterType="java.util.Map" >
+	   	<selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id"> 
+	        	SELECT uuid() from dual
+	    </selectKey> 
+	    
+		INSERT INTO t_b_role_branch
+			(id , role , branch_name , branch_id )
+		VALUES
+			( #{id},#{role_id},#{branch_name} , #{branch_id} )
+	</insert>
+	
+	 
+	<select id="getPermitUrl"  resultType="java.lang.String">
+		SELECT
+		u.url
+		FROM
+		t_b_role_function rf, t_b_function f,t_b_url u, t_b_function_url fu
+		WHERE 
+		rf.role=#{roleId}
+		AND f.id=rf.function 
+		AND fu.function=f.id
+		AND u.id=fu.url
+	</select>
+	 
+	 <!-- 根据功能模块编号，获取拥有此功能模块的角色的列表。 -->
+	 <select id="getRoleListByFunctionsCodes" resultType="com.candao.www.data.model.Role" parameterType="java.util.HashMap">
+	 	select DISTINCT role.* 
+		from  t_b_role  role,
+			  t_b_function funs,
+			  t_b_role_function rf 
+		where role.id=rf.role 
+			and rf.function=funs.id
+			and funs.code in   (
+				<foreach collection="functionCodes" item="item" index="index" open="" close="" separator=",">
+					#{item}
+				</foreach>
+			)
+	 </select>
+	 
+</mapper>

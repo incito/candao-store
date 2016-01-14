@@ -1,0 +1,347 @@
+
+body {
+    font-family: Microsoft YaHei;
+    color: #282828;
+    font-size: 12px;
+    background-color:#fafafa;
+    margin:0;
+    padding:0;
+}
+.clearfix:after {
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+.clearfix {
+    display:inline-block;
+    width:100%;
+}
+h2 {
+	margin:0;
+	padding:0;
+}
+.ky-navbar-default {
+    background-color: #f4f4f4;
+}
+.ky-navbar {
+    float: left;
+    height: auto;
+    width: 100px;
+}
+.ky-navbar-header {
+    background-color: #202d37;
+    color: #fff;
+    font-size: smaller;
+    height: 44px;
+    text-align: center;
+}
+.ky-navbar-header img {
+    height: 25px;
+}
+p {
+    margin: 0 0 10px;
+}
+.ky-title {
+    background-color: #34495e;
+    color: #ffffff;
+    height: 44px;
+    min-width: 920px;
+    padding-right: 20px;
+    text-align: center;
+}
+.ky-content {
+	margin-top:85px;
+	height:362px;
+	position:relative;
+	min-width:1024px;
+	background-color:#ebeff0;
+}
+.ky-content .contentBj {
+	min-width:1024px;
+	margin:0 auto;
+	display: block;
+}
+
+.loginWrap {
+	background-color: #fff;
+    height: 330px;
+    left: 60%;
+    position: absolute;
+    top: 15px;
+    width: 311px;
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.2);
+   
+}
+.loginWrap .header {
+	border-bottom: 1px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 10px 20px;
+    margin-bottom:40px;
+}
+.loginWrap .row {
+	margin:20px;
+}
+.loginWrap .row .textWrap {
+	border: 1px solid #dfdfdf;
+    border-radius: 2px;
+    height: 30px;
+    position: relative;
+}
+.active {
+	border: 1px solid #99c3ef !important;
+    box-shadow: 0 0 2px 0 #99c3ef;
+}
+.error {
+	border: 1px solid #ff0000 !important;
+    box-shadow: 0 0 2px 0 #ff0000;
+}
+.loginWrap .row .textWrap .input-block-level {
+	border: medium none;
+    float: left;
+    height: 30px;
+    text-indent: 6px;
+    width: 240px;
+    font-family: Microsoft YaHei;
+    font-size: 12px;
+    color: #505050;
+    padding-bottom: 2px;
+}
+.loginWrap .row .textWrap span {
+	background-position: center center;
+    float:left;
+    height: 16px;
+    margin: 6px 0;
+    padding: 0 6px;
+    width: 16px;
+    border-right: 1px solid #dfdfdf;
+   
+}
+.loginWrap .row .forgetPwd {
+	text-align:right;
+	padding:0 10px;
+}
+.loginWrap .row .forgetPwd a {
+	color:#505050;
+	text-decoration: none;
+}
+.icon-user {
+	background:url("../images/icon-user.png") no-repeat;
+}
+.icon-pwd {
+	background:url("../images/icon-pwd.png") no-repeat;
+}
+.icon-repwdSuccess {
+	background:url("../images/repwdSuccess.png") no-repeat;
+	  display: block;
+    font-size: 16px;
+    height: 24px;
+    line-height: 24px;
+    margin: 0 auto;
+    padding-left: 30px;
+    width: 130px;
+}
+.submitLogin {
+	background-color: #8cc253;
+    border: medium none;
+    border-radius: 2px;
+    color: #fff;
+    font-family: Microsoft YaHei;
+    height: 30px;
+    width: 100%;
+    margin-top: 20px;
+}
+.submitLogin:hover {
+	background-color: #78ba32;
+	cursor:pointer;
+}
+
+.disabledbtn {
+	background-color: #CDC5BF;
+    border: medium none;
+    border-radius: 2px;
+    font-family: Microsoft YaHei;
+    height: 30px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.alert {
+  padding: 8px 35px 8px 14px;
+  margin-bottom: 20px;
+  color: #c09853;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  background-color: #fcf8e3;
+  border: 1px solid #fbeed5;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.alert-warning {
+  color: #c09853;
+  background-color: #fcf8e3;
+  border-color: #fbeed5;
+  width:70%;
+  margin:-20px auto 0;
+}
+
+.fade {
+  opacity: 0;
+  -webkit-transition: opacity 0.15s linear;
+     -moz-transition: opacity 0.15s linear;
+       -o-transition: opacity 0.15s linear;
+          transition: opacity 0.15s linear;
+}
+
+.close {
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 14px;
+  color: #000000;
+  text-shadow: 0 1px 0 #ffffff;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+  font-family:Microsoft YaHei;
+  
+}
+
+.close:hover {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+}
+
+button.close {
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+}
+
+
+.footer {
+	color:#505050;
+	text-align:center;
+	margin-top:100px;
+}
+.footer a {
+	color:#505050;
+	text-decoration:none;
+}
+
+
+
+
+.retrieveTitle {
+	font-size: 20px;
+    margin: -30px 0 30px;
+    text-align: center;
+    font-family:Microsoft YaHei;
+}
+.stepsInner {
+	width:550px;
+	margin:0 auto;
+}
+.stepsNum {
+	background-color: #dfdfdf;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    color: #505050;
+    display: block;
+    font-family: Arial;
+    font-size: 18px;
+    font-weight: bold;
+    height: 36px;
+    line-height: 36px;
+    margin: 0 auto;
+    text-align: center;
+    width: 36px;
+    
+}
+
+.current .stepsNum {
+	background-color: #34495e;
+    color: #fff;
+}
+.stepsTip {
+	font-size:14px;
+	margin-top:10px;
+	display:block;
+}
+.steps {
+	text-align: center;
+    width: 60px;
+    float:left;
+}
+.stepsLine {
+	 border: 2px solid #dfdfdf;
+    float: left;
+    margin-top: 20px;
+    width: 180px;
+}
+
+.retrieveForm {
+	width:460px;
+	margin:70px auto;
+}
+.retrieveForm .row {
+	margin:20px 0;
+}
+.retrieveForm label {
+	width:100px;
+	text-align:right;
+	display:inline-block;
+	font-size:14px;
+}
+.retrieveForm input, .retrieveForm select  {
+	color: #505050;
+    font-family: Microsoft Yahei;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    text-indent: 20px;
+    width: 300px;
+    font-size:12px;
+    border:1px solid #dfdfdf;
+}
+.retrieveForm select {
+	text-indent: 10px;
+}
+.retrieveForm .checkCode {
+	width:170px;
+}
+.getCheckCode {
+	margin-top: 0;
+    width: 125px;
+    position: relative;
+    top: 1px;
+}
+.btnNext {
+	width:300px;
+}
+
+.pwdAlt {
+	left: 420px;
+    position: absolute;
+    top: 6px;
+    width: 200px;
+    color:
+}
+.goEmail {
+	color:red;
+	text-decoration: underline;
+}
+.goEmail:hover {
+	color:red;
+}
+.setTime {
+	font-size: 20px;
+    text-align: center;
+}

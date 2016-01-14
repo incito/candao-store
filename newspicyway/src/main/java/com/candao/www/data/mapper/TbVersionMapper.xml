@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbVersionDao">
+	<resultMap id="tbVersionResultMap" type="com.candao.www.data.model.TbVersion">
+	    <result property="no" column="versionNo" />
+		<result property="info" column="releaseNote" />
+		<result property="url" column="updateUrl" />
+		<result property="type" column="updatetype" />
+		<result property="isforce" column="isinforce" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbVersionResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbVersionResultMap"></resultMap>
+
+ 
+	<update id="update" parameterType="com.candao.www.data.model.TbVersion">
+	   update t_version set
+	     versionNo=#{no},
+	     releaseNote=#{info},
+	     updateUrl=#{url},
+	     updatetype=#{type},
+	     isinforce=#{isforce}
+	   where type=#{type}
+	</update>
+
+ 
+	<select id="get" parameterType="map" resultMap="tbVersionResultMap">
+	   select 
+	    versionNo,
+	    releaseNote,
+	    updateUrl,
+	    updatetype,
+	    isinforce
+	   from t_version
+	   where updatetype=#{type}
+	</select>
+
+	 
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	    versionNo,
+	    releaseNote,
+	    updateUrl,
+	    updatetype,
+	    isinforce
+	   from t_version
+	   <where>
+	     <if test="no != null">
+	        versionNo=#{no}
+	     </if>
+	     <if test="info != null">
+	        and releaseNote=#{info}
+	     </if>
+	     <if test="url != null">
+	        and updateUrl=#{url}
+	     </if>
+	     <if test="type != null">
+	        and updatetype=#{type}
+	     </if>
+	     <if test="isforce != null">
+	        and isinforce=#{isforce}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	    versionNo,
+	    releaseNote,
+	    updateUrl,
+	    updatetype,
+	    isinforce
+	   from t_version
+	   <where>
+	    <if test="no != null">
+	        versionNo=#{no}
+	     </if>
+	     <if test="info != null">
+	        and releaseNote=#{info}
+	     </if>
+	     <if test="url != null">
+	        and updateUrl=#{url}
+	     </if>
+	     <if test="type != null">
+	        and updatetype=#{type}
+	     </if>
+	     <if test="isforce != null">
+	        and isinforce=#{isforce}
+	     </if>
+	   </where>
+	</select>
+</mapper> 

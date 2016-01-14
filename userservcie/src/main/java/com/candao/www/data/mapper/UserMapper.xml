@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ 	基本用户-Mybatis Mapper文件
+ 	作者：lishoukun
+ 	日期：2015/04/21
+-->
+<mapper namespace="com.candao.www.data.dao.UserDao">
+
+	<resultMap type="com.candao.www.data.model.User" id="userMap">
+		<id property="id" column="id" jdbcType="VARCHAR" /> 
+		<result property="account" column="account" jdbcType="VARCHAR" />
+		<result property="password" column="password" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="email" column="email" jdbcType="VARCHAR" />
+		<result property="mobile" column="mobile" jdbcType="VARCHAR" />
+		<result property="areaCode" column="area_code" jdbcType="VARCHAR" />
+		<result property="telephone" column="telephone" jdbcType="VARCHAR" />
+		<result property="status" column="status" jdbcType="VARCHAR" />
+		<result property="userType" column="user_type" jdbcType="VARCHAR" />
+		<result property="tenantid" column="tenantid" jdbcType="VARCHAR" />
+		<result property="createtime" column="createtime" jdbcType="TIMESTAMP" />
+		<result property="orderNum" column="order_num" jdbcType="INTEGER" />
+		<result property="lastlogintime" column="lastlogintime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	
+  <!-- ===================基本用户,开始======================== -->
+	
+  <!--  公用列,包含基本用户表所有字段     -->
+  <sql id="base_user_column_list" >
+   		bu.id as id,
+   		bu.account as account,
+   		bu.password as password,
+   		bu.name as name,
+   		bu.email as email,
+   		bu.mobile as mobile,
+   		bu.area_code as areaCode,
+   		bu.telephone as telephone,
+   		bu.status as status,
+   		bu.createtime as createtime,
+   		bu.creator as creator,
+   		bu.user_type as userType ,
+   		bu.order_num as orderNum ,
+   		bu.tenantid  as tenantid,
+   		bu.lastlogintime as lastlogintime
+  </sql>
+  
+  <!--  公用查询条件，包含基本用户所有字段的查询条件     -->
+  <sql id="base_user_condition" >
+      <if test="id != null" >
+       		and bu.id = #{id}
+      </if>
+      <if test="account != null" >
+      	<choose>
+      		<when test="exactFind != null and exactFind == true">
+      			and bu.account = #{account}
+      		</when>
+      		<otherwise>
+      			and bu.account like '%${account}%'
+      		</otherwise>
+      	</choose>
+      </if>
+      <if test="password != null" >
+       		and bu.password = #{password}
+      </if>
+      <if test="name != null" >
+       		and bu.name = #{name}
+      </if>
+      <if test="email != null" >
+       		and bu.email = #{email}
+      </if>
+      <if test="mobile != null" >
+       		and bu.mobile = #{mobile}
+      </if>
+      <if test="areaCode != null" >
+       		and bu.area_code = #{areaCode}
+      </if>
+      <if test="telephone != null" >
+       		and bu.telephone = #{telephone}
+      </if>
+      <if test="status != null" >
+       		and bu.status = #{status}
+      </if>
+      <if test="createtime != null" >
+       		and bu.createtime = #{createtime}
+      </if>
+      <if test="creator != null" >
+       		and bu.creator = #{creator}
+      </if>
+      <if test="userType != null" >
+       		and bu.user_type = #{userType}
+      </if>
+  </sql>
+  
+  <!--  获取一条基本用户，根据主键    -->
+  <select id="getUserById" resultType="com.candao.www.data.model.User" parameterType="java.lang.String" >
+    select 
+    <include refid="base_user_column_list" />
+    from t_b_user bu
+    where bu.id = #{id}
+  </select>
+  
+  <!--  获取一条基本用户，随机获取    -->
+  <select id="getUserByRand" resultType="com.candao.www.data.model.User" >
+    select 
+    <include refid="base_user_column_list" />
+    from t_b_user bu
+    order by rand() limit 1
+  </select>
+  
+  <!--  查询基本用户列表，根据条件    -->
+  <select id="queryUserList" resultType="com.candao.www.data.model.User" parameterType="java.util.Map" >
+    select 
+    <include refid="base_user_column_list" />
+    from t_b_user bu
+    <if test="(jobNumber != null and jobNumber != '' ) or (paymentPassword != null and paymentPassword != '')" >
+    	left join (select tbe.* from t_b_employee tbe,t_branch_info tbi where tbe.branch_id=tbi.branchid ) be on bu.id = be.user_id  
+    </if>
+    <where>
+     	<include refid="base_user_condition" />
+     	<if test="searchText != null and searchText != '' " >
+       	and (
+       		bu.account like '%${searchText}%' 
+       		or bu.name like '%${searchText}%' 
+       		or bu.email like '%${searchText}%' 
+       		or bu.mobile like '%${searchText}%' 
+       		)
+     	</if>
+     	<if test="jobNumber != null and jobNumber != '' " >
+     		and be.job_number = #{jobNumber}
+     		and bu.status='01'
+     	</if>
+     	<if test="paymentPassword != null and paymentPassword != '' " >
+     		and be.payment_password = #{paymentPassword}
+     	</if>
+    </where>
+    order by bu.createtime asc
+  </select>
+  
+   <!--  获取基本用户总数量，根据条件    -->
+  <select id="getUserTotal" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select 
+    count(bu.id)
+    from t_b_user bu
+    <where>
+      <include refid="base_user_condition" />
+    </where>
+  </select>
+  
+  <!--  添加一条基本用户记录  -->
+  <insert id="addUser" parameterType="com.candao.www.data.model.User" >
+    insert into t_b_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+   			id,
+   			account,
+   			password,
+   			name,
+   			<if test="email != null and email != ''">
+   				email,
+   			</if>
+   			<if test="mobile != null and mobile != ''">
+   				mobile,
+   			</if>
+   			area_code,
+   			telephone,
+   			status,
+   			createtime,
+   			creator,
+   			user_type,
+   			tenantid,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+    		#{id},
+    		#{account},
+    		#{password},
+    		#{name},
+    		<if test="email != null and email != ''">
+   				#{email},
+   			</if>
+   			<if test="mobile != null and mobile != ''">
+   				#{mobile},
+   			</if>
+    		#{areaCode},
+    		#{telephone},
+    		#{status},
+    		#{createtime},
+    		#{creator},
+    		#{userType},
+    		#{tenantid},
+    </trim>
+  </insert>
+  
+  <!--  修改一条基本用户记录  -->
+  <update id="updateUser" parameterType="com.candao.www.data.model.User" >
+    update t_b_user
+    <set >
+    	<if test="id != null" >
+       		id = #{id},
+      	</if>
+    	<if test="account != null" >
+       		account = #{account},
+      	</if>
+    	<if test="password != null" >
+       		password = #{password},
+      	</if>
+    	<if test="name != null" >
+       		name = #{name},
+      	</if>
+    	<if test="email != null" >
+       		email = #{email},
+      	</if>
+    	<if test="mobile != null" >
+       		mobile = #{mobile},
+      	</if>
+    	<if test="areaCode != null" >
+       		area_code = #{areaCode},
+      	</if>
+    	<if test="telephone != null" >
+       		telephone = #{telephone},
+      	</if>
+    	<if test="status != null" >
+       		status = #{status},
+      	</if>
+    	<if test="createtime != null" >
+       		createtime = #{createtime},
+      	</if>
+    	<if test="creator != null" >
+       		creator = #{creator},
+      	</if>
+      	<if test="userType != null" >
+       		user_type = #{userType},
+      	</if>
+    </set>
+   where id = #{id}
+  </update>
+  
+  <!--  删除一条基本用户记录 ，根据主键    -->
+  <delete id="deleteUserById" parameterType="java.lang.String" >
+    delete from t_b_user
+    where id = #{id}
+  </delete>
+  
+  <!--  删除基本用户记录 ，根据条件    -->
+  <delete id="deleteUser" parameterType="java.util.Map" >
+    delete from t_b_user
+    <where>
+      <if test="id != null" >
+       		and id = #{id}
+      </if>
+      <if test="account != null" >
+       		and account = #{account}
+      </if>
+      <if test="password != null" >
+       		and password = #{password}
+      </if>
+      <if test="name != null" >
+       		and name = #{name}
+      </if>
+      <if test="email != null" >
+       		and email = #{email}
+      </if>
+      <if test="mobile != null" >
+       		and mobile = #{mobile}
+      </if>
+      <if test="areaCode != null" >
+       		and area_code = #{areaCode}
+      </if>
+      <if test="telephone != null" >
+       		and telephone = #{telephone}
+      </if>
+      <if test="status != null" >
+       		and status = #{status}
+      </if>
+      <if test="createtime != null" >
+       		and createtime = #{createtime}
+      </if>
+      <if test="creator != null" >
+       		and creator = #{creator}
+      </if>
+      <if test="userType != null" >
+       		and user_type = #{userType}
+      </if>
+    </where>
+  </delete>
+  
+  <select id="getDuplicateUser" resultType="com.candao.www.data.model.User" parameterType="java.util.Map" >
+    select 
+    <include refid="base_user_column_list" />
+    from t_b_user bu
+    <where>
+     	<if test="account != null">
+     		OR bu.account = #{account}
+     	</if>
+     	<if test="email != null">
+     		OR bu.email = #{email}
+     	</if>
+     	<if test="mobile != null">
+     		OR bu.mobile = #{mobile}
+     	</if>
+    </where>
+  </select>
+  
+  <update id="updatePassword" parameterType="java.util.Map">
+  	update t_b_user
+  	<set>
+  		password = #{password}
+  	</set>
+  	<where>
+  		account = #{account}
+  	</where>
+  </update>
+  
+  <update id="updateLoginTime" parameterType="map">
+	   update t_b_user set  lastlogintime = now()
+	   where 
+	    id=#{id} 
+  </update>
+  
+  <select id="login" resultType="com.candao.www.data.model.User" parameterType="java.util.Map">
+  	select 
+    <include refid="base_user_column_list" />
+    from t_b_user bu
+    <where>
+    	bu.password = #{password}
+     	AND (
+     		bu.account = #{loginName} OR bu.email = #{loginName} OR bu.mobile = #{loginName} or bu.name =#{loginName}
+     	)
+    </where>
+  </select>
+  
+  
+  <select id="findMaxOrderNum" parameterType="map" resultMap="userMap">
+	     select max(ifnull(order_num,0)) ordernum  from t_b_user
+  </select>
+	<update id="updateUserOrderNum" parameterType="map">
+		update t_b_user set
+		order_num = #{order_num} + 1 ,lastlogintime = now()
+		where
+		 id in ( select user_id from t_b_employee where job_number =#{account} )
+		 
+	</update>
+	
+ <select id="getCurrentBranchName"   resultType="com.candao.www.data.model.User">
+	     SELECT tbi.branchname name FROM t_branch_info tbi
+  </select>
+  
+  <select id="getTenantName"   resultType="com.candao.www.data.model.User">
+	     SELECT tbb.business_name name FROM t_b_business tbb
+  </select>
+  <select id="getUserByjobNum" parameterType="map"  resultType="com.candao.www.data.model.User">
+<!-- 	     select u.* from t_b_employee t,t_b_user u where t.job_number=#{jobnum} and u.id=t.user_id -->
+	     select u.* from t_b_employee t,t_b_user u,t_branch_info b where t.job_number=#{jobnum}  and u.id=t.user_id and b.branchid=t.branch_id
+  </select>
+ <!-- ===================基本用户,结束======================== -->
+</mapper>

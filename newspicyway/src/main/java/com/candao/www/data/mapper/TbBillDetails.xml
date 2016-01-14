@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbBillDetailsDao" >
+<resultMap id="BaseResultMap" type="com.candao.www.data.model.Tdish" >
+    
+  </resultMap>
+  <resultMap id="pageResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+
+  	<select id="page" parameterType="map" resultMap="pageResultMap">
+  	
+select 
+		DATE_FORMAT( a.inserttime, '%H%i%s')diningSection,
+		DATE_FORMAT( a.inserttime, '%Y-%m-%d') inserttime,
+		a.orderid,c.tableNo,(b.womanNum+b.childNum+b.mannum)num,
+		d.amount,f.mainIncome,e.discount,g.fullName,g.userName,
+		a.userid,DATE_FORMAT( b.begintime, '%H:%i:%s')begintime,DATE_FORMAT( b.endtime, '%H:%i:%s')endtime,b.userid userid2
+
+	FROM 	t_settlement a 
+	LEFT JOIN t_order b
+	on a.orderid=b.orderid
+	left join t_table c
+	on b.orderid=c.orderid
+	left join 
+		(select IFNULL(SUM(orderprice*dishnum),0)amount, orderid from t_order_detail 
+		group by orderid) d
+	on c.orderid=d.orderid
+	left join
+	 (SELECT payamount discount ,orderid FROM t_settlement_detail WHERE payway IN (2,3,4,6,7)) e
+	on d.orderid=e.orderid
+	left join
+	(SELECT payamount mainIncome ,orderid FROM t_settlement_detail WHERE payway IN (0,1,5,8))f 
+	on e.orderid=f.orderid
+	left join
+	(SELECT payamount mainIncome ,orderid FROM t_settlement_detail WHERE payway IN (0,1,5,8))g
+	on e.orderid=f.orderid
+	left join t_user g 
+	on f.orderid=g.orderid
+	
+	
+	where
+	DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{Index} AND #{End}
+		
+
+	group by a.orderid
+	
+
+
+	</select>
+
+  
+  
+
+
+
+</mapper>

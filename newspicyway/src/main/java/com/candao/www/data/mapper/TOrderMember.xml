@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TOrderMemberDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TOrderMember" >
+    <result column="id" property="id" />
+    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="ordertime" property="ordertime" jdbcType="TIMESTAMP" />
+    <result column="operatetype" property="operatetype" jdbcType="INTEGER" />
+    <result column="business" property="business" jdbcType="VARCHAR" />
+    <result column="terminal" property="terminal" jdbcType="VARCHAR" />
+    <result column="serial" property="serial" jdbcType="VARCHAR" />
+    <result column="batchno" property="batchno" jdbcType="VARCHAR" />
+    <result column="businessname" property="businessname" jdbcType="VARCHAR" />
+    <result column="score" property="score"  />
+    <result column="coupons" property="coupons"  />
+    <result column="stored" property="stored"  />
+    <result column="scorebalance" property="scorebalance"  />
+    <result column="couponsbalance" property="couponsbalance"  />
+    <result column="storedbalance" property="storedbalance"  />
+    <result column="cardno" property="cardno" jdbcType="VARCHAR" />
+    <result column="valid" property="valid" jdbcType="INTEGER" />
+    <result column="psexpansivity" property="psexpansivity" jdbcType="VARCHAR" />
+    <result column="netvalue" property="netvalue"  />
+    <result column="Inflated" property="inflated"  />
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+      id,orderid, userid, ordertime, 
+      operatetype, business, terminal, serial, batchno, businessname,
+      score, coupons, stored,scorebalance,couponsbalance,storedbalance,
+      cardno,valid,psexpansivity,netvalue,Inflated
+  </sql>
+   
+  
+  <insert id="insert" parameterType="com.candao.www.data.model.TOrderMember" >
+    insert into t_order_member (
+      orderid, userid, ordertime, 
+      business, terminal, serial, businessname,
+      score, coupons, stored,scorebalance,couponsbalance,storedbalance,
+      cardno,valid,
+      psexpansivity,netvalue,Inflated )
+    values (
+      #{orderid,jdbcType=VARCHAR},
+      #{userid,jdbcType=VARCHAR},
+      current_timestamp(), 
+       
+      #{business,jdbcType=VARCHAR},
+      #{terminal,jdbcType=VARCHAR}, 
+      #{serial,jdbcType=VARCHAR}, 
+      #{businessname,jdbcType=VARCHAR}, 
+      
+      #{score}, 
+      #{coupons}, 
+      #{stored}, 
+      #{scorebalance},
+      #{couponsbalance},
+      #{storedbalance},
+      
+      #{cardno,jdbcType=VARCHAR},
+      #{valid,jdbcType=INTEGER},
+      
+      #{psexpansivity,jdbcType=VARCHAR},
+      #{netvalue},
+      #{inflated}
+      )
+  </insert>
+  
+
+  <update id="updateValid" parameterType="map">
+	         update t_order_member 
+	         set  valid = 1
+	         where orderid = #{orderid,jdbcType=VARCHAR}
+  </update>
+  
+
+	<select id="get" parameterType="map" resultMap="BaseResultMap">
+	   select 
+    <include refid="Base_Column_List" />
+	     from t_order_member
+	   where 
+	    orderid=#{orderid,jdbcType=VARCHAR} 
+	    and valid = 0
+   </select>
+
+</mapper>

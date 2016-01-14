@@ -1,0 +1,171 @@
+package com.candao.www.webroom.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.candao.common.page.Page;
+import com.candao.common.utils.IdentifierUtils;
+import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.ValidateUtils;
+import com.candao.www.data.model.TbTable;
+import com.candao.www.webroom.service.TableService;
+
+@Controller
+@RequestMapping("/table")
+public class TableController {
+	@Autowired
+	private TableService tableService;
+
+	@RequestMapping("/page")
+	@ResponseBody
+	public ModelAndView page(@RequestParam Map<String, Object> params, int page, int rows) {
+		Page<Map<String, Object>> pageMap = tableService.grid(params, page, rows);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("page", pageMap);
+		// return JacksonJsonMapper.objectToJson(page);
+		return mav;
+	}
+
+	@RequestMapping("/index")
+	public String index() {
+		return "table/show";
+	}
+
+	@RequestMapping("/save")
+	@ResponseBody
+	public String save(@RequestBody TbTable tbTable, String json, Model model) {
+		boolean b = false;
+		
+		String id = tbTable.getTableid();
+		//只是获取页面的数据
+		try {
+			if (ValidateUtils.isEmpty(id)) {// 增加
+				tbTable.setTableid(IdentifierUtils.getId().generate().toString());
+				tbTable.setStatus(0);
+				//0空闲
+				b = tableService.save(tbTable);
+			} else {// 修改
+				b = tableService.update(tbTable);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (b) {
+			if (ValidateUtils.isEmpty(id)) {
+				map.put("maessge", "添加成功");
+			} else {
+				map.put("maessge", "修改成功");
+			}
+		} else {
+			if (ValidateUtils.isEmpty(id)) {
+				map.put("maessge", "添加失败");
+			} else {
+				map.put("maessge", "修改失败");
+			}
+		}
+		return JacksonJsonMapper.objectToJson(map);
+	}
+
+	@RequestMapping("/validateTable")
+	@ResponseBody
+	public ModelAndView validateArticle(TbTable tbTable){
+		ModelAndView mav = new ModelAndView();
+		Map<String,Object> params=new HashMap<String,Object>();
+		params.put("tableNo", tbTable.getTableNo());
+//		params.put("status", 0);
+		
+		List<Map<String, Object>> list=tableService.find(params);
+		TbTable a=tableService.findById(tbTable.getTableid());
+		//新增
+		if(ValidateUtils.isEmpty(tbTable.getTableid())){
+			if(list!=null&&list.size()>0){
+				mav.addObject("message", "餐台编号不能重复");
+			}
+		}else{
+			//修改
+			if(!a.getTableNo().equals(tbTable.getTableNo())){
+				if(list!=null&&list.size()>0){
+					mav.addObject("message", "餐台编号不能重复");
+				}
+			}else{
+				if(list!=null&&list.size()>1){
+					mav.addObject("message", "餐台编号不能重复");
+				}
+			}
+		}
+		
+		return mav;
+	}
+
+	
+	
+	@RequestMapping("/findById/{id}")
+	@ResponseBody
+	public ModelAndView findById(@PathVariable(value = "id") String id, Model model) {
+		TbTable tbTable = tableService.findById(id);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("tbTable", tbTable);
+		return mav;
+	}
+
+	@RequestMapping("/delete/{ss}")
+	@ResponseBody
+	public ModelAndView deleteById(@PathVariable(value = "ss") String id) {
+		boolean b = tableService.deleteById(id);
+		ModelAndView mav = new ModelAndView();
+		if (b) {
+			mav.addObject("message", "删除成功");
+		} else {
+			mav.addObject("message", "删除失败");
+		}
+		return mav;
+	}
+
+
+	@RequestMapping("/getTableTag")
+	@ResponseBody
+	public ModelAndView getTableTag() {
+		List<Map<String, Object>> list = tableService.getTableTag();
+		List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
+		Map<String, Object> maps = new HashMap<String, Object>();
+//		maps.put("areaname", "全部");
+//		maps.put("areaid", "0");
+		lists.add(maps);
+		for (int i = 0; i < list.size(); i++) {
+			lists.add(list.get(i));
+		}
+		ModelAndView mav = new ModelAndView();
+		mav.addObject(lists);
+		return mav;
+	}
+	
+	@RequestMapping("/getPrinterTag")
+	@ResponseBody
+	public ModelAndView getPrinterTag() {
+		List<Map<String, Object>> list = tableService.getPrinterTag();
+//		List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
+//		Map<String, Object> maps = new HashMap<String, Object>();
+//		maps.put("areaname", "全部");
+//		maps.put("areaid", "0");
+//		lists.add(maps);
+//		for (int i = 0; i < list.size(); i++) {
+//			lists.add(list.get(i));
+//		}
+		ModelAndView mav = new ModelAndView();
+		mav.addObject(list);
+		return mav;
+	}
+}

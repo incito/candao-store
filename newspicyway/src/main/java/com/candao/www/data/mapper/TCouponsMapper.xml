@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TCouponsDao">
+	<resultMap id="BaseResultMap" type="com.candao.www.data.model.TCoupons">
+		<id column="couponid" property="couponid" jdbcType="VARCHAR" />
+		<result column="couponparent" property="couponparent" jdbcType="VARCHAR" />
+		<result column="couponchild" property="couponchild" jdbcType="VARCHAR" />
+		<result column="showposition" property="showposition" jdbcType="INTEGER" />
+		<result column="couponcustomer" property="couponcustomer"
+			jdbcType="INTEGER" />
+		<result column="couponname" property="couponname" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="totalamount" property="totalamount" jdbcType="DECIMAL" />
+		<result column="couponperiod" property="couponperiod" jdbcType="VARCHAR" />
+		<result column="coupontype" property="coupontype" jdbcType="INTEGER" />
+		<result column="begintime" property="begintime" jdbcType="VARCHAR" />
+		<result column="endtime" property="endtime" jdbcType="VARCHAR" />
+		<result column="userid" property="userid" jdbcType="VARCHAR" />
+		<result column="inserttime" property="inserttime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="ruledescription" property="ruledescription" jdbcType="VARCHAR" />
+	    <result column="wholesingle" property="wholesingle" jdbcType="INTEGER" />
+	</resultMap>
+
+	<resultMap id="pageResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+
+
+	<sql id="Base_Column_List">
+		couponid, couponparent, couponchild, showposition, couponcustomer, couponname,
+		description,
+		totalamount, couponperiod, coupontype, date_format(begintime,'%Y-%m-%d %T') as begintime, 
+		date_format(endtime,'%Y-%m-%d %T') as endtime, userid, inserttime,
+		status,ruledescription,wholesingle
+	</sql>
+	<select id="get" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from t_coupons
+		where couponid = #{couponid,jdbcType=VARCHAR}
+	</select>
+
+	<select id="find" resultMap="findResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from t_coupons
+		<where>
+			status = 0
+			<if test="couponid != null">
+				and couponid = #{couponid,jdbcType=VARCHAR}
+			</if>
+			<if test="couponparent != null">
+				and couponparent = #{couponparent,jdbcType=VARCHAR}
+			</if>
+			<if test="couponchild != null">
+				and couponchild = #{couponchild,jdbcType=VARCHAR}
+			</if>
+			<if test="showposition != null">
+				and showposition = #{showposition,jdbcType=INTEGER}
+			</if>
+			<if test="couponcustomer != null">
+				and couponcustomer = #{couponcustomer,jdbcType=INTEGER}
+			</if>
+			<if test="couponname != null">
+				and couponname = #{couponname,jdbcType=VARCHAR}
+			</if>
+			<if test="description != null">
+				and description = #{description,jdbcType=VARCHAR}
+			</if>
+			<if test="totalamount != null">
+				and totalamount = #{totalamount,jdbcType=DECIMAL}
+			</if>
+			<if test="couponperiod != null">
+				and couponperiod = #{couponperiod,jdbcType=VARCHAR}
+			</if>
+			<if test="coupontype != null">
+				and coupontype = #{coupontype,jdbcType=INTEGER}
+			</if>
+			<if test="begintime != null">
+				and begintime = #{begintime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endtime != null">
+				and endtime = #{endtime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="userid != null">
+				and userid = #{userid,jdbcType=VARCHAR}
+			</if>
+			<if test="inserttime != null">
+				inserttime = #{inserttime,jdbcType=TIMESTAMP}
+			</if>
+			 <if test="ruledescription != null">
+				ruledescription = #{ruledescription,jdbcType=VARCHAR}
+			</if>
+			 <if test="wholesingle != null">
+				wholesingle = #{wholesingle,jdbcType=INTEGER}
+			</if>
+			
+			
+		</where>
+		order by endtime desc
+	</select>
+
+	<select id="page" resultMap="pageResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from t_coupons
+		<where>
+			status = 0
+			<if test="couponid != null">
+				and couponid = #{couponid,jdbcType=VARCHAR}
+			</if>
+			<if
+				test="couponparent != null and couponparent!='' and couponparent!='0'.toString()">
+				and couponparent = #{couponparent,jdbcType=VARCHAR}
+			</if>
+			<if test="couponchild != null">
+				and couponchild = #{couponchild,jdbcType=VARCHAR}
+			</if>
+			<if test="showposition != null">
+				and showposition = #{showposition,jdbcType=INTEGER}
+			</if>
+			<if test="couponcustomer != null">
+				and couponcustomer = #{couponcustomer,jdbcType=INTEGER}
+			</if>
+			<if test="couponname != null and couponname!=''">
+				and couponname like CONCAT('%',#{couponname,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="description != null">
+				and description = #{description,jdbcType=VARCHAR}
+			</if>
+			<if test="totalamount != null">
+				and totalamount = #{totalamount,jdbcType=DECIMAL}
+			</if>
+			<if test="couponperiod != null">
+				and couponperiod = #{couponperiod,jdbcType=VARCHAR}
+			</if>
+			<if test="coupontype != null">
+				and coupontype = #{coupontype,jdbcType=INTEGER}
+			</if>
+			<if test="begintime != null">
+				and begintime = #{begintime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endtime != null">
+				and endtime = #{endtime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="userid != null">
+				and userid = #{userid,jdbcType=VARCHAR}
+			</if>
+			<if test="inserttime != null">
+				inserttime = #{inserttime,jdbcType=TIMESTAMP}
+			</if>
+			
+			 <if test="ruledescription != null">
+				ruledescription = #{ruledescription,jdbcType=VARCHAR}
+			</if>
+			 <if test="wholesingle != null">
+				wholesingle = #{wholesingle,jdbcType=INTEGER}
+			</if>
+			
+		</where>
+		order by endtime desc
+	</select>
+
+	<delete id="delete" parameterType="java.lang.String">
+		update t_coupons set status=1
+		where couponid = #{couponid,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.candao.www.data.model.TCoupons">
+		insert into t_coupons (couponid, couponparent, couponchild,
+		showposition, couponcustomer, couponname,
+		description, totalamount,
+		couponperiod, coupontype, begintime,
+		endtime, userid, inserttime,
+		status,ruledescription,wholesingle)
+		values (#{couponid,jdbcType=VARCHAR}, #{couponparent,jdbcType=VARCHAR},
+		#{couponchild,jdbcType=VARCHAR},
+		#{showposition,jdbcType=INTEGER}, #{couponcustomer,jdbcType=INTEGER}, #{couponname,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR}, #{totalamount,jdbcType=DECIMAL},
+		#{couponperiod,jdbcType=VARCHAR}, #{coupontype,jdbcType=INTEGER},
+		#{begintime,jdbcType=TIMESTAMP},
+		#{endtime,jdbcType=TIMESTAMP}, #{userid,jdbcType=VARCHAR}, now(),
+		#{status,jdbcType=INTEGER},
+		 #{ruledescription,jdbcType=VARCHAR},
+		  #{wholesingle,jdbcType=INTEGER}
+			
+		)
+	</insert>
+	<update id="update" parameterType="com.candao.www.data.model.TCoupons">
+		update t_coupons
+		<set>
+			couponparent = #{couponparent,jdbcType=VARCHAR},
+			couponchild = #{couponchild,jdbcType=VARCHAR},
+			showposition = #{showposition,jdbcType=INTEGER},
+			couponcustomer = #{couponcustomer,jdbcType=INTEGER},
+			couponname = #{couponname,jdbcType=VARCHAR},
+			description = #{description,jdbcType=VARCHAR},
+			totalamount = #{totalamount,jdbcType=DECIMAL},
+			couponperiod = #{couponperiod,jdbcType=VARCHAR},
+			coupontype = #{coupontype,jdbcType=INTEGER},
+			begintime = #{begintime,jdbcType=TIMESTAMP},
+			endtime = #{endtime,jdbcType=TIMESTAMP},
+			wholesingle = #{wholesingle,jdbcType=INTEGER},
+			ruledescription = #{ruledescription,jdbcType=VARCHAR},
+			<if test="userid!=null and userid!=''">
+				userid = #{userid,jdbcType=VARCHAR},
+			</if>
+			<if test="inserttime!=null and inserttime!=''">
+				inserttime = #{inserttime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status!=null and status!=''">
+				status = #{status,jdbcType=INTEGER}
+			</if>
+		</set>
+		where couponid = #{couponid,jdbcType=VARCHAR}
+	</update>
+	
+ <select id="findCouponByDishId" resultMap="BaseResultMap" parameterType="java.util.Map">
+	   select  
+	    distinct couponparent, couponchild, showposition, couponcustomer, couponname,
+		description,
+		  couponperiod, coupontype, begintime, endtime, userid, inserttime,
+		status,ruledescription,wholesingle
+		from  t_coupons tc
+		where  tc.couponparent ='1'
+	    and exists (
+	      select 1 from t_coupon_rule tcr
+	       where   tcr.couponid = tc.couponid
+	        and tcr.dishid = #{dishid}
+       )
+		
+	</select>
+	
+</mapper>

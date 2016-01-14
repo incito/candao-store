@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.CallWaiterDao">
+
+	<resultMap id="tbMessageResultMap" type="com.candao.www.data.model.TbMessage">
+		<id property = "id" column="id" />
+		<result property = "msgType" column="msg_type" />
+		<result property = "inserttime" column="inserttime" />
+		<result property = "status" column="status" />
+		<result property = "replyTime" column="reply_time" />
+		<result property = "sentTime" column="sent_time" />
+		<result property = "tableno" column="tableno" />
+		<result property = "userid" column="userid" />
+		<result property = "orderid" column="orderid" />
+		<result property = "deviceType" column="device_type" />
+		<result property = "deviceNo" column="device_no" />
+		<result property = "startTime" column="call_start_time" />
+		<result property = "timeoutTime" column="timeout_start_time" />
+		<result property = "timeoutDuration" column="timeout_duration" />
+		<result property = "callStatus" column="call_status" />
+		<result property = "callNums" column="call_nums" />
+		<result property = "urgeNums" column="urge_nums" />
+		<result property = "responseNums" column="response_nums" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,msg_type,inserttime,status,reply_time,sent_time,tableno,userid,orderid,device_type,device_no,call_start_time,timeout_start_time,timeout_duration,call_status,call_nums,urge_nums,response_nums
+	</sql>
+	<insert id="saveMessage" parameterType="com.candao.www.data.model.TbMessage">
+		insert into t_message(id,msg_type,inserttime,tableno,userid,orderid,device_type,device_no,call_start_time,timeout_start_time,call_status,call_nums)
+		values (
+		 #{id},#{msgType},#{inserttime},#{tableno},#{userid},#{orderid},#{deviceType},#{deviceNo},#{startTime},#{timeoutTime},#{callStatus},#{callNums}
+		)
+	</insert>
+
+	<update id="updateMessage" parameterType="java.util.Map">
+		update t_message 
+		<set>
+		  <if test ="callStatus!=null">call_status=#{callStatus},</if>
+		  <if test ="callOverTime">call_over_date=#{callOverTime},</if>
+		  <if test ="replyTime!=null">reply_time=#{replyTime},</if>
+		  <if test ="timeoutDuration!=null">timeout_duration=#{timeoutDuration},</if>
+		  <if test ="callNums!=null">call_nums=#{callNums},</if>
+		  <if test ="urgeNums!=null">urge_nums=#{urgeNums},</if>
+		  <if test ="responseNums!=null">response_nums=#{responseNums}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<update id="updateCallInfoStatus" parameterType="java.lang.String">
+		update t_message set call_status = 4,call_over_date = now() where orderid = #{orderid} and call_status not in (3,4)
+	</update>
+	
+	<select id ="queryMessageInfo" parameterType="java.util.Map" resultMap="tbMessageResultMap">
+	   select <include refid="Base_Column_List"/> from t_message where orderid=#{orderid} and msg_type = #{msgType} order by inserttime desc limit 1
+	</select>
+</mapper> 

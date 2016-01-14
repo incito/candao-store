@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TmenuBranchDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TmenuBranch" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="menuid" property="menuid" jdbcType="VARCHAR" />
+    <result column="branchid" property="branchid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap type="java.util.HashMap" id="findResultMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    id, menuid, branchid
+  </sql>
+	<insert id="insertOnce" parameterType="java.util.ArrayList">
+		 insert into t_menu_branch (id, menuid, branchid ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.id,jdbcType=VARCHAR}, #{item.menuid,jdbcType=VARCHAR}, #{item.branchid,jdbcType=INTEGER})
+		</foreach>
+	</insert>
+	<update id="delete" parameterType="map">
+	delete from t_menu_branch where menuid=#{menuid,jdbcType=VARCHAR}
+	</update>
+	<select id="find" resultMap="BaseResultMap" parameterType="map" >
+	select b.* from t_menu_branch b ,t_branch t where b.branchid=t.branchid and b.menuid=#{menuid,jdbcType=VARCHAR}
+	</select>
+	<select id="getBranchDetailBymenuId" resultMap="findResultMap" parameterType="map" >
+	select t.branchid,t.branchname from t_menu_branch b ,t_branch t where b.branchid=t.branchid and b.menuid=#{menuid,jdbcType=VARCHAR}
+	</select>
+	<select id="getBranchIdBymenuId" resultType="java.lang.Integer" parameterType="map" >
+	select branchid from t_menu_branch where  menuid=#{menuid,jdbcType=VARCHAR}
+	</select>
+</mapper>

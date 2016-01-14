@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TmenuDao" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tmenu" >
+    <id column="menuid" property="menuid" jdbcType="VARCHAR" />
+    <result column="menuname" property="menuname" jdbcType="VARCHAR" />
+    <result column="effecttime" property="effecttime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="createuserid" property="createuserid" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="sortnum" property="sortnum" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="findResultMap" type="java.util.HashMap" extends="BaseResultMap"></resultMap>
+  <sql id="Base_Column_List" >
+    menuid, menuname, effecttime, status, createuserid, createtime, sortnum
+  </sql>
+  <select id="find" resultMap="BaseResultMap" parameterType="map">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_menu
+   <where>
+    status!='3'
+    <if test="menuname != null" >
+     and menuname = #{menuname,jdbcType=VARCHAR}
+    </if>
+     </where>
+    <if test="sorttype != null and sorttype=='1'.toString()">
+    order by  status asc,effecttime desc
+    </if>
+    <if test="sorttype != null and sorttype=='2'.toString()">
+    order by  effecttime desc,status asc
+    </if>
+   
+  </select>
+  <select id="findByBranchid" resultMap="BaseResultMap" parameterType="map">
+  select m.* from t_menu m,t_menu_branch b 
+  <where>
+  status!='3' and b.menuid=m.menuid
+  <if test="branchid != null and branchid!=''">
+    and b.branchid=#{branchid}
+   </if>
+   <if test="menuname != null" >
+       and m.menuname = #{menuname,jdbcType=VARCHAR}
+    </if>
+  <if test="sorttype != null and sorttype=='1'.toString()">
+    order by  m.status asc,m.createtime desc
+    </if>
+    <if test="sorttype != null and sorttype=='2'.toString()">
+    order by  m.effecttime desc,m.status asc
+    </if>
+  </where>
+  </select>
+  <select id="get" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_menu
+    where menuid = #{menuid,jdbcType=VARCHAR}
+    and status!='3'
+  </select>
+  <delete id="delete" parameterType="map" >
+    update  t_menu set status='3'
+    where menuid = #{menuid,jdbcType=VARCHAR}
+  </delete>
+<!--   <insert id="insert" parameterType="com.candao.www.data.model.Tmenu" > -->
+<!--     insert into t_menu (menuid, menuname, effecttime,  -->
+<!--       status, createuserid, createtime,  -->
+<!--       sortnum) -->
+<!--     values (#{menuid,jdbcType=VARCHAR}, #{menuname,jdbcType=VARCHAR}, #{effecttime,jdbcType=TIME},  -->
+<!--       #{status,jdbcType=INTEGER}, #{createuserid,jdbcType=VARCHAR},now(),  -->
+<!--       #{sortnum,jdbcType=INTEGER}) -->
+<!--   </insert> -->
+  <insert id="insert" parameterType="com.candao.www.data.model.Tmenu" >
+    insert into t_menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="menuid != null" >
+        menuid,
+      </if>
+      <if test="menuname != null" >
+        menuname,
+      </if>
+      <if test="effecttime != null and effecttime!=''" >
+        effecttime,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createuserid != null" >
+        createuserid,
+      </if>
+<!--       <if test="createtime != null" > -->
+        createtime,
+<!--       </if> -->
+      <if test="sortnum != null" >
+        sortnum,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="menuid != null" >
+        #{menuid,jdbcType=VARCHAR},
+      </if>
+      <if test="menuname != null" >
+        #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="effecttime != null and effecttime!=''" >
+        #{effecttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=VARCHAR},
+      </if>
+<!--       <if test="createtime != null" > -->
+        now(),
+<!--       </if> -->
+      <if test="sortnum != null" >
+        #{sortnum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+    <update id="update" parameterType="com.candao.www.data.model.Tmenu" >
+    update t_menu
+    <set >
+      <if test="menuname != null" >
+        menuname = #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="effecttime != null and effecttime!=''" >
+        effecttime = #{effecttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createuserid != null" >
+        createuserid = #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sortnum != null" >
+        sortnum = #{sortnum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where menuid = #{menuid,jdbcType=VARCHAR}
+  </update>
+  <select id="findMenuByBrachid" resultMap="findResultMap" parameterType="map">
+  	 select m.*,t.branchid,b.branchname from t_menu m,t_menu_branch t ,t_branch_info b
+	<where>
+	m.menuid=t.menuid and m.`status`=1 and t.branchid=b.branchid
+	<if test="branchid!=null">
+	  and t.branchid=#{branchid,jdbcType=INTEGER}
+	</if>
+	</where>
+		order by m.effecttime desc
+  </select>
+  <select id="findEffectMenu" resultMap="BaseResultMap" parameterType="map">
+  <if test="branchid!=null and  branchid !=''">
+  	 select m.* from t_menu m,t_menu_branch t 
+	<where>
+	m.menuid=t.menuid and m.`status` in (#{ststus}) 
+	and <![CDATA[ m.effecttime <= now() ]]>
+	
+	  and t.branchid=#{branchid,jdbcType=INTEGER}
+	
+	</where>
+		order by m.effecttime desc
+  </if>
+  <if test="branchid == null or branchid ==''">
+  	 select m.* from t_menu m
+	<where>
+	 m.`status` in (#{ststus}) 
+	and <![CDATA[ m.effecttime <= now() ]]>
+	</where>
+		order by m.effecttime desc
+  </if>
+  </select>
+ <select id="getHeatDishList" resultMap="findResultMap" parameterType="map">
+  	 select DISTINCT  u.dishname,d.dishid,d.orderNum heat from t_menu m,t_dish d,t_template_detail t,
+	t_template_dishunit u where m.menuid=#{menuid}
+	and m.menuid=t.menuid and m.menuid=u.menuid and d.dishid=t.redishid and d.recommend='1' and d.dishid=u.dishid
+	order by d.orderNum desc
+  </select>
+ <select id="getBranchMenuColumn" resultMap="findResultMap" parameterType="map">
+  	 select DISTINCT b.id,b.itemDesc from t_template t,t_basicdata b where t.columnid=b.id 
+  	 and t.menuid=#{menuid}
+	order by t.columnsort asc
+  </select>
+ <select id="getBranchMenuDishByType" resultMap="findResultMap" parameterType="map">
+  	 select DISTINCT d.dishid,d.dishname from t_template t,t_template_detail tt, t_template_dishunit d where t.menuid=#{menuid}
+	and t.menuid=tt.menuid and d.menuid=t.menuid and tt.templateid=t.templateid and t.columnid=#{columnid}
+	and d.dishid=tt.redishid
+  </select>
+ <select id="getMenuDishDetailById" resultMap="findResultMap" parameterType="map">
+   <if test="flag=='1'.toString()">
+   select DISTINCT d.dishNo,d.dishid,t.dishname,t.dishintroduction,d.abbrdesc,d.imagetitle,t.status ,d.image  
+   </if>
+   <if test="flag=='2'.toString()">
+   select distinct b.itemDesc 
+   </if>
+   <if test="flag=='3'.toString()">
+   select distinct t.unit,t.price,t.vipprice 
+   </if>
+  	  from t_dish d,t_template_dishunit t,
+	t_basicdata b,t_dish_dishtype p
+ 	where t.dishid=d.dishid and t.menuid=#{menuid} and t.dishid=#{dishid}
+	and b.id=p.columnid and p.dishid=t.dishid
+  </select>
+</mapper>

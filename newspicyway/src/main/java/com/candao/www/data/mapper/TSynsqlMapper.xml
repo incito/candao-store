@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TSynSqlMapper" >
+  <resultMap id="BaseResultMap" type="com.candao.www.webroom.model.SynSqlObject" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="branchid" property="branchid" jdbcType="VARCHAR" />
+    <result column="sqltext" property="sqltext" jdbcType="VARCHAR" />
+    <result column="inserttime" property="inserttime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="generatetime" property="generatetime" jdbcType="TIMESTAMP" />
+    <result column="orderseqno" property="orderSeqno" jdbcType="INTEGER" />
+  </resultMap>
+ 
+    <insert id="insert" parameterType="com.candao.www.webroom.model.SynSqlObject" >
+    insert into t_syn_sql_temp (id, branchid, sqltext, inserttime, status, generattime,orderseqno)
+    values (
+      #{id,jdbcType=VARCHAR}, 
+      #{branchid,jdbcType=VARCHAR},
+       #{sqltext,jdbcType=VARCHAR}, 
+      now(), 
+      #{status}, 
+     #{generattime,jdbcType=DATE},
+     #{orderSeqno,jdbcType=INTEGER}
+      )
+  </insert>
+	<select id="getSynSqlDetailByparams" parameterType="map" resultType="com.candao.www.webroom.model.SynSqlObject">
+		select
+		id, branchid, sqltext, inserttime, status, generattime
+		from t_syn_sql
+	</select>
+	
+	<update id="update" parameterType="com.candao.www.webroom.model.SynSqlObject">
+		update t_syn_sql
+		<set>
+	       status = '2',syntime = now()
+		</set>
+		where id =#{id}
+	</update>
+	
+	 <select   id="syndata" parameterType="java.util.Map" statementType="CALLABLE"    >  
+	  {  
+	      call  p_syndata(  
+	       #{id,jdbcType=VARCHAR,mode=IN},
+	       #{result,jdbcType=VARCHAR,mode=INOUT}
+	    )
+	   }  
+ 
+  </select>
+  
+    <update id="updateBizLog">
+       update t_biz_log set syn_status ='1'
+    </update>
+    
+  <insert id="copyDataFromTemp" >
+        insert into t_syn_sql select * from t_syn_sql_temp
+  </insert>
+    
+  <insert id="deleteDataTemp" >
+         delete from t_syn_sql_temp
+  </insert>
+    
+</mapper>

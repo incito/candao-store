@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbSalesSummaryDao" >
+
+
+  	<select id="page" parameterType="map" resultType="map">
+  	
+  	SELECT 
+b.opendate , 
+IFNULL(mainIncome,0)mainIncome, 
+IFNULL(cardIncome,0)cardIncome, 
+IFNULL(cashIncome,0)cashIncome, 
+IFNULL(debtIncome,0)debtIncome, 
+IFNULL(vipIncome,0)vipIncome,
+IFNULL(free,0)free,
+IFNULL(maling,0)maling,
+IFNULL(vipSales,0)vipSales,
+IFNULL(vipIntegral,0)vipIntegral,
+IFNULL(yazuoCoupon,0)yazuoCoupon,
+IFNULL(debtIncome2,0)debtIncome2,
+IFNULL(vipValue,0)vipValue,
+IFNULL(coupon,0)coupon,
+IFNULL(discount,0)discount,
+IFNULL(vipGive,0)vipGive,
+IFNULL(debtAdjustment,0)debtAdjustment
+<!-- , -->
+<!-- receivable -->
+
+ FROM 
+ 
+
+
+(SELECT IFNULL(SUM(payamount),0)mainIncome, b.opendate   FROM t_settlement_detail t,t_settlement b 
+	WHERE t.orderid=b.orderid AND payway IN (0,1,5,8) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate )b 
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)cardIncome, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (1) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)c 
+	ON b.opendate =c.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)cashIncome, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (0) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)d 
+	ON b.opendate =d.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)debtIncome, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (5) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)e
+	 ON b.opendate =e.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)vipIncome, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (8) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)f 
+	ON b.opendate =f.opendate  
+
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)free, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (6) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)g 
+	ON b.opendate =g.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)maling, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (7) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)h
+	ON b.opendate =h.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)vipSales, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (9) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)i
+	ON b.opendate =i.opendate 
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)vipIntegral, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (11) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)j
+	ON b.opendate =j.opendate 
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)yazuoCoupon, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (12) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)k
+	ON b.opendate =k.opendate 
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)debtIncome2, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (13) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)l
+	ON b.opendate =l.opendate 
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)vipValue, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (2) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)m
+	ON b.opendate =m.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)coupon, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (3) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)n
+	ON b.opendate =n.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)discount, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (4) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)o
+	ON b.opendate =o.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)vipGive, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (10) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)p
+	ON b.opendate =p.opendate  
+LEFT JOIN (SELECT IFNULL(SUM(payamount),0)debtAdjustment, b.opendate  FROM t_settlement_detail t,t_settlement b
+	WHERE t.orderid=b.orderid AND payway IN (15) and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)q
+	ON b.opendate =q.opendate 
+<!-- LEFT JOIN (SELECT IFNULL(SUM(orderprice*dishnum),0)receivable ,b.opendate  FROM t_order_detail t,t_settlement b -->
+
+<!-- 	WHERE t.orderid=b.orderid  and b.opendate BETWEEN #{begintime} AND #{endtime} group by b.opendate)r -->
+<!-- 	ON b.opendate =r.opendate  -->
+	
+	
+	
+</select>
+
+ <select id="pageFooter" parameterType="map" resultType="map">
+	
+	select '合计' as opendate,
+	(select IFNULL(SUM(payamount),0.00)mainIncome  FROM t_settlement_detail WHERE payway IN (0,1,5,8) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as mainIncome,
+	(SELECT IFNULL(SUM(payamount),0.00)cardIncome FROM t_settlement_detail WHERE payway IN (1) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as cardIncome,
+	(SELECT IFNULL(SUM(payamount),0.00)cashIncome FROM t_settlement_detail WHERE payway IN (0) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as cashIncome,
+	(SELECT IFNULL(SUM(payamount),0.00)debtIncome FROM t_settlement_detail WHERE payway IN (5) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as debtIncome,
+	(SELECT IFNULL(SUM(payamount),0.00)vipIncome FROM t_settlement_detail WHERE payway IN (8) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as vipIncome,
+	(SELECT IFNULL(SUM(payamount),0.00)free FROM t_settlement_detail WHERE payway IN (6) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as free,
+	(SELECT IFNULL(SUM(payamount),0.00)maling FROM t_settlement_detail WHERE payway IN (7) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as maling,
+	(SELECT IFNULL(SUM(payamount),0.00)vipSales FROM t_settlement_detail WHERE payway IN (9) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as vipSales,
+	(SELECT IFNULL(SUM(payamount),0.00)vipIntegral FROM t_settlement_detail WHERE payway IN (11) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as vipIntegral,
+	(SELECT IFNULL(SUM(payamount),0.00)yazuoCoupon FROM t_settlement_detail WHERE payway IN (12) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as yazuoCoupon,
+	(SELECT IFNULL(SUM(payamount),0.00)debtIncome2 FROM t_settlement_detail WHERE payway IN (13) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as debtIncome2,
+	(SELECT IFNULL(SUM(payamount),0.00)vipValue FROM t_settlement_detail WHERE payway IN (2) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as vipValue,
+	(SELECT IFNULL(SUM(payamount),0.00)coupon FROM t_settlement_detail WHERE payway IN (3) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as coupon,
+	(SELECT IFNULL(SUM(payamount),0.00)discount FROM t_settlement_detail WHERE payway IN (4) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as discount,
+	(SELECT IFNULL(SUM(payamount),0.00)vipGive FROM t_settlement_detail WHERE payway IN (10) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as vipGive,
+	(SELECT IFNULL(SUM(payamount),0.00)debtAdjustment FROM t_settlement_detail WHERE payway IN (15) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime}) as debtAdjustment
+	union
+	select '平均' as opendate,
+	FORMAT((select IFNULL(SUM(payamount),0)mainIncome FROM t_settlement_detail WHERE payway IN (0,1,5,8) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as mainIncome,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)cardIncome FROM t_settlement_detail WHERE payway IN (1) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as cardIncome,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)cashIncome FROM t_settlement_detail WHERE payway IN (0) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as cashIncome,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)debtIncome FROM t_settlement_detail WHERE payway IN (5) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as debtIncome,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)vipIncome FROM t_settlement_detail WHERE payway IN (8) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as vipIncome,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)free FROM t_settlement_detail WHERE payway IN (6) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as free,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)maling FROM t_settlement_detail WHERE payway IN (7) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as maling,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)vipSales FROM t_settlement_detail WHERE payway IN (9) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as vipSales,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)vipIntegral FROM t_settlement_detail WHERE payway IN (11) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as vipIntegral,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)yazuoCoupon FROM t_settlement_detail WHERE payway IN (12) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as yazuoCoupon,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)debtIncome2 FROM t_settlement_detail WHERE payway IN (13) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as debtIncome2,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)vipValue FROM t_settlement_detail WHERE payway IN (2) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as vipValue,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)coupon FROM t_settlement_detail WHERE payway IN (3) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as coupon,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)discount FROM t_settlement_detail WHERE payway IN (4) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as discount,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)vipGive FROM t_settlement_detail WHERE payway IN (10) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as vipGive,
+	FORMAT((SELECT IFNULL(SUM(payamount),0)debtAdjustment FROM t_settlement_detail WHERE payway IN (15) 
+	and	 DATE_FORMAT( inserttime, '%Y-%m-%d') BETWEEN #{begintime} AND #{endtime})/(TIMESTAMPDIFF(DAY,#{begintime},#{endtime})),2) as debtAdjustment
+	
+</select>
+	<select id="dates" parameterType="map" resultType="map">
+	select b.opendateinserttime 
+	FROM
+	t_settlement_detail 
+	WHERE  b.opendate BETWEEN #{begintime} AND #{endtime}
+	group by b.opendate as inserttime
+	</select>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbInstrumentDao">
+
+	<resultMap id="tbInstrumentResultMap" type="com.candao.www.data.model.TbInstrument">
+		<id property="id" column="id" />
+		<result property="instrument_name" column="instrument_name" />
+		<result property="instrument_code" column="instrument_code" />
+		<result property="msg_id" column="msg_id" />
+		<result property="inserttime" column="inserttime" />
+		
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbInstrumentResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbInstrumentResultMap"></resultMap>
+
+	<sql id="Base_Column_List" >
+	id,
+	instrument_name,
+	instrument_code,
+	msg_id,
+	inserttime
+	</sql>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbInstrument">
+
+         
+		insert into t_instrument (
+	    id,
+		instrument_name,
+		instrument_code,
+		msg_id,
+		inserttime
+	     
+	   )values (
+	     #{id},
+	     #{instrument_name},
+	     #{instrument_code},
+	     #{msg_id},
+	     now()
+
+	   )
+	
+	   
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbInstrument">
+	   update t_instrument
+	   <set>
+	     <if test="id != null">
+	     id=#{id},
+	     </if>
+	     <if test="instrument_name != null ">
+	     instrument_name=#{instrument_name},
+	     </if>
+	     <if test="instrument_code != null ">
+	     instrument_code=#{instrument_code},
+	     </if>
+	     <if test="msg_id != null">
+	     msg_id=#{msg_id},
+	     </if>
+	     <if test="inserttime != null">
+	     inserttime=#{inserttime},
+	      </if>
+	    	     
+	    </set> 
+	   where 
+	    id=#{id} 
+	</update>
+	<delete id="delete" parameterType="map">
+
+	</delete>
+
+	
+	<select id="get" parameterType="map" resultMap="tbInstrumentResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_instrument
+	   where 
+	    id=#{id} 
+	</select>
+	
+
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_instrument
+	   where 
+	    id=#{id} 
+	</select>
+	
+
+
+
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+<!-- 	   select  -->
+
+		 
+		 
+<!-- 		    from t_instrument a, -->
+<!-- 	   <where> -->
+<!-- 	   		a.instrument_code != 5 and b.instrument_code =1 and a.areaid=b.areaid -->
+<!-- 	     <if test="id != null and id != ''"> -->
+<!-- 	        a.id=#{id} -->
+<!-- 	     </if> -->
+<!-- 	     <if test="instrument_name != null and instrument_name != ''"> -->
+<!-- 	        and a.instrument_name=#{instrument_name} -->
+<!-- 	     </if> -->
+<!-- 	     <if test="instrument_code != null and instrument_code != ''"> -->
+<!-- 	        and a.instrument_code=#{instrument_code} -->
+<!-- 	     </if> -->
+<!-- 	     <if test="msg_id != null and msg_id != ''"> -->
+<!-- 	        and a.msg_id=#{msg_id} -->
+<!-- 	     </if> -->
+<!-- 	     <if test="inserttime != null and inserttime != ''"> -->
+<!-- 	        and a.inserttime=#{inserttime} -->
+<!-- 	     </if> -->
+<!-- 	    </where> -->
+	   
+	</select>
+
+ <update id="updateStatus" parameterType="com.candao.www.data.model.TbInstrument">
+	   update t_instrument set instrument_code = #{instrument_code},orderid =#{orderid} where    id=#{id}
+ </update>
+
+</mapper>

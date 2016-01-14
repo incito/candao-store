@@ -1,0 +1,223 @@
+.form-control{
+	font-size: 12px;
+}
+/* 报表头部信息 */
+.report-title {
+	margin-top: 20px;
+	font-size: 16px;
+}
+
+.report-title span {
+	color: #e9241c;
+}
+
+.report-title img {
+	float: right;
+}
+/*search box*/
+.report-search-box {
+	padding-top: 10px;
+/*	background: #f4f4f4;*/
+	font-size: 14px;
+}
+
+.report-search-span {
+	margin-top: 7px;
+	padding: 0px;
+	width: 30px;
+}
+
+.report-search-box .form-group {
+	height: 40px;
+}
+
+.report-search-box .control-label {
+	margin-top: 7px;
+	padding-right: 0px;
+	text-align: left;
+	font-weight: normal;
+	width: 80px;
+}
+
+.report-search-box .col-xs-2 {
+	padding-left: 0px;
+}
+
+.report-confirm-btn {
+	padding-left: 0px;
+}
+
+.report-confirm-btn button {
+	background: #fff;
+	color: #333333;
+}
+
+.long-search {
+	width: 290px;
+}
+
+.long-search button {
+	width: 65px;
+}
+
+.long-search button.active {
+	background: #ff6c77;
+	color: #fff;
+}
+
+.report-confirm-btn button.active {
+	background: #ff6c77;
+	color: #fff;
+}
+
+.short-search {
+	float: right;
+	width: 180px;
+}
+
+.short-search button.active {
+	background: #ff6c77;
+	color: #fff;
+}
+/* 报表具体内容 */
+.ky-table i {
+	color: red;
+	float: left;
+}
+
+.ky-table {
+	width: 100%;
+	text-align: center;
+	border: 1px solid #dcdcdc;
+	margin-top: 10px;
+}
+
+.ky-table th {
+	text-align: center;
+	background-color: #dcdcdc;
+	padding: 5px;
+	font-size: 14px;
+}
+
+.ky-table td {
+	font-size: 14px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border: 1px solid #e3e3e3;
+}
+
+.ky-table td.text-right {
+	padding-right: 50px;
+}
+
+.ky-table td.text-left {
+	padding-left: 50px;
+}
+
+.ky-table tr.ky-table-title {
+	background-color: #f0f0f0;
+}
+
+.ky-table tr {
+	border-bottom: 1px solid #dcdcdc;
+}
+
+.report_data_div {
+/*	margin-left: 1em;
+  	margin-right: 5.5em;*/
+  	margin-bottom: 1em;
+	border: 1px solid #e3e3e3;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.report_data_div table {
+	width: 100%;
+	margin-bottom: 0px;
+}
+
+.report_data_div table tr th {
+	border: 1px solid #e3e3e3;
+}
+
+.report_data_div table tr td {
+	border: 1px solid #e3e3e3;
+}
+ul#report_tab li {
+	width: 33%;
+	text-align: center;
+}
+.report_head {
+	height: 30px;
+  	margin-top: 1em;
+  	text-align: right;
+	margin-bottom: 1em;
+}
+.report_sub_tb {
+	font-size: 14px;
+  	font-family: Arial "微软雅黑";
+	text-align: center;
+}
+.report_sub_tb tbody > tr > td, .report_sub_tb thead > tr > td{
+	line-height: 0.8;
+}
+#dataStat_tb th {
+	width: 33px;
+	border: 1px solid #e3e3e3;
+	background: rgb(249, 249, 249);
+	vertical-align: middle;
+}
+
+#dataStat_tb td {
+	width: 33px;
+	border: 1px solid #e3e3e3;
+	vertical-align: middle;
+}
+
+.report-tb-div {
+	margin-bottom: 40px;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+.auto-width {
+	width: auto;
+	padding-left: 0px;
+}
+.btn:hover {
+	background: #ff6c77
+}
+.bottom-div{
+	margin-bottom: 8em;
+}
+.ky-content.content-iframe{
+	margin-bottom: 0px;
+}
+#coupon-details-dialog .modal-dialog {
+	width: 800px;
+}
+/**解决报表页面 代开dialog 页面移动的问题**/
+.modal-open{
+	margin-right: 17px;
+}
+#frozenTb th {
+	border: 1px solid #e3e3e3;
+	background: rgb(249, 249, 249);
+}
+.frozen-tb-div{
+	width: 15%;
+	position: absolute;
+	margin-left: 2px;
+}
+.scroll-tb-div{
+	overflow-x: hidden;
+	width: 85%;
+	float: right;
+	margin-right: 1px;
+}
+.scroll-tb-div:hover{
+	overflow-x: auto;
+}

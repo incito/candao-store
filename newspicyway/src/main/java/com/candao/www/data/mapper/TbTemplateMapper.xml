@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbTemplateDao">
+
+	<resultMap id="tbTemplateResultMap" type="com.candao.www.data.model.Ttemplate">
+		<id property="id" column="id" />
+		<result property="templateid" column="templateid" />
+		<result property="createuserid" column="createuserid" />
+		<result property="name" column="name" />
+		<result property="type" column="type" />
+		<result property="data" column="data" />
+		<result property="status" column="status" />
+		<result property="sort" column="sort" />
+		<result property="columnsort" column="columnsort" />
+		<result property="releasetime" column="releaseTime" />
+		<result property="createtime" column="createTime" />
+		<result property="articleids" column="articleids" />
+		<result property="columnid" column="columnid" />
+		<result property="menuid" column="menuid" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbTemplateResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbTemplateResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.Ttemplate">
+	   insert into t_template (
+	     id,
+	     createuserid,
+	     name,
+	     type,
+	     data,
+	     status,
+	     sort,
+	     releaseTime,
+	     createTime,
+	     articleids,
+	     columnid
+	   )values (
+	     #{id},
+	     #{createuserid},
+	     #{name},
+	     #{type},
+	     #{data},
+	     #{status},
+	     #{sort},
+	     now(),
+	     now(),
+	     #{articleids},
+	     #{columnid}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.Ttemplate">
+	   update t_template set
+	     id=#{id},
+	     createuserid=#{createuserid},
+	     name=#{name},
+	     type=#{type},
+	     data=#{data},
+	     status=#{status},
+	     sort=#{sort},
+	     releaseTime=#{releasetime},
+	     createTime=now(),
+	     articleids=#{articleids},
+	     columnid=#{columnid}
+	   where 
+	    id=#{id} 
+	</update>
+	<update id="updateTemplates" parameterType="java.util.ArrayList">
+		<foreach collection="list" item="item" index="index" separator=";">
+		 update t_template set
+	     data=#{item.data}
+	   where 
+	    id=#{item.id} 
+		</foreach>
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   update t_template set status=0
+	   where id=#{id} 
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbTemplateResultMap">
+	   select 
+	    id,
+	    createuserid,
+	    name,
+	    type,
+	    data,
+	    status,
+	    sort,
+	    DATE_FORMAT(releaseTime,'%Y-%m-%d %T') as releaseTime,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	    articleids,
+	    columnid
+	   from t_template
+	   where 
+	    id=#{id} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    id,
+	    createuserid,
+	    name,
+	    type,
+	    data,
+	    status,
+	    sort,
+	    DATE_FORMAT(releaseTime,'%Y-%m-%d %T') as releaseTime,
+	    DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	    articleids,
+	    columnid
+	   from t_template
+	   where 
+	    id=#{id} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     id,
+	     createuserid,
+	     name,
+	     type,
+	     data,
+	     status,
+	     sort,
+	     DATE_FORMAT(releaseTime,'%Y-%m-%d %T') as releaseTime,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     articleids,
+	     columnid
+	   from t_template 
+	   <where>
+	     <if test="id != null">
+	        id=#{id}
+	     </if>
+	     <if test="createuserid != null">
+	        and createuserid=#{createuserid}
+	     </if>
+	     <if test="name != null">
+	        and name=#{name}
+	     </if>
+	     <if test="type != null">
+	        and type=#{type}
+	     </if>
+	     <if test="data != null">
+	        and  data like CONCAT('%',#{data},'%')
+	     </if>
+	     <if test="status != null and status!=''">
+	        and status=#{status}
+	     </if>
+	     <if test=" status == null or status==''">
+	     <![CDATA[   and  status <> 0]]>
+	     </if>
+	     <if test="releasetime != null">
+	        and releaseTime=#{releasetime}
+	     </if>
+	     <if test="createtime != null">
+	        and createTime=#{createtime}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	     tt.id,
+	     tt.createuserid,
+	     tt.name,
+	     tt.type,
+	     tt.data,
+	     tt.status,
+	     tt.sort,
+	     DATE_FORMAT(tt.releaseTime,'%Y-%m-%d %T') as releaseTime,
+	     DATE_FORMAT(tt.createTime,'%Y-%m-%d %T') as createTimeateTime,
+	     tu.userName,
+	     tt.articleids,
+	     tt.columnid,
+	     tb.itemDesc
+	   from t_template tt , t_user tu ,t_basicdata tb
+	   <where>
+	     <if test=" id != null">
+	          tt.id=#{id}
+	     </if>
+	     <if test=" createuserid != null">
+	        and  tt.createuserid=#{createuserid}
+	     </if>
+	     <if test=" name != null and  name != ''" >
+	        and  tt.name like CONCAT('%',#{name},'%')
+	     </if>
+	     <if test=" type != null ">
+	        and  tt.type=#{type}
+	     </if>
+	     <if test=" data != null">
+	        and  tt.data=#{data}
+	     </if>
+	     <if test=" status != null and  status!=''">
+	       and  tt.status=#{status} 
+	     </if>
+	     <if test=" status == null or status==''">
+	     <![CDATA[   and  tt.status <> 0]]>
+	     </if>
+	     <if test=" releasetime != null">
+	        <![CDATA[ and  tt.releaseTime <#{releasetime} ]]>   
+	     </if>
+	     <if test=" createtime != null">
+	        and  tt.createTime=#{createtime}
+	     </if>
+	     and  tu.userid=tt.createuserid and tb.id=tt.columnid
+	   </where>
+	      order by  tt.sort desc
+	</select>
+	
+		<!-- 验证模板所选文章是否在别的模板中使用了-->
+	<select id="validateTemplate"  parameterType="map" resultMap="tbTemplateResultMap">
+	   select 
+	     id,
+	     createuserid,
+	     name,
+	     type,
+	     data,
+	     status,
+	     sort,
+	     DATE_FORMAT(releaseTime,'%Y-%m-%d %T') as releaseTime,
+	     DATE_FORMAT(createTime,'%Y-%m-%d %T') as createTime,
+	     articleids,
+	     columnid
+	   from t_template    
+	   <where>
+	       status!=0
+	       <if test="tbTemplateid!=null and tbTemplateid!=''">
+	          and id!=#{tbTemplateid} 
+	       </if>
+	       <if test="articleids!=null">
+	           and 
+	       <foreach collection="articleids" item="label" open="(" close=")" separator="or">
+	    	 articleids like CONCAT('%',#{label},'%')
+	   	   </foreach> 
+	   	   </if>
+	   	   
+	   </where>
+	</select>
+	<!-- 下面是新项目中用到的sql文件 -->
+	<insert id="insertOnce" parameterType="java.util.ArrayList">
+		 insert into t_template (
+	     id, templateid,createuserid, name, type, data, status, sort, releaseTime, createTime,
+	     articleids, columnid,columnsort, menuid ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		( #{item.id},#{item.templateid}, #{item.createuserid}, #{item.name}, #{item.type}, #{item.data}, #{item.status},
+	     #{item.sort},  now(), now(), #{item.articleids}, #{item.columnid},#{item.columnsort}, #{item.menuid} )
+		</foreach>
+	</insert>
+	<update id="deleteTemplateList" parameterType="map">
+	delete from t_template where menuid=#{menuid,jdbcType=VARCHAR}
+	</update>
+	<select id="findTempalteList" resultMap="tbTemplateResultMap" parameterType="map" >
+	select t.*,b.itemDesc from t_template t,t_basicdata b 
+	<where>
+	b.id=t.columnid
+	<if test="menuid != null ">
+	        and t.menuid=#{menuid}
+	</if>
+	<if test="columnid != null ">
+	        and t.columnid=#{columnid}
+	</if>
+	</where>
+	ORDER BY t.sort asc
+	</select>
+	<select id="getTtemplateBymenuIdPad" resultMap="findResultMap" parameterType="map" >
+	select t.templateid,t.columnid,b.itemDesc,t.type,t.sort,t.columnsort from t_template t,t_basicdata b  
+	<where>
+	b.id=t.columnid
+	<if test="menuid != null ">
+	        and t.menuid=#{menuid}
+	</if>
+	<if test="columnid != null ">
+	        and t.columnid=#{columnid}
+	</if>
+	</where>
+	ORDER BY t.columnsort asc
+	</select>
+</mapper> 

@@ -1,0 +1,221 @@
+@charset "utf-8";
+/* CSS Document */
+/* A模板 */
+.tempalteTopA{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopA #A1 {
+	border:1px solid #bebebe;
+	height: 400px;  
+	margin:4px;
+	overflow:scroll;
+}
+/* B模板 */
+.tempalteTopB{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopB #B1 {
+	border:1px solid #bebebe;
+	height: 200px;  
+	margin:4px;
+	overflow:scroll;
+}
+
+.tempalteTopB #B2 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    margin: 4px;
+    overflow:scroll;
+}
+/* C模板 */
+.tempalteTopC{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopC #C1 {
+	border:1px solid #bebebe;
+	height: 200px;  
+	margin:4px;
+	overflow:scroll;
+}
+.tempalteTopC #C2, .tempalteTopC #C3 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    width: 47%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+     display:inline
+}
+/* D模板 */
+.tempalteTopD{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopD #D3 {
+	border:1px solid #bebebe;
+	height: 200px;  
+	margin:4px;
+	overflow:scroll;
+}
+.tempalteTopD #D1, .tempalteTopD #D2 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    width: 47%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+     display:inline
+}
+/* E模板 */
+.tempalteTopE{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopE #E1, .tempalteTopE #E2 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    width: 47%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+     display:inline
+}
+.tempalteTopE #E3, .tempalteTopE #E4 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    width: 47%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+     display:inline
+}
+/* F模板 */
+.tempalteTopF{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopF #F1 {
+	border:1px solid #bebebe;
+	height: 200px;  
+	margin:4px;
+	overflow:scroll;
+}
+.tempalteTopF #F2 {
+	 border:1px solid #bebebe;
+	 height: 98px;  
+	 margin:4px; 
+	 overflow:scroll;
+}
+.tempalteTopF #F3 {
+	 border:1px solid #bebebe;
+	 height: 98px;  
+     margin:4px; 
+     overflow:scroll;
+}
+.tempalteTopF #F4 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    width: 47%;
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+}
+.tempalteTopF #F2F3 {
+	 width:50%; 
+	 float:left;
+}
+/* G模板 */
+.tempalteTopG{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopG #G1 {
+	border:1px solid #bebebe;
+	height: 200px;  
+	margin:4px;
+	overflow:scroll;
+}
+.tempalteTopG #G2 {
+	border: 1px solid #BEBEBE;
+    height: 200px;
+    width: 47%;
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+}
+.tempalteTopG #G3 {
+	 border:1px solid #bebebe;
+	 height: 98px;  
+	 margin:4px; 
+	 overflow:scroll;
+}
+.tempalteTopG #G4 {
+	 border:1px solid #bebebe;
+	 height: 98px;  
+     margin:4px; 
+     overflow:scroll;
+}
+
+.tempalteTopG #G3G4 {
+	 width:50%; 
+	 float:left;
+}
+/* H模板 */
+.tempalteTopH{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopH #H1,#H2,#H3,#H4,#H5,#H6,#H7,#H8 {
+	border: 1px solid #BEBEBE;
+    height: 97px;
+    width: 47%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+     display:inline
+}
+/* I模板 */
+.tempalteTopI{
+	 border:1px solid #bebebe;
+	 margin-top: 10px;
+	 margin-left: 60px;
+	 margin-right: 60px;
+	 overflow:hidden;
+}
+.tempalteTopI #I1,#I2,#I3,#I4,#I5,#I6,#I7,#I8,#I9,#I10,#I11,#I12,#I13,#I14 {
+	border: 1px solid #BEBEBE;
+    height: 60px;
+    width: 47%; 
+    margin: 4px;
+    float: left;
+    overflow:scroll;
+     display:inline
+}
+

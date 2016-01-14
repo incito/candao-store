@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbUserRoleDao">
+
+	<resultMap id="tbUserRoleResultMap" type="com.candao.www.data.model.TbUserRole">
+		<id property="roleid" column="roleId" />
+		<id property="userid" column="userId" />
+		<result property="roleid" column="roleId" />
+		<result property="userid" column="userId" />
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbUserRoleResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbUserRoleResultMap"></resultMap>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbUserRole">
+	   insert into t_user_role (
+	     roleId,
+	     userId
+	   )values (
+	     #{roleid},
+	     #{userid}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbUserRole">
+	   update t_user_role set
+	     roleId=#{roleid},
+	     userId=#{userid}
+	   where 
+	    roleId=#{roleid} 
+	    and userId=#{userid} 
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   delete from 
+	     t_user_role 
+	   where 
+         userId=#{userid} 
+	</delete>
+
+	<select id="get" parameterType="map" resultMap="tbUserRoleResultMap">
+	   select 
+	    roleId,
+	    userId
+	   from t_user_role
+	   where 
+	    roleId=#{roleid} 
+	    and userId=#{userid} 
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    roleId,
+	    userId
+	   from t_user_role
+	   where 
+	    roleId=#{roleid} 
+	    and userId=#{userid} 
+	</select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	     roleId,
+	     userId
+	   from t_user_role
+	   <where>
+	     <if test="roleid != null">
+	        roleId=#{roleid}
+	     </if>
+	     <if test="userid != null">
+	        and userId=#{userid}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select 
+	     roleId,
+	     userId
+	   from t_user_role
+	   <where>
+	     <if test="roleid != null">
+	        roleId=#{roleid}
+	     </if>
+	     <if test="userid != null">
+	        and userId=#{userid}
+	     </if>
+	   </where>
+	</select>
+	
+	<insert id="inserts" parameterType="map">
+	   insert into t_user_role (
+	     roleId,
+	     userId
+	   )values 
+	   <foreach collection="roleids" item="roleid" separator=",">
+	   (
+	     #{roleid},
+	     #{userid}
+	   )
+	   </foreach>
+	</insert>
+	
+	<select id="getUserRole" parameterType="map" resultMap="findResultMap">
+	   select 
+	     roleId
+	   from t_user_role
+	   where userId=#{userid}
+	</select>
+	
+</mapper> 

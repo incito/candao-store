@@ -1,0 +1,395 @@
+body{
+	margin: 0;
+	font-family: Arial "微软雅黑";
+	color: #282828;
+	font-size: 12px;
+	overflow: auto;
+}
+
+/* 门店管理 */
+.ky-primary{
+	color: #7AC454;
+}
+
+/* 菜品管理 */
+.ky-info{
+	color: #FF6A4D;
+}
+
+/* 餐台管理 */
+.ky-warning{
+	color: #FFCC4C;
+}
+
+/* 打印管理 */
+.ky-danger{
+	color: #00C4E9;
+}
+
+/* 优惠管理 */
+.ky-minor{
+	color: #00D3AC;
+}
+
+/* 报表分析 */
+.ky-success{
+	color: #FF313E;
+}
+.no-margin{
+	margin:0px !important;
+}
+label.error {
+	color: red;
+}
+.required-span{
+	color: red;
+}
+
+
+.ky-select-padding{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.ky-group-radius{
+	border-top-right-radius: 4px !important;
+	border-bottom-right-radius: 4px !important;
+}
+
+.ky-xs-4{
+	width: 33.33333333%;
+	float: left;
+}
+
+.ky-hr{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.ky-form label.control-label{
+	padding-right: 0;
+	width: 90px;
+	float: left;
+	font-weight: normal;
+}
+
+.ky-form .ky-inputW{
+	width: 175px;
+	float: left;
+}
+
+.glyphicon{
+	cursor: pointer;
+}
+/* 添加按钮 */
+.btn-add{
+	margin:20px 0px;
+}
+.btn-add button{
+	height:30px;
+	font-size: 14px;
+}
+.btn-add .btn-first{
+	width:92px;
+	color:#fff;
+	padding:3px 12px;
+}
+.btn-add .btn-second{
+	width:35px;
+	padding:3px 10px;
+	color:#fff;
+}
+/* table list */
+/*具体内容*/
+.table-list{
+/* 	border:1px solid #f4f3f3;
+	 */	background: #fff;
+	color:#505050;
+}
+.table-list tbody > tr >td,.table-list thead > tr > th{
+	padding:6px;
+}
+.table-list tbody > tr > td{
+	border-top:none;
+	border-bottom:none;
+	text-align: center;
+}
+.table-list thead > tr > th{
+	border-top:none;
+	border-bottom:none;
+	text-align: center;
+	background: #e6e6e6;
+}
+/* .table-list tr.odd{
+	background: #f5f4f3;
+} */
+.table-list div.operate{
+	display: none;
+}
+.table-list div.operate a{
+	color:#282828;
+	text-decoration: underline;
+}
+.table-list thead tr:hover{
+	background:#fff;
+}
+.table-list thead tr>th{
+	text-align: center;
+	font-size: 14px;
+	font-weight: normal;
+}
+.table-list tr:hover{
+	background: #f4f4f4 ;
+	color:#000000;
+	 
+}
+.table-list tr:hover div.operate{
+	display: block;
+}
+.table-list .td-color{
+	width:60px;
+	height:20px;
+	margin:0 auto;
+	background: #ff5500;
+
+}
+.table-list .td-last{
+	width:200px;
+}
+/* 分页 */
+.paging{
+	padding-bottom:20px;
+	text-align: center;
+}
+
+.paging a{
+	height:30px;
+	width:30px;
+	margin-right:5px;
+	padding-top:5px;
+	text-align: center;
+	display: inline-block;
+	border:1px solid #f2f2f2;
+	border-radius:20px;
+	color:#b4b4b4;
+	text-decoration: none;
+	font-size: 12.8px;
+}
+.paging a:hover,.paging a.active{
+	color:#fff;
+	background:#646464;
+}
+/* 添加页面的按钮 */
+.btn-operate{
+	text-align: center;
+	margin:40px 0px 0px;
+}
+.btn-operate button{
+	padding:4px 12px;
+	color:#fff;
+}
+.btn-cancel{
+	background: #756f7c;
+}
+.btn-save{
+	background:#8cc253;
+}
+.btn-save:hover{
+	background:#78ba32;
+	color:#fff;
+}
+.btn-cancel:hover{
+	color:#fff;
+	background: #625d68;
+}
+
+.in-btn135{
+	width:135px;
+}
+/* button 分隔 */
+.btn-division{
+	margin:0px 20px -15px;
+	height:34px;
+	width:1px;
+	background: #756f7c;
+	display: inline-block;
+}
+.arrow-down{
+	color:#fff;
+}
+
+/* 重写selectbox */
+.select-content{
+	width:92%;
+  position: absolute;
+  z-index: 9999;
+  border:1px solid #cccccc;
+  background: #fff;
+}
+.select-content span{
+	width:100%;
+	text-align: left;
+	display: inline-block;
+	padding:5px 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.select-content span:hover{
+	background: #f4f4f4;
+	cursor: pointer;
+
+}
+.select-content-detail input[type='checkbox']
+{
+	position:absolute;
+	right:3%;
+}
+.select-content.select-multi{
+	width:100%;
+}
+.select-content.select-multi span{
+	position:relative;
+/* 	border-bottom:1px solid #cecece;
+	 */	margin-bottom:-5px;
+}
+/* 弹出框 */
+.pop-div{
+	margin:200px auto;
+	padding:75px 0px;
+ 	width:310px;
+	height:210px;
+	border:2px solid #cecece;
+	border-radius: 4px;
+	box-shadow: 2px 2px 6px #cecece;
+	text-align: center;
+}
+.pop-div-content{
+	font-size: 28px;
+}
+.pop-div-content i{
+	margin-right:10px;
+}
+/* form-control样式重写，统一定义为30px */
+.form-control{
+	height:30px;
+	padding:2px 12px;
+	border-radius: 0px;
+}
+
+span.input-group-addon{
+	border-radius: 0px;
+}
+button.btn{
+	padding:4px 12px;
+	border-radius: 0px;
+} 
+
+/* 删除成功弹出框 */
+.confirm-box{
+	padding:30px 0px;
+ 	width:300px;
+	height:130px;
+	border-radius: 4px;
+	text-align: center;
+	position: fixed;
+	top:35%;
+	left:40%;
+	font-size: 24px;
+	color:#fff;
+	background: #555555;
+	z-index:9999;
+	opacity: 0.9;
+}
+
+.ky-del-dialog .modal-header{
+	border-bottom: none;
+	padding:3px 15px;
+	font-size:16px;
+}
+.ky-del-dialog .modal-body{
+	padding-top:50px;
+	text-align: center;
+}
+.ky-del-dialog .btn-operate{
+	margin-top:90px;
+}
+.ky-del-p1{
+	font-size: 20px;
+}
+.ky-del-p1 img{
+	margin-right:20px;
+	margin-top:-8px;
+}
+.ky-del-hr{
+	margin:0px 15px;
+}
+/* checkbox div */
+.div-checkbox{
+	width:15px;
+	height:15px;
+	display: inline-block;
+	border:1px solid #cecece;
+	padding:2px;
+	background-clip:content-box;
+	background-color: #555555;
+}
+/* 小弹出框 */
+.dialog-sm .modal-content{
+	width:310px;
+/*	height:200px;*/
+	margin:200px auto;
+	padding-top: 0px;
+}
+.dialog-sm .modal-content form{
+	margin-bottom: 0px;
+}
+.dialog-sm-header{
+	padding-top:0px;
+	padding-bottom: 3px;
+	margin-top:-15px;
+	font-size:16px;
+	border-bottom:1px solid #cecece;
+}
+.dialog-sm .dialog-sm-info{
+	margin:30px 0px;
+	font-size: 14px;
+}
+.dialog-sm .btn-operate button{
+	width:80px;
+}
+.dialog-sm-info .p1{
+	text-align: center;
+} 
+.dialog-sm-info .p1 img{
+	margin-right:20px;
+	margin-top:-5px;
+}
+
+.dish-label{color:#FF6A4D}
+/*input  alert*/
+input.error{
+	border:1px solid #ea2626;
+}
+select.error{
+	border:1px solid #ea2626;
+}
+label.error{margin-bottom:0 ; font-weight:normal ;font-size: 12px;}
+/* 关闭按钮样式添加 */
+img.img-close{
+	width:26px;
+	height:26px;
+	position: absolute;
+	float: right;
+	/*
+	left: 98%;
+	top: -5%;*/
+	top: -13px;
+  	right: -13px;
+}
+.counter-input-select{
+	font-size:12px;
+}
+.floatleft {
+	float: left;
+}

@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Exampleseadsdfdsafsfsf</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<title>laundry</title>
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css">
+		<link rel="stylesheet" href="../css/print.css">
+
+
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../scripts/projectJs/index.js"></script>
+	<script src="../scripts/projectJs/print.js"></script>
+
+
+
+
+
+</head>
+<body>
+	<div class="ky-navbar ky-navbar-default">
+		<div class="ky-navbar-header">
+			<img src="../images/logo.png" alt="">
+			<p>新辣道后台管理平台</p>
+		</div>
+		<div class="ky-navbar-menu">
+			<ul class="ky-nav ky-nav-pills">
+				<li>
+					<a href="#" class="ky-menu-primary">门店管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-info">菜品管理</a>
+				</li>
+				<li class="ky-dropdown">
+					<a href="#" class="ky-menu-warning">餐台管理</a>
+					<ul class="ky-dropdown-menu ky-nav ky-nav-pills">
+						<li><a href="#" class="ky-menu-warning">区域管理</a></li>
+						<li><a href="#" class="ky-menu-warning">菜品管理</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-danger">打印管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-minor">优惠管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-success">报表分析</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="ky-container ">
+		<div class="ky-title">
+			<p>菜品管理</p>
+			<div class="ky-title-right">
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">		
+						<div class="input-group">
+						  <span class="input-group-addon" id="basic-addon1"><i class="icon-search"></i></span>
+						  <input type="text" class="form-control" placeholder="搜索" aria-describedby="basic-addon1">
+						</div>
+					</div>
+				</form> 
+				<img src="../images/user.png" alt="">
+				<span class="ky-user">李明</span>
+				<img src="../images/logout.png"></div>
+
+
+		</div>
+		<div class="ky-content">
+			<div class="print-content">
+		
+					<div class="print-detail-box"  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPrintBox(this)">
+						<p class="print-img" ><img src="../images/print.png"></p>
+						<p>厨房打印</p>
+						<i class="icon-remove hidden" onclick="delPrintBox(this)"></i>
+					</div>
+					<div class="print-detail-box" onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPrintBox(this)" >
+						<p class="print-img" ><img src="../images/print.png"></p>
+						<p>客用打印</p>
+						<i class="icon-remove hidden" onclick="delPrintBox(this)"></i>
+					</div>
+					<div class="printConfig-btn" id="printConfig-add">
+						<img src="../images/print-addBtn.png">
+			
+					</div>
+			</div>
+	
+		</div>
+
+	</div>
+		<!--添加打印配置 -->
+	<div class="modal fade printConfig-add-dialog in " id="printConfig-add-dialog"  data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">	
+				<div class="modal-header">				  
+			        <h4 class="modal-title">添加打印配置</h4>
+			        <img src="../images/close.png" class="img-close"  data-dismiss="modal">
+			    </div>
+				<div class="modal-body">			
+					<form action="" method="post" class="form-horizontal " name="">
+						<div class="form-group">
+							<label class="col-xs-5 control-label">打印配置名称：</label>
+							<div class="col-xs-7">
+								<input type="text"	value="" class="form-control" name="" id="printConfig-name">	
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-5 control-label">打印配置IP：</label>
+							<div class="col-xs-7">
+								<input type="text"	value="" class="form-control" name="">	
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-5 control-label">打印单据：</label>
+							<div class="col-xs-7">
+								<select class="form-control" id="print-bill">
+									<option value="1">厨打单</option>
+									<option value="2">客用单</option>
+									<option value="3">预结单</option>
+									<option value="4">结账单</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group hidden" id="print-area">
+							<label class="col-xs-5 control-label">打印区域：</label>
+							<div class="col-xs-7">
+								<button title="" class="btn btn-default" type="button" id="print-area-add"><i class="icon-plus-sign"></i></button>
+							</div>
+						</div>
+						<!--已选择内容的样式-->
+					 	<div class="form-group" id="print-area">
+							<label class="col-xs-5 control-label">打印区域：</label>
+							<div class="col-xs-7">
+								<button title="一楼A区，一楼B区，一楼C区，一楼D区" class="btn btn-default" type="button" id="print-area-add">一楼A区，一楼B区，一楼C区，一楼D区</button>		
+							</div>
+						</div>	 
+						<div class="form-group hidden" id="print-dishes">
+							<label class="col-xs-5 control-label">打印菜品：</label>
+							<div class="col-xs-7">
+								<button title="" class="btn btn-default" type="button" id="print-dishes-add"><i class="icon-plus-sign"></i></button>		
+							</div>
+						</div>	
+								
+						<div class="btn-operate">
+							<button class="btn btn-cancel" type="button">取消</button>
+							<div  class="btn-division"></div>
+							<button class="btn btn-save" id="printConfig-save" type="button">确认</button>
+						</div>
+					</form>
+				</div>
+				
+
+			</div>
+			
+		</div>
+	</div>
+	<!--删除弹出框-->
+	<div class="modal fade dialog-sm in"  data-backdrop="static" id="printConfig-del-dialog" >
+		<div class="modal-dialog">
+			<div class="modal-content">				
+				<div class="modal-body">
+					<div class="dialog-sm-header">				  
+				        <span>确认删除</span>
+				        <img src="../images/close-sm.png" class="img-close"  data-dismiss="modal">
+			  	 	 </div>				
+					<form action="" method="post" class="form-horizontal " name="">
+						<div class="dialog-sm-info">
+							<p class="p1"><img src="../images/del-tip.png"></i>确认删除该打印配置吗？</p>	
+						</div>
+						<div class="btn-operate">
+							<button class="btn btn-cancel" type="button">取消</button>
+							<div  class="btn-division"></div>
+							<button class="btn btn-save" type="button">确认</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+		<!--打印区域弹出框-->
+		<div class="modal fade " data-backdrop="static" id="printArea-add-dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="ky-print-title">
+							<span>打印区域</span>
+							<span class="ky-print-empty">
+								<label class="radio-inline">
+									<input type="radio" name="printArea-select" id="" value="1" >全选</label>
+								<label class="radio-inline">
+									<input type="radio" name="printArea-select" id="" value="0" >全不选</label>
+							</span>
+							<img src="../images/close.png" class="img-close" data-dismiss="modal">
+
+						</div>
+						<hr class="ky-hr">
+						<div class="ky-print-content">
+							<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingOne">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>二楼A区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="pull-right"> <i class="glyphicon glyphicon-chevron-up"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingTwo">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>二楼B区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingThree">
+										<div class="panel-title">
+											<input type="checkbox">
+											<span>二楼C区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingFour">
+										<div class="panel-title">
+											<input type="checkbox">											
+											<span>二楼D区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingFive">
+										<div class="panel-title">
+											<input type="checkbox">
+											<span>二楼A区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingSix">
+										<div class="panel-title">
+											<input type="checkbox">
+											<span>二楼B区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="true" aria-controls="collapseSix" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingSeven">
+										<div class="panel-title">
+											<input type="checkbox">
+											<span>二楼C区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="headingEight">
+										<div class="panel-title">
+											<input type="checkbox">
+											<span>二楼D区</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="true" aria-controls="collapseEight" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEight">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">001号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">002号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">003号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">004号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">005号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">006号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">007号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">008号桌</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">A包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">B包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">C包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">D包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">E包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">F包间</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">G包间</label>
+										</div>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+						<div class="ky-print-footer">
+							<div class="btn-operate">
+								<button class="btn btn-cancel in-btn135">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="print-area-confirm">确认</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+		<!-- /.modal-dialog -->
+		</div>
+		<!--打印菜品弹出框-->
+		<div class="modal fade " data-backdrop="static" id="printDishes-add-dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="ky-print-title">
+							<span>选择菜品</span>
+							<span class=" ky-print-empty">
+								<label class="radio-inline">
+									<input type="radio" name="" id="" value="" >全选</label>
+								<label class="radio-inline">
+									<input type="radio" name="" id="" value="" >全不选</label>
+							</span>
+							<img src="../images/close.png" class="img-close" data-dismiss="modal">
+
+						</div>
+						<hr class="ky-hr">
+						<div class="ky-print-content">
+							<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingOne">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>鱼锅类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseOne" aria-expanded="true" aria-controls="collapseOne" class="pull-right"> <i class="glyphicon glyphicon-chevron-up"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="printDishes-headingOne">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingTwo">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>小料类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseTwo" aria-expanded="true" aria-controls="collapseTwo" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingTwo">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingThree">
+										<div class="panel-title">
+											<input type="checkbox">
+											<span>凉菜类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseThree" aria-expanded="true" aria-controls="collapseThree" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingThree">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingFour">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>丸滑类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseFour" aria-expanded="true" aria-controls="printDishes-collapseFour" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingFour">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingFive">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>肉类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseFive" aria-expanded="true" aria-controls="collapseFive" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingFive">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingSix">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>菌类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseSix" aria-expanded="true" aria-controls="collapseSix" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingSix">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingSeven">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>根茎类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseSeven" aria-expanded="true" aria-controls="collapseSeven" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingSeven">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingEight">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>叶菜类</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseEight" aria-expanded="true" aria-controls="collapseEight" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingEight">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading" role="tab" id="printDishes-headingNine">
+										<div class="panel-title">
+											<input type="checkbox" id="" value="">
+											<span>饮品</span>
+											<a data-toggle="collapse" data-parent="#accordion" href="#printDishes-collapseNine" aria-expanded="true" aria-controls="collapseNine" class="pull-right"> <i class="glyphicon glyphicon-chevron-down"></i>
+											</a>
+										</div>
+									</div>
+									<div id="printDishes-collapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="printDishes-headingNine">
+										<div class="panel-body">
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+											<label class="checkbox-inline col-xs-3">
+												<input type="checkbox" id="" value="">红汤梭边鱼锅</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ky-print-footer">
+							<div class="btn-operate">
+								<button class="btn btn-cancel in-btn135">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="print-dishes-confirm">确认</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+		<!-- /.modal-dialog -->
+		</div>
+
+</body>
+</html>

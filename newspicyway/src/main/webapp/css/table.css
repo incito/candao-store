@@ -1,0 +1,38 @@
+.table-btn .btn-first{
+	background: #8cc253;
+}
+.table-btn .btn-second{
+	background: #72a141;
+}
+.table-search{
+	margin-bottom: 20px;
+	padding:30px 0px;
+	border:1px solid #ececec;
+	background: #f4f4f4;
+	
+}
+.table-search .control-label{
+	padding-right:0px;
+	margin-top:-5px;
+	font-weight: normal;
+	text-align: right;
+	width:100px;
+}
+.table-search .col-xs-3{
+	margin-top: -10px;
+}
+/*添加dialog*/
+.table-dialog{
+	font-size: 16px;
+}
+.table-dialog .control-label{
+	width:150px;
+	font-weight: normal;
+	padding-right: 0px;
+}
+.table-dialog .col-xs-8{
+	width:300px;
+}
+.table-btn-save{
+	background:#8cc253;
+}

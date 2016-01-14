@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TsettlementDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TsettlementDetail" >
+    <id column="sdetailid" property="sdetailid" jdbcType="VARCHAR" />
+    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
+    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
+    <result column="normalprice" property="normalprice" jdbcType="DECIMAL" />
+    <result column="discountamount" property="discountamount" jdbcType="DECIMAL" />
+    <result column="discountid" property="discountid" jdbcType="VARCHAR" />
+    <result column="couponid" property="couponid" jdbcType="VARCHAR" />
+    <result column="couponamount" property="couponamount" jdbcType="DECIMAL" />
+    <result column="payamount" property="payamount" jdbcType="DECIMAL" />
+     <result column="incometype" property="incometype" jdbcType="INTEGER" />
+      <result column="membercardno" property="membercardno" jdbcType="VARCHAR" />
+      <result column="bankcardno" property="bankcardno" jdbcType="VARCHAR" />
+      <result column="openDate" property="openDate" jdbcType="DATE" />
+      <result column="userName" property="userName" jdbcType="VARCHAR" />
+      <result column="payway" property="payway" jdbcType="INTEGER" />
+     <result column="debitParterner" property="debitParterner" jdbcType="VARCHAR" />
+        <result column="coupondetailid" property="coupondetailid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sdetailid, orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, 
+    payamount,debitParterner
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_settlement_detail
+    where sdetailid = #{sdetailid,jdbcType=VARCHAR}
+  </select>
+  
+    <select id="find" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_settlement_detail
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_settlement_detail
+    where sdetailid = #{sdetailid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.candao.www.data.model.TsettlementDetail" >
+    insert into t_settlement_detail (sdetailid, orderid, dishid, 
+      normalprice, discountamount, discountid, 
+      couponid, couponamount, payamount,debitParterner
+      )
+    values (#{sdetailid,jdbcType=VARCHAR}, #{orderid,jdbcType=VARCHAR}, #{dishid,jdbcType=VARCHAR}, 
+      #{normalprice,jdbcType=DECIMAL}, #{discountamount,jdbcType=DECIMAL}, #{discountid,jdbcType=VARCHAR}, 
+      #{couponid,jdbcType=VARCHAR}, #{couponamount,jdbcType=DECIMAL}, #{payamount,jdbcType=DECIMAL}
+      #{debitParterner,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+<insert id="insertOnce" parameterType="java.util.ArrayList">
+		INSERT
+       INTO  t_settlement_detail(sdetailid, 
+                                 orderid, 
+                                 dishid,
+                                 normalprice,
+                                 discountamount,
+                                 discountid,
+                                 couponid,
+                                 couponamount,
+                                 payamount, 
+                                 couponnum, 
+                                 feeamount,
+                                 settledid,
+                                 membercardno,
+                                 bankcardno,
+                                incometype,
+                                 opendate,
+                                 username,
+                                 payway,
+                                 debitParterner,
+                                 inserttime,
+                                 coupondetailid
+
+                                 )
+
+		<foreach collection="ids" item="item" index="index" separator="union all">
+		select   #{item.sdetailid,jdbcType=VARCHAR}, 
+		        #{item.orderid,jdbcType=VARCHAR}, 
+		         #{item.dishid,jdbcType=VARCHAR}, 
+	             #{item.normalprice,jdbcType=DECIMAL},
+	              #{item.discountamount,jdbcType=DECIMAL}, 
+	                #{item.discountid,jdbcType=VARCHAR},
+	                 #{item.couponid,jdbcType=VARCHAR}, 
+	                 #{item.couponamount,jdbcType=DECIMAL},
+	                #{item.payamount,jdbcType=DECIMAL},
+	               #{item.couponnum,jdbcType=DECIMAL},
+	              #{item.feeamount,jdbcType=DECIMAL},
+	             #{item.settledid,jdbcType=VARCHAR},
+	               #{item.membercardno,jdbcType=VARCHAR},
+	             #{item.bankcardno,jdbcType=VARCHAR},
+	            #{item.incometype,jdbcType=INTEGER},
+	           #{item.opendate,jdbcType=DATE},
+	            #{item.username,jdbcType=VARCHAR},
+	              #{item.payway,jdbcType=INTEGER},
+	                #{item.debitParterner,jdbcType=VARCHAR},
+	                now(),
+	                #{item.coupondetailid,jdbcType=VARCHAR}
+		</foreach>
+</insert>
+
+      
+  <insert id="insertSelective" parameterType="com.candao.www.data.model.TsettlementDetail" >
+    insert into t_settlement_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sdetailid != null" >
+        sdetailid,
+      </if>
+      <if test="orderid != null" >
+        orderid,
+      </if>
+      <if test="dishid != null" >
+        dishid,
+      </if>
+      <if test="normalprice != null" >
+        normalprice,
+      </if>
+      <if test="discountamount != null" >
+        discountamount,
+      </if>
+      <if test="discountid != null" >
+        discountid,
+      </if>
+      <if test="couponid != null" >
+        couponid,
+      </if>
+      <if test="couponamount != null" >
+        couponamount,
+      </if>
+      <if test="payamount != null" >
+        payamount,
+      </if>
+      <if test="debitParterner != null" >
+        debitParterner,
+      </if>
+      
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sdetailid != null" >
+        #{sdetailid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderid != null" >
+        #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="dishid != null" >
+        #{dishid,jdbcType=VARCHAR},
+      </if>
+      <if test="normalprice != null" >
+        #{normalprice,jdbcType=DECIMAL},
+      </if>
+      <if test="discountamount != null" >
+        #{discountamount,jdbcType=DECIMAL},
+      </if>
+      <if test="discountid != null" >
+        #{discountid,jdbcType=VARCHAR},
+      </if>
+      <if test="couponid != null" >
+        #{couponid,jdbcType=VARCHAR},
+      </if>
+      <if test="couponamount != null" >
+        #{couponamount,jdbcType=DECIMAL},
+      </if>
+      <if test="payamount != null" >
+        #{payamount,jdbcType=DECIMAL},
+      </if>
+      <if test="debitParterner != null" >
+        #{debitParterner,jdbcType=VARCHAR},
+      </if>
+     
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.TsettlementDetail" >
+    update t_settlement_detail
+    <set >
+      <if test="orderid != null" >
+        orderid = #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="dishid != null" >
+        dishid = #{dishid,jdbcType=VARCHAR},
+      </if>
+      <if test="normalprice != null" >
+        normalprice = #{normalprice,jdbcType=DECIMAL},
+      </if>
+      <if test="discountamount != null" >
+        discountamount = #{discountamount,jdbcType=DECIMAL},
+      </if>
+      <if test="discountid != null" >
+        discountid = #{discountid,jdbcType=VARCHAR},
+      </if>
+      <if test="couponid != null" >
+        couponid = #{couponid,jdbcType=VARCHAR},
+      </if>
+      <if test="couponamount != null" >
+        couponamount = #{couponamount,jdbcType=DECIMAL},
+      </if>
+      <if test="payamount != null" >
+        payamount = #{payamount,jdbcType=DECIMAL},
+      </if>
+     <if test="debitParterner != null" >
+        #{debitParterner,jdbcType=VARCHAR},
+      </if>
+      
+    </set>
+    where sdetailid = #{sdetailid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TsettlementDetail" >
+    update t_settlement_detail
+    set orderid = #{orderid,jdbcType=VARCHAR},
+      dishid = #{dishid,jdbcType=VARCHAR},
+      normalprice = #{normalprice,jdbcType=DECIMAL},
+      discountamount = #{discountamount,jdbcType=DECIMAL},
+      discountid = #{discountid,jdbcType=VARCHAR},
+      couponid = #{couponid,jdbcType=VARCHAR},
+      couponamount = #{couponamount,jdbcType=DECIMAL},
+      payamount = #{payamount,jdbcType=DECIMAL},
+      debitParterner =  #{debitParterner,jdbcType=VARCHAR}
+    where sdetailid = #{sdetailid,jdbcType=VARCHAR}
+  </update>
+  
+    <delete id="deleteBySettleId" parameterType="java.util.Map" >
+    delete from t_settlement_detail
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </delete>
+  
+<!--    <insert id="insertHistory" parameterType="java.util.Map" > -->
+<!--      insert into t_settlement_detail_history select * from t_settlement_detail where orderid = #{orderid,jdbcType=VARCHAR} -->
+<!--   </insert> -->
+  
+  <select id="calDebitAmount" parameterType="java.util.Map" statementType="CALLABLE"  >
+        {  
+	      call  p_calcDishPrice(  
+	       #{orderid,jdbcType=VARCHAR,mode=IN}
+	    )
+	   }   
+  </select>
+   
+  
+</mapper>

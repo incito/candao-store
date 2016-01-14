@@ -1,0 +1,363 @@
+.ky-navbar{
+	width: 108px;
+	float: left;
+	height: auto;
+}
+
+.ky-navbar-default{
+	background-color: #E8E7E4;
+}
+
+.ky-navbar-header{
+	height: 64px;
+	text-align: center;
+	font-size: smaller;
+	color: #fff;
+	background-color: #202d37;
+}
+
+.ky-nav{
+	padding-left: 0;
+	list-style: none;
+	font-size: 14.4px;
+}
+/* .ky-nav-pills > li{
+	height:64px;
+} */
+
+.ky-nav-pills > li > a{
+	padding-top: 22px;
+	padding-bottom: 22px;
+	text-align: center;
+	display: block;
+	color: #282828;
+}
+
+.ky-nav-pills > li > a:hover{
+	text-decoration: none;
+}
+
+/* 门店管理 */
+.ky-menu-primary{
+	border-left: 2px solid #7AC454;
+}
+
+/* 菜品管理 */
+.ky-menu-info{
+	border-left: 2px solid #FF6A4D;
+}
+
+/* 餐台管理 */
+.ky-menu-warning{
+	border-left: 2px solid #FFCC4C;
+}
+
+/* 打印管理 */
+.ky-menu-danger{
+	border-left: 2px solid #00C4E9;
+}
+
+/* 优惠管理 */
+.ky-menu-minor{
+	border-left: 2px solid #00D3AC;
+}
+
+/* 报表分析 */
+.ky-menu-success{
+	border-left: 2px solid #FF313E;
+}
+
+/* 报表分析 */
+.ky-menu-success:hover{
+	background-color: #FF313E !important;
+	color: #ffffff !important;
+}
+
+/* 门店管理 */
+.ky-menu-primary:hover{
+	background-color: #7AC454 !important;
+	color: #ffffff !important;
+}
+
+/* 菜品管理 */
+.ky-menu-info:hover{
+	background-color: #FF6A4D !important;
+	color: #ffffff !important;
+}
+
+/* 餐台管理 */
+.ky-menu-warning:hover{
+	background-color: #FFCC4C !important;
+	color: #ffffff !important;
+}
+
+/* 打印管理 */
+.ky-menu-danger:hover{
+	background-color: #00C4E9 !important;
+	color: #ffffff !important;
+}
+
+/* 优惠管理 */
+.ky-menu-minor:hover{
+	background-color: #00D3AC !important;
+	color: #ffffff !important;
+}
+
+/* 报表分析 */
+.ky-menu-success:hover{
+	background-color: #FF313E !important;
+	color: #ffffff !important;
+}
+
+/* 选中菜单 */
+.ky-menu-focus{
+	background-color: #7AC454;
+	color: #ffffff !important;
+}
+
+.ky-dropdown{
+	position: relative;
+}
+
+.ky-dropdown-menu{
+	position: absolute;
+	top: 0;
+	left: 100%;
+	z-index: 1000;
+	min-width: 160px;
+	margin: 0;
+	font-size: 14.4px;
+	display: none;
+	text-align: left;
+	list-style: none;
+	background-color: #fff;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	-webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+	box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.ky-dropdown-menu .ky-menu-warning{
+	background-color: #FFCC4C;
+}
+
+.ky-title{
+	height: 64px;
+	text-align: center;
+	padding-top: 12px;
+	padding-bottom: 20px;
+	background-color: #7AC454;
+	padding-right: 20px;
+	color: #ffffff;
+}
+.ky-title>p{
+	font-size: 25.6px;
+}
+
+.ky-title .navbar-form{
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.ky-title .input-group-addon{
+	background: #fff;
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 15px;
+}
+
+.ky-title input[type=text]{
+	border-radius: 15px;
+	border-left:none;
+}
+
+.ky-title-right{
+	float: right;
+	margin-top: -42px;
+}
+
+.ky-title-right > img{
+	cursor: pointer;
+}
+
+.ky-title-right .form-group{
+	position: relative;
+	display: table;
+}
+
+/* .ky-group-btn{
+	display: table-cell;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.ky-group-btn > i.icon-search{
+	padding: 6px 10px;
+	background-color: #ffffff;
+	border : 1px solid #cccccc;
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 15px;
+	border-right: none;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	color: #dbdbdb;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	-webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+	transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.ky-group-btn + input[type=text]{
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-left: none;
+} */
+
+.ky-user{
+	padding-right: 10px;
+	padding-left: 10px;
+	font-size: 12.8px;
+	color: #ffffff;
+}
+/* iframe框架 */
+.ky-container-iframe{
+	margin-left:108px;
+	color:#fafafa;
+} 
+/* iframe 框架样式 */
+.ky-content.content-iframe{
+	margin-top: 20px;
+	margin-left:20px;
+	margin-right:20px;
+}
+/* 内容 */
+.ky-content{
+	margin-left:128px;
+	margin-right:20px;
+}
+
+/* 添加按钮 */
+.btn-add{
+	margin:20px 0px;
+}
+.btn-add button{
+	height:36px;
+	font-size: 16px;
+}
+.btn-add .btn-first{
+	width:92px;
+	color:#fff;
+}
+.btn-add .btn-second{
+	width:35px;
+	padding:6px 10px;
+	color:#fff;
+}
+/* table list */
+/*具体内容*/
+.table-list{
+	margin-top:20px;
+	border:1px solid #f4f3f3;
+	font-size: 12.8px;
+	background: #fff;
+}
+.table-list tr{
+	height:50px;
+}
+.table-list tbody > tr > td{
+	padding-top:15px;
+	border-top:none;
+	border-bottom:none;
+	text-align: center;
+}
+.table-list thead > tr > th{
+	padding-bottom:15px;
+	border-top:none;
+	border-bottom:none;
+	text-align: center;
+}
+.table-list tr.odd{
+	background: #f5f4f3;
+}
+.table-list div.operate{
+	display: none;
+}
+.table-list div.operate a{
+	color:#282828;
+	text-decoration: underline;
+}
+.table-list thead tr:hover{
+	background:#fff;
+}
+.table-list thead tr>th{
+	text-align: center;
+	font-size: 16px;
+	font-weight: normal;
+}
+.table-list tr:hover{
+	background: #e0ded9;
+	color:#000000;
+	font-weight: bold;
+}
+.table-list tr:hover div.operate{
+	display: block;
+}
+.table-list .td-color{
+	width:60px;
+	height:20px;
+	margin:0 auto;
+	background: #ff5500;
+
+}
+.table-list .td-last{
+	width:200px;
+}
+/* 分页 */
+.paging{
+	padding-bottom:20px;
+	text-align: center;
+}
+
+.paging a{
+	height:30px;
+	width:30px;
+	margin-right:5px;
+	padding-top:5px;
+	text-align: center;
+	display: inline-block;
+	border:1px solid #f2f2f2;
+	border-radius:20px;
+	color:#b4b4b4;
+	text-decoration: none;
+	font-size: 12.8px;
+}
+.paging a:hover,.paging a.active{
+	color:#fff;
+	background:#646464;
+}
+/* 添加页面的按钮 */
+.btn-operate{
+	text-align: center;
+	margin:20px 0px;
+}
+.btn-cancel{
+	background: #756f7c;
+	color:#fff;
+}
+.btn-cancel:hover,.btn-save:hover,.btn-save{
+	color:#fff;
+}
+
+.in-btn135{
+	width:135px;
+}
+/* button 分隔 */
+.btn-division{
+	margin:0px 20px -15px;
+	height:34px;
+	width:1px;
+	background: #756f7c;
+	display: inline-block;
+}
+.arrow-down{
+	color:#fff;
+}

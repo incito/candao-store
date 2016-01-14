@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+    
+	<description>JSTL 1.1 functions library</description>
+	<display-name>JSTL functions</display-name>
+	<tlib-version>1.1</tlib-version>
+	<short-name>blue</short-name>  
+	
+	<function>
+		<description>获取用户可用菜单</description>
+	<name>menu</name>
+		<function-class>com.candao.www.support.FunctionTag</function-class>
+		<function-signature>List getMenu()</function-signature>
+		<example>${blue:menu()}</example>
+	</function>
+</taglib>

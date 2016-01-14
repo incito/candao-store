@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Examples</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css"> 
+	<link rel="stylesheet" href="../css/menu.css"> 
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+
+	/** 菜谱管理用 **/
+	$(document).ready(function(){
+		$(".menuControl-list-sigle").hover(function(){
+			$(this).find(".menuControl-list-operate").show();
+		},function(){
+			$(this).find(".menuControl-list-operate").hide();
+		})
+	});
+	</script>
+</head>
+<body>
+	<div class="ky-navbar ky-navbar-default">
+		<div class="ky-navbar-header">
+			<img src="../images/logo.png" alt="">
+			<p>新辣道后台管理平台</p>
+		</div>
+		<div class="ky-navbar-menu">
+			<ul class="ky-nav ky-nav-pills">
+				<li>
+					<a href="#" class="ky-menu-primary">门店管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-info">菜品管理</a>
+				</li>
+				<li class="ky-dropdown">
+					<a href="#" class="ky-menu-warning">餐台管理</a>
+					<ul class="ky-dropdown-menu ky-nav ky-nav-pills">
+						<li><a href="#" class="ky-menu-warning">区域管理</a></li>
+						<li><a href="#" class="ky-menu-warning">菜品管理</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-danger">打印管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-minor">优惠管理</a>
+				</li>
+				<li>
+					<a href="#" class="ky-menu-success">报表分析</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="ky-container">
+		<div class="ky-title">
+			<p>菜单管理</p>
+			<div class="ky-title-right">
+				<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+				<!-- 		<span class="ky-group-btn">
+					<i class="icon-search"></i>
+				</span>
+				<input type="text" class="form-control" placeholder="Search"> -->
+
+						<div class="input-group">
+						  <span class="input-group-addon" id="basic-addon1"><i class="icon-search"></i></span>
+						  <input type="text" class="form-control" placeholder="search" aria-describedby="basic-addon1">
+						</div>
+
+					</div>
+				</form>
+				<img src="../images/user.png" alt="">
+				<span class="ky-user">李明</span>
+				<img src="../images/logout.png"></div>
+		</div>
+		<div class="ky-content">
+			<div class="menuControl-sort">
+				<span class="menuControl-sort-title">菜品管理</span>
+				<label class="radio-inline">
+					<input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">按状态排序</label>
+				<label class="radio-inline">
+					<input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">按时间排序</label>
+				<button class="btn btn-menuControl-title pull-right">菜品库</button>
+			</div>
+			<hr class="ky-hr">
+			<div class="menuControl-list">
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-on.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道北京慧心店<br>淡季菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+				<div class="menuControl-list-sigle">
+					<img src="../images/menuControl-timingon.png" alt="">
+					<div class="menuControl-list-content">
+						<p class="menuControl-list-name">新辣道春节菜谱</p>
+						<p>适用门店：全部</p>
+					</div>
+					<div class="menuControl-list-contentBottom">
+						<p>启用时间<br>2015-2-14 00:00:00</p>
+					</div>
+					<div class="menuControl-list-operate" style="display:none">
+						<img src="../images/menuControl-edit.png" alt="">
+						<img src="../images/menuControl-copy.png" alt="" class="menuControl-img-margin">
+						<img src="../images/menuControl-delete.png" alt="">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade menuAdd-complete-dialog in " id="menuControl-copy-modal"  data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">	
+				<div class="modal-header">				  
+			        <h4 class="modal-title">菜谱属性设置</h4>
+			        <img src="../images/close.png" class="img-close"  data-dismiss="modal">
+			    </div>
+				<div class="modal-body">			
+					<form action="" method="post" class="form-horizontal " name="">
+						<div class="form-group">
+							<label class="col-xs-5 control-label">菜谱名称：</label>
+							<div class="col-xs-7">
+								<input type="text"	value="" class="form-control" name="" id="printConfig-name">	
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-5 control-label">适用门店：</label>
+							<div class="col-xs-7 menu-shop-edit">
+								<button class="btn btn-default" type="button"><i class="icon-plus-sign"></i></button>	
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-5 control-label">菜谱状态：</label>
+							<div class="col-xs-7">
+								<label class="radio-inline"><input type="radio" value="1">启用</label>
+								<label class="radio-inline"><input type="radio" value="1">不启用</label>						
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-5 control-label">启用时间：</label>
+							<div class="col-xs-7">
+								<input type="text"	value="" class="form-control date-bg" name="">	
+							</div>
+						</div>			
+						<div class="btn-operate">
+							<button class="btn btn-cancel" type="button">取消</button>
+							<div  class="btn-division"></div>
+							<button class="btn btn-save" id="printConfig-save" type="button">确认</button>
+						</div>
+					</form>
+				</div>
+				
+
+			</div>
+			
+		</div>
+	</div>
+
+	<div class="modal fade menuAdd-complete-dialog in " id="menuControl-prompt-modal"  data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">	
+				<div class="modal-header">				  
+			        <h4 class="modal-title">提示</h4>
+			        <img src="../images/close.png" class="img-close"  data-dismiss="modal">
+			    </div>
+				<div class="modal-body">
+					<p>当前菜谱状态为<span class="ky-info">“已启用”</span>，确认对其进行修改</p>
+					<div class="btn-operate">
+						<button class="btn btn-cancel" type="button">取消</button>
+						<div  class="btn-division"></div>
+						<button class="btn btn-save" id="menuControl-save" type="button">确认</button>
+					</div>
+				</div>
+				
+
+			</div>
+			
+		</div>
+	</div>
+</body>
+	<script>
+		$(document).ready(function(){
+
+
+
+
+			$('#menuControl-save').click(function(){
+				
+			});
+			$('#menuControl-prompt-modal').modal('show');
+			$('.ky-navbar-menu > .ky-nav > li > a.ky-menu-primary').css({'background-color':'#7AC454','color':'#ffffff'});
+
+			$('.ky-nav li a').click(function(){
+				var _this = $(this);
+				var bgcolor = _this.css('border-left-color');
+				$('.ky-nav li a').css({'background-color':'#E8E7E4','color':'#282828'})
+				_this.css({'background-color':bgcolor,'color':'#ffffff'});
+				$('.ky-title').css('background-color',bgcolor);
+				if(_this.parent().hasClass('ky-dropdown')){
+					_this.next('ul').find('a').css({'background-color':bgcolor,'color':'#ffffff'});
+				}
+				if(_this.parent().parent().hasClass('ky-dropdown-menu')){
+					_this.parent().parent().prev('a').css({'background-color':bgcolor,'color':'#ffffff'});
+					_this.parent().parent('ul.ky-dropdown-menu').css('display','none');
+				}
+			});
+
+			$('.ky-dropdown').mouseover(function(){
+				$('.ky-dropdown > ul.ky-dropdown-menu').css('display','block');
+				var bgcolor = $(this).children('a').css('border-left-color');
+				$(this).find('.ky-dropdown-menu a').css({'background-color':bgcolor,'color':'#ffffff'});
+			});
+
+			$('.ky-dropdown').mouseout(function(){
+				$('.ky-dropdown > ul.ky-dropdown-menu').css('display','none');
+			});
+
+			$('.ky-dropdown-menu a').mouseover(function(){
+				var bgcolor = $(this).css('border-left-color');
+				$(this).parent().parent().prev('a').css({'background-color':bgcolor,'color':'#ffffff'});
+				console.log('message');
+			});
+		});
+	</script>
+</html>

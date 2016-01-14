@@ -1,0 +1,65 @@
+.shop-btn .btn-first{
+	background: #8cc253;
+}
+/* .shop-btn .btn-second{
+	background: #72a141;
+} */
+.shop-search{
+	padding:5px 0px;
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+
+.shop-search .control-label{
+	padding-right:0px;
+	margin-top:-5px;
+	font-weight: normal;
+	text-align: right;
+	width:100px;
+}
+.shop-search .col-xs-3{
+	margin-top: -10px;
+}
+/*添加dialog*/
+.shop-dialog{
+	font-size: 14px;
+}
+.shop-dialog .control-label{	
+	font-weight: normal;
+	padding-right: 0px;
+	padding-top:4px;
+}
+.shop-btn-save{
+	background:#8cc253;
+}
+.shop-search-btn button{
+	color:#c8c7c7;
+	border-radius: 15px;
+	padding:4px 12px;
+}
+.shop-search-btn{
+	width:100px;
+}
+/*add by fandan */
+.shop-dialog .mt20{
+	margin-top: 0px !important;
+}
+.shop-dialog .btn-operate{
+	margin: 20px 0 0;
+}
+.shop-dialog .modal-content{
+	margin: 20px 0 0;
+}
+.shop-store-table td.manager{
+	text-align: left;padding-left:15px;
+}
+.shop-store-table td.name{
+	text-align: left;padding-left:70px;
+}
+.shop-dialog .ky-group-radius{
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+}
+.form-group {
+    margin-bottom: 10px;
+}

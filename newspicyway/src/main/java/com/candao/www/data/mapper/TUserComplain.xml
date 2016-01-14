@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.ComplainDao">
+
+	<resultMap id="tbUserComplainResultMap" type="com.candao.www.data.model.TbUserComplain">
+		<id property="id" column="id" />
+		<result property="orderid" column="orderid" />
+		<result property="deviceType" column="device_type" />
+		<result property="deviceNo" column="device_no" />
+		<result property="userid" column="userid" />
+		<result property="opinion" column="complaint_opinion" />
+		<result property="photoUrl" column="photo_url" />
+		<result property="complainTime" column="complaint_start_time" />
+		<result property="visitDate" column="visit_date" />
+		<result property="visiter" column="visiter" />
+		<result property="visitRecord" column="visit_record" />
+		<result property="problemSolver" column="problem_solver" />
+		<result property="result" column="result" />
+	</resultMap>
+
+ <sql id="Base_Column_List" >
+          id, orderid,device_type,device_no,userid,complaint_opinion,photo_url,complaint_start_time,visit_date,visiter,visit_record,problem_solver,result
+  </sql>
+ <insert id="saveComplain" parameterType="com.candao.www.data.model.TbUserComplain">
+	 insert into t_user_complaint (id, orderid,device_type,device_no,userid,complaint_opinion,photo_url,complaint_start_time,message_id) values (
+          #{id},
+		  #{orderid},
+		  #{deviceType},
+		  #{deviceNo},
+		  #{userid} , 
+		  #{opinion} ,
+		  #{photoUrl} ,
+		  #{complainTime},
+		  #{messageid}
+	   )
+	</insert>
+	
+	 <insert id="saveComplainType" parameterType="java.util.Map">
+	 insert into t_complaint_type (complaint_id,complaint_type_id) values (
+          #{complaintId},
+		  #{complaintType}
+	   )
+	</insert>
+</mapper> 

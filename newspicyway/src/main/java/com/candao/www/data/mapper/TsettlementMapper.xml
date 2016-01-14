@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TsettlementMapper" >
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tsettlement" >
+    <id column="settledId" property="settledid" jdbcType="VARCHAR" />
+    <result column="debitamount" property="debitamount" jdbcType="DECIMAL" />
+    <result column="creditamount" property="creditamount" jdbcType="DECIMAL" />
+    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
+    <result column="inserttime" property="inserttime" jdbcType="TIMESTAMP" />
+    <result column="indiscount" property="indiscount" jdbcType="DECIMAL" />
+    <result column="outdiscount" property="outdiscount" jdbcType="DECIMAL" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="settleddetailid" property="settleddetailid" jdbcType="VARCHAR" />
+   <result column="cashamount" property="cashamount" jdbcType="DECIMAL" />
+   <result column="bankamount" property="bankamount" jdbcType="DECIMAL" />
+    <result column="memeberamount" property="memeberamount" jdbcType="DECIMAL" />
+     <result column="status" property="status" jdbcType="DECIMAL" />
+     <result column="opendate" property="opendate" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    settledId, debitamount, creditamount, orderid, inserttime, indiscount, outdiscount, 
+    userid, settleddetailid,cashamount,bankamount,memeberamount,status,opendate
+  </sql>
+  
+ <select id="find" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_settlement
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_settlement
+    where settledId = #{settledid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_settlement
+    where settledId = #{settledid,jdbcType=VARCHAR}
+  </delete>
+  
+    <delete id="delete" parameterType="java.lang.String" >
+    delete from t_settlement
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </delete>
+  
+ <insert id="insertHistory" parameterType="java.util.Map" >
+     insert into t_settlement_history (
+	  settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
+	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
+	id,  reason,  rebacktime
+	) select   settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
+	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
+	   UUID(),#{reason},now()
+	 from t_settlement where orderid =#{orderid}
+  </insert>
+  
+   <insert id="insertDetailHistory" parameterType="java.util.Map" >
+     insert into t_settlement_detail_history (
+	  sdetailid ,  orderid ,  dishid ,  normalprice ,  discountamount ,  discountid,  couponid,  couponamount,  payamount ,  couponNum,
+	  feeamount,  settledid ,  incometype ,  membercardno,  bankcardno,  opendate,  username,  payway ,  isclear ,  debitParterner ,
+	  inserttime,  coupondetailid ,  id
+	) select   sdetailid ,  orderid ,  dishid ,  normalprice ,  discountamount ,  discountid,  couponid,  couponamount,  payamount ,  couponNum,
+	  feeamount,  settledid ,  incometype ,  membercardno,  bankcardno,  opendate,  username,  payway ,  isclear ,  debitParterner ,
+	  inserttime,  coupondetailid,UUID() from t_settlement_detail where orderid =#{orderid}
+   </insert>
+  
+<insert id="insertOnce" parameterType="java.util.ArrayList">
+		 insert into t_settlement (settledId, debitamount, creditamount, 
+      orderid, inserttime, indiscount, 
+      outdiscount, userid, settleddetailid,cashamount,bankamount,memeberamount,status,opendate
+      )
+		<foreach collection="list" item="item" index="index" separator="union all">
+		select   #{item.settledid,jdbcType=VARCHAR}, #{item.debitamount,jdbcType=DECIMAL}, #{item.creditamount,jdbcType=DECIMAL}, 
+	              #{item.orderid,jdbcType=VARCHAR}, current_timestamp(), #{item.indiscount,jdbcType=DECIMAL}, 
+	                #{item.outdiscount,jdbcType=DECIMAL}, #{item.userid,jdbcType=VARCHAR}, #{item.settleddetailid,jdbcType=VARCHAR},
+	                #{item.cashamount,jdbcType=DECIMAL},
+	     #{item.bankamount,jdbcType=DECIMAL},
+	       #{item.memeberamount,jdbcType=DECIMAL},
+	       #{item.status,jdbcType=INTEGER}
+	        #{item.opendate,jdbcType=DATE}
+       from dual
+		</foreach>
+</insert>
+
+    
+  <insert id="insert" parameterType="com.candao.www.data.model.Tsettlement" >
+    insert into t_settlement (settledId, debitamount, creditamount, 
+      orderid, inserttime, indiscount, 
+      outdiscount, userid, settleddetailid,cashamount,bankamount,memeberamount,status,opendate
+      )
+    values (#{settledid,jdbcType=VARCHAR}, #{debitamount,jdbcType=DECIMAL}, #{creditamount,jdbcType=DECIMAL}, 
+      #{orderid,jdbcType=VARCHAR}, current_timestamp(), #{indiscount,jdbcType=DECIMAL}, 
+      #{outdiscount,jdbcType=DECIMAL}, #{userid,jdbcType=VARCHAR}, #{settleddetailid,jdbcType=VARCHAR},
+     #{cashamount,jdbcType=DECIMAL},
+     #{bankamount,jdbcType=DECIMAL},
+     #{memeberamount,jdbcType=DECIMAL},
+     #{status,jdbcType=INTEGER},
+     #{opendate,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.candao.www.data.model.Tsettlement" >
+    insert into t_settlement
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="settledid != null" >
+        settledId,
+      </if>
+      <if test="debitamount != null" >
+        debitamount,
+      </if>
+      <if test="creditamount != null" >
+        creditamount,
+      </if>
+      <if test="orderid != null" >
+        orderid,
+      </if>
+      <if test="inserttime != null" >
+        inserttime,
+      </if>
+      <if test="indiscount != null" >
+        indiscount,
+      </if>
+      <if test="outdiscount != null" >
+        outdiscount,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="settleddetailid != null" >
+        settleddetailid,
+      </if>
+            <if test="cashamount != null" >
+        cashamount,
+      </if>
+      <if test="bankamount != null" >
+        bankamount,
+      </if>
+            <if test="memeberamount != null" >
+        memeberamount,
+      </if> 
+     <if test="status != null" >
+        status,
+      </if> 
+      <if test="opendate != null" >
+        opendate,
+      </if> 
+      </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="settledid != null" >
+        #{settledid,jdbcType=VARCHAR},
+      </if>
+      <if test="debitamount != null" >
+        #{debitamount,jdbcType=DECIMAL},
+      </if>
+      <if test="creditamount != null" >
+        #{creditamount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderid != null" >
+        #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="inserttime != null" >
+        #{inserttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="indiscount != null" >
+        #{indiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="outdiscount != null" >
+        #{outdiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="settleddetailid != null" >
+        #{settleddetailid,jdbcType=VARCHAR},
+      </if>
+        <if test="cashamount != null" >
+        #{cashamount,jdbcType=DECIMAL},
+      </if>
+              <if test="bankamount != null" >
+        #{bankamount,jdbcType=DECIMAL},
+      </if>
+      <if test="memeberamount != null" >
+        #{memeberamount,jdbcType=DECIMAL},
+      </if>
+       <if test="status != null" >
+            #{status,jdbcType=INTEGER},
+      </if> 
+      <if test="opendate != null" >
+            #{opendate,jdbcType=DATE},
+      </if> 
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.Tsettlement" >
+    update t_settlement
+    <set >
+      <if test="debitamount != null" >
+        debitamount = #{debitamount,jdbcType=DECIMAL},
+      </if>
+      <if test="creditamount != null" >
+        creditamount = #{creditamount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderid != null" >
+        orderid = #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="inserttime != null" >
+        inserttime = #{inserttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="indiscount != null" >
+        indiscount = #{indiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="outdiscount != null" >
+        outdiscount = #{outdiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="settleddetailid != null" >
+        settleddetailid = #{settleddetailid,jdbcType=VARCHAR},
+      </if>
+       <if test="cashamount != null" >
+        cashamount = #{cashamount,jdbcType=VARCHAR},
+      </if>
+       <if test="bankamount != null" >
+        bankamount = #{bankamount,jdbcType=VARCHAR},
+      </if>
+       <if test="memeberamount != null" >
+       memeberamount = #{memeberamount,jdbcType=DECIMAL},
+      </if>
+        <if test="status != null" >
+         status =  #{status,jdbcType=INTEGER},
+      </if> 
+    </set>
+    where settledId = #{settledid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.Tsettlement" >
+    update t_settlement
+    set debitamount = #{debitamount,jdbcType=DECIMAL},
+      creditamount = #{creditamount,jdbcType=DECIMAL},
+      orderid = #{orderid,jdbcType=VARCHAR},
+      inserttime = current_timestamp(),
+      indiscount = #{indiscount,jdbcType=DECIMAL},
+      outdiscount = #{outdiscount,jdbcType=DECIMAL},
+      userid = #{userid,jdbcType=VARCHAR},
+      settleddetailid = #{settleddetailid,jdbcType=VARCHAR},
+      cashamount = #{cashamount,jdbcType=VARCHAR},
+       bankamount = #{bankamount,jdbcType=VARCHAR},
+      memeberamount= #{memeberamount,jdbcType=DECIMAL},
+        status = #{status,jdbcType=DECIMAL}
+    where settledId = #{settledid,jdbcType=VARCHAR}
+  </update>
+  
+    <update id="reverseOrder" parameterType="com.candao.www.data.model.Tsettlement" >
+    update t_settlement
+    set  status =  #{status,jdbcType=INTEGER}
+    where orderid = #{orderid,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="getTotalAmount" parameterType="java.util.Map">
+        select  t.debitamount,t.creditamount,t.indiscount,t.outdiscount,cacheamount,
+        t.bankamount,t.memberamount
+        from t_settlement t where t.inserttime
+		between  #{beginTime} and  now()
+		   and t.status = '0'
+    </select>
+
+  
+</mapper>

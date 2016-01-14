@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ 	基本用户-Mybatis Mapper文件
+ 	作者：lishoukun
+ 	日期：2015/04/21
+-->
+<mapper namespace="com.candao.www.data.dao.BusinessUserDao">
+  <!-- ===================用户,开始======================== -->
+	
+  <!--  公用列,包含用户表和企业用户表所有字段     -->
+  <sql id="base_user_column_list" >
+  		SELECT 
+   		bb.id as id,
+   		bb.user_id as userId,
+   		bb.province,
+   		bb.city,
+   		bb.region,
+   		bb.address,
+   		bb.business_name as businessName,
+   		bu.account as account,
+   		bu.password as password,
+   		bu.name as name,
+   		bu.user_type as userType,
+   		bu.email as email,
+   		bu.mobile as mobile,
+   		bu.area_code as areaCode,
+   		bu.telephone as telephone,
+   		bu.status as status,
+   		bu.createtime as createtime,
+   		bu.creator as creator
+   		FROM  t_b_user bu
+   		LEFT JOIN t_b_business bb ON bb.user_id = bu.id
+  </sql>
+  
+  <!--  公用查询条件，包含用户所有字段的查询条件     -->
+  <sql id="base_user_condition" >
+  	  <if test="id != null" >
+       		and bb.id = #{id}
+      </if>
+      <if test="userId != null" >
+       		and bb.user_id = #{userId}
+      </if>
+      <if test="province != null" >
+       		and bb.province = #{province}
+      </if>
+      <if test="city != null" >
+       		and bb.city = #{city}
+      </if>
+      <if test="region != null" >
+       		and bb.region = #{region}
+      </if>
+      <if test="businessName != null" >
+      	<choose>
+      		<when test="exactFind != null and exactFind == true">
+      			and bb.business_name = #{businessName}
+      		</when>
+      		<otherwise>
+      			and bb.business_name like '%${businessName}%'
+      		</otherwise>
+      	</choose>
+      </if>
+      <if test="account != null" >
+       		and bu.account = #{account}
+      </if>
+      <if test="password != null" >
+       		and bu.password = #{password}
+      </if>
+      <if test="name != null" >
+       		and bu.name = #{name}
+      </if>
+      <if test="email != null" >
+       		and bu.email = #{email}
+      </if>
+      <if test="mobile != null" >
+       		and bu.mobile = #{mobile}
+      </if>
+      <if test="areaCode != null" >
+       		and bu.area_code = #{areaCode}
+      </if>
+      <if test="telephone != null" >
+       		and bu.telephone = #{telephone}
+      </if>
+      <if test="status != null" >
+       		and bu.status = #{status}
+      </if>
+      <if test="userType != null" >
+       		and bu.user_type= #{userType}
+      </if>
+      <if test="createtime != null" >
+       		and bu.createtime = #{createtime}
+      </if>
+      <if test="creator != null" >
+       		and bu.creator = #{creator}
+      </if>
+  </sql>
+  
+  <!--  获取一条用户，根据主键    -->
+  <select id="getUserById" resultType="com.candao.www.data.model.BusinessUser" parameterType="java.lang.String" >
+    <include refid="base_user_column_list" />
+    WHERE bb.id = #{id}
+  </select>
+  
+  <!--  查询用户列表，根据条件    -->
+  <select id="queryUserList" resultType="com.candao.www.data.model.BusinessUser" parameterType="java.util.Map" >
+    <include refid="base_user_column_list" />
+    <where>
+     	<include refid="base_user_condition" />
+     	<if test="searchText != null and searchText != '' " >
+       	and (
+       		bb.business_name like '%${searchText}%'
+       		or bb.province like '%${searchText}%' 
+       		or bb.city like '%${searchText}%' 
+       		or bb.region like '%${searchText}%' 
+       		or bb.address like '%${searchText}%'
+       		or bu.account like '%${searchText}%' 
+       		or bu.name like '%${searchText}%' 
+       		or bu.email like '%${searchText}%' 
+       		or bu.mobile like '%${searchText}%' 
+       		or bu.area_code like '%${searchText}%' 
+       		or bu.telephone like '%${searchText}%' 
+       		)
+     	</if>
+    </where>
+    order by bu.createtime asc
+    
+  </select>
+  
+  <!--  添加一条用户记录  -->
+  <insert id="addUser" parameterType="com.candao.www.data.model.BusinessUser" >
+    insert into t_b_business
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+   			id,
+   			user_id,
+   			province,
+	   		city,
+	   		region,
+	   		address,
+	   		business_name,
+   			createtime,
+   			creator,
+   			tenantid,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+    		#{id},
+    		#{userId},
+    		#{province},
+    		#{city},
+    		#{region},
+    		#{address},
+    		#{businessName},
+    		#{createtime},
+    		#{creator},
+    		#{tenantid},
+    </trim>
+  </insert>
+  
+  <!--  修改一条用户记录  -->
+  <update id="updateUser" parameterType="com.candao.www.data.model.BusinessUser" >
+    update t_b_business
+    <set >
+      <if test="province != null" >
+       		province = #{province},
+      </if>
+      <if test="city != null" >
+       		city = #{city},
+      </if>
+      <if test="region != null" >
+       		region = #{region},
+      </if>
+      <if test="address != null" >
+       		address = #{address},
+      </if>
+      <if test="businessName != null" >
+       		business_name = #{businessName},
+      </if>
+    </set>
+   where id = #{id}
+  </update>
+  
+  <!--  删除一条用户记录 ，根据主键    -->
+  <delete id="deleteUserById" parameterType="java.util.Map" >
+    delete from t_b_business
+    where id = #{id}
+  </delete>
+  
+  <!--  删除用户记录 ，根据条件    -->
+  <delete id="deleteUser" parameterType="java.util.Map" >
+    delete from t_b_business
+    <where>
+      <if test="id != null" >
+       		and id = #{id}
+      </if>
+      <if test="userId != null" >
+       		and user_id = #{userId}
+      </if>
+      <if test="province != null" >
+       		and province = #{province}
+      </if>
+      <if test="city != null" >
+       		and city = #{city}
+      </if>
+      <if test="region != null" >
+       		and region = #{region}
+      </if>
+      <if test="businessName != null" >
+       		and business_name = #{businessName}
+      </if>
+    </where>
+  </delete>
+ 
+  <select id="findLastAccount" resultType="java.lang.String" parameterType="java.util.Map" >
+  	SELECT account FROM t_b_user 
+  	WHERE user_type= #{userType}
+  	ORDER BY account DESC
+  	LIMIT 1
+  </select>
+ <!-- ===================用户,结束======================== -->
+</mapper>

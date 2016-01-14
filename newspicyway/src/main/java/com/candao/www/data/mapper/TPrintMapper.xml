@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TbPrintObjDao" >
+  <resultMap id="BaseResultMap" type="com.candao.print.entity.PrintObj" >
+  		<id property="id" column="id" />
+		<result property="printtype" column="printType" />
+		<result property="messagemsg" column="messageMsg" />
+		<result property="orderno" column="orderNo" />
+		<result property="username" column="userName" />
+		<result property="tableno" column="tableNo" />
+		<result property="timemsg" column="timeMsg" />
+		<result property="printnum" column="printnum" />
+		<result property="status" column ="status"/>
+		<result property="customerprinterip" column="customerPrinterIp" />
+		<result property="customerprinterport" column="customerPrinterPort" />
+		<result property="tableArea" column="tableArea" />
+		<result property="tableid" column="tableid" />
+		<result property="orderseq" column="orderseq" />
+  </resultMap>
+  
+  <resultMap id="DishResultMap" type="com.candao.print.entity.PrintDish" >
+    <result column="printdishid" property="printdishid" jdbcType="VARCHAR" />
+    <result column="printobjid" property="printobjid" jdbcType="VARCHAR" />
+    <result column="dishName" property="dishName" jdbcType="VARCHAR" />
+    <result column="dishnum" property="dishNum" jdbcType="VARCHAR" />
+    <result column="dishprice" property="dishPrice" jdbcType="DECIMAL" />
+    <result column="totalamount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="payamount" property="payAmount" jdbcType="DECIMAL" />
+    <result column="currenttableid" property="currenttableid" jdbcType="INTEGER" />
+    <result column="sperequire" property="sperequire" jdbcType="VARCHAR" />
+     <result column="tableNomsg" property="tableNomsg" jdbcType="VARCHAR" />
+     <result column="maxDishCount" property="maxDishCount" jdbcType="INTEGER" />
+     <result column="dishUnit" property="dishUnit" jdbcType="VARCHAR" />
+      <result column="printipaddress" property="printipaddress" jdbcType="VARCHAR" />
+       <result column="printport" property="printport" jdbcType="VARCHAR" />
+     <result column="dishid" property="dishId" jdbcType="VARCHAR" />
+      <result column="printtype" property="printtype" jdbcType="VARCHAR" />
+     <result column="relatedishid" property="relatedishid" jdbcType="VARCHAR" />
+     <result column="orderseq" property="orderseq" jdbcType="INTEGER" />
+     <result column="dishtype" property="dishtype" jdbcType="INTEGER" />
+       <result column="printerId" property="printerId" jdbcType="VARCHAR" />
+      <result column="ordertype" property="ordertype" jdbcType="INTEGER" />
+		<result column="parentkey" property="parentkey" jdbcType="VARCHAR" />
+		<result column="superkey" property="superkey" jdbcType="VARCHAR" />
+		<result column="ismaster" property="ismaster" jdbcType="INTEGER" />
+		<result column="primarykey" property="primarykey" jdbcType="VARCHAR" />
+		<result property="printnum" column="printnum" jdbcType="INTEGER"/>
+		  <result column="islatecooke" property="islatecooke" jdbcType="INTEGER" />
+		  <result column="ispot" property="ispot" jdbcType="INTEGER" />
+		
+    
+  </resultMap>
+  
+ <sql id ="BASE_SELECT">
+         id,
+		  printtype,
+		  messagemsg,
+		  orderno,
+		  username,
+		  tableno,
+		  timemsg,
+		  customerprinterip,
+		  customerprinterport,
+		  tableArea,
+		  tableid,orderseq
+    </sql>
+     <sql id ="BASE_DISH_SELECT">
+         printdishid
+		 ,printobjid
+		 ,dishname
+		 ,dishnum
+		 ,dishprice
+		 ,totalamount
+		 ,payamount
+		 ,sperequire
+		 ,tableNomsg
+		 ,maxDishCount
+		 ,dishUnit
+		 ,printipaddress
+		 ,printtype
+		 ,printport,dishId,relatedishid,orderseq,dishtype,printerId,islatecooke,ismaster,printnum,primarykey,parentkey
+    </sql>
+	<update id="update" parameterType="com.candao.print.entity.PrintObj">
+		update t_printobj
+		<set>
+			<if test="id != null">
+				id=#{id},
+			</if>
+			<if test="printtype != null">
+				printtype=#{printtype},
+			</if>
+			<if test="messagemsg != null ">
+				messagemsg=#{messagemsg},
+			</if>
+			<if test="orderno != null ">
+				orderno=#{orderno},
+			</if>
+			<if test="username != null ">
+				username=#{username},
+			</if>
+			<if test="tableno != null">
+				tableno=#{tableno},
+			</if>
+			<if test="timemsg != null ">
+				timemsg=#{timemsg},
+			</if>
+			<if test="printnum != null ">
+				printnum=#{printnum},
+			</if>
+			<if test="status != null ">
+				status=#{status},
+			</if>
+			<if test="customerprinterip != null">
+				customerprinterip=#{customerprinterip},
+			</if>
+			<if test="customerprinterport != null ">
+				customerprinterport=#{customerprinterport},
+			</if>
+			<if test="tableArea != null ">
+				tableArea=#{tableArea},
+			</if>
+			<if test="tableid != null ">
+				tableid=#{tableid},
+			</if>
+			<if test="orderseq != null ">
+				orderseq=#{orderseq},
+			</if>
+			
+		</set>
+		where
+		 id =#{id}
+
+	</update>
+	
+	<update id ="updateDishCall" parameterType = "java.util.Map">
+	    update t_printdish 
+	    set printnum = 1
+	    where printobjid=#{printobjid}
+			<if test="dishid != null ">
+			  and 	dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="printobjid != null and printobjid !='0' ">
+			 and	printobjid=#{printobjid,jdbcType=INTEGER}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+			 <if test="ordertype != null ">
+			  and 	ordertype =#{ordertype,jdbcType=INTEGER}
+			</if>
+			 <if test="parentkey != null ">
+			  and 	parentkey =#{parentkey,jdbcType=VARCHAR}
+			</if>
+			 <if test="superkey != null ">
+			  and 	superkey =#{superkey,jdbcType=VARCHAR}
+			</if>
+		   <if test="ismaster != null ">
+			  and 	ismaster =#{ismaster,jdbcType=VARCHAR}
+			</if>
+		    <if test="superkey != null ">
+			  and 	superkey =#{superkey,jdbcType=VARCHAR}
+			</if>
+		    <if test="primarykey != null ">
+			  and 	primarykey =#{primarykey,jdbcType=VARCHAR}
+			</if>
+		    <if test="islatecooke != null ">
+			  and 	islatecooke =#{islatecooke,jdbcType=VARCHAR}
+			</if>
+			 <if test="childdishtype != null ">
+			  and 	childdishtype =#{childdishtype,jdbcType=INTEGER}
+			</if>
+       
+	</update>
+	
+	
+	<update id="updateDish" parameterType="com.candao.print.entity.PrintDish">
+		update t_printdish
+		<set>
+			<if test="printobjid != null and printobjid !='0' ">
+				printobjid=#{printobjid},
+			</if>
+			<if test="dishName != null ">
+				dishname=#{dishName},
+			</if>
+			<if test="dishNum != null and dishNum != '' ">
+				dishnum=#{dishNum},
+			</if>
+			<if test="dishPrice != null">
+				dishprice=#{dishPrice},
+			</if>
+			<if test="totalAmount != null and totalAmount != ''">
+				totalamount=#{totalAmount},
+			</if>
+			<if test="payAmount != null and payAmount != ''">
+				payamount=#{payAmount},
+			</if>
+			<if test="sperequire != null and sperequire != ''">
+				sperequire=#{sperequire},
+			</if>
+			<if test="tableNomsg != null ">
+				tableNomsg=#{tableNomsg},
+			</if>
+				<if test="maxDishCount != null and maxDishCount!=0">
+				maxDishCount=#{maxDishCount},
+			</if>
+				<if test="printipaddress != null ">
+				printipaddress=#{printipaddress},
+			</if>
+			 <if test="printport != null ">
+				printport=#{printport},
+			</if>
+			<if test="relatedishid != null ">
+				relatedishid=#{relatedishid},
+			</if>
+			<if test="orderseq!= null and orderseq!=0" >
+			    orderseq = #{orderseq},
+			</if>
+			<if test="printnum!= null and printnum!=0" >
+			    printnum = #{printnum},
+			</if>
+<!-- 			<if test="islatecooke!= null" > -->
+<!-- 			    islatecooke = #{islatecooke}, -->
+<!-- 			</if> -->
+			
+		</set>
+	where primarykey=#{primarykey}
+	</update>
+	
+
+	<select id="findDishType1" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		<where>
+		 printobjid=#{printobjid}
+		   and dishtype = 1
+		
+		</where>
+			
+	</select>
+	
+	 <select id="findDishType3" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		where	 printobjid=#{printobjid}
+		   and dishtype = 3
+	</select>
+	
+	
+	
+	<select id="findDishType" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		where	 printobjid=#{printobjid}
+		     and ( dishtype not in ('1','2','3') or dishtype is null)
+		       
+	</select>
+	
+   <select id="find" parameterType="map" resultType="com.candao.print.entity.PrintObj">
+		select
+		 <include refid="BASE_SELECT"/>
+		from t_printobj
+		where	orderno=#{orderno}
+		       
+	</select>
+	
+ <select id="findDish" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 a.printdishid
+		 ,a.printobjid
+		 ,a.dishname
+		 ,a.dishnum
+		 ,a.dishprice
+		 ,a.totalamount
+		 ,a.payamount
+		 ,a.sperequire
+		 ,a.tableNomsg
+		 ,a.maxDishCount
+		 ,a.dishUnit
+		  ,a.printtype
+		  ,a.dishId,a.relatedishid,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
+		 a.printnum,a.primarykey,a.parentkey,a.ispot
+		from t_printdish a 
+		where	  printobjid=#{printobjid}
+			 
+		     <if test="dishid != null ">
+			  and 	a.dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	a.dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	a.relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	a.dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+			   <if test="islatecooke != null ">
+			  and 	a.islatecooke  =#{islatecooke,jdbcType=INTEGER}
+			</if>
+			 <if test="parentkey != null ">
+			  and 	a.parentkey  =#{parentkey,jdbcType=VARCHAR}
+			</if>
+			 <if test="printnum != null ">
+			  and 	a.printnum  =#{printnum,jdbcType=INTEGER}
+			</if>
+			 <if test="ismaster != null ">
+			  and 	a.ismaster  =#{ismaster,jdbcType=INTEGER}
+			</if>
+			
+			 <if test="childdishtype != null ">
+			  and 	a.childdishtype  =#{childdishtype,jdbcType=INTEGER}
+			</if>
+			 <if test="primarykey != null ">
+			  and 	a.primarykey  =#{primarykey,jdbcType=VARCHAR}
+			</if>
+			order by (a.printdishid+0) asc
+	 </select>
+	 
+ <select id="findPrinterByDishId" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select distinct c.ipaddress printipaddress ,
+		 c.port printport 
+		from  t_printer_detail b,t_printer c
+		where	  dishid=#{dishid}
+		  and	  b.printerid=c.printerid
+		    
+	 </select>
+	 
+ <select id="findDishNoPot" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		where	  printobjid=#{printobjid}
+		    and ismaster != '1'
+		     <if test="dishid != null ">
+			  and 	dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+			   <if test="islatecooke != null ">
+			  and 	islatecooke  =#{islatecooke,jdbcType=INTEGER}
+			</if>
+			 <if test="parentkey != null ">
+			  and 	parentkey  =#{parentkey,jdbcType=VARCHAR}
+			</if>
+			 <if test="printnum != null ">
+			  and 	printnum  =#{printnum,jdbcType=INTEGER}
+			</if>
+<!-- 			 <if test="ismaster != null "> -->
+<!-- 			  and 	ismaster  =#{ismaster,jdbcType=INTEGER} -->
+<!-- 			</if> -->
+			
+			 <if test="childdishtype != null ">
+			  and 	childdishtype  =#{childdishtype,jdbcType=INTEGER}
+			</if>
+			 <if test="primarykey != null ">
+			  and 	primarykey  =#{primarykey,jdbcType=VARCHAR}
+			</if>
+			
+	 </select>
+	 
+  <select id="findDishGroupByParentKey" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		where	  printobjid=#{printobjid}
+		     <if test="dishid != null ">
+			  and 	dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+			   <if test="islatecooke != null ">
+			  and 	islatecooke  =#{islatecooke,jdbcType=INTEGER}
+			</if>
+			 <if test="parentkey != null ">
+			  and 	parentkey  =#{parentkey,jdbcType=VARCHAR}
+			</if>
+			 <if test="printnum != null ">
+			  and 	printnum  =#{printnum,jdbcType=INTEGER}
+			</if>
+			 <if test="childdishtype != null ">
+			  and 	childdishtype  =#{childdishtype,jdbcType=INTEGER}
+			</if>
+			<if test="ismaster != null and ismaster !='0'">
+			  and 	ismaster  =#{ismaster,jdbcType=INTEGER}
+			</if>
+			 <if test="primarykey != null ">
+			  and 	primarykey  =#{primarykey,jdbcType=VARCHAR}
+			</if>
+			 group by parentkey
+	 </select>
+	 
+  <select id="findDishExceptNow" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		where	  printobjid=#{printobjid}
+		 and printtype != '1' 
+		     <if test="dishid != null ">
+			  and 	dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+	 </select>
+	 
+  <select id="findNowDish" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 <include refid="BASE_DISH_SELECT"/>
+		from t_printdish
+		where	  printobjid=#{printobjid}
+		     and printtype = '1' 
+		     <if test="dishid != null ">
+			  and 	dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+	 </select>
+	 
+ 
+   <delete id="deletePrintObj" parameterType="map"  >
+		delete 		 
+		from t_printobj
+		where	 orderno=#{orderno}
+	 </delete>
+	 
+  <delete id="deleteDish" parameterType="map"  >
+		delete 		 
+		from t_printdish
+		where	  printobjid=#{printobjid}
+		     <if test="dishid != null ">
+			  and 	dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			<if test="dishUnit != null ">
+			  and 	dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+			<if test="relatedishid != null ">
+			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+			<if test="dishtype != null ">
+			  and 	dishtype =#{dishtype,jdbcType=INTEGER}
+			</if>
+			
+			<if test="parentkey != null ">
+			  and 	parentkey =#{parentkey,jdbcType=VARCHAR}
+			</if>
+			
+		    <if test="childdishtype != null ">
+			  and 	childdishtype =#{childdishtype,jdbcType=VARCHAR}
+			</if>
+			 <if test="primarykey != null ">
+			  and 	primarykey =#{primarykey,jdbcType=VARCHAR}
+			</if>
+		    <if test="superkey != null ">
+			  and 	superkey =#{superkey,jdbcType=VARCHAR}
+			</if>
+			
+	 </delete>
+  
+   <insert id="insertPrintDish" parameterType="com.candao.print.entity.PrintDish" >
+    insert into t_printdish (printdishid, printobjid, dishname, 
+      dishnum, dishprice, totalamount, 
+      payamount, sperequire, tableNomsg, 
+      maxDishCount, dishUnit, printipaddress, 
+      printport, printnum, dishid, 
+      printtype, orderseq, relatedishid, 
+      dishtype, printerId,ordertype,parentkey,superkey,ismaster,primarykey,islatecooke)
+    values (#{printdishid,jdbcType=VARCHAR}, #{printobjid,jdbcType=VARCHAR}, #{dishName,jdbcType=VARCHAR}, 
+      #{dishNum,jdbcType=VARCHAR}, #{dishPrice,jdbcType=DECIMAL}, #{totalAmount,jdbcType=DECIMAL}, 
+      #{payAmount,jdbcType=DECIMAL}, #{sperequire,jdbcType=VARCHAR}, #{tableNomsg,jdbcType=VARCHAR}, 
+      #{maxDishCount,jdbcType=INTEGER}, #{dishUnit,jdbcType=VARCHAR}, #{printipaddress,jdbcType=VARCHAR}, 
+      #{printport,jdbcType=VARCHAR},0, #{dishId,jdbcType=VARCHAR}, 
+      #{printtype,jdbcType=VARCHAR}, #{orderseq,jdbcType=INTEGER}, #{relatedishid,jdbcType=VARCHAR}, 
+      #{dishtype,jdbcType=INTEGER}, #{printerId,jdbcType=VARBINARY},
+      #{ordertype,jdbcType=INTEGER},
+      #{parentkey,jdbcType=VARCHAR},
+      #{superkey,jdbcType=VARCHAR},
+      #{ismaster,jdbcType=INTEGER},
+      #{primarykey,jdbcType=VARCHAR},
+       #{islatecooke,jdbcType=INTEGER})
+  </insert>
+  <update id="updateDishWeight" parameterType="map">
+  update t_printdish set dishnum=#{dishnum} where dishid=#{dishid}
+	and printobjid=#{printobjid} and primarykey=#{primarykey}
+  </update>
+  <update id="deletefishpot" parameterType="map">
+  delete from t_printdish where primarykey = #{primarykey} or parentkey = #{primarykey}
+  </update>
+  
+  <select id ="findDishByPrimaryKey" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+       select *
+       from t_printdish where (primarykey = #{primarykey} or parentkey = #{primarykey} ) and printobjid  = #{printobjid} and islatecooke = #{islatecooke}
+       order by ismaster desc
+       
+  </select>
+  
+    <update id ="updateDishByPrimaryKey" parameterType="map" >
+        update t_printdish set islatecooke = '0' where (primarykey = #{primarykey} or parentkey = #{primarykey} ) and printobjid  = #{printobjid} 
+  </update>
+   <update id ="updateDetailByPrimaryKey" parameterType="map" >
+        update t_order_detail set islatecooke = '0' where (primarykey = #{primarykey} or parentkey = #{primarykey} ) and orderid  = #{orderid} 
+  </update>
+  
+    <select id ="findDishByObjId" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+          select *
+       from t_printdish where  printobjid  = #{printobjid}
+        and  dishid !='DISHES_98'  and dishtype = '0' and islatecooke=#{islatecooke}
+		union all
+        select *
+       from t_printdish where  printobjid  = #{printobjid}
+          and dishtype = '1' and ismaster='1' and islatecooke=#{islatecooke}
+		union all
+			select *
+       from t_printdish where  printobjid  = #{printobjid}
+          and dishtype = '2' and ismaster='1' and childdishtype='1'
+          and  islatecooke=#{islatecooke}
+	   union all
+			select *
+       from t_printdish where  printobjid  = #{printobjid}
+          and dishtype = '2' and ismaster='0' and childdishtype='0'  and islatecooke=#{islatecooke}
+ 
+ 
+       
+  </select>
+  
+<!--     <update id ="updateDishByPrimaryKey" parameterType="map" > -->
+<!--         update t_printdish set islatecooke = '0' where    printobjid  = #{printobjid}  -->
+<!--   </update> -->
+<!--    <update id ="updateDetailByPrimaryKey" parameterType="map" > -->
+<!--         update t_order_detail set islatecooke = '0' where   orderid  = #{orderid}  -->
+<!--   </update> -->
+</mapper>

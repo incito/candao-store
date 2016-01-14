@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Examples</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/index.css">
+	<link rel="stylesheet" href="../css/preferential.css">
+	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
+	<script src="../scripts/jquery.js"></script>
+	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
+
+
+</head>
+ <body>
+	<div class="ky-content content-iframe">
+		<div class="preferential-btn btn-add">
+			<div class="btn-group" role="group" aria-label="...">
+			  <button type="button" class="btn  btn-first">新增优惠</button>
+			  <button type="button" class="btn btn-second"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+			</div>
+		</div>
+
+
+		<ul class="nav-preferential " id="nav-preferential-main">
+			<li class="active">
+				<span class="top"></span>
+				<em></em>
+				<a>全部</a>
+				<span class="bottom"></span>
+			</li>
+			<li>
+				<span class="top"></span>
+				<em></em>
+				<a>特价券</a>
+				<span class="bottom"></span>
+
+			</li>
+			<li>
+				<span class="top"></span>
+				<em></em>
+				<a>折扣券</a>
+				<span class="bottom"></span>
+			</li>
+			<li>
+				<span class="top"></span>
+				<em></em><a>代金券</a>
+				<span class="bottom"></span>
+			</li>
+			<li>
+				<span class="top"></span>
+				<em></em>
+				<a>礼品券</a>
+				<span class="bottom"></span>
+
+			</li>
+			<li>
+				<span class="top"></span>
+				<em></em><a>团购券</a>
+				<span class="bottom"></span>
+			</li>
+			<li>
+				<span class="top"></span>
+				<em></em><a>其他优惠</a>
+				<span class="bottom"></span>
+			</li>
+		</ul>	
+		<table class="table preferential-table table-list">
+			<thead>
+				<tr>
+					<th></th>
+					<th>编号</th>
+					<th>名称</th>
+					<th>分类</th>
+					<th>颜色</th>
+					<th>有效期</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="odd">
+					<td>1</td>
+					<td>P001</td>
+					<td>一元勾玉</td>
+					<td>折扣券</td>
+					<td><div class="td-color"></div></td>
+					<td>2014/01/01-2015/01/01</td>
+					<td>
+						<div class="operate">
+							<a>查看</a>
+							<a>修改</a>
+							<a>删除</a>
+						</div>
+					</td>
+				</tr>
+				<tr >
+					<td>2</td>
+					<td>P001</td>
+					<td>一元勾玉</td>
+					<td>折扣券</td>
+					<td><div class="td-color"></div></td>
+					<td>2014/01/01-2015/01/01</td>
+					<td class="td-last">
+						<div class="operate"><a>查看</a>
+						<a>修改</a>
+						<a>删除</a></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p class="paging">
+			<a class="prev"><</a>
+			<a>1</a>
+			<a>2</a>
+			<a class="active">3</a>
+			<a>4</a>
+			<a>5</a>
+			<a>...</a>
+			<a class="next">></a>
+
+		</p>
+	</div>
+	<!--点击按钮弹出添加界面 -->
+	<div class="modal fade preferential-dialog in " id="preferential-add" >
+		<div class="modal-dialog">
+			<div class="modal-content">	
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-xs-4">
+							<img src="../images/preferential-type1.png"/>
+							<p class="preferential-type">特价券</p>
+							<p class="preferential-detail">川味香肠特价8折</p>
+
+						</div>
+						<div class="col-xs-4">
+							<img src="../images/preferential-type2.png"/>
+							<p class="preferential-type">折扣券</p>
+							<p class="preferential-detail">整单满200元8折</p>
+
+						</div>
+						<div class="col-xs-4">
+							<img src="../images/preferential-type3.png"/>
+							<p class="preferential-type">代金券</p>
+							<p class="preferential-detail">30元代金券</p>
+
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-4">
+							<img src="../images/preferential-type4.png"/>
+							<p class="preferential-type">礼品券</p>
+							<p class="preferential-detail">梭金鱼买1斤送1斤</p>
+
+						</div>
+						<div class="col-xs-4">
+							<img src="../images/preferential-type5.png"/>
+							<p class="preferential-type">团购券</p>
+							<p class="preferential-detail">美团88抵100</p>
+
+						</div>
+						<div class="col-xs-4">
+							<img src="../images/preferential-type6.png"/>
+							<p class="preferential-type">其他优惠</p>
+							<p class="preferential-detail">新品1元尝鲜</p>
+
+						</div>
+					</div>
+	
+					
+				</div>
+		
+
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+$("ul.nav-preferential li").click(function(){
+	$("ul.nav-preferential li").removeClass("active");
+	$(this).addClass("active");
+	var left= ($(this).prevAll("li").length*14+7)+'%';
+	$(this).find("em").css("left",left);
+
+
+});
+$("ul.nav-preferential li").mouseover(function(){
+	var left= ($(this).prevAll("li").length*14+7)+'%';
+	$(this).find("em").css("left",left);
+
+
+});
+$(".btn-second").click(function(){
+	$("#preferential-add").modal("show")
+
+});
+
+$(".btn-first").click(function(){
+	$("#preferential-add").modal("show")
+
+});
+
+</script>

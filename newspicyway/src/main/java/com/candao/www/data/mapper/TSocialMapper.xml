@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TSocialDao">
+
+<!-- 保存礼物 -->
+<insert id="saveGift" parameterType="com.candao.www.data.model.TbGift">
+	INSERT INTO t_gift (id, gift_no, gift_type_id, gift_name, gift_unit, gift_price, member_price) 
+	VALUES (#{id,jdbcType=VARCHAR}, #{giftNo,jdbcType=VARCHAR}, #{giftTypeId,jdbcType=VARCHAR}, 
+	#{giftName,jdbcType=VARCHAR}, #{giftUnit,jdbcType=VARCHAR}, #{giftPrice,jdbcType=DECIMAL}, #{memberPrice,jdbcType=DECIMAL});
+</insert>
+
+<!-- 删除礼物表 -->
+<delete id="deleteGift">
+    delete from t_gift
+</delete>
+
+<!-- 查询所有已开台桌台 -->
+<select id="queryAllOpenTable" parameterType="map" resultType="map">
+	SELECT 
+	   too.orderid,
+	   IFNULL(too.ageperiod,'') as ageperiod,
+	   tt.tableNo as currenttableid,
+	   too.womanNum,
+	   too.mannum
+	FROM
+		t_order too,	
+	    t_table tt
+	WHERE too.currenttableid = tt.tableid
+	AND too.orderstatus = 0
+	AND tt.`status` in (1,2)
+	AND too.gift_status <![CDATA[ <> ]]> '-1'
+	AND too.currenttableid <![CDATA[ <> ]]> (select currenttableid from t_order too where too.orderid = #{orderid})
+	order by tt.tableNo+0,too.orderid
+</select>
+
+<!-- 查询礼物列表 -->
+<select id="getGiftList" parameterType="map" resultMap="tbGift">
+    select id, gift_no, gift_type_id, gift_name, gift_unit, gift_price, member_price from t_gift
+</select>
+
+<!-- 礼物表对应 -->
+<resultMap type="TbGift" id="tbGift">
+    <id column="id" property="id" />
+    <id column="gift_no" property="giftNo" />
+    <id column="gift_type_id" property="giftTypeId" />
+	<id column="gift_name" property="giftName" />
+	<id column="gift_unit" property="giftUnit" />
+	<id column="gift_price" property="giftPrice" />
+	<id column="member_price" property="memberPrice" />
+	<id column="image_url" property="imageUrl" />
+</resultMap>
+
+<!-- 查询已送礼物列表 -->
+<select id="sendGiftList" parameterType="map" resultType="map">
+    SELECT
+	    tgl.order_id,
+		DATE_FORMAT(tgl.insert_time,'%Y-%m-%d %H:%i') as insert_time,
+		tgl.gift_num,
+		tgl.gift_price,
+		tgl.gift_unit,
+		tgl.gift_name
+	FROM
+		t_order too,
+		t_gift_log tgl
+	WHERE
+		too.orderid = tgl.order_id
+	and DATE(too.begintime) = curdate()
+	<if test="orderid != null and orderid != ''">
+	    AND too.orderid <![CDATA[ <> ]]> #{orderid}
+	</if>
+	group by tgl.order_id
+</select>
+</mapper>

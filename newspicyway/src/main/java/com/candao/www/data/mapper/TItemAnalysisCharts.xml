@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TItemAnalysisChartsDao">
+    <!-- 查询营业分析品项销售统计存储过程 -->
+    <select id="itemAnalysisChartsForPro" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+        {
+          call p_report_yyfx_pxxstj(
+            #{branchId,jdbcType=INTEGER,mode=IN},
+            #{dateType,jdbcType=INTEGER,mode=IN},
+            #{beginTime,jdbcType=TIMESTAMP,mode=IN},
+            #{endTime,jdbcType=TIMESTAMP,mode=IN},
+            #{result,jdbcType=VARCHAR,mode=OUT}
+          )
+        }
+    </select>
+</mapper>

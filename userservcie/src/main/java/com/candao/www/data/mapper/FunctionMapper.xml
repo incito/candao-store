@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.dao.FunctionDao">
+	<resultMap id="base_result_map" type="com.candao.www.data.model.Function">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="application" property="application" jdbcType="VARCHAR" />
+		<result column="application_name" property="applicationName" jdbcType="VARCHAR" />
+		<result column="application_type" property="applicationType" jdbcType="VARCHAR" />
+		<result column="webroot" property="webroot" jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+		<result column="parent_fun" property="parentFun" jdbcType="VARCHAR" />
+		<result column="is_leaf" property="isLeaf" jdbcType="BOOLEAN" />
+		<result column="operation_type" property="operationType" jdbcType="CHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+		<result column="scope_code" property="scopeCode" jdbcType="CHAR" />
+		<result column="scope_name" property="scopeName" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<!-- <result column="application_name" property="applicationName" jdbcType="VARCHAR" /> -->
+		<result column="activity_introduction" property="activityIntroduction" jdbcType="VARCHAR" />
+		<!-- <result column="application_type" property="applicationType" jdbcType="CHAR" /> -->
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="creator" property="creator" jdbcType="VARCHAR" />
+		<association property="parentFunction" column="parent_fun"  javaType="com.candao.www.data.model.Function" select="getFunctionById" />
+	</resultMap>
+	
+	<sql id="base_column_list">
+		SELECT
+		tf.id,
+		tf.name,
+		tf.code,
+		tf.application,
+		tf.level,
+		tf.parent_fun,
+		tf.is_leaf,
+		tf.operation_type,
+		tf.status,
+		tf.scope_code,
+		tf.scope_name,
+		tf.description,
+		tf.createtime,
+		tf.creator,
+		ta.name as application_name,
+		ta.type as application_type,
+		ta.webroot
+		FROM t_b_function tf
+		LEFT JOIN t_b_application ta ON tf.application = ta.id
+	</sql>
+	<sql id="base_condition">
+		<if test="id != null">AND tf.id = #{id}</if>
+		<if test="name != null">AND tf.name = #{name} </if>
+		<if test="code != null">AND tf.code = #{code} </if>
+		<if test="application != null">AND tf.application = #{application} </if>
+		<if test="level != null and level > 0">AND tf.level = #{level}</if>
+		<if test="parentFun != null">AND tf.parent_fun = #{parentFun}</if>
+		<if test="isLeaf != null">AND tf.is_leaf = #{isLeaf}</if>
+		<if test="operationType != null">AND tf.operation_type = #{operationType}</if>
+		<if test="status != null">AND tf.status = #{status}</if>
+		<if test="scopeCode != null">AND tf.scope_code = #{scopeCode}</if>
+		<if test="scopeName != null">AND tf.scope_name = #{scopeName}</if>
+		<if test="description != null">AND tf.description = #{description}</if>
+		<if test="application != null">AND tf.application= #{application}</if>
+		<if test="applicationType != null">AND ta.type= #{applicationType}</if>
+	</sql>
+
+	<select id="getFunctionById" resultMap="base_result_map" parameterType="map">
+		<include refid="base_column_list"></include>
+		<where>
+			tf.id=#{id}
+		</where>
+		ORDER BY
+		tf.createtime
+	</select>
+	
+	<insert id="insert" parameterType="com.candao.www.data.model.Function"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_b_function
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			<if test="name != null">name, </if>
+			<if test="code != null">code, </if>
+			<if test="application != null">application, </if>
+			<if test="level">level,</if>
+			<if test="parentFun != null">parent_fun,</if>
+			<if test="isLeaf != null">is_leaf,</if>
+			<if test="operationType != null">operation_type,</if>
+			<if test="status != null">status,</if>
+			<if test="scopeCode != null">scope_code,</if>
+			<if test="scopeName != null">scope_name,</if>
+			<if test="description != null">description,</if>
+			createtime,
+			<if test="creator != null">creator,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id},
+			<if test="name != null">#{name}, </if>
+			<if test="code != null">#{code}, </if>
+			<if test="application != null">#{application}, </if>
+			<if test="level">#{level},</if>
+			<if test="parentFun != null">#{parentFun},</if>
+			<if test="isLeaf != null">#{isLeaf},</if>
+			<if test="operationType != null">#{operationType},</if>
+			<if test="status != null">#{status},</if>
+			<if test="scopeCode != null">#{scopeCode},</if>
+			<if test="scopeName != null">#{scopeName},</if>
+			<if test="description != null">#{description},</if>
+			<choose>
+				<when test="createtime == null">now(),</when>
+				<otherwise>#{createtime}</otherwise>
+			</choose>
+			<if test="creator != null">#{creator},</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.Function">
+		UPDATE t_b_function 
+		<set>
+			<if test="name != null">name = #{name}, </if>
+			<if test="code != null">code = #{code}, </if>
+			<if test="application != null">application = #{application}, </if>
+			<if test="level">level = #{level},</if>
+			<if test="parentFun != null">parent_fun = #{parentFun},</if>
+			<if test="isLeaf != null">is_leaf = #{isLeaf},</if>
+			<if test="operationType != null">operation_type = #{operationType},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="scopeCode != null">scope_code = #{scopeCode},</if>
+			<if test="scopeName != null">scope_name = #{scopeName},</if>
+			<if test="description != null">description = #{description},</if>
+		</set>
+		WHERE
+		id = #{id}
+	</update>
+
+	<delete id="delete" parameterType="String">
+		DELETE FROM t_b_function WHERE
+		id = #{id}
+	</delete>
+	
+	<select id="getFunctionList" parameterType="map" resultMap="base_result_map">
+		<include refid="base_column_list"></include>
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+		ORDER BY tf.index , tf.createtime
+	</select>
+	
+	<select id="getFunctionCodeList" parameterType="map" resultType="java.util.Map">
+		SELECT
+		tf.code,
+		tr.id
+		FROM t_b_function tf
+		LEFT JOIN t_b_role_function tfr ON tfr.function = tf.id
+		LEFT JOIN t_b_role tr ON tr.id = tfr.role
+		LEFT JOIN t_b_application ta ON tf.application = ta.id
+		<where>
+			tr.id is not null
+			<include refid="base_condition"></include>
+			<if test="scopeCode != null">
+				and tr.scope_code= #{scopeCode}
+			</if>
+		</where>
+		ORDER BY tr.id
+	</select>
+	
+	<select id="getFunctionListPage" parameterType="map" resultMap="base_result_map">
+		<include refid="base_column_list"></include>
+		<where>
+			<include refid="base_condition"></include>
+		</where>
+		ORDER BY
+		tf.createtime
+	</select>
+	
+	<select id="getFunctionUrls" resultType="String">
+		SELECT
+		u.url
+		FROM
+		t_b_url u, t_b_function_url fu
+		WHERE 
+		fu.function=#{function}
+		AND fu.url=u.id
+	</select>
+	
+	<insert id="insertFunctionUrls">
+		<if test=" null != urls and urls.size >0 ">
+			INSERT INTO
+			t_b_function_url(id,function, url)
+			VALUES
+			<foreach collection="urls" item="url" index="index" open="" close="" separator=",">
+				(#{id},#{function}, #{url})
+			</foreach>
+		</if>
+	</insert>
+	
+	<delete id="deleteFunctionUrl">
+		DELETE FROM　t_b_function_url WHERE function=#{function}
+	</delete>
+	
+	<select id="getChildFunction" parameterType="java.lang.String" resultMap="base_result_map">
+		<include refid="base_column_list"></include>
+		WHERE parent_fun=#{parentFun}
+		ORDER BY tf.index,tf.createtime
+	</select>
+	
+	<!-- 获取功能列表，根据条件 -->
+	<select id="queryFunctionList" parameterType="map" resultMap="base_result_map">
+		select f.* from t_b_function f
+		<if test="roleId != null or (userId!=null or account !=null)">
+		left join t_b_role_function rf on rf.function = f.id
+		left join t_b_role r on r.id = rf.role
+		</if>
+		<if test="userId != null or account != null">
+		left join t_b_user_role ur on ur.role_id = r.id
+		left join t_b_user u on u.id = ur.user_id
+		</if>
+		<where>
+			<if test="code != null">
+				and f.code = #{code}
+			</if>
+			<if test="roleId != null">
+				and r.id = #{roleId}
+			</if>
+			<if test="userId != null">
+				and u.id = #{userId}
+			</if>
+			<if test="account != null">
+				and u.account = #{account}
+			</if>
+		</where>
+	</select>
+	<!-- 获取功能列表，根据条件 -->
+	<select id="getFunctionTotal" resultType="java.lang.Integer" parameterType="java.util.Map" >
+		select count(f.id) from t_b_function f
+		<if test="roleId != null or (userId!=null or account !=null)">
+		left join t_b_role_function rf on rf.function = f.id
+		left join t_b_role r on r.id = rf.role
+		</if>
+		<if test="userId != null or account != null">
+		left join t_b_user_role ur on ur.role_id = r.id
+		left join t_b_user u on u.id = ur.user_id
+		</if>
+		<where>
+			<if test="code != null">
+				and f.code = #{code}
+			</if>
+			<if test="roleId != null">
+				and r.id = #{roleId}
+			</if>
+			<if test="userId != null">
+				and u.id = #{userId}
+			</if>
+			<if test="account != null">
+				and u.account = #{account}
+			</if>
+		</where>
+	</select>
+	<!-- 获取角色、功能、URL列表，根据条件 -->
+	<select id="queryRoleFunctionUrlList" parameterType="map" resultType="java.util.Map">
+		select 
+			url.id as urlId,
+			url.name as urlName,
+			url.url,
+			f.id as functionId,
+			f.name as functionName,
+			f.code as functionCode,
+			r.id as roleId,
+			r.code as roleCode,
+			r.name as roleName
+			
+		from t_b_url url
+		left join t_b_function_url fu on fu.url = url.id
+		left join t_b_function f on f.id = fu.function
+		left join t_b_role_function rf on rf.function = f.id
+		left join t_b_role r on r.id = rf.role
+		left join t_b_user_role ur on ur.role_id = r.id
+		left join t_b_user u on u.id = ur.user_id
+		<where>
+			and r.id is not null and f.id is not null and url.id is not null
+			<if test="account != null">
+				and u.account = #{account}
+			</if>
+		</where>
+		order by r.id,f.id,url.id
+	</select>
+</mapper>
