@@ -61,8 +61,8 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 //
 //
 					//刷卡（元）-工商银行
-					if (businessR.get(i).get("card") != null) {
-						businssRport.setICBC(businessR.get(i).get("card").toString());
+					if (businessR.get(i).get("icbccard") != null) {
+						businssRport.setICBC(businessR.get(i).get("icbccard").toString());
 					}
 
 					//刷卡（元）-其他银行
@@ -70,7 +70,14 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						businssRport.setOtherbank(businessR.get(i).get("card").toString());
 					}
 //
-
+					//微信
+                    if (businessR.get(i).get("weixin") != null) {
+                        businssRport.setWeixin(businessR.get(i).get("weixin").toString());
+                    }
+                    //支付宝
+                    if (businessR.get(i).get("zhifubao") != null) {
+                        businssRport.setZhifubao(businessR.get(i).get("zhifubao").toString());
+                    }
 //					//会员积分消费（元）Merbervaluenet
 					if (businessR.get(i).get("integralconsum") != null) {
 						businssRport.setIntegralconsum(ToolsUtil.formatTwoDecimal(businessR.get(i).get("integralconsum") + ""));
@@ -206,10 +213,8 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 	@Override
 	public List<Map<String, Object>> isgetBusinessDetailexcel(Map<String, Object> params) {
 		List<Map<String, Object>> businessR = tbusinessDataDetailDao.isgetBusinessDetail(params);
-		List<BusinessReport1> businessList = new ArrayList<BusinessReport1>();
 		List<Map<String, Object>> mapList = new ArrayList<>();
 		if (businessR.size() > 0) {
-			BusinessReport1 businssRport = new BusinessReport1();
 			for (int i = 0; i < businessR.size(); i++) {
 				if (businessR.get(i) != null) {
 //					//营业数据收入统计栏
@@ -261,16 +266,41 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						mapList.add(map);
 					}
 //
-//
-					//刷卡（元）-工商银行
+					//微信
+					if (businessR.get(i).get("weixin") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "微信");
+						map.put("title", "实收总额统计");
+						map.put("value", businessR.get(i).get("weixin").toString());
+						mapList.add(map);
+						}
+					
+					//支付宝
+					if (businessR.get(i).get("zhifubao") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "支付宝");
+						map.put("title", "实收总额统计");
+						map.put("value", businessR.get(i).get("zhifubao").toString());
+						mapList.add(map);
+						}
+
+					//刷工行卡
+					if (businessR.get(i).get("icbccard") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "刷卡-工行");
+						map.put("title", "实收总额统计");
+						map.put("value", businessR.get(i).get("icbccard").toString());
+						mapList.add(map);
+						}
+					
+					//刷卡他行
 					if (businessR.get(i).get("card") != null) {
 						Map<String, Object> map = new HashMap<>();
-						map.put("key", "刷卡");
+						map.put("key", "刷卡-他行");
 						map.put("title", "实收总额统计");
 						map.put("value", businessR.get(i).get("card").toString());
 						mapList.add(map);
 						}
-
 					//会员储值消费净值（元）
 					if (businessR.get(i).get("merbervaluenet") != null) {
 
@@ -280,7 +310,6 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("merbervaluenet") + ""));
 						mapList.add(map);
 					}
-
 
 //					//优免（元）
 					if (businessR.get(i).get("free") != null) {
@@ -338,7 +367,7 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 
 
 
-//赠送总额
+                    //赠送总额
 
 					if (businessR.get(i).get("give") != null) {
 						Map<String, Object> map = new HashMap<>();
