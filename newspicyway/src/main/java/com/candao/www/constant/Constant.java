@@ -268,7 +268,8 @@ public class Constant {
 		public static final String msg_1003 = "1003"; // 菜品沽清消息
 		public static final String msg_1005 = "1005"; // 清除PAD开台信息消息，用于转台和其它 可以用于更换PAD后清除原PAD，参数是MEID
 		public static final String msg_1006 = "1006"; // 刷新菜谱		
-		public static final String msg_1007 = "1007"; // 菜品取消沽清消息			
+		public static final String msg_1007 = "1007"; // 菜品取消沽清消息	
+		public static final String msg_1010 = "1010"; // 微信支付结果消息
 		public static final String msg_9999 = "9999"; // 退出系统消息
 		public static final String msg_2001 = "2001"; // 手环消息推送
 		public static final String msg_2003 = "2003"; // 手环登录消息推送

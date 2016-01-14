@@ -380,13 +380,11 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    				try {
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
 	    					 finaltableno = java.net.URLEncoder.encode(finaltableno,"utf-8");
+	    					 System.out.println("areaname:"+areaname);
+	    					 System.out.println("tableno:"+finaltableno);
 	    				} catch (UnsupportedEncodingException e) {
 	    					e.printStackTrace();
 	    				}
- 
-	    				System.out.println("areaname:"+areaname);
-	    				System.out.println("tableNo:"+finaltableno);
-	    				
 	    				if(!userid.equals("")){
 	    					messageinfo.append(userid+"|"+finalmsgType+"|"+finalcallStatus+"|"+areaname+"|"+finaltableno+"|"+finalmessid);
 	        				//new TsThread(messageinfo.toString()).start();

@@ -10,8 +10,6 @@ public class BusinessReport1 {
 	  private String Card="0";
 	  private String ICBC="0";
 	  private String otherbank="0";
-	  private String weixin = "0";
-	  private String zhifubao = "0";
 	  private String Merbervaluenet="0";
 	  private String Total="0";
 	  private String MeberTicket="0";
@@ -296,22 +294,5 @@ public class BusinessReport1 {
     public void setGive(String give) {
         this.give = give;
     }
-
-	public String getWeixin() {
-		return weixin;
-	}
-
-	public void setWeixin(String weixin) {
-		this.weixin = weixin;
-	}
-
-	public String getZhifubao() {
-		return zhifubao;
-	}
-
-	public void setZhifubao(String zhifubao) {
-		this.zhifubao = zhifubao;
-	}
-    
 }
 

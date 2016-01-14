@@ -488,7 +488,7 @@ function paidInAmount(result) {
 	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
-		legend_data = [ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
+		legend_data = [ '会员储值消费净值', '刷卡', '挂账', '现金' ];
 		series_data.push({
 			value : strToFloat(item.merbervaluenet),
 			name : legend_data[0]
@@ -498,32 +498,16 @@ function paidInAmount(result) {
 			name : legend_data[1]
 		});
 		series_data.push({
-			value : strToFloat(item.icbc),
+			value : strToFloat(item.card),
 			name : legend_data[2]
 		});
 		series_data.push({
-			value : strToFloat(item.zhifubao),
+			value : strToFloat(item.money),
 			name : legend_data[3]
 		});
-		series_data.push({
-			value : strToFloat(item.weixin),
-			name : legend_data[4]
-		});
-		series_data.push({
-			value : strToFloat(item.card),
-			name : legend_data[5]
-		});
-		series_data.push({
-			value : strToFloat(item.money),
-			name : legend_data[6]
-		});
-		tb = '<tr><td>' + item.money + '</td><td>' //现金
-			+ item.card + '</td><td>'//挂账
-			+ item.weixin+'</td><td>'//微信
-			+ item.zhifubao+'</td><td>'//支付宝
-			+ item.icbc + '</td><td>'//刷工行卡
-			+ item.otherbank + '</td><td>'//刷他行卡
-			+ item.merbervaluenet + '</td></tr>';
+		tb = '<tr><td>' + item.money + '</td><td>' + item.card + '</td><td>'
+				 + item.otherbank + '</td><td>'
+				+ item.merbervaluenet + '</td></tr>';
 	}
 	$("#paidIn_tb tbody").html(tb);
 

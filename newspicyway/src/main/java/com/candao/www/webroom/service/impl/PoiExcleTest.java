@@ -528,7 +528,7 @@ public class PoiExcleTest {
 		
 		HSSFRow firstRow = sheet.createRow(0);
 		firstRow.setHeight((short) 1200);
-		sheet.addMergedRegion(new Region(0, (short) (0), 0, (short) (2)));
+		sheet.addMergedRegion(new Region(0, (short) (0), 0, (short) (3)));
 		HSSFCellStyle cellStyle = wb.createCellStyle();
 		HSSFCell firstcell = firstRow.createCell((short) (0));
 		cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直

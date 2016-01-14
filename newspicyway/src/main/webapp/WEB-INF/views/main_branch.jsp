@@ -39,11 +39,8 @@
 		</div>
 		<div class="ky-navbar-menu">
 			<ul class="ky-nav ky-nav-pills" id="ul_left_menu">
-<!-- 			<li> -->
-<!--  						<a href="#" class="ky-menu-employees" onclick="toEmployees()">员工管理</a> -->
-<!--  					</li>  -->
 			<c:forEach items="${menumap }" var="item">
-				    <c:if test="${item.key  == '0101' }">
+				    <%-- <c:if test="${item.key  == '0101' }">
 				<li>
 					<a href="#" class="ky-menu-primary   " onclick="toShop()">门店管理</a>
 				</li>
@@ -52,7 +49,7 @@
 				<li>
 					<a href="#" class="ky-menu-info" onclick="todish()">菜品管理</a>
 				</li>
-				</c:if>
+				</c:if> --%>
 			   <c:if test="${item.key  == '0304' || item.key=='020101'}">
 				<li>
 					<a href="#" class="ky-menu-info" onclick="tobranchdish()">菜品管理</a>
@@ -68,11 +65,11 @@
 					<a href="#" class="ky-menu-danger" onclick="toPrinterManager()">打印管理</a>
 				</li>
 				 </c:if>
-				  <c:if test="${item.key  == '0103'}">
+				  <%-- <c:if test="${item.key  == '0103'}">
 				<li>
 					<a href="#" class="ky-menu-minor" onclick="toPreferterial()">优惠管理</a>
 				</li>
-				</c:if>
+				</c:if> --%>
 			 <c:if test="${item.key  == '0308' || item.key=='020101'}">
 				<li>
 					<a href="#" class="ky-menu-minor" onclick="toPreferterial()">优惠活动</a>
@@ -92,16 +89,16 @@
 					</ul>
 				</li>
 				</c:if>
-<%-- 				<c:if test="${item.key  == '0106'}"> --%>
-<!--  					<li>  -->
-<!--  						<a href="#" class="ky-menu-tenant" onclick="toTenant()">租户管理</a>  -->
-<!--  					</li> -->
-<%--  				</c:if> --%>
+				<%-- <c:if test="${item.key  == '0106'}">
+ 					<li> 
+ 						<a href="#" class="ky-menu-tenant" onclick="toTenant()">租户管理</a> 
+ 					</li>
+ 				</c:if>
              	<c:if test="${item.key  == '0105'}">
 					<li>
 						<a href="#" class="ky-menu-tenant" onclick="toNormal()">账户管理</a>
 					</li>
-				</c:if>
+				</c:if> --%>
 			
 				<c:if test="${item.key  == '0309' || item.key=='020101'}">
 					<li>
