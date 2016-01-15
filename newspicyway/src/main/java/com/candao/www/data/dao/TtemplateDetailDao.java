@@ -33,4 +33,11 @@ public interface TtemplateDetailDao {
 	 */
 	public <E, K, V> List<E> getTtemplateDetailByparamsPad(Map<K, V> params);
 
+	/**
+	 * 查询新版式，参数包含redishid
+	 * sql不做关联查询，
+	 * @param params
+	 * @return
+	 */
+	public <E, K, V> List<E> getTtemplateDetailByParamsHasRedishid(Map<K, V> params);
 }
