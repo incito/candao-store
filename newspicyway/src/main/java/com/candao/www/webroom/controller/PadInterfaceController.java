@@ -51,6 +51,7 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
+import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -625,26 +626,7 @@ public class PadInterfaceController {
 		}).start();
 		
 		if("0".equals(result)){
-			  /*//调用进销存接口 返回数据给 进销存 管理
-			  *//**
-			  {
-
-				    "orderid": "H20151111152314000068",
-				    "orderMap": {
-				        "0d19a1a8-d257-4f1c-95b1-7d48c874c71b": "1",
-				        "0f7a4a91-a7ba-459a-b41a-a9e917207097": "1",
-				        "1a96ae20-1a89-4d86-9d73-de668d20feb7": "2",
-				        "1bf992a5-f7ff-4484-9381-1f456d9f53ac": "1",
-				        "31d4aaf7-b7d3-43df-8b3c-c512f8d91eea": "1",
-				        "6efea012-c10d-4428-b9f4-eacd305664b6": "1",
-				        "72e063c3-afdd-41ec-a3a3-a77d4879d65f": "1",
-				        "DISHES_98": "2",
-				        "a93c4248-b76a-4dbf-a27e-198b17a9b280": "1",
-				        "c24adc46-c37f-466c-86f5-1f6547315d8e": "1",
-				        "f1ae150c-7a2a-43e7-863e-f86534ac6a29": "1"
-				    }
-				}
-				**//*
+			  //调用进销存接口 返回数据给 进销存 管理
 		 String retString = orderDetailService.getOrderDetailByOrderId(orderid);
         //String retPSI = HttpUtils.httpPostBookorderArray(PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER"), retString);
 		String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
@@ -663,7 +645,7 @@ public class PadInterfaceController {
 			  info.setOrderNo(orderid);
 			  orderSettleService.rebackSettleOrder(settlementInfo);
 			  return Constant.FAILUREMSG;
-           }*/
+           }
 		    return Constant.SUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
@@ -706,6 +688,23 @@ public class PadInterfaceController {
 		SettlementInfo  settlementInfo =  JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
 		String result = orderSettleService.rebackSettleOrder(settlementInfo);
 		if("0".equals(result)){
+			  //反结算
+		    String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
+	        //String retPSI = HttpUtils.httpPostBookorderArray(PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER"), retString);
+			String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
+			Map<String, String> dataMap = new HashMap<String, String>();
+			 dataMap.put("data", retString);
+			String retPSI = null;
+			try {
+				retPSI = new HttpRequestor().doPost(url, dataMap);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+			 if(retMap == null || "1".equals(retMap.get("code"))){	
+					return Constant.FAILUREMSG;
+			 }
+		//end 
 			return Constant.SUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;

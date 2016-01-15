@@ -397,5 +397,6 @@
   	<module>printservice</module>
   	<module>newspicyway</module>
     <module>pinyin4j</module>
+    <module>psi</module>
   </modules>
 </project>
