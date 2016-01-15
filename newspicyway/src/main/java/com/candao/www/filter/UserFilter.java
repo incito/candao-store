@@ -47,7 +47,7 @@ public class UserFilter implements Filter {
 		}
 
 		if (!"/".equals(StringUtils.left(targetURL, 6))) {
-			if (!"/login".equals(StringUtils.left(targetURL, 6)) && ! targetURL.startsWith("/padinterface")&& ! targetURL.startsWith("/member")
+			if (!"/login".equals(StringUtils.left(targetURL, 6)) && ! targetURL.startsWith("/padinterface")&& ! targetURL.startsWith("/bankinterface")&& ! targetURL.startsWith("/member")
 					&&!targetURL.startsWith("/t_user/retrievePwd")&&!targetURL.startsWith("/t_user/retrievePwdEmailValicode") &&!targetURL.startsWith("/tenant/") &&!targetURL.startsWith("/client")
 					&&!targetURL.startsWith("/social")) {
 				if (session == null || session.getAttribute(Constant.CURRENT_USER) == null) {
