@@ -200,7 +200,7 @@ public class WeixinController {
 	 * @param str
 	 */
 	private void sendmessage2Android(String str) {
-		StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_1010+"/");
+		StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+""+"/");
 		messageinfo.append(str);
 		System.out.println("微信支付推送");
 		new TsThread(messageinfo.toString()).run();

@@ -259,12 +259,6 @@ public class MenuServiceImpl implements MenuService {
 						templateDetail.setDishunitlist(dishunitlist);
 					}
 				}
-				
-//				2016年1月13号之后，新增的4种新版式的处理
-				map.put("redishid", "TEMPLATE-IMAGE");
-				List<TtemplateDetail> imgDetaillist = ttemplateDetailDao.getTtemplateDetailByParamsHasRedishid(map);
-				detaillist.addAll(imgDetaillist);
-				
 				template.setDetaillist(detaillist);
 			}
 		}
@@ -368,16 +362,7 @@ public class MenuServiceImpl implements MenuService {
 							templateDetail.put("dishunitlist", dishunitlist);
 							templateDataMap.put(String.valueOf(templateDetail.get("location")),templateDetail);
 						}
-//						2016年1月13号之后，新增的4种新版式的处理
-						map.put("redishid", "TEMPLATE-IMAGE");
-						List<TtemplateDetail> imgDetaillist = ttemplateDetailDao.getTtemplateDetailByParamsHasRedishid(map);
-						TtemplateDetail tempdetail = imgDetaillist.get(0);
-						//added by caicai
-						tempdetail.setDishtype("0");
-						templateDataMap.put(tempdetail.getLocation(), tempdetail);
-						
 					}
-					
 					templateMap.put("datas", templateDataMap);
 				}
 			}

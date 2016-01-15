@@ -256,6 +256,20 @@ function toCouponsRept(beginTime,endTime, dateType){
 	$("#allSearch").css("visibility","hidden");
 }
 /**
+ * 排班参考报表
+ */
+function toScheduleReport(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/scheduleReport");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 服务员考核报表
+ */
+function toWaiterAssess(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/waiterAssessment");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
  * 跳转到租户管理
  */
 function toTenant(){
@@ -321,6 +335,41 @@ function toAskedForARefund(){
  */
 function toDataStatistics(){
 	$(parent.document.all("detail")).attr("src",global_Path+"/daliyReports/dataStatistics");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 反结算统计表
+ */
+function toTheSettlementStatistics(){
+	$(parent.document.all("detail")).attr("src",global_Path+"/daliyReports/theSettlement");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 交接班统计表
+ */
+function toPresentStatistics(){
+	$(parent.document.all("detail")).attr("src",global_Path+"/daliyReports/presentStatistics");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 营业报表
+ */
+function toBusinessReport(){
+	$(parent.document.all("detail")).attr("src",global_Path+"/daliyReports/businessReportFirst");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 财务报表——结算方式信息
+ */
+function toPaywayInfo(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/paywayInfoReports");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 财务报表——营业汇总表
+ */
+function toBusinessSum(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/businessSumReports");
 	$("#allSearch").css("visibility","hidden");
 }
 /**

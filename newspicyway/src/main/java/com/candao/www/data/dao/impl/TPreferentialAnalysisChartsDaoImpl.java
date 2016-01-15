@@ -1,5 +1,6 @@
 package com.candao.www.data.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,14 @@ public class TPreferentialAnalysisChartsDaoImpl implements TPreferentialAnalysis
     	return daoSupport.find(PREFIX + ".findPreferentialDetail", params);
     }
     public <T, K, V> List<T> findPreferentialView(Map<K, V> params){
-    	return daoSupport.find(PREFIX + ".findPreferentialView", params);
+    	try{
+    		return daoSupport.find(PREFIX + ".findPreferentialView", params);
+    	}catch(Exception ex){
+    		ex.printStackTrace();
+    	}
+    	return new ArrayList<T>();
+    }
+    public <T, K, V> List<T> findBranchPreferential(Map<K, V> params){
+    	return daoSupport.find(PREFIX + ".findBranchPreferential", params);
     }
 }

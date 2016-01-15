@@ -26,8 +26,6 @@
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/index.css" />
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/preferential.css" />
-<link rel="stylesheet"
 	href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css" />
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/report.css" />
@@ -46,10 +44,12 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>结算方式明细表</span> <a href="Javascript:exportxlsC()"><img
+				<span>结算方式明细表</span>
+				<a href="Javascript:exportxlsC(0)"><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
+		<hr />
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -132,7 +132,6 @@
 		});
 		function loadChart(){
 			shiftid = $("#shiftid").val();
-//			$("#paywayChart").load( global_Path + "/daliyReports/paywayChart");
 			$("#paywayChart").load( global_Path + "/settlementOption/paywayChart");
 		}
 	</script>

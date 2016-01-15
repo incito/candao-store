@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.SchedulingDao">
+    <select id="scheduling" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+            {
+                 call p_pbckbb 
+                      (
+                        #{pi_branchid,jdbcType=INTEGER,mode=IN},
+                        #{pi_sb,jdbcType=SMALLINT,mode=IN},
+                        #{pi_ksrq,jdbcType=DATE,mode=IN},
+                        #{pi_jsrq,jdbcType=DATE,mode=IN},
+                        #{pi_sjjg,jdbcType=SMALLINT ,mode=IN},
+                        #{pi_week,jdbcType=VARCHAR,mode=IN},
+                        #{po_errmsg,jdbcType=VARCHAR,mode=OUT}
+                      )
+             }  
+    </select>
+</mapper>

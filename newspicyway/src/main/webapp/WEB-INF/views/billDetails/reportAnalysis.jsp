@@ -36,9 +36,9 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>营业分析</span>
+				<span>营业数据分析表</span>
 			</div>
-
+			<hr />
 			<div class="report-search-box">
 				<div class="form-group">
 					<div class="col-xs-4 long-search auto-width">
@@ -57,7 +57,7 @@
 							<div class="input-group">
 								<input type="text" class="form-control"
 									aria-describedby="basic-addon1"
-									onFocus="WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}',minDate:'#F{$dp.$D(\'endTime\',{d:-30});}'})"
+									onFocus="WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}',minDate:'#F{$dp.$D(\'endTime\',{M:-1});}'})"
 									id="beginTime" name="beginTime" value="" readOnly="true" /> <span
 									class="input-group-addon arrow-down" id="basic-addon1"><i
 									class="icon-chevron-down" style="color: #000000"></i></span>
@@ -68,7 +68,7 @@
 							<div class="input-group">
 								<input type="text" class="form-control"
 									aria-describedby="basic-addon1"
-									onFocus="WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}',maxDate:'#F{$dp.$D(\'beginTime\',{d:30});}'})"
+									onFocus="WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}',maxDate:'#F{$dp.$D(\'beginTime\',{M:1});}'})"
 									id="endTime" name="endTime" value="" readOnly="true" /> <span
 									class="input-group-addon arrow-down" id="basic-addon1"><i
 									class="icon-chevron-down" style="color: #000000"></i></span>
@@ -94,12 +94,29 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal fade dialog in " id="prompt-dialog"
+		data-backdrop="static">
+		<div class="modal-dialog" style="margin-top: 100px; position: absolute; left: 35%;width: 250px;">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div style="text-align: center;">
+						<p id="prompt-msg">处理中，请稍后...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script type="text/javascript">
 		var myDate;
 		var dateType = 0;
 		var activiyType = "";
 		var endTime = "";
 		var beginTime = "";
+
+		var selPreftType = "";
+		var selItemType1 = "";
+		var selItemType2 = "";
+		var selItemType3 = "";
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");
@@ -177,18 +194,13 @@
 			if (dateType == 0) {
 				//日
 				date.setDate(date.getDate() - 6);//7天
-//				date.setDate(date.getDate() - 30);//31天
 				begintt = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1) + "-"
 						+ formatMonDay(date.getDate());
 			} else if (dateType == 1) {
 				//月
 				date.setMonth((date.getMonth()+1) - 6, 1);//6个月
-//				date.setMonth(date.getMonth() + 1 - 12);//12个月
 				begintt = date.getFullYear() + "-" + formatMonDay(date.getMonth()+1);
 			} else {
-				//年
-//				date.setFullYear(date.getFullYear() + 1 - 10);
-//				begintt = date.getFullYear()+1;
 			}
 			console.log(begintt);
 			return begintt;
@@ -197,17 +209,12 @@
 			var end = "";
 			if (dateType == 0) {
 				date.setDate(date.getDate() + 6);
-//				date.setDate(date.getDate() + 30);
 				end = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1) + "-" + formatMonDay(date.getDate());
 				
 			} else if (dateType == 1) {
 				date.setMonth(date.getMonth() + 6, 0);
-//				date.setMonth(date.getMonth() + 12, 0);
 				end = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1);
-			} else {
-//				date.setFullYear(date.getFullYear() + 10, 0, 0);
-//				end = date.getFullYear()+1;
-			}
+			} else {}
 			return end;
 		}
 		//获取开始时间(暂时没用)
@@ -226,7 +233,7 @@
 			}
 			return begintt;
 		}
-		//获取结束时间
+		//获取结束时间(今天的日期)
 		function getEndTime() {
 			var end = "";
 			var date = new Date();
@@ -257,11 +264,11 @@
 				$("#beginTime")
 						.attr(
 								"onFocus",
-								"WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\\'endTime\\')}',minDate:'#F{$dp.$D(\\'endTime\\',{d:-30});}'})");
+								"WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\\'endTime\\')}',minDate:'#F{$dp.$D(\\'endTime\\',{M:-1});}'})");
 				$("#endTime")
 						.attr(
 								"onFocus",
-								"WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\\'beginTime\\')}',maxDate:'#F{$dp.$D(\\'beginTime\\',{d:30});}'})");
+								"WdatePicker({startDate:'+%Y-%m-%d',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\\'beginTime\\')}',maxDate:'#F{$dp.$D(\\'beginTime\\',{M:1});}'})");
 			} else if (dateType == 1) {
 				$("#beginTime")
 						.attr(

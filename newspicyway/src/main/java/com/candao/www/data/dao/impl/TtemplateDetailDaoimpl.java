@@ -39,9 +39,4 @@ public class TtemplateDetailDaoimpl implements TtemplateDetailDao {
 		return daoSupport.find(PREFIX+".findTempalteDetailListPad", params);
 	}
 
-	@Override
-	public <E, K, V> List<E> getTtemplateDetailByParamsHasRedishid(Map<K, V> params) {
-		// TODO Auto-generated method stub
-		return daoSupport.find(PREFIX+".getTtemplateDetailByParamsHasRedishid", params);
-	}
 }

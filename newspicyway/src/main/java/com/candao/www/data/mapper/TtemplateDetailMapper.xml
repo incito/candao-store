@@ -40,25 +40,6 @@
 	</if>
 	</where>
 	</select>
-	
-	
-	<select id="getTtemplateDetailByParamsHasRedishid" resultMap="BaseResultMap" parameterType="map" >
-		select * 
-		from t_template_detail 
-		<where>
-			<if test="redishid != null">
-				and redishid = #{redishid} 
-			</if>
-			<if test="menuid != null ">
-			    and menuid=#{menuid} 
-			</if>
-			<if test="templateid != null ">
-			    and templateid=#{templateid} 
-			</if>
-		</where>
-	</select>
-	
-	
 	<select id="findTempalteDetailListPad" resultMap="findResultMap" parameterType="map" >
 	select  distinct  d.level,t.location,t.redishid,d.dishNo,t.image,u.dishname,u.dishintroduction,d.columnId,d.abbrdesc tag,d.dishtype,d.imagetitle special,u.status,u.recommend,d.weigh
  	from t_template_detail t,t_dish d,t_template_dishunit u 

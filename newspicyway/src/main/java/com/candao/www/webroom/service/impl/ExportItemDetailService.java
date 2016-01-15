@@ -54,13 +54,13 @@ public class ExportItemDetailService {
              wwb = Workbook.createWorkbook(os);  
              WritableSheet sheet1 = wwb.createSheet("品项销售表", 1);// 建立工作簿 
              // 写表头  
-             sheet1.mergeCells(0, 0, 3, 0);
+             sheet1.mergeCells(0, 0, 5, 0);
              sheet1.setRowView(0, 1200);
              String title1 = ExcelUtils.setTabTitle("品项销售表",params);
              jxl.write.Label labelTitle1 = new jxl.write.Label(0, 0, title1);
              labelTitle1.setCellFormat(wcfTitle); 
              sheet1.addCell(labelTitle1);// 放入工作簿  
-             String text1 [] = {"品类","品项类型","数量","份额（%）"};
+             String text1 [] = {"品类","品项类型","数量","千 次" ,"金额" ,"营业额占比"};
              for(int i=0;i<text1.length;i++){
             	 sheet1.setColumnView(i,25);
             	 sheet1.addCell(new Label(i,1,text1[i],wcfHead));  
@@ -73,21 +73,25 @@ public class ExportItemDetailService {
 	            	 String itemDesc = item.get(i).get("itemDesc") == null ? "" : item.get(i).get("itemDesc").toString();
 	            	 String dishtypetitle = item.get(i).get("dishtypetitle") == null ? "" : item.get(i).get("dishtypetitle").toString();
 	 				 String number = item.get(i).get("number") == null ? "" : item.get(i).get("number").toString();
-	 				 String share = item.get(i).get("share") == null ? "" : item.get(i).get("share").toString();
+	 				 String thousandstimes = item.get(i).get("thousandstimes") == null ? "" : item.get(i).get("thousandstimes").toString();
+	 				 String orignalprice = item.get(i).get("orignalprice") == null ? "" : item.get(i).get("orignalprice").toString();
+	 				 String turnover = item.get(i).get("turnover") == null ? "" : item.get(i).get("turnover").toString();
 	            	 sheet1.addCell(new Label(0, rowNum1, itemDesc, wcfTable));
 	            	 sheet1.addCell(new Label(1, rowNum1, dishtypetitle, wcfTable));
 	            	 sheet1.addCell(new Label(2, rowNum1, number.substring(0, number.length()-2), wcfTable));
-	            	 sheet1.addCell(new Label(3, rowNum1, share, wcfTable));
+	            	 sheet1.addCell(new Label(3, rowNum1, thousandstimes, wcfTable));
+	            	 sheet1.addCell(new Label(4, rowNum1, orignalprice, wcfTable));
+	            	 sheet1.addCell(new Label(5, rowNum1, turnover, wcfTable));
 	             }
              }
              WritableSheet sheet2 = wwb.createSheet("品项销售明细表", 2);// 建立工作簿 
-             sheet2.mergeCells(0, 0, 5, 0);
+             sheet2.mergeCells(0, 0, 7, 0);
              sheet2.setRowView(0, 1200);
              String title2 = ExcelUtils.setTabTitle("品项销售明细表",params);
              jxl.write.Label labelTitle2 = new jxl.write.Label(0, 0, title2);
              labelTitle2.setCellFormat(wcfTitle); 
              sheet2.addCell(labelTitle2);// 放入工作簿  
-             String text2[] = {"品项名称","品项编号","单价","单位","数量","份额（%）"};
+             String text2[] = {"品项名称","品项编号","单价","单位","数量","千次" ,"金额","营业额占比"};
              for(int i=0;i<text2.length;i++){
             	 sheet2.setColumnView(i,25);
             	 sheet2.addCell(new Label(i,1,text2[i],wcfHead));
@@ -102,13 +106,17 @@ public class ExportItemDetailService {
 	 				 String price = itemDetail.get(i).get("price") == null ? "" : itemDetail.get(i).get("price").toString();
 	 				 String unit = itemDetail.get(i).get("unit") == null ? "" : itemDetail.get(i).get("unit").toString();
 	 				 String dishNum = itemDetail.get(i).get("number") == null ? "" : itemDetail.get(i).get("number").toString();
-	 				 String share = itemDetail.get(i).get("share") == null ? "" : itemDetail.get(i).get("share").toString();
+	 				 String thousandstimes = itemDetail.get(i).get("thousandstimes") == null ? "" : itemDetail.get(i).get("thousandstimes").toString();
+	 				 String orignalprice = itemDetail.get(i).get("orignalprice") == null ? "" : itemDetail.get(i).get("orignalprice").toString();
+	 				 String turnover = itemDetail.get(i).get("turnover") == null ? "" : itemDetail.get(i).get("turnover").toString();
 	            	 sheet2.addCell(new Label(0, rowNum2, title, wcfTable));
 	            	 sheet2.addCell(new Label(1, rowNum2, dishNo, wcfTable));
 	            	 sheet2.addCell(new Label(2, rowNum2, price, wcfTable));
 	            	 sheet2.addCell(new Label(3, rowNum2, unit, wcfTable));
 	            	 sheet2.addCell(new Label(4, rowNum2, dishNum.substring(0, dishNum.length()-2), wcfTable));
-	            	 sheet2.addCell(new Label(5, rowNum2, share, wcfTable));
+	            	 sheet2.addCell(new Label(5, rowNum2, thousandstimes, wcfTable));
+	            	 sheet2.addCell(new Label(6, rowNum2, orignalprice, wcfTable));
+	            	 sheet2.addCell(new Label(7, rowNum2, turnover, wcfTable));
 	             }
              }
              // 写入数据     
@@ -117,7 +125,6 @@ public class ExportItemDetailService {
         }catch(Exception e){
         	e.printStackTrace();
         }
-        ExcelUtils.downloadExcel(response,fileName,realPath);
+        ExcelUtils.downloadExcel(request,response,fileName,realPath);
 	}
-	
 }

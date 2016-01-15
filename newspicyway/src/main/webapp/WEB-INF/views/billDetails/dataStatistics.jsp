@@ -40,15 +40,24 @@
 <script src="<%=request.getContextPath()%>/scripts/projectJs/dataAnalysis.js"></script>
 
 <script src="<%=request.getContextPath()%>/scripts/jquery.easyui.min.js"></script>
+<style type="">
+	.bottom-div {
+	 	padding-bottom: 100px;
+	 	float: left;
+	 	width: 100%;
+	}
+</style>
 </head>
 <body>
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>详细数据统计表</span> <a href="Javascript:exportReports();"><img
+				<span>详细数据统计表</span>
+				<a href="Javascript:exportReports();"><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
+		<hr />
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -124,14 +133,14 @@
 			</div>
 		</div>
 	</div>
-	<div>
+	<div class="bottom-div">
 		<div class="frozen-tb-div" id="frozenDiv" style="width: 100%;">
 			<table class="ky-table table table-list " id="frozenTb">
 				<thead><tr><th>区域</th><th>桌号/时间</th></tr></thead>
 				<tbody></tbody>
 			</table>
 		</div>
-		<div class="report-tb-div bottom-div scroll-tb-div">
+		<div class="report-tb-div scroll-tb-div">
 			<table class="ky-table table table-list " style="margin-bottom: 2px;" id="dataStat_tb">
 			</table>
 		</div>

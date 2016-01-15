@@ -39,17 +39,20 @@
 		</div>
 		<div class="ky-navbar-menu">
 			<ul class="ky-nav ky-nav-pills" id="ul_left_menu">
+<!-- 			<li> -->
+<!--  						<a href="#" class="ky-menu-employees" onclick="toEmployees()">员工管理</a> -->
+<!--  					</li>  -->
 			<c:forEach items="${menumap }" var="item">
-				    <%-- <c:if test="${item.key  == '0101' }">
+			    <c:if test="${item.key  == '0101' && isbranch == 'N' }">
 				<li>
 					<a href="#" class="ky-menu-primary   " onclick="toShop()">门店管理</a>
 				</li>
 				 </c:if>
-				    <c:if test="${item.key  == '0102'}">
+				    <c:if test="${item.key  == '0102' && isbranch == 'N'}">
 				<li>
 					<a href="#" class="ky-menu-info" onclick="todish()">菜品管理</a>
 				</li>
-				</c:if> --%>
+				</c:if>
 			   <c:if test="${item.key  == '0304' || item.key=='020101'}">
 				<li>
 					<a href="#" class="ky-menu-info" onclick="tobranchdish()">菜品管理</a>
@@ -65,11 +68,11 @@
 					<a href="#" class="ky-menu-danger" onclick="toPrinterManager()">打印管理</a>
 				</li>
 				 </c:if>
-				  <%-- <c:if test="${item.key  == '0103'}">
+				  <c:if test="${item.key  == '0103' && isbranch == 'N'}">
 				<li>
 					<a href="#" class="ky-menu-minor" onclick="toPreferterial()">优惠管理</a>
 				</li>
-				</c:if> --%>
+				</c:if>
 			 <c:if test="${item.key  == '0308' || item.key=='020101'}">
 				<li>
 					<a href="#" class="ky-menu-minor" onclick="toPreferterial()">优惠活动</a>
@@ -79,26 +82,46 @@
 				<li  class="ky-dropdown" id="bb">
 					<a href="#" class="ky-menu-success ky-menu-report" onclick="toAnalysis()">报表分析</a>
 					 <ul class="ky-dropdown-menu ky-nav ky-nav-pills ky-dropdown-menu-report">
-						<li><a href="#" class="ky-menu-success" onclick="toAnalysis()">营业分析</a></li>
-						<li><a href="#" class="ky-menu-success sub_bussi_menu" onclick="toSaleRept()">营业数据明细表</a></li>
-						<li><a href="#" class="ky-menu-success" onclick="toSettleDetailRept()">结算方式明细表</a></li>
-						<li><a href="#" class="ky-menu-success sub_item_menu" onclick="toDishSaleRept()">品项销售明细表</a></li>
-						<li><a href="#" class="ky-menu-success sub_coup_menu" onclick="toCouponsRept()">优惠活动明细表</a></li>
-						<li><a href="#" class="ky-menu-success" onclick="toAskedForARefund()">退菜明细表</a></li>
-						<li><a href="#" class="ky-menu-success" onclick="toDataStatistics()">详细数据统计表</a></li>
+					 	<li class="ky-dropdown-sec report-dropdown-sec">
+ 					 		<a href="#" class="ky-menu-success" onclick="toAnalysis()">营运报表</a>
+ 							<ul class="ky-dropdown-sec-menu ky-nav ky-nav-pills">
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toAnalysis()">营业数据分析表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success sub_bussi_menu" onclick="toSaleRept()">营业数据明细表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success" onclick="toSettleDetailRept()">结算方式明细表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success sub_item_menu" onclick="toDishSaleRept()">品项销售明细表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success sub_coup_menu" onclick="toCouponsRept()">优惠活动明细表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success" onclick="toDataStatistics()">详细数据统计表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success" onclick="toAskedForARefund()">退菜数据明细表</a></li>
+ 							</ul>
+ 					 	</li>
+ 					 	<li class="ky-dropdown-sec report-dropdown-sec">
+ 							<a href="#" class="ky-menu-success" onclick="toScheduleReport()">统计报表</a>
+ 							<ul class="ky-dropdown-sec-menu ky-nav ky-nav-pills">
+ 								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toTheSettlementStatistics()">反结算统计表</a></li>
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toScheduleReport()">排班参考统计表</a></li>
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterAssess()">服务员考核统计表</a></li>
+ 							</ul>
+ 						</li>
+ 						<!--li class="ky-dropdown-sec report-dropdown-sec">
+ 							<a href="#" class="ky-menu-success" onclick="toBusinessReport()">财务报表</a>
+ 							<ul class="ky-dropdown-sec-menu ky-nav ky-nav-pills">
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toBusinessReport()">营业报表</a></li>
+ 							</ul>
+ 						</li-->
 					</ul>
 				</li>
 				</c:if>
-				<%-- <c:if test="${item.key  == '0106'}">
- 					<li> 
- 						<a href="#" class="ky-menu-tenant" onclick="toTenant()">租户管理</a> 
- 					</li>
- 				</c:if>
-             	<c:if test="${item.key  == '0105'}">
+<%-- 				<c:if test="${item.key  == '0106'}"> --%>
+<!--  					<li>  -->
+<!--  						<a href="#" class="ky-menu-tenant" onclick="toTenant()">租户管理</a>  -->
+<!--  					</li> -->
+<%--  				</c:if> --%>
+             	<c:if test="${item.key  == '0105' && isbranch == 'N'}">
 					<li>
 						<a href="#" class="ky-menu-tenant" onclick="toNormal()">账户管理</a>
 					</li>
-				</c:if> --%>
+				</c:if>
 			
 				<c:if test="${item.key  == '0309' || item.key=='020101'}">
 					<li>
@@ -110,7 +133,7 @@
 						<a href="#" class="ky-menu-setup" onclick="toSetup()">系统设置</a>
 					</li>
 				</c:if>
-				<%-- <c:if test="${item.key  == '0311' || item.key=='020101'}">
+				<c:if test="${item.key  == '0311' || item.key=='020101'}">
 				<li  class="ky-dropdown" id="psi">
 					<a href="#" class="ky-menu-psi ky-menu-erp" onclick="toBasic()">进销存管理</a>
 					 <ul class="ky-dropdown-menu ky-nav ky-nav-pills ky-dropdown-menu-erp">
@@ -123,7 +146,7 @@
 						<li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toChart()">报表分析</a></li>
 					</ul>
 				</li>
-				</c:if> --%>
+				</c:if>
 			</c:forEach>	
 			</ul>
 		</div>
@@ -150,7 +173,7 @@
 		<%--默认页面不跳转
 		 <%=request.getContextPath()%>/shopMg
 		--%>
-		<iframe onload="" id="detail" src="" width="100%" frameBorder="0" scrolling="auto" height="95%" style="overflow-x: hidden;"> 
+		<iframe onload="" id="detail" src="" width="100%" frameBorder="0" scrolling="auto" height="92%" style="overflow-x: hidden;"> 
 		</iframe>
 		<!-- style="overflow-x:hidden; overflow-y:auto;" -->
 		<div class="modal fade dialog-sm in " id="modal_confirmExit"  data-backdrop="static">
@@ -163,7 +186,7 @@
 				    </div>
 						<form action="" method="post" class="form-horizontal " name="">
 							<div class="dialog-sm-info">
-							<p class="p1" style="color:black;"><img src="<%=request.getContextPath()%>/images/del-tip.png">确认退出“餐道后台管理平台”吗?</p>
+							<p class="p1" style="color:black;"><img src="<%=request.getContextPath()%>/images/del-tip.png"></i>确认退出“餐道后台管理平台”吗?</p>
 							</div>
 							<div class="btn-operate  ">
 								<button class="btn btn-cancel  " type="button" data-dismiss="modal"   >取消</button>
@@ -259,7 +282,16 @@ function doExit(){
 function confirmExit(){
 	 window.location.href='<%=request.getContextPath()%>/login/logout';
 }
-
+/**
+ * 删除营业报表中的缓存
+ */
+function clearBusinessStorage(){
+	localStorage.removeItem("branchId");
+	localStorage.removeItem("shiftId");
+	localStorage.removeItem("beginTime");
+	localStorage.removeItem("endTime");
+	localStorage.removeItem("currDate");
+}
 $(document).ready(function() {
 	
 	//dialog中右上角关闭按钮，鼠标经过效果
@@ -275,9 +307,10 @@ $(document).ready(function() {
 		'color' : '#ffffff'
 	});
 
-	//一、二级菜单 点击事件
+	//一、二、三级菜单 点击事件
 	$('.ky-nav li a').click(function() {
 		var _this = $(this);
+		clearBusinessStorage();
 		
 		//点击任意菜单，取消报表菜单的选中状态
 		$('.ky-menu-success').removeClass("ky-menu-active");
@@ -289,7 +322,11 @@ $(document).ready(function() {
 		$("#title_p").html(_this.html());
 		//若是报表分析，显示第一个子菜单名称
 		if(_this.parent().attr("id") == "bb"){
-			$("#title_p").html($(".ky-dropdown-menu-report").find("li").eq(0).find("a").text());
+			$("#title_p").html($(".ky-dropdown-menu-report").find("li").eq(0).find(".ky-dropdown-sec-menu").find("li").eq(0).find("a").text());
+		}
+		//点击报表二级菜单，若此二级菜单有三级菜单，显示三级第一个名称
+		if(_this.parent().hasClass("ky-dropdown-sec")){
+			$("#title_p").html(_this.parent().find(".ky-dropdown-sec-menu").find("li").eq(0).find("a").text());
 		}
 		
 		//若是进销存，显示第一个子菜单名称
@@ -331,6 +368,27 @@ $(document).ready(function() {
 			//隐藏二级菜单
 			_this.parent().parent('ul.ky-dropdown-menu').css('display', 'none');
 		}
+		//若点击的是三级菜单中的一项
+		if(_this.parent().parent().hasClass('ky-dropdown-sec-menu')) {
+			//将父菜单颜色设为对应颜色（未选中状态的颜色）
+			_this.parent().parent().parent().parent().prev('a').css({
+				'background-color' : bgcolor,
+				'color' : '#ffffff'
+			});
+			//隐藏三级菜单
+			_this.parent().parent('ul.ky-dropdown-sec-menu').css('display', 'none');
+		}
+		
+		//判断是否是报表二级菜单
+		if(_this.parent().parent().parent().attr("id") == "bb"){
+			$('.ky-menu-success').removeClass("ky-menu-active");
+			$(this).addClass("ky-menu-active");
+		}
+		//判断是否是报表三级菜单
+		if(_this.parent().parent().parent().hasClass("report-dropdown-sec")){
+			_this.parent().parent().prev("a").addClass("ky-menu-active");
+			$(this).addClass("ky-menu-active");
+		}
 	});
 //	餐台管理
 //	bindEventForsecondMenu("ct");
@@ -350,7 +408,24 @@ $(document).ready(function() {
 		$(this).parent().parent().prev('a').css({
 			'background-color' : bgcolor,
 			'color' : '#ffffff'
+		});		
+		
+		//鼠标经过变颜色
+		$(this).addClass("ky-menu-sub-hover");
+	});
+	//三级菜单鼠标经过事件
+	$('.ky-dropdown-sec-menu a').mouseover(function() {
+		var bgcolor = $(this).css('border-left-color');
+		//将父菜单颜色设为对应色（未选中状态的颜色）
+		$(this).parent().parent().prev('a').css({
+			'background-color' : bgcolor,
+			'color' : '#ffffff'
 		});
+		$(this).parent().parent().parent().parent().prev('a').css({
+			'background-color' : bgcolor,
+			'color' : '#ffffff'
+		});
+		
 		//鼠标经过变颜色
 		$(this).addClass("ky-menu-sub-hover");
 	});
@@ -377,11 +452,6 @@ $(document).ready(function() {
 			}
 		}
 	});
-	//报表分析子菜单点击事件
-	$('.ky-menu-success').click(function(){
-		$('.ky-menu-success').removeClass("ky-menu-active");
-		$(this).addClass("ky-menu-active");
-	});
 	
 	//进销存子菜单点击事件
 	$('.ky-menu-psi').click(function(){
@@ -405,13 +475,12 @@ $(document).ready(function() {
 		$(".ky-container-iframe").find(".ky-title p#title_p").html("我的账户");
 	}
 });
-
 //报表分析一级菜单鼠标经过
 function bindEventForsecondMenu(id){
 	$('#'+id).mouseover(function() {
 		$('#'+id+' > ul.ky-dropdown-menu').css('display', 'block');
 	    var bgcolor = $(this).children('a').css('border-left-color');
-		$(this).find('.ky-dropdown-menu a').css({
+		$(this).find('.ky-dropdown-menu>li>a').css({
 			'background-color' : bgcolor,
 			'color' : '#ffffff'
 		});
@@ -419,6 +488,17 @@ function bindEventForsecondMenu(id){
 
 	$('#'+id).mouseout(function() {
 		$('.ky-dropdown > ul.ky-dropdown-menu').css('display', 'none');
+	});
+	
+	//三级报表
+	$(".report-dropdown-sec").mouseover(function() {
+		$(this).find('ul.ky-dropdown-sec-menu').css('display', 'block');
+		$(this).find('.ky-dropdown-sec-menu li a').css({
+			'background-color' : 'rgb(250, 164, 171)',
+			'color' : '#ffffff'
+		});
+	}).mouseout(function() {
+		$(this).find('ul.ky-dropdown-sec-menu').css('display', 'none');
 	});
 }
 /**

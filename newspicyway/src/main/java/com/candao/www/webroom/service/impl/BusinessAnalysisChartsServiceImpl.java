@@ -73,8 +73,8 @@ public class BusinessAnalysisChartsServiceImpl implements BusinessAnalysisCharts
                     }
 
                     // 桌数
-                    if (businessR.get(i).get("tablecount") != null && businessR.get(i).get("tablecount") != "") {
-                        BigDecimal tablecount = new BigDecimal(businessR.get(i).get("tablecount").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if (businessR.get(i).get("tablenum") != null && businessR.get(i).get("tablenum") != "") {
+                        BigDecimal tablecount = new BigDecimal(businessR.get(i).get("tablenum").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                         businssRport.setTablenum(tablecount);
                     } else {
                         BigDecimal tablecount = new BigDecimal(("0.00").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -82,8 +82,8 @@ public class BusinessAnalysisChartsServiceImpl implements BusinessAnalysisCharts
                     }
 
                     // 人均
-                    if (businessR.get(i).get("personpercent") != null && businessR.get(i).get("personpercent") != "") {
-                        BigDecimal personpercent = new BigDecimal(businessR.get(i).get("personpercent").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if (businessR.get(i).get("personcon") != null && businessR.get(i).get("personcon") != "") {
+                        BigDecimal personpercent = new BigDecimal(businessR.get(i).get("personcon").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                         businssRport.setPersonPercent(personpercent);
                     } else {
                         BigDecimal personpercent = new BigDecimal(("0.00").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);

@@ -68,6 +68,9 @@ public class ExportReturnDishService {
              }
              int rowNum = 1;
              for (int i=0;i<mapList.size();i++) {
+            	 if(mapList.get(i)==null){
+            		 continue;
+            	 }
             	 rowNum++;
             	 sheet1.setColumnView(i, 25);
  				 String beginTime = mapList.get(i).get("beginTime")==null?"":mapList.get(i).get("beginTime").toString();
@@ -96,7 +99,7 @@ public class ExportReturnDishService {
         }catch(Exception e){
         	e.printStackTrace();
         }
-        ExcelUtils.downloadExcel(response,fileName,realPath);
+        ExcelUtils.downloadExcel(request,response,fileName,realPath);
 	}
 }
 
