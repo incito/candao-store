@@ -62,7 +62,7 @@ public class ExportSettlDetChildService {
             	 sheet.setColumnView(i, 25);
             	 sheet.addCell(new Label(i,1,parentItemTitle[i],wcfHead)); 
              }
-             String payWayName = (String)parentItem.get("payWayName");
+             String payWayName = (String)params.get("payWay");
              Long nums = (Long)parentItem.get("nums");
              BigDecimal  prices = (BigDecimal)parentItem.get("price");
              sheet.addCell(new Label(0, 2, payWayName, wcfTable));
