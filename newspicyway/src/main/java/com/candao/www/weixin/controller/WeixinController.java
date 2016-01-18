@@ -2,6 +2,7 @@ package com.candao.www.weixin.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.StringReader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,14 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.xml.sax.InputSource;
 
+import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.www.constant.Constant;
 import com.candao.www.utils.TsThread;
+import com.candao.www.weixin.dto.WeixinRequestParam;
 import com.candao.www.weixin.dto.WxPayDto;
 import com.candao.www.weixin.dto.WxPayResult;
 import com.candao.www.weixin.utils.GetWxOrderno;
@@ -47,7 +51,7 @@ public class WeixinController {
 	// 这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全
 	private static String partnerkey = "candao2015beijingxiangmuzukaifaa";
 	// 微信支付成功后通知地址 必须要求80端口并且地址不能带参数
-	private static String notifyurl = "http://1.appnewspi.applinzi.com"; // Key
+	private static String notifyurl = "http://1.appnewspi.applinzi.com/index.jsp"; // Key
 
 	/**
 	 * 生成二维码url
@@ -59,26 +63,30 @@ public class WeixinController {
 	 * @return
 	 */
 	@RequestMapping(value = "/createQRcodeurl", produces = { "application/json;charset=UTF-8" })
-	public Map<String, Object> createQRcodeurl(String body, String orderid, String spbillCreateIp, String totalFee) {
-		if (isNull(body)) {
+	public Map<String, Object> createQRcodeurl(@RequestBody String jsonString) {
+		WeixinRequestParam  weixinRequestParam=JacksonJsonMapper.jsonToObject(jsonString, WeixinRequestParam.class);
+		System.out.println(weixinRequestParam);
+		if (isNull(weixinRequestParam.getBody())) {
 			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
 		}
-		if (isNull(orderid)) {
+		if (isNull(weixinRequestParam.getOrderid())) {
 			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
 		}
-		if (isNull(body)) {
+		if (isNull(weixinRequestParam.getSpbillCreateIp())) {
 			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
 		}
-		if (isNull(body)) {
+		if (isNull(weixinRequestParam.getTotalFee())) {
 			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
 		}
+		
 		WxPayDto tpWxPay1 = new WxPayDto();
-		tpWxPay1.setBody(body);
-		tpWxPay1.setOrderId(orderid);
-		tpWxPay1.setSpbillCreateIp(spbillCreateIp);
-		tpWxPay1.setTotalFee(totalFee);
+		tpWxPay1.setBody(weixinRequestParam.getBody());
+		tpWxPay1.setOrderId(weixinRequestParam.getOrderid());
+		tpWxPay1.setSpbillCreateIp(weixinRequestParam.getSpbillCreateIp());
+		tpWxPay1.setTotalFee(weixinRequestParam.getTotalFee());
 		String codeurl = getCodeurl(tpWxPay1);
 		return renderSuccessJSONString(SUCCESSCODE, codeurl);
+		
 	}
 
 	/**
@@ -89,30 +97,10 @@ public class WeixinController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/sinanotify", produces = { "application/json;charset=UTF-8" })
-	public void sinanotify(String notityXml, HttpServletResponse response) throws Exception {
-		String resXml = "";
-		System.out.println("新浪云回调接收到的报文：" + notityXml);
-
-		Map m = parseXmlToList2(notityXml);
-		WxPayResult wpr = new WxPayResult();
-		wpr.setAppid(m.get("appid").toString());
-		wpr.setBankType(m.get("bank_type").toString());
-		wpr.setCashFee(m.get("cash_fee").toString());
-		wpr.setFeeType(m.get("fee_type").toString());
-		wpr.setIsSubscribe(m.get("is_subscribe").toString());
-		wpr.setMchId(m.get("mch_id").toString());
-		wpr.setNonceStr(m.get("nonce_str").toString());
-		wpr.setOpenid(m.get("openid").toString());
-		wpr.setOutTradeNo(m.get("out_trade_no").toString());
-		wpr.setResultCode(m.get("result_code").toString());
-		wpr.setReturnCode(m.get("return_code").toString());
-		wpr.setSign(m.get("sign").toString());
-		wpr.setTimeEnd(m.get("time_end").toString());
-		wpr.setTotalFee(m.get("total_fee").toString());
-		wpr.setTradeType(m.get("trade_type").toString());
-		wpr.setTransactionId(m.get("transaction_id").toString());
-
-		if ("SUCCESS".equals(wpr.getResultCode())) {
+	public void sinanotify(String isSuccess, HttpServletResponse response) throws Exception {
+		System.out.println("--------"+isSuccess);
+		String resXml="";
+		if ("0".equals(isSuccess)) {
 			// 支付成功
 			resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
 					+ "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
@@ -120,13 +108,13 @@ public class WeixinController {
 			resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>"
 					+ "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
 		}
-		sendmessage2Android(resXml);
 		System.out.println("微信支付回调数据结束");
 
-		BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+		/*BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+		sendmessage2Android(resXml);
 		out.write(resXml.getBytes());
 		out.flush();
-		out.close();
+		out.close();*/
 
 	}
 
@@ -365,4 +353,22 @@ public class WeixinController {
 		return strTime + strRandom;
 	}
 
+	public static void main(String args[]){
+		
+		String dd=String.valueOf(new Date().getTime());
+		System.out.println(dd);
+		String str="{\"body\":\"测试"+dd+"\",\"orderid\":\""+dd+"\",\"spbillCreateIp\":\"192.168.0.1\",\"totalFee\":\"0.01\"}";
+		WeixinRequestParam  weixinRequestParam=JacksonJsonMapper.jsonToObject(str, WeixinRequestParam.class);
+		System.out.println(weixinRequestParam);
+		
+		WxPayDto tpWxPay1 = new WxPayDto();
+		tpWxPay1.setBody(weixinRequestParam.getBody());
+		tpWxPay1.setOrderId(weixinRequestParam.getOrderid());
+		tpWxPay1.setSpbillCreateIp(weixinRequestParam.getSpbillCreateIp());
+		tpWxPay1.setTotalFee(weixinRequestParam.getTotalFee());
+		String codeurl = getCodeurl(tpWxPay1);
+		
+		
+	}
+	
 }
