@@ -20,6 +20,9 @@ public class SettlementInfo implements Serializable {
 	private String incometype;
 	
 	private BigDecimal payamount;
+	
+	//反结算授权人id
+	private String authorizerName;
 	 
 	//退菜原因 
 	private String reason;
@@ -83,5 +86,13 @@ public class SettlementInfo implements Serializable {
 	public void setPayDetail(ArrayList<SettlementDetail> payDetail) {
 		this.payDetail = payDetail;
 	}
-	
+
+	public String getAuthorizerName() {
+		return authorizerName;
+	}
+
+	public void setAuthorizerName(String authorizerName) {
+		this.authorizerName = authorizerName;
+	}
+
 }

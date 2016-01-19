@@ -1,7 +1,9 @@
 package com.candao.www.webroom.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.model.TGiftLog;
+import com.candao.www.data.model.Torder;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.service.GiftLogService;
+import com.candao.www.webroom.service.OrderService;
 
 import net.sf.json.JSONObject;
 
@@ -31,6 +35,9 @@ public class GiftController {
 
 	@Autowired
 	private GiftLogService giftService;
+	
+	@Autowired
+	private OrderService orderService;
 
 	private static final Logger logger = LoggerFactory.getLogger(GiftController.class);
 
@@ -47,6 +54,7 @@ public class GiftController {
 		logger.debug("start method sendGiftInfo  waiter");
 		try {
 			logger.debug("save sendGiftInfo  data for params : {} ", body);
+			System.out.println("send gift param body "+body);
 			if (StringUtils.isEmpty(body)) {
 				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
 			}
@@ -79,9 +87,22 @@ public class GiftController {
 			if (!giftInfo.containsKey("receiveOrderId") || giftInfo.getString("receiveOrderId") == null|| giftInfo.getString("receiveOrderId").equals("")) {
 				return ReturnMap.getReturnMap(0, "002", "缺少目标桌订单号");
 			}
+			
 			String receiveOrderId = giftInfo.getString("receiveOrderId");
 			
+			Torder receviceOrder = orderService.get(receiveOrderId);
+			if(receviceOrder==null||receviceOrder.getOrderstatus()!=0){
+				return ReturnMap.getReturnMap(0, "005", "订单已结账");
+			}
+			
 			String isAnonymous = giftInfo.containsKey("isAnonymous")?giftInfo.getString("isAnonymous"):"1";
+			
+			String msg = giftInfo.containsKey("msg")?giftInfo.getString("msg"):"无";//留言
+			
+			if(StringUtils.isBlank(msg)){
+				msg = "无";
+			}
+			
 			
 			int gnum = parseInt(giftInfo.getString("giftNum"));
 			
@@ -121,6 +142,7 @@ public class GiftController {
 			log.setGiftAmount(gnum*gprice);
 			
 			log = giftService.saveGiftLogInfo(log);
+			
 			if (log == null) {
 				return ReturnMap.getReturnMap(0, "002", "发起赠送失败");
 			}
@@ -130,22 +152,26 @@ public class GiftController {
 				final String giftNo = giftInfo.getString("giftNo");
 				final String messageid = log.getId();
 				final String receiveOrderIdstr = receiveOrderId;
+				final String finalmsg = msg;
 				
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
 						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2101+"/");
-						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
+						try {
+							messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr).append("|").append(java.net.URLEncoder.encode(finalmsg,"UTF-8"));
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
 						new TsThread(messageinfo.toString()).run();
+						
 					}
 				}).start();
 			}catch(Exception ex){
 				
 			}
 			List<Map<String,String>> datalist = new ArrayList<Map<String,String>>();
-//			Map<String,String> idMap = new HashMap<String,String>();
-//			idMap.put("giftlogid", log.getId());
-//			datalist.add(idMap);
+
 			return ReturnMap.getReturnMap(1, "001", "发起赠送成功成功",datalist);
 
 		} catch (Exception e) {
@@ -190,15 +216,35 @@ public class GiftController {
 			String giftLogId =  giftInfo.getString("giftlogId");
 			String giftStatusstr = giftInfo.getString("giftStatus");
 			String giftPriceType = giftInfo.getString("giftPriceType");
+			
+			String msg = giftInfo.containsKey("msg")?giftInfo.getString("msg"):"无";//留言
+			
+			if(StringUtils.isBlank(msg)){
+				msg = "无";
+			}
+			
 			TGiftLog log  = giftService.getGiftLogInfo(giftLogId);
-			if (log == null) {
+			
+			if (log == null){
 				return ReturnMap.getReturnMap(0, "002", "没有查询到对应的送礼信息");
 			}
+			
+			if (StringUtils.isBlank(log.getOrderId())){
+				return ReturnMap.getReturnMap(0, "003", "订单已结账");
+			}
+			
+			Torder receviceOrder = orderService.get(log.getOrderId());
+			if(receviceOrder==null||receviceOrder.getOrderstatus()!=0){
+				return ReturnMap.getReturnMap(0, "003", "订单已结账");
+			}
+			
 			if(log.getGiftStatus()==null||!log.getGiftStatus().equals("1")){
 				return ReturnMap.getReturnMap(0, "002", "礼物已经处理");
 			}
+			
 			String primarykey = IdentifierUtils.getId().generate().toString()+"-"+giftPriceType;
 			log.setGiftStatus(giftStatusstr);
+			
 			int tempnum = giftService.updateGiftLogInfo(log,primarykey,reqeust);
 			
 			if(tempnum==1){
@@ -220,11 +266,16 @@ public class GiftController {
 				final String giftStatus = giftStatusstr;
 				final String orderId = log.getOrderId();
 				final String finalprimarykey = primarykey;
+				final String finalmsg = msg;
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
 						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2102+"/");
-						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey);
+						try {
+							messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey).append("|").append(java.net.URLEncoder.encode(finalmsg,"UTF-8"));
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
 						new TsThread(messageinfo.toString()).run();
 					}
 				}).start();
@@ -236,6 +287,79 @@ public class GiftController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("method sendGiftToAnthorTable is wrong :{}", e.getMessage());
+			return ReturnMap.getReturnMap(0, "002", "服务异常请联系管理员");
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * 赠送礼物到邻桌
+	 * 
+	 * @param body
+	 * @return
+	 */
+	@RequestMapping("/msg")
+	@ResponseBody
+	public Map<String, Object> sendMsg(@RequestBody String body,HttpServletRequest reqeust) {
+		logger.debug("start method recvice sendGiftInfo  waiter");
+		try {
+			logger.debug("update recviceGiftInfo  data for params : {} ", body);
+			if (StringUtils.isEmpty(body)) {
+				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
+			}
+			JSONObject giftInfo = JSONObject.fromObject(body);
+			if (giftInfo == null) {
+				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
+			}
+			System.out.println(">>>>>>>>>>>"+body);
+			if (!giftInfo.containsKey("sendOrderId") || giftInfo.getString("sendOrderId") == null|| giftInfo.getString("sendOrderId").equals("")) {
+				return ReturnMap.getReturnMap(0, "002", "缺少发送订单ID");
+			}
+			if (!giftInfo.containsKey("recOrderId") || giftInfo.getString("recOrderId") == null|| giftInfo.getString("recOrderId").equals("")) {
+				return ReturnMap.getReturnMap(0, "002", "缺少收礼订单ID");
+			}
+			if (!giftInfo.containsKey("msg") || giftInfo.getString("msg") == null|| giftInfo.getString("msg").equals("")) {
+				return ReturnMap.getReturnMap(0, "002", "缺少消息内容");
+			}
+			
+			final String sendOrderId =  giftInfo.getString("sendOrderId");
+			final String recOrderId = giftInfo.getString("recOrderId");
+			final String msg = giftInfo.getString("msg");
+			
+			Torder receviceOrder = orderService.get(recOrderId);
+			if(receviceOrder==null||receviceOrder.getOrderstatus()!=0){
+				return ReturnMap.getReturnMap(0, "003", "订单已结账");
+			}
+			
+			Map<String,String> params = new HashMap<String,String>();
+			params.put("recOrderId", recOrderId);
+			params.put("sendOrderId", sendOrderId);
+			
+			List<TGiftLog> logs  = giftService.getGiftLogInfo(params);
+			
+			if (logs == null||logs.size()<=0){
+				return ReturnMap.getReturnMap(0, "002", "没有查询到对应的送礼信息");
+			}
+			
+			//推送消息到目的桌pad显示
+			try{
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2103+"/");
+						messageinfo.append(sendOrderId).append("|").append(recOrderId).append("|").append(msg);
+						new TsThread(messageinfo.toString()).run();
+					}
+				}).start();
+			}catch(Exception ex){
+			    ex.printStackTrace();	
+			}
+			return ReturnMap.getReturnMap(1, "001", "消息发送成功");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("method sendMsg is wrong :{}", e.getMessage());
 			return ReturnMap.getReturnMap(0, "002", "服务异常请联系管理员");
 		}
 	}

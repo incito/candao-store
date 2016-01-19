@@ -24,8 +24,8 @@ public interface TsettlementMapper {
 		
 		public int update(Tsettlement tsettlement);
 		
-		public int delete(java.lang.String id ,String reason);
-
+		public int delete(java.lang.String id);
+		
 		public <E, K, V> Page<E> page(Map<K, V> params, int current, int pagesize);
 
 		public int reverseOrder(Tsettlement tsettlement);
@@ -37,5 +37,36 @@ public interface TsettlementMapper {
 		public void insertRebackSettle(SettlementInfo settlementInfo);
 
 		public void insertRebackSettleDetail(SettlementInfo settlementInfo);
+		
+		/**
+		 * 根据订单号查询反结次数
+		 * @author weizhifang
+		 * @since 2016-1-12
+		 * @param orderId
+		 * @return
+		 */
+		public String queryAgainSettleNums(String orderId);
+		
+		/**
+		 * 根据订单号修改反结算次数
+		 * @author weizhifang
+		 * @since 2016-1-12
+		 * @param orderId
+		 * @param againSettleNums
+		 * @return
+		 */
+		public int updateSettlementHistory(String orderId,int againSettleNums,String authorizerName);
+		
+		/**
+		 * 往结算表里写数据
+		 * @author weizhifang
+		 * @since 2016-01-14
+		 * @param id
+		 * @param reason
+		 * @param againSettleNums
+		 * @param authorizerName
+		 * @return
+		 */
+		public int insertSettlementHistory(java.lang.String id ,String reason,int againSettleNums,String authorizerName);
 		
 }

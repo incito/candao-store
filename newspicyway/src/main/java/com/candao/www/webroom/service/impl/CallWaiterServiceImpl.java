@@ -110,7 +110,6 @@ public class CallWaiterServiceImpl implements CallWaiterService{
     			return 3;
     		}
 		}
-        System.out.println("2:"+(System.currentTimeMillis()-begintime));
 		//首先查询有没有对应的呼叫类型的信息
 		Map<String,String> paramMap = new HashMap<String,String>();
 		paramMap.put("msgType", msgType);
@@ -170,11 +169,9 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		}else {
 			  returnnum = 99;
 		}
-		System.out.println("4:"+(System.currentTimeMillis()-begintime));
         if(returnnum>0&&returnnum!=99){
         	executor.execute(new WiterThread(tableno,msgType,callStatus,message.getId()));
         }
-        System.out.println("5:"+(System.currentTimeMillis()-begintime));
 		return returnnum;
 	}
 	
@@ -379,9 +376,6 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    				String areaname = null;
 	    				try {
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
-	    					 finaltableno = java.net.URLEncoder.encode(finaltableno,"utf-8");
-	    					 System.out.println("areaname:"+areaname);
-	    					 System.out.println("tableno:"+finaltableno);
 	    				} catch (UnsupportedEncodingException e) {
 	    					e.printStackTrace();
 	    				}

@@ -12,5 +12,8 @@ public interface TBusinessDataDetailDao {
 
 	public final static String PREFIX = TBusinessDataDetailDao.class.getName();
 	public List<Map<String, Object>> isgetBusinessDetail(Map<String, Object> params);
+	
+	
+	public List<Map<String, Object>> getOrderInfo(Map<String, Object> params);
 
 }

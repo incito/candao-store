@@ -36,10 +36,12 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>品项销售明细表</span> <a href="Javascript:exportReports(0)"><img
+				<span>品项销售明细表</span>
+				<a href="Javascript:exportReportsItem(0)"><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
+		<hr />
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -120,19 +122,23 @@
 			</div>
 		</div>
 	</div>
-	<div class="report-tb-div bottom-div">
-		<table class="ky-table table table-list" id="items_tb">
+	<div class="bottom-div">
+	<div class="report-tb-div">
+		<table class="ky-table table table-list click-table" id="items_tb">
 			<thead>
 				<tr>
 					<th>品类</th>
 					<th>品项类型</th>
 					<th>数量</th>
-					<th>份额(%)</th>
+					<th>千次</th>
+					<th>金额</th>
+					<th>营业额占比(%)</th>
 				</tr>
 			</thead>
 			<tbody>
 			</tbody>
 		</table>
+	</div>
 	</div>
 	<div class="modal fade report-details-dialog in " id="item-details-dialog" data-backdrop="static">
 	<div class="modal-dialog">
@@ -140,7 +146,7 @@
 			<div class="modal-header">
 				<div class="modal-title">
 					<span>品项销售详情</span>
-					<!--a href="Javascript:exportReports(1)"><img src="../images/download.png" alt="" /></a-->
+					<!--a href="Javascript:exportReportsItem(1)"><img src="../images/download.png" alt="" /></a-->
 					<img src="../images/close.png" class="img-close" data-dismiss="modal" />
 				</div>
 			</div>
@@ -157,7 +163,9 @@
 								<th>单价</th>
 								<th>单位</th>
 								<th>数量</th>
-								<th>份额(%)</th>
+								<th>千次</th>
+								<th>金额</th>
+								<th>营业额占比(%)</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -176,80 +184,6 @@
 		var itemId;
 		var dishtype;
 		var searchType;
-		function exportReports(f) {
-			if(compareBeginEndTime()){
-			var beginTime = $("#beginTime").val();
-			var endTime = $("#endTime").val();
-			if (beginTime == null || "" == beginTime) {
-				var d = new Date();
-				var month = d.getMonth() + 1;
-				if (d.getMonth() + 1 < 10) {
-					month = "0" + month;
-				}
-				var day = d.getDate();
-				if (d.getDate() < 10) {
-					day = "0" + day;
-				}
-				beginTime = d.getFullYear() + '-' + month + '-' + day
-						+ ' 00:00:00';
-			}
-
-			if (endTime == null || "" == endTime) {
-				var d = new Date();
-				var month = d.getMonth() + 1;
-				if (d.getMonth() + 1 < 10) {
-					month = "0" + month;
-				}
-				var day = d.getDate();
-				if (d.getDate() < 10) {
-					day = "0" + day;
-				}
-				var day = d.getDate();
-				if (d.getDate() < 10) {
-					day = "0" + day;
-				}
-				var hours = d.getHours();
-				if (d.getHours() < 10) {
-					hours = "0" + hours;
-				}
-				var minutes = d.getMinutes();
-				if (d.getMinutes() < 10) {
-					minutes = "0" + minutes;
-				}
-
-				var second = d.getSeconds();
-				if (d.getSeconds() < 10) {
-					second = "0" + second;
-				}
-
-				endTime = d.getFullYear() + '-' + month + '-' + day + ' '
-						+ hours + ":" + minutes + ":" + second;
-			}
-			if(shiftid == ""){
-				shiftid = "null";
-			}
-			var id = itemId;
-			var dishType = dishtype;
-			if(id == null || id == ""){
-				id = "null";
-			}
-			if(dishType == null || dishType == ""){
-				dishType = "null";
-			}
-			
-			var itemids = "";
-			if(f == 1){
-				var itemid = $("#p-item-id").val();
-				var dishtype = $("#p-dish-type").val();
-				itemids = itemid+","+dishtype+"|";
-			}else{
-				itemids = "null";
-			}
-			
-			location.href = global_Path + "/itemDetail/exportxlsA/"
-					+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ dishType + "/"+itemids+"/"+searchType+".json";
-			}
-		}
 		$(document).ready(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");

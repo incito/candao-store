@@ -49,10 +49,10 @@
      insert into t_settlement_history (
 	  settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
 	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
-	id,  reason,  rebacktime
+	id,  reason,  rebacktime, again_settle_nums, authorizer_name
 	) select   settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
 	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
-	   UUID(),#{reason},now()
+	   UUID(),#{reason},now(),#{againSettleNums},#{authorizerName}
 	 from t_settlement where orderid =#{orderid}
   </insert>
   
@@ -264,5 +264,23 @@
 		   and t.status = '0'
     </select>
 
+  <!-- 查询反结算次数 -->
+  <select id="queryAgainSettleNums" parameterType="map" resultType="String">
+     select again_settle_nums from t_settlement_history where orderid = #{orderid}
+  </select>
   
+  <!-- 修改反结算次数 -->
+  <update id="updateSettlementHistory" parameterType="map">
+     update t_settlement_history set again_settle_nums = #{againSettleNums},authorizer_name = #{authorizerName} where orderid = #{orderid}
+  </update>
+  
+  <!-- 保存订单历史记录 -->
+  <insert id="insertOrderHistory" parameterType="map">
+     insert into t_order_history select * from t_order where orderid = #{orderid}
+  </insert>
+  
+  <!-- 保存订单详情历史记录 -->
+  <insert id="insertOrderDetailHistory" parameterType="map">
+     insert into t_order_detail_history select * from t_order_detail where orderid = #{orderid} 
+  </insert>
 </mapper>

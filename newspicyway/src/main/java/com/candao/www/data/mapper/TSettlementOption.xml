@@ -11,8 +11,14 @@
     </parameterMap>
 
     <select id="settlementOptionList" parameterMap="homeVO" statementType="CALLABLE" resultType="map">
-        {call p_report_jsfsmxb(
-        ?,?,?,?,?
-        )}
+        {call p_report_jsfsmxb
+        (
+             #{branchId,jdbcType=INTEGER,mode=IN},
+             #{shiftid,jdbcType=SMALLINT,mode=IN},
+             #{beginTime,jdbcType=DATE,mode=IN},
+             #{endTime,jdbcType=DATE,mode=IN},
+             #{po_errmsg,jdbcType=VARCHAR,mode=OUT}
+           )
+        }
     </select>
 </mapper>

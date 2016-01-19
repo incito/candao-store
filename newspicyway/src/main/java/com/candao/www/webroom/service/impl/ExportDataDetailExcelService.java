@@ -113,7 +113,7 @@ public class ExportDataDetailExcelService {
         }catch(Exception e){
         	e.printStackTrace();
         }
-        ExcelUtils.downloadExcel(response,fileName,realPath);
+        ExcelUtils.downloadExcel(request,response,fileName,realPath);
 	}
 	
 	/**

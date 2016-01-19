@@ -276,7 +276,7 @@ public class Constant {
 		public static final String msg_2102 = "2102"; // 社交 菜品处理信息
 		public static final String msg_2103 = "2103"; // 送礼 消息推送
 		
-		public static final String msg_5555 = "5555"; // 微信支付消息推送
+
 	}
 	 
 }

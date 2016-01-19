@@ -13,4 +13,25 @@
           )
         }
     </select>
+      <!-- 查询营业分析品项销售统计存储过程(指定分类) -->
+    <select id="itemAnalysisChartsForColumnPro" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+        {
+          call p_report_yyfx_pxxstj_column(
+            #{branchId,jdbcType=INTEGER,mode=IN},
+            #{dateType,jdbcType=INTEGER,mode=IN},
+            #{beginTime,jdbcType=TIMESTAMP,mode=IN},
+            #{endTime,jdbcType=TIMESTAMP,mode=IN},
+            #{columnid,jdbcType=VARCHAR,mode=IN},
+            #{result,jdbcType=VARCHAR,mode=OUT}
+          )
+        }
+    </select>
+    
+    <select id="getAllOrderInfo" parameterType="java.util.Map"  resultType="java.util.Map">
+       select ord.dishid,sum(ord.dishnum) as dishnum ,od.custnum,od.begintime from t_order_detail ord left join t_order od  on od.orderid = ord.orderid LEFT JOIN t_dish_dishtype dt on ord.dishid = dt.dishid
+       where od.orderstatus in (0,3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime} and dt.columnid = #{columnid} and od.branchid = #{branchId} and  ord.superkey = ord.primarykey group by ord.dishid,ord.orderid
+    </select>
+    <select id="getAllOrderCustnum" parameterType="java.util.Map"  resultType="java.util.Map">
+       select sum(od.custnum) as custnum,DATE_FORMAT(od.begintime,"%Y-%m-%d") as time  from t_order od  where od.orderstatus in (0,3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime}  and od.branchid = #{branchId} group by time 
+    </select>
 </mapper>

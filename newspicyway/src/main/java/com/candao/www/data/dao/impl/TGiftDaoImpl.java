@@ -43,6 +43,21 @@ public class TGiftDaoImpl implements GiftLogDao {
 		}
 		return list.get(0);
 	}
+	
+	/**
+	 * 
+	 * 保存礼物赠送信息到数据库
+	 *
+	 * @return
+	 */
+	@Override
+	public List<TGiftLog> getGiftLogInfo(Map<String,String> paramMap){
+		List<TGiftLog> list = daoSupport.find(PREFIX + ".getGiftLog", paramMap);
+		if(list==null||list.size()<=0){
+			return null;
+		}
+		return list;
+	}
 	/**
 	 * 
 	 * 查询当前桌子赠送到目的桌的礼物列表

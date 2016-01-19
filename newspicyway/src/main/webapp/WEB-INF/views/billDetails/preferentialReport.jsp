@@ -9,20 +9,12 @@
 <link
 	href="<%=request.getContextPath()%>/tools/echarts/css/font-awesome.min.css"
 	rel="stylesheet">
-<!--link
-	href="<%=request.getContextPath()%>/tools/echarts/css/bootstrap.css"
-	rel="stylesheet"-->
 <link
 	href="<%=request.getContextPath()%>/tools/echarts/css/carousel.css"
 	rel="stylesheet">
 <link
 	href="<%=request.getContextPath()%>/tools/echarts/css/echartsHome.css"
 	rel="stylesheet">
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 <script src="<%=request.getContextPath()%>/tools/echarts/js/echarts.js"></script>
 <script
 	src="<%=request.getContextPath()%>/tools/echarts/js/codemirror.js"></script>
@@ -39,13 +31,21 @@
 </head>
 <body>
 	<div class="report_head">
-		<button class="btn btn-default floatleft active" onclick="changeActivy(0);">活动名称</button>
-		<button class="btn btn-default floatleft" onclick="changeActivy(1);">活动类别</button>
 		<button class="btn btn-default" id="to_detail">查看明细</button>
 	</div>
 	<div class="bottom-div">
 		<div class="row-fluid example">
 			<!--/span-->
+			<div class="item-type">
+				<div class="nav-types-prev " id="nav-types-prev" style="visibility: hidden;">
+					<i class="icon-chevron-left"></i>
+				</div>
+				<ul class="tab-ul nav-coup-type" id="preferential-type-first">
+				</ul>
+				<div class="nav-types-next " id="nav-types-next" style="visibility: hidden;">
+					<i class="icon-chevron-right"></i>
+				</div>
+			</div>
 			<div id="nums_graphic" class="col-md-14 graphic">
 			<div class="p-main lf">
 				<div id="nums_main" class="main"
@@ -104,33 +104,81 @@
 	<script src="<%=request.getContextPath()%>/scripts/jquery.min.js"></script>
 	<script
 		src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>
+	<script src="<%=request.getContextPath()%>/scripts/projectJs/report.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/prefreport.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/zxx.color_exchange.js"></script>
 	<script type="text/javascript">
-		var type = "";
+		var type = "活动名称";
+		var up_num = 0;
 		$(function() {
-			$(".report_head button").click(function() {
-				$(this).parent().find("button").removeClass("active");
-				$(this).addClass("active");
-			});
-			$(".report_head button").removeClass("active");
-			if(activiyType == ""){
-				activiyType = 0;
-				$(".report_head button").eq(0).addClass("active");
-			}else{
-				if(activiyType == 0){
-					$(".report_head button").eq(0).addClass("active");
-				}else{
-					$(".report_head button").eq(1).addClass("active");
-				}
-			}
-			changeActivy(activiyType);
-			initPreferentialData();
+			getPreferentialType();
 			$("#to_detail").click(function(){
 				orgTime();
 				toDetail(2,beginTime ,endTime);
 			});
+			
+			$(".item-type").hover(function(){
+				var _this =$(this).find(".nav-coup-type");
+				if(_this.children().length>10){
+					_this.prev().css("visibility","visible");
+					_this.next().css("visibility","visible");
+				}
+			},function(){
+				var _this =$(this).find(".nav-coup-type");
+				_this.prev().css("visibility","hidden");
+				_this.next().css("visibility","hidden");
+			});
+			$("#nav-types-prev").click(function(event){
+				if(up_num>=1){
+					$(this).next(".nav-coup-type").find("li").eq(up_num-1).css("margin-left","0");
+					up_num--;
+				}
+			});
+			$("#nav-types-next").click(function(){
+				var count = $(this).prev(".nav-coup-type").find("li").length;
+				if(up_num<count-10){
+					$(this).prev(".nav-coup-type").find("li").eq(up_num).css("margin-left","-10%");
+					up_num++;
+				}
+			});
+			/*鼠标滚动*/
+		     var user_agent = navigator.userAgent;
+			 var dom1 =$("#preferential-type-first")[0];
+		     if(user_agent.indexOf("Firefox")!=-1){// Firefox
+		    	 dom1.addEventListener("DOMMouseScroll",addEvent,!1);
+		     } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
+		         dom1.attachEvent("onmousewheel",addEvent,!1);
+		     }else{
+		    	 dom1.addEventListener("mousewheel",addEvent,!1);
+		     }
 		});
+		function addEvent(event) {
+			event = event || window.event;
+			var type = event.type;
+			if (type == 'DOMMouseScroll' || type == 'mousewheel') {
+				event.delta = (event.wheelDelta) ? event.wheelDelta / 120
+						: -(event.detail || 0) / 3;
+			}
+			/*菜品分类*/
+			var count = $("#preferential-type-first").children("li").length;
+			if (event.delta > 0) {
+				if (count - up_num > 10) {
+					$("#preferential-type-first").find("li").eq(up_num).css("margin-left", "-10%");
+					up_num++;
+				}
+			} else {
+				if (up_num >= 1) {
+					$("#preferential-type-first").find("li").eq(up_num - 1).css("margin-left", "0");
+					up_num--;
+				}
+			}
+			if (document.all) {
+				event.cancelBubble = false;
+				return false;
+			} else {
+				event.preventDefault();
+			}
+		}
 	</script>
 </body>
 </html>

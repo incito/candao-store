@@ -209,4 +209,6 @@
 	    </property>  
     </bean>  
  
+     <!-- 导入bossapp 配置信息
+	<import resource="bossapp.xml"/>-->
 </beans>

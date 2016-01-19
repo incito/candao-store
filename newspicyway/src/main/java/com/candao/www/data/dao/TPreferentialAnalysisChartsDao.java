@@ -14,4 +14,5 @@ public interface TPreferentialAnalysisChartsDao {
 	public <T, K, V> List<T> findPreferential(Map<K, V> params);
 	public <T, K, V> List<T> findPreferentialDetail(Map<K, V> params);
 	public <T, K, V> List<T> findPreferentialView(Map<K, V> params);
+	public <T, K, V> List<T> findBranchPreferential(Map<K, V> params);
 }

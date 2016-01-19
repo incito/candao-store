@@ -33,6 +33,7 @@ import com.candao.print.service.CustDishProducerService;
 import com.candao.print.service.MutilDishProducerService;
 import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.PrinterService;
+import com.candao.www.bossapp.activemq.BranchActiveMqUtil;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.data.dao.TorderDetailMapper;
@@ -84,6 +85,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	        return Constant.SUCCESSMSG;
 	}
 	
+ 
+	 
    /**
     * 清桌 ，
     */
@@ -118,7 +121,6 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	  Map<String,Object> delmap=new HashMap<String,Object>();
 	  delmap.put("tableno", table.getTableNo());
 	  toperationLogService.deleteToperationLog(delmap);
-	   
 	   return Constant.SUCCESSMSG;
    }
 	 
@@ -140,14 +142,6 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		public List<TorderDetail> getallTorderDetail(List<TorderDetail> orderDetails){
 			 List<TorderDetail> listall=new ArrayList<TorderDetail>();
 			 for(TorderDetail t:orderDetails){
-				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
-				 String primarykey = t.getPrimarykey();
-				 TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				 if(orderDetail != null){
-					 continue;
-				 }
-				 /**********end************/
-				 
 		    	 if("0".equals(t.getDishtype())){
 		    		 if(!"0".equals(t.getDishnum())){
 		    			 t.setOrdertype(0);
@@ -270,16 +264,11 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		}else{
 			return Constant.FAILUREMSG;
 		}
-		
-//		判断是否重复下单
-		if(isRepetitionOrder(orders.getRows())){
-			return Constant.SUCCESSMSG;
-		}
 		//从传过来的数据中，获取订单详情的所有信息	
-	    List<TorderDetail> listall = getallTorderDetail(orders.getRows());
-		if(listall == null || listall.size() == 0){
-			return Constant.FAILUREMSG;
-		}
+	     List<TorderDetail> listall = getallTorderDetail(orders.getRows());
+		 if(listall == null || listall.size() == 0){
+				return Constant.FAILUREMSG;
+		 }
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
 			  return Constant.FAILUREMSG;
@@ -310,8 +299,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
 ////	    	   flag=4;
 ////	       }
-	       printOrderList( orders.getOrderid(),table.getTableid(), flag);
-	       printweigth(listall,orders.getOrderid());
+	      // printOrderList( orders.getOrderid(),table.getTableid(), flag);
+	      // printweigth(listall,orders.getOrderid());
 			   	 //操作成功了，插入操作日记
 	        if(toperationLogService.save(toperationLog)){
 	    	  transactionManager.commit(status);
@@ -915,23 +904,6 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	    		}
 		  }
 	}
-	  
-	  /**
-		 * 判断是否是重复下单
-		 * @param orderDetails
-		 * @return
-		 */
-		private boolean isRepetitionOrder(List<TorderDetail> orderDetails){
-			int repeteNum = 0;
-			for(TorderDetail t:orderDetails){
-				String primarykey = t.getPrimarykey();
-				TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				if(orderDetail != null && orderDetail.getOrderdetailid() != ""){
-					repeteNum++;
-				}
-			}
-			return repeteNum == orderDetails.size() ? true : false;
-		}
 		
 	  /**
 	   * 退菜处理
@@ -1574,6 +1546,5 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
-
 
 }

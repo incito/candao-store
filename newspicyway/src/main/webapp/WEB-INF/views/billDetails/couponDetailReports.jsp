@@ -38,10 +38,12 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>优惠活动明细表</span> <a href="Javascript:exportReports(0)"><img
+				<span>优惠活动明细表</span>
+				<a href="Javascript:exportReportsCou(0)"><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
+		<hr />
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -96,12 +98,12 @@
 				<label class="col-xs-1 control-label">活动名称:</label>
 				<div class="col-xs-2">
 					<div class="input-group select-box">
-						<select style="width: 150px; height: 30px;" class="form-control" id="bankcardno">
+						<select style="width: 208px; height: 30px;" class="form-control" id="bankcardno">
 						</select>
 					</div>
 				</div>
 				<label class="col-xs-1 control-label">结算方式:</label>
-				<div class="col-xs-2">
+				<div class="col-xs-2" style="width: 150px;">
 					<div class="input-group select-box">
 						<select style="width: 150px; height: 30px;" class="form-control" id="settlementWay">
 						</select>
@@ -122,22 +124,26 @@
 			</div>
 		</div>
 	</div>
-	<div class="report-tb-div bottom-div">
-		<table class="ky-table table table-list" id="coupon_tb">
+	<div class="bottom-div">
+	<div class="report-tb-div">
+		<table class="ky-table table table-list click-table" id="coupon_tb">
 			<thead>
 				<tr>
 					<th>活动名称</th>
 					<th>活动类型</th>
 					<th>结算方式</th>
+					<th>单数</th>
 					<th>笔数</th>
 					<th>发生金额</th>
 					<th>拉动应收</th>
 					<th>拉动实收</th>
+					<th>人均</th>
 				</tr>
 			</thead>
 			<tbody>
 			</tbody>
 		</table>
+	</div>
 	</div>
 <div class="modal fade report-details-dialog in " id="coupon-details-dialog" data-backdrop="static">
 	<div class="modal-dialog">
@@ -145,7 +151,7 @@
 			<div class="modal-header">
 				<div class="modal-title">
 					<span>优惠活动详情</span>
-					<a href="Javascript:exportReports(1)"><img src="../images/download.png" alt="" style="float: right;" /></a>
+					<a href="Javascript:exportReportsCou(1)"><img src="../images/download.png" alt="" style="float: right;" /></a>
 					<img src="../images/close.png" class="img-close" data-dismiss="modal" />
 				</div>
 			</div>
@@ -155,7 +161,7 @@
 					<input type="hidden" id="p-coupon-payway" value="" />
 					<input type="hidden" id="p-type-id" value="" />
 					<div class="p-desc"><span class="span-desc">优惠活动名称：</span><span id="coupon-name"></span>&nbsp;&nbsp;<span class="span-desc p-margin-left">结算方式：</span><span id="payway-name"></span></div>
-					<table class="ky-table table table-list report_sub_tb" id="coupon_sub_tb">
+					<table class="ky-table table table-list report_sub_tb click-table" id="coupon_sub_tb">
 						<thead>
 							<tr>
 								<th>发生时间</th>
@@ -178,6 +184,7 @@
 		</div>
 	</div>
 </div>
+<jsp:include page="reckoning.jsp" />
 	<script type="text/javascript">
 		var shiftid;
 		var settlementWay;
@@ -245,82 +252,6 @@
 			getPayway();
 			getActiviyType();
 		});
-		function exportReports(f) {
-			if(compareBeginEndTime()){
-				var beginTime = $("#beginTime").val();
-				var endTime = $("#endTime").val();
-//				var shiftid = $("#shiftid").val();
-//				var settlementWay = $("#settlementWay").val();
-//				var bankcardno = transcoding($("#bankcardno").val());
-//				var type = $("#type").val();
-				
-				if (beginTime == null || "" == beginTime) {
-					var d = new Date();
-					var month = d.getMonth() + 1;
-					if (d.getMonth() + 1 < 10) {
-						month = "0" + month;
-					}
-					var day = d.getDate();
-					if (d.getDate() < 10) {
-						day = "0" + day;
-					}
-					beginTime = d.getFullYear() + '-' + month + '-' + day + ' 00:00:00';
-				}
-		
-				if (endTime == null || "" == endTime) {
-					var d = new Date();
-					var month = d.getMonth() + 1;
-					if (d.getMonth() + 1 < 10) {
-						month = "0" + month;
-					}
-					var day = d.getDate();
-					if (d.getDate() < 10) {
-						day = "0" + day;
-					}
-					var day = d.getDate();
-					if (d.getDate() < 10) {
-						day = "0" + day;
-					}
-					var hours = d.getHours();
-					if (d.getHours() < 10) {
-						hours = "0" + hours;
-					}
-					var minutes = d.getMinutes();
-					if (d.getMinutes() < 10) {
-						minutes = "0" + minutes;
-					}
-		
-					var second = d.getSeconds();
-					if (d.getSeconds() < 10) {
-						second = "0" + second;
-					}
-		
-					endTime = d.getFullYear() + '-' + month + '-' + day + ' ' + hours
-							+ ":" + minutes + ":" + second;
-				}
-				
-				var payway = "";
-				var ptype = "";
-				var pname = "";
-				if(f == 1){
-					//pname = transcoding($("#p-coupon-id").val());
-					pname = encodeURI(encodeURI($("#p-coupon-id").val()));
-					payway = $("#p-coupon-payway").val();
-					ptype = $("#p-type-id").val();
-				}else{
-					payway = "null";
-					ptype= "null";
-					pname = "null";
-				}
-				/*
-				location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
-						+ settlementWay + "/" + beginTime + "/" + endTime + "/"
-						+ shiftid + "/" + bankcardno + "/" + type + "/"+codes+".json";*/
-				location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
-					+ settlementWay + "/" + beginTime + "/" + endTime + "/"
-					+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
-			}
-		}
 	</script>
 </body>
 </html>
