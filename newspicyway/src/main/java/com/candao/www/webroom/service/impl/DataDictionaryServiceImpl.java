@@ -57,7 +57,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		  if(dataDictionary == null ){
 			  return "";
 		  }
-		  return MD5.md5(dataDictionary.getItemid());
+		  return MD5.md5(dataDictionary.getItemDesc());
 	  }
 	@Override
 	public boolean delDishTasteService(String dishTasteId) {
