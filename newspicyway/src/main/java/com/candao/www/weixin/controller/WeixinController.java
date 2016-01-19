@@ -51,8 +51,9 @@ public class WeixinController {
 	// 这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全
 	private static String partnerkey = "candao2015beijingxiangmuzukaifaa";
 	// 微信支付成功后通知地址 必须要求80端口并且地址不能带参数
-	private static String notifyurl = "http://1.appnewspi.applinzi.com/index.jsp"; // Key
-
+	//private static String notifyurl = "http://1.appnewspi.applinzi.com/index/hello.do"; // Key
+	//private static String notifyurl = "http://1.appnewspi.applinzi.com/index.jsp"; // Key
+	private static String notifyurl = "http://123.71.192.133:10000/newspicyway/weixin/notify";
 	/**
 	 * 生成二维码url
 	 * 
@@ -164,16 +165,19 @@ public class WeixinController {
 		wpr.setTradeType(m.get("trade_type").toString());
 		wpr.setTransactionId(m.get("transaction_id").toString());
 
+		String isSuucess="1";//失败
 		if ("SUCCESS".equals(wpr.getResultCode())) {
 			// 支付成功
+			isSuucess="0";
 			resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
 					+ "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
 		} else {
+			isSuucess="1";
 			resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>"
 					+ "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
 		}
 
-		sendmessage2Android(resXml);
+		sendmessage2Android(isSuucess);
 		System.out.println("微信支付回调数据结束");
 
 		BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
@@ -188,7 +192,7 @@ public class WeixinController {
 	 * @param str
 	 */
 	private void sendmessage2Android(String str) {
-		StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+""+"/");
+		StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_5555+""+"/");
 		messageinfo.append(str);
 		System.out.println("微信支付推送");
 		new TsThread(messageinfo.toString()).run();
