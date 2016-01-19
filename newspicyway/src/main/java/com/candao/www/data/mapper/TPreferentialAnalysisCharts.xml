@@ -42,24 +42,8 @@
                         #{pi_ksrq,jdbcType=DATE,mode=IN},
                         #{pi_jsrq,jdbcType=DATE,mode=IN},
                         #{pi_tjx,jdbcType=SMALLINT,mode=IN},
-                        #{pi_hdlx,jdbcType=SMALLINT,mode=IN},
                         #{po_errmsg,jdbcType=VARCHAR,mode=OUT}
                       )
              }  
-    </select>
-        <select id="findBranchPreferential" parameterType="map" resultType="map">
-        select DISTINCT temp.id as codeid,temp.pname as codeDesc from (
-			select tsd.coupondetailid as id,tsd.bankcardno as pname from t_order tod ,t_settlement_detail tsd where tod.orderid=tsd.orderid
-			and tod.orderstatus='3'
-			and tod.branchid=#{branchId}
-			and tsd.coupondetailid is not null
-            and tsd.payway='12'
-			GROUP BY tsd.bankcardno
-			UNION
-			select tppa.id as id,tppa.name as pname from t_p_preferential_branch tppb ,t_p_preferential_activity tppa where  
-			tppb.branch=#{branchId} and tppb.preferential = tppa.id
-			UNION
-			select id,name from t_p_preferential_activity where apply_all = 1
-		)temp
     </select>
 </mapper>

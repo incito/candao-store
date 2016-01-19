@@ -14,9 +14,6 @@
 	src="<%=request.getContextPath()%>/scripts/json2.js"></script>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/tools/calendar_diy/WdatePicker.js"></script>
-<script
-	src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/global.js"></script>
 <script src="<%=request.getContextPath()%>/scripts/projectJs/report.js"></script>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css" />
@@ -45,12 +42,10 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>退菜数据明细表</span> 
-				<a href="Javascript:exportReturnDishxls()"><img
+				<span>退菜明细表</span> <a href="Javascript:exportReturnDishxls()"><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
-		<hr />
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -105,9 +100,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="bottom-div">
-		<div class="report-tb-div">
-			<table class="ky-table table table-list click-table" id="return_dish_data">
+		<div class="report-tb-div bottom-div">
+			<table class="ky-table table table-list" id="return_dish_data">
 				<thead>
 					<tr>
 						<th>发生时间</th>
@@ -124,9 +118,8 @@
 				</tbody>
 			</table>
 		</div>
-		</div>
 	</div>
-	<jsp:include page="reckoning.jsp" />
+	<div id="paywayChart"></div>
 	<script type="text/javascript">
 		var shiftid;
 		var searchType;

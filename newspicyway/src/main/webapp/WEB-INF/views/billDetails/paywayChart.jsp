@@ -41,9 +41,8 @@
 			<!--/span-->
 		</div>
 		<!--/row-->
-		<div class="bottom-div">
-		<div class="report_data_div" >
-			<table class="ky-table table table-list click-table" id="payway_data">
+		<div class="report_data_div bottom-div" >
+			<table class="table table-list" id="payway_data">
 				<thead>
 					<tr>
 						<th>结算方式</th>
@@ -55,51 +54,7 @@
 				</tbody>
 			</table>
 		</div>
-		</div>
 	</div>
-	<div class="modal fade report-details-dialog in " id="payway-details-dialog" data-backdrop="static">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<div class="modal-title">
-					<span>结算方式详情</span>
-					<a href="Javascript:exportxlsC(1)"><img src="../images/download.png" alt="" style="float: right;" /></a>
-					<img src="../images/close.png" class="img-close" data-dismiss="modal" />
-				</div>
-			</div>
-			<div class="modal-body">
-				<div>
-					<input type="hidden" id="p-payway" value="" />
-					<input type="hidden" id="membercardno" value="" />
-					<input type="hidden" id="itemid" value="" />
-					<table class="ky-table table table-list report_sub_tb" style="margin-bottom: 0px;">
-						<thead>
-							<tr><th width="33%">结算方式</th><th width="33%">笔数</th><th>金额</th></tr>
-						</thead>
-						<tbody>
-							<tr><td id="payway-name"></td><td id="payway-nums"></td><td id="payway-amount"></td></tr>
-						</tbody>
-					</table>
-					<table class="ky-table table table-list report_sub_tb click-table" id="payway_sub_tb" style="margin-top: 0px;">
-						<thead>
-							<tr>
-								<th width="33%">时间</th>
-								<th width="33%">订单号</th>
-								<th>金额</th>
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
-				</div>
-				<div class="btn-operate btn-operate-dishes">
-					<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">关闭</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<jsp:include page="reckoning.jsp" />
 	<script src="<%=request.getContextPath()%>/scripts/jquery.min.js"></script>
 	<script
 		src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>

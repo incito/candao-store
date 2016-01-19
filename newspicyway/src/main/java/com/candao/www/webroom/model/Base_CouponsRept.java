@@ -1,5 +1,6 @@
 package com.candao.www.webroom.model;
 
+import java.math.BigDecimal;
 
 public class Base_CouponsRept {
 	private Object BaseCom; 
@@ -14,8 +15,6 @@ public class Base_CouponsRept {
 	private Object Yinshou;
 	private Object insertTime;
 	private Object Payamount;
-	private Object Singular;
-	private Object PerCapita;
 	public Object getBaseCom() {
 		return BaseCom;
 	}
@@ -87,18 +86,6 @@ public class Base_CouponsRept {
 	}
 	public void setPayamount(Object payamount) {
 		Payamount = payamount;
-	}
-	public Object getSingular() {
-		return Singular;
-	}
-	public void setSingular(Object singular) {
-		Singular = singular;
-	}
-	public Object getPerCapita() {
-		return PerCapita;
-	}
-	public void setPerCapita(Object perCapita) {
-		PerCapita = perCapita;
 	} 
 }
 

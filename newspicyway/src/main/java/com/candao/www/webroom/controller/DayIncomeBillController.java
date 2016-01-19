@@ -87,13 +87,6 @@ public class DayIncomeBillController<V, K> {
 			@RequestParam Map<String, Object> params) {
 		return getData("/billDetails/itemDetailReports", params);
 	}
-	//load页面
-	@RequestMapping("/topage")
-	public ModelAndView topage(@RequestParam Map<String, Object> params){
-		String path = params.get("path").toString();
-		ModelAndView newProduct = new ModelAndView(path);
-		return newProduct;
-	}
 
 	/**
 	 * 营业分析进入明细报表时参数传递
@@ -168,31 +161,7 @@ public class DayIncomeBillController<V, K> {
 	public String askedForARefund() {
 		return "/billDetails/askedForARefund";
 	}
-	//反结算统计表
-	@RequestMapping("/theSettlement")
-	public String theSettlement(){
-		return "/billDetails/theSettlementStatistics";
-	}
-	//交接班统计表
-	@RequestMapping("/presentStatistics")
-	public String presentStatistics(){
-		return "/billDetails/presentStatistics";
-	}	
-	//营业报表-一级
-	@RequestMapping("/businessReportFirst")
-	public String businessReport(){
-		return "/billDetails/businessReportFirst";
-	}
-	//营业报表-二级
-	@RequestMapping("/businessReportSec")
-	public String businessReportSec(){
-		return "/billDetails/businessReportSec";
-	}
-	//营业报表-二级
-	@RequestMapping("/businessReportThird")
-	public String businessReportThird(){
-		return "/billDetails/businessReportThird";
-	}
+
 	@InitBinder
 	protected void initBinder(HttpServletRequest request,
 							  ServletRequestDataBinder binder) throws Exception {

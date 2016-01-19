@@ -20,7 +20,6 @@ function plaunchExample() {
 /**
  * 切换查询方式
  */
-/*
 function changeActivy(p) {
 	activiyType = p;
 	if (p == 0) {
@@ -29,53 +28,20 @@ function changeActivy(p) {
 		type = "活动类别";
 	}
 }
-*/
-/**
- * 初始化、并切换活动类型
- */
-function getPreferentialType(){
-	doGetActiviyType(function(result){
-		var li = '';
-		$.each(result, function(i, item){
-			var cla = "";
-			if(selPreftType == null || selPreftType == ""){
-				if(i == 0){
-					cla = "active";
-					selPreftType = item.codeId;
-				}
-			}else{
-				if(selPreftType == item.codeId){
-					cla = "active";
-				}
-			}
-			li += '<li class="'+cla+'" value="'+item.codeId+'">'+item.codeDesc+'</li>';
-		});
-		$("#preferential-type-first").html(li);
-		$("ul#preferential-type-first li").click(function(){
-			$("ul#preferential-type-first li").removeClass("active");
-			$(this).addClass("active");
-			selPreftType = $(this).val();
-			initPreferentialData(selPreftType);
-		});
-		initPreferentialData(selPreftType);
-	});
-}
+
 /**
  * 调api 获取数据
  */
-function initPreferentialData(selPreftType) {
-	showLoading();
+function initPreferentialData() {
 	$.post(global_Path + "/preferentialAnalysisCharts/findPreferentialView.json", {
 		beginTime : beginTime,
 		endTime : endTime,
 		dateType : dateType,
-		dataType : 0,//按名称查询
-		preftType : selPreftType
+		dataType : activiyType
 	}, function(result) {
 		console.log(result);
 		toActivyNamePie(result);
 		toActivyNameLine(result);
-		hideLoading();
 	});
 }
 /**
@@ -317,7 +283,7 @@ function pieCharts_custom(title, domMain, legend_data, series_data) {
 				formatter : "{a} <br/>{b} : {c} ({d}%)"
 			},
 			legend : {
-				show : true,
+				show : false,
 				orient : 'horizontal',
 				y : 'bottom',
 				data : legend_data
@@ -370,7 +336,7 @@ function lineChart_custom(title, domMain, legend_data, xAxis_data, series) {
 //			trigger : 'axis',
 		},
 		legend : {
-			show :  true,
+			show : false,
 			orient : 'horizontal',
 			y : 'bottom',
 			data : legend_data
@@ -398,7 +364,6 @@ function legend_custom(domMain, option, type ){
 	var myPreChart = echarts.init(domMain, curTheme);
 	myPreChart.setOption(option);
 	//divLegends
-	/*
 	var divLegends = $('<div style="width:98%;text-align:center;"></div>').appendTo($(domMain).parent());
 	var legend = null;
 	if(myPreChart.chart[type] != "" && myPreChart.chart[type] != null && myPreChart.chart[type] != undefined){
@@ -435,7 +400,7 @@ function legend_custom(domMain, option, type ){
 			});
 			divLegends.append(labelLegend);
 		});
-	}*/
+	}
 }
 function changeColor(color){
 	var rgbColor = '';

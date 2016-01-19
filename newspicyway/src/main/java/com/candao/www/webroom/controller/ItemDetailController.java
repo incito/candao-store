@@ -1,13 +1,14 @@
 package com.candao.www.webroom.controller;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.candao.common.utils.PropertiesUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.webroom.model.Code;
 import com.candao.www.webroom.service.ItemDetailService;
 import com.candao.www.webroom.service.impl.ExportItemDetailService;
@@ -207,49 +207,5 @@ public class ItemDetailController {
         }
         map.put("searchType", searchType);
         return map;
-	}
-	
-    
-    /**
-     * 品项列表品类查询
-     * @author weizhifang
-     * @since 2015-5-28
-     * @param request
-     * @return
-     */
-    @RequestMapping("/getItemTypeListForPx")
-	@ResponseBody
-	public ModelAndView getItemTypeListForPx(
-			@RequestParam Map<String, Object> params,
-			HttpServletRequest request, HttpServletResponse response) {
-		List<Code> ItemTypeLis = itemDetailService.getItemDescList();
-		List<Code> returnItemTypeLis = new ArrayList<Code>();
-		for(Code co : ItemTypeLis){
-			if(!co.getCodeDesc().equals("鱼锅")){
-				returnItemTypeLis.add(co);
-			}
-		}
-		ModelAndView mad = new ModelAndView();
-		mad.addObject("ItemTypeLis", returnItemTypeLis);
-		return mad;
-	}
-	/**
-	 * 查询所有门店列表
-	 * @author weizhifang
-	 * @since 2015-8-21
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping("/getBranchList")
-	public @ResponseBody ModelAndView getBranchList(HttpServletRequest request, HttpServletResponse response){
-		List<Map<String,Object>> branchList = new ArrayList<Map<String,Object>>();
-		Map<String,Object> branchMap = new HashMap<String,Object>();
-		branchMap.put("branchId", PropertiesUtils.getValue("current_branch_id"));
-		branchMap.put("branchname", "");
-		branchList.add(branchMap);
-		ModelAndView mad = new ModelAndView();
-		mad.addObject("branchList", branchList);
-		return mad;
 	}
 }

@@ -9,12 +9,20 @@
 <link
 	href="<%=request.getContextPath()%>/tools/echarts/css/font-awesome.min.css"
 	rel="stylesheet">
+<!--link
+	href="<%=request.getContextPath()%>/tools/echarts/css/bootstrap.css"
+	rel="stylesheet"-->
 <link
 	href="<%=request.getContextPath()%>/tools/echarts/css/carousel.css"
 	rel="stylesheet">
 <link
 	href="<%=request.getContextPath()%>/tools/echarts/css/echartsHome.css"
 	rel="stylesheet">
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
 <script src="<%=request.getContextPath()%>/tools/echarts/js/echarts.js"></script>
 <script
 	src="<%=request.getContextPath()%>/tools/echarts/js/codemirror.js"></script>
@@ -26,30 +34,6 @@
 <link href="<%=request.getContextPath()%>/tools/echarts/css/monokai.css"
 	rel="stylesheet">
 <!-- Fixed navbar -->
-<style type="text/css">
-	.main1{
-		width: 50%; 
-		float: left; 
-		margin-right: 0; 
-		padding-right: 0; 
-		border-right-width: 0;
-	}
-	.main2{
-		width: 50%; 
-		float: left; 
-		margin-left: 0; 
-		padding-left: 0;
-		border-left-width: 0;
-	}
-	.main3{
-		width: 100%; 
-		float: left; 
-		margin-right: 0; 
-		padding-right: 0; 
-		border-right-width: 0;
-		padding-bottom: 100px;
-	}
-</style>
 </head>
 <body>
 	<div class="report_head">
@@ -59,49 +43,19 @@
 		<div class="row-fluid example">
 			<!--/span-->
 			<div id="sale_count_graphic" class="col-md-14">
-				<div class="item-type">
-					<div class="nav-types-prev " id="nav-types-prev1" style="visibility: hidden;">
-						<i class="icon-chevron-left"></i>
-					</div>
-					<ul class="tab-ul nav-dish-type" id="dish-type-first">
-					</ul>
-					<div class="nav-types-next " id="nav-types-next1" style="visibility: hidden;">
-						<i class="icon-chevron-right"></i>
-					</div>
+				<div id="sale_count_top_main" class="main"
+					style='width: 50%; float: left; margin-right: 0; padding-right: 0; border-right-width: 0'>
 				</div>
-				<div id="sale_count_top_main" class="main1 main" style=''>
-				</div>
-				<div id="sale_count_main" class="main2 main" style=''>
+				<div id="sale_count_main" class="main"
+					style='width: 50%; margin-left: 0; padding-left: 0; border-left-width: 0'>
 				</div>
 			</div>
 			<div id="amount_graphic" class="col-md-14">
-				<div class="item-type">
-					<div class="nav-types-prev " id="nav-types-prev2" style="visibility: hidden;">
-						<i class="icon-chevron-left"></i>
-					</div>
-					<ul class="tab-ul nav-dish-type" id="dish-type-sec">
-					</ul>
-					<div class="nav-types-next " id="nav-types-next2" style="visibility: hidden;">
-						<i class="icon-chevron-right"></i>
-					</div>
+				<div id="saleamount_top_main" class="main"
+					style='width: 50%; float: left; margin-right: 0; padding-right: 0; border-right-width: 0'>
 				</div>
-				<div id="saleamount_top_main" class="main1 main" style=''>
-				</div>
-				<div id="saleamount_trend_main" class="main2 main" style=''>
-				</div>
-			</div>
-			<div id="thousand_graphic" class="col-md-14">
-				<div class="item-type">
-					<div class="nav-types-prev " id="nav-types-prev3" style="visibility: hidden;">
-						<i class="icon-chevron-left"></i>
-					</div>
-					<ul class="tab-ul nav-dish-type" id="dish-type-third">
-					</ul>
-					<div class="nav-types-next " id="nav-types-next3" style="visibility: hidden;">
-						<i class="icon-chevron-right"></i>
-					</div>
-				</div>
-				<div id="thousand_times_main" class="main3 main" style=''>
+				<div id="saleamount_trend_main" class="main"
+					style='width: 50%; margin-left: 0; padding-left: 0; border-left-width: 0'>
 				</div>
 			</div>
 			<!--/span-->
@@ -116,16 +70,12 @@
 	<script
 		src="<%=request.getContextPath()%>/scripts/projectJs/report.js"></script>
 	<script type="text/javascript">
-		var up_num1 = 0;
-		var up_num2 = 0;
-		var up_num3 = 0;
 		$(function() {
-			getItemsType();
+			initItemData();
 			$("#to_detail").click(function(){
 				orgTime();
 				toDetail(1,beginTime ,endTime);
 			});
-			scrollClick();
 		});
 	</script>
 </body>

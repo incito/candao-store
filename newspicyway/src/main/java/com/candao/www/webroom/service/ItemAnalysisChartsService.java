@@ -54,22 +54,4 @@ public interface ItemAnalysisChartsService {
 	 * @return
 	 */
 	public List<Map<String,Object>> getItemAmountTop10trend(List<Map<String,Object>> amountList);
-	
-	/**
-	 * 查询品项分析图表存储过程(指定分类统计)
-	 * @author weizhifang
-	 * @since 2015-07-04
-	 * @param params
-	 * @return
-	 */
-	public List<Map<String,Object>> itemAnalysisChartsForColumnPro(Map<String,Object> params);
-	
-	/**
-	 * 查询品项销售千次信息
-	 * @author weizhifang
-	 * @since 2015-07-04
-	 * @param params
-	 * @return
-	 */
-	public List<Map<String,String>> getColumnItemThousandsTimesReportForView(Map<String,Object> params);
 }

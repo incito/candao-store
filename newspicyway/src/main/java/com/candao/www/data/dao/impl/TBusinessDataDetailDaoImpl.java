@@ -22,10 +22,6 @@ public class TBusinessDataDetailDaoImpl implements TBusinessDataDetailDao {
 
 
 	public List<Map<String, Object>> isgetBusinessDetail(Map<String, Object> params) {
-		return daoSupport.find(PREFIX + ".isgetBusinessDetail", params); 
-	}
-	
-	public List<Map<String, Object>> getOrderInfo(Map<String, Object> params) {
-		return daoSupport.find(PREFIX + ".getOrderInfo", params); 
+		return daoSupport.find(PREFIX + ".isgetBusinessDetail", params);  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

@@ -55,8 +55,7 @@
 		</div>
 		<!--/row-->
 	</div>
-	<div class="bottom-div">
-	<div class="report_data_div">
+	<div class="report_data_div bottom-div">
 		<table class="table table-list" id="tb_d">
 			<thead>
 				<tr>
@@ -64,14 +63,11 @@
 					<th>应收总额</th>
 					<th>实收总额</th>
 					<th>折扣总额</th>
-					<th>人均</th>
-					<th>桌数</th>
 				</tr>
 			</thead>
 			<tbody>
 			</tbody>
 		</table>
-	</div>
 	</div>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/report.js"></script>
 	<script type="text/javascript">

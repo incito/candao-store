@@ -77,8 +77,6 @@ public class ReturnDishDetailController<V, K> {
         params.put("branchid", branchid);// 门店id
         String branchname = itemDetailService.getBranchName(branchid);
         params.put("branchname", branchname);
-        params.put("currPage","0");
-        params.put("pageNums","10000");
         List<Map<String, Object>> dishResult = returnDishDetailService.returnDishList(params);
         exportReturnDishService.exportReturnDishExcel(dishResult,request,response,params);
     }

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface PreferentialAnalysisChartsService {
 	public List<Map<String,Object>> insertPreferential(Map<String, Object> params);
 	public List<Map<String,Object>>  insertPreferentialDetail(Map<String,Object> params);
-	public List<Map<String,Object>> insertPreferentialView(Map<String, Object> params);
-	public List<Map<String,Object>>  findBranchPreferential(Map<String, Object>params);
+	public  List<Map<String,Object>> insertPreferentialView(Map<String, Object> params);
 	public void exportxlsB(Map<String, Object> params, HttpServletRequest req, HttpServletResponse resp) throws Exception;
 }

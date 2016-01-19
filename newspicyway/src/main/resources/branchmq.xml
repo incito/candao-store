@@ -266,7 +266,7 @@
    
 <!--         	  发送数据到分店数据的队列   -->
     <bean id="branchDataTopic" name="branchDataTopic" class="org.apache.activemq.command.ActiveMQTopic">  
-        <constructor-arg value="branchDataTopic" />  
+        <constructor-arg value="branchDataTopic_${tenant_id}" />  
     </bean> 
  
     <bean id="centerQueue" name="centerQueue" class="org.apache.activemq.command.ActiveMQQueue">  

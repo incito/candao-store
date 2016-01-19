@@ -43,12 +43,10 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>营业数据明细表</span>
-				<a href="Javascript:exportReportDaliy()" ><img
+				<span>营业数据明细表</span> <a href="Javascript:exportReportDaliy()" ><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
-		<hr />
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -107,6 +105,7 @@
 		var shiftid;
 		var searchType;
 		$(function() {
+			$("#title_p").html("营业数据明细表");
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");
 				$(this).addClass("active");

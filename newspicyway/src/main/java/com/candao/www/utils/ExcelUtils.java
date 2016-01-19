@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jxl.format.UnderlineStyle;
@@ -126,17 +125,13 @@ public class ExcelUtils {
 	 * @param fileName
 	 * @param realPath
 	 */
-	public static void downloadExcel(HttpServletRequest request,HttpServletResponse response, String fileName,
+	public static void downloadExcel(HttpServletResponse response, String fileName,
 			String realPath) {
 		try {
-//			response.addHeader("Content-Disposition", new String(("attachment; filename=" + fileName).getBytes("GBK"), "ISO-8859-1"));
-//			response.setContentType("application/vnd.ms-excel; charset=utf-8");
-//			response.setCharacterEncoding("utf-8");
-			
-			response.setContentType("application/vnd.ms-excel");
-			String filedi = new String(fileName.getBytes("GBK"), "ISO-8859-1");
-			response.setHeader("Content-Disposition", "attachment;filename=" + filedi);
-			
+			response.setHeader("Content-Disposition", "attachment; filename="
+					+ new String(fileName.getBytes(), "iso-8859-1"));
+			response.setContentType("application/vnd.ms-excel; charset=utf-8");
+			response.setCharacterEncoding("utf-8");
 			OutputStream out = response.getOutputStream();
 			InputStream in = new FileInputStream(realPath);
 			byte[] buffer = new byte[1024];
@@ -224,7 +219,7 @@ public class ExcelUtils {
 	 * @return
 	 */
 	public static String setTabTitle(String sheetName,Map<String,Object> params){
-		String branchname = params.containsKey("branchname")?params.get("branchname").toString():"";
+		String branchname = params.get("branchname").toString();
 		String shiftid = params.get("shiftid").toString();
 		String beginTime = params.get("beginTime").toString();
 		String endTime = params.get("endTime").toString();
@@ -243,46 +238,5 @@ public class ExcelUtils {
         }
 		return sheetName+"\n门店名称:"+branchname+"   市别："+shiftname+"\n时间:"+beginTime+"——"+endTime;
 	}
-	
-	/**
-	 * 构建excel表头
-	 * @author zhouyao
-	 * @since 2015-11-25
-	 * @param sheetName
-	 * @param params
-	 * @return
-	 */
-	public static String setTabTitleToBusiness(String sheetName,Map<?, ?> params){
-		String branchName = null;
-		String beginTime = null;
-		String endTime = null;
-		String type = null;
-		
-		if(params.get("branchName")!=null&&!params.get("branchName").equals("")){
-			branchName = params.get("branchName").toString();
-		}else{
-			branchName="全部门店";
-		}
-        if(params.get("type")!=null&&!params.get("type").equals("")){
-        	type = params.get("type").toString();
-		}
-        if(params.get("beginTime")!=null&&!params.get("beginTime").equals("")){
-        	beginTime = params.get("beginTime").toString();
-		}
-        if(params.get("endTime")!=null&&!params.get("endTime").equals("")){
-        	endTime = params.get("endTime").toString();
-		}
-
-		String typename = "";
-		if (type.equals("0")) {
-			typename = "午市";
-		}else if (type.equals("-1")) {
-			typename = "全天";
-		}else if (type.equals("1")) {
-			typename = "晚市";
-		}
-		return sheetName+"\n门店名称:"+branchName+"   市别："+typename+"\n时间:"+beginTime+"——"+endTime;
-	}
-	
 	
 }

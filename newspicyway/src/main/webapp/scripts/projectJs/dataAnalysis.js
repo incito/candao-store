@@ -14,17 +14,25 @@ function gethiddenId_nohms(num, obj) {
 			// 获得今日的开始时间
 			$("#beginTime").val(getNowDate().split(" ")[0]);
 			$("#endTime").val(getNowDate1().split(" ")[0]);
+			// $("#wdate").hide();
 		} else if (num == 1) {
 			// 获取上月的开始时间
 			$("#beginTime").val(getLastMonthStartDate().split(" ")[0]);
 			$("#endTime").val(getLastMonthEndDate().split(" ")[0]);
+			// $("#wdate").hide();
 		} else if (num == 2) {
 			// 获得本月的开始时间
 			$("#beginTime").val(getMonthStartDate().split(" ")[0]);
 			$("#endTime").val(getNowDate1().split(" ")[0]);
+			// $("#wdate").hide();
 		}
+		// $("#endTime").val(getNowDate1());
 		$("#wdate").hide();
 	}
+	// $("#wdate").hide();
+	// change color FF313E
+	// $(obj).parent().children().css("background-color","#FFFFFF");
+	// $(obj).css("background-color","#9a9691");
 }
 /**
  * 导出
@@ -33,6 +41,8 @@ function exportReports() {
 	if(compareBeginEndTime()){
 		var beginTime = $("#beginTime").val();
 		var endTime = $("#endTime").val();
+//		var shiftid = $("#shiftid").val();
+//		var dataType = $("#dataType").val();
 		var areaid = areasel;
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
@@ -152,6 +162,7 @@ function initDataStat_new() {
 				thHtm += '</tr></thead>';
 				$("#frozenDiv").css("width", "15%");
 			}else{
+//				tbodyHtm = '<tr><td colspan="2">没有数据</td></tr>';
 				frozenTbody = '<tr><td colspan="2">没有数据</td></tr>';
 				$("#frozenDiv").css("width", "100%");
 			}
@@ -187,4 +198,149 @@ function getArea() {
 		});
 		$("#areaSel").html(option);
 	});
+}
+
+/******************以下是原来代码 暂时不用***************************/
+/**
+ * 初始化全部区域、桌号
+ * @param callback
+ */
+function initTableNo(callback){
+	map = new HashMap();
+	areamap = new HashMap();
+	var tablelist = [];
+	$.get(global_Path + "/daliyReports/getTableNoList.json", function(result) {
+		rows = result.length;
+		$.each(result, function(i, code){
+			var area = code.codeDesc;
+			var aredId = code.aredId;
+			if(map.containsKey(aredId)){
+				tablelist = map.get(aredId);
+			}else{
+				tablelist = [];
+			}
+			tablelist.push(code.codeId);
+			map.put(aredId, tablelist);
+			areamap.put(aredId, area);
+		});
+		callback(map, rows);
+	});
+}
+
+/**
+ * 显示api获取数据
+ * @param map
+ * @param rows
+ */
+function initDataStat(map, rows) {
+	if(compareBeginEndTime()){
+		var begin = $("#beginTime").val();
+		var end = $("#endTime").val();
+		var tThead = '<thead><tr>' + '<th>区域</th>' + '<th>桌号/时间</th>';
+		var thValue = getThDate(begin, end);
+		console.log(thValue);
+		var thHtm = '';
+		$.each(thValue, function(i, th) {
+			thHtm += '<th>' + th + '</th>';
+		});
+		$("#dataStat_tb tbody").remove();
+		tThead = tThead + thHtm +'</tr></thead>';
+		var tbody = "";
+		var areaSelId = $("#areaSel").val();
+		$.post(global_Path + "/daliyReports/getDatastatistics.json", {
+			beginTime : $("#beginTime").val(),
+			endTime : $("#endTime").val(),
+			shiftId : $("#shiftid").val(),
+			dataType : $("#dataType").val() == null ? "1" : $("#dataType").val(),
+			areaid : areaSelId
+		}, function(result) {
+			console.log(result);
+			var len = 0;
+			map.each(function(areaid, values, num){
+				console.log(11);
+				if (areaSelId == null
+						|| areaSelId == "" || areaSelId == "-1"
+						|| (areaSelId != null
+								&& areaSelId != "" && areaSelId != "-1" && areaSelId == areaid)) {
+				len = values.length;
+				var area = areamap.get(areaid);
+				console.log(area);
+				$.each(values, function(k, tableno){
+					tbody += '<tr>';
+					if(k == 0){
+						tbody += '<td rowspan="'+len+'">' + area + '</td>';
+					}
+					tbody += '<td>' + tableno + "</td>";
+					$.each(thValue, function(m, time){
+						tbody += '<td>';
+						$.each(result, function(i, data) {
+							var arealist = data.list;
+							$.each(arealist, function(j, areaData) {
+								var area_id = areaData.id;
+								if(area_id == areaid){
+									var tblist = areaData.list;
+									$.each(tblist, function(n, tbs) {
+										var tableid = tbs.name;
+										if(tableid == tableno){
+											var datalist = tbs.list;
+											$.each(datalist, function(h, item) {
+												var dateTime = item.dateTime;
+												var arr = dateTime.split("-");
+												dateTime = arr[0]+"/"+arr[1]+"/"+arr[2];
+												if(time == dateTime){
+													var value = item.values;
+													tbody += value;
+												}
+											});
+										}
+									});
+								}
+							});
+						});
+						tbody += '</td>';
+					});//end thtimes.each
+					tbody += '</tr>';
+				});//end values.each (table)
+				}
+			});//end map.each
+			var htm = tThead + '<tbody>' + tbody +'</tbody>';
+			console.log(htm);
+			$("#dataStat_tb").html(htm);
+		});
+	}
+}
+/**
+ * 初始化动态表头
+ * @param begin
+ * @param end
+ * @returns {Array}
+ */
+function getThDate(begin, end) {
+	if (begin != null && begin != "") {
+		begin = begin.split(" ")[0];
+	}
+	if (end != null && end != "") {
+		end = end.split(" ")[0];
+	}
+	var num = dateDiff(begin, end, 0);
+	var date1 = getNewDate(begin, 0);
+	var thValue = [];
+	for (var j = 0; j <= num; j++) {
+		var d = getNewDate(begin, 0);
+		var value = "";
+		// 日
+		var dd = date1.getDate();
+		d.setDate(dd + j);
+		var month = d.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month;
+		}
+		var day = d.getDate();
+		if (day < 10) {
+			day = "0" + day;
+		}
+		value = d.getFullYear() + "/" + month + "/" + day;
+		thValue.push(value);
+	}
+	return thValue;
 }

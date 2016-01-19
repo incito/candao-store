@@ -77,105 +77,6 @@ public class PreferentialAnalysisChartsController {
 		}
 		return mod;
 	}
-	
-	
-	/**
-	 * 优惠分析报表导出
-	 *
-	 * @param settlementWay
-	 * @param beginTime
-	 * @param endTime
-	 * @param shiftid
-	 * @param bankcardno
-	 * @param type
-	 * @param payway
-	 * @param ptype
-	 * @param pname
-	 * @param searchType
-	 * @param req
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value="/exportReportCouDetail/{settlementWay}/{beginTime}/{endTime}/{shiftid}/{bankcardno}/{type}/{payway}/{ptype}/{pname}/{searchType}",method={RequestMethod.GET})
-	@ResponseBody
-	public ModelAndView exportReportCouDetail(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "settlementWay") String settlementWay,
-			@PathVariable(value = "beginTime") String beginTime,
-			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "shiftid") String shiftid,
-			@PathVariable(value = "bankcardno") String bankcardno,
-			@PathVariable(value = "type") String type,
-			@PathVariable(value = "payway") String payway,
-			@PathVariable(value = "ptype") String ptype,
-			@PathVariable(value = "pname") String pname,
-			@PathVariable(value = "searchType") String searchType) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		ModelAndView mav = new ModelAndView();
-		try {
-			if(!bankcardno.equals("-1")){
-				bankcardno = URLDecoder.decode(bankcardno,"UTF-8");
-			}
-			if(pname.equals("null")){
-				pname = "";
-			}else{
-				pname = URLDecoder.decode(pname,"UTF-8");
-			}
-			if(payway.equals("null")){
-				payway ="";
-			}
-			if(ptype.equals("null")){
-				ptype ="";
-			}
-			
-			map.put("settlementWay", settlementWay);
-			map.put("beginTime", beginTime);
-			map.put("shiftid", shiftid);
-			map.put("endTime", endTime);
-			map.put("bankcardno", bankcardno);
-			map.put("pname", pname);
-			map.put("payway", payway);
-			map.put("ptype", ptype);
-			map.put("type", type);
-			map.put("searchType", searchType);
-			String branchid = PropertiesUtils.getValue("current_branch_id");
-			String branchname = itemDetailService.getBranchName(branchid);
-			map.put("names","优惠活动明细表");
-			map.put("branchname", branchname);
-			mav.addObject("message", "导出成功！");
-			
-			String dateShowbegin = DateUtils.stringDateFormat(beginTime);
-			String dateShowend = DateUtils.stringDateFormat(endTime);
-			if (dateShowbegin.equals(dateShowend)) {
-				map.put("dateShow", dateShowbegin);
-			} else {
-				map.put("dateShow", dateShowbegin + "-" + dateShowend);
-			}
-			preferentialAnalysisChartsService.exportxlsB(map, request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mav.addObject("message", "导出失败！");
-		}
-		return mav;
-	}
-
-	
-	/**
-	 * 优惠报表统计明细-根据门店名称查询优惠活动名称
-	 * findBranchPreferential
-	 *  @author zhouyao
-	 *  @serialData 2015-11-26
-	 */
-	@RequestMapping("/findBranchPreferentialList")
-	public ModelAndView findBranchPreferentialList(@RequestParam Map<String, Object> params) {
-		ModelAndView mod = new ModelAndView();
-		try {
-			List<Map<String,Object>>  BranchPreferentialList = preferentialAnalysisChartsService.findBranchPreferential(params);
-			mod.addObject("BranchPreferentialList", BranchPreferentialList);
-		} catch (Exception e) {
-			e.getStackTrace();
-		}
-		return mod;
-	}
 	/**
 	 *  优惠数据统计图表
 	 *  @author zhouyao
@@ -289,6 +190,86 @@ public class PreferentialAnalysisChartsController {
 		mod.addObject("mapCouDtalTime", mapCouDtalTime);
 		return mod;
 	}
+	
+	/**
+	 * 优惠分析报表导出
+	 *
+	 * @param settlementWay
+	 * @param beginTime
+	 * @param endTime
+	 * @param shiftid
+	 * @param bankcardno
+	 * @param type
+	 * @param payway
+	 * @param ptype
+	 * @param pname
+	 * @param searchType
+	 * @param req
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/exportReportCouDetail/{settlementWay}/{beginTime}/{endTime}/{shiftid}/{bankcardno}/{type}/{payway}/{ptype}/{pname}/{searchType}",method={RequestMethod.GET})
+	@ResponseBody
+	public ModelAndView exportReportCouDetail(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable(value = "settlementWay") String settlementWay,
+			@PathVariable(value = "beginTime") String beginTime,
+			@PathVariable(value = "endTime") String endTime,
+			@PathVariable(value = "shiftid") String shiftid,
+			@PathVariable(value = "bankcardno") String bankcardno,
+			@PathVariable(value = "type") String type,
+			@PathVariable(value = "payway") String payway,
+			@PathVariable(value = "ptype") String ptype,
+			@PathVariable(value = "pname") String pname,
+			@PathVariable(value = "searchType") String searchType) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		ModelAndView mav = new ModelAndView();
+		try {
+			if(!bankcardno.equals("-1")){
+				bankcardno = URLDecoder.decode(bankcardno,"UTF-8");
+			}
+			if(pname.equals("null")){
+				pname = "";
+			}else{
+				pname = URLDecoder.decode(pname,"UTF-8");
+			}
+			if(payway.equals("null")){
+				payway ="";
+			}
+			if(ptype.equals("null")){
+				ptype ="";
+			}
+			
+			map.put("settlementWay", settlementWay);
+			map.put("beginTime", beginTime);
+			map.put("shiftid", shiftid);
+			map.put("endTime", endTime);
+			map.put("bankcardno", bankcardno);
+			map.put("pname", pname);
+			map.put("payway", payway);
+			map.put("ptype", ptype);
+			map.put("type", type);
+			map.put("searchType", searchType);
+			String branchid = PropertiesUtils.getValue("current_branch_id");
+			String branchname = itemDetailService.getBranchName(branchid);
+			map.put("names","优惠活动明细表");
+			map.put("branchname", branchname);
+			mav.addObject("message", "导出成功！");
+			
+			String dateShowbegin = DateUtils.stringDateFormat(beginTime);
+			String dateShowend = DateUtils.stringDateFormat(endTime);
+			if (dateShowbegin.equals(dateShowend)) {
+				map.put("dateShow", dateShowbegin);
+			} else {
+				map.put("dateShow", dateShowbegin + "-" + dateShowend);
+			}
+			preferentialAnalysisChartsService.exportxlsB(map, request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mav.addObject("message", "导出失败！");
+		}
+		return mav;
+	}
+	
 	/**
 	 * 2015-01-06 14:24:58 变成2015年01月06日
 	 *

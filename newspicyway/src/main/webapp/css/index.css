@@ -1,6 +1,3 @@
-/*去除a标签带来的虚框*/
-a:focus { -moz-outline-style: none; } /* IE不支持 */
-a:focus{outline:none;}/* IE支持 */
 .ky-navbar{
 	width: 100px;
 	float: left;
@@ -40,32 +37,32 @@ a:focus{outline:none;}/* IE支持 */
 	text-decoration: none;
 }
 
-/* 门店管理 */
+/* �ŵ���� */
 .ky-menu-primary{
 	border-left: 2px solid #7AC454;
 }
 
-/* 菜品管理 */
+/* ��Ʒ���� */
 .ky-menu-info{
 	border-left: 2px solid #FF6A4D;
 }
 
-/* 餐台管理 */
+/* ��̨���� */
 .ky-menu-warning{
 	border-left: 2px solid #FFCC4C;
 }
 
-/* 报表管理 */
+/* ������� */
 .ky-rpt-menu-warning{
 	border-left: 2px solid #FFCC4C;
 }
 
-/* 打印管理 */
+/* ��ӡ���� */
 .ky-menu-danger{
 	border-left: 2px solid #00C4E9;
 }
 
-/* 优惠管理 */
+/* �Żݹ��� */
 .ky-menu-minor{
 	border-left: 2px solid #00D3AC;
 }
@@ -79,15 +76,14 @@ a:focus{outline:none;}/* IE支持 */
 	border-left: 2px solid #34495e;
 }
 
-/* 报表分析 */
+/* ������� */
 .ky-menu-success{
 	border-left: 2px solid #ff6c77;
 }
-/* 进销存 */
 .ky-menu-psi{
 	border-left: 2px solid #0CB505;
 }
-/* 报表二级菜单 */
+/* ��������˵� */
 /*
 .ky-menu-report-sub{
 	background-color: rgb(255, 108, 119) !important;
@@ -95,31 +91,31 @@ a:focus{outline:none;}/* IE支持 */
 }
 */
 
-/* 门店管理 */
+/* �ŵ���� */
 .ky-menu-primary:hover{
 	background-color: #7AC454 !important;
 	color: #ffffff !important;
 }
 
-/* 菜品管理 */
+/* ��Ʒ���� */
 .ky-menu-info:hover{
 	background-color: #FF6A4D !important;
 	color: #ffffff !important;
 }
 
-/* 餐台管理 */
+/* ��̨���� */
 .ky-menu-warning:hover{
 	background-color: #FFCC4C !important;
 	color: #ffffff !important;
 }
 
-/* 打印管理 */
+/* ��ӡ���� */
 .ky-menu-danger:hover{
 	background-color: #00C4E9 !important;
 	color: #ffffff !important;
 }
 
-/* 优惠管理 */
+/* �Żݹ��� */
 .ky-menu-minor:hover{
 	background-color: #00D3AC !important;
 	color: #ffffff !important;
@@ -136,13 +132,13 @@ a:focus{outline:none;}/* IE支持 */
 	background-color: #34495e !important;
 	color: #ffffff !important;
 }
-/* 报表分析 */
-/* 报表一级菜单*/
+/* ������� */
+/* ����һ���˵�*/
 .ky-menu-report:hover{
 	background-color: #FF313E !important;
 	color: #ffffff !important;
 }
-/* 进销存 */
+/* �����һ���˵�*/
 .ky-menu-erp:hover{
 	background-color: #088803 !important;
 	color: #ffffff !important;
@@ -159,7 +155,7 @@ a:focus{outline:none;}/* IE支持 */
 	background-color: #088803 !important;
 	color: #ffffff !important;
 }
-/* 系统设置 */
+/* ϵͳ���� */
 .ky-menu-setup{
 	border-left: 2px solid #c276e2;
 }
@@ -167,7 +163,7 @@ a:focus{outline:none;}/* IE支持 */
 	background-color: #c276e2 !important;
 	color: #ffffff !important;
 }
-/* 选中菜单 */
+/* ѡ�в˵� */
 .ky-menu-focus{
 	background-color: #7AC454;
 	color: #ffffff !important;
@@ -176,27 +172,8 @@ a:focus{outline:none;}/* IE支持 */
 .ky-dropdown{
 	position: relative;
 }
-.ky-dropdown-sec{
-	position: relative;
-}
+
 .ky-dropdown-menu{
-	position: absolute;
-	top: 0px;
-	left: 100%;
-	z-index: 1000;
-	min-width: 130px;
-	margin: 0;
-	font-size: 14.4px;
-	display: none;
-	text-align: left;
-	list-style: none;
-	background-color: #fff;
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
-	-webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-	box-shadow: 0 6px 12px rgba(0,0,0,.175);
-}
-.ky-dropdown-sec-menu{
 	position: absolute;
 	top: 0;
 	left: 100%;
@@ -213,9 +190,7 @@ a:focus{outline:none;}/* IE支持 */
 	-webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
 	box-shadow: 0 6px 12px rgba(0,0,0,.175);
 }
-.report-sec{
-	border-left: 2px solid rgb(250, 164, 171);
-}
+
 .ky-dropdown-menu .ky-menu-warning{
 	background-color: #FFCC4C;
 }
@@ -308,21 +283,21 @@ a:focus{outline:none;}/* IE支持 */
 	font-size: 12px;
 	color: #ffffff;
 }
-/* iframe框架 */
+/* iframe��� */
 .ky-container-iframe{
 	margin-left:100px;
 	color:#fafafa;
 	min-width:920px;
 	height: 100%;/*20150522 by fandan*/
 } 
-/* iframe 框架样式 */
+/* iframe �����ʽ */
 .ky-content.content-iframe{
 	margin-top: 20px;
 	margin-left:15px;
 	margin-right:15px;
 	margin-bottom: 40px;/*add by lisa*/
 }
-/* 内容 */
+/* ���� */
 .ky-content{
 	min-width:864px;
 	margin-left:109px;

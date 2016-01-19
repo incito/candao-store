@@ -34,7 +34,6 @@ import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
-import com.candao.www.bossapp.activemq.BranchActiveMqUtil;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.model.EmployeeUser;
 import com.candao.www.data.model.TJsonRecord;
@@ -52,7 +51,6 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -67,7 +65,6 @@ import com.candao.www.webroom.service.ComboDishService;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.DishService;
 import com.candao.www.webroom.service.DishTypeService;
-import com.candao.www.webroom.service.GiftLogService;
 import com.candao.www.webroom.service.InstrumentService;
 import com.candao.www.webroom.service.InvoiceService;
 import com.candao.www.webroom.service.JsonRecordService;
@@ -200,23 +197,7 @@ public class PadInterfaceController {
 		record.setPadpath("setorder");
 		jsonRecordService.insertJsonRecord(record);
 
-		String returnStr =  orderService.startOrder(order);
-		
-		JSONObject returnobject = JSONObject.fromObject(returnStr);
-		
-		
-		if(!StringUtils.isBlank(order.getIsShield())&&order.getIsShield().equals("0")&&returnobject.containsKey("result")&&!StringUtils.isBlank(returnobject.getString("result"))&&returnobject.getString("result").equals("0")){
-			try{
-				String orderid = returnobject.containsKey("orderid")?returnobject.getString("orderid"):"";
-				if(!StringUtils.isBlank(orderid)){
-					giftService.updateOrderStatus(orderid);
-				}
-				
-			}catch(Exception ex){
-				
-			}
-		}
-		return returnStr;
+		return orderService.startOrder(order);
 	}
 
 
@@ -305,10 +286,7 @@ public class PadInterfaceController {
 		toperationLog.setSequence(order.getSequence());
 		int flag= judgeRepeatData(toperationLog);
 		if(flag==0){
-			String returnStr = orderDetailService.saveOrderDetailList(order,toperationLog);
-			if(returnStr.equals(Constant.SUCCESSMSG)){
-			}
-			return returnStr;
+			return orderDetailService.saveOrderDetailList(order,toperationLog);
 		}else if(flag==1){
 			return Constant.FAILUREMSG;
 		}else{
@@ -727,26 +705,7 @@ public class PadInterfaceController {
 
 		SettlementInfo  settlementInfo =  JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
 		String result = orderSettleService.rebackSettleOrder(settlementInfo);
-		
-		 
 		if("0".equals(result)){
-			  //反结算
-				    String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
-			        //String retPSI = HttpUtils.httpPostBookorderArray(PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER"), retString);
-					String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
-					Map<String, String> dataMap = new HashMap<String, String>();
-					 dataMap.put("data", retString);
-					String retPSI = null;
-					try {
-						retPSI = new HttpRequestor().doPost(url, dataMap);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
-					 if(retMap == null || "1".equals(retMap.get("code"))){	
-							return Constant.FAILUREMSG;
-					 }
-				//end 
 			return Constant.SUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
@@ -2013,7 +1972,8 @@ public class PadInterfaceController {
 	private CallWaiterService callWaiterService;
 	@Autowired
 	private InvoiceService invoiceService;
-	@Autowired
-	private GiftLogService giftService;
+	
+	
+	
 	
 }

@@ -10,8 +10,6 @@ public class BusinessReport1 {
 	  private String Card="0";
 	  private String ICBC="0";
 	  private String otherbank="0";
-	  private String weixin = "0";
-	  private String zhifubao = "0";
 	  private String Merbervaluenet="0";
 	  private String Total="0";
 	  private String MeberTicket="0";
@@ -43,106 +41,8 @@ public class BusinessReport1 {
 	private String viporderpercent="0";     //会员消费占比
 	private String handerWay="";     //零头处理方式名称
 	private String handervalue="";     //零头处理方式值
-	
-	private String closedordermums = "0";  //已结账单数
-    private String closedordershouldamount = "0";  //已结账单应收
-    private String closedorderpersonnums = "0";  //已结人数
-    private String nobillnums = "0"; //未结账单数
-    private String nobillshouldamount = "0"; //未结账单应收
-    private String nopersonnums = "0"; //未结人数
-    private String billnums = "0"; //全部账单数
-    private String billshouldamount = "0"; //全部账单应收
-    private String personnums = "0"; //全部人数
-    private String zaitaishu = "0"; //在台数
-    private String kaitaishu = "0"; //开台数
 
-	public String getClosedordermums() {
-		return closedordermums;
-	}
 
-	public void setClosedordermums(String closedordermums) {
-		this.closedordermums = closedordermums;
-	}
-
-	public String getClosedordershouldamount() {
-		return closedordershouldamount;
-	}
-
-	public void setClosedordershouldamount(String closedordershouldamount) {
-		this.closedordershouldamount = closedordershouldamount;
-	}
-
-	public String getClosedorderpersonnums() {
-		return closedorderpersonnums;
-	}
-
-	public void setClosedorderpersonnums(String closedorderpersonnums) {
-		this.closedorderpersonnums = closedorderpersonnums;
-	}
-
-	public String getNobillnums() {
-		return nobillnums;
-	}
-
-	public void setNobillnums(String nobillnums) {
-		this.nobillnums = nobillnums;
-	}
-
-	public String getNobillshouldamount() {
-		return nobillshouldamount;
-	}
-
-	public void setNobillshouldamount(String nobillshouldamount) {
-		this.nobillshouldamount = nobillshouldamount;
-	}
-
-	public String getNopersonnums() {
-		return nopersonnums;
-	}
-
-	public void setNopersonnums(String nopersonnums) {
-		this.nopersonnums = nopersonnums;
-	}
-
-	public String getBillnums() {
-		return billnums;
-	}
-
-	public void setBillnums(String billnums) {
-		this.billnums = billnums;
-	}
-
-	public String getBillshouldamount() {
-		return billshouldamount;
-	}
-
-	public void setBillshouldamount(String billshouldamount) {
-		this.billshouldamount = billshouldamount;
-	}
-
-	public String getPersonnums() {
-		return personnums;
-	}
-
-	public void setPersonnums(String personnums) {
-		this.personnums = personnums;
-	}
-
-	public String getZaitaishu() {
-		return zaitaishu;
-	}
-
-	public void setZaitaishu(String zaitaishu) {
-		this.zaitaishu = zaitaishu;
-	}
-
-	public String getKaitaishu() {
-		return kaitaishu;
-	}
-
-	public void setKaitaishu(String kaitaishu) {
-		this.kaitaishu = kaitaishu;
-	}
 
 	public String getHanderWay() {
 		return handerWay;
@@ -394,22 +294,5 @@ public class BusinessReport1 {
     public void setGive(String give) {
         this.give = give;
     }
-
-	public String getWeixin() {
-		return weixin;
-	}
-
-	public void setWeixin(String weixin) {
-		this.weixin = weixin;
-	}
-
-	public String getZhifubao() {
-		return zhifubao;
-	}
-
-	public void setZhifubao(String zhifubao) {
-		this.zhifubao = zhifubao;
-	}
-    
 }
 
