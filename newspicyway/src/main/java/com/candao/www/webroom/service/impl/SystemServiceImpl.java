@@ -264,12 +264,21 @@ public class SystemServiceImpl {
 	 */
 	private JSONArray getJsonArrary(List<Map<String, Object>> mapList, String type) {
 		JSONArray jsonArray = new JSONArray();
-
-		for (Map<String, Object> m : mapList) {
-			if (StringUtils.equals(m.get("type").toString(), type)) {
-				JSONObject jsonObject = new JSONObject();
-				getjsonContent(m, jsonObject);
-				jsonArray.add(jsonObject);
+		if(type.equals("PASSWORD")){
+			for (Map<String, Object> m : mapList) {
+				if (StringUtils.equals(m.get("id").toString(), "SECRETKEY")) {
+					JSONObject jsonObject = new JSONObject();
+					getjsonContent(m, jsonObject);
+					jsonArray.add(jsonObject);
+				}
+			}
+		}else{
+			for (Map<String, Object> m : mapList) {
+				if (StringUtils.equals(m.get("type").toString(), type)) {
+					JSONObject jsonObject = new JSONObject();
+					getjsonContent(m, jsonObject);
+					jsonArray.add(jsonObject);
+				}
 			}
 		}
 		return jsonArray;

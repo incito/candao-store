@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.model.TGiftLog;
+import com.candao.www.data.model.Torder;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.service.GiftLogService;
+import com.candao.www.webroom.service.OrderService;
 
 import net.sf.json.JSONObject;
 
@@ -33,6 +35,9 @@ public class GiftController {
 
 	@Autowired
 	private GiftLogService giftService;
+	
+	@Autowired
+	private OrderService orderService;
 
 	private static final Logger logger = LoggerFactory.getLogger(GiftController.class);
 
@@ -193,7 +198,7 @@ public class GiftController {
 			}
 			System.out.println(">>>>>>>>>>>"+body);
 			if (!giftInfo.containsKey("giftlogId") || giftInfo.getString("giftlogId") == null|| giftInfo.getString("giftlogId").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少礼物记录礼物ID");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物记录ID");
 			}
 			if (!giftInfo.containsKey("giftStatus") || giftInfo.getString("giftStatus") == null|| giftInfo.getString("giftStatus").equals("")) {
 				return ReturnMap.getReturnMap(0, "002", "缺少礼物记录状态");
@@ -304,9 +309,15 @@ public class GiftController {
 				return ReturnMap.getReturnMap(0, "002", "缺少消息内容");
 			}
 			
+			
 			final String sendOrderId =  giftInfo.getString("sendOrderId");
 			final String recOrderId = giftInfo.getString("recOrderId");
 			final String msg = giftInfo.getString("msg");
+			
+			Torder receviceOrder = orderService.get(recOrderId);
+			if(receviceOrder==null||receviceOrder.getOrderstatus()!=0){
+				return ReturnMap.getReturnMap(0, "003", "订单已结账");
+			}
 			
 			Map<String,String> params = new HashMap<String,String>();
 			params.put("recOrderId", recOrderId);
@@ -324,7 +335,12 @@ public class GiftController {
 					@Override
 					public void run() {
 						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2103+"/");
-						messageinfo.append(sendOrderId).append("|").append(recOrderId).append("|").append(msg);
+						try {
+							messageinfo.append(sendOrderId).append("|").append(recOrderId).append("|").append(java.net.URLEncoder.encode(msg,"UTF-8"));
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						new TsThread(messageinfo.toString()).run();
 					}
 				}).start();
