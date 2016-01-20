@@ -20,7 +20,7 @@
 <script src="../scripts/jquery.js"></script>
 <script src="../tools/bootstrap/js/bootstrap.min.js"></script>
 <script src="../scripts/bootstrap-contextmenu.js"></script>
-
+<script src="<%=request.getContextPath()%>/scripts/ajaxfileupload.js"></script>
 <script src="../scripts/projectJs/index.js"></script>
 <script src="../scripts/projectJs/menu.js"></script>
 <script src="../scripts/projectJs/menuoperate.js"></script>
@@ -87,7 +87,10 @@
 									<img tmplid="tmpl7" src="../images/menu-detail7.png" class="menu-add-img">
 									<img tmplid="tmpl8" src="../images/menu-detail8.png" class="menu-add-img">
 									<img tmplid="tmpl9" src="../images/menu-detail9.png" class="menu-add-img">
-
+									<img tmplid="tmpl10" src="../images/menu-detail10.png" class="menu-add-img">
+								</p>
+								<p>
+									<img tmplid="tmpl12" src="../images/menu-detail12.png" class="menu-add-img">
 								</p>
 							</div>
 							<div class="nav-menu-next"
@@ -713,6 +716,288 @@
 									</div>
 								</div>
 							</div>
+							<!--样式十-->
+							<div class="menu-detail hidden" id="menu-detail10">
+								<div class="row-left row menu-detail-box" data-toggle="context" 
+									data-target="#context-menu67" ondrop="menuDrop(event,2)" id="J1" isdbclick="no">
+									<img class="show-pic" src="<%=request.getContextPath()%>/images/menu-detail-bg-upload-ver.png" onclick="imgtempClick(this)" >
+									<input type="file" onchange="showpic(this)" style="position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;" size="1" id="main_img1" name="main_img1" accept="image/*" >
+									<div id="context-menu67">
+										<ul class="dropdown-menu menu-right-tab">
+											<li class="menu-right-tab2">调整图片</li>
+										</ul>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu57" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J2">
+										<div id="context-menu57">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu58" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J3">
+										<div id="context-menu58">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu59" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J4">
+										<div id="context-menu59">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu60" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J5">
+										<div id="context-menu60">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu61" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J6">
+										<div id="context-menu61">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu62" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J7">
+										<div id="context-menu62">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu63" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J8">
+										<div id="context-menu63">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu64" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J9">
+										<div id="context-menu64">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu65" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="J10">
+										<div id="context-menu65">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--样式十二-->
+							<div class="menu-detail hidden" id="menu-detail12">
+								<div class="row1 row menu-detail-box" data-toggle="context" 
+									data-target="#context-menu66" ondrop="menuDrop(event,2)" id="L1" isdbclick="no">
+									<img class="show-pic" src="<%=request.getContextPath()%>/images/menu-detail-bg-upload.png" onclick="imgtempClick(this)" >
+									<input type="file" onchange="showpic(this)" style="position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;" size="1" id="main_img" name="main_img" accept="image/*" >
+									<div id="context-menu66">
+										<ul class="dropdown-menu menu-right-tab">
+											<li class="menu-right-tab2">调整图片</li>
+										</ul>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu47" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L2">
+										<div id="context-menu47">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu48" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L3">
+										<div id="context-menu48">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu49" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L4">
+										<div id="context-menu49">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu50" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L5">
+										<div id="context-menu50">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu51" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L6">
+										<div id="context-menu51">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu52" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L7">
+										<div id="context-menu52">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu53" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L8">
+										<div id="context-menu53">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu54" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L9">
+										<div id="context-menu54">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu55" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L10">
+										<div id="context-menu55">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+									<div class="col-xs-6 menu-detail-box" data-toggle="context"
+										data-target="#context-menu56" ondrop="menuDrop(event,2)"
+										ondragover="allowDrop(event)" id="L11">
+										<div id="context-menu56">
+											<ul class="dropdown-menu menu-right-tab">
+												<li class="menu-right-tab1">修改菜品属性</li>
+												<li class="menu-right-tab2">调整图片</li>
+												<li class="menu-right-tab3">将菜品从本页中移除</li>
+												<li class="menu-right-tab4">推荐</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
 							<!--对于图片的操作-->
 							<div class="menu-detail-oper hidden">
 								<p class="p-remove">
@@ -736,7 +1021,10 @@
 									<img tmplid="tmpl7" src="../images/menu-detail7.png" class="menu-add-img">
 									<img tmplid="tmpl8" src="../images/menu-detail8.png" class="menu-add-img">
 									<img tmplid="tmpl9" src="../images/menu-detail9.png" class="menu-add-img">
-
+									<img tmplid="tmpl10" src="../images/menu-detail10.png" class="menu-add-img">
+								</p>
+								<p>
+									<img tmplid="tmpl12" src="../images/menu-detail12.png" class="menu-add-img">
 								</p>
 							</div>
 
