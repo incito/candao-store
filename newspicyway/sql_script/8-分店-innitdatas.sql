@@ -13,6 +13,7 @@
 -- Set character set the client will use to send SQL statements to the server
 --
 SET NAMES 'utf8';
+SET autocommit=0;
 
 INSERT INTO sequence(name, val) VALUES ('one', 0);
 INSERT INTO sequence(name, val) VALUES ('two', 0);
@@ -528,8 +529,21 @@ INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typen
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('locktime', '120', '屏保锁屏时间', 1, 1, 'LOCKTIME', '屏保锁屏时间', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('SECRETKEY', '0', '0', 1, 1, 'PASSWORD', '通用密码', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('vipaddress', '192.168.104.252:8081', '雅座的VIP地址', 1, 1, 'VIPADDRESS', '雅座的VIP地址', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-commit;
-
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('110', '17', '微信支付', '17', '1', 'PAYWAY', '支付方式', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('111', '18', '支付宝支付', '18', '1', 'PAYWAY', '支付方式', NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
+--POS结账银行列表
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('200', '0', '其他银行', 100, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('201', '1', '工商银行', 1, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('202', '2', '农业银行', 2, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('203', '3', '建设银行', 3, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('204', '4', '中国银行', 4, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('205', '5', '浦发银行', 5, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('206', '6', '招商银行', 6, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('207', '7', '中信银行', 7, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('208', '8', '民生银行', 8, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('209', '9', '光大银行', 9, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('210', '10', '平安银行', 10, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('211', '11', '北京银行', 11, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
 
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('01', '特价券', 't_p_special_ticket', 0, NULL);
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('02', '折扣券', 't_p_discount_tickets', 0, NULL);
@@ -540,7 +554,6 @@ INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, pa
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('0601', '手工优免', 't_p_handfree', 1, '06');
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('0602', '内部优免', 't_p_innerfree', 1, '06');
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('99', '雅座优惠券', '', 0, '');
-
 
 INSERT INTO tableseqno(name, val) VALUES ('tableid', 1);
 INSERT INTO tableseqno(name, val) VALUES ('parternerid', 1);
@@ -557,13 +570,14 @@ INSERT INTO t_dish (dishid, dishNo, columnId, userId, title, label, introduction
 
 INSERT INTO t_b_role(id, code, name, type, scope_code, scope_name, status, description, createtime, creator) VALUES ('d6e6fb6045034c8ab49436bcce461b02', null, '管理员', null, '-1', null, null, null, '2015-06-17 21:55:45', null);
 
-INSERT INTO t_b_role_function (id, role, function, role_name, function_name) VALUES ('03df3e8f-7806-4278-ae79-dc27653935eb', 'd6e6fb6045034c8ab49436bcce461b02', '3bcb378d-9412-49f5-90da-b0b16634a783', NULL, NULL); 
-INSERT INTO t_b_role_function (id, role, function, role_name, function_name) VALUES ('17580c6c-c6d9-4c38-a99a-c89c6a03253a', 'd6e6fb6045034c8ab49436bcce461b02', '3f79641c-896e-4383-91ea-aa9731d12345', NULL, NULL); 
-INSERT INTO t_b_role_function (id, role, function, role_name, function_name) VALUES ('306afff0-a41f-4e15-93c9-1e2972b7cf8a', 'd6e6fb6045034c8ab49436bcce461b02', '3f79641c-896e-4383-91ea-aa9731da6d2e', NULL, NULL); 
-INSERT INTO t_b_role_function (id, role, function, role_name, function_name) VALUES ('35ddb100-c17e-42c0-a850-efe09cd1c924', 'd6e6fb6045034c8ab49436bcce461b02', '85969423-01b2-460b-937e-a8743694f46d', NULL, NULL); 
-INSERT INTO t_b_role_function (id, role, function, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
-INSERT INTO t_b_role_function (id, role, function, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('03df3e8f-7806-4278-ae79-dc27653935eb', 'd6e6fb6045034c8ab49436bcce461b02', '3bcb378d-9412-49f5-90da-b0b16634a783', NULL, NULL); 
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('17580c6c-c6d9-4c38-a99a-c89c6a03253a', 'd6e6fb6045034c8ab49436bcce461b02', '3f79641c-896e-4383-91ea-aa9731d12345', NULL, NULL); 
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('306afff0-a41f-4e15-93c9-1e2972b7cf8a', 'd6e6fb6045034c8ab49436bcce461b02', '3f79641c-896e-4383-91ea-aa9731da6d2e', NULL, NULL); 
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('35ddb100-c17e-42c0-a850-efe09cd1c924', 'd6e6fb6045034c8ab49436bcce461b02', '85969423-01b2-460b-937e-a8743694f46d', NULL, NULL); 
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
 
+commit;
 -- 
 -- Enable foreign keys
 -- 

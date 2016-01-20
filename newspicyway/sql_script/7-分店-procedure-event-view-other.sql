@@ -16,6 +16,64 @@ SET NAMES 'utf8';
 
 DELIMITER $$
 
+--
+-- Definition for view v_currmenu
+--
+DROP VIEW IF EXISTS v_currmenu CASCADE $$
+CREATE OR REPLACE SQL SECURITY INVOKER
+
+VIEW v_currmenu
+AS
+	select tm.menuid AS menuid from ((t_branch_info tbf join t_menu_branch mb) join t_menu tm) where ((tbf.branchid = mb.branchid) and (mb.menuid = tm.menuid) and (tm.status = '1')) order by tm.effecttime desc limit 1 $$
+
+--
+-- Definition for view v_order
+--
+DROP VIEW IF EXISTS v_order CASCADE $$
+CREATE OR REPLACE SQL SECURITY INVOKER
+VIEW v_order
+AS
+	select a.tableNo AS tableNo,a.tableid AS tableid,a.orderid AS orderid,c.dishid AS dishid,c.title AS title,b.dishunit AS dishunit,b.dishnum AS dishnum,b.orderprice AS orderprice,b.orderdetailid AS orderdetailid,b.orderseq AS orderseq from ((t_table a join t_order_detail b) join t_dish c) where ((a.orderid = b.orderid) and (b.dishid = c.dishid)) $$
+
+--
+-- Definition for view v_revenuepayway
+--
+DROP VIEW IF EXISTS v_revenuepayway CASCADE $$
+CREATE OR REPLACE SQL SECURITY INVOKER
+VIEW v_revenuepayway
+AS
+SELECT t_dictionary.dictid AS dictid
+     , t_dictionary.itemid AS itemid
+     , t_dictionary.itemDesc AS itemDesc
+     , t_dictionary.itemSort AS itemSort
+     , t_dictionary.status AS status
+     , t_dictionary.type AS type
+     , t_dictionary.typename AS typename
+     , t_dictionary.begin_time AS begin_time
+     , t_dictionary.end_time AS end_time
+     , t_dictionary.charges_status AS charges_status
+     , t_dictionary.member_price AS member_price
+     , t_dictionary.price AS price
+     , t_dictionary.date_type AS date_type
+     , t_dictionary.item_value AS item_value
+FROM
+  t_dictionary
+WHERE
+  ((t_dictionary.itemid IN ('0', '1', '5', '8', '13', '17', '18'))
+  AND (t_dictionary.type = 'PAYWAY')) $$
+
+--
+-- Definition for view v_t_p_preferential_activity
+--
+DROP VIEW IF EXISTS v_t_p_preferential_activity CASCADE $$
+CREATE OR REPLACE SQL SECURITY INVOKER
+VIEW v_t_p_preferential_activity
+AS
+	select (case when (a.preferential = a.id) then b.name else ifnull(ifnull(a.free_reason,a.company_name),b.name) end) AS id,(case when (a.preferential = a.id) then b.name else ifnull(ifnull(a.free_reason,a.company_name),b.name) end) AS name,b.type AS type,b.type_name AS type_name,b.sub_type AS sub_type,b.sub_type_name AS sub_type_name,a.preferential AS preferential from (t_p_preferential_detail a join t_p_preferential_activity b on((a.preferential = b.id))) union select distinct t_settlement_detail.bankcardno AS id,t_settlement_detail.bankcardno AS name,'12' AS type,'会员' AS type_name,'' AS sub_type,'' AS sub_type_name,t_settlement_detail.bankcardno AS preferential from t_settlement_detail where (t_settlement_detail.payway = '12')$$
+
+
+
+
 DROP PROCEDURE IF EXISTS p_cal_dishset_price$$
 CREATE PROCEDURE p_cal_dishset_price()
 SQL SECURITY INVOKER
@@ -717,7 +775,7 @@ BEGIN
   update t_order_detail set payamount=0, discountamount=0,predisamount=0  where ((status<>5 and  (not (orderprice>0))) or (status=5))  and orderid=v_orderid;
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
-  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,8,11);
+  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,8,11,17,18);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
   update t_order set dueamount=v_dueamount,wipeamount=v_dueamount-floor(v_dueamount),ssamount=v_ssamount,gzamount=v_gzamount,ymamount=v_ymamount where orderid=v_orderid;
@@ -823,6 +881,8 @@ BEGIN
   -- 异常处理模块，出现异常回滚(20151204 shangwenchao added)
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
+  	set t_error = 1;
+  	set v_endfinish = false;
     ROLLBACK;
   END;
 
@@ -890,10 +950,6 @@ BEGIN
   UPDATE t_printer
   SET
     printnum = 0;
-
-  DELETE
-  FROM
-    t_worklog;
 
   UPDATE t_table
   SET
@@ -2425,7 +2481,8 @@ BEGIN
   (
     orderid VARCHAR(50),
     payway INT,
-    payamount DOUBLE(13, 2)
+    payamount DOUBLE(13, 2),
+    membercardno varchar(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #生产临时结算明细表数据
@@ -2433,12 +2490,13 @@ BEGIN
   SELECT b.orderid
        , b.payway
        , b.payamount
+       , case when b.membercardno='1' then '1' else '0' end  -- 1 工行 0 它行
   FROM
     t_temp_order a, t_settlement_detail b
   WHERE
     a.orderid = b.orderid
     AND b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8, 11, 12);
+    AND b.payway IN (0, 1, 5, 8, 11, 12, 13, 17, 18);  -- shangwenchao 2015/12/21 22:46:49 增加结算方式13
 
 
   #创建结果内存表
@@ -2447,17 +2505,19 @@ BEGIN
   (
     payway VARCHAR(50),
     nums INT,
-    prices DOUBLE(13, 2)
+    prices DOUBLE(13, 2),
+    membercardno VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_res
   SELECT payway
        , count(1)
        , ifnull(sum(payamount), 0)
+       , membercardno
   FROM
     t_temp_settlement_detail
   GROUP BY
-    payway;
+    payway,membercardno;
 
   --   #对payway=13的归入到优免里
   --   UPDATE t_temp_res
@@ -2469,15 +2529,15 @@ BEGIN
 
   #返回结果集
   SELECT b.itemDesc AS payway
-       , sum(a.nums) AS nums
-       , sum(prices) AS prices
+       , b.itemid
+       , a.nums
+       , a.prices
+       , membercardno
   FROM
     t_temp_res a, t_dictionary b
   WHERE
     a.payway = b.itemid
     AND b.type = 'PAYWAY'
-  GROUP BY
-    b.itemDesc
   ORDER BY
     b.itemSort;
 
@@ -3533,8 +3593,8 @@ BEGIN
       t_temp_order a, t_settlement_detail b
     WHERE
       a.orderid = b.orderid
-      AND b.payway IN (0, 1, 5, 8)
-      AND payamount > 0;
+      AND b.payway IN (0, 1, 5, 8, 13, 17, 18)  -- shangwenchao 2015/12/21 22:46:49 增加结算方式13
+      AND b.payamount > 0;
 
     CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
 
@@ -3920,7 +3980,7 @@ BEGIN
   FROM
     t_temp_settlement_detail
   WHERE
-    payway IN (0, 1, 5, 8);
+    payway IN (0, 1, 5, 8, 13, 17, 18); -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
   CREATE INDEX ix_t_temp_paidinamout_orderid ON t_temp_paidinamout (orderid);
 
 
@@ -4688,7 +4748,7 @@ lable_fetch_loop:
     t_temp_settlement_detail a, t_temp_orderid b
   WHERE
     a.orderid = b.orderid
-    AND payway IN (0, 1, 5, 8)
+    AND payway IN (0, 1, 5, 8, 13, 17, 18)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
   GROUP BY
     a.orderid;
 
@@ -5299,7 +5359,7 @@ BEGIN
     t_temp_settlement_detail
   WHERE
     payamount > 0
-    AND payway IN (0, 1, 5, 8)
+    AND payway IN (0, 1, 5, 8, 13, 17, 18)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
   GROUP BY
     orderid;
   CREATE INDEX ix_t_temp_settlement_paidinamount_orderid ON t_temp_settlement_paidinamount (orderid);
@@ -6064,7 +6124,7 @@ BEGIN
   WHERE
     a.orderid = b.orderid
     AND b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8);
+    AND b.payway IN (0, 1, 5, 8, 13, 17, 18);  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
   CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
 
   #创建会员消费内存表
@@ -6161,6 +6221,7 @@ END
 $$
 
 DROP PROCEDURE IF EXISTS p_report_yysjmxb$$
+
 CREATE PROCEDURE p_report_yysjmxb(IN  pi_branchid INT(11), -- 分店id
                                   IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
                                   IN  pi_ksrq     DATETIME, -- 开始日期，
@@ -6186,8 +6247,11 @@ BEGIN
   #以下为实收明细统计项
   DECLARE v_pa_cash               DOUBLE(13, 2) DEFAULT 0; #实收（现金）
   DECLARE v_pa_credit             DOUBLE(13, 2) DEFAULT 0; #实收（挂账）
-  DECLARE v_pa_card               DOUBLE(13, 2) DEFAULT 0; #实收（刷卡）
+  DECLARE v_pa_card               DOUBLE(13, 2) DEFAULT 0; #实收（刷卡——刷他行卡）
+  DECLARE v_pa_icbc_card          DOUBLE(13, 2) DEFAULT 0; #实收（刷卡——刷工行卡）
   DECLARE v_pa_paidinamount       DOUBLE(13, 2) DEFAULT 0; #会员储值消费（含虚增）
+  DECLARE v_pa_weixin             DOUBLE(13, 2) DEFAULT 0; #实收（微信）
+  DECLARE v_pa_zhifubao           DOUBLE(13, 2) DEFAULT 0; #实收（支付宝）
 
   #以下为折扣明细统计项
   DECLARE v_da_free               DOUBLE(13, 2) DEFAULT 0; #折扣(优免）
@@ -6360,7 +6424,8 @@ BEGIN
     payamount DOUBLE(13, 2),
     couponid VARCHAR(50),
     ordertype TINYINT,
-    isviporder TINYINT
+    isviporder TINYINT,
+    membercardno VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #生产临时结算明细表数据
@@ -6376,6 +6441,7 @@ BEGIN
          ELSE
            0
          END
+       , b.membercardno
   FROM
     t_temp_order a, t_settlement_detail b
   WHERE
@@ -6489,7 +6555,7 @@ BEGIN
   FROM
     t_temp_settlement_detail
   WHERE
-    payway IN (0, 1, 5, 8)
+    payway IN (0, 1, 5, 8, 13, 17, 18)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
     AND ordertype > 0;
 
   #设置实收（外卖） = 外卖实收- 外卖虚增
@@ -6505,14 +6571,21 @@ BEGIN
          END), 0)
        , ifnull(sum(
          CASE
-         WHEN payway = 1 THEN #刷卡
+         WHEN payway = 1 and membercardno='0' and payamount<>0 THEN #刷它行卡
            payamount
          ELSE
            0
          END), 0)
        , ifnull(sum(
          CASE
-         WHEN payway = 5 AND payamount > 0 THEN #挂账
+         WHEN payway = 1 and membercardno='1' and payamount<>0 THEN #刷工行卡
+           payamount
+         ELSE
+           0
+         END), 0)
+       , ifnull(sum(
+         CASE
+         WHEN payway in(5,13) AND payamount > 0 THEN #挂账 --SHANGWENCHAO 2015/12/21 23:28:59 13也是挂账
            payamount
          ELSE
            0
@@ -6553,13 +6626,27 @@ BEGIN
            0
          END), 0)
        , sum(isviporder) #会员订单数量
+       , ifnull(sum(
+         CASE
+         WHEN payway = 17 THEN #微信支付
+           payamount
+         ELSE
+           0
+         END), 0)
+       , ifnull(sum(
+         CASE
+         WHEN payway = 18 THEN #支付宝支付
+           payamount
+         ELSE
+           0
+         END), 0)
   INTO
-    v_pa_cash, v_pa_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_other_vipordercount
+    v_pa_cash, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_other_vipordercount, v_pa_weixin, v_pa_zhifubao
   FROM
     t_temp_settlement_detail;
 
-  #设置实收（全部） = 现金 + 挂账 + 刷卡 + 会员储值消费 - 会员储值消费虚增
-  SET v_paidinamount = v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd;
+  #设置实收（全部） = 现金 + 挂账 + 刷他行卡 + 会员储值消费 - 会员储值消费虚增 + 刷工行卡 + 微信支付 + 支付宝支付
+  SET v_paidinamount = v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin + v_pa_zhifubao;
 
   #设置折扣额
   SELECT ifnull(sum(a.payamount), 0)
@@ -6638,7 +6725,10 @@ BEGIN
     discountamount DOUBLE(13, 2), #折扣总额
     cash DOUBLE(13, 2), #实收（现金）
     credit DOUBLE(13, 2), #实收（挂账）
-    card DOUBLE(13, 2), #实收（刷卡）
+    card DOUBLE(13, 2), #实收（刷他行卡）
+    icbccard DOUBLE(13, 2), #实收（刷工行卡）
+    weixin DOUBLE(13, 2), #实收（微信）
+    zhifubao DOUBLE(13, 2), #实收（支付宝）
     merbervaluenet DOUBLE(13, 2), #实收（会员储值消费净值）
     free DOUBLE(13, 2), #折扣(优免）
     integralconsum DOUBLE(13, 2), #折扣(会员积分消费）
@@ -6666,7 +6756,7 @@ BEGIN
     membertotal DOUBLE(13, 2) #会员消费合计
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  INSERT INTO t_temp_res VALUES (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount - v_paidinamount, v_pa_cash, v_pa_credit, v_pa_card, v_pa_paidinamount - v_da_mebervalueadd, v_da_free, v_da_integralconsum, v_da_meberTicket, v_da_discount, v_da_fraction, v_da_give, v_da_roundoff, v_da_mebervalueadd, v_sa_ordercount, v_sa_tableconsumption, v_sa_settlementnum, v_sa_shouldaverage, v_sa_paidinaverage, v_sa_attendance, v_sa_overtaiwan, v_sa_avgconsumtime, v_sa_shouldamount, v_oa_shouldamount, v_oa_paidinamount, v_oa_ordercount, v_oa_avgprice, v_other_vipordercount, v_other_viporderpercent, v_ma_total);
+  INSERT INTO t_temp_res VALUES (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount - v_paidinamount, v_pa_cash, v_pa_credit, v_pa_card, v_pa_icbc_card, v_pa_weixin, v_pa_zhifubao, v_pa_paidinamount - v_da_mebervalueadd, v_da_free, v_da_integralconsum, v_da_meberTicket, v_da_discount, v_da_fraction, v_da_give, v_da_roundoff, v_da_mebervalueadd, v_sa_ordercount, v_sa_tableconsumption, v_sa_settlementnum, v_sa_shouldaverage, v_sa_paidinaverage, v_sa_attendance, v_sa_overtaiwan, v_sa_avgconsumtime, v_sa_shouldamount, v_oa_shouldamount, v_oa_paidinamount, v_oa_ordercount, v_oa_avgprice, v_other_vipordercount, v_other_viporderpercent, v_ma_total);
   SELECT *
   FROM
     t_temp_res;
