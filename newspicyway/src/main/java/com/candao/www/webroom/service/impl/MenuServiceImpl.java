@@ -276,9 +276,8 @@ public class MenuServiceImpl implements MenuService {
 						}
 					}
 					detaillist.addAll(imgDetaillist);
-					
 				}
-				template.setDetaillist(detaillist);					
+				template.setDetaillist(detaillist);	
 			}
 		}
 		menuGroup.setTemplatelist(templatelist);
