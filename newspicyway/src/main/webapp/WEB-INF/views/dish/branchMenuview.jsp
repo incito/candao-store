@@ -831,6 +831,294 @@
 				</div>
 			</div>
 		</div>
+		<!--样式十-->
+		<div class="menu-detail hidden" id="menu-detail10">
+			<div class="row-left row menu-detail-box" id="J1">
+				<img class="show-pic" src="">
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J2">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J3">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J4">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J5">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J6">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J7">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J8">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J9">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="J10">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		<!--样式十二-->
+		<div class="menu-detail hidden" id="menu-detail12">
+			<div class="row1 row menu-detail-box" id="L1">
+				<img class="show-pic" id="upload-img" src="">
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="L2">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+				<div class="col-xs-6 menu-detail-box" id="L3">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="L4">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+				<div class="col-xs-6 menu-detail-box" id="L5">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row ">
+				<div class="col-xs-6 menu-detail-box" id="L6">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+				<div class="col-xs-6 menu-detail-box" id="L7">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row ">
+				<div class="col-xs-6 menu-detail-box" id="L8">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+				<div class="col-xs-6 menu-detail-box" id="L9">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 menu-detail-box" id="L10">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+				<div class="col-xs-6 menu-detail-box" id="L11">
+					<div class="menu-desc">
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+						<p>
+							<span></span>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

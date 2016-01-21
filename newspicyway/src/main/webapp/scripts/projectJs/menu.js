@@ -39,7 +39,9 @@ var T_role = {
 	F : "menu-detail6",
 	G : "menu-detail7",
 	H : "menu-detail8",
-	I : "menu-detail9"
+	I : "menu-detail9",
+	J : "menu-detail10",
+	L : "menu-detail12"
 };
 var T_role_reverse = {
 	"menu-detail1": "A",
@@ -50,7 +52,9 @@ var T_role_reverse = {
 	"menu-detail6":	"F",
 	"menu-detail7":	"G",
 	"menu-detail8":	"H",
-	"menu-detail9":	"I"
+	"menu-detail9":	"I",
+	"menu-detail10": "J",
+	"menu-detail12":"L"
 };
 //裁剪图片
 var jcrop_api =null;
@@ -230,7 +234,11 @@ $(document).ready(function(){
 		delete tmpllist[curr_num].detaillist[drop_id];
 	});
 	$(".menu-detail-box").dblclick(function(){
-		adjustPic($(this).find(".menu-right-tab2"));
+		if($(this).attr("isdbclick") == "no"){
+			return false;
+		}else{
+			adjustPic($(this).find(".menu-right-tab2"));
+		}
 	});
 	/*点击调整图片按钮*/
 	$(".menu-right-tab2").click(function(){
@@ -351,81 +359,6 @@ $(document).ready(function(){
 			img$.attr("src",src);
 			img$.removeAttr("style");
 			imgLoad(src, calculateImg, img$, pobj);
-			/*
-			// add zt 0428
-			var img_= document.createElement('img');
-			img_.src=src;
-			var maxW = 700;
-			var minW = 360;
-			var maxH = 450;
-			var minH = 200;
-			img_.onload=function(){
-				alert(1);
-				originalWidth = img_.width;
-				originalHeight = img_.height;
-				var img_w = img_.width;
-				var img_h = img_.height;
-//				if(img_w > img_h){
-				if(img_w/maxW > img_h/maxH){
-					// use width
-					if(img_w < minW ){
-						img_w = minW;
-					}else if(img_w > maxW ){
-						img_w= maxW;
-					}
-					img$.width(img_w);
-					var heightV = (img_.height/img_.width)*img_w;
-					img$.height(heightV);
-					$("#menuImg-adjust-dialog .modal-content").width(img_w+20);
-					$("#menuImg-adjust-dialog .modal-content").height(heightV+110);
-					
-				}else{
-					// use height
-					if(img_h < minH ){
-						img_h = minH;
-					}else if(img_h > maxH ){
-						img_h= maxH;
-					}
-					img$.height(img_h);
-					var widthV = (img_.width/img_.height)*img_h;
-					
-//					if(widthV < minW){
-//						widthV = minW;
-//					}
-					$("#menuImg-adjust-dialog .modal-dialog").width(widthV+20);
-					$("#menuImg-adjust-dialog .modal-content").width(widthV+20);
-					$("#menuImg-adjust-dialog .modal-content").height(img_h+110);
-					img$.width(widthV);
-					
-				}
-			};
-			var cropW=0,croph=0;
-			$('#menuImg-adjust-dialog').on('shown.bs.modal', function () {
-				console.log("api==");
-				console.log(jcrop_api);
-				$("#target-img").Jcrop({
-					aspectRatio: pobj.width()/pobj.height(),
-					onSelect: updateCoords,
-					onChange: function(c){
-						cropW = c.w;
-						croph = c.h;
-					},
-					onDblClick: function(c){
-						doTail();
-					}
-				},function(){
-					jcrop_api = this;
-					jcrop_api.animateTo([100, 100, 400, 300]);
-					
-					fillVal(100, 100, cropW, croph);
-				});
-				
-				$("#menuImg-adjust-dialog .jcrop-holder").removeClass("hide");
-				$(".jcrop-keymgr").css("width", "0px");
-				$(".jcrop-keymgr").css("display", "none");
-				$(".jcrop-holder").css("margin","0 auto");
-			 });
-			$("#menuImg-adjust-dialog").modal("show");*/
 		}else{
 			$("#menuadd-prompt-modal #prop-msg").text("该菜品没有图片");
 			$("#menuadd-prompt-modal").modal("show");
@@ -500,8 +433,8 @@ $(document).ready(function(){
 			src = src.substr(src.lastIndexOf("/")+1, src.length);
 			src = global_Path + "/images/menubox/" + src ;
 		}
-		
-		var temp = '<div class="menu-count-box" dishtypeid = "'+dishtypeid+'"> ';
+		//版式menu-count-box上添加typeid区分属于哪个分类
+		var temp = '<div class="menu-count-box '+dishtypeid+'" dishtypeid = "'+dishtypeid+'"> ';
 			temp +='<img src="'+src+'" draggable="true" class="active" target-type="'+g_typeid+'" id="box'+id+'" onmouseover="menuImgActive(this)" onmouseout="menuImgDisable(this)" onclick="menuDetailDis(this)" ondragstart="drag(event)"  ondrop="menuDrop(event,1)" ondragover="allowDrop(event)"></div>'; 
 		$(".menu-add").before(temp);	
 		$(".menu-add-type").addClass("hidden");	
@@ -509,13 +442,19 @@ $(document).ready(function(){
 		$(".menu-detail").addClass("hidden");
 		$("#"+detail_id).removeClass("hidden");
 		$("#"+detail_id).find("div.recommend_div").remove();
-		$("#"+detail_id).find("img").remove();
+		$("#"+detail_id).find("img").not(".show-pic").remove();
 		$("#"+detail_id).find("div.menu-desc").remove();
-		$("#"+detail_id).find(".menu-detail-box").css("background",'url("../images/menu-detail-bg.png") no-repeat center center #e6e6e6 ');
+//		$("#"+detail_id).find(".menu-detail-box").css("background",'url("../images/menu-detail-bg.png") no-repeat center center #e6e6e6 ');
 
 		thumb_num = 'box'+id;
 		$("#"+detail_id).find("div.menu-detail-box").attr("thumb-detail",thumb_num);
 		
+		//若是L（第十二版式），第一栏只显示图片，并且默认显示默认图片
+		if(T_role_reverse[detail_id] == "L"){
+			$("#"+detail_id).find("img.show-pic").attr("src",global_Path+"/images/menu-detail-bg-upload.png");
+		}else if(T_role_reverse[detail_id] == "J"){
+			$("#"+detail_id).find("img.show-pic").attr("src",global_Path+"/images/menu-detail-bg-upload-ver.png");
+		}
 		//相当于一次向右滚动操作
 		var count = $(".menu-count").find("div").not(".hidden").length;
 		if(menu_num < count-8){
@@ -532,6 +471,12 @@ $(document).ready(function(){
 		dataStyle[thumb_num].menu_pos = 'box'+id; //缩略图ID，也对应于缩略图的位置
 		dataStyle[thumb_num].menu_id = detail_id; //缩略图对应的具体样式
 		dataStyle[thumb_num].menu_content = new Object(); //缩略图中的内容详情
+		//若是L（第十二版式），第一栏只显示图片，并且默认显示默认图片
+		if(T_role_reverse[detail_id] == "L"){
+			dataStyle[thumb_num].menu_content["L1"]={menu_content_img: global_Path+"/images/menu-detail-bg-upload.png"};
+		}else if(T_role_reverse[detail_id] == "J"){
+			dataStyle[thumb_num].menu_content["J1"]={menu_content_img: global_Path+"/images/menu-detail-bg-upload-ver.png"};
+		}
 		
 		//add by lisafan
 		tmpllist[thumb_num]= new Object();
@@ -548,8 +493,9 @@ $(document).ready(function(){
 		//判断是否有菜品选择
 		if(isNullObj(tmpllist)){
 			f = false;
-		}else{			
-		var datalist = tmpllist["box1"].detaillist;
+		}else{
+			var boxid = $(".menu-count-box").find("img").eq(0).attr("id");
+			var datalist = tmpllist[boxid].detaillist;
 			if(isNullObj(datalist)){
 				f = false;
 			}
@@ -567,7 +513,9 @@ $(document).ready(function(){
 
 	/*菜谱详情图片hover效果*/
 	$(".menu-detail-edit").hover(function(){
-		$(this).find(".menu-detail-oper").toggleClass("hidden");
+		$(this).find(".menu-detail-oper").removeClass("hidden");
+	},function () {
+		$(this).find(".menu-detail-oper").addClass("hidden");
 	});
 	/*点击更换板式按钮*/
 	$(".p-change").click(function(event){
@@ -595,9 +543,9 @@ $(document).ready(function(){
 		var detail_id = src.substring(src.lastIndexOf('/')+1,src.lastIndexOf('-'));
 		var obj = $(".menu-detail").not(".hidden");
 		var curr_num = obj.find(".menu-detail-box").attr("thumb-detail");
-		obj.find("img").remove();
+		obj.find("img").not(".show-pic").remove();
 		obj.find(".menu-desc").remove();
-		$("#"+detail_id).find("img").remove();
+		$("#"+detail_id).find("img").not(".show-pic").remove();
 		$("#"+detail_id).find(".menu-desc").remove();
 		var change_src = "../images/menubox/"+detail_id+'-active.png';
 		$("#"+curr_num).attr("src",change_src);
@@ -625,44 +573,161 @@ $(document).ready(function(){
 		//判断顺序
 		thumSort();
 	});
+	/**
+	 * 循环判断下一个版式
+	 */
+	function hideNext(curobj){
+		var nextobj = null;
+		if(curobj.hasClass("menu-count-box")){
+			nextobj = curobj.next();
+			if(nextobj.hasClass("hidden")){
+				nextobj = nextobj.next();
+				if(nextobj.hasClass("hidden")){
+					nextobj = hideNext(nextobj);
+				}
+			}
+			return nextobj;
+		}
+		return nextobj;
+	}
+	
+	/**
+	 * 循环判断是否存在上一个版式
+	 */
+	function hidePrev(curobj){
+		var prevobj = null;
+		if(curobj.hasClass("menu-count-box")){
+			prevobj = curobj.prev();
+			if(prevobj.hasClass("hidden")){
+				prevobj = prevobj.prev();
+				if(prevobj.hasClass("hidden")){
+					prevobj = hidePrev(prevobj);
+				}
+			}
+			return prevobj;
+		}
+		return prevobj;
+	}
+	/**
+	 * 判断下一个分类下是否有版式
+	 */
+	function hasboxNext(curtype){
+		var nexttype = curtype.next();
+		if(nexttype.parent().hasClass("nav-dishes-menu")){
+			var nexttypeid = nexttype.attr("dishtypeid");
+			if($("#menu-count-scroll").find(".menu-count-box."+nexttypeid).length <= 0){
+				//没有
+				nexttype = hasboxNext(nexttype);
+			}
+		}
+		return nexttype;
+	}
+	/**
+	 * 判断上一个分类下是否有版式
+	 */
+	function hasboxPrev(curtype){
+		var prevtype = curtype.prev();
+		if(prevtype.parent().hasClass("nav-dishes-menu")){
+			var prevtypeid = prevtype.attr("dishtypeid");
+			if($("#menu-count-scroll").find(".menu-count-box."+prevtypeid).length <= 0){
+				//没有
+				prevtype = hasboxPrev(prevtype);
+			}
+		}
+		return prevtype;
+	}
 	/*点击删除*/
 	$(".p-remove").click(function(event){
 		event.stopPropagation();
 		var obj = $(".menu-detail-edit").find(".menu-detail").not(".hidden");
 		var curr_num = obj.find(".menu-detail-box").attr("thumb-detail");	
 		$(".menu-detail").addClass("hidden");
-		obj.find("img").remove();
+		obj.find("img").not(".show-pic").remove();
 		obj.find("div.menu-desc").remove();
 		
-		//显示前一个box
-		var oo = $("#"+curr_num).parent().prev();
-		if(oo == null || !oo.hasClass("menu-count-box") || $(oo).attr("dishtypeid") != g_typeid){
-			oo = $("#"+curr_num).parent().next();
-		}
-		if($(oo).attr("dishtypeid") == g_typeid){
-			$(oo).find("img").addClass("active");
-			menuDetailDis($(oo).find("img"));
-		}
-		//删除菜品中标签
-		$.each(tmpllist[curr_num].detaillist, function(i, detail){
-			removeSelIcon(detail.redishid);
-		});
-		/*注意，需要对应删除缩略图中的信息*/
-		var _this = $(".menu-count");
-		if( _this.children().not(".hidden").length>8){
-			$("#"+curr_num).parent().remove();
-			if(menu_num>=1){	
-				$(".menu-count").find("div").not(".hidden").eq(menu_num-1).css("margin-left","0");	
-				menu_num--;
-				menuNumMap.put(g_typeid, menu_num);
+		/**
+		 * 当删除一个菜谱版式时，判断逻辑：
+		 * 1、先判断当前分类下是否有其他版式:
+		 * 	1)若当前分类下有其他版式，则默认显示后一个版式，若当前删除的是最后一个，则显示前一个版式
+		 *  2)若当前分类下没有其他菜谱版式，则显示其他分类下的版式：
+		 *   默认显示后一个分类下的第一个版式，若当前分类是最后一个分类，则显示前一个分类下的第一个版式
+		 */
+		
+		if($("#menu-count-scroll").find(".menu-count-box."+g_typeid).length > 1){
+			//若当前分类下有其他菜谱
+			//判断前面是否存在菜谱
+			var curobj = $("#"+curr_num).parent();
+			var nextobj = oo = hideNext(curobj);
+			if(nextobj == null || !nextobj.hasClass("menu-count-box")){
+				nextobj = hidePrev(curobj);
 			}
+			
+			if($(nextobj).attr("dishtypeid") == g_typeid){
+				$(nextobj).find("img").addClass("active");
+				menuDetailDis($(nextobj).find("img"));
+			}
+			
+			//删除菜品中标签
+			$.each(tmpllist[curr_num].detaillist, function(i, detail){
+				removeSelIcon(detail.redishid);
+			});
+			//注意，需要对应删除缩略图中的信息
+			var _this = $(".menu-count");
+			if( _this.children().not(".hidden").length>8){
+				$("#"+curr_num).parent().remove();
+				if(menu_num>=1){	
+					$(".menu-count").find("div").not(".hidden").eq(menu_num-1).css("margin-left","0");	
+					menu_num--;
+					menuNumMap.put(g_typeid, menu_num);
+				}
+			}else{
+				$("#"+curr_num).parent().remove();
+			}
+			//清空存储的信息
+			delete dataStyle[curr_num];
+			delete tmpllist[curr_num];
 		}else{
-			$("#"+curr_num).parent().remove();
-		}
-		//清空存储的信息
-		delete dataStyle[curr_num];
+			//若存在，先删除上一个分类下的相关：
+			//删除菜品中标签
+			$.each(tmpllist[curr_num].detaillist, function(i, detail){
+				removeSelIcon(detail.redishid);
+			});
+			//注意，需要对应删除缩略图中的信息
+			var _this = $(".menu-count");
+			if( _this.children().not(".hidden").length>8){
+				$("#"+curr_num).parent().remove();
+				if(menu_num>=1){	
+					$(".menu-count").find("div").not(".hidden").eq(menu_num-1).css("margin-left","0");	
+					menu_num--;
+					menuNumMap.put(g_typeid, menu_num);
+				}
+			}else{
+				$("#"+curr_num).parent().remove();
+			}
+			//清空存储的信息
+			delete dataStyle[curr_num];
+			delete tmpllist[curr_num];
+			
+			
+			//当前分类下无其他版式
+			var curtype = $("#nav-dishes-scroll").find("li.active");
+			var nexttype = hasboxNext(curtype);
+			var nexttypeid = nexttype.attr("dishtypeid");
+			if($("#menu-count-scroll").find(".menu-count-box."+nexttypeid).length <= 0){
+				//取上一个分类
+				nexttype = hasboxPrev(curtype);
+				nexttypeid = nexttype.attr("dishtypeid");
+			}
+			if($("#menu-count-scroll").find(".menu-count-box."+nexttypeid).length > 0){
+				
+				$("#nav-dishes-scroll").find("li").removeClass("active");
+				nexttype.addClass("active");
 
-		delete tmpllist[curr_num];
+				menu_num = menuNumMap.get(nexttypeid);
+		     	initDishes(nexttypeid);
+		     	showBox(nexttypeid);
+			}
+		}
 		thumSort();
 	});
 	/*左侧信息hover效果显示滚动条*/
@@ -904,7 +969,7 @@ $(document).ready(function(){
 			obj.next().removeClass("hidden");
 		}
 	});
-	//暂时应该没用 end
+	//暂时应该没用 end	
 });
 /**
  * 销毁jcrop
@@ -1355,72 +1420,77 @@ function showAllTmpl(templatelist){
  * @param f（=true的时候为查看菜谱）
  */
 function getDishDesc(detail, $obj, f){
-	var img = detail.image;
-	if(f){
-		if(checkSrc(img)){
-			$obj.find("img").attr("src", replaceEscape(img_Path + img));
-		}
-	}
-	var dish_desc = $obj.find(".menu-desc");
-	var dishtype = detail.dishtype;
-	var level = detail.level;
-	if(dishtype == 1){
-		//鱼锅，查询关联鱼锅名称
-		var desc = '<input type="hidden" id="menu_dishid" value="'+detail.redishid+'"/>';
+	//只返回图片的情况 如第十二版式
+	if(detail.dishunitlist == null || detail.dishunitlist == undefined || detail.redishid == "TEMPLATE-IMAGE"){
+		$obj.find("img.show-pic").attr("src", replaceEscape(img_Path+detail.image));
+	}else{
+		var img = detail.image;
 		if(f){
-			//鱼锅名称
-			desc += detail.dishunitlist[0].dishname;
-			if(level == 1){
-				//双拼锅
+			if(checkSrc(img)){
+				$obj.find("img").attr("src", replaceEscape(img_Path + img));
+			}
+		}
+		var dish_desc = $obj.find(".menu-desc");
+		var dishtype = detail.dishtype;
+		var level = detail.level;
+		if(dishtype == 1){
+			//鱼锅，查询关联鱼锅名称
+			var desc = '<input type="hidden" id="menu_dishid" value="'+detail.redishid+'"/>';
+			if(f){
+				//鱼锅名称
+				desc += detail.dishunitlist[0].dishname;
+				if(level == 1){
+					//双拼锅
+				}else{
+					//非 双拼锅
+					$.each(detail.fishpotlist, function(i, item){
+						desc += "<p><span>"+item.dishname+"</span>";
+						var va = item.price+"元/"+item.unit;
+						if(item.vipprice!=null && item.vipprice!=""){
+							va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+						}
+						desc += "<span>"+va+"</span></p>";
+					});
+				}
+				
 			}else{
-				//非 双拼锅
-				$.each(detail.fishpotlist, function(i, item){
-					desc += "<p><span>"+item.dishname+"</span>";
-					var va = item.price+"元/"+item.unit;
-					if(item.vipprice!=null && item.vipprice!=""){
-						va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+				$.each(detail.dishunitlist, function(i, item){
+					if(i != 0){
+						desc += "<p><span>"+item.dishname+"</span>";
+						var va = item.price+"元/"+item.unit;
+						if(item.vipprice!=null && item.vipprice!=""){
+							va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+						}
+						desc += "<span>"+va+"</span></p>";
+					}else{
+						//鱼锅名称
+						desc += "<p><span>"+item.dishname+"</span></p>";
 					}
-					desc += "<span>"+va+"</span></p>";
 				});
 			}
-			
+			$(dish_desc).html(desc);
 		}else{
+			var desc = '<input type="hidden" id="menu_dishid" value="'+detail.redishid+'"/>';
 			$.each(detail.dishunitlist, function(i, item){
-				if(i != 0){
-					desc += "<p><span>"+item.dishname+"</span>";
-					var va = item.price+"元/"+item.unit;
-					if(item.vipprice!=null && item.vipprice!=""){
-						va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+				var unit = item.unit;
+				if(dishtype == 2){
+					if(unit == null || unit == undefined){
+						unit = "套";
 					}
-					desc += "<span>"+va+"</span></p>";
-				}else{
-					//鱼锅名称
+				}
+				var price = item.price+"元/"+unit;
+				if(item.vipprice != null && item.vipprice != "" && item.vipprice != undefined){
+					price += "(会员价："+item.vipprice+"元/"+unit+")";
+				}
+				if(i == 0){
 					desc += "<p><span>"+item.dishname+"</span></p>";
+					desc += "<p><span>"+price+"</span></p>";
+				}else if(i == 1){
+					desc += "<p><span>"+price+"</span></p>";
 				}
 			});
+			$(dish_desc).html(desc);
 		}
-		$(dish_desc).html(desc);
-	}else{
-		var desc = '<input type="hidden" id="menu_dishid" value="'+detail.redishid+'"/>';
-		$.each(detail.dishunitlist, function(i, item){
-			var unit = item.unit;
-			if(dishtype == 2){
-				if(unit == null || unit == undefined){
-					unit = "套";
-				}
-			}
-			var price = item.price+"元/"+unit;
-			if(item.vipprice != null && item.vipprice != "" && item.vipprice != undefined){
-				price += "(会员价："+item.vipprice+"元/"+unit+")";
-			}
-			if(i == 0){
-				desc += "<p><span>"+item.dishname+"</span></p>";
-				desc += "<p><span>"+price+"</span></p>";
-			}else if(i == 1){
-				desc += "<p><span>"+price+"</span></p>";
-			}
-		});
-		$(dish_desc).html(desc);
 	}
 }
 /**
@@ -1543,6 +1613,7 @@ function showBox(typeid){
  */
 function initEditTmpl(menuid){
 	$.getJSON(global_Path+"/menu/getMenuById/"+menuid+".json", function(json){
+		console.log(json);
 		showAllColumn(json.templatelist);
 		initDisheType(menuid);
 		
@@ -1558,12 +1629,13 @@ function initEditTmpl(menuid){
 			}else{
 				img = T_role[tmpl.type]+'.png';
 			}
-			//若是第九板式，显示无缩略图
+			//若是第九板式或是第十二板式，显示无缩略图
 			var imgSrc = '../images/menubox/' + img;
-			if(T_role[tmpl.type] == "menu-detail9"){
+			if(T_role[tmpl.type] == "menu-detail9" || T_role[tmpl.type] == "menu-detail12"){
 				imgSrc = '../images/' + img;
 			}
-			htm += '<div class="menu-count-box" dishtypeid="'+tmpl.columnid+'">'
+			//版式menu-count-box上添加typeid区分属于哪个分类
+			htm += '<div class="menu-count-box '+tmpl.columnid+'" dishtypeid="'+tmpl.columnid+'">'
 				+ '<img src="' + imgSrc + '" draggable="true" class="'+cla+'" id="box'+(index+1)+'" onmouseover="menuImgActive(this)" onmouseout="menuImgDisable(this)" onclick="menuDetailDis(this)" ondragstart="drag(event)" ondrop="menuDrop(event,1)" ondragover="allowDrop(event)">'
 				+ '</div>';
 			thumb_num = "box"+(index+1);
@@ -1583,69 +1655,84 @@ function initEditTmpl(menuid){
 				var dishname = "";
 				value = "";
 				var dishtype = detail.dishtype;
-				var temp ='<div class="menu-desc">';
-				if(dishtype == 1){
-					$.each(detail.dishunitlist, function(j, item){
-						if(j != 0){
-							var va = item.price+"元/"+item.unit;
-							if(item.vipprice != null && item.vipprice != ""){
-								va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+				//只返回图片的情况 如第十二版式
+				if(detail.dishunitlist == null || detail.dishunitlist == undefined || detail.redishid == "TEMPLATE-IMAGE"){
+					$("#"+detail.location).find("img").attr("src", detail.image);
+					dataStyle[thumb_num].menu_content[detail.location] = {
+							menu_content_img: detail.image==null?global_Path+"/images/menu-detail-bg-upload.png":replaceEscape(img_Path + detail.image)
+					};
+					// TODO
+					tmpllist[thumb_num].detaillist[detail.location] = {
+							location: detail.location,
+							image: detail.image,
+							originalImage: detail.originalImage
+					};
+				}else{
+					var temp ='<div class="menu-desc">';
+					if(dishtype == 1){
+						$.each(detail.dishunitlist, function(j, item){
+							if(j != 0){
+								var va = item.price+"元/"+item.unit;
+								if(item.vipprice != null && item.vipprice != ""){
+									va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+								}
+								temp += '<p><span>'+item.dishname+'</span><span >'+va+'</span></p>';
+							}else{
+								//鱼锅名称
+								temp += '<p><span>'+item.dishname+'</span></p>';
 							}
-							temp += '<p><span>'+item.dishname+'</span><span >'+va+'</span></p>';
-						}else{
-							//鱼锅名称
-							temp += '<p><span>'+item.dishname+'</span></p>';
-						}
-					});
-				}else{
-					$.each(detail.dishunitlist, function(j, item){
-						if(j == 0){
-							dishname = item.dishname;
-							temp += '<p><span>'+dishname+'</span></p>';
-						}
-						var va = item.price+"元";
-						if(item.unit!=null && item.unit != undefined)
-							va += "/"+item.unit;
-						if(item.vipprice!=null && item.vipprice!=undefined){
-							va += "(会员价："+item.vipprice+"元/"+item.unit+")";
-						}else{
-							detail.dishunitlist[j].vipprice = "";
-						}
-						value += va;
-						temp += '<p><span >'+va+'</span></p>';
-					});
+						});
+					}else{
+						$.each(detail.dishunitlist, function(j, item){
+							if(j == 0){
+								dishname = item.dishname;
+								temp += '<p><span>'+dishname+'</span></p>';
+							}
+							var va = item.price+"元";
+							if(item.unit!=null && item.unit != undefined)
+								va += "/"+item.unit;
+							if(item.vipprice!=null && item.vipprice!=undefined){
+								va += "(会员价："+item.vipprice+"元/"+item.unit+")";
+							}else{
+								detail.dishunitlist[j].vipprice = "";
+							}
+							value += va;
+							temp += '<p><span >'+va+'</span></p>';
+						});
+					}
+					temp += "</div>";
+				
+					var obj = $("#"+detail.location);
+					var hide = '';
+					if(tmpl.type == "I" || tmpl.type == "L" || tmpl.type == "J"){
+						hide = 'style="display: none"';
+						obj.css("background","#e6e6e6");
+					}else{
+						hide = 'style="display: block"';
+					}
+					var imgsrc = "";
+					if(checkSrc(detail.image)){
+						imgsrc = replaceEscape(img_Path + detail.image);
+					}
+					var temp_img = '<img dishid="'+detail.redishid+'" value="'+value+'" text="'+dishname+'" src="'+imgsrc+'" '+hide+'>';
+					var recommend_img = '';
+					var width = obj.width();
+					var height = obj.height();
+					if(detail.recommend == 1){
+						recommend_img = '<div class="recommend_div"><div class="img"></div></div>';
+					}
+					dataStyle[thumb_num].menu_content[detail.location] = {
+							menu_content_pos: detail.location,
+							menu_content_img:temp_img,
+							recommend_img:recommend_img,
+							menu_content_imgW:width,
+							menu_content_imgH:height,
+							menu_content_desc:temp
+					};
+					tmpllist[thumb_num].detaillist[detail.location] = detail;
+					tmpllist[thumb_num].detaillist[detail.location].dishtype = dishtype;
 				}
-				temp += "</div>";
-				var obj = $("#"+detail.location);
-				var hide = '';
-				if(tmpl.type == "I"){
-					hide = 'style="display: none"';
-					obj.css("background","#e6e6e6");
-				}else{
-					hide = 'style="display: block"';
-				}
-				var imgsrc = "";
-				if(checkSrc(detail.image)){
-					imgsrc = replaceEscape(img_Path + detail.image);
-				}
-				var temp_img = '<img dishid="'+detail.redishid+'" value="'+value+'" text="'+dishname+'" src="'+imgsrc+'" '+hide+'>';
-				var recommend_img = '';
-				var width = obj.width();
-				var height = obj.height();
-				if(detail.recommend == 1){
-					recommend_img = '<div class="recommend_div"><div class="img"></div></div>';
-				}
-				dataStyle[thumb_num].menu_content[detail.location] = {
-						menu_content_pos: detail.location,
-						menu_content_img:temp_img,
-						recommend_img:recommend_img,
-						menu_content_imgW:width,
-						menu_content_imgH:height,
-						menu_content_desc:temp
-				};
-				tmpllist[thumb_num].detaillist[detail.location] = detail;
-				tmpllist[thumb_num].detaillist[detail.location].dishtype = dishtype;
-			});
+			});//end detaillist
 		});
 		$("#menu-count-scroll #menu-add-btn").before(htm);//showbox
 		activeType(g_typeid);
@@ -1844,7 +1931,7 @@ function showDishDesc(obj, data, src, oldsrc, manyTimes){
 	obj.find("img").remove();
 	obj.find("div.menu-desc").remove();
 	var hide = '';
-	if(drop_id.indexOf("I") < 0){
+	if(drop_id.indexOf("I") < 0 && drop_id.indexOf("L")<0  && drop_id.indexOf("J")<0){
 		hide = 'style="display: block;"';
 	}else{
 		hide = 'style="display: none;"';
@@ -1852,7 +1939,7 @@ function showDishDesc(obj, data, src, oldsrc, manyTimes){
 	var temp_img = '<img dishid="'+dishid+'" value="'+$("#"+data).attr("value")+'" text="'+text+'" src="'+show_src+'" '+hide+'>';
 	obj.append(temp_img);
 	
-	if(drop_id.indexOf("I") < 0){//样式九的图片不用放入
+	if(drop_id.indexOf("I") < 0 && drop_id.indexOf("L") < 0 && drop_id.indexOf("J") < 0){//样式九和样式十二的图片不用放入
 	}else{
 		obj.css("background","#e6e6e6");
 	}
@@ -1873,11 +1960,12 @@ function showDishDesc(obj, data, src, oldsrc, manyTimes){
 	
 	var temp ='<div class="menu-desc">';
 	if(dishtype == 1){
+		//鱼锅
 		tmpllist[curr_num].detaillist[drop_id].dishunitlist[0] = {
 				dishid : dish.dishid,
 				dishname : dish.title,
 				dishintroduction : dish.introduction,
-				unit : '',
+				unit : dish.unit,
 				price : '',
 				vipprice : ''
 		};
@@ -2032,15 +2120,26 @@ function menuDetailDis(e){
 	var obj = $("#"+detail_id);
 	obj.find(".menu-detail-box").attr("thumb-detail",curr_num);
 	obj.removeClass("hidden");
-	obj.find("img").remove();
+	obj.find("img").not("img.show-pic").remove();
 	obj.find(".menu-desc").remove();
 	obj.find(".menu-detail-box").each(function(){
 		var id = $(this).attr("id");
 		$("#"+id).find("div.recommend_div").remove();
 		if(typeof(dataStyle[curr_num].menu_content[id])!='undefined'){
-			$(this).append(dataStyle[curr_num].menu_content[id].recommend_img);
-			$(this).append(dataStyle[curr_num].menu_content[id].menu_content_img);
-			$(this).append(dataStyle[curr_num].menu_content[id].menu_content_desc);
+			if(id == "L1" || id == "J1"){
+				//L1栏上传图片，只展示图片
+				$("#"+id).find("img.show-pic").attr("src", dataStyle[curr_num].menu_content[id].menu_content_img);
+			}else{
+				$(this).append(dataStyle[curr_num].menu_content[id].recommend_img);
+				$(this).append(dataStyle[curr_num].menu_content[id].menu_content_img);
+				$(this).append(dataStyle[curr_num].menu_content[id].menu_content_desc);
+			}
+		}else {
+			if(id == "L1"){
+				$("#"+id).find("img.show-pic").attr("src", global_Path+"/images/menu-detail-bg-upload.png");
+			}else if(id == "J1"){
+				$("#"+id).find("img.show-pic").attr("src", global_Path+"/images/menu-detail-bg-upload-ver.png");
+			}
 		}
 	});
 }
@@ -2158,3 +2257,105 @@ function menuDetailDis(e){
  	}
  	return img;
  }
+ /**
+ * 点击图片触发点击input file上传
+ */
+function imgtempClick(o){
+	$(o).parent().find("input[type='file']").click();
+}
+/**
+ * 上传图片压缩处理
+ * @param o
+ * @param src 压缩前图片
+ */
+function compress($o, src){
+	var type = 5;
+	var curr_num = $o.attr("thumb-detail");
+	var id = $o.attr("id");
+	if(id == "L1"){//上图下菜
+		type = 5;
+	} else if(id == "J1"){//左图右菜
+		type = 6;
+	}
+	doAdjust(1,{
+		src: src,
+		oldimage: src,//被替换的菜品图片
+		type: type
+	},function(json){
+		console.log(json.image);
+		tmpllist[curr_num].detaillist[id] = {
+    			location: id,
+    			image: json.image,
+    			originalImage: img_Path+"/"+json.image
+    	};
+    	dataStyle[curr_num].menu_content[id] = {
+    			menu_content_img: img_Path+"/"+json.image
+    	};
+    	$o.find("img.show-pic").attr("src", img_Path+"/"+json.image);
+    	console.log("上传图片后：");
+    	console.log(tmpllist);
+    	console.log(dataStyle);
+	});
+}
+/**
+ * 选择图片的时候 显示图片
+ */
+function showpic(o){
+	var strsrc=getObjectURL(o.files[0]);
+	var inpId = $(o).attr("id");
+	if(strsrc!=null){
+		//设置显示图片
+		var $o = $(o).parent();
+		//判断图片格式
+		judgePicType(o);
+		//新板式提交图片
+	 	$.ajaxFileUpload({
+	 		fileElementId: [inpId],  
+		    url: global_Path+"/menu/saveimg",  
+		    dataType: 'json',
+		    contentType:'application/json;charset=UTF-8',
+		    data:{},
+		    success: function (data, textStatus) {
+		    },  
+		    complete: function (XMLHttpRequest, textStatus) {
+		    	console.log("complete");
+		    	//新板式特殊图片处理
+		    	var result = $.parseJSON(XMLHttpRequest.responseText);//jQuery.parseJSON(jsonstr),可以将json字符串转换成json对象 
+		    	if(result.code == 1){
+		    		// TODO
+		    		compress($o, img_Path+"/"+result.data);
+		    	}else{
+		    		alert("图片上传失败，请重新选择上传！");
+		    	}
+		    }
+	 	});
+	}
+}
+/**
+ * 获取路径
+ * @param file
+ * @returns
+ */
+function getObjectURL(file) {
+    var url = null ;
+    if (window.createObjectURL!=undefined) { // basic
+        url = window.createObjectURL(file) ;
+    } else if (window.URL!=undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file) ;
+    } else if (window.webkitURL!=undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file) ;
+    }
+    return url ;
+}
+/**
+  * 判断图片是否正确
+  */
+ var allowExt = ['jpg', 'gif', 'bmp', 'png', 'jpeg'];
+ function judgePicType(o){
+ 	var name = $(o).val();
+ 	var ext = name.substr(name.lastIndexOf(".")+1, name.length);
+ 	 if(allowExt.indexOf(ext) == -1){
+ 		 alert("图片格式错误！");
+ 	 }
+ }
+ 

@@ -53,6 +53,7 @@ public class MenuServiceImpl implements MenuService {
 	private ComboDishDao comboDishDao;
 	@Autowired
 	private DataDictionaryService datadictionaryService;
+	private static final String SEPERATOR = "^thumbnail^";
 
 	@Override
 	public boolean saveMenu(MenuGroup menuGroup) {
@@ -259,7 +260,24 @@ public class MenuServiceImpl implements MenuService {
 						templateDetail.setDishunitlist(dishunitlist);
 					}
 				}
-				template.setDetaillist(detaillist);
+				
+//				2016年1月13号之后，新增的4种新版式的处理
+				map.put("redishid", "TEMPLATE-IMAGE");
+				List<TtemplateDetail> imgDetaillist = ttemplateDetailDao.getTtemplateDetailByParamsHasRedishid(map);
+//				updated by caicai split field img 
+				if(imgDetaillist != null && !imgDetaillist.isEmpty()){
+					for (TtemplateDetail it : imgDetaillist) {
+						if(it.getImage()!= null && !"".equals(it.getImage())){
+							String[] path = it.getImage().split(SEPERATOR.replaceAll("\\^", "\\\\^"));
+							if(path != null && path.length == 2){
+								it.setOriginalImage(path[0]);
+								it.setImage(path[1]);
+							}							
+						}
+					}
+					detaillist.addAll(imgDetaillist);
+				}
+				template.setDetaillist(detaillist);	
 			}
 		}
 		menuGroup.setTemplatelist(templatelist);
@@ -362,7 +380,24 @@ public class MenuServiceImpl implements MenuService {
 							templateDetail.put("dishunitlist", dishunitlist);
 							templateDataMap.put(String.valueOf(templateDetail.get("location")),templateDetail);
 						}
+//						2016年1月13号之后，新增的4种新版式的处理
+						map.put("redishid", "TEMPLATE-IMAGE");
+						List<TtemplateDetail> imgDetaillist = ttemplateDetailDao.getTtemplateDetailByParamsHasRedishid(map);
+						if(imgDetaillist != null && !imgDetaillist.isEmpty()){
+							TtemplateDetail tempdetail = imgDetaillist.get(0);
+							//added by caicai
+							tempdetail.setDishtype("0");
+							if(tempdetail.getImage()!= null && !"".equals(tempdetail.getImage())){
+								String[] path = tempdetail.getImage().split(SEPERATOR.replaceAll("\\^", "\\\\^"));
+								if(path != null && path.length == 2){
+									tempdetail.setOriginalImage(path[0]);
+									tempdetail.setImage(path[1]);
+								}							
+							}
+							templateDataMap.put(tempdetail.getLocation(), tempdetail);							
+						}
 					}
+					
 					templateMap.put("datas", templateDataMap);
 				}
 			}
