@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.candao.www.data.dao.TsettlementMapper" >
   <resultMap id="BaseResultMap" type="com.candao.www.data.model.Tsettlement" >
@@ -11,11 +11,11 @@
     <result column="outdiscount" property="outdiscount" jdbcType="DECIMAL" />
     <result column="userid" property="userid" jdbcType="VARCHAR" />
     <result column="settleddetailid" property="settleddetailid" jdbcType="VARCHAR" />
-   <result column="cashamount" property="cashamount" jdbcType="DECIMAL" />
-   <result column="bankamount" property="bankamount" jdbcType="DECIMAL" />
+    <result column="cashamount" property="cashamount" jdbcType="DECIMAL" />
+    <result column="bankamount" property="bankamount" jdbcType="DECIMAL" />
     <result column="memeberamount" property="memeberamount" jdbcType="DECIMAL" />
-     <result column="status" property="status" jdbcType="DECIMAL" />
-     <result column="opendate" property="opendate" jdbcType="DATE" />
+    <result column="status" property="status" jdbcType="DECIMAL" />
+    <result column="opendate" property="opendate" jdbcType="DATE" />
   </resultMap>
   <sql id="Base_Column_List" >
     settledId, debitamount, creditamount, orderid, inserttime, indiscount, outdiscount, 
@@ -49,10 +49,10 @@
      insert into t_settlement_history (
 	  settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
 	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
-	id,  reason,  rebacktime
+	id,  reason,  rebacktime, again_settle_nums, authorizer_name
 	) select   settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
 	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
-	   UUID(),#{reason},now()
+	   UUID(),#{reason},now(),#{againSettleNums},#{authorizerName}
 	 from t_settlement where orderid =#{orderid}
   </insert>
   
@@ -264,5 +264,23 @@
 		   and t.status = '0'
     </select>
 
+  <!-- ��ѯ��������� -->
+  <select id="queryAgainSettleNums" parameterType="map" resultType="String">
+     select again_settle_nums from t_settlement_history where orderid = #{orderid}
+  </select>
   
+  <!-- �޸ķ�������� -->
+  <update id="updateSettlementHistory" parameterType="map">
+     update t_settlement_history set again_settle_nums = #{againSettleNums},authorizer_name = #{authorizerName} where orderid = #{orderid}
+  </update>
+  
+  <!-- ���涩����ʷ��¼ -->
+  <insert id="insertOrderHistory" parameterType="map">
+     insert into t_order_history select * from t_order where orderid = #{orderid}
+  </insert>
+  
+  <!-- ���涩��������ʷ��¼ -->
+  <insert id="insertOrderDetailHistory" parameterType="map">
+     insert into t_order_detail_history select * from t_order_detail where orderid = #{orderid} 
+  </insert>
 </mapper>

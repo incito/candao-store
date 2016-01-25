@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TSettlementDetailChildDao">
+    
+    <!-- 查询结算方式详情 -->
+    <select id="querySettDetailList" resultType="map" parameterType="map" >
+        SELECT
+			tdc.itemDesc,
+			DATE_FORMAT(tsd.inserttime,'%Y-%m-%d %H:%i:%s') as insertTime,
+			tsd.orderid,
+			IFNULL(tsd.payamount,0) as payAmount,
+			tsd.membercardno,
+			tdc.itemid
+		FROM
+			t_dictionary tdc,
+			t_settlement_detail tsd,
+		    t_order too
+		WHERE
+		    tdc.itemid = tsd.payway
+		AND tsd.orderid = too.orderid
+		AND tdc.type = 'PAYWAY'
+		AND tsd.payamount > 0		
+		<if test="branchId != null and branchId != ''">
+            and too.branchid = #{branchId}		
+		</if>
+		<if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+	        and too.shiftid = #{shiftid}
+	    </if>
+	    <if test="itemid  != null and itemid != ''">
+	        and tdc.itemid = #{itemid}
+	    </if>
+	    <if test="beginTime != null and beginTime != ''">
+            and too.begintime >=  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and too.begintime <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="itemid == '1'.toString()">
+            and tsd.membercardno = #{membercardno}
+        </if>
+        order by tsd.inserttime asc
+    </select>
+
+    <!-- 查询结算方式 -->
+    <select id="querySettList" resultType="map" parameterType="map" >
+        SELECT
+			tdc.itemDesc as payWayName,
+			IFNULL(count(tsd.sdetailid),0) as nums,
+			IFNULL(sum(tsd.payamount),0) as price,
+			tsd.membercardno,
+			tdc.itemid
+		FROM
+			t_dictionary tdc,
+			t_settlement_detail tsd,
+		    t_order too
+		WHERE
+		    tdc.itemid = tsd.payway
+		AND tsd.orderid = too.orderid
+		AND tdc.type = 'PAYWAY'
+		AND tsd.payamount > 0
+		<if test="branchId != null and branchId != ''">
+            and too.branchid = #{branchId}		
+		</if>
+		<if test="shiftid == '1'.toString() or shiftid =='0'.toString()">
+	        and too.shiftid = #{shiftid}
+	    </if>
+	    <if test="itemid  != null and itemid != ''">
+	        and tdc.itemid = #{itemid}
+	    </if>
+        <if test="beginTime != null and beginTime != ''">
+            and str_to_date(too.begintime,'%Y-%m-%d %H:%i:%s') >=  str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and str_to_date(too.begintime,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>  str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="itemid == '1'.toString()">
+            and tsd.membercardno = #{membercardno}
+        </if>
+        order by tsd.inserttime asc
+    </select>
+    <select id="queryPayName" resultType="map" parameterType="map" >
+       select itemDesc from t_dictionary where type = 'BANK' and itemid = #{membercardno} 
+    </select>
+</mapper>

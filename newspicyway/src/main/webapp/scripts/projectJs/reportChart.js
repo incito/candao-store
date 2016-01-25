@@ -221,7 +221,70 @@ function _pieChart(title, domMain, legend_data, series_data, flag) {
 	if(flag == 1){
 		//title居中，图例放在图表下面
 		option.title = {text: title, x: "center"};
-		option.legend = {orient : 'horizontal', y : "bottom", data : legend_data};
+		option.legend = {show: false, orient : 'horizontal', y : "bottom", data : legend_data};
+		launchExample(domMain, option);
+		g_legend_custom(domMain, option, "pie");
+	}else{
+		launchExample(domMain, option);
 	}
-	launchExample(domMain, option);
+}
+/**
+ * 自定义legend
+ * @param domMain
+ * @param option
+ * @param type
+ */
+function g_legend_custom(domMain, option, type ){
+	var myPreChart = echarts.init(domMain, curTheme);
+	myPreChart.setOption(option);
+	//divLegends
+	var divLegends = $('<div class="legend-custom-div" style="width:98%;margin-top: 5px;text-align:center;float:left;"></div>').appendTo($(domMain).parent());
+	var legend = null;
+	if(myPreChart.chart[type] != "" && myPreChart.chart[type] != null && myPreChart.chart[type] != undefined){
+		legend = myPreChart.chart[type].component.legend;
+	}
+	if(legend != null){
+		$(option.legend.data).each(function(i, l){
+			var color = legend.getColor(l);
+			var labelLegend = $('<label class="legend">' +
+					'<span class="label" style="background-color:'+color+'"></span>'+l+'</label>');
+			
+			var hoveColor = g_changeColor(color);
+			labelLegend.mouseover(function(){
+				labelLegend.css('color', color).css('font-weight', 'bold');
+				if(type == 'line'){
+					option.series[i].itemStyle.normal.areaStyle.color = hoveColor;
+					myPreChart.setOption(option);
+				}else{
+					legend.setColor(l, hoveColor);
+				}
+				myPreChart.refresh();
+			}).mouseout(function(){
+				labelLegend.css('color', '#333').css('font-weight', 'normal');
+				if(type == 'line'){
+					option.series[i].itemStyle.normal.areaStyle.color = '';
+					myPreChart.setOption(option);
+				}else{
+					legend.setColor(l, color);
+				}
+				myPreChart.refresh();
+			}).click(function(){
+				labelLegend.toggleClass('disabled');
+				legend.setSelected(l, !labelLegend.hasClass('disabled'));
+			});
+			divLegends.append(labelLegend);
+		});
+	}
+}
+function g_changeColor(color){
+	var rgbColor = '';
+	if (color.charAt(0) == '#')
+		rgbColor = color.colorRgb();
+	else
+		rgbColor = color;
+	
+	var s1 = rgbColor.split("(")[1];
+	var s2 = s1.split(")")[0];
+	var hoveColor = "rgba("+s2+",0.7)";
+	return hoveColor;
 }

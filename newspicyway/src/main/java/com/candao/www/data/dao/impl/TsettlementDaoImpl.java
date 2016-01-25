@@ -52,16 +52,8 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	 
 
 	@Override
-	public int delete(java.lang.String id,String reason) {
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("orderid", id);
-		params.put("reason", reason);
-		
-		dao.delete(PREFIX + ".insertHistory", params);
-		
-		dao.delete(PREFIX + ".insertDetailHistory", params);
-		 
+	public int delete(java.lang.String id) {
+		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("orderid", id);
 		return dao.delete(PREFIX + ".delete", params);
 	}
@@ -113,5 +105,72 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	public void insertRebackSettleDetail(SettlementInfo settlementInfo) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * 根据订单号查询反结次数
+	 * @author weizhifang
+	 * @since 2016-1-12
+	 * @param orderId
+	 * @return
+	 */
+	public String queryAgainSettleNums(String orderId){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("orderid", orderId);
+		return dao.get(PREFIX + ".queryAgainSettleNums", params);
+	}
+	
+	/**
+	 * 根据订单号修改反结算次数
+	 * @author weizhifang
+	 * @since 2016-1-12
+	 * @param orderId
+	 * @param againSettleNums
+	 * @return
+	 */
+	public int updateSettlementHistory(String orderId,int againSettleNums,String authorizerName,String reason){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderId);
+		params.put("againSettleNums", againSettleNums);
+		params.put("authorizerName", authorizerName);
+		params.put("reason", reason);
+		return dao.update(PREFIX + ".updateSettlementHistory", params);
+	}
+	
+	/**
+	 * 往结算表里写数据
+	 * @author weizhifang
+	 * @since 2016-01-14
+	 * @param id
+	 * @param reason
+	 * @param againSettleNums
+	 * @param authorizerName
+	 * @return
+	 */
+	public int insertSettlementHistory(java.lang.String id ,String reason,int againSettleNums,String authorizerName,Double inflated){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("orderid", id);
+		params.put("reason", reason);
+		params.put("againSettleNums", againSettleNums);
+		params.put("authorizerName", authorizerName);
+		params.put("inflated", inflated);
+		dao.insert(PREFIX + ".insertHistory", params);
+		dao.insert(PREFIX + ".insertDetailHistory", params);
+		dao.insert(PREFIX + ".insertOrderHistory", params);
+		dao.insert(PREFIX + ".insertOrderDetailHistory", params);
+		return 0;
+	}
+	
+	/**
+	 * 得到会员消费虚增值
+	 * @author weizhifang
+	 * @since 2016-1-19
+	 * @param orderid
+	 * @return
+	 */
+	public Double getMemberInflated(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return dao.getSqlSessionTemplate().selectOne(PREFIX + ".getMemberInflated", params);
 	}
 }

@@ -3,14 +3,13 @@ package com.candao.common.utils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.bea.xml.stream.StaticAllocator;
 
 /**
  * @author maew
@@ -21,6 +20,8 @@ public class DateUtils {
 			.getLogger(DateUtils.class);
 
 	final static String DEFAULT_FORMAT = "yyyy-MM-dd";
+	
+	public final static String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	final static String ORDERID_FORMAT = "yyyyMMdd";
 
@@ -167,6 +168,24 @@ public class DateUtils {
 	}
 
 	/**
+	 * 获得系统当前时间
+	 * 
+	 * @return java.util.Date
+	 */
+	public static String getBeforDay() {
+		if (logger.isDebugEnabled()) {
+			logger.debug(">>>before()");
+		}
+		Calendar cl = Calendar.getInstance();
+		int day = cl.get(Calendar.DATE);  
+	    cl.set(Calendar.DATE, day-1);  
+		if (logger.isDebugEnabled()) {
+			logger.debug("<<<currentDate() return date");
+		}
+		return toString(cl.getTime());
+	}
+
+	/**
 	 * 获得系统当前时间(按用户自己格式)
 	 * 
 	 * @return java.util.Date
@@ -308,10 +327,6 @@ public class DateUtils {
 		return new Date(d.getTime() - 90 * 24 * 60 * 60 * 1000);
 	}
 
-	public static void main(String[] args) {
-		System.out.println(getCurrentTime());
-	}
-	
 	/**
 	 * 格式化日期字符串，显示年月日
 	 * @author weizhifang
@@ -324,6 +339,94 @@ public class DateUtils {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 		time = formatter.format(d); 
 		return time; 
+	}
+	public static void main(String[] args) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 2015);
+		calendar.set(Calendar.MONTH, 1);
+		calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));  
+		System.out.println(toString(calendar.getTime()));
+	}
+
+
+	/**
+	 * 计算两个日期相关天数
+	 * @author weizhifang
+	 * @since 2015-11-19
+	 * @param fDate
+	 * @param oDate
+	 * @return
+	 */
+	public static int daysOfTwo(Date fDate, Date oDate) {
+        Calendar aCalendar = Calendar.getInstance();
+        aCalendar.setTime(fDate);
+        int day1 = aCalendar.get(Calendar.DAY_OF_YEAR);
+        aCalendar.setTime(oDate);
+        int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
+        return day2 - day1;
+    }
+	
+	/**
+	 * 默认将日期转换为字符串，格式(yyyy-MM-dd HH:mm:ss)
+	 * 
+	 * @param date
+	 * @return String
+	 */
+	public static String formatDateToString(java.util.Date date) {
+		return toString(date, DEFAULT_TIME_FORMAT);
+	}
+
+	/**
+	 * 
+	 * 返回两个日期的日间隔数
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getDateDayArrayByParams(String beginTime,String endTime){
+		ArrayList<String> result = new ArrayList<String>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//格式化为年月
+		try{
+			Calendar min = Calendar.getInstance();
+			Calendar max = Calendar.getInstance();
+			min.setTime(sdf.parse(beginTime));
+			max.setTime(sdf.parse(endTime));
+			Calendar curr = min;
+			while (curr.before(max)) {
+				result.add(sdf.format(curr.getTime()));
+				curr.add(Calendar.DAY_OF_YEAR, 1);
+			}
+			result.add(sdf.format(curr.getTime()));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return result;
+	}
+	/**
+	 * 
+	 * 返回两个日期的日间隔数
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public static List<String> getDateMonthArrayByParams(String beginTime,String endTime){
+		ArrayList<String> result = new ArrayList<String>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");//格式化为年月
+		try{
+			Calendar min = Calendar.getInstance();
+			Calendar max = Calendar.getInstance();
+			min.setTime(sdf.parse(beginTime));
+			max.setTime(sdf.parse(endTime));
+			Calendar curr = min;
+			while (curr.before(max)) {
+				result.add(sdf.format(curr.getTime()));
+				curr.add(Calendar.MONTH, 1);
+			}
+			result.add(sdf.format(max.getTime()));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }

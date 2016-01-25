@@ -201,7 +201,40 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						businssRport.setHanderWay("抹零");
 						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
 					}
-
+					if(businessR.get(i).get("closedbillnums") != null){ //已结账单数
+                    	businssRport.setClosedordermums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillnums").toString()));
+                    }
+                    if(businessR.get(i).get("closedbillshouldamount") != null){ //已结账单应收
+                    	businssRport.setClosedordershouldamount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillshouldamount").toString()));
+                    }
+                    if(businessR.get(i).get("closedpersonnums") != null){ //已结人数
+                    	businssRport.setClosedorderpersonnums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedpersonnums").toString()));
+                    }
+                    if(businessR.get(i).get("nobillnums") != null){ //未结账单数
+                    	businssRport.setNobillnums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("nobillnums").toString()));
+                    }
+                    if(businessR.get(i).get("nobillshouldamount") != null){  //未结账单应收
+                    	businssRport.setNobillshouldamount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("nobillshouldamount").toString()));
+                    }
+                    if(businessR.get(i).get("nopersonnums") != null){  //未结人数
+                    	businssRport.setNopersonnums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("nopersonnums").toString()));
+                    }
+                    if(businessR.get(i).get("billnums") != null){ //全部账单数
+                    	businssRport.setBillnums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("billnums").toString()));
+                    }
+                    if(businessR.get(i).get("billshouldamount") != null){  //全部账单应收
+                    	businssRport.setBillshouldamount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("billshouldamount").toString()));
+                    }
+                    if(businessR.get(i).get("personnums") != null){  //全部人数
+                    	businssRport.setPersonnums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("personnums").toString()));
+                    }
+                    if(businessR.get(i).get("zaitaishu") != null){  //在台数
+                    	businssRport.setZaitaishu(ToolsUtil.formatTwoDecimal(businessR.get(i).get("zaitaishu").toString()));
+                    }
+                    if(businessR.get(i).get("kaitaishu") != null){  //开台数
+                    	businssRport.setKaitaishu(ToolsUtil.formatTwoDecimal(businessR.get(i).get("kaitaishu").toString()));
+                    }
+                    businessList.add(businssRport);
 					businessList.add(businssRport);
 				}
 			}
@@ -561,6 +594,89 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						map.put("key", "合计");
 						map.put("title", "会员数据统计");
 						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("membertotal") + ""));
+						mapList.add(map);
+					}
+					
+					//账单信息统计
+					if (businessR.get(i).get("closedbillnums") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "已结账单数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillnums") + ""));
+						mapList.add(map);
+					}
+					
+					if (businessR.get(i).get("closedbillshouldamount") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "已结账单应收");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillshouldamount") + ""));
+						mapList.add(map);
+					}
+					
+					if (businessR.get(i).get("closedpersonnums") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "已结人数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedpersonnums") + ""));
+						mapList.add(map);
+					}
+					
+					if (businessR.get(i).get("nobillnums") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "未结账单数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("nobillnums") + ""));
+						mapList.add(map);
+					}
+					if (businessR.get(i).get("nobillshouldamount") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "未结账单应收");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("nobillshouldamount") + ""));
+						mapList.add(map);
+					}
+					
+					if (businessR.get(i).get("nopersonnums") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "未结人数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("nopersonnums") + ""));
+						mapList.add(map);
+					}
+					if (businessR.get(i).get("billnums") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "全部账单数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("billnums") + ""));
+						mapList.add(map);
+					}
+					if (businessR.get(i).get("billshouldamount") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "全部账单应收");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("billshouldamount") + ""));
+						mapList.add(map);
+					}
+					if (businessR.get(i).get("personnums") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "全部人数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("personnums") + ""));
+						mapList.add(map);
+					}
+					if (businessR.get(i).get("zaitaishu") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "在台数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("zaitaishu") + ""));
+						mapList.add(map);
+					}
+					if (businessR.get(i).get("kaitaishu") != null) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("key", "开台数");
+						map.put("title", "账单信息统计");
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("kaitaishu") + ""));
 						mapList.add(map);
 					}
 				}

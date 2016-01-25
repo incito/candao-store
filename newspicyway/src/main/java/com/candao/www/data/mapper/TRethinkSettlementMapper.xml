@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TRethinkSettlementDao">
+
+    <!-- 查询反结算前数据 -->
+	<select id="queryRethinkSettlementBefore" parameterType="map" resultType="map">
+	    SELECT
+		  	tsdh.orderid,
+			tsh.inserttime as before_cleartime,
+			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail_history tod where tod.orderid = too.orderid AND tod.superkey <![CDATA[ <> ]]> tod.primarykey) as before_shouldamount,
+			IFNULL(sum(tsdh.payamount)-tsh.Inflated,0) as before_paidamount,
+			too.userid as waiter,
+			tsh.userid as cashier,
+			tsh.authorizer_name
+		FROM
+			t_settlement_detail_history tsdh,
+			t_order_history too,
+		    t_settlement_history tsh
+		WHERE
+			tsdh.orderid = too.orderid
+		AND tsdh.orderid = tsh.orderid
+		AND tsdh.payway in (0,1,5,8,13,17,18)
+		AND too.orderstatus = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+            AND tsh.inserttime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+        </if>
+        group by tsdh.orderid
+	</select>
+    
+    <!-- 查询反结算后数据 -->
+    <select id="queryRethinkSettlementAfter" parameterType="map" resultType="map">
+        SELECT
+		  	tsd.orderid,
+			tsd.inserttime as after_cleartime,
+			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail tod where tod.orderid = too.orderid AND tod.superkey <![CDATA[ <> ]]> tod.primarykey) as after_shouldamount,
+			IFNULL(sum(tsd.payamount)-(select Inflated from t_order_member where orderid = #{orderid}),0) as after_paidamount
+		FROM
+			t_settlement_detail tsd,
+			t_order too,
+		    t_settlement ts
+		WHERE
+			tsd.orderid = too.orderid
+		AND tsd.orderid = ts.orderid
+		AND tsd.payway in (0,1,5,8,13,17,18)
+		AND tsd.orderid = #{orderid}
+    </select>
+    
+    <!-- 查询用户名 -->
+    <select id="queryUserNameByJobNumber" parameterType="map" resultType="String">
+        select name from t_b_employee tbe,t_b_user tbu where tbe.user_id = tbu.id
+        <if test="branchId != null and branchId != ''">
+           and tbe.branch_id = #{branchId}
+        </if> 
+         and job_number = #{userId}
+    </select>
+    
+    <!-- 查询订单基本信息 -->
+    <select id="queryOrder" parameterType="map" resultType="map">
+        SELECT
+		    too.orderid,
+			IFNULL(too.custnum,0) as personnum,
+			DATE_FORMAT(too.begintime,'%Y-%m-%d %H:%i:%s') as begintime,
+			DATE_FORMAT(too.endtime,'%Y-%m-%d %H:%i:%s') as endtime,
+			tt.tableNo as tableno,
+			tta.areaname as area,
+		    tbu.name as waiter
+		FROM
+			t_order too,
+			t_table tt,
+			t_tablearea tta,
+			t_b_employee tbe,
+		    t_b_user tbu
+		WHERE
+			too.currenttableid = tt.tableid
+		AND tt.areaid = tta.areaid
+		AND tbe.user_id = tbu.id
+		AND tbe.job_number = too.userid 
+        <if test="orderid!=null and orderid!=''">
+            AND too.orderid = #{orderid}
+        </if>
+        <if test="branchId != null and branchId != ''">
+           and tbe.branch_id = #{branchId}
+        </if>
+    </select>
+    
+    <!-- 查询订单详情 -->
+    <select id="queryOrderDetail" parameterType="map" resultType="map">
+        SELECT
+			td.title AS itemdesc,
+			sum(tod.dishnum) AS count,
+			tod.dishunit AS dishunit,
+			IFNULL(round(tod.orderprice,2), 0) AS price,
+			IFNULL(round(tod.orderprice * sum(tod.dishnum),2),0) AS amount
+		FROM
+			t_order_detail tod,
+			t_dish td
+		WHERE
+			tod.dishid = td.dishid
+	    <if test="orderid!=null and orderid!=''">
+            AND tod.orderid = #{orderid}
+        </if>
+        group by tod.dishid,tod.dishunit,tod.orderprice
+    </select>
+    
+    <!-- 查询优惠信息 -->
+    <select id="queryPreferenceDetail" parameterType="map" resultType="map">
+        SELECT
+			IFNULL(a.bankcardno,'') AS bankcardno,
+			IFNULL(sum(payamount),0) AS amount,
+			itemDesc AS name
+		FROM
+			t_settlement_detail a
+		LEFT JOIN (
+			SELECT
+				itemid,
+				itemDesc
+			FROM
+				t_dictionary
+			WHERE
+				type = 'PAYWAY'
+		) b ON (a.payway = b.itemid)
+		WHERE
+			a.payway <![CDATA[ <> ]]> 7
+		AND a.payamount <![CDATA[ <> ]]> 0
+		AND a.payway <![CDATA[ <> ]]> 20
+		<if test="orderid!=null and orderid!=''">
+            AND a.orderid = #{orderid}
+        </if>
+		GROUP BY
+			orderid,
+			couponNum,
+			incometype,
+			payway,
+			itemDesc,
+			membercardno,
+			bankcardno
+    </select>
+        
+    <!-- 查询结算信息 -->
+    <select id="querySettlementDetail" parameterType="map" resultType="map">
+        select IFNULL(totalconsumption,0) as totalconsumption,
+	       IFNULL(payway,0) as payway,
+	       IFNULL(payamount,0) as payamount,
+	       couponamount,
+  		   IFNULL(giveamount,0) as giveamount,
+	       IFNULL(paidamount,0) as paidamount,
+	       invoiceamount
+		from
+        (select sum(tsd.payamount) as totalconsumption,
+			(select tp.payway from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (7,20)) as payway,
+			(select tp.payamount from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (7,20)) as payamount,
+			IFNULL(sum(tsd.couponamount),0) AS couponamount,
+			(select orignalprice from t_order_detail where orderid = #{orderid} and pricetype = 1) AS giveamount,
+			(select sum(tp.payamount) from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (0,1,5,8,13,17,18)) as paidamount,
+			0.00 AS invoiceamount
+			from t_settlement_detail tsd 
+		where 1=1 
+		<if test="orderid!=null and orderid!=''">
+            AND tsd.orderid = #{orderid}
+        </if>
+        group by tsd.orderid) torder
+    </select>
+    
+    <!-- 查询桌号 -->
+    <select id="queryTableNo" resultType="String" parameterType="map">
+        SELECT
+			tt.tableNo
+		FROM
+			t_order too,
+			t_table tt,
+			t_tablearea tta
+		WHERE 
+			too.currenttableid = tt.tableid
+		AND tt.areaid = tta.areaid
+		<if test="orderid!=null and orderid!=''">
+            AND too.orderid = #{orderid}
+        </if>
+    </select>
+</mapper>

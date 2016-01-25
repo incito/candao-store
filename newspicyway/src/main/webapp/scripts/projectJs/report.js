@@ -14,15 +14,20 @@ function changeDataType(type, o){
 	searchType = type;
 	gethiddenId(type, o);
 }
+function showLoading(){
+	$("#prompt-dialog").modal("show");
+}
+function hideLoading(){
+	$("#prompt-dialog").modal("hide");
+}
 /** *****************营业数据统计 START ******************************************** */
 function initBussinessData() {
+	showLoading();
 	$.post(global_Path + "/daliyReports/getBusinessReport.json", {
 		beginTime : beginTime,
 		endTime : endTime,
 		Datetype : dateType == 0 ? "D" : (dateType == 1 ? "M" : "Y")
 	}, function(result) {
-		console.log("营业数据统计");
-		console.log(result);
 		var tbody = "";
 		var series_data1 = [];
 		var series_data2 = [];
@@ -38,7 +43,7 @@ function initBussinessData() {
 				m.put(item.statistictime, item);
 				tbody += '<tr><td>' + item.statistictime + '</td><td>'
 						+ item.shouldamount + '</td><td>' + item.paidinamount
-						+ '</td><td>' + item.discountamount + '</td></tr>';
+						+ '</td><td>' + item.discountamount + '</td><td>'+item.personPercent+'</td><td>'+item.tablenum+'</td></tr>';
 			});
 			for (var j = 0; j < xAxis_data.length; j++) {
 				var xValue = xAxis_data[j];
@@ -66,6 +71,7 @@ function initBussinessData() {
 		$("#tb_d tbody").html(tbody);
 		chartData(xAxis_data, legend, series_data1, series_data2, series_data3,
 				markPoint_data);
+		hideLoading();
 	});
 }
 /**
@@ -127,14 +133,263 @@ function chartData(xAxis_data, legend_datav, series_data1, series_data2,
 }
 /** *****************营业数据统计 END ******************************************** */
 /** ******************品项销售统计 START **************************************** */
-function initItemData() {
-	$.post(global_Path + "/itemAnalysisCharts/getItemReport.json", {
-		beginTime : beginTime,
-		endTime : endTime,
-		Datetype : dateType == 0 ? "D" : (dateType == 1 ? "M" : "Y")
-	}, function(result) {
-		console.log("品项销售统计");
-		console.log(result);
+/**
+ * 品项类别点击切换
+ */
+function scrollClick(){
+	$(".item-type").hover(function(){ 
+		var _this =$(this).find(".nav-dish-type");
+		if(_this.children().length>10){ 
+			_this.prev().css("visibility","visible");
+			_this.next().css("visibility","visible");
+		} 
+	},function(){
+		var _this =$(this).find(".nav-dish-type");
+		_this.prev().css("visibility","hidden");
+		_this.next().css("visibility","hidden");
+	});
+	$("#nav-types-prev1").click(function(event){
+		if(up_num1>=1){
+			$(this).next(".nav-dish-type").find("li").eq(up_num1-1).css("margin-left","0");
+			up_num1--;
+		}
+	});
+	$("#nav-types-next1").click(function(){
+		var count = $(this).prev(".nav-dish-type").find("li").length;
+		if(up_num1<count-10){
+			$(this).prev(".nav-dish-type").find("li").eq(up_num1).css("margin-left","-10%");
+			up_num1++;
+		}
+	});
+	$("#nav-types-prev2").click(function(event){
+		if(up_num2>=1){
+			$(this).next(".nav-dish-type").find("li").eq(up_num2-1).css("margin-left","0");
+			up_num2--;
+		}
+	});
+	$("#nav-types-next2").click(function(){
+		var count = $(this).prev(".nav-dish-type").find("li").length;
+		if(up_num2<count-10){
+			$(this).prev(".nav-dish-type").find("li").eq(up_num2).css("margin-left","-10%");
+			up_num2++;
+		}
+	});
+	$("#nav-types-prev3").click(function(event){
+		if(up_num3>=1){
+			$(this).next(".nav-dish-type").find("li").eq(up_num3-1).css("margin-left","0");
+			up_num3--;
+		}
+	});
+	$("#nav-types-next3").click(function(){
+		var count = $(this).prev(".nav-dish-type").find("li").length;
+		if(up_num3<count-10){
+			$(this).prev(".nav-dish-type").find("li").eq(up_num3).css("margin-left","-10%");
+			up_num3++;
+		}
+	});
+	/*鼠标滚动*/
+     var user_agent = navigator.userAgent;
+	 var dom1 =$("#dish-type-first")[0];
+     if(user_agent.indexOf("Firefox")!=-1){// Firefox
+    	 dom1.addEventListener("DOMMouseScroll",addEvent_1,!1);
+     } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
+         dom1.attachEvent("onmousewheel",addEvent_1,!1);
+     }else{
+    	 dom1.addEventListener("mousewheel",addEvent_1,!1);
+     }
+     
+     var dom2 =$("#dish-type-sec")[0];
+     if(user_agent.indexOf("Firefox")!=-1){// Firefox
+    	 dom2.addEventListener("DOMMouseScroll",addEvent_2,!1);
+     } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
+    	 dom2.attachEvent("onmousewheel",addEvent_2,!1);
+     }else{
+    	 dom2.addEventListener("mousewheel",addEvent_2,!1);
+     }
+     var dom3 =$("#dish-type-third")[0];
+     if(user_agent.indexOf("Firefox")!=-1){// Firefox
+    	 dom3.addEventListener("DOMMouseScroll",addEvent_3,!1);
+     } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
+    	 dom3.attachEvent("onmousewheel",addEvent_3,!1);
+     }else{
+    	 dom3.addEventListener("mousewheel",addEvent_3,!1);
+     }
+}
+function addEvent_1(event) {
+	event = event || window.event;
+	var type = event.type;
+	if (type == 'DOMMouseScroll' || type == 'mousewheel') {
+		event.delta = (event.wheelDelta) ? event.wheelDelta / 120
+				: -(event.detail || 0) / 3;
+	}
+	/*菜品分类*/
+	var count = $("#dish-type-first").children("li").length;
+	if (event.delta > 0) {
+		if (count - up_num1 > 10) {
+			$("#dish-type-first").find("li").eq(up_num1).css("margin-left", "-10%");
+			up_num1++;
+		}
+	} else {
+		if (up_num1 >= 1) {
+			$("#dish-type-first").find("li").eq(up_num1 - 1).css("margin-left", "0");
+			up_num1--;
+		}
+	}
+	if (document.all) {
+		event.cancelBubble = false;
+		return false;
+	} else {
+		event.preventDefault();
+	}
+}
+function addEvent_2(event) {
+	event = event || window.event;
+	var type = event.type;
+	if (type == 'DOMMouseScroll' || type == 'mousewheel') {
+		event.delta = (event.wheelDelta) ? event.wheelDelta / 120
+				: -(event.detail || 0) / 3;
+	}
+	/*菜品分类*/
+	var count = $("#dish-type-sec").children("li").length;
+	if (event.delta > 0) {
+		if (count - up_num2 > 10) {
+			$("#dish-type-sec").find("li").eq(up_num2).css("margin-left", "-10%");
+			up_num2++;
+		}
+	} else {
+		if (up_num2 >= 1) {
+			$("#dish-type-sec").find("li").eq(up_num2 - 1).css("margin-left", "0");
+			up_num2--;
+		}
+	}
+	if (document.all) {
+		event.cancelBubble = false;
+		return false;
+	} else {
+		event.preventDefault();
+	}
+}
+function addEvent_3(event) {
+	event = event || window.event;
+	var type = event.type;
+	if (type == 'DOMMouseScroll' || type == 'mousewheel') {
+		event.delta = (event.wheelDelta) ? event.wheelDelta / 120
+				: -(event.detail || 0) / 3;
+	}
+	/*菜品分类*/
+	var count = $("#dish-type-third").children("li").length;
+	if (event.delta > 0) {
+		if (count - up_num3 > 10) {
+			$("#dish-type-third").find("li").eq(up_num3).css("margin-left", "-10%");
+			up_num3++;
+		}
+	} else {
+		if (up_num3 >= 1) {
+			$("#dish-type-third").find("li").eq(up_num3 - 1).css("margin-left", "0");
+			up_num3--;
+		}
+	}
+	if (document.all) {
+		event.cancelBubble = false;
+		return false;
+	} else {
+		event.preventDefault();
+	}
+}
+/**
+ * 获取品项类型
+ */
+function getItemsType() {
+	$.get(global_Path + "/itemDetail/getItemTypeListForPx.json", function(result) {
+		var li1 = '';
+		var li2 = '';
+		var li3 = '';
+		$.each( result, function(i, item) {
+			var cla = "";
+			if (selItemType1 == null
+					|| selItemType1 == "") {
+				if (i == 0) {
+					cla = "active";
+					selItemType1 = item.codeId;
+				}
+			} else {
+				if (item.codeId == selItemType1) {
+					cla = "active";
+				}
+			}
+			li1 += '<li class="'+cla+'" value="'+item.codeId+'">'
+					+ item.codeDesc
+					+ '</li>';
+			$("#dish-type-first").html(
+					li1);
+			var cla2 = "";
+			if (selItemType2 == null
+					|| selItemType2 == "") {
+				if (i == 0) {
+					cla2 = "active";
+					selItemType2 = item.codeId;
+				}
+			} else {
+				if (item.codeId == selItemType2) {
+					cla2 = "active";
+				}
+			}
+			li2 += '<li class="'+ cla2 +'" value="'+item.codeId+'">'
+					+ item.codeDesc
+					+ '</li>';
+			$("#dish-type-sec").html(
+					li2);
+			var cla3 = "";
+			if (selItemType3 == null
+					|| selItemType3 == "") {
+				if (i == 0) {
+					cla3 = "active";
+					selItemType3 = item.codeId;
+				}
+			} else {
+				if (item.codeId == selItemType3) {
+					cla3 = "active";
+				}
+			}
+			li3 += '<li class="'+cla3+'" value="'+item.codeId+'">'
+					+ item.codeDesc
+					+ '</li>';
+		});
+		$("#dish-type-third").html(li3);
+		$("ul#dish-type-first li").click(function() {
+			$("ul#dish-type-first li").removeClass("active");
+			$(this).addClass("active");
+			selItemType1 = $(this).attr("value");
+			itemCount();
+		});
+		$("ul#dish-type-sec li").click(
+				function() {
+					$("ul#dish-type-sec li")
+							.removeClass("active");
+					$(this).addClass("active");
+					selItemType2 = $(this)
+							.attr("value");
+					itemAmount();
+				});
+		$("ul#dish-type-third li").click(
+				function() {
+					$("ul#dish-type-third li")
+							.removeClass("active");
+					$(this).addClass("active");
+					selItemType3 = $(this)
+							.attr("value");
+					itemThousandstimes();
+				});
+		itemCount();//份数
+		itemAmount();//金额
+		itemThousandstimes();//千次
+	});
+}
+/**
+ * 品项售卖份数Top10
+ */
+function itemCount(){
+	doitemReportPost(0, function(result){
 		// 售卖份数
 		var yAxis_data = [];
 		var series_data = [];
@@ -146,7 +401,15 @@ function initItemData() {
 			}
 		}
 		saleCountTop(yAxis_data, series_data);
-
+		// 售卖份数趋势
+		saleCountTrend(result.ItemNumQushiReport);
+	});
+}
+/**
+ * 品项售卖金额Top10
+ */
+function itemAmount(){
+	doitemReportPost(1, function(result){
 		// 售卖金额
 		var amount_yAxis_data = [];
 		var amount_series_data = [];
@@ -158,12 +421,38 @@ function initItemData() {
 			}
 		}
 		saleAmountTop(amount_yAxis_data, amount_series_data);
-
-		// 售卖份数趋势
-		saleCountTrend(result.ItemNumQushiReport);
 		// 售卖金额趋势
 		saleAmountTrend(result.ItemShareQushiReport);
 	});
+}
+/**
+ * 千次
+ */
+function itemThousandstimes(){
+	$.post(global_Path+"/itemAnalysisCharts/getColumnItemThousandsTimesReportForView.json", {
+		beginTime : beginTime,
+		endTime : endTime,
+		Datetype : dateType == 0 ? "D" : (dateType == 1 ? "M" : "Y"),
+		columnid: selItemType3
+	}, function(result){
+		thousandstimes(result);
+	},'json');
+}
+/**
+ * 发送请求
+ */
+function doitemReportPost(type, callback){
+	showLoading();
+	$.post(global_Path+"/itemAnalysisCharts/getColumnItemReport.json", {
+		beginTime : beginTime,
+		endTime : endTime,
+		Datetype : dateType == 0 ? "D" : (dateType == 1 ? "M" : "Y"),
+		type: type,//0:份数；1：金额
+		columnid: type ==0 ? selItemType1 : selItemType2
+	}, function(result){
+		callback(result);
+		hideLoading();
+	}, 'json');
 }
 /**
  * 销售份数top10
@@ -194,6 +483,45 @@ function saleAmountTrend(arr) {
 	var domMain = document.getElementById('saleamount_trend_main');
 	var o = getTrendDataObj(arr, 'share');
 	lineChart("售卖金额趋势", domMain, o.legend_data, o.xAxis_data, o.series);
+}
+/**
+ * 千次
+ */
+function thousandstimes(arr) {
+	var domMain = document.getElementById('thousand_times_main');
+	var o = getThousandstimesObj(arr);
+	lineChart("千次", domMain, o.legend_data, o.xAxis_data, o.series);
+}
+/**
+ * 千次组数据
+ * @param arr
+ * @param type
+ * @returns {___anonymous8291_8372}
+ */
+function getThousandstimesObj(arr) {
+	var xAxis_data = [];
+	var series = [];
+	if (arr != null && arr.length > 0) {
+		xAxis_data = getDataByType();
+		var obj = {
+				name : '千次',
+				type : 'line'
+			};
+		obj.data = getData(arr, xAxis_data, "times");
+		series.push(obj);
+	} else {
+		var obj = {
+			name : "",
+			type : 'line',
+			data : []
+		};
+		series.push(obj);
+	}
+	return {
+		legend_data : ["千次"],
+		xAxis_data : xAxis_data,
+		series : series
+	};
 }
 /**
  * 组数据
@@ -233,7 +561,11 @@ function getData(list, xAxis_data, type) {
 	var data = [];
 	var m = new HashMap();
 	$.each(list, function(j, o) {
-		m.put(o.statistictime, o);
+		if(type == "times"){
+			m.put(o.time, o);
+		}else{
+			m.put(o.statistictime, o);
+		}
 	});
 	for (var j = 0; j < xAxis_data.length; j++) {
 		var xValue = xAxis_data[j];
@@ -243,6 +575,8 @@ function getData(list, xAxis_data, type) {
 				data.push(o.num);
 			else if (type == "share")
 				data.push(strToFloat(o.share));
+			else if(type == "times")
+				data.push(strToFloat(o.thousandstimes));
 		} else {
 			data.push(0);
 		}
@@ -398,15 +732,37 @@ function initDaliyData() {
 			endTime : $("#endTime").val(),
 			shiftid : $("#shiftid").val()
 		}, function(result) {
-			console.log("营业数据明细报表");
-			console.log(result);
 			incomeStatistics(result);
 			paidInAmount(result);
 			discountAmount(result);
 			businessDataTb(result);
 			meberDataTb(result);
+			billDataTb(result);
 		});
 	}
+}
+/**
+ * 账单信息统计表
+ * @param result
+ */
+function billDataTb(result){
+	var tb = "";
+	if (result != null && result.length > 0) {
+		var item = result[0];
+		tb += '<tr><td>'
+			+ item.closedordermums+'</td><td>'
+			+ item.closedordershouldamount+'</td><td>' 
+			+ item.closedorderpersonnums + '</td><td>' 
+			+ item.nobillnums + '</td><td>' 
+			+ item.nobillshouldamount + '</td><td>'
+			+ item.nopersonnums + '</td><td>' 
+			+ item.billnums + '</td><td>' 
+			+ item.billshouldamount + '</td><td>' 
+			+ item.personnums + '</td><td>' 
+			+ item.zaitaishu + '</td><td>' 
+			+ item.kaitaishu + '</td></tr>';
+	}
+	$("#bill_data_tb tbody").html(tb);
 }
 /**
  * 营业数据统计
@@ -598,7 +954,6 @@ function exportReportDaliy() {
 	if(compareBeginEndTime()){
 		var beginTime = $("#beginTime").val();
 		var endTime = $("#endTime").val();
-//		var shiftid = $("#shiftid").val();
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -654,6 +1009,7 @@ function exportReportDaliy() {
 /** *******************营业数据明细报表 END***************************************** */
 /** *******************结算方式明细报表 START*************************************** */
 function initPaywayData() {
+	$(".legend-custom-div").remove();
 	if(compareBeginEndTime()){
 		var tb = "";
 		$.post(global_Path + "/settlementOption/settlementOptionList.json", {
@@ -661,8 +1017,6 @@ function initPaywayData() {
 			endTime : $("#endTime").val(),
 			shiftid : $("#shiftid").val()
 		}, function(result) {
-			console.log("结算方式明细报表");
-			console.log(result);
 			var legend_data = [];
 			var num_series_data = [];
 			var price_series_data = [];
@@ -677,15 +1031,59 @@ function initPaywayData() {
 						value : Math.abs(strToFloat(item.prices)),
 						name : item.payway
 					});
-	
-					tb += '<tr><td>' + item.payway + '</td><td>' + item.nums
-							+ '</td><td>' + item.prices + '</td></tr>';
+
+					tb += '<tr ondblclick="showPaywaySub(\''+item.payway+'\', \''+item.nums+'\', \''+item.prices+'\', \''+item.membercardno+'\', \''+item.itemid+'\')"><td>' + item.payway + '</td><td>' + item.nums
+							+ '</td><td>' + item.prices + '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td></tr>';
 				});
 			}
 			$("#payway_data tbody").html(tb);
 			paywayNums(legend_data, num_series_data);
 			paywayPrices(legend_data, price_series_data);
 		});
+	}
+}
+/**
+ * 获取结算方式详情数据
+ * @param payway
+ * @param nums
+ * @param amount
+ */
+function showPaywaySub(payway, nums, amount, membercardno, itemid){
+	$("#p-payway").val(payway);
+	$("#membercardno").val(membercardno);
+	$("#itemid").val(itemid);
+	
+	$("#payway-name").text(payway);
+	$("#payway-nums").text(nums);
+	$("#payway-amount").text(amount);
+	$("#payway-details-dialog").modal("show");
+	$("#payway_sub_tb tbody").html("");
+	$.post(global_Path+"/settlementDetailChild/getSettDetChildList.json", {
+		beginTime : $("#beginTime").val(),
+		endTime : $("#endTime").val(),
+		shiftid : $("#shiftid").val(),
+		payWay : transcoding(payway),
+		membercardno : membercardno,
+		itemid : itemid
+	}, function(result){
+		if(result.flag == 1){
+			initPaywaySubTb(result.data);
+		}
+	},'json');
+}
+/**
+ * 结算方式详情表格
+ * @param data
+ */
+function initPaywaySubTb(data){
+	if(data != null && data.length>0){
+		var htm = "";
+		$.each(data, function(i, item){
+			htm += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>'+item.insertTime+'</td>'
+				+ '<td>'+item.orderid+'</td>'
+				+ '<td>'+item.payAmount+'</td></tr>';
+		});
+		$("#payway_sub_tb tbody").html(htm);
 	}
 }
 /**
@@ -709,12 +1107,10 @@ function paywayPrices(legend_data, series_data) {
 /**
  * 结算方式导出
  */
-function exportxlsC() {
+function exportxlsC(f) {
 	if(compareBeginEndTime()){
-		//var settlementWay=$("#settlementWay").combobox('getValue');
 		var beginTime = $("#beginTime").val();
 		var endTime = $("#endTime").val();
-//		var shiftid = $("#shiftid").val();
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -759,8 +1155,20 @@ function exportxlsC() {
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
 					+ hours + ":" + minutes + ":" + second;
 		}
-		location.href = global_Path + "/settlementOption/exportXls?beginTime="
+		if(f == 1){
+			var payway = encodeURI(encodeURI($("#p-payway").val()));
+			var itemid = $("#itemid").val();
+			var membercardno = $("#membercardno").val();
+			if(membercardno == null || membercardno == ""){
+				membercardno = 0;
+			}
+			//详情
+			location.href = global_Path + "/settlementDetailChild/exportSettDetailChildList/"
+				+beginTime + "/" + endTime +"/"+payway+"/" + shiftid+"/"+searchType+"/"+itemid+"/"+membercardno;
+		}else{
+			location.href = global_Path + "/settlementOption/exportXls?beginTime="
 				+ beginTime + "&endTime=" + endTime + "&shiftid=" + shiftid+"&searchType="+searchType;
+		}
 	}
 }
 /** ********************结算方式明细报表 END*************************************** */
@@ -786,9 +1194,12 @@ function initReturnTb(result, isFirst){
 			$("#return_dish_data tbody").html(more);
 		}
 		$.each(result, function(i, item) {
-			tb += '<tr><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title 
-			+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter 
-		    + '</td><td>' + item.discardusername + '</td><td>' + item.discardreason + '</td></tr>';
+			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title 
+				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter 
+			    + '</td><td>' + item.discardusername + '</td><td>' 
+			    + item.discardreason 
+			    + '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
+			    + '</td></tr>';
 		});
 		$("#show-more").parent().before(tb);
 		if(len < 20){
@@ -824,7 +1235,6 @@ function exportReturnDishxls() {
 	if(compareBeginEndTime()){
 		var beginTime = $("#beginTime").val();
 		var endTime = $("#endTime").val();
-//		var shiftid = $("#shiftid").val();
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -871,9 +1281,6 @@ function exportReturnDishxls() {
 		}
 		location.href = global_Path + "/returnDish/exportXls?beginTime="
 			+ beginTime + "&endTime=" + endTime + "&shiftid=" + shiftid+"&currPage=-1&pageNums=20&searchType="+searchType;
-		/*
-		location.href = global_Path + "/daliyReports/exportReturnDishxls?beginTime="
-				+ beginTime + "&endTime=" + endTime + "&shiftid=" + shiftid;*/
 	}
 }
 /***********************退菜明细表 END *******************************************/
@@ -918,7 +1325,7 @@ function initTb(datalist) {
 	var tHtml = "";
 	if(datalist!=null && datalist!=""){
 		$.each(datalist, function(i, obj) {
-			tHtml += '<tr onclick="showsubTb(\''
+			tHtml += '<tr ondblclick ="showsubTb(\''
 				+ obj.pname
 				+ '\',\''
 				+ obj.payway
@@ -929,14 +1336,17 @@ function initTb(datalist) {
 				+ '\',\''
 				+ obj.ptype
 				+ '\')">'
-				+ '<td width="20%">'
+				+ '<td width="10%">'
 				+ obj.pname
 				+ '</td>'
-				+ '<td width="15%">'
+				+ '<td width="10%">'
 				+ obj.ptypename
 				+ '</td>'
-				+ '<td width="15%">'
+				+ '<td width="10%">'
 				+ obj.paywaydesc
+				+ '</td>'
+				+ '<td width="10%">'
+				+ obj.singular
 				+ '</td>'
 				+ '<td width="10%">'
 				+ obj.couponNum
@@ -944,16 +1354,19 @@ function initTb(datalist) {
 				+ '<td width="10%">'
 				+ obj.payamount
 				+ '</td>'
-				+ '<td width="15%">'
+				+ '<td width="10%">'
 				+ obj.shouldamount
 				+ '</td>'
-				+ '<td width="15%">'
+				+ '<td width="10%">'
 				+ obj.paidinamount 
+				+ '</td>'
+				+ '<td width="10%">'
+				+ obj.perCapita
 				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td>' 
 				+ '</tr>';
 		});
 	}else{
-		tHtml += '<tr><td colspan="7">没有数据</td></tr>';
+		tHtml += '<tr><td colspan="9">没有数据</td></tr>';
 	}
 	$("#coupon_tb tbody").html(tHtml);
 }
@@ -1003,7 +1416,7 @@ function initSubTb(code, payway, ptype, result, isFirst) {
 			$("#coupon_sub_tb tbody").html(more);
 		}
 		$.each(result, function(i, item){
-			subTbody += "<tr>";
+			subTbody += "<tr ondblclick='showReckon(\""+item.orderid+"\")'>";
 			subTbody += "<td>" + item.begintime + "</td>";
 			subTbody += "<td>" + item.orderid + "</td>";
 			subTbody += "<td>" + item.price + "</td>";
@@ -1035,7 +1448,8 @@ function initSubTb(code, payway, ptype, result, isFirst) {
  * 活动名称
  */
 function getActiviy() {
-	$.get(global_Path+"/daliyReports/getActivityNameList.json", function(result){
+	$.get(global_Path+"/daliyReports/getActivityNameList.json", 
+	function(result){
 		var option = '<option value="-1">全部</option>';
 		$.each(result, function(i, item){
 			option += '<option value="'+item.codeDesc+'">'+item.codeDesc+'</option>';
@@ -1058,10 +1472,19 @@ function getPayway() {
 	});
 }
 /**
+ * 活动类别api
+ * @param callback
+ */
+function doGetActiviyType(callback){
+	$.get(global_Path+"/daliyReports/getTypeDictList.json", function(result){
+		callback(result);
+	});
+}
+/**
  * 活动类别
  */
 function getActiviyType() {
-	$.get(global_Path+"/daliyReports/getTypeDictList.json", function(result){
+	doGetActiviyType(function(result){
 		var option = '<option value="-1">全部</option>';
 		$.each(result, function(i, item){
 			option += '<option value="'+item.codeId+'">'+item.codeDesc+'</option>';
@@ -1069,6 +1492,80 @@ function getActiviyType() {
 		$("#type").html(option);
 	});
 	
+}
+/**
+ * 优惠活动明细表 导出
+ * @param f
+ */
+function exportReportsCou(f) {
+	if(compareBeginEndTime()){
+		var beginTime = $("#beginTime").val();
+		var endTime = $("#endTime").val();
+		
+		if (beginTime == null || "" == beginTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			beginTime = d.getFullYear() + '-' + month + '-' + day + ' 00:00:00';
+		}
+
+		if (endTime == null || "" == endTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var hours = d.getHours();
+			if (d.getHours() < 10) {
+				hours = "0" + hours;
+			}
+			var minutes = d.getMinutes();
+			if (d.getMinutes() < 10) {
+				minutes = "0" + minutes;
+			}
+
+			var second = d.getSeconds();
+			if (d.getSeconds() < 10) {
+				second = "0" + second;
+			}
+
+			endTime = d.getFullYear() + '-' + month + '-' + day + ' ' + hours
+					+ ":" + minutes + ":" + second;
+		}
+		
+		var payway = "";
+		var ptype = "";
+		var pname = "";
+		if(f == 1){
+			//pname = transcoding($("#p-coupon-id").val());
+			pname = encodeURI(encodeURI($("#p-coupon-id").val()));
+			payway = $("#p-coupon-payway").val();
+			ptype = $("#p-type-id").val();
+		}else{
+			payway = "null";
+			ptype= "null";
+			pname = "null";
+		}
+		
+		
+		location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
+			+ settlementWay + "/" + beginTime + "/" + endTime + "/"
+			+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
+	}
 }
 /***********************优惠活动明细表 END****************************************/
 /***********************品项销售明细表 START**************************************/
@@ -1098,9 +1595,10 @@ function initItemTb(datalist) {
 	if (datalist != null && datalist != "") {
 		$.each(datalist, function(i, obj) {
 			var share = parseFloat(obj.share);
+			var turnover = parseFloat(obj.turnover);
 			var dishType = obj.dishtype;
 			var typedesc = dishType == 0 ? "单品" : (dishType == 1 ? "鱼锅" : "套餐");
-			tHtml += '<tr itemid="'+obj.id+'" dishType="'+dishType+'" onclick="showItemSubTb(\''
+			tHtml += '<tr itemid="'+obj.id+'" dishType="'+dishType+'" ondblclick="showItemSubTb(\''
 					+ obj.id
 					+ '\',\''
 					+ dishType
@@ -1116,12 +1614,15 @@ function initItemTb(datalist) {
 					+ typedesc
 					+ '</td>'
 					+ '<td width="15%">' + Math.round(obj.number)
-					+ '</td>' + '<td width="15%">'
-					+ share.toFixed(2) + '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td>'
+					+ '</td><td>'+obj.thousandstimes+'</td><td>'+obj.orignalprice
+ 					+'</td>' 
+					+ '<td width="15%">'
+					+ turnover.toFixed(2) 
+					+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td>'
 					+ '</tr>';
 		});
 	}else{
-		tHtml += '<tr><td colspan="4">没有数据</td></tr>';
+		tHtml += '<tr><td colspan="6">没有数据</td></tr>';
 	}
 
 	$("#items_tb tbody").html(tHtml);
@@ -1150,24 +1651,34 @@ function initItemSubTb(id, dishType) {
 		var subTbody = "";
 		$.each(result, function(i, item) {
 			var share = parseFloat(item.share);
+			var turnover = parseFloat(item.turnover);
 			subTbody += "<tr>";
 			subTbody += "<td>" + item.title + "</td>";
 			subTbody += "<td>" + item.dishNo + "</td>";
 			subTbody += "<td>" + item.price + "</td>";
 			subTbody += "<td>" + item.unit + "</td>";
 			subTbody += "<td>" + Math.round(item.number) + "</td>";
-			subTbody += "<td>" + share.toFixed(2) + "</td>";
+			subTbody += "<td>" + item.thousandstimes+"</td><td>"+item.orignalprice+"</td>";
+			subTbody += "<td>" + turnover.toFixed(2) + "</td>";//
 			subTbody += "</tr>";
 		});
 		$("#item_sub_tb tbody").html(subTbody);
 	},'json');
 }
 /**
+ * 品类api
+ * @param callback
+ */
+function doGetItemType(callback){
+	$.get(global_Path + "/itemDetail/getItemTypeList.json", function(result) {
+		callback(result);
+	});
+}
+/**
  * 品类
  */
 function getItemType() {
-	$.get(global_Path + "/itemDetail/getItemTypeList.json", function(
-			result) {
+	doGetItemType(function(result) {
 		var option = '<option value="-1">全部</option>';
 		$.each(result, function(i, item) {
 			option += '<option value="'+item.codeId+'">'
@@ -1176,4 +1687,686 @@ function getItemType() {
 		$("#itemID").html(option);
 	});
 }
+/**
+ * 品项销售明细 导出
+ * @param f
+ */
+function exportReportsItem(f) {
+	if(compareBeginEndTime()){
+	var beginTime = $("#beginTime").val();
+	var endTime = $("#endTime").val();
+	if (beginTime == null || "" == beginTime) {
+		var d = new Date();
+		var month = d.getMonth() + 1;
+		if (d.getMonth() + 1 < 10) {
+			month = "0" + month;
+		}
+		var day = d.getDate();
+		if (d.getDate() < 10) {
+			day = "0" + day;
+		}
+		beginTime = d.getFullYear() + '-' + month + '-' + day
+				+ ' 00:00:00';
+	}
+
+	if (endTime == null || "" == endTime) {
+		var d = new Date();
+		var month = d.getMonth() + 1;
+		if (d.getMonth() + 1 < 10) {
+			month = "0" + month;
+		}
+		var day = d.getDate();
+		if (d.getDate() < 10) {
+			day = "0" + day;
+		}
+		var day = d.getDate();
+		if (d.getDate() < 10) {
+			day = "0" + day;
+		}
+		var hours = d.getHours();
+		if (d.getHours() < 10) {
+			hours = "0" + hours;
+		}
+		var minutes = d.getMinutes();
+		if (d.getMinutes() < 10) {
+			minutes = "0" + minutes;
+		}
+
+		var second = d.getSeconds();
+		if (d.getSeconds() < 10) {
+			second = "0" + second;
+		}
+
+		endTime = d.getFullYear() + '-' + month + '-' + day + ' '
+				+ hours + ":" + minutes + ":" + second;
+	}
+	if(shiftid == ""){
+		shiftid = "null";
+	}
+	var id = itemId;
+	var dishType = dishtype;
+	if(id == null || id == ""){
+		id = "null";
+	}
+	if(dishType == null || dishType == ""){
+		dishType = "null";
+	}
+	
+	var itemids = "";
+	if(f == 1){
+		var itemid = $("#p-item-id").val();
+		var dishtype = $("#p-dish-type").val();
+		itemids = itemid+","+dishtype+"|";
+	}else{
+		itemids = "null";
+	}
+	
+	location.href = global_Path + "/itemDetail/exportxlsA/"
+			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ dishType + "/"+itemids+"/"+searchType+".json";
+	}
+}
 /***********************品项销售明细表 END***************************************/
+/***********************服务员考核 START**************************/
+/**
+ * 导出
+ */
+function exportWaiterAssess(type){
+	var beginTime = $("#beginTime").val();
+	var endTime = $("#endTime").val();
+	var shiftid = $("#shiftid").val();
+	var userid = $("#p_userid").val();
+	if(type == 0){
+		location.href = global_Path + "/waiter/shift/"+beginTime+"/"+endTime+"/"+shiftid+".json";
+	}else{
+		location.href = global_Path + "/waiter/shiftorders/"+beginTime+"/"+endTime+"/"+shiftid+"/"+userid+".json";
+	}
+}
+/**
+ * 初始化datatable
+ */
+function initDatatableConfig(){
+	oTable = $("#waiter-assess-tb").dataTable( {
+		"bAutoWidth":false,
+    	"bFilter":false,
+    	"bInfo":false,
+    	"bPaginate": false,
+    	"bSort": true,
+    	"aaSorting": [[0,'asc']],
+    	"aoColumnDefs": [
+    	   { "bSortable": false, "aTargets": [ 1 ] }],
+    	"oLanguage": {
+    		"sEmptyTable": "无数据"
+		},
+    	"bRetrieve": false,
+    	"bDestroy": true
+	});
+	$(".row-fluid").addClass("hide");
+}
+/**
+ * 获取数据
+ */
+function getWaiterAssessData(){
+	if(oTable !=null){
+		oTable.fnClearTable(false);
+	}
+	$.get(global_Path+"/waiter/shift.json", {
+		beginTime: $("#beginTime").val(),
+		endTime: $("#endTime").val(),
+		shiftid: $("#shiftid").val()
+	}, function(result){
+		console.log(result);
+		if(result.flag == 1){
+			var data = result.data;
+			var htm = '';
+			if(data != null && data.length>0){
+				$.each(data, function(i, item){
+					htm += '<tr ondblclick="showWaiterSecPage(\''+item.userid+'\')">'
+						+ '<td>'+item.userid+'</td>'
+						+ '<td>'+item.username+'</td>'
+						+ '<td>'+item.ordernum+'</td>'
+						+ '<td>'+item.custnum+'</td>'
+						+ '<td>'+item.shouldamount+'</td>'
+						+ '<td>'+item.paidinamount+'</td>'
+						+ '<td>'+item.shouldpre+'</td>'
+						+ '<td>'+item.paidinpre+'</td></tr>';
+				});
+				$("#waiter-assess-tb tbody").html(htm);
+				initDatatableConfig();
+			}else{
+				htm += '<tr><td colspan="8">无数据</td></tr>';
+				$("#waiter-assess-tb tbody").html(htm);
+			}
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+function showWaiterSecPage(userid){
+	$("#p_userid").val(userid);
+	$("#waiter-assess-dialog").modal("show");
+	getWaiterDetails();
+}
+function getWaiterDetails(){
+	$.get(global_Path+"/waiter/shiftorders.json", {
+		beginTime: $("#beginTime").val(),
+		endTime: $("#endTime").val(),
+		shiftid: $("#shiftid").val(),
+		userid: $("#p_userid").val()
+	}, function(result){
+		if(result.flag == 1){
+			var data = result.data;
+			var htm = '';
+			if(data != null && data.length>0){
+				$.each(data, function(i, item){
+					htm += '<tr><td>'+item.orderid+'</td>'
+						+ '<td>'+item.tableids+'</td>'
+						+ '<td>'+item.custnum+'</td>'
+						+ '<td>'+item.shouldamount+'</td>'
+						+ '<td>'+item.paidinamount+'</td></tr>';
+				});
+			}else{
+				htm = '<tr><td colspan="5">无数据</td></tr>';
+			}
+			$("#waiterassess-details-tb tbody").html(htm);
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+/***********************服务员考核 END****************************/
+/***********************排班参考报表 start************************/
+function getScheduleReport(){
+	var week  = '-1';
+	$("input[name='weeky']:checked").each(function(i, o){
+		if(i == 0){
+			week = $(this).val();
+		}else{
+			week += ','+$(this).val();
+		}
+	});
+	$.post(global_Path+"/scheduling/schedulingReport.json",{
+		beginTime: $("#beginTime").val(),
+		endTime: $("#endTime").val(),
+		shiftid: '-1',
+		week: week,
+		dateinterval: $("#dateinterval").val()
+	}, function(result){
+		console.log(result);
+		initScheduleTb(result);
+	},'json');
+}
+function initScheduleTb(result){
+	if(result == null || result.length == 0){
+		$("#nodataPrompt").modal("show");
+		
+		setInterval(function(){
+			$("#nodataPrompt").modal("hide");
+		},3000);
+	}
+	var frozenTh = '';
+	var frozenTd = '';
+	var scheduleThs  ='';//日期标题
+	var scheduleThs_sec = '<tr>';//下面的副标题
+	var scheduleTds = '';//内容
+	
+	var avgThs = '';
+	if(result != null && result.length > 0){
+		$.each(result, function(i, item){
+			console.log(item);
+			var time = item.time;
+			frozenTd += '<tr><td>'+time+'</td></tr>';
+			
+			var stores = item.stores;
+			if(stores!=null && stores.length>0){
+				var avgTds = '';
+				var otherTds = '';
+				$.each(stores, function(j, store){
+					var dateTh = store.date;
+					if(i == 0){
+						if(dateTh == "avg"){
+							avgThs = '<th colspan="7" class="wight-bg">平均值</th>';
+						}else{
+							scheduleThs += '<th colspan="7" class="wight-bg">'+dateTh+'</th>';
+						}
+						scheduleThs_sec += '<th nowrap="nowrap">开台数</th>'
+							+ '<th nowrap="nowrap">上客数</th>'
+							+ '<th nowrap="nowrap">已点餐金额</th>'
+							+ '<th nowrap="nowrap">已结账台数</th>'
+							+ '<th nowrap="nowrap">结账金额</th>'
+							+ '<th nowrap="nowrap">未结账台数</th>'
+							+ '<th nowrap="nowrap">在台数</th>';
+					}
+					var values = store.values;
+					if(dateTh == "avg"){
+						avgTds += '<td>'+values.openNum+'</td>'
+							+ '<td>'+values.guestNum+'</td>'
+							+ '<td>'+values.orderamount+'</td>'
+							+ '<td>'+values.alreadycheckNum+'</td>'
+							+ '<td>'+values.checkamount+'</td>'
+							+ '<td>'+values.notcheckNum+'</td>'
+							+ '<td>'+values.intheNum+'</td>';
+					}else{
+						otherTds += '<td>'+values.openNum+'</td>'
+							+ '<td>'+values.guestNum+'</td>'
+							+ '<td>'+values.orderamount+'</td>'
+							+ '<td>'+values.alreadycheckNum+'</td>'
+							+ '<td>'+values.checkamount+'</td>'
+							+ '<td>'+values.notcheckNum+'</td>'
+							+ '<td>'+values.intheNum+'</td>';
+					}
+				});
+				scheduleTds += '<tr>'+avgTds+otherTds+'</tr>';
+			}
+		});
+		scheduleThs = '<tr>'+avgThs+scheduleThs+'</tr>';
+		scheduleThs_sec += '</tr>';
+		frozenTh = '<tr><th nowrap="nowrap" rowspan="2" class="wight-bg" style="vertical-align: middle;height: 66px;">时间段</th></tr>';
+	}
+	
+	$("#frozen-schedule-Tb thead").html(frozenTh);
+	$("#frozen-schedule-Tb tbody").html(frozenTd);
+	$("#schedule-tb thead").html(scheduleThs+scheduleThs_sec);
+	$("#schedule-tb tbody").html(scheduleTds);
+}
+/**
+ * 排班导出
+ */
+function exportScheduleReport(){
+	var beginTime = $("#beginTime").val();
+	var endTime = $("#endTime").val();
+	var shiftid = '-1';
+	var dateinterval = $("#dateinterval").val();
+	var week  = '-1';
+	$("input[name='weeky']:checked").each(function(i, o){
+		if(i == 0){
+			week = $(this).val();
+		}else{
+			week += ','+$(this).val();
+		}
+	});
+	location.href = global_Path + "/scheduling/exportSchedulingData/"+beginTime+"/"+endTime+"/"+shiftid+"/"+week+"/"+dateinterval+".json";
+}
+/***********************反结算统计表 START***************************************/
+/**
+ * 反结算导出
+ */
+function exportSettlement(){
+	if(compareBeginEndTime()){
+		var beginTime = $("#beginTime").val();
+		var endTime = $("#endTime").val();
+		location.href = global_Path + "/dishtypeSettlement/exportSettDetailChildList/"+ beginTime + "/" + endTime + "/" + searchType + ".json";
+	}
+}
+/**
+ * 反结算查询
+ */
+function initSettlementData(){
+	if(compareBeginEndTime()){
+		doSettlementPost(initSettlementTb);
+	}
+}
+/**
+ * 发送请求
+ * @param callback
+ */
+function doSettlementPost(callback){
+	$.post(global_Path+"/dishtypeSettlement/getRethinkSettlementList.json", {
+		beginTime : $("#beginTime").val(),
+		endTime : $("#endTime").val()
+	}, function(result){
+		if(result.flag == 1){
+			callback(result.data);
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+/**
+ * 组合数据表格
+ * @param data
+ */
+function initSettlementTb(data){
+	if(data!=null && data.length>0){
+		var htm = "";
+		$.each(data, function(i, item){
+			htm += "<tr ondblclick='showReckon(\""+item.orderid+"\")'><td>"+item.orderid+"</td>"
+				+"<td>"+item.before_cleartime+"</td>"
+				+"<td>"+item.before_shouldamount+"</td>"
+				+"<td>"+item.before_paidamount+"</td>"
+				+"<td>"+item.after_cleartime+"</td>"
+				+"<td>"+item.after_shouldamount+"</td>"
+				+"<td>"+item.after_paidamount+"</td>"
+				+"<td>"+item.timedifference+"</td>"
+				+"<td>"+item.paidindifference+"</td>"
+				+"<td>"+item.waiter+"</td>"
+				+"<td>"+item.cashier+"</td>"
+				+"<td>"+item.authorized+"<i class='icon-chevron-right' style='color: #000000;float: right;'></i></td>"
+				+"</tr>";
+		});
+	}else{
+		htm = "<tr><td colspan='12'>无数据</td></tr>";
+	}
+	$("#the_settlement_data tbody").html(htm);
+}
+/************************反结算统计表 END****************************************/
+/***********************交接班统计表 START***************************************/
+/**
+ * 交接班导出
+ */
+function exportPresent(){
+	if(compareBeginEndTime()){
+		var beginTime = $("#beginTime").val();
+		var endTime = $("#endTime").val();
+		location.href = global_Path + "/biz/exportinfos/"+ beginTime + "/" + endTime + ".json";
+	}
+}
+/**
+ * 交接班查询
+ */
+function initPresentData(){
+	if(compareBeginEndTime()){
+		doPresentPost(initPresentTb);
+	}
+}
+/**
+ * 发送请求
+ * @param callback
+ */
+function doPresentPost(callback){
+	$.post(global_Path+"/biz/infos.json", {
+		beginTime : $("#beginTime").val(),
+		endTime : $("#endTime").val()
+	}, function(result){
+		if(result.flag == 1){
+			callback(result.data);
+		}else{
+			alert(result.desc);
+		}
+	}, 'json');
+}
+/**
+ * 组合数据表格
+ * @param data
+ */
+function initPresentTb(data){
+	var tbody = "";
+	if(data != null && data.length>0){
+		$.each(data, function(i, item){
+			tbody += "<tr ondblclick='showPresentSubDialog(\""+item.opentime+"\", \""+item.completiontime+"\")'><td>"+item.opentime+"</td>"
+				+"<td>"+item.openauthorized+"</td>"
+				+"<td>"+item.completiontime+"</td>"
+				+"<td>"+item.completionauthorized
+				+"<i class='icon-chevron-right' style='color: #000000;float: right;'></i>"
+				+"</td></tr>";
+		});
+	}else{
+		tbody = "<tr><td colspan='4'>无数据</td></tr>";
+	}
+	$("#present_statistics_data tbody").html(tbody);
+}
+/**
+ * 打开明细dialog
+ */
+function showPresentSubDialog(opentime, completiontime){
+	$("#present-details-dialog").modal("show");
+	initPresentDetails(opentime, completiontime);
+}
+/**
+ * 明细列表展示
+ */
+function initPresentDetails(opentime, completiontime){
+	$.post(global_Path+"/biz/infosDetail.json", {
+		beginTime : opentime,
+		endTime : completiontime
+	}, function(result){
+		if(result.flag == 1){
+			var data = result.data;
+			var tbody = "";
+			if(data != null && data.length>0){
+				$.each(data, function(i, item){
+					tbody += "<tr><td>"+item.cashier+"</td><td>"+item.starttime+"</td><td>"+item.endtime+"</td><td>"+item.endauthorized+"</td></tr>";
+				});
+			}else{
+				tbody += "<tr><td colspan='4'>无数据</td></tr>";
+			}
+			$("#present_sub_tb tbody").html(tbody);
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+/************************交接班统计表 END*****************************************/
+/************************营业报表 start******************************************/
+function clearCurrtStorage(){
+	localStorage.removeItem("branchId");
+	localStorage.removeItem("shiftId");
+	localStorage.removeItem("beginTime");
+	localStorage.removeItem("endTime");
+	localStorage.removeItem("currDate");
+	selBranchId = "";
+}
+/**
+ * 
+ */
+function doSearchBtn(){
+	clearCurrtStorage();
+	initBusinessReport();
+}
+/**
+ * 营业报表请求
+ */
+function initBusinessReport() {
+	localStorage.setItem("beginTime", $("#beginTime").val());
+	localStorage.setItem("endTime", $("#endTime").val());
+	localStorage.setItem("shiftId", $("#shiftid").val());
+	
+	branchId = localStorage.getItem("currentStore");
+	if(compareBeginEndTime()){
+		$.post(global_Path + "/branchbusiness/infos.json", {
+			beginTime : $("#beginTime").val(),
+			endTime : $("#endTime").val(),
+			type : $("#shiftid").val(),
+			day : 0
+		}, function(result) {
+			if(result.flag == 1){
+				initBusinessTb(result.data);
+			}else{
+				alert(result.desc);
+			}
+		},'json');
+	}
+}
+/**
+ * 初始化营业报表数据表
+ * @param data
+ */
+function initBusinessTb(data){
+	var tbody = '';
+	if(data!= null && data.length>0){
+		$.each(data, function(i, item){
+			var cla = "";
+			if(item.branchId == selBranchId){
+				cla = "select_tr";
+			}
+			tbody += '<tr title="双击查看详情" ondblclick="showSecPage(this)" branchid="'+item.branchId+'" class="'+cla+'"><td>'+item.branchName+'</td>'
+				+ '<td>'+item.branchId+'</td>'
+				+ '<td>'+item.jdeNo+'</td>'
+				+ '<td>'+(item.shouldamount==0?"0.00":item.shouldamount)+'</td>'
+				+ '<td>'+(item.paidinamount==0?"0.00":item.paidinamount)+'</td>'
+				+ '<td>'+(item.discountamount==0?"0.00":item.discountamount)+'</td>'
+				+ '<td>'+(item.cash==0?"0.00":item.cash)+'</td>'
+				+ '<td>'+(item.card==0?"0.00":item.card)+'</td>'
+				+ '<td>'+(item.othercard==0?"0.00":item.othercard)+'</td>'
+				+ '<td>'+(item.weixin==0?"0.00":item.weixin)+'</td>'
+				+ '<td>'+(item.zhifubao==0?"0.00":item.zhifubao)+'</td>'
+				+ '<td>'+(item.credit==0?"0.00":item.credit)+'</td>'
+				+ '<td>'+(item.merbervaluenet==0?"0.00":item.merbervaluenet)+'</td>'
+				+ '<td>'+(item.mebervalueadd==0?"0.00":item.mebervalueadd)+'</td>'
+				+ '<td>'+(item.integralconsum==0?"0.00":item.integralconsum)+'</td>'
+				+ '<td>'+(item.meberTicket==0?"0.00":item.meberTicket)
+				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
+				+'</td>'
+				+ '</tr>';
+		});
+	}else{
+		tbody = '<tr><td colspan="16">无数据</td></tr>';
+	}
+	$("#business_report_data tbody").html(tbody);
+}
+/**
+ * 显示二级页面
+ * @param obj
+ */
+function showSecPage(obj){
+	$("#business_report_data tbody tr").removeClass("select_tr");
+	$(obj).addClass("select_tr");
+	var branchid = $(obj).attr("branchid");
+	localStorage.setItem("branchId", branchid);
+	$(parent.document.all("detail")).attr("src",global_Path+"/daliyReports/businessReportSec");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 初始化二级营业报表
+ */
+function initBusinessReportSec(){
+	$.post(global_Path + "/branchbusiness/infos.json", {
+		beginTime : beginTime,
+		endTime : endTime,
+		type : shiftId,
+		day : 1
+	}, function(result) {
+		if(result.flag == 1){
+			initBusinessReportSecTb(result.data);
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+function initBusinessReportSecTb(data){
+	var tbody = '';
+	if(data!= null && data.length>0){
+		$.each(data, function(i, item){
+			var cla = "";
+			if(currDate == item.date){
+				cla = "select_tr";
+			}
+			tbody += '<tr title="双击查看详情" ondblclick="showThirdPage(this)" class="'+cla+'" branchid="'+item.branchId+'" date="'+item.date+'"><td>'+item.date+'</td>'
+				+ '<td>'+item.branchName+'</td>'
+				+ '<td>'+(item.shouldamount==0?"0.00":item.shouldamount)+'</td>'
+				+ '<td>'+(item.paidinamount==0?"0.00":item.paidinamount)+'</td>'
+				+ '<td>'+(item.discountamount==0?"0.00":item.discountamount)+'</td>'
+				+ '<td>'+(item.cash==0?"0.00":item.cash)+'</td>'
+				+ '<td>'+(item.card==0?"0.00":item.card)+'</td>'
+				+ '<td>'+(item.othercard==0?"0.00":item.othercard)+'</td>'
+				+ '<td>'+(item.weixin==0?"0.00":item.weixin)+'</td>'
+				+ '<td>'+(item.zhifubao==0?"0.00":item.zhifubao)+'</td>'
+				+ '<td>'+(item.credit==0?"0.00":item.credit)+'</td>'
+				+ '<td>'+(item.merbervaluenet==0?"0.00":item.merbervaluenet)+'</td>'
+				+ '<td>'+(item.mebervalueadd==0?"0.00":item.mebervalueadd)+'</td>'
+				+ '<td>'+(item.integralconsum==0?"0.00":item.integralconsum)+'</td>'
+				+ '<td>'+(item.meberTicket==0?"0.00":item.meberTicket)
+				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
+				+'</td>'
+				+ '</tr>';
+		});
+	}else{
+		tbody = '<tr><td colspan="15">无数据</td></tr>';
+	}
+	$("#business_sec_report_data tbody").html(tbody);
+}
+/**
+ * 显示三级页面
+ * @param obj
+ */
+function showThirdPage(obj){
+	$("#business_sec_report_data tbody tr").removeClass("select_tr");
+	$(obj).addClass("select_tr");
+	var branchid = $(obj).attr("branchid");
+	var date = $(obj).attr("date");
+	localStorage.setItem("branchId", branchid);
+	localStorage.setItem("currDate", date);
+	$(parent.document.all("detail")).attr("src",global_Path+"/daliyReports/businessReportThird");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
+ * 营业报表 一级、二级数据导出
+ * @param day：0=一级；1=二级
+ */
+function exportBusinessReportData(day){
+	if(day == 0){
+		shiftId = $("#shiftid").val();
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
+	}
+	location.href = global_Path + "/branchbusiness/exportReportInfos/"+ beginTime + "/" + endTime + "/" + shiftId + "/" + day +".json";
+}
+/**
+ * 营业报表 三级orders导出
+ */
+function exportBusinessReportOrders(){
+	location.href = global_Path + "/branchbusiness/exportReportDayOrders/"+ currDate + "/" + shiftId +".json";
+}
+/**
+ * 初始化三级营业报表
+ */
+function initBusinessReportThird(){
+	$.post(global_Path+"/branchbusiness/dayorders.json", {
+		type : shiftId,
+		date : currDate
+	}, function(result){
+		if(result.flag == 1){
+			initBusinessReportThirdTb(result.data);
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+function initBusinessReportThirdTb(data){
+	var tbody = '';
+	if(data!= null && data.length>0){
+		$.each(data, function(i, item){
+			tbody += '<tr title="双击查看结账单" orderid="'+item.orderId+'" ondblclick="showOrderPage(this)"><td>'+item.orderId+'</td>'	
+				+ '<td>'+item.beginTime+'</td>'
+				+ '<td>'+item.endTime+'</td>'
+				+ '<td>'+item.shouldamount+'</td>'
+				+ '<td>'+item.paidinamount+'</td>'
+				+ '<td>'+item.discountamount+'</td>'
+				+ '<td>'+item.cash+'</td>'
+				+ '<td>'+item.card+'</td>'
+				+ '<td>'+item.othercard+'</td>'
+				+ '<td>'+item.weixin+'</td>'
+				+ '<td>'+item.zhifubao+'</td>'
+				+ '<td>'+item.credit+'</td>'
+				+ '<td>'+item.merbervaluenet+'</td>'
+				+ '<td>'+item.mebervalueadd+'</td>'
+				+ '<td>'+item.integralconsum+'</td>'
+				+ '<td>'+item.meberTicket
+				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
+				+'</td>'
+				+ '</tr>';
+		});
+	}else{
+		tbody = '<tr><td colspan="16">无数据</td></tr>';
+	}
+	$("#business_third_report_data tbody").html(tbody);
+}
+/**
+ * 显示结账单
+ * @param orderId
+ */
+function showReckon(orderId){
+	$("#orderid_param").val(orderId);
+	initReckonData(function(){
+		$("#reckoning-dialog").modal("show");
+	});
+}
+/**
+ * 选择三级某一条记录
+ * @param obj
+ */
+function showOrderPage(obj){
+	$("#business_third_report_data tbody tr").removeClass("select_tr");
+	$(obj).addClass("select_tr");
+	showReckon($(obj).attr("orderid"));
+}
+/*******************营业报表 END********************************/

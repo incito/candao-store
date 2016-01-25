@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.WaiterShiftDao">
+    <select id="getWaiterShiftInfo" parameterType="java.util.Map"  resultType="java.util.Map">
+        SELECT ord.orderid,ord.userid,ord.custnum,us.`name`,sum(ordt.dishnum*ordt.orignalprice) as shouldamount,tab.tableNo as tableids from t_order ord LEFT JOIN t_order_detail ordt ON ord.orderid = ordt.orderid left join t_b_employee em on ord.userid = em.job_number left join t_b_user us on us.id = em.user_id LEFT JOIN t_table tab ON tab.tableid = ord.tableids 
+        where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime}  and (ordt.primarykey &lt;&gt; ordt.superkey or ordt.ordertype &lt;&gt; 2) and em.branch_id = #{branchId} and ord.branchid = #{branchId}
+        <if test="shiftid==-1">
+	      and  ord.shiftid in (0,1)
+	    </if>
+	    <if test="shiftid!=-1">
+	      and  ord.shiftid =#{shiftid}
+	    </if>
+	    <if test=" userid != null and userid!='' ">
+	      and  ord.userid =#{userid}
+	    </if>
+	    group by ord.orderid
+    </select>
+    
+    <select id="getOrderPayMount" parameterType="java.util.Map"  resultType="java.util.Map">
+       select ord.orderid,sum(setd.payamount) as paidinamount from t_order ord left join t_settlement_detail setd on ord.orderid = setd.orderid where setd.payway in (0,1,5,8,13,17,18) 
+       and ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}
+        <if test="shiftid==-1">
+	      and  ord.shiftid in (0,1)
+	    </if>
+	    <if test="shiftid!=-1">
+	      and  ord.shiftid =#{shiftid}
+	    </if>
+	    <if test=" userid != null and userid!='' ">
+	      and  ord.userid =#{userid}
+	    </if>
+       group by ord.orderid
+    </select>
+    
+    <select id="getOrderInflated" parameterType="java.util.Map"  resultType="java.util.Map">
+      SELECT ord.orderid, sum(mem.Inflated) as inflated from t_order ord LEFT JOIN t_order_member mem ON ord.orderid = mem.orderid
+       where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}
+        <if test="shiftid==-1">
+	      and  ord.shiftid in (0,1)
+	    </if>
+	    <if test="shiftid!=-1">
+	      and  ord.shiftid =#{shiftid}
+	    </if>
+	   <if test=" userid != null and userid!='' ">
+	      and  ord.userid =#{userid}
+	    </if>
+	    GROUP BY
+		ord.orderid;
+    </select>
+</mapper>

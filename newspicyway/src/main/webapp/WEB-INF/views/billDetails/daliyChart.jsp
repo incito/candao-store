@@ -140,23 +140,47 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="report_data_div bottom-div">
-			<h4>会员数据统计</h4>
-			<table class="table table-list" id="meber_data_tb">
-				<thead>
-					<tr>
-						<th class="count">会员消费笔数</th>
-						<th class="count">会员消费占比(%)</th>
-						<th class="count">会员券消费</th>
-						<th class="code">会员积分消费</th>
-						<th class="name">会员储值消费净值</th>
-						<th class="name">会员储值消费虚增</th>
-						<th class="name">合计</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
+		<div class="bottom-div">
+			<div class="report_data_div">
+				<h4>会员数据统计</h4>
+				<table class="table table-list" id="meber_data_tb">
+					<thead>
+						<tr>
+							<th class="count">会员消费笔数</th>
+							<th class="count">会员消费占比(%)</th>
+							<th class="count">会员券消费</th>
+							<th class="code">会员积分消费</th>
+							<th class="name">会员储值消费净值</th>
+							<th class="name">会员储值消费虚增</th>
+							<th class="name">合计</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+			<div class="report_data_div">
+				<h4>账单信息统计</h4>
+				<table class="table table-list" id="bill_data_tb">
+					<thead>
+						<tr>
+							<th nowrap="nowrap">已结账单</th>
+							<th nowrap="nowrap">已结账单应收</th>
+							<th nowrap="nowrap">已结人数</th>
+							<th nowrap="nowrap">未结账单数</th>
+							<th nowrap="nowrap">未结账单应收</th>
+							<th nowrap="nowrap">未结人数</th>
+							<th nowrap="nowrap">全部账单数</th>
+							<th nowrap="nowrap">全部账单应收</th>
+							<th nowrap="nowrap">全部人数</th>
+							<th nowrap="nowrap">在台数</th>
+							<th nowrap="nowrap">开台数</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 	

@@ -55,6 +55,25 @@ public class ItemAnalysisChartsController {
 	}
 	
 	/**
+	 * 营业分析-品项销售千次统计(指定分类统计)
+	 * @author YANGZHONGLI
+	 * @since 2015-06-06
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping("/getColumnItemThousandsTimesReportForView")
+	@ResponseBody
+	public ModelAndView getColumnItemThousandsTimesReportForView(@RequestParam Map<String, Object> params) {
+		setParameter(params);
+		ModelAndView mav = new ModelAndView();
+		params.put("beginTime", String.valueOf(params.get("beginTime"))+" 00:00:00");
+		params.put("endTime", String.valueOf(params.get("endTime"))+" 23:59:59");
+		List<Map<String,String>> itemCharsList = itemAnalysisChartsService.getColumnItemThousandsTimesReportForView(params);
+		mav.addObject("thousandsTimesInfo", itemCharsList);
+		return mav;
+	}
+	
+	/**
      * 设置查询参数
      * @author weizhifang
      * @since 2015-07-04
@@ -62,8 +81,24 @@ public class ItemAnalysisChartsController {
      * @return
      */
     private Map<String,Object> setParameter(Map<String,Object> params){
-    	String branchid = PropertiesUtils.getValue("current_branch_id");
-    	params.put("branchId", branchid);
+    	String branchId = "";
+    	if(params.get("branchId") != null && !"".equals(params.get("branchId"))){
+    		branchId = params.get("branchId").toString();
+    	}else{
+    		branchId = PropertiesUtils.getValue("current_branch_id");
+    	}
+    	String columnid  = "";
+    	if(params.get("columnid") != null && !"".equals(params.get("columnid"))){
+    		columnid = params.get("columnid").toString();
+    	}
+    	
+    	String type  = "";
+    	if(params.get("type") != null && !"".equals(params.get("type"))){
+    		type = params.get("type").toString();
+    	}
+    	params.put("columnid", columnid);
+    	params.put("branchId", branchId);
+    	params.put("type", type);
     	String beginTime = params.get("beginTime").toString();
 		String endTime = params.get("endTime").toString();
 		if(params.get("Datetype").equals("D")){
@@ -79,4 +114,35 @@ public class ItemAnalysisChartsController {
 		}
 		return params;
     }
+    /**
+	 * 营业分析-品项销售统计(指定分类统计)
+	 * @author weizhifang
+	 * @since 2015-06-06
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping("/getColumnItemReport")
+	@ResponseBody
+	public ModelAndView getColumnItemReportForView(@RequestParam Map<String, Object> params) {
+		setParameter(params);
+		ModelAndView mav = new ModelAndView();
+		List<Map<String,Object>> itemCharsList = itemAnalysisChartsService.itemAnalysisChartsForColumnPro(params);
+		if(String.valueOf(params.get("type")).equals("0")){//份数
+			//售卖份数top10
+			List<Map<String,Object>> dishNumList = itemAnalysisChartsService.getItemDishNumTop10(itemCharsList);
+			//售卖份数top10趋势图
+			List<Map<String,Object>> dishNumTrendList = itemAnalysisChartsService.getItemDishNumTop10Trend(dishNumList);
+			mav.addObject("ItemReportList", dishNumList);
+			mav.addObject("ItemNumQushiReport", dishNumTrendList);
+		}
+        if(String.valueOf(params.get("type")).equals("1")){//金额
+        	//售卖金额top10
+    		List<Map<String,Object>> amountList = itemAnalysisChartsService.getItemAmountTop10(itemCharsList);
+    		//售卖金额top10趋势图
+    		List<Map<String,Object>> amountTrendList = itemAnalysisChartsService.getItemAmountTop10trend(amountList);
+    		mav.addObject("ItemSharezhuzhuangReport", amountList);
+    		mav.addObject("ItemShareQushiReport", amountTrendList);
+		}
+		return mav;
+	}
 }

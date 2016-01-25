@@ -2402,29 +2402,32 @@ BEGIN
 END
 $$
 
-DROP PROCEDURE IF EXISTS p_report_jsfsmxb$$
-CREATE PROCEDURE p_report_jsfsmxb(IN  pi_branchid INT(11), -- 分店id
-                                  IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
-                                  IN  pi_ksrq     DATETIME, -- 开始日期，
-                                  IN  pi_jsrq     DATETIME, -- 结束日期
-                                  OUT po_errmsg   VARCHAR(100)
-                                  )
-SQL SECURITY INVOKER
-COMMENT '结算方式明细表'
+-- ----------------------------
+-- Procedure structure for p_report_jsfsmxb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_jsfsmxb`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `p_report_jsfsmxb`(IN  pi_branchid INT(11), 
+                                  IN  pi_sb       SMALLINT, 
+                                  IN  pi_ksrq     DATETIME, 
+                                  IN  pi_jsrq     DATETIME, 
+                                  OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '结算方式明细表'
 label_main:
 BEGIN
-  -- 返回字段说明如下(3个字段)：
-  -- 结算方式 笔数 金额
-  --
-  -- 返回数据举例（返回值包含多条数据）：
-  -- 现金	11	4467.00
-  -- 优免	1	14.50
-  -- 抹零	1	0.50
+  
+  
+  
+  
+  
+  
+  
 
   DECLARE v_date_start DATETIME;
   DECLARE v_date_end   DATETIME;
 
-  -- 异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
@@ -2440,11 +2443,11 @@ BEGIN
   SET @@max_heap_table_size = 1024 * 1024 * 300;
   SET @@tmp_table_size = 1024 * 1024 * 300;
 
-  #处理开始结束时间
+  
   SET v_date_start = pi_ksrq;
   SET v_date_end = pi_jsrq;
 
-  #创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
@@ -2458,7 +2461,7 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND shiftid = pi_sb
       AND orderstatus = 3;
   ELSE
@@ -2468,14 +2471,14 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
 
-  #为订单内存表创建索引
+  
   CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
 
-  #创建结算明细内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
   CREATE TEMPORARY TABLE t_temp_settlement_detail
   (
@@ -2485,21 +2488,19 @@ BEGIN
     membercardno varchar(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  #生产临时结算明细表数据
+  
   INSERT INTO t_temp_settlement_detail
   SELECT b.orderid
        , b.payway
        , b.payamount
-       , case when b.membercardno='1' then '1' else '0' end  -- 1 工行 0 它行
+       , b.membercardno
   FROM
     t_temp_order a, t_settlement_detail b
   WHERE
     a.orderid = b.orderid
-    AND b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8, 11, 12, 13, 17, 18);  -- shangwenchao 2015/12/21 22:46:49 增加结算方式13
-
-
-  #创建结果内存表
+    and b.payamount > 0
+    AND b.payway IN (0, 1, 5, 8, 11, 12, 13,17, 18);
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
   (
@@ -2513,73 +2514,1418 @@ BEGIN
   SELECT payway
        , count(1)
        , ifnull(sum(payamount), 0)
-       , membercardno
+       , CASE payway WHEN 1 THEN membercardno ELSE NULL END
   FROM
     t_temp_settlement_detail
   GROUP BY
     payway,membercardno;
-
-  --   #对payway=13的归入到优免里
-  --   UPDATE t_temp_res
-  --   SET
-  --     payway = '6'
-  --   WHERE
-  --     payway = '13';
-
-
-  #返回结果集
-  SELECT b.itemDesc AS payway
+  
+  SELECT (CASE payway WHEN 1 THEN (select c.itemDesc from t_dictionary c where c.type ='BANK' and c.itemid = a.membercardno) ELSE b.itemDesc END)  AS payway
        , b.itemid
-       , a.nums
-       , a.prices
-       , membercardno
+       , a.nums AS nums
+       , sum(a.prices) AS prices
+       , a.membercardno
   FROM
-    t_temp_res a, t_dictionary b
+    t_temp_res a left join t_dictionary b on a.payway = b.itemid 
   WHERE
-    a.payway = b.itemid
-    AND b.type = 'PAYWAY'
+    b.type = 'PAYWAY'   
+  GROUP BY
+    b.itemDesc,a.membercardno
   ORDER BY
     b.itemSort;
-
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
 END
-$$
+;;
+DELIMITER ;
 
-DROP PROCEDURE IF EXISTS p_report_pxxsmxb$$
-CREATE PROCEDURE p_report_pxxsmxb(IN  pi_branchid INT(11), -- 分店id
-                                  IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
-                                  IN  pi_ksrq     DATETIME, -- 开始日期，
-                                  IN  pi_jsrq     DATETIME, -- 结束日期
-                                  IN  pi_pl       VARCHAR(50), -- 品类 -1:全部  非-1:品类ID
-                                  IN  pi_lx       VARCHAR(10), -- 品项类型  -1:全部  0:单品 1:鱼锅 2:套餐
-                                  OUT po_errmsg   VARCHAR(100)
-                                  -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '品项销售明细表'
+-- ----------------------------
+-- Procedure structure for p_report_jsfsxx
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_jsfsxx`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_jsfsxx`(IN  pi_branchid VARCHAR(50), # 分店id
+								  IN  pi_jsfs     INT(11),#结算方式ID
+								  IN  pi_hdmc     VARCHAR(50),#活动名称ID
+                                  IN  pi_sb       SMALLINT, # 市别，0:午市；1:晚市；-1:全天
+                                  IN  pi_ksrq     DATETIME, # 开始日期，
+                                  IN  pi_jsrq     DATETIME, # 结束日期
+								  IN `pi_brandid` int(11),
+								  IN `pi_marketid` int(11),
+								  IN `pi_areaid` int(11),
+                                  OUT po_errormsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '结算方式信息'
+label_main:
+BEGIN
+
+  DECLARE v_date_start DATETIME;
+  DECLARE v_date_end   DATETIME;
+  DECLARE v_branchid   VARCHAR(50) DEFAULT NULL;#当前分店id
+  DECLARE v_branchid_cur   VARCHAR(50);#当前遍历分店id
+  DECLARE v_branchname_cur   VARCHAR(50);#当前遍历分店name
+  DECLARE v_brandid  VARCHAR(128); #品牌
+  DECLARE v_marketid  VARCHAR(128); #市场
+  DECLARE v_areaid  VARCHAR(128); #区域
+  DECLARE v_jde  VARCHAR(128); #jde
+  DECLARE v_brand_name  VARCHAR(128); #品牌
+  DECLARE v_market_name  VARCHAR(128); #市场
+  DECLARE v_area_name  VARCHAR(128); #区域
+  DECLARE v_datetime  VARCHAR(128); #日期
+  DECLARE v_hdmc  VARCHAR(50); #活动名称
+  
+  
+  DECLARE v_pname        VARCHAR(50);#活动名称
+  DECLARE v_ptype        CHAR(4);#活动类型
+  DECLARE v_payway       INT;#支付方式
+  DECLARE v_payways       INT;#支付方式数量
+  DECLARE v_shouldamount decimal(13, 2);#拉动应收
+  DECLARE v_paidinamount decimal(13, 2);#拉动实收
+  DECLARE v_inflated     decimal(13, 2); #虚增
+  DECLARE v_shouldamount_total     decimal(13, 2); #总应收数
+  DECLARE v_paidinamount_total     decimal(13, 2); #总实收数
+  DECLARE v_payways_total     	   decimal(13, 2); #总支付方式数
+  DECLARE v_inflated_total     	   decimal(13, 2); #总虚增数
+  
+  DECLARE v_fetch_done          BOOL DEFAULT FALSE; #游标结束标识
+  
+  DECLARE v_paywaypercent decimal(5, 2); #笔数比
+  DECLARE v_shouldpercent decimal(5, 2); #应收比
+  DECLARE v_paidinpercent decimal(5, 2); #实收比
+  
+  #定义一个优惠活动的游标
+  DECLARE cur_p_detail CURSOR FOR SELECT DISTINCT pname
+                                                , ptype
+                                                , payway
+                                  FROM
+                                    t_temp_res_detail_sub;
+
+  # 异常处理模块，出现异常返回null
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    SELECT NULL;
+    GET DIAGNOSTICS CONDITION 1 po_errormsg = MESSAGE_TEXT;
+  END;
+  
+    #游标结束时的处理程序
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  BEGIN
+    SET v_fetch_done = TRUE; #当读到数据的最后一条时,设置v_fetch_done变量为TRUE
+  END;
+  
+  IF pi_brandid > -1 THEN
+  #设置当前分店id
+	SELECT id,name INTO v_brandid,v_brand_name  FROM t_c_brand WHERE id = pi_brandid;
+  ELSE
+	SELECT id,name INTO v_brandid,v_brand_name FROM t_c_brand LIMIT 1;
+  END IF;  
+  
+  IF pi_marketid > -1 THEN
+  #设置当前分店id
+	SELECT id,name INTO v_marketid,v_market_name  FROM t_c_market WHERE id = pi_marketid;
+  ELSE
+	SELECT id,name INTO v_marketid,v_market_name FROM t_c_market LIMIT 1;
+  END IF;  
+  
+  IF pi_areaid > -1 THEN
+  #设置当前分店id
+	SELECT id,name INTO v_areaid,v_area_name  FROM t_c_area WHERE id = pi_areaid;
+  ELSE
+	SELECT id,name INTO v_areaid,v_area_name FROM t_c_area LIMIT 1;
+  END IF; 
+
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+
+  #处理开始结束时间
+  SET v_date_start = pi_ksrq;
+  SET v_date_end = pi_jsrq;
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_branch;
+  CREATE TEMPORARY TABLE t_temp_branch
+  (
+	branchid VARCHAR(50),
+    branchname VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  #为分店内存表创建索引
+  CREATE UNIQUE INDEX ix_t_temp_branch_branchid ON t_temp_branch (branchid);  
+  
+   IF pi_branchid > -1 THEN
+	#设置当前分店id
+	INSERT INTO t_temp_branch SELECT branchid,branchname  FROM t_branch WHERE branchid =CONCAT(pi_branchid) OR branchname LIKE CONCAT('%',pi_branchid,'%'); 
+	SELECT ifnull(COUNT(1),0) INTO v_branchid FROM t_temp_branch;
+	IF v_branchid = 0 THEN 
+		SELECT NULL;
+		SET po_errormsg = '分店ID不存在';
+		LEAVE label_main;
+	END IF;
+  END IF;
+  
+  #生成要统计的分店信息
+  IF v_branchid IS NULL THEN 
+	  INSERT INTO t_temp_branch
+	  SELECT branchid
+		   , branchname
+	  FROM
+		t_branch;
+  END IF;
+ 
+  #创建订单临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+    orderid VARCHAR(50),
+	branchid INT(11),
+	begintime datetime
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  IF pi_sb > -1 THEN
+    INSERT INTO t_temp_order
+    SELECT orderid,t_temp_branch.branchid,begintime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime), t_temp_branch
+    WHERE
+      t_temp_branch.branchid = t_order.branchid
+      AND begintime BETWEEN v_date_start AND v_date_end # 需要创建索引IX_t_order_begintime  
+      AND shiftid = pi_sb
+      AND orderstatus = 3;
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid,t_temp_branch.branchid,begintime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime), t_temp_branch
+    WHERE
+      t_temp_branch.branchid = t_order.branchid
+      AND begintime BETWEEN v_date_start AND v_date_end # 需要创建索引IX_t_order_begintime  
+      AND orderstatus = 3;
+  END IF;
+
+  #为订单内存表创建索引
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+
+  #创建订单详情内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishtype TINYINT
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #向临时订单详情内存表中放值
+  INSERT INTO t_temp_order_detail
+  SELECT b.orderid
+       , b.dishnum
+       , b.orignalprice
+       , b.childdishtype
+       , b.primarykey
+       , b.superkey
+       , b.dishtype
+  FROM
+    t_temp_order a, t_order_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND b.orignalprice > 0; 
+	
+  
+ -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
+
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+
+  CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
+  
+  #创建结算明细内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponNum INT,
+    bankcardno VARCHAR(50),
+    coupondetailid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #生产临时结算明细表数据
+  INSERT INTO t_temp_settlement_detail
+  SELECT b.orderid
+       , b.payway
+       , b.payamount
+       , b.couponNum
+       , b.bankcardno
+       , b.coupondetailid
+  FROM
+    t_temp_order a, t_settlement_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND b.payamount > 0;
+  #创建查询索引
+  CREATE INDEX ix_t_temp_settlement_detail_payway ON t_temp_settlement_detail (payway);  
+
+  #创建会员消费内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
+  CREATE TEMPORARY TABLE t_temp_order_member
+  (
+    orderid VARCHAR(50),
+    Inflated DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #生成临时会员结算数据  
+  INSERT INTO t_temp_order_member
+  SELECT b.orderid
+       , b.Inflated
+  FROM
+    t_temp_order a, t_order_member b
+  WHERE
+    a.orderid = b.orderid;
+  CREATE INDEX ix_t_temp_order_member_orderid ON t_temp_order_member (orderid);
+
+  #创建优惠活动内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
+  CREATE TEMPORARY TABLE t_temp_preferential
+  (
+    pid VARCHAR(50),
+    pname VARCHAR(128),
+    ptype CHAR(4),
+    ptypename VARCHAR(32)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  #生成正常的优惠券数据，包括将其他优惠中的具体原因和合作单位也看成单独的优惠
+  INSERT INTO t_temp_preferential
+  SELECT a.id
+       , (
+         CASE
+         WHEN a.preferential = a.id THEN
+           b.name
+         ELSE
+           ifnull(ifnull(a.free_reason, a.company_name), b.name)
+         END) AS name
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type
+         ELSE
+           b.type
+         END
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type_name
+         ELSE
+           b.type_name
+         END
+  FROM
+    t_p_preferential_detail a, t_p_preferential_activity b
+  WHERE
+    a.preferential = b.id;
+	
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
+  CREATE TEMPORARY TABLE t_temp_res_detail
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+    couponNum INT, #使用数量
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    ptypename VARCHAR(32) #活动分类名称
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  #生成挂账和优免数据（不包含挂账2数据）
+  INSERT INTO t_temp_res_detail
+  SELECT a.orderid
+       , a.payway
+       , a.payamount
+       , a.couponNum
+       , b.pname
+       , b.ptype
+       , b.ptypename
+  FROM
+    t_temp_settlement_detail a, t_temp_preferential b
+  WHERE
+    a.payway IN (5, 6)
+    AND a.coupondetailid = b.pid;
+
+  #生成雅座优惠券数据
+  INSERT INTO t_temp_res_detail
+  SELECT a.orderid
+       , 6
+       , a.payamount
+       , a.couponNum
+       , a.bankcardno
+       , '99'
+       , '雅座优惠券'
+  FROM
+    t_temp_settlement_detail a
+  WHERE
+    a.payway = 12;
+	
+	CREATE INDEX ix_t_temp_res_detail ON t_temp_res_detail (pname, ptype, payway);
+  
+  ########################################生成中间表,加快循环速度##############################################
+  #创建订单id临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
+  CREATE TEMPORARY TABLE t_temp_orderid
+  (
+	orderid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_orderid_orderid ON t_temp_orderid (orderid);
+  
+  #创建订单详情临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_order_detail_sub
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_detail_sub_orderid ON t_temp_order_detail_sub (orderid);
+  
+  #创建订单详情临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail_sub_new;
+  CREATE TEMPORARY TABLE t_temp_order_detail_sub_new
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_detail_sub_new_orderid ON t_temp_order_detail_sub_new (orderid);
+  
+    #创建结算明细临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail_sub
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponNum INT,
+    bankcardno VARCHAR(50),
+    coupondetailid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #创建查询索引
+  CREATE INDEX ix_t_temp_settlement_detail_sub_payway ON t_temp_settlement_detail_sub (payway); 
+  #创建查询索引
+  CREATE INDEX ix_t_temp_settlement_detail_sub_orderid ON t_temp_settlement_detail_sub (orderid);  
+  
+    #创建结算明细临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail_sub_new;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail_sub_new
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponNum INT,
+    bankcardno VARCHAR(50),
+    coupondetailid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  #创建查询索引
+  CREATE INDEX ix_t_temp_settlement_detail_sub_new_payway ON t_temp_settlement_detail_sub_new (payway); 
+  #创建查询索引
+  CREATE INDEX ix_t_temp_settlement_detail_sub_new_orderid ON t_temp_settlement_detail_sub_new (orderid);   
+  
+  
+  #创建优惠活动临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_res_detail_sub
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+    couponNum INT, #使用数量
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    ptypename VARCHAR(32) #活动分类名称
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  CREATE INDEX ix_t_temp_res_detail_sub ON t_temp_res_detail_sub (pname, ptype, payway);
+  
+  #结果集合
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	datetime VARCHAR(50),
+	brandid VARCHAR(50),
+	brandname VARCHAR(50),
+	marketid VARCHAR(50),
+	market  VARCHAR(50),
+	areaid VARCHAR(50),
+	area  VARCHAR(50),
+	managePattern  VARCHAR(50),
+	managePatternid VARCHAR(50),
+	jde VARCHAR(50),#jde
+	branchid VARCHAR(50),#分店id
+	branchname VARCHAR(50),#分店名称
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    ptypename VARCHAR(32), #活动分类名称
+    payway INT, #结算方式
+    paywaydesc VARCHAR(50), #结算方式名称
+    couponNum INT, #笔数
+    payamount decimal(13, 2), #发生金额
+    shouldamount decimal(13, 2)DEFAULT 0.00, #拉动应收
+    paidinamount decimal(13, 2)DEFAULT 0.00, #拉动实收
+	paywaypercent decimal(5, 2)DEFAULT 0.00, #笔数比
+	shouldpercent decimal(5, 2)DEFAULT 0.00, #应收比
+	paidinpercent decimal(5, 2) DEFAULT 0.00, #实收比
+    PRIMARY KEY (id)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  #结果临时集合
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_sub;
+  CREATE TEMPORARY TABLE t_temp_res_sub
+  (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	datetime VARCHAR(50),
+	brandid VARCHAR(50),
+	brandname VARCHAR(50),
+	marketid VARCHAR(50),
+	market  VARCHAR(50),
+	areaid VARCHAR(50),
+	area  VARCHAR(50),
+	managePattern  VARCHAR(50),
+	managePatternid VARCHAR(50),
+	jde VARCHAR(50),#jde
+	branchid VARCHAR(50),#分店id
+	branchname VARCHAR(50),#分店名称
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    ptypename VARCHAR(32), #活动分类名称
+    payway INT, #结算方式
+    paywaydesc VARCHAR(50), #结算方式名称
+    couponNum INT, #笔数
+    payamount decimal(13, 2), #发生金额
+    shouldamount decimal(13, 2) DEFAULT 0.00, #拉动应收
+    paidinamount decimal(13, 2) DEFAULT 0.00, #拉动实收
+	paywaypercent decimal(5, 2) DEFAULT 0.00, #笔数比
+	shouldpercent decimal(5, 2) DEFAULT 0.00, #应收比
+	paidinpercent decimal(5, 2) DEFAULT 0.00, #实收比
+    PRIMARY KEY (id)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+ 
+  BEGIN
+	DECLARE cur_branchid CURSOR FOR SELECT branchid,branchname FROM t_temp_branch;
+	
+	OPEN cur_branchid;
+	
+	#设置统计时间
+	IF DATEDIFF(v_date_end,v_date_start) > 0 THEN 
+		SET v_datetime = concat(date_format(v_date_start,'%Y-%m-%d'),' - ',date_format(v_date_end,'%Y-%m-%d'));
+	ELSE
+		SET v_datetime = concat(date_format(v_date_start,'%Y-%m-%d'));
+	END IF;
+	
+	#遍历分店
+	lable_fetch_branchid_loop:
+		LOOP
+		
+			FETCH cur_branchid INTO v_branchid_cur,v_branchname_cur;
+			IF v_fetch_done THEN
+				  LEAVE lable_fetch_branchid_loop;
+				END IF;
+				
+			#生成JDE
+			SELECT ifnull(branch_id,0)
+			INTO v_jde
+			FROM t_branch_code a WHERE a.branch_id_code = v_branchid_cur;
+				
+			#清空订单Id临时内存表
+			TRUNCATE t_temp_orderid;
+			
+			#生成订单id临时数据
+			INSERT INTO t_temp_orderid
+			SELECT a.orderid  FROM t_temp_order a
+			WHERE a.branchid = v_branchid_cur;
+			
+			#################################清空中间表########################################
+			
+			#包含该分店所有的订单信息	
+			TRUNCATE t_temp_order_detail_sub;
+			
+			INSERT INTO t_temp_order_detail_sub
+				SELECT a.* FROM t_temp_order_detail a,t_temp_orderid b
+				WHERE a.orderid = b.orderid;
+
+			#包含该分店所有的结算信息	
+			TRUNCATE t_temp_settlement_detail_sub;
+			
+			INSERT INTO t_temp_settlement_detail_sub
+				SELECT a.* FROM t_temp_settlement_detail a,t_temp_orderid b
+				WHERE a.orderid = b.orderid;
+				
+			#包含该分店所有的优惠活动信息				
+			TRUNCATE t_temp_res_detail_sub;
+
+			INSERT INTO t_temp_res_detail_sub
+				SELECT a.* FROM t_temp_res_detail a,t_temp_orderid b
+				WHERE a.orderid = b.orderid;
+			
+			#清空临时订单表
+			TRUNCATE t_temp_orderid;
+			
+			INSERT INTO t_temp_orderid 
+				SELECT DISTINCT orderid
+				FROM t_temp_res_detail_sub;
+				
+			#计算应收
+			SELECT ifnull(sum(a.orignalprice * a.dishnum), 0)
+			INTO
+			  v_shouldamount_total
+			FROM
+			  t_temp_order_detail_sub a , t_temp_orderid b
+			WHERE
+			  a.orderid = b.orderid;
+					  
+			#计算拉动实收(含虚增)
+			SELECT ifnull(sum(a.payamount), 0)
+			INTO
+				v_paidinamount_total
+			FROM
+				t_temp_settlement_detail_sub a,t_temp_orderid b
+			WHERE
+				a.orderid = b.orderid
+			AND
+				a.payway IN (0, 1, 5, 8, 13, 17, 18); #增加挂账2 标记13
+			  
+			#计算虚增
+			SELECT ifnull(sum(a.Inflated), 0)
+			INTO
+			  v_inflated_total
+			FROM
+			  t_temp_order_member a, t_temp_orderid b
+			WHERE
+			  a.orderid = b.orderid;
+			  
+			#计算总优惠活动结算单数
+			SELECT ifnull(count(DISTINCT orderid ),0)
+			INTO 
+				v_payways_total
+			FROM
+				t_temp_orderid a;
+			
+			TRUNCATE t_temp_res_sub;
+			
+			##################根据筛选条件(活动名称,结算方式),只在统计活动中删除多余数据###################
+			IF pi_hdmc != '-1' THEN
+				SELECT pname INTO v_hdmc FROM t_temp_preferential WHERE pid = pi_hdmc ;
+				SET v_fetch_done = FALSE;
+				IF v_hdmc IS  NULL THEN
+					SET v_hdmc = pi_hdmc;
+				END IF;
+				DELETE
+				FROM
+					t_temp_res_detail_sub
+				WHERE
+					pname NOT LIKE CONCAT('%',pi_hdmc,'%') AND pname NOT LIKE CONCAT('%',v_hdmc,'%');
+			END IF;
+
+			IF pi_jsfs != -1 THEN
+				DELETE
+				FROM
+					t_temp_res_detail_sub
+				WHERE
+					payway != pi_jsfs;
+			END IF;
+			
+			#开始统计每条优惠的数据
+			OPEN cur_p_detail;
+			
+			lable_fetch_loop:
+			  LOOP
+
+				FETCH cur_p_detail INTO v_pname, v_ptype, v_payway;
+				IF v_fetch_done THEN
+				  SET v_fetch_done = FALSE;
+				  LEAVE lable_fetch_loop;
+				END IF;
+				
+			    INSERT INTO t_temp_res_sub (pname, ptype, payway, couponNum, payamount)
+			    SELECT pname
+				   , ptype
+				   , payway
+				   , ifnull(sum(couponNum), 0)
+				   , ifnull(sum(payamount), 0)
+			    FROM
+				  t_temp_res_detail_sub
+			    GROUP BY
+				  pname
+			    , ptype
+			    , payway
+				HAVING pname = v_pname AND ptype = v_ptype AND payway = v_payway;
+				  
+			  END LOOP;
+
+			  #最后关闭游标.
+			  CLOSE cur_p_detail;
+			  
+		  TRUNCATE t_temp_orderid;
+
+		  #获取自增长字段的偏移量和自增量，以及自增字段的最大值
+		  SET @offset = @@auto_increment_offset;
+		  SET @increment = @@auto_increment_increment;
+		  SELECT ifnull(max(id), 0)
+		  INTO
+			@maxid
+		  FROM
+			t_temp_res_sub;
+			
+		lable_loop:
+		  LOOP
+			#循环结束标识
+			IF @offset > @maxid THEN
+			  LEAVE lable_loop;
+			END IF;
+
+			SELECT pname
+				 , ptype
+				 , payway
+			INTO
+			  v_pname, v_ptype, v_payway
+			FROM
+			  t_temp_res_sub
+			WHERE
+			  id = @offset;
+
+			TRUNCATE t_temp_orderid;
+
+			#获取订单列表
+			INSERT INTO t_temp_orderid
+			SELECT DISTINCT orderid
+			FROM
+			  t_temp_res_detail_sub
+			WHERE
+			  pname = v_pname
+			  AND ptype = v_ptype
+			  AND payway = v_payway;
+			
+			TRUNCATE t_temp_order_detail_sub_new;
+			
+			INSERT INTO t_temp_order_detail_sub_new
+			SELECT a.*
+			FROM
+			  t_temp_order_detail_sub a USE INDEX (ix_t_temp_order_detail_sub_orderid) join t_temp_orderid b USE INDEX (ix_t_temp_orderid_orderid)
+			on
+			  a.orderid = b.orderid;
+			  
+			TRUNCATE t_temp_settlement_detail_sub_new;
+			
+			INSERT INTO t_temp_settlement_detail_sub_new
+			SELECT a.*
+			FROM
+			  t_temp_settlement_detail_sub a USE INDEX (ix_t_temp_settlement_detail_sub_orderid,ix_t_temp_settlement_detail_sub_payway) join t_temp_orderid b USE INDEX (ix_t_temp_orderid_orderid)
+			on
+			  a.orderid = b.orderid
+			WHERE a.payway IN (0, 1, 5, 8, 13, 17, 18);
+			
+			#计算拉动应收
+			SELECT ifnull(sum(a.orignalprice * a.dishnum), 0)
+			INTO
+			  v_shouldamount
+			FROM
+			  t_temp_order_detail_sub_new a;
+
+			#计算拉动实收(含虚增)
+			SELECT ifnull(sum(a.payamount), 0)
+			INTO
+			  v_paidinamount
+			FROM
+			  t_temp_settlement_detail_sub_new a;
+
+			#计算虚增
+			SELECT ifnull(sum(a.Inflated), 0)
+			INTO
+			  v_inflated
+			FROM
+			  t_temp_order_member a JOIN t_temp_orderid b USE INDEX (ix_t_temp_orderid_orderid)
+			ON
+			  a.orderid = b.orderid;
+		  
+			#计算结算方式数量
+			SELECT ifnull(count(DISTINCT orderid),0)
+			INTO v_payways
+			FROM t_temp_orderid a;
+		
+			#计算占总结算方式比: 该分店包含该优惠活动的订单数/该分店所有包含优惠活动的订单数
+			SET v_paywaypercent = v_payways / v_payways_total ;
+			
+			#计算占应收比 : 该分店包含该优惠活动的订单的应收/该分店所有包含优惠活动的订单的应收
+			SET v_shouldpercent = v_shouldamount / v_shouldamount_total ;
+			
+			#计算占实收比 : 该分店包含该优惠活动的订单的实收/该分店所有包含优惠活动的订单的实收
+			SET v_paidinpercent = (v_paidinamount - v_inflated ) / ( v_paidinamount_total - v_inflated_total ) ;
+
+			#更新结果数据
+			UPDATE t_temp_res_sub
+			SET
+			  brandid=v_brandid,brandname=v_brand_name,marketid=v_marketid,market=v_market_name,areaid=v_areaid,
+			  area=v_area_name,managePattern='1',managePatternid ='自营',jde=v_jde,datetime=v_datetime,
+			  shouldamount = v_shouldamount, paidinamount = v_paidinamount - v_inflated, branchid = v_branchid_cur,
+			  branchname = v_branchname_cur, paywaypercent = v_paywaypercent, shouldpercent = v_shouldpercent,
+			  paidinpercent = v_paidinpercent
+			WHERE
+			  id = @offset;
+
+			#获取下一个自增id值
+			SET @offset = @offset + @increment;
+		  END LOOP;
+
+		  #更新支付方式名称
+		  UPDATE t_temp_res_sub a, t_dictionary b
+		  SET
+			a.paywaydesc = b.itemDesc
+		  WHERE
+			a.payway = b.itemid
+			AND type = 'PAYWAY';
+
+		  #更新活动类型名称
+		  UPDATE t_temp_res_sub a, t_temp_preferential b
+		  SET
+			a.ptypename = b.ptypename
+		  WHERE
+			a.ptype = b.ptype;
+
+		  #更新雅座优惠券活动类型
+		  UPDATE t_temp_res_sub a
+		  SET
+			a.ptypename = '雅座优惠券'
+		  WHERE
+			a.ptype = '99';
+		  
+		INSERT INTO t_temp_res (brandid,brandname,marketid,market,areaid,area,managePattern,managePatternid ,jde,datetime,
+			branchid,branchname,pname,ptype,ptypename,
+			payway,paywaydesc,couponNum,payamount,shouldamount,paidinamount,
+			paywaypercent,shouldpercent,paidinpercent)
+		SELECT  
+			a.brandid,a.brandname,a.marketid,a.market,a.areaid,a.area,a.managePattern,a.managePatternid ,a.jde,a.datetime,
+			a.branchid,a.branchname,a.pname,a.ptype,a.ptypename,
+			a.payway,a.paywaydesc,a.couponNum,a.payamount,a.shouldamount,a.paidinamount,
+			a.paywaypercent,a.shouldpercent,a.paidinpercent
+		FROM t_temp_res_sub a;
+		  
+		END LOOP lable_fetch_branchid_loop;
+	
+	CLOSE cur_branchid;
+	
+  END;
+  #返回结果集
+		  SELECT 
+				brandid,
+				brandname,
+				marketid,
+				market,
+				areaid,
+				area,
+				managePattern,
+				managePatternid,
+				jde jdecode,
+				datetime durdate,
+				branchid storeid,
+				branchname store,
+				paywaydesc settermenttype,
+				pname activityid,
+				pname activityname,
+				ptype,
+				payway settlementno,
+				couponNum no,
+				payamount happenmoney,
+				shouldamount pullreceivable,
+				paidinamount pullactive,
+				paywaypercent oftotalsetter,
+				shouldpercent ofreceivable,
+				paidinpercent ofpullactive
+		  FROM
+			t_temp_res;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_jsfsxxxq
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_jsfsxxxq`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_jsfsxxxq`(IN  pi_branchid INT(11), # 分店id
+								  IN  pi_jsfs     INT(11),#结算方式ID
+								  IN  pi_hdmc     VARCHAR(50),#活动名称ID
+                                  IN  pi_sb       SMALLINT, # 市别，0:午市；1:晚市；-1:全天
+                                  IN  pi_ksrq     DATETIME, # 开始日期，
+                                  IN  pi_jsrq     DATETIME, # 结束日期
+								  IN `pi_brandid` int(11),
+								  IN `pi_marketid` int(11),
+								  IN `pi_areaid` int(11),
+                                  OUT po_errormsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '结算方式信息'
+label_main:
+BEGIN
+  DECLARE v_date_start DATETIME;
+  DECLARE v_date_end   DATETIME;
+  DECLARE v_branchid   INT(11);#当前分店id
+  DECLARE v_branchname VARCHAR(50);#当前分店名称
+  DECLARE v_brandid  VARCHAR(128); #品牌
+  DECLARE v_marketid  VARCHAR(128); #市场
+  DECLARE v_areaid  VARCHAR(128); #区域
+  DECLARE v_jde  VARCHAR(128); #jde
+  DECLARE v_brand_name  VARCHAR(128); #品牌
+  DECLARE v_market_name  VARCHAR(128); #市场
+  DECLARE v_area_name  VARCHAR(128); #区域
+  DECLARE v_datetime  VARCHAR(128); #日期
+  
+  DECLARE v_pname        VARCHAR(50);#活动名称
+  DECLARE v_ptype        CHAR(4);#活动类型
+  DECLARE v_payway       INT;#支付方式
+  DECLARE v_payways       INT;#支付方式数量
+  DECLARE v_shouldamount DOUBLE(13, 2);#拉动应收
+  DECLARE v_paidinamount DOUBLE(13, 2);#拉动实收
+  DECLARE v_inflated     DOUBLE(13, 2); #虚增
+  
+  DECLARE v_fetch_done          BOOL DEFAULT FALSE; #游标结束标识
+  
+  #定义一个优惠活动的游标
+  DECLARE cur_p_detail CURSOR FOR SELECT DISTINCT pname
+                                                , ptype
+                                                , payway
+                                  FROM
+                                    t_temp_res_detail;
+
+  # 异常处理模块，出现异常返回null
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    SELECT NULL;
+    GET DIAGNOSTICS CONDITION 1 po_errormsg = MESSAGE_TEXT;
+  END;
+  
+  #游标结束时的处理程序
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  BEGIN
+    SET v_fetch_done = TRUE; #当读到数据的最后一条时,设置v_fetch_done变量为TRUE
+  END;
+  
+     #设置当前分店id
+  IF pi_branchid IS NULL THEN
+    SELECT NULL;
+    SET po_errormsg = '分店ID输入不能为空';
+    LEAVE label_main;
+  END IF;
+  
+  IF pi_brandid > -1 THEN
+  #设置当前分店id
+	SELECT id,name INTO v_brandid,v_brand_name  FROM t_c_brand WHERE id = pi_brandid;
+  ELSE
+	SELECT id,name INTO v_brandid,v_brand_name FROM t_c_brand LIMIT 1;
+  END IF;  
+  
+  IF pi_marketid > -1 THEN
+  #设置当前分店id
+	SELECT id,name INTO v_marketid,v_market_name  FROM t_c_market WHERE id = pi_marketid;
+  ELSE
+	SELECT id,name INTO v_marketid,v_market_name FROM t_c_market LIMIT 1;
+  END IF;  
+  
+  IF pi_areaid > -1 THEN
+  #设置当前分店id
+	SELECT id,name INTO v_areaid,v_area_name  FROM t_c_area WHERE id = pi_areaid;
+  ELSE
+	SELECT id,name INTO v_areaid,v_area_name FROM t_c_area LIMIT 1;
+  END IF;  
+  
+  SET v_branchid = pi_branchid;
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+  
+  SELECT ifnull(branch_id,0)
+  INTO v_jde
+  FROM t_branch_code a WHERE a.branch_id_code = v_branchid;
+
+  #处理开始结束时间
+  SET v_date_start = pi_ksrq;
+  SET v_date_end = pi_jsrq;
+
+  SELECT branchname into v_branchname 
+  FROM t_branch WHERE branchid = v_branchid;
+ 
+  #创建订单临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+    orderid VARCHAR(50),
+	begintime DATETIME
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  IF pi_sb > -1 THEN
+    INSERT INTO t_temp_order
+    SELECT orderid,begintime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime)
+    WHERE
+      v_branchid = t_order.branchid
+      AND begintime BETWEEN v_date_start AND v_date_end # 需要创建索引IX_t_order_begintime  
+      AND shiftid = pi_sb
+      AND orderstatus = 3;
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid,begintime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime)
+    WHERE
+      v_branchid = t_order.branchid
+      AND begintime BETWEEN v_date_start AND v_date_end # 需要创建索引IX_t_order_begintime  
+      AND orderstatus = 3;
+  END IF;
+
+  #为订单内存表创建索引
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+
+  #创建订单详情内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishtype TINYINT
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #向临时订单详情内存表中放值
+  INSERT INTO t_temp_order_detail
+  SELECT b.orderid
+       , b.dishnum
+       , b.orignalprice
+       , b.childdishtype
+       , b.primarykey
+       , b.superkey
+       , b.dishtype
+  FROM
+    t_temp_order a, t_order_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND b.orignalprice > 0; 
+	
+ 
+ -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
+
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+  
+
+  CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
+  
+  #创建结算明细内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponNum INT,
+    bankcardno VARCHAR(50),
+    coupondetailid VARCHAR(50),
+	begintime DATETIME
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #生产临时结算明细表数据
+  INSERT INTO t_temp_settlement_detail
+  SELECT b.orderid
+       , b.payway
+       , b.payamount
+       , b.couponNum
+       , b.bankcardno
+       , b.coupondetailid
+	   , a.begintime
+  FROM
+    t_temp_order a, t_settlement_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND b.payamount > 0;
+  #创建查询索引
+  CREATE INDEX ix_t_temp_settlement_detail_payway ON t_temp_settlement_detail (payway);  
+ 
+  #创建会员消费内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
+  CREATE TEMPORARY TABLE t_temp_order_member
+  (
+    orderid VARCHAR(50),
+    Inflated DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #生成临时会员结算数据  
+  INSERT INTO t_temp_order_member
+  SELECT b.orderid
+       , b.Inflated
+  FROM
+    t_temp_order a, t_order_member b
+  WHERE
+    a.orderid = b.orderid;
+  CREATE INDEX ix_t_temp_order_member_orderid ON t_temp_order_member (orderid);
+
+
+  #创建优惠活动内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
+  CREATE TEMPORARY TABLE t_temp_preferential
+  (
+    pid VARCHAR(50),
+    pname VARCHAR(128),
+    ptype CHAR(4),
+    ptypename VARCHAR(32)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  #生成正常的优惠券数据，包括将其他优惠中的具体原因和合作单位也看成单独的优惠
+  INSERT INTO t_temp_preferential
+  SELECT a.id
+       , (
+         CASE
+         WHEN a.preferential = a.id THEN
+           b.name
+         ELSE
+           ifnull(ifnull(a.free_reason, a.company_name), b.name)
+         END) AS name
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type
+         ELSE
+           b.type
+         END
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type_name
+         ELSE
+           b.type_name
+         END
+  FROM
+    t_p_preferential_detail a, t_p_preferential_activity b
+  WHERE
+    a.preferential = b.id;
+	
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
+  CREATE TEMPORARY TABLE t_temp_res_detail
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+    couponNum INT, #使用数量
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    ptypename VARCHAR(32), #活动分类名称
+	begintime DATETIME
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  #生成挂账和优免数据（不包含金总挂账数据）
+  INSERT INTO t_temp_res_detail
+  SELECT a.orderid
+       , a.payway
+       , a.payamount
+       , a.couponNum
+       , b.pname
+       , b.ptype
+       , b.ptypename
+	   , a.begintime
+  FROM
+    t_temp_settlement_detail a, t_temp_preferential b
+  WHERE
+    a.payway IN (5, 6)
+    AND a.coupondetailid = b.pid;
+
+  #生成雅座优惠券数据
+  INSERT INTO t_temp_res_detail
+  SELECT a.orderid
+       , 6
+       , a.payamount
+       , a.couponNum
+       , a.bankcardno
+       , '99'
+       , '雅座优惠券'
+	   , a.begintime
+  FROM
+    t_temp_settlement_detail a
+  WHERE
+    a.payway = 12;	
+  ##############################################删除多余数据#######################################
+  IF pi_hdmc != '-1' THEN
+    DELETE
+    FROM
+      t_temp_res_detail
+    WHERE
+      pname != pi_hdmc;
+  END IF;
+
+  IF pi_jsfs != -1 THEN
+    DELETE
+    FROM
+      t_temp_res_detail
+    WHERE
+      payway != pi_jsfs;
+  END IF;
+  CREATE INDEX ix_t_temp_res_detail ON t_temp_res_detail (pname, ptype, payway);
+  
+  #结果集合
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	datetime date,
+	brandid VARCHAR(50),
+	brandname VARCHAR(50),
+	marketid VARCHAR(50),
+	market  VARCHAR(50),
+	areaid VARCHAR(50),
+	area  VARCHAR(50),
+	managePattern  VARCHAR(50),
+	managePatternid VARCHAR(50),
+	jde VARCHAR(50),#jde
+	branchid VARCHAR(50),#分店id
+	branchname VARCHAR(50),#分店名称
+    pname VARCHAR(128), #活动名称
+    orderid VARCHAR(50), #订单id
+    ptype CHAR(4), #活动分类
+    ptypename VARCHAR(32), #活动分类名称
+    couponNum INT, #笔数
+    payamount decimal(13, 2), #发生金额
+    shouldamount decimal(13, 2), #拉动应收
+    paidinamount decimal(13, 2), #拉动实收
+    PRIMARY KEY (id)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+ 
+  
+  #遍历分店
+  BEGIN
+			#开始统计每条优惠的数据
+			OPEN cur_p_detail;
+			
+			lable_fetch_loop:
+			  LOOP
+				FETCH cur_p_detail INTO v_pname, v_ptype, v_payway;
+				IF v_fetch_done THEN
+				  SET v_fetch_done = FALSE;
+				  LEAVE lable_fetch_loop;
+				END IF;
+				
+				INSERT INTO t_temp_res (datetime, orderid,pname, payamount, couponNum, shouldamount, paidinamount)
+				SELECT date_format(max(begintime), '%Y-%m-%d')
+					 , orderid
+					 , pname
+					 , ifnull(sum(payamount), 0)
+					 , ifnull(sum(couponNum), 0)
+					 , 0
+					 , 0
+				FROM
+				  t_temp_res_detail
+				WHERE
+				  pname = v_pname
+				  AND ptype = v_ptype
+				  AND payway = v_payway
+				GROUP BY
+				  orderid;
+			  END LOOP;
+
+			  #最后关闭游标.
+			  CLOSE cur_p_detail;
+			  
+		    #生成优惠对应的订单号的内存表
+			  DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
+			  CREATE TEMPORARY TABLE t_temp_orderid
+			  (
+				orderid VARCHAR(50)
+			  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+			  INSERT INTO t_temp_orderid
+			  SELECT DISTINCT orderid
+			  FROM
+				t_temp_res;
+
+			  #生成应收表
+			  DROP TEMPORARY TABLE IF EXISTS t_temp_shouldamount;
+			  CREATE TEMPORARY TABLE t_temp_shouldamount
+			  (
+				orderid VARCHAR(50),
+				shouldamount DOUBLE(13, 2) #应收
+			  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+			  INSERT INTO t_temp_shouldamount
+			  SELECT a.orderid
+				   , sum(a.orignalprice * a.dishnum)
+			  FROM
+				t_temp_order_detail a, t_temp_orderid b
+			  WHERE
+				a.orderid = b.orderid
+			  GROUP BY
+				a.orderid;
+
+			  #生成虚增表
+			  DROP TEMPORARY TABLE IF EXISTS t_temp_inflated;
+			  CREATE TEMPORARY TABLE t_temp_inflated
+			  (
+				orderid VARCHAR(50),
+				inflated DOUBLE(13, 2) #虚增
+			  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+			  INSERT INTO t_temp_inflated
+			  SELECT a.orderid
+				   , ifnull(sum(a.Inflated), 0)
+			  FROM
+				t_temp_order_member a, t_temp_orderid b
+			  WHERE
+				a.orderid = b.orderid
+			  GROUP BY
+				a.orderid;
+
+			  #生成实收表
+			  DROP TEMPORARY TABLE IF EXISTS t_temp_paidinamount;
+			  CREATE TEMPORARY TABLE t_temp_paidinamount
+			  (
+				orderid VARCHAR(50),
+				paidinamount DOUBLE(13, 2) #实收
+			  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+			  INSERT INTO t_temp_paidinamount
+			  SELECT a.orderid
+				   , ifnull(sum(a.payamount), 0)
+			  FROM
+				t_temp_settlement_detail a, t_temp_orderid b
+			  WHERE
+				a.orderid = b.orderid
+				AND payway IN (0, 1, 5, 8,13,17,18)
+			  GROUP BY
+				a.orderid;
+
+			  #更新实收表
+			  UPDATE t_temp_paidinamount a, t_temp_inflated b
+			  SET
+				a.paidinamount = a.paidinamount - b.inflated
+			  WHERE
+				a.orderid = b.orderid;
+
+			  #更新结果集（分店）
+			  UPDATE t_temp_res
+			  SET branchid = v_branchid,branchname = v_branchname,
+				brandid=v_brandid,brandname=v_brand_name,marketid=v_marketid,market=v_market_name,areaid=v_areaid,
+			    area=v_area_name,managePattern='1',managePatternid ='自营',jde=v_jde;
+			
+			  #更新结果集（应收）
+			  UPDATE t_temp_res a, t_temp_shouldamount b
+			  SET
+				a.shouldamount = b.shouldamount
+			  WHERE
+				a.orderid = b.orderid;
+
+			  #更新结果集（实收）
+			  UPDATE t_temp_res a, t_temp_paidinamount b
+			  SET
+				a.paidinamount = b.paidinamount
+			  WHERE
+				a.orderid = b.orderid;
+
+		  #更新活动类型名称
+		  UPDATE t_temp_res a, t_temp_preferential b
+		  SET
+			a.ptypename = b.ptypename
+		  WHERE
+			a.ptype = b.ptype;
+
+		  #更新雅座优惠券活动类型
+		  UPDATE t_temp_res a
+		  SET
+			a.ptypename = '雅座优惠券'
+		  WHERE
+			a.ptype = '99';
+		  
+  END;
+  
+  #返回结果集
+		  SELECT 
+				datetime durdate,
+				brandid,
+				brandname,
+				marketid,
+				market ,
+				areaid,
+				area ,
+				managePattern,
+				managePatternid ,
+				jde jdecode,
+				branchid,
+				branchname store,
+				pname activityname,
+				orderid orderno,
+				couponNum no,
+				payamount happenmoney,
+				shouldamount pullreceivable,
+				paidinamount pullactive
+		  FROM
+			t_temp_res;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_pxxsmxb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_pxxsmxb`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_pxxsmxb`(IN  pi_branchid INT(11), 
+                                  IN  pi_sb       SMALLINT, 
+                                  IN  pi_ksrq     DATETIME, 
+                                  IN  pi_jsrq     DATETIME, 
+                                  IN  pi_pl       VARCHAR(50), 
+                                  IN  pi_lx       VARCHAR(10), 
+                                  OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '品项销售明细表'
 label_main:
 BEGIN
 
 
-  # 返回字段说明如下(6个字段)：
-  # 品类id 品类	品项类型编号 品项类型	数量	份额(%)
-  #
-  # 返回数据举例（返回值包含多条数据）：
-  # 12356466 凉菜	0 单品	4	4.65
+  
+  
+  
+  
+  
 
 
   DECLARE v_count       INT;
   DECLARE v_sum         INT;
   DECLARE v_total_count DOUBLE(13, 2);
-  DECLARE v_item_desc   VARCHAR(50); #菜品分类名称
-  DECLARE v_item_id     VARCHAR(50); #菜品分类id
+  DECLARE v_item_desc   VARCHAR(50); 
+  DECLARE v_item_id     VARCHAR(50); 
   DECLARE v_date_start  DATETIME;
   DECLARE v_date_end    DATETIME;
+  DECLARE v_total_custnum_count    DOUBLE(13, 2); -- 来客总人数
+  DECLARE v_total_shouldmount_count    DOUBLE(13, 2); -- 应收总额
+  DECLARE v_canju_mount DOUBLE(13, 2); -- 餐具金额
 
-  -- 异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
@@ -2596,40 +3942,41 @@ BEGIN
   SET @@max_heap_table_size = 1024 * 1024 * 400;
   SET @@tmp_table_size = 1024 * 1024 * 400;
 
-  #处理开始结束时间
-  SET v_date_start = pi_ksrq; # str_to_date(concat(date_format(pi_ksrq, '%Y-%m-%d'), '00:00:00'), '%Y-%m-%d %H:%i:%s');
-  SET v_date_end = pi_jsrq; # str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+  
+  SET v_date_start = pi_ksrq; 
+  SET v_date_end = pi_jsrq; 
 
-  -- 创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
     orderid VARCHAR(50),
+    custnum INT(11),
     PRIMARY KEY (orderid)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   IF pi_sb > -1 THEN
     INSERT INTO t_temp_order
-    SELECT orderid
+    SELECT orderid,custnum
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND shiftid = pi_sb
       AND orderstatus = 3;
   ELSE
     INSERT INTO t_temp_order
-    SELECT orderid
+    SELECT orderid,custnum
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
 
-  -- 创建订单详情临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail
   (
@@ -2641,10 +3988,11 @@ BEGIN
     parentkey VARCHAR(40),
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  -- 向临时订单详情内存表中放值
+  
   INSERT INTO t_temp_order_detail
   SELECT a.orderid
        , a.dishnum
@@ -2655,44 +4003,37 @@ BEGIN
        , a.childdishtype
        , a.primarykey
        , a.superkey
+       , a.orignalprice 
   FROM
     t_temp_order b, t_order_detail a
   WHERE
     b.orderid = a.orderid
     AND a.orignalprice > 0;
+  
+  -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
   # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
-  (
-    primarykey VARCHAR(50)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
-
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+  delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
   CREATE INDEX ix_t_temp_order_detail_dishid ON t_temp_order_detail (dishid);
 
-  ########################################## begin: 如果后来单下的鱼，需要将此类的品项统计成单品#################################
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_parentkey;
   CREATE TEMPORARY TABLE t_temp_parentkey
   (
     parentkey VARCHAR(40)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  #记录所有后来单加的鱼的key值
+  
   INSERT INTO t_temp_parentkey
   SELECT DISTINCT parentkey
   FROM
@@ -2701,7 +4042,7 @@ BEGIN
     ispot = 1
     AND dishnum = 0;
 
-  #删除无用个锅底
+  
   DELETE
   FROM
     t_temp_order_detail
@@ -2709,17 +4050,17 @@ BEGIN
     ispot = 1
     AND dishnum = 0;
 
-  #更新单加的鱼为单品
+  
   UPDATE t_temp_order_detail a, t_temp_parentkey b
   SET
     a.dishtype = 0
   WHERE
     a.parentkey = b.parentkey;
 
-  ########################################## end: 如果后来单下的鱼，需要将此类的品项统计成单品#################################
+  
 
 
-  # 更新订单详情表中的菜品类别
+  
   UPDATE t_temp_order_detail a, t_dish b
   SET
     a.dishtype = b.dishtype
@@ -2727,8 +4068,7 @@ BEGIN
     a.dishid = b.dishid
     AND a.dishtype IS NULL;
 
-  -- 计算总的售卖份数
-  -- 注意的地方：1\一个菜属于多个分类，这该菜的售卖份数只计算一次；
+  
   SELECT ifnull(sum(dishnum), 0)
   INTO
     v_total_count
@@ -2741,9 +4081,34 @@ BEGIN
     LEAVE label_main;
   END IF;
 
+  SELECT ifnull(sum(custnum), 0)
+  INTO
+    v_total_custnum_count
+  FROM
+    t_temp_order;
 
-  # 创建结果内存表
-  -- 品类	品项类型	数量	份额(%)
+  IF v_total_custnum_count <= 0 THEN
+    SELECT NULL;
+    SET po_errmsg = '数据为空，无查询结果';
+    LEAVE label_main;
+  END IF;
+
+
+  SELECT ifnull(sum(dishnum*orignalprice), 0)
+  INTO
+    v_total_shouldmount_count
+  FROM
+    t_temp_order_detail;
+
+  IF v_total_shouldmount_count <= 0 THEN
+    SELECT NULL;
+    SET po_errmsg = '数据为空，无查询结果';
+    LEAVE label_main;
+  END IF;
+
+
+  
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
   (
@@ -2752,14 +4117,17 @@ BEGIN
     dishtype INT,
     dishtypetitle VARCHAR(50),
     number DOUBLE(13, 2),
+    thousandstimes DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    turnover DOUBLE(13, 2),
     share DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
 
-  INSERT INTO t_temp_res (id, dishType, number)
+  INSERT INTO t_temp_res (id, dishType, number,orignalprice)
   SELECT b.columnid
        , a.dishtype
-       , ifnull(sum(a.dishnum), 0)
+       , ifnull(sum(a.dishnum), 0), ifnull(sum(a.dishnum*a.orignalprice), 0)
   FROM
     t_temp_order_detail a, t_dish_dishtype b
   WHERE
@@ -2771,7 +4139,7 @@ BEGIN
     NULL;
 
 
-  -- 更新菜品类型
+  
   UPDATE t_temp_res
   SET
     dishtypetitle =
@@ -2783,9 +4151,7 @@ BEGIN
     ELSE
       '套餐'
     END;
-
-
-  -- 更新菜品分类
+  
   UPDATE t_temp_res t, t_basicdata a
   SET
     t.itemDesc = a.itemDesc
@@ -2793,29 +4159,29 @@ BEGIN
     t.Id = a.id
     AND a.status = 1;
 
-  -- 更新比例
+  
   UPDATE t_temp_res
   SET
-    share = number / v_total_count * 100;
+    share = number / v_total_count * 100,thousandstimes= number/v_total_custnum_count * 1000,turnover = orignalprice/v_total_shouldmount_count;
 
 
-  #需要计算餐具数据的场景（全部，或者 只查询餐具）
+  
   IF pi_pl = -1 OR pi_pl = 'DISHES_98' THEN
-    SELECT ifnull(sum(dishnum), 0)
+    SELECT ifnull(sum(dishnum), 0),ifnull(sum(dishnum*orignalprice), 0)
     INTO
-      v_sum
+      v_sum,v_canju_mount
     FROM
       t_temp_order_detail
     WHERE
       dishid = 'DISHES_98';
 
     IF v_sum > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', '餐具', 0, '单品', v_sum, v_sum / v_total_count * 100);
+      INSERT INTO t_temp_res VALUES ('DISHES_98', '餐具', 0, '单品', v_sum,v_sum/v_total_custnum_count*1000,v_canju_mount,v_canju_mount/v_total_shouldmount_count,v_sum / v_total_count * 100); -- 字段问题
     END IF;
   END IF;
   COMMIT;
 
-  #返回结果集
+  
   IF pi_pl = -1 AND pi_lx = -1 THEN
     SELECT *
     FROM
@@ -2841,53 +4207,61 @@ BEGIN
       AND dishtype = pi_lx;
   END IF;
 
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_parentkey;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-END
-$$
 
-DROP PROCEDURE IF EXISTS p_report_pxxsmxb_zhixiang$$
-CREATE PROCEDURE p_report_pxxsmxb_zhixiang(IN  pi_branchid INT(11), -- 分店id
-                                           IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
-                                           IN  pi_ksrq     DATETIME, -- 开始日期，
-                                           IN  pi_jsrq     DATETIME, -- 结束日期
-                                           IN  pi_pl       VARCHAR(50), -- 品类ID, -1 代表全部
-                                           IN  pi_pxlx     INT, -- 品项类型 -1 代表全部
-                                           OUT po_errmsg   VARCHAR(100)
-                                           -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '品项销售明细表'
+
+
+
+
+
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_pxxsmxb_zhixiang
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_pxxsmxb_zhixiang`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_pxxsmxb_zhixiang`(IN  pi_branchid INT(11), 
+                                           IN  pi_sb       SMALLINT, 
+                                           IN  pi_ksrq     DATETIME, 
+                                           IN  pi_jsrq     DATETIME, 
+                                           IN  pi_pl       VARCHAR(50), 
+                                           IN  pi_pxlx     INT, 
+                                           OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '品项销售明细表'
 label_main:
-BEGIN -- 返回字段说明如下(6个字段)：
-  -- 品项名称	品项编号	单价	单位	数量	份额(%)
-  --
-  -- 返回数据举例（返回值包含多条数据）：
-  -- 白汤梭边鱼	20405	55	斤	7	8.14
+BEGIN 
+  
+  
+  
+  
 
   DECLARE v_total_count DOUBLE(13, 2) DEFAULT 0;
-  DECLARE v_title       VARCHAR(50); #菜品名称
-  DECLARE v_dishNo      VARCHAR(50); #品项编号
-  DECLARE v_price       DOUBLE(13, 2); #单价
-  DECLARE v_unit        VARCHAR(50); #单位
-  DECLARE v_number      DOUBLE(13, 2); #数量
-  DECLARE v_share       DOUBLE(13, 2); #占比
+  DECLARE v_title       VARCHAR(50); 
+  DECLARE v_dishNo      VARCHAR(50); 
+  DECLARE v_price       DOUBLE(13, 2); 
+  DECLARE v_unit        VARCHAR(50); 
+  DECLARE v_number      DOUBLE(13, 2); 
+  DECLARE v_share       DOUBLE(13, 2); 
+  DECLARE v_sum_price   DOUBLE(13, 2); 
   DECLARE v_fetch_done  INT DEFAULT FALSE;
   DECLARE v_dishid      VARCHAR(50);
   DECLARE v_dishclass   VARCHAR(50);
   DECLARE v_dishtype    INT;
   DECLARE v_date_start  DATETIME;
   DECLARE v_date_end    DATETIME;
+  DECLARE v_total_custnum_count    DOUBLE(13, 2); -- 来客总人数
+  DECLARE v_total_shouldmount_count    DOUBLE(13, 2); -- 应收总额
+  DECLARE v_canju_mount DOUBLE(13, 2); -- 餐具金额
   DECLARE cur_dish_detail CURSOR FOR SELECT a.dishid
                                           , a.dishunit
                                           , a.dishtype
                                           , b.columnid
                                           , ifnull(sum(a.dishnum), 0)
                                           , ifnull(max(a.orignalprice), 0)
+																					, ifnull(sum(a.orignalprice*a.dishnum), 0)
                                      FROM
                                        t_temp_order_detail a, t_dish_dishtype b
                                      WHERE
@@ -2902,18 +4276,18 @@ BEGIN -- 返回字段说明如下(6个字段)：
 
   DECLARE CONTINUE HANDLER FOR NOT FOUND
   BEGIN
-    SET v_fetch_done = TRUE; #当读到数据的最后一条时,设置v_fetch_done变量为TRUE
+    SET v_fetch_done = TRUE; 
   END;
 
 
-  -- 异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
     GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
   END;
 
-  #判断参数
+  
   IF pi_sb IS NULL OR pi_ksrq IS NULL OR pi_jsrq IS NULL OR pi_pl IS NULL OR pi_pxlx IS NULL THEN
     SELECT NULL;
     SET po_errmsg = '传入参数不能为空';
@@ -2929,40 +4303,41 @@ BEGIN -- 返回字段说明如下(6个字段)：
   SET @@max_heap_table_size = 1024 * 1024 * 400;
   SET @@tmp_table_size = 1024 * 1024 * 400;
 
-  #处理开始结束时间
-  SET v_date_start = pi_ksrq; #str_to_date(concat(date_format(pi_ksrq, '%Y-%m-%d'), '00:00:00'), '%Y-%m-%d %H:%i:%s');
-  SET v_date_end = pi_jsrq; #str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+  
+  SET v_date_start = pi_ksrq; 
+  SET v_date_end = pi_jsrq; 
 
-  -- 创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
     orderid VARCHAR(50),
+    custnum INT(11),
     PRIMARY KEY (orderid)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   IF pi_sb > -1 THEN
     INSERT INTO t_temp_order
-    SELECT orderid
+    SELECT orderid,custnum
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND shiftid = pi_sb
       AND orderstatus = 3;
   ELSE
     INSERT INTO t_temp_order
-    SELECT orderid
+    SELECT orderid,custnum
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
 
-  -- 创建订单详情临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail
   (
@@ -2979,7 +4354,7 @@ BEGIN -- 返回字段说明如下(6个字段)：
     superkey VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  -- 向临时订单详情内存表中放值
+  
   INSERT INTO t_temp_order_detail
   SELECT a.orderid
        , a.dishnum
@@ -2998,37 +4373,30 @@ BEGIN -- 返回字段说明如下(6个字段)：
     b.orderid = a.orderid
     AND a.orignalprice > 0;
 
-  # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
+   -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
   (
-    primarykey VARCHAR(50)
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+
   CREATE INDEX ix_t_tmp_order_detail_dishid ON t_temp_order_detail (dishid);
 
-  ########################################## begin: 如果后来单下的鱼，需要将此类的品项统计成单品#################################
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_parentkey;
   CREATE TEMPORARY TABLE t_temp_parentkey
   (
     parentkey VARCHAR(40)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  #记录所有后来单加的鱼的key值
+  
   INSERT INTO t_temp_parentkey
   SELECT DISTINCT parentkey
   FROM
@@ -3037,7 +4405,7 @@ BEGIN -- 返回字段说明如下(6个字段)：
     ispot = 1
     AND dishnum = 0;
 
-  #删除无用个锅底
+  
   DELETE
   FROM
     t_temp_order_detail
@@ -3045,16 +4413,16 @@ BEGIN -- 返回字段说明如下(6个字段)：
     ispot = 1
     AND dishnum = 0;
 
-  #更新单加的鱼为单品
+  
   UPDATE t_temp_order_detail a, t_temp_parentkey b
   SET
     a.dishtype = 0
   WHERE
     a.parentkey = b.parentkey;
 
-  ########################################## end: 如果后来单下的鱼，需要将此类的品项统计成单品#################################
+  
 
-  # 更新订单详情表中的菜品类别
+  
   UPDATE t_temp_order_detail a, t_dish b
   SET
     a.dishtype = b.dishtype
@@ -3062,7 +4430,7 @@ BEGIN -- 返回字段说明如下(6个字段)：
     a.dishid = b.dishid
     AND a.dishtype IS NULL;
 
-  #计算总的售卖份数
+  
   SELECT ifnull(sum(dishnum), 0)
   INTO
     v_total_count
@@ -3075,33 +4443,60 @@ BEGIN -- 返回字段说明如下(6个字段)：
     LEAVE label_main;
   END IF;
 
-  #创建结果内存表
+  SELECT ifnull(sum(custnum), 0)
+  INTO
+    v_total_custnum_count
+  FROM
+    t_temp_order;
+
+  IF v_total_custnum_count <= 0 THEN
+    SELECT NULL;
+    SET po_errmsg = '数据为空，无查询结果';
+    LEAVE label_main;
+  END IF;
+
+  SELECT ifnull(sum(dishnum*orignalprice), 0)
+  INTO
+    v_total_shouldmount_count
+  FROM
+    t_temp_order_detail;
+
+  IF v_total_shouldmount_count <= 0 THEN
+    SELECT NULL;
+    SET po_errmsg = '数据为空，无查询结果';
+    LEAVE label_main;
+  END IF;
+
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
   (
-    columnid VARCHAR(50), # 菜品分类
-    dishtype INT, #菜品属性，是单品还是鱼锅等
-    title VARCHAR(50), #菜品名称
-    dishNo VARCHAR(50), #品项编号
-    price DOUBLE(13, 2), #单价
-    unit VARCHAR(50), #单位
-    number DOUBLE(13, 2), #数量
-    share DOUBLE(13, 2) #占比
+    columnid VARCHAR(50), 
+    dishtype INT, 
+    title VARCHAR(50), 
+    dishNo VARCHAR(50), 
+    price DOUBLE(13, 2), 
+    unit VARCHAR(50), 
+    number DOUBLE(13, 2), 
+    thousandstimes DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    turnover DOUBLE(13, 2),
+    share DOUBLE(13, 2) 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
 
-  #开始设置其他值
+  
   OPEN cur_dish_detail;
 
 read_loop:
   LOOP
-    FETCH cur_dish_detail INTO v_dishid, v_unit, v_dishtype, v_dishclass, v_number, v_price;
+    FETCH cur_dish_detail INTO v_dishid, v_unit, v_dishtype, v_dishclass, v_number, v_price,v_sum_price;
 
     IF v_fetch_done THEN
       LEAVE read_loop;
     END IF;
 
-    #获取编号
+    
     SELECT dishNo
          , title
     INTO
@@ -3113,18 +4508,18 @@ read_loop:
     LIMIT
       1;
 
-    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number, round(v_number / v_total_count * 100, 2));
+    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number,round(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_sum_price/v_total_shouldmount_count, round(v_number / v_total_count * 100, 2));
   END LOOP;
   COMMIT;
-  #最后关闭游标.
+  
   CLOSE cur_dish_detail;
 
-  #对餐具进行特殊处理
+  
   IF pi_pl = -1 OR pi_pl = 'DISHES_98' THEN
     SELECT sum(dishnum)
-         , ifnull(max(orignalprice), 0)
+         , ifnull(max(orignalprice), 0),ifnull(sum(dishnum*orignalprice), 0)
     INTO
-      @cnt, @price
+      @cnt, @price,@sumprice
     FROM
       t_temp_order_detail
     WHERE
@@ -3142,12 +4537,12 @@ read_loop:
       1;
 
     IF @cnt > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt, round(@cnt / v_total_count * 100, 2));
+      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt,round(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@sumprice/v_total_shouldmount_count, round(@cnt / v_total_count * 100, 2));
     END IF;
   END IF;
 
 
-  #返回结果集
+  
   IF pi_pl != '-1' AND pi_pxlx != -1 THEN
     SELECT title
          , dishNo
@@ -3155,6 +4550,9 @@ read_loop:
          , unit
          , number
          , share
+         , thousandstimes
+         , orignalprice
+         , turnover
     FROM
       t_temp_res
     WHERE
@@ -3168,6 +4566,9 @@ read_loop:
          , unit
          , number
          , share
+         , thousandstimes
+         , orignalprice
+         , turnover
     FROM
       t_temp_res
     WHERE
@@ -3180,6 +4581,9 @@ read_loop:
          , unit
          , number
          , share
+         , thousandstimes
+         , orignalprice
+         , turnover
     FROM
       t_temp_res
     WHERE
@@ -3192,45 +4596,53 @@ read_loop:
          , unit
          , number
          , share
+         , thousandstimes
+         , orignalprice
+         , turnover
     FROM
       t_temp_res;
 
   END IF;
 
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_parentkey;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-END
-$$
 
-DROP PROCEDURE IF EXISTS p_report_tcmxb$$
-CREATE PROCEDURE p_report_tcmxb(IN  pi_branchid INT(11), -- 分店id
-                                IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
-                                IN  pi_ksrq     DATETIME, -- 开始日期，
-                                IN  pi_jsrq     DATETIME, -- 结束日期
-                                IN  pi_dqym     INT, -- 当前页码 第一次进入时从0开始
-                                IN  pi_myts     INT, -- 每页显示的条数
+
+
+
+
+
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_tcmxb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_tcmxb`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_tcmxb`(IN  pi_branchid INT(11), 
+                                IN  pi_sb       SMALLINT, 
+                                IN  pi_ksrq     DATETIME, 
+                                IN  pi_jsrq     DATETIME, 
+                                IN  pi_dqym     INT, 
+                                IN  pi_myts     INT, 
                                 OUT po_errmsg   VARCHAR(100)
-                                -- 错误信息
+                                
 )
-SQL SECURITY INVOKER
-COMMENT '退菜明细表'
+    SQL SECURITY INVOKER
+    COMMENT '退菜明细表'
 label_main:
 BEGIN
-  -- 返回字段说明如下(8个字段)：
-  -- 发生时间	订单号 菜品名称 份数 金额 退菜申请人 退菜授权人 退菜原因
-  --
-  -- 返回数据举例（返回值包含多条数据）：
-  -- 2015/06/01 h2015006666 鸡蛋豆干 1 12 小明 老赵 客户投诉
+  
+  
+  
+  
+  
   DECLARE v_date_start          DATETIME;
   DECLARE v_date_end            DATETIME;
   DECLARE v_increment_offset    INT;
   DECLARE v_increment_increment INT;
 
-  #异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
@@ -3256,17 +4668,17 @@ BEGIN
     LEAVE label_main;
   END IF;
 
-  #设置内存表的上限
+  
   SET @@max_heap_table_size = 1024 * 1024 * 300;
   SET @@tmp_table_size = 1024 * 1024 * 300;
   SET v_increment_offset = @@auto_increment_offset;
   SET v_increment_increment = @@auto_increment_increment;
 
-  #处理开始结束时间
-  SET v_date_start = pi_ksrq; # str_to_date(concat(date_format(pi_ksrq, '%Y-%m-%d'), '00:00:00'), '%Y-%m-%d %H:%i:%s');
-  SET v_date_end = pi_jsrq; # str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+  
+  SET v_date_start = pi_ksrq; 
+  SET v_date_end = pi_jsrq; 
 
-  #创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
@@ -3280,7 +4692,7 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND shiftid = pi_sb
       AND orderstatus = 3;
   ELSE
@@ -3290,17 +4702,17 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
   CREATE UNIQUE INDEX uix_t_temp_order_orderid ON t_temp_order (orderid);
 
 
-  -- 创建临时退菜内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_tcb;
   CREATE TEMPORARY TABLE t_temp_tcb
   (
-    --   temp_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    
     begintime DATETIME,
     orderid VARCHAR(50),
     dishid VARCHAR(50),
@@ -3311,7 +4723,7 @@ BEGIN
     discardreason VARCHAR(100)
   ) ENGINE = HEAP DEFAULT CHARSET = utf8;
 
-  -- 向内存表中放值
+  
   INSERT INTO t_temp_tcb
   SELECT b.begintime
        , b.orderid
@@ -3329,7 +4741,7 @@ BEGIN
   ORDER BY
     b.begintime DESC;
 
-  -- 创建结果内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_re;
   CREATE TEMPORARY TABLE t_temp_re
   (
@@ -3345,7 +4757,7 @@ BEGIN
     PRIMARY KEY (temp_id)
   ) ENGINE = HEAP DEFAULT CHARSET = utf8;
 
-  -- 向结果内存表中赋值
+  
   INSERT INTO t_temp_re (beginTime, orderid, title, num, amount, waiter, discardusername, discardreason)
   SELECT b.begintime
        , b.orderid
@@ -3361,7 +4773,7 @@ BEGIN
     b.dishid = c.dishid;
 
 
-  #创建员工信息内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_user;
   CREATE TEMPORARY TABLE t_temp_user
   (
@@ -3379,23 +4791,23 @@ BEGIN
     AND a.branch_id = pi_branchid;
 
 
-  -- 更新退菜人
+  
   UPDATE t_temp_re t, t_temp_user b
   SET
     t.waiter = b.name
   WHERE
     t.waiter = b.job_number;
 
-  -- 更新授权人
+  
   UPDATE t_temp_re t, t_temp_user b
   SET
     t.discardusername = b.name
   WHERE
     t.discardusername = b.job_number;
 
-  -- 发生时间	订单号 菜品名称 份数 金额 退菜申请人 退菜授权人 退菜原因
-  -- 将结果返回
-  #SET @a = pi_dqym * pi_myts;
+  
+  
+  
   IF pi_dqym > -1 THEN
     SET @a = v_increment_offset + pi_dqym * pi_myts * v_increment_increment - v_increment_increment;
     SET @b = pi_myts;
@@ -3408,45 +4820,48 @@ BEGIN
 
   DEALLOCATE PREPARE s1;
 
-#及时释放内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_tcb;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_re;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_user;
+
+
+
+
+
 
 END
-$$
+;;
+DELIMITER ;
 
-DROP PROCEDURE IF EXISTS p_report_xxsjtjb$$
-CREATE PROCEDURE p_report_xxsjtjb(IN  pi_branchid INT(11), -- 分店id
-                                  IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
-                                  IN  pi_ksrq     DATETIME, -- 开始日期，
-                                  IN  pi_jsrq     DATETIME, -- 结束日期
-                                  IN  pi_cxlx     SMALLINT, -- 查询类型 1:应收金额 2:实收金额 3:结算人数 4:开台数
-                                  IN  pi_qy       VARCHAR(50), -- 餐台所属区域 -1:全部 非-1:区域id
-                                  OUT po_errmsg   VARCHAR(100)
-                                  -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '详细数据统计表'
+-- ----------------------------
+-- Procedure structure for p_report_xxsjtjb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_xxsjtjb`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_xxsjtjb`(IN  pi_branchid INT(11), 
+                                  IN  pi_sb       SMALLINT, 
+                                  IN  pi_ksrq     DATETIME, 
+                                  IN  pi_jsrq     DATETIME, 
+                                  IN  pi_cxlx     SMALLINT, 
+                                  IN  pi_qy       VARCHAR(50), 
+                                  OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '详细数据统计表'
 label_main:
 BEGIN
-  -- 返回字段说明如下(2个固定字段+不固定字段)：
-  -- 区域 桌号 时间列1 时间列2 时间列3.....
-  --
-  -- 返回数据举例（返回值包含多条数据）：
-  -- 大堂 1 22 33 44
+  
+  
+  
+  
+  
 
 
   DECLARE v_date_start    DATETIME;
   DECLARE v_date_end      DATETIME;
-  DECLARE v_date_interval DATETIME; #时间间隔  
-  DECLARE v_loop_num      INT DEFAULT 0; #根据开始结束时间和显示类型，来设置循环次数
+  DECLARE v_date_interval DATETIME; 
+  DECLARE v_loop_num      INT DEFAULT 0; 
   DECLARE v_table_index   INT;
   DECLARE v_table_id      VARCHAR(50);
   DECLARE v_sql           VARCHAR(5000) DEFAULT '';
 
-  -- 异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
@@ -3463,13 +4878,13 @@ BEGIN
   SET @@max_heap_table_size = 1024 * 1024 * 300;
   SET @@tmp_table_size = 1024 * 1024 * 300;
 
-  #设置循环次数,处理开始结算时间
+  
   SET v_date_start = str_to_date(concat(date_format(pi_ksrq, '%Y-%m-%d'), '00:00:00'), '%Y-%m-%d %H:%i:%s');
   SET v_date_end = str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
   SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
   SET v_loop_num = timestampdiff(DAY, v_date_start, v_date_end) + 1;
 
-  #创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
@@ -3493,7 +4908,7 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND shiftid = pi_sb
       AND orderstatus = 3;
   ELSE
@@ -3508,11 +4923,11 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
 
-  #为订单内存表创建索引
+  
   CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
 
 
@@ -3527,10 +4942,11 @@ BEGIN
       begintime DATETIME,
       childdishtype TINYINT,
       primarykey VARCHAR(50),
-      superkey VARCHAR(50)
+      superkey VARCHAR(50),
+      dishtype TINYINT
     ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-    # 向临时订单详情内存表中放值
+    
     INSERT INTO t_temp_order_detail
     SELECT b.orderid
          , b.dishnum
@@ -3540,37 +4956,32 @@ BEGIN
          , b.childdishtype
          , b.primarykey
          , b.superkey
+         , b.dishtype
     FROM
       t_temp_order a, t_order_detail b
     WHERE
       a.orderid = b.orderid
       AND b.orignalprice > 0;
 
-    # 删除套餐明细
-    DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-    CREATE TEMPORARY TABLE t_temp_keys
-    (
-      primarykey VARCHAR(50)
-    ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-    INSERT INTO t_temp_keys
-    SELECT primarykey
-    FROM
-      t_temp_order_detail
-    WHERE
-      childdishtype = 2;
+    
+   
+     -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
-    DELETE
-    FROM
-      t_temp_order_detail
-    USING
-      t_temp_order_detail, t_temp_keys
-    WHERE
-      t_temp_order_detail.superkey = t_temp_keys.primarykey
-      AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
     CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
 
-  #创建结算明细内存表
+  
   ELSEIF pi_cxlx = 2 THEN
     DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
     CREATE TEMPORARY TABLE t_temp_settlement_detail
@@ -3582,7 +4993,7 @@ BEGIN
       tableid VARCHAR(50)
     ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-    #生产临时结算明细表数据
+    
     INSERT INTO t_temp_settlement_detail
     SELECT b.orderid
          , b.payway
@@ -3593,12 +5004,12 @@ BEGIN
       t_temp_order a, t_settlement_detail b
     WHERE
       a.orderid = b.orderid
-      AND b.payway IN (0, 1, 5, 8, 13, 17, 18)  -- shangwenchao 2015/12/21 22:46:49 增加结算方式13
+      AND b.payway IN (0, 1, 5, 8, 13, 17, 18)   
       AND b.payamount > 0;
 
     CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
 
-    #创建会员消费内存表
+    
     DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
     CREATE TEMPORARY TABLE t_temp_order_member
     (
@@ -3608,7 +5019,7 @@ BEGIN
       tableid VARCHAR(50)
     ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-    #生成临时会员结算数据  
+    
     INSERT INTO t_temp_order_member
     SELECT b.orderid
          , b.Inflated
@@ -3622,7 +5033,7 @@ BEGIN
   END IF;
 
 
-  #筛选桌子
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_table;
   CREATE TEMPORARY TABLE t_temp_table
   (
@@ -3655,7 +5066,7 @@ BEGIN
   END IF;
 
 
-  #创建结果集
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
   (
@@ -3666,7 +5077,7 @@ BEGIN
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
 
-  #创建虚增结果集
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_inflated;
   CREATE TEMPORARY TABLE t_temp_inflated
   (
@@ -3675,11 +5086,11 @@ BEGIN
     svalue DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  #####################################遍历桌子及统计天数，生成结果数据##########################################
+  
   WHILE v_loop_num > 0
   DO
 
-    #统计应收
+    
     IF pi_cxlx = 1 THEN
       INSERT INTO t_temp_res (tableid, stime, svalue)
       SELECT tableid
@@ -3692,7 +5103,7 @@ BEGIN
       GROUP BY
         tableid;
 
-    #统计实收
+    
     ELSEIF pi_cxlx = 2 THEN
       INSERT INTO t_temp_res (tableid, stime, svalue)
       SELECT tableid
@@ -3716,9 +5127,9 @@ BEGIN
       GROUP BY
         tableid;
 
-    #INSERT INTO t_temp_res (tableid, stime, svalue) VALUES (v_table_id, date_format(v_date_start, '%Y/%m/%d'), @shishou - @xuzeng);
+    
 
-    #统计结账人数
+    
     ELSEIF pi_cxlx = 3 THEN
       INSERT INTO t_temp_res (tableid, stime, svalue)
       SELECT tableid
@@ -3731,7 +5142,7 @@ BEGIN
       GROUP BY
         tableid;
 
-    #统计开台数据
+    
     ELSEIF pi_cxlx = 4 THEN
       INSERT INTO t_temp_res (tableid, stime, svalue)
       SELECT tableid
@@ -3743,14 +5154,14 @@ BEGIN
         begintime BETWEEN v_date_start AND v_date_interval
       GROUP BY
         tableid;
-    #退出程序
+    
     ELSE
       SELECT NULL;
       SET po_errmsg = '显示类型输入有误 1:应收金额 2:实收金额 3:结算人数 4:开台数';
       LEAVE label_main;
     END IF;
 
-    #动态拼装sql，为后面的返回数据做准备
+    
     SET @date_start = date_format(v_date_start, '%Y/%m/%d');
     SET v_sql = concat(v_sql, ',max(case stime when \'', @date_start, '\' then svalue else 0 end) \'', @date_start, '\'');
 
@@ -3760,7 +5171,7 @@ BEGIN
   END WHILE;
 
 
-  #删除不需要统计的桌号
+  
   DELETE t_temp_res
   FROM
     t_temp_res
@@ -3769,7 +5180,7 @@ BEGIN
   WHERE
     t_temp_table.tableid IS NULL;
 
-  #更新实收数据
+  
   UPDATE t_temp_res a, t_temp_inflated b
   SET
     a.svalue = a.svalue - b.svalue
@@ -3777,14 +5188,14 @@ BEGIN
     a.tableid = b.tableid
     AND a.stime = b.stime;
 
-  #更新桌号及区域名称
+  
   UPDATE t_temp_res a, t_temp_table b
   SET
     a.areaname = b.areaname, a.tableid = b.tableNo
   WHERE
     a.tableid = b.tableid;
 
-  #返回数据
+  
   SET v_sql = concat('SELECT areaname, tableid', v_sql);
   SET v_sql = concat(v_sql, ' FROM t_temp_res GROUP BY areaname, tableid order by tableid-0,areaname');
   SET @sql_xxsj = v_sql;
@@ -3792,32 +5203,34 @@ BEGIN
   EXECUTE s1;
   DEALLOCATE PREPARE s1;
 
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_table;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_inflated;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
+
+
+
+
+
+
+
+
+
 END
-$$
+;;
+DELIMITER ;
 
-
-DROP PROCEDURE IF EXISTS p_report_yhhdmxb$$
-CREATE PROCEDURE p_report_yhhdmxb(IN  pi_branchid INT(11), -- 分店id
+-- ----------------------------
+-- Procedure structure for p_report_yhhdmxb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yhhdmxb`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yhhdmxb`(IN  pi_branchid INT(11), -- 分店id
                                   IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
                                   IN  pi_ksrq     DATETIME, -- 开始日期，
                                   IN  pi_jsrq     DATETIME, -- 结束日期
                                   IN  pi_hdmc     VARCHAR(50), -- 活动名称 -1:全部  非-1:对应的活动名称
                                   IN  pi_jsfs     INT, -- 计算方式 -1:全部  5:挂账 6:优免
                                   IN  pi_hdlx     VARCHAR(10), -- 活动类型 -1:全部 99:雅座优惠券 其他值:活动类型code
-                                  OUT po_errmsg   VARCHAR(100)
-                                  -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '优惠活动明细表'
+                                  OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '优惠活动明细表'
 label_main:
 BEGIN
   -- 返回字段说明如下(7个字段)：
@@ -3840,7 +5253,7 @@ BEGIN
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
-    GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
+  -- GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
   END;
 
   IF pi_branchid IS NULL THEN
@@ -3860,12 +5273,18 @@ BEGIN
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
-    orderid VARCHAR(50)
+    orderid VARCHAR(50),
+    mannum INT,
+    womanNum INT,
+    childNum INT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   IF pi_sb > -1 THEN
     INSERT INTO t_temp_order
     SELECT orderid
+         , mannum
+         , womanNum
+         , childNum
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
@@ -3876,6 +5295,9 @@ BEGIN
   ELSE
     INSERT INTO t_temp_order
     SELECT orderid
+         , mannum
+         , womanNum
+         , childNum
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
@@ -3895,7 +5317,8 @@ BEGIN
     orignalprice DOUBLE(13, 2),
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+    dishtype TINYINT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #向临时订单详情内存表中放值
@@ -3906,33 +5329,26 @@ BEGIN
        , b.childdishtype
        , b.primarykey
        , b.superkey
+       , b.dishtype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
     a.orderid = b.orderid
     AND b.orignalprice > 0;
 
-  # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
+  -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
   (
-    primarykey VARCHAR(50)
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
   CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
 
@@ -3942,6 +5358,8 @@ BEGIN
   (
     orderid VARCHAR(50),
     payway INT,
+    singular INT, #使用的单数
+    perCapita DOUBLE(13, 2), #人均
     payamount DOUBLE(13, 2),
     couponNum INT,
     bankcardno VARCHAR(50),
@@ -3949,18 +5367,19 @@ BEGIN
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #生产临时结算明细表数据
-  INSERT INTO t_temp_settlement_detail
+  INSERT INTO t_temp_settlement_detail (orderid, payway, payamount, couponNum, bankcardno, coupondetailid, singular, perCapita)
   SELECT b.orderid
        , b.payway
-       , b.payamount
-       , b.couponNum
+       , sum(b.payamount)
+       , sum(b.couponNum)
        , b.bankcardno
        , b.coupondetailid
+       , '1'
+       , (a.mannum + a.womanNum + a.childNum)
   FROM
     t_temp_order a, t_settlement_detail b
   WHERE
-    a.orderid = b.orderid
-    AND b.payamount > 0;
+    a.orderid = b.orderid group by b.orderid,b.payway,b.coupondetailid;
   #创建查询索引
   CREATE INDEX ix_t_temp_settlement_detail_payway ON t_temp_settlement_detail (payway);
 
@@ -3980,7 +5399,7 @@ BEGIN
   FROM
     t_temp_settlement_detail
   WHERE
-    payway IN (0, 1, 5, 8, 13, 17, 18); -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
+    payway IN (0, 1, 5, 8, 17, 18 ,13);
   CREATE INDEX ix_t_temp_paidinamout_orderid ON t_temp_paidinamout (orderid);
 
 
@@ -4046,15 +5465,17 @@ BEGIN
   (
     orderid VARCHAR(50),
     payway INT, #结算方式
+    singular INT, #使用的单数
     payamount DOUBLE(13, 2), #结算金额
     couponNum INT, #使用数量
     pname VARCHAR(128), #活动名称
     ptype CHAR(4), #活动分类
+    perCapita DOUBLE(13, 2), #人均
     ptypename VARCHAR(32) #活动分类名称
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   #生成挂账和优免数据（不包含金总挂账数据）
-  INSERT INTO t_temp_res_detail
+  INSERT INTO t_temp_res_detail (orderid, payway, payamount, couponNum, pname, ptype, ptypename, singular, perCapita)
   SELECT a.orderid
        , a.payway
        , a.payamount
@@ -4062,6 +5483,8 @@ BEGIN
        , b.pname
        , b.ptype
        , b.ptypename
+       , a.singular
+       , a.perCapita
   FROM
     t_temp_settlement_detail a, t_temp_preferential b
   WHERE
@@ -4083,7 +5506,7 @@ BEGIN
   --     a.payway = 13;
 
   #生成雅座优惠券数据
-  INSERT INTO t_temp_res_detail
+  INSERT INTO t_temp_res_detail (orderid, payway, payamount, couponNum, pname, ptype, ptypename, singular, perCapita)
   SELECT a.orderid
        , 6
        , a.payamount
@@ -4091,6 +5514,8 @@ BEGIN
        , a.bankcardno
        , '99'
        , '雅座优惠券'
+       , a.singular
+       , a.perCapita
   FROM
     t_temp_settlement_detail a
   WHERE
@@ -4108,19 +5533,23 @@ BEGIN
     payway INT, #结算方式
     paywaydesc VARCHAR(50), #结算方式名称
     couponNum INT, #使用数量
+    singular INT, #使用的单数
     payamount DOUBLE(13, 2), #发生金额
+    perCapita DOUBLE(13, 2), #人均
     shouldamount DOUBLE(13, 2), #应收
     paidinamount DOUBLE(13, 2), #实收
     PRIMARY KEY (id)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
 
-  INSERT INTO t_temp_res (pname, ptype, payway, couponNum, payamount)
+  INSERT INTO t_temp_res (pname, ptype, payway, couponNum, payamount, singular, perCapita)
   SELECT pname
        , ptype
        , payway
        , ifnull(sum(couponNum), 0)
        , ifnull(sum(payamount), 0)
+       , ifnull(count(1), 0)
+       , ifnull(sum(perCapita), 0)
   FROM
     t_temp_res_detail
   GROUP BY
@@ -4263,24 +5692,42 @@ lable_loop:
 
   #返回结果集
   SELECT pname
-       , #活动名称
-         ptype
-       , #活动分类编码
-         ptypename
-       , #活动分类名称
-         payway
-       , #结算方式编码
-         paywaydesc
-       , #结算方式名称
-         couponNum
-       , #使用数量
-         payamount
-       , #发生金额
-         shouldamount
-       , #应收
-         paidinamount #实收
+     , #活动名称
+       ptype
+     , #活动分类编码
+       ptypename
+     , #活动分类名称
+       payway
+     , #结算方式编码
+       paywaydesc
+     , #结算方式名称
+       couponNum
+     , #使用数量
+       payamount
+     , #发生金额
+       shouldamount
+     , #应收
+       paidinamount
+     #实收
+       , round(paidinamount / perCapita, 2) AS perCapita
+     , singular
+FROM
+  t_temp_res;
+
+
+/*SELECT pname
+       , ptype
+       , payway
+       , ifnull(count(1), 0)
+       , ifnull(sum(payamount), 0)
+       , ifnull(sum(couponNum), 0)
+       , ifnull(sum(perCapita), 0)
   FROM
-    t_temp_res;
+    t_temp_res_detail
+  GROUP BY
+    pname
+  , ptype
+  , payway;*/
 
 
 
@@ -4296,31 +5743,33 @@ lable_loop:
 --   DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
 --   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
 END
-$$
+;;
+DELIMITER ;
 
-
-DROP PROCEDURE IF EXISTS p_report_yhhdmxb_zhixiang$$
-CREATE PROCEDURE p_report_yhhdmxb_zhixiang(IN  pi_branchid INT(11), -- 分店id
-                                           IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
-                                           IN  pi_ksrq     DATETIME, -- 开始日期，
-                                           IN  pi_jsrq     DATETIME, -- 结束日期
-                                           IN  pi_hdmc     VARCHAR(50), -- 活动名称
-                                           IN  pi_jsfs     INT, -- 计算方式 5:挂账 6:优免
-                                           IN  pi_hdlx     VARCHAR(10), -- 活动类型 99:雅座优惠券 其他值:活动类型code
-                                           IN  pi_dqy      INT, -- 当前页码 第一次进入时从0开始
-                                           IN  pi_myts     INT, -- 每页显示的条数
-                                           OUT po_errmsg   VARCHAR(100)
-                                           -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '优惠活动明细表-子项'
+-- ----------------------------
+-- Procedure structure for p_report_yhhdmxb_zhixiang
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yhhdmxb_zhixiang`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yhhdmxb_zhixiang`(IN  pi_branchid INT(11), 
+                                           IN  pi_sb       SMALLINT, 
+                                           IN  pi_ksrq     DATETIME, 
+                                           IN  pi_jsrq     DATETIME, 
+                                           IN  pi_hdmc     VARCHAR(50), 
+                                           IN  pi_jsfs     INT, 
+                                           IN  pi_hdlx     VARCHAR(10), 
+                                           IN  pi_dqy      INT, 
+                                           IN  pi_myts     INT, 
+                                           OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '优惠活动明细表-子项'
 label_main:
-BEGIN -- 返回字段说明如下(7个字段)：
-  -- 发生时间	订单号 结算金额 发生笔数 发生金额 拉动应收 拉动实收
-  --
-  -- 返回数据举例（返回值包含多条数据）：
-  -- 2015/06/01 h2015006666 88 3 264 550 505
-  -- 2015/06/01 h2016006666 88 3 264 550 505
+BEGIN 
+  
+  
+  
+  
+  
 
   DECLARE v_date_start          DATETIME;
   DECLARE v_date_end            DATETIME;
@@ -4330,27 +5779,27 @@ BEGIN -- 返回字段说明如下(7个字段)：
   DECLARE v_payway              INT;
   DECLARE v_shouldamount        DOUBLE(13, 2);
   DECLARE v_paidinamount        DOUBLE(13, 2);
-  DECLARE v_inflated            DOUBLE(13, 2); #虚增
-  DECLARE v_fetch_done          BOOL DEFAULT FALSE; #游标结束标识
+  DECLARE v_inflated            DOUBLE(13, 2); 
+  DECLARE v_fetch_done          BOOL DEFAULT FALSE; 
   DECLARE v_increment_offset    INT;
   DECLARE v_increment_increment INT;
 
 
 
-  #定义一个优惠活动的游标
+  
   DECLARE cur_p_detail CURSOR FOR SELECT DISTINCT pname
                                                 , ptype
                                                 , payway
                                   FROM
                                     t_temp_res_detail;
 
-  #游标结束时的处理程序
+  
   DECLARE CONTINUE HANDLER FOR NOT FOUND
   BEGIN
-    SET v_fetch_done = TRUE; #当读到数据的最后一条时,设置v_fetch_done变量为TRUE
+    SET v_fetch_done = TRUE; 
   END;
 
-  -- 异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
@@ -4382,11 +5831,11 @@ BEGIN -- 返回字段说明如下(7个字段)：
   SET v_increment_offset = @@auto_increment_offset;
   SET v_increment_increment = @@auto_increment_increment;
 
-  #处理开始结束时间
-  SET v_date_start = pi_ksrq; # str_to_date(concat(date_format(pi_ksrq, '%Y-%m-%d'), '00:00:00'), '%Y-%m-%d %H:%i:%s');
-  SET v_date_end = pi_jsrq; #str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+  
+  SET v_date_start = pi_ksrq; 
+  SET v_date_end = pi_jsrq; 
 
-  #创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
@@ -4402,7 +5851,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND shiftid = pi_sb
       AND orderstatus = 3;
   ELSE
@@ -4413,13 +5862,13 @@ BEGIN -- 返回字段说明如下(7个字段)：
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
+      AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
-  #为订单内存表创建索引
+  
   CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
 
-  #创建订单详情内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail
   (
@@ -4428,10 +5877,11 @@ BEGIN -- 返回字段说明如下(7个字段)：
     orignalprice DOUBLE(13, 2),
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+    dishtype TINYINT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  #向临时订单详情内存表中放值
+  
   INSERT INTO t_temp_order_detail
   SELECT b.orderid
        , b.dishnum
@@ -4439,36 +5889,29 @@ BEGIN -- 返回字段说明如下(7个字段)：
        , b.childdishtype
        , b.primarykey
        , b.superkey
+       , b.dishtype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
     a.orderid = b.orderid;
 
-  # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
+   -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
   (
-    primarykey VARCHAR(50)
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
   CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
 
-  #创建结算明细内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
   CREATE TEMPORARY TABLE t_temp_settlement_detail
   (
@@ -4481,7 +5924,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
     begintime DATETIME
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  #生产临时结算明细表数据
+  
   INSERT INTO t_temp_settlement_detail
   SELECT b.orderid
        , b.payway
@@ -4495,10 +5938,10 @@ BEGIN -- 返回字段说明如下(7个字段)：
   WHERE
     a.orderid = b.orderid
     AND b.payamount > 0;
-  #创建查询索引
+  
   CREATE INDEX ix_t_temp_settlement_detail_orderid ON t_temp_settlement_detail (orderid);
 
-  #创建会员消费内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
   CREATE TEMPORARY TABLE t_temp_order_member
   (
@@ -4506,7 +5949,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
     Inflated DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  #生成临时会员结算数据  
+  
   INSERT INTO t_temp_order_member
   SELECT b.orderid
        , b.Inflated
@@ -4517,7 +5960,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
   CREATE INDEX ix_t_temp_order_member_orderid ON t_temp_order_member (orderid);
 
 
-  #创建优惠活动内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
   CREATE TEMPORARY TABLE t_temp_preferential
   (
@@ -4527,7 +5970,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
     ptypename VARCHAR(32)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  #生成正常的优惠券数据，包括将其他优惠中的具体原因和合作单位也看成单独的优惠
+  
   INSERT INTO t_temp_preferential
   SELECT a.id
        , (
@@ -4554,20 +5997,20 @@ BEGIN -- 返回字段说明如下(7个字段)：
   WHERE
     a.preferential = b.id;
 
-  ##############################################根据选择，生成中间临时数据####################################
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
   CREATE TEMPORARY TABLE t_temp_res_detail
   (
     orderid VARCHAR(50),
-    payway INT, #结算方式
-    payamount DOUBLE(13, 2), #结算金额
-    couponNum INT, #使用数量
-    pname VARCHAR(128), #活动名称
-    ptype CHAR(4), #活动分类
+    payway INT, 
+    payamount DOUBLE(13, 2), 
+    couponNum INT, 
+    pname VARCHAR(128), 
+    ptype CHAR(4), 
     begintime DATETIME
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  #生成挂账和优免数据（不包含金总挂账数据）
+  
   INSERT INTO t_temp_res_detail
   SELECT a.orderid
        , a.payway
@@ -4582,21 +6025,21 @@ BEGIN -- 返回字段说明如下(7个字段)：
     a.payway IN (5, 6)
     AND a.coupondetailid = b.pid;
 
-  #生成金总挂账优免数据
-  --   INSERT INTO t_temp_res_detail
-  --   SELECT a.orderid
-  --        , 6
-  --        , a.payamount
-  --        , 1
-  --        , '金总挂账'
-  --        , '0601'
-  --        , a.begintime
-  --   FROM
-  --     t_temp_settlement_detail a
-  --   WHERE
-  --     a.payway = 13;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-  #生成雅座优惠券数据
+  
   INSERT INTO t_temp_res_detail
   SELECT a.orderid
        , 6
@@ -4610,7 +6053,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
   WHERE
     a.payway = 12;
 
-  ##############################################删除多余数据#######################################
+  
   IF pi_hdmc != '-1' THEN
     DELETE
     FROM
@@ -4637,7 +6080,7 @@ BEGIN -- 返回字段说明如下(7个字段)：
   CREATE INDEX ix_t_temp_res_detail ON t_temp_res_detail (pname, ptype, payway);
 
 
-  ##############################################生成最终结果数据####################################
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
   (
@@ -4645,16 +6088,16 @@ BEGIN -- 返回字段说明如下(7个字段)：
     begintime CHAR(10),
     orderid VARCHAR(50),
     price DOUBLE(13, 2),
-    couponNum INT, #使用数量
-    payamount DOUBLE(13, 2), #发生金额
-    shouldamount DOUBLE(13, 2), #应收
-    paidinamount DOUBLE(13, 2), #实收
+    couponNum INT, 
+    payamount DOUBLE(13, 2), 
+    shouldamount DOUBLE(13, 2), 
+    paidinamount DOUBLE(13, 2), 
     PRIMARY KEY (temp_id)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
 
 
-  #开始统计每条优惠的数据
+  
   OPEN cur_p_detail;
 
 lable_fetch_loop:
@@ -4681,11 +6124,11 @@ lable_fetch_loop:
     GROUP BY
       orderid;
   END LOOP;
-  #最后关闭游标.
+  
   CLOSE cur_p_detail;
 
 
-  #生成优惠对应的订单号的内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
   CREATE TEMPORARY TABLE t_temp_orderid
   (
@@ -4697,12 +6140,12 @@ lable_fetch_loop:
   FROM
     t_temp_res;
 
-  #生成应收表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_shouldamount;
   CREATE TEMPORARY TABLE t_temp_shouldamount
   (
     orderid VARCHAR(50),
-    shouldamount DOUBLE(13, 2) #应收
+    shouldamount DOUBLE(13, 2) 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_shouldamount
@@ -4715,12 +6158,12 @@ lable_fetch_loop:
   GROUP BY
     a.orderid;
 
-  #生成虚增表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_inflated;
   CREATE TEMPORARY TABLE t_temp_inflated
   (
     orderid VARCHAR(50),
-    inflated DOUBLE(13, 2) #应收
+    inflated DOUBLE(13, 2) 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_inflated
@@ -4733,12 +6176,12 @@ lable_fetch_loop:
   GROUP BY
     a.orderid;
 
-  #生成实收表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_paidinamount;
   CREATE TEMPORARY TABLE t_temp_paidinamount
   (
     orderid VARCHAR(50),
-    paidinamount DOUBLE(13, 2) #应收
+    paidinamount DOUBLE(13, 2) 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_paidinamount
@@ -4748,11 +6191,11 @@ lable_fetch_loop:
     t_temp_settlement_detail a, t_temp_orderid b
   WHERE
     a.orderid = b.orderid
-    AND payway IN (0, 1, 5, 8, 13, 17, 18)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
+    AND payway IN (0, 1, 5, 8, 13, 17, 18)  
   GROUP BY
     a.orderid;
 
-  #更新实收表
+  
   UPDATE t_temp_paidinamount a, t_temp_inflated b
   SET
     a.paidinamount = a.paidinamount - b.inflated
@@ -4760,14 +6203,14 @@ lable_fetch_loop:
     a.orderid = b.orderid;
 
 
-  #更新结果集（应收）
+  
   UPDATE t_temp_res a, t_temp_shouldamount b
   SET
     a.shouldamount = b.shouldamount
   WHERE
     a.orderid = b.orderid;
 
-  #更新结果集（实收）
+  
   UPDATE t_temp_res a, t_temp_paidinamount b
   SET
     a.paidinamount = b.paidinamount
@@ -4775,8 +6218,8 @@ lable_fetch_loop:
     a.orderid = b.orderid;
 
 
-  #返回结果集
-  #SET @a = pi_dqy * pi_myts;
+  
+  
   IF pi_dqy > -1 THEN
     SET @a = v_increment_offset + pi_dqy * pi_myts * v_increment_increment - v_increment_increment;
     SET @b = pi_myts;
@@ -4790,57 +6233,59 @@ lable_fetch_loop:
 
 
 
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_shouldamount;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_paidinamount;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_inflated;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
+
+
+
+
+
+
+
+
+
+
+
+
+
 END
-$$
+;;
+DELIMITER ;
 
-
-DROP PROCEDURE IF EXISTS p_report_yyfx_pxxstj$$
-CREATE PROCEDURE p_report_yyfx_pxxstj(IN  pi_branchid INT(11), -- 分店id
-                                      IN  pi_xslx     SMALLINT, -- 显示类别 0:日  1:月  2:年
-                                      IN  pi_ksrq     DATETIME, -- 开始日期
-                                      IN  pi_jsrq     DATETIME, -- 结束日期
-                                      OUT po_errmsg   VARCHAR(100)
-                                      -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '营业分析_品项销售统计'
+-- ----------------------------
+-- Procedure structure for p_report_yyfx_pxxstj
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yyfx_pxxstj`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yyfx_pxxstj`(IN  pi_branchid INT(11), 
+                                      IN  pi_xslx     SMALLINT, 
+                                      IN  pi_ksrq     DATETIME, 
+                                      IN  pi_jsrq     DATETIME, 
+                                      OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业分析_品项销售统计'
 label_main:
 BEGIN
-  -- 返回字段说明如下（4个字段）：
-  -- 类别（0:份数；1:金额），菜名，汇总值，拆分值（格式为：时间,数值|时间,数值|时间,数值|时间,数值|....） 
-  --
-  -- 返回数据举例（多行数据）：
-  -- 0  红汤梭边鱼  100  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 0  青柠巴沙鱼  98  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 0  凉菜四拼  300  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 1  红汤梭边鱼  100  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 1  青柠巴沙鱼  98  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 1  凉菜四拼  300  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   DECLARE v_date_start    DATETIME;
   DECLARE v_date_end      DATETIME;
-  DECLARE v_date_interval DATETIME; #时间间隔  
-  DECLARE v_statistictime VARCHAR(15); #统计日期
+  DECLARE v_date_interval DATETIME; 
+  DECLARE v_statistictime VARCHAR(15); 
   DECLARE v_dishid        VARCHAR(50);
   DECLARE v_dishunit      VARCHAR(50);
   DECLARE v_showtype      TINYINT;
   DECLARE v_value_detail  VARCHAR(1000);
-  DECLARE v_loop_num      INT DEFAULT 0; #根据开始结束时间和显示类型，来设置循环次数
+  DECLARE v_loop_num      INT DEFAULT 0; 
 
-  -- 异常处理模块，出现异常返回null
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
@@ -4854,11 +6299,11 @@ BEGIN
     LEAVE label_main;
   END IF;
 
-  #设置临时内存表
+  
   SET @@max_heap_table_size = 1024 * 1024 * 300;
   SET @@tmp_table_size = 1024 * 1024 * 300;
 
-  #设置循环次数,处理开始结算时间
+  
   IF pi_xslx = 0 THEN
     SET v_statistictime = date_format(pi_ksrq, '%Y-%m-%d');
     SET v_date_start = str_to_date(concat(v_statistictime, '00:00:00'), '%Y-%m-%d %H:%i:%s');
@@ -4876,7 +6321,7 @@ BEGIN
     LEAVE label_main;
   END IF;
 
-  #创建订单临时内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
@@ -4891,14 +6336,14 @@ BEGIN
     t_order USE INDEX (IX_t_order_begintime)
   WHERE
     branchid = pi_branchid
-    AND begintime BETWEEN v_date_start AND v_date_end # 需要创建索引IX_t_order_begintime  
+    AND begintime BETWEEN v_date_start AND v_date_end 
     AND orderstatus = 3;
 
-  #为订单内存表创建索引
+  
   CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
   CREATE INDEX ix_t_temp_order_begintime ON t_temp_order (begintime);
 
-  #创建订单详情临时内存表（方便计算应收）
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail
   (
@@ -4910,10 +6355,11 @@ BEGIN
     begintime DATETIME,
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+    dishtype TINYINT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
-  # 向临时订单详情内存表中放值
+  
   INSERT INTO t_temp_order_detail
   SELECT b.orderid
        , b.dishid
@@ -4924,38 +6370,31 @@ BEGIN
        , b.childdishtype
        , b.primarykey
        , b.superkey
+       , b.dishtype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
     a.orderid = b.orderid
     AND b.orignalprice > 0;
 
-  # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
+
+ -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
   (
-    primarykey VARCHAR(50)
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
-
-  #为订单详情表创建索引
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+  
   CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
 
-  #创建中间临时表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
   CREATE TEMPORARY TABLE t_temp_res_detail
   (
@@ -4966,7 +6405,7 @@ BEGIN
     dishprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  #循环计算所需的数据
+  
   WHILE v_loop_num > 0
   DO
     INSERT INTO t_temp_res_detail
@@ -4998,10 +6437,10 @@ BEGIN
 
     SET v_loop_num = v_loop_num - 1;
   END WHILE;
-  #为临时表创建索引
+  
   CREATE INDEX ix_t_temp_res_detail_dishid ON t_temp_res_detail (dishid);
 
-  #餐具不参与统计
+  
   DELETE
   FROM
     t_temp_res_detail
@@ -5009,7 +6448,7 @@ BEGIN
     dishid = 'DISHES_98';
 
 
-  #创建结果内存表
+  
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
   (
@@ -5022,7 +6461,7 @@ BEGIN
     PRIMARY KEY (id)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  #售卖份数TOP10
+  
   INSERT INTO t_temp_res (showtype, dishid, dishunit, total_num)
   SELECT 0
        , dishid
@@ -5038,7 +6477,7 @@ BEGIN
   LIMIT
     10;
 
-  #售卖金额TOP10
+  
   INSERT INTO t_temp_res (showtype, dishid, dishunit, total_num)
   SELECT 1
        , dishid
@@ -5055,7 +6494,7 @@ BEGIN
     10;
 
 
-  #获取自增长字段的偏移量和自增量，以及自增字段的最大值
+  
   SET @offset = @@auto_increment_offset;
   SET @increment = @@auto_increment_increment;
   SELECT ifnull(max(id), 0)
@@ -5064,11 +6503,11 @@ BEGIN
   FROM
     t_temp_res;
 
-#组装每天（每月）拆分的值
+
   loop_lable1:
   LOOP
 
-    #循环结束标识
+    
     IF @offset > @maxid THEN
       LEAVE loop_lable1;
     END IF;
@@ -5117,19 +6556,19 @@ BEGIN
       LEAVE loop_lable1;
     END IF;
 
-    #设置拆分值
+    
     UPDATE t_temp_res
     SET
       detail_num = v_value_detail
     WHERE
       id = @offset;
 
-    #获取下一个自增id值
+    
     SET @offset = @offset + @increment;
   END LOOP;
-  -- 
+  
 
-  #返回结果
+  
   SELECT a.showtype
        , concat(b.title, '(', a.dishunit, ')') title
        , a.total_num
@@ -5141,41 +6580,387 @@ BEGIN
 
 
 
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
+
+
+
+
+
+
 
 END
-$$
+;;
+DELIMITER ;
 
-DROP PROCEDURE IF EXISTS p_report_yyfx_yhhdtj$$
-CREATE PROCEDURE p_report_yyfx_yhhdtj(IN  pi_branchid INT(11), -- 分店id
-                                      IN  pi_xslx     SMALLINT, -- 显示类别 0:日  1:月  2:年
-                                      IN  pi_ksrq     DATETIME, -- 开始日期
-                                      IN  pi_jsrq     DATETIME, -- 结束日期
-                                      IN  pi_tjx      SMALLINT, -- 统计项：0:活动名称  1:活动类别
-                                      OUT po_errmsg   VARCHAR(100)
-                                      -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '营业分析_优惠活动统计'
+-- ----------------------------
+-- Procedure structure for p_report_yyfx_pxxstj_column
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yyfx_pxxstj_column`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yyfx_pxxstj_column`(IN  pi_branchid INT(11), 
+                                      IN  pi_xslx     SMALLINT, 
+                                      IN  pi_ksrq     DATETIME, 
+                                      IN  pi_jsrq     DATETIME, 
+            IN pi_columnid   VARCHAR(100),                             OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业分析_品项销售统计'
+label_main:
+BEGIN
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  DECLARE v_date_start    DATETIME;
+  DECLARE v_date_end      DATETIME;
+  DECLARE v_date_interval DATETIME; 
+  DECLARE v_statistictime VARCHAR(15); 
+  DECLARE v_dishid        VARCHAR(50);
+  DECLARE v_dishunit      VARCHAR(50);
+  DECLARE v_showtype      TINYINT;
+  DECLARE v_value_detail  VARCHAR(1000);
+  DECLARE v_loop_num      INT DEFAULT 0; 
+
+  
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    SELECT NULL;
+    GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
+  END;
+
+
+  IF pi_branchid IS NULL THEN
+    SELECT NULL;
+    SET po_errmsg = '分店ID输入不能为空';
+    LEAVE label_main;
+  END IF;
+
+  
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+
+  
+  IF pi_xslx = 0 THEN
+    SET v_statistictime = date_format(pi_ksrq, '%Y-%m-%d');
+    SET v_date_start = str_to_date(concat(v_statistictime, '00:00:00'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_end = str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
+    SET v_loop_num = timestampdiff(DAY, v_date_start, v_date_end) + 1;
+  ELSEIF pi_xslx = 1 THEN
+    SET v_statistictime = date_format(pi_ksrq, '%Y-%m');
+    SET v_date_start = str_to_date(concat(v_statistictime, '-01 00:00:00'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+    SET v_date_end = date_sub(date_add(str_to_date(concat(date_format(pi_jsrq, '%Y-%m'), '-01 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+    SET v_loop_num = timestampdiff(MONTH, v_date_start, v_date_end) + 1;
+  ELSE
+    SELECT NULL;
+    LEAVE label_main;
+  END IF;
+
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+    orderid VARCHAR(50),
+    begintime DATETIME
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  INSERT INTO t_temp_order
+  SELECT orderid
+       , begintime
+  FROM
+    t_order USE INDEX (IX_t_order_begintime)
+  WHERE
+    branchid = pi_branchid
+    AND begintime BETWEEN v_date_start AND v_date_end 
+    AND orderstatus = 3;
+
+  
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+  CREATE INDEX ix_t_temp_order_begintime ON t_temp_order (begintime);
+
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail
+  (
+    orderid VARCHAR(50),
+    dishid VARCHAR(50),
+    dishunit VARCHAR(10),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    begintime DATETIME,
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishtype TINYINT
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  
+  INSERT INTO t_temp_order_detail
+  SELECT b.orderid
+       , b.dishid
+       , b.dishunit
+       , b.dishnum
+       , b.orignalprice
+       , a.begintime
+       , b.childdishtype
+       , b.primarykey
+       , b.superkey
+       , b.dishtype
+  FROM
+    t_temp_order a, t_order_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND b.orignalprice > 0;
+
+  
+ -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+
+   --  计算套餐金额结束 
+  -- 删除套餐数据
+  delete from t_temp_order_detail where dishid not in (select dishid from t_dish_dishtype where columnid = pi_columnid) or (dishtype =2 and superkey <> primarykey);
+
+  
+  CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
+
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
+  CREATE TEMPORARY TABLE t_temp_res_detail
+  (
+    statistictime VARCHAR(20),
+    dishid VARCHAR(50),
+    dishunit VARCHAR(10),
+    dishnum INT,
+    dishprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  
+  WHILE v_loop_num > 0
+  DO
+    INSERT INTO t_temp_res_detail
+    SELECT v_statistictime
+         , dishid
+         , dishunit
+         , sum(dishnum)
+         , sum(dishnum * orignalprice)
+    FROM
+      t_temp_order_detail USE INDEX (ix_t_temp_order_detail_begintime)
+    WHERE
+      begintime BETWEEN v_date_start AND v_date_interval
+    GROUP BY
+      dishid
+    , dishunit
+    ORDER BY
+      NULL;
+
+
+    IF pi_xslx = 0 THEN
+      SET v_date_start = date_add(v_date_start, INTERVAL 1 DAY);
+      SET v_date_interval = date_add(v_date_interval, INTERVAL 1 DAY);
+      SET v_statistictime = date_format(v_date_start, '%Y-%m-%d');
+    ELSE
+      SET v_date_start = date_add(v_date_start, INTERVAL 1 MONTH);
+      SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+      SET v_statistictime = date_format(v_date_start, '%Y-%m');
+    END IF;
+
+    SET v_loop_num = v_loop_num - 1;
+  END WHILE;
+  
+  CREATE INDEX ix_t_temp_res_detail_dishid ON t_temp_res_detail (dishid);
+
+  
+  DELETE
+  FROM
+    t_temp_res_detail
+  WHERE
+    dishid = 'DISHES_98';
+
+
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    showtype TINYINT,
+    dishid VARCHAR(50),
+    dishunit VARCHAR(50),
+    total_num INT,
+    detail_num VARCHAR(1000),
+    PRIMARY KEY (id)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  
+  INSERT INTO t_temp_res (showtype, dishid, dishunit, total_num)
+  SELECT 0
+       , dishid
+       , dishunit
+       , sum(dishnum)
+  FROM
+    t_temp_res_detail
+  GROUP BY
+    dishid
+  , dishunit
+  ORDER BY
+    sum(dishnum) DESC
+  LIMIT
+    10;
+
+  
+  INSERT INTO t_temp_res (showtype, dishid, dishunit, total_num)
+  SELECT 1
+       , dishid
+       , dishunit
+       , sum(dishprice)
+  FROM
+    t_temp_res_detail
+  GROUP BY
+    dishid
+  , dishunit
+  ORDER BY
+    sum(dishprice) DESC
+  LIMIT
+    10;
+
+
+  
+  SET @offset = @@auto_increment_offset;
+  SET @increment = @@auto_increment_increment;
+  SELECT ifnull(max(id), 0)
+  INTO
+    @maxid
+  FROM
+    t_temp_res;
+
+
+  loop_lable1:
+  LOOP
+
+    
+    IF @offset > @maxid THEN
+      LEAVE loop_lable1;
+    END IF;
+
+    SELECT showtype
+         , dishid
+         , dishunit
+    INTO
+      v_showtype, v_dishid, v_dishunit
+    FROM
+      t_temp_res
+    WHERE
+      id = @offset;
+
+
+    IF v_showtype = 0 THEN
+      SELECT group_concat(t.value_detail SEPARATOR '|')
+      INTO
+        v_value_detail
+      FROM
+        (
+        SELECT concat(statistictime, ',', dishnum) AS value_detail
+        FROM
+          t_temp_res_detail
+        WHERE
+          dishid = v_dishid
+          AND dishunit = v_dishunit
+        ORDER BY
+          statistictime ASC) t;
+
+    ELSEIF v_showtype = 1 THEN
+      SELECT group_concat(t.value_detail SEPARATOR '|')
+      INTO
+        v_value_detail
+      FROM
+        (
+        SELECT concat(statistictime, ',', dishprice) AS value_detail
+        FROM
+          t_temp_res_detail
+        WHERE
+          dishid = v_dishid
+          AND dishunit = v_dishunit
+        ORDER BY
+          statistictime ASC) t;
+    ELSE
+      LEAVE loop_lable1;
+    END IF;
+
+    
+    UPDATE t_temp_res
+    SET
+      detail_num = v_value_detail
+    WHERE
+      id = @offset;
+
+    
+    SET @offset = @offset + @increment;
+  END LOOP;
+  
+
+  
+  SELECT a.showtype
+       , concat(b.title, '(', a.dishunit, ')') title
+       , a.total_num
+       , a.detail_num
+  FROM
+    t_temp_res a, t_dish b
+  WHERE
+    a.dishid = b.dishid;
+
+
+
+
+
+
+
+
+
+
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_yyfx_yhhdtj
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yyfx_yhhdtj`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yyfx_yhhdtj`(IN  pi_branchid INT(11), -- 分店id
+                                                IN  pi_xslx     SMALLINT, -- 显示类别 0:日  1:月  2:年
+                                                IN  pi_ksrq     DATETIME, -- 开始日期
+                                                IN  pi_jsrq     DATETIME, -- 结束日期
+                                                IN  pi_tjx      SMALLINT, -- 统计项：0:活动名称  1:活动类别
+                                                IN  pi_hdlx     SMALLINT, -- 活动类别
+                                                OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业分析_优惠活动统计'
 label_main:
 BEGIN
   -- 返回字段说明如下（4个字段）：
-  -- 类别（0:笔数；1:金额；2:应收；3:实收），名称，汇总值，拆分值（格式为：时间,数值|时间,数值|时间,数值|时间,数值|....） 
+  -- 类别（0:笔数；1:金额；2:应收；3:实收），名称，类型，汇总值，拆分值（格式为：时间,数值|时间,数值|时间,数值|时间,数值|....） 
   --
   -- 返回数据举例（多行数据）：
-  -- 0  1元尝鲜  100  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 0  美团券  98  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 1  1元尝鲜  1806  6.1,151|6.2,131|6.3,81|6.4,10|6.5,141|6.6,71|6.7,91
-  -- 1  美团券  7896  6.1,15|6.2,132|6.3,82|6.4,20|6.5,214|6.6,72|6.7,92
-  -- 2  1元尝鲜  10000  6.1,15|6.2,1300|6.3,800|6.4,100|6.5,1400|6.6,700|6.7,900
-  -- 2  美团券  20000  6.1,15|6.2,1300|6.3,899|6.4,299|6.5,1499|6.6,799|6.7,999
-  -- 3  1元尝鲜  8888  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
-  -- 3  美团券  9999  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
+  -- 0  1元尝鲜 99 100  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
+  -- 0  美团券  99  98  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
+  -- 1  1元尝鲜 99 1806  6.1,151|6.2,131|6.3,81|6.4,10|6.5,141|6.6,71|6.7,91
+  -- 1  美团券  99 7896  6.1,15|6.2,132|6.3,82|6.4,20|6.5,214|6.6,72|6.7,92
+  -- 2  1元尝鲜 99  10000  6.1,15|6.2,1300|6.3,800|6.4,100|6.5,1400|6.6,700|6.7,900
+  -- 2  美团券  99 20000  6.1,15|6.2,1300|6.3,899|6.4,299|6.5,1499|6.6,799|6.7,999
+  -- 3  1元尝鲜 99 8888  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
+  -- 3  美团券  99 9999  6.1,15|6.2,13|6.3,8|6.4,0|6.5,14|6.6,7|6.7,9
 
   DECLARE v_date_start    DATETIME;
   DECLARE v_date_end      DATETIME;
@@ -5199,11 +6984,11 @@ BEGIN
   END;
 
   -- 异常处理模块，出现异常返回null
-  DECLARE EXIT HANDLER FOR SQLEXCEPTION
-  BEGIN
-    SELECT NULL;
-    GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
-  END;
+  -- DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  --	BEGIN
+  -- ELECT NULL;
+  -- GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
+  -- END;
 
   IF pi_branchid IS NULL THEN
     SELECT NULL;
@@ -5271,7 +7056,8 @@ BEGIN
     orignalprice DOUBLE(13, 2),
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+    dishtype TINYINT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #向临时订单详情内存表中放值
@@ -5282,34 +7068,24 @@ BEGIN
        , b.childdishtype
        , b.primarykey
        , b.superkey
+       , b.dishtype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
-    a.orderid = b.orderid
-    AND b.orignalprice > 0;
+    a.orderid = b.orderid  AND orignalprice > 0;
+
+ DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
   # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
-  (
-    primarykey VARCHAR(50)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
-
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
-
+  delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
   CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
 
@@ -5359,7 +7135,7 @@ BEGIN
     t_temp_settlement_detail
   WHERE
     payamount > 0
-    AND payway IN (0, 1, 5, 8, 13, 17, 18)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
+    AND payway IN (0, 1, 5, 8,13,17,18)
   GROUP BY
     orderid;
   CREATE INDEX ix_t_temp_settlement_paidinamount_orderid ON t_temp_settlement_paidinamount (orderid);
@@ -5658,6 +7434,7 @@ BEGIN
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     showtype TINYINT,
     pname VARCHAR(50),
+    ptype VARCHAR(50),
     total_num DOUBLE(13, 2),
     detail_num VARCHAR(1000),
     PRIMARY KEY (id)
@@ -5668,42 +7445,54 @@ BEGIN
   IF pi_tjx = 0 THEN
 
     #发生笔数
-    INSERT INTO t_temp_res (showtype, pname, total_num)
+    INSERT INTO t_temp_res (showtype, pname, ptype, total_num)
     SELECT 0
          , pname
+         , ptype
          , sum(pcount)
     FROM
       t_temp_res_detail
+    WHERE
+      ptype = pi_hdlx
     GROUP BY
       pname;
 
     #发生金额
-    INSERT INTO t_temp_res (showtype, pname, total_num)
+    INSERT INTO t_temp_res (showtype, pname, ptype, total_num)
     SELECT 1
          , pname
+         , ptype
          , sum(pamount)
     FROM
       t_temp_res_detail
+    WHERE
+      ptype = pi_hdlx
     GROUP BY
       pname;
 
     #拉动应收
-    INSERT INTO t_temp_res (showtype, pname, total_num)
+    INSERT INTO t_temp_res (showtype, pname, ptype, total_num)
     SELECT 2
          , pname
+         , ptype
          , sum(pshouldamount)
     FROM
       t_temp_res_detail
+    WHERE
+      ptype = pi_hdlx
     GROUP BY
       pname;
 
     #拉动实收
-    INSERT INTO t_temp_res (showtype, pname, total_num)
+    INSERT INTO t_temp_res (showtype, pname, ptype, total_num)
     SELECT 3
          , pname
+         , ptype
          , sum(ppaidinamount)
     FROM
       t_temp_res_detail
+    WHERE
+      ptype = pi_hdlx
     GROUP BY
       pname;
   #按活动类型来统计
@@ -5749,32 +7538,26 @@ BEGIN
       ptype;
   END IF;
 
-  #获取自增长字段的偏移量和自增量，以及自增字段的最大值
-  SET @offset = @@auto_increment_offset;
-  SET @increment = @@auto_increment_increment;
-  SELECT ifnull(max(id), 0)
-  INTO
-    @maxid
-  FROM
-    t_temp_res;
 
-#组装每天（每月）拆分的值
-  loop_lable1:
+  #组装每天（每月）拆分的值
+  SET v_loop_num = 1;
+
+loop_lable1:
   LOOP
-    #循环结束标识
-    IF @offset > @maxid THEN
-      LEAVE loop_lable1;
-    END IF;
-
-    #通过ID来遍历每一条数据
     SELECT showtype
          , pname
+         , count(1)
     INTO
-      v_showtype, v_pname
+      v_showtype, v_pname, @cnt
     FROM
       t_temp_res
     WHERE
-      id = @offset;
+      id = v_loop_num;
+
+    #循环结束标识
+    IF @cnt = 0 THEN
+      LEAVE loop_lable1;
+    END IF;
 
     IF pi_tjx = 0 THEN
       IF v_showtype = 0 THEN
@@ -5843,13 +7626,11 @@ BEGIN
           v_value_detail
         FROM
           (
-          SELECT concat(statistictime, ',', sum(pcount)) AS value_detail
+          SELECT concat(max(statistictime), ',', sum(pcount)) AS value_detail
           FROM
             t_temp_res_detail
           WHERE
             ptype = v_pname
-          GROUP BY
-            statistictime
           ORDER BY
             statistictime ASC) t;
 
@@ -5859,13 +7640,11 @@ BEGIN
           v_value_detail
         FROM
           (
-          SELECT concat(statistictime, ',', sum(pamount)) AS value_detail
+          SELECT concat(max(statistictime), ',', sum(pamount)) AS value_detail
           FROM
             t_temp_res_detail
           WHERE
             ptype = v_pname
-          GROUP BY
-            statistictime
           ORDER BY
             statistictime ASC) t;
 
@@ -5875,13 +7654,11 @@ BEGIN
           v_value_detail
         FROM
           (
-          SELECT concat(statistictime, ',', sum(pshouldamount)) AS value_detail
+          SELECT concat(max(statistictime), ',', sum(pshouldamount)) AS value_detail
           FROM
             t_temp_res_detail
           WHERE
             ptype = v_pname
-          GROUP BY
-            statistictime
           ORDER BY
             statistictime ASC) t;
 
@@ -5891,13 +7668,11 @@ BEGIN
           v_value_detail
         FROM
           (
-          SELECT concat(statistictime, ',', sum(ppaidinamount)) AS value_detail
+          SELECT concat(max(statistictime), ',', sum(ppaidinamount)) AS value_detail
           FROM
             t_temp_res_detail
           WHERE
             ptype = v_pname
-          GROUP BY
-            statistictime
           ORDER BY
             statistictime ASC) t;
 
@@ -5913,10 +7688,8 @@ BEGIN
     SET
       detail_num = v_value_detail
     WHERE
-      id = @offset;
-
-    #设置下一个id
-    SET @offset = @offset + @increment;
+      id = v_loop_num;
+    SET v_loop_num = v_loop_num + 1;
   END LOOP;
 
   #如果统计的活动类型，还需要将活动类型编码转化为活动类型名称
@@ -5936,42 +7709,46 @@ BEGIN
   ELSE
     SELECT showtype
          , pname
+         , ptype
          , total_num
          , detail_num
     FROM
       t_temp_res;
   END IF;
 
-#清空内存表
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_paidinamount;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_sub;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new_sub;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_shouldamount;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
---   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
+  #清空内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_paidinamount;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_sub;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new_sub;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_shouldamount;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+
 
 
 END
-$$
+;;
+DELIMITER ;
 
-DROP PROCEDURE IF EXISTS p_report_yyfx_yysjtj$$
-CREATE PROCEDURE p_report_yyfx_yysjtj(IN  pi_branchid INT(11), -- 分店id
-                                      IN  pi_xslx     SMALLINT, -- 显示类别 0:日  1:月  2:年
-                                      IN  pi_ksrq     DATETIME, -- 开始日期
-                                      IN  pi_jsrq     DATETIME, -- 结束日期
-                                      OUT po_errmsg   VARCHAR(100)
-                                      -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '营业分析_营业数据统计'
+-- ----------------------------
+-- Procedure structure for p_report_yyfx_yysjtj
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yyfx_yysjtj`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yyfx_yysjtj`(IN  pi_branchid INT(11), 
+                                      IN  pi_xslx     SMALLINT, 
+                                      IN  pi_ksrq     DATETIME, 
+                                      IN  pi_jsrq     DATETIME, 
+                                      OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业分析_营业数据统计'
 label_main:
 BEGIN
   -- 返回字段说明如下：
@@ -5981,14 +7758,17 @@ BEGIN
   -- 2015-05  3636.00  3630.00  6.00
   -- 2015-06  4636.00  4630.00  6.00
 
-  DECLARE v_date_start    DATETIME;
-  DECLARE v_date_end      DATETIME;
-  DECLARE v_date_interval DATETIME; #时间间隔
-  DECLARE v_loop_num      INT DEFAULT 0; #根据开始结束时间和显示类型，来设置循环次数
-  DECLARE v_statistictime VARCHAR(15); #统计日期
-  DECLARE v_shouldamount  DOUBLE(13, 2); #应收
-  DECLARE v_paidinamount  DOUBLE(13, 2); #实收(含虚增)
-  DECLARE v_inflated      DOUBLE(13, 2); #虚增
+  DECLARE v_date_start        DATETIME;
+  DECLARE v_date_end          DATETIME;
+  DECLARE v_date_interval     DATETIME; #时间间隔
+  DECLARE v_loop_num          INT DEFAULT 0; #根据开始结束时间和显示类型，来设置循环次数
+  DECLARE v_statistictime     VARCHAR(15); #统计日期
+  DECLARE v_shouldamount      DOUBLE(13, 2); #应收
+  DECLARE v_paidinamount      DOUBLE(13, 2); #实收(含虚增)
+  DECLARE v_inflated          DOUBLE(13, 2); #虚增
+  DECLARE v_person_con        DOUBLE(13, 2) DEFAULT 0; #人均
+  DECLARE v_table_num         INT DEFAULT 0; #桌数
+  DECLARE v_sa_settlementnum  INT DEFAULT 0; #总人数
 
   -- 异常处理模块，出现异常返回null
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -5996,7 +7776,6 @@ BEGIN
     SELECT NULL;
     GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
   END;
-
 
   IF pi_branchid IS NULL THEN
     SELECT NULL;
@@ -6032,11 +7811,19 @@ BEGIN
   CREATE TEMPORARY TABLE t_temp_order
   (
     orderid VARCHAR(50),
+		womanNum TINYINT UNSIGNED,
+    childNum TINYINT UNSIGNED,
+    mannum TINYINT UNSIGNED,
+    ordertype TINYINT,
     begintime DATETIME
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_order
   SELECT orderid
+       , womanNum
+       , childNum
+       , mannum
+       , ordertype
        , begintime
   FROM
     t_order USE INDEX (IX_t_order_begintime)
@@ -6060,7 +7847,8 @@ BEGIN
     begintime DATETIME,
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+    dishtype TINYINT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   # 向临时订单详情内存表中放值
@@ -6072,33 +7860,25 @@ BEGIN
        , b.childdishtype
        , b.primarykey
        , b.superkey
+       , b.dishtype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
     a.orderid = b.orderid
     AND orignalprice > 0;
+ -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
   # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
-  (
-    primarykey VARCHAR(50)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
-
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+  delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
   #为订单详情表创建索引
   CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
@@ -6124,7 +7904,7 @@ BEGIN
   WHERE
     a.orderid = b.orderid
     AND b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8, 13, 17, 18);  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
+    AND b.payway IN (0, 1, 5, 8,13,17,18);
   CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
 
   #创建会员消费内存表
@@ -6154,7 +7934,9 @@ BEGIN
     statistictime VARCHAR(15), #统计日期
     shouldamount DOUBLE(13, 2), #应收
     paidinamount DOUBLE(13, 2), #实收
-    discountamount DOUBLE(13, 2) #折扣
+    discountamount DOUBLE(13, 2), #折扣
+    personcon  DOUBLE(13, 2), #人均
+    tablenum   INT DEFAULT 0 #桌数
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #循环计算所需的数据
@@ -6162,13 +7944,13 @@ BEGIN
   DO
 
     #计算应收
-    SELECT ifnull(sum(orignalprice * dishnum), 0)
+    SELECT ifnull(sum(a.orignalprice * a.dishnum), 0)
     INTO
       v_shouldamount
     FROM
-      t_temp_order_detail
+      t_temp_order_detail a left join t_temp_order b on a.orderid = b.orderid
     WHERE
-      begintime BETWEEN v_date_start AND v_date_interval;
+      b.begintime BETWEEN v_date_start AND v_date_interval;
 
     #计算实收（含虚增）
     SELECT ifnull(sum(payamount), 0)
@@ -6188,7 +7970,21 @@ BEGIN
     WHERE
       begintime BETWEEN v_date_start AND v_date_interval;
 
-    INSERT INTO t_temp_res VALUES (v_statistictime, v_shouldamount, v_paidinamount - v_inflated, v_shouldamount - v_paidinamount + v_inflated);
+    #设置订单数和人数
+    SELECT IFNULL(count(orderid),0) #堂吃的订单数量
+         , IFNULL(sum(womanNum + childNum + mannum),0) #堂吃的就餐总人数
+    INTO
+      v_table_num, v_sa_settlementnum
+    FROM
+      t_temp_order
+    WHERE
+      begintime BETWEEN v_date_start AND v_date_interval;
+
+    IF v_table_num > 0 THEN
+      SET v_person_con = (v_paidinamount - v_inflated) / v_sa_settlementnum;
+    END IF;
+
+    INSERT INTO t_temp_res VALUES (v_statistictime, v_shouldamount, v_paidinamount - v_inflated, v_shouldamount - v_paidinamount + v_inflated,v_person_con,v_table_num);
 
     IF pi_xslx = 0 THEN
       SET v_date_start = date_add(v_date_start, INTERVAL 1 DAY);
@@ -6218,19 +8014,1672 @@ BEGIN
 --   DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
 
 END
-$$
+;;
+DELIMITER ;
 
-DROP PROCEDURE IF EXISTS p_report_yysjmxb$$
+-- ----------------------------
+-- Procedure structure for p_report_yyhzb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yyhzb`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yyhzb`(IN `pi_branchid` varchar(50)
+																,IN  pi_sb	SMALLINT
+																,IN `pi_ksrq` datetime
+																,IN `pi_jsrq` datetime
+																,IN `pi_brandid` int(11)
+																,IN `pi_marketid` int(11)
+																,IN `pi_areaid` int(11)
+																,OUT `po_errormsg` varchar(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业汇总表'
+label_main:
+BEGIN
+  DECLARE v_date_start    DATETIME;
+  DECLARE v_date_end      DATETIME;
+  DECLARE v_cur_branchid  VARCHAR(50);
+  DECLARE v_branchname  VARCHAR(50);#当前分店名称
+  DECLARE v_fetch_done BOOL DEFAULT FALSE; 
+  DECLARE v_branchid VARCHAR(50) DEFAULT NULL; 
+  DECLARE v_shouldamount VARCHAR(50); 
+  DECLARE v_paidinamount  VARCHAR(128); #实收总额
+  DECLARE v_brandid  VARCHAR(128); #品牌
+  DECLARE v_marketid  VARCHAR(128); #市场
+  DECLARE v_areaid  VARCHAR(128); #区域
+  DECLARE v_jde  VARCHAR(128); #jde
+  DECLARE v_brand_name  VARCHAR(128); #品牌
+  DECLARE v_market_name  VARCHAR(128); #市场
+  DECLARE v_area_name  VARCHAR(128); #区域
+  DECLARE v_datetime  VARCHAR(128); #日期
+  DECLARE v_num  INT(11); #数量
 
-CREATE PROCEDURE p_report_yysjmxb(IN  pi_branchid INT(11), -- 分店id
+  #以下为实收明细统计项
+  DECLARE v_pa_cash               DOUBLE(13, 2) DEFAULT 0; #实收（现金）
+  DECLARE v_pa_credit             DOUBLE(13, 2) DEFAULT 0; #实收（挂账）
+  DECLARE v_pa_card               DOUBLE(13, 2) DEFAULT 0; #实收（刷卡——刷他行卡）
+  DECLARE v_pa_icbc_card          DOUBLE(13, 2) DEFAULT 0; #实收（刷卡——刷工行卡）
+  DECLARE v_pa_paidinamount       DOUBLE(13, 2) DEFAULT 0; #会员储值消费（含虚增）
+  DECLARE v_pa_weixin             DOUBLE(13, 2) DEFAULT 0; #实收（微信）
+  DECLARE v_pa_zhifubao           DOUBLE(13, 2) DEFAULT 0; #实收（支付宝）
+  
+  #以下为折扣明细统计项
+  DECLARE v_da_free               DOUBLE(13, 2) DEFAULT 0; #折扣(优免）
+  DECLARE v_da_integralconsum     DOUBLE(13, 2) DEFAULT 0; #折扣(会员积分消费）
+  DECLARE v_da_meberTicket        DOUBLE(13, 2) DEFAULT 0; #折扣(会员券）
+  DECLARE v_da_discount           DOUBLE(13, 2) DEFAULT 0; #折扣(折扣额）
+  DECLARE v_da_fraction           DOUBLE(13, 2) DEFAULT 0; #折扣(抹零）
+  DECLARE v_da_roundoff           DOUBLE(13, 2) DEFAULT 0; #折扣(四舍五入调整）
+  DECLARE v_da_give               DOUBLE(13, 2) DEFAULT 0; #折扣(赠送）
+  DECLARE v_da_mebervalueadd      DOUBLE(13, 2) DEFAULT 0; #折扣(会员储值消费虚增）
+  DECLARE v_da_credit2      	  DOUBLE(13, 2) DEFAULT 0; #挂账2
+  DECLARE v_da_free2      		  DOUBLE(13, 2) DEFAULT 0; #优惠2
+  DECLARE v_da_totalfree      	  DOUBLE(13, 2) DEFAULT 0; #优惠活动优免
+  DECLARE v_da_mebervalueaddnet   DOUBLE(13, 2) DEFAULT 0; #会员净增
+  
+  #以下是活动明细统计项
+  DECLARE v_pid         VARCHAR(50); #活动id
+  DECLARE v_pname         VARCHAR(128); #活动名称
+  DECLARE v_ptype         CHAR(4); #活动分类编码
+  DECLARE v_pamount       DOUBLE(13, 2); #活动发生金额
+  DECLARE v_value_detail  VARCHAR(10000); #活动发生金额
+  DECLARE v_value_total  VARCHAR(10000); #活动发生金额统计
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  BEGIN
+    SET v_fetch_done = TRUE; #当读到数据的最后一条时,设置v_fetch_done变量为TRUE
+  END;
+
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+	SELECT NULL;
+	GET DIAGNOSTICS CONDITION 1 po_errormsg = MESSAGE_TEXT;
+  END;
+  
+  IF pi_brandid > -1 THEN
+  #设置当前品牌id
+	SELECT id,name INTO v_brandid,v_brand_name  FROM t_c_brand WHERE id = pi_brandid;
+  ELSE
+	SELECT id,name INTO v_brandid,v_brand_name FROM t_c_brand LIMIT 1;
+  END IF;  
+  
+  IF pi_marketid > -1 THEN
+  #设置当前市场id
+	SELECT id,name INTO v_marketid,v_market_name  FROM t_c_market WHERE id = pi_marketid;
+  ELSE
+	SELECT id,name INTO v_marketid,v_market_name FROM t_c_market LIMIT 1;
+  END IF;  
+  
+  IF pi_areaid > -1 THEN
+  #设置当前区域id
+	SELECT id,name INTO v_areaid,v_area_name  FROM t_c_area WHERE id = pi_areaid;
+  ELSE
+	SELECT id,name INTO v_areaid,v_area_name FROM t_c_area LIMIT 1;
+  END IF;  
+  
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+  SET SESSION group_concat_max_len=102400;
+
+  SET v_date_start = str_to_date(concat(date_format(pi_ksrq,'%Y-%m-%d'),'00:00:00'),'%Y-%m-%d %H:%i:%s');
+  SET v_date_end = str_to_date(concat(date_format(pi_jsrq,'%Y-%m-%d'),'23:59:59'),'%Y-%m-%d %H:%i:%s');
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_branch;
+  CREATE TEMPORARY TABLE t_temp_branch
+  (
+	branchid VARCHAR(50),
+    branchname VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+   IF pi_branchid > -1 THEN
+	#设置当前分店id
+	INSERT INTO t_temp_branch SELECT branchid,branchname  FROM t_branch WHERE branchid=CONCAT(pi_branchid) OR branchname LIKE CONCAT('%',pi_branchid,'%'); 
+	SELECT ifnull(COUNT(1),0) INTO v_branchid FROM t_temp_branch;
+	IF v_branchid = 0 THEN 
+		SELECT NULL;
+		SET po_errormsg = '分店ID不存在';
+		LEAVE label_main;
+	END IF;
+  END IF;
+  
+  #生成要统计的分店信息
+  IF v_branchid IS NULL THEN 
+	  INSERT INTO t_temp_branch
+	  SELECT branchid
+		   , branchname
+	  FROM
+		t_branch;
+  END IF;
+		
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;  
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+	orderid VARCHAR(50),
+    ordertype TINYINT,
+	branchid VARCHAR(50),
+    begintime DATETIME,
+    endtime DATETIME
+	
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  #创建orderid索引
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+  #创建branchid索引
+  CREATE INDEX ix_t_temp_order_branchid ON t_temp_order (branchid);
+  
+  #早市晚市
+  IF pi_sb > -1 THEN
+    INSERT INTO t_temp_order
+    SELECT orderid
+         , ordertype
+		 , t_temp_branch.branchid branchid
+         , begintime
+         , endtime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime), t_temp_branch
+    WHERE
+      t_order.branchid = t_temp_branch.branchid
+      AND begintime BETWEEN v_date_start AND v_date_end 
+      AND shiftid = pi_sb
+      AND orderstatus = 3;
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid
+         , ordertype
+		 , t_temp_branch.branchid branchid
+         , begintime
+         , endtime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime), t_temp_branch
+    WHERE
+      t_order.branchid = t_temp_branch.branchid
+      AND begintime BETWEEN v_date_start AND v_date_end 
+      AND orderstatus = 3;
+  END IF;
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    payamount DOUBLE(13, 2),
+    ordertype TINYINT,
+    pricetype CHAR(1),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishtype TINYINT
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
+  
+  INSERT INTO t_temp_order_detail
+  SELECT b.orderid
+       , b.dishnum
+       , b.orignalprice
+       , b.payamount
+       , a.ordertype
+       , b.pricetype
+       , b.childdishtype
+       , b.primarykey
+       , b.superkey
+       , b.dishtype
+  FROM
+    t_temp_order a, t_order_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND orignalprice > 0;  
+
+	 -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
+
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+ 
+	
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponid VARCHAR(50),
+    ordertype TINYINT,
+    isviporder TINYINT, #是否会员卡消费 1:是; 0:否;
+    coupondetailid VARCHAR(50),
+	couponNum INT,
+	bankcardno VARCHAR(50),
+    membercardno VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_settlement_detail_orderid ON t_temp_settlement_detail (orderid);
+  
+  INSERT INTO t_temp_settlement_detail
+  SELECT b.orderid
+       , b.payway
+       , b.payamount
+       , b.couponid
+       , a.ordertype
+       , CASE
+         WHEN b.payway = 8 AND char_length(b.membercardno) > 1 THEN
+           1
+         ELSE
+           0
+         END
+		, b.coupondetailid
+		, b.couponNum
+		, b.bankcardno
+        , b.membercardno
+  FROM
+    t_temp_order a, t_settlement_detail b
+  WHERE
+    a.orderid = b.orderid;
+	
+  #除会员验证的那条数据外，删除其它无效数据  
+  DELETE
+  FROM
+    t_temp_settlement_detail
+  WHERE
+    isviporder = 0
+    AND payamount = 0;
+  
+  #创建会员消费内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
+  CREATE TEMPORARY TABLE t_temp_order_member
+  (
+    orderid VARCHAR(50),
+    Inflated DOUBLE(13, 2),
+    netvalue DOUBLE(13, 2),
+    ordertype TINYINT
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_member_orderid ON t_temp_order_member (orderid);
+
+  #生成临时会员结算数据  
+  INSERT INTO t_temp_order_member
+  SELECT b.orderid
+       , b.Inflated
+       , b.netvalue
+       , a.ordertype
+  FROM
+    t_temp_order a, t_order_member b
+  WHERE
+    a.orderid = b.orderid;
+	
+  #创建订单id临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_orderid;
+  CREATE TEMPORARY TABLE t_temp_orderid
+  (
+	orderid VARCHAR(50),
+	begintime datetime
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  #创建优惠活动内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
+  CREATE TEMPORARY TABLE t_temp_preferential
+  (
+    pid VARCHAR(50),
+    pname VARCHAR(128),
+    ptype CHAR(4),
+    ptypename VARCHAR(32)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+  #生成正常的优惠券数据，包括将其他优惠中的具体原因和合作单位也看成单独的优惠
+  INSERT INTO t_temp_preferential
+  SELECT a.id
+       , (
+         CASE
+         WHEN a.preferential = a.id THEN
+           b.name
+         ELSE
+           ifnull(ifnull(a.free_reason, a.company_name), b.name)
+         END) AS name
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type
+         ELSE
+           b.type
+         END
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type_name
+         ELSE
+           b.type_name
+         END
+  FROM
+    t_p_preferential_detail a, t_p_preferential_activity b
+  WHERE
+    a.preferential = b.id
+  ORDER BY b.code; #按code排序
+
+  #生成结算详情活动联合表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new;
+  CREATE TEMPORARY TABLE t_temp_settlement_new
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+	pid VARCHAR(50),#活动id
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4) #活动分类
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  CREATE INDEX ix_t_temp_settlement_new ON t_temp_settlement_new(orderid);
+
+  #生成优免数据（不包含金总挂账数据）
+  INSERT INTO t_temp_settlement_new
+  SELECT a.orderid
+       , a.payway
+       , a.payamount
+	   , b.pid
+       , b.pname
+       , b.ptype
+  FROM
+    t_temp_settlement_detail a, t_temp_preferential b
+  WHERE
+    a.payway = 6
+    AND a.coupondetailid = b.pid;
+
+  #创建优惠中间临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new_sub;
+  CREATE TEMPORARY TABLE t_temp_settlement_new_sub
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+    pid VARCHAR(50), #活动id
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4) #活动分类
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  CREATE INDEX ix_t_temp_settlement_new_sub ON t_temp_settlement_new_sub(orderid);
+  
+  #创建订单详情临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_order_detail_sub
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    payamount DOUBLE(13, 2),
+    ordertype TINYINT,
+    pricetype CHAR(1),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_detail_sub_orderid ON t_temp_order_detail_sub (orderid);
+  
+  #创建结算详情临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail_sub
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponid VARCHAR(50),
+    ordertype TINYINT,
+    isviporder TINYINT, #是否会员卡消费 1:是; 0:否;
+    coupondetailid VARCHAR(50),
+	couponNum INT,
+	bankcardno VARCHAR(50),
+    membercardno VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_settlement_detail_sub_orderid ON t_temp_settlement_detail_sub (orderid);
+  
+  ##创建结果内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	datetime VARCHAR(50),
+	brandid VARCHAR(50),
+	brandname VARCHAR(50),
+	marketid VARCHAR(50),
+	market  VARCHAR(50),
+	areaid VARCHAR(50),
+	area  VARCHAR(50),
+	managePattern  VARCHAR(50),
+	managePatternid VARCHAR(50),
+	jde VARCHAR(50),#jde
+	branchid VARCHAR(50),  #活动id
+	branchname VARCHAR(50), #活动名称
+    shouldamount decimal(13, 2), #应收总额
+    paidinamount decimal(13, 2), #实收总额
+    discountamount decimal(13, 2), #折扣总额
+    cash decimal(13, 2) DEFAULT 0.00, #实收（现金）
+    credit decimal(13, 2) DEFAULT 0.00, #实收（挂账）
+    credit2 decimal(13, 2) DEFAULT 0.00, #实收（挂账2）
+    card decimal(13, 2) DEFAULT 0.00, #实收（刷他行卡）
+    icbccard decimal(13, 2) DEFAULT 0.00, #实收（刷工行卡）
+    weixin decimal(13, 2) DEFAULT 0.00, #实收（微信）
+    zhifubao decimal(13, 2) DEFAULT 0.00, #实收（支付宝）
+    merbervaluenet decimal(13, 2) DEFAULT 0.00, #实收（会员储值消费净值）
+    integralconsum decimal(13, 2) DEFAULT 0.00, #折扣(会员积分消费）
+    meberTicket decimal(13, 2) DEFAULT 0.00, #折扣(会员券）
+    fraction decimal(13, 2) DEFAULT 0.00, #折扣(抹零）
+    give decimal(13, 2) DEFAULT 0.00, #折扣(赠送）
+    roundoff decimal(13, 2) DEFAULT 0.00, #折扣(四舍五入调整）
+    mebervalueadd decimal(13, 2) DEFAULT 0.00, #折扣(虚增）
+    free decimal(13, 2) DEFAULT 0.00, #折扣(会员优免 - 直接相减 )
+    free2 decimal(13, 2) DEFAULT 0.00, #折扣(会员优免2 - 详细计算 )
+	preferentialdetail VARCHAR(10000), #活动详细信息
+	totalfree VARCHAR(10000), #测试
+	PRIMARY KEY (id)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  ##创建结果内存优惠详情页
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
+  CREATE TEMPORARY TABLE t_temp_res_detail
+  (
+	pid VARCHAR(50) NOT NULL,#活动id
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    payamount DOUBLE(13, 2), #结算金额
+	PRIMARY KEY(pid)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  #创建pid索引
+  CREATE UNIQUE INDEX ix_t_temp_res_detail_pid ON t_temp_res_detail (pid);	
+	
+	#创建所有优惠集合
+	BEGIN
+		DECLARE cur_total CURSOR FOR SELECT DISTINCT pname,pid
+										   FROM
+											 t_temp_settlement_new;
+			
+		SET v_fetch_done = FALSE;
+		OPEN cur_total;
+		TRUNCATE t_temp_res_detail;
+			 
+		lable_fetch_total_loop:
+		LOOP
+			FETCH cur_total INTO v_pname,v_pid;
+			
+			IF v_fetch_done THEN
+			SET v_fetch_done = FALSE;
+			LEAVE lable_fetch_total_loop;
+			END IF;
+
+			SELECT max(ptype)
+				, ifnull(sum(payamount), 0)
+			INTO
+				v_ptype, v_pamount
+			FROM
+				t_temp_settlement_new
+			WHERE
+				pname = v_pname
+			AND pid = v_pid;
+				  
+			INSERT INTO t_temp_res_detail (pid,pname,ptype,payamount) VALUES( v_pid, v_pname , v_ptype , v_pamount );
+
+		END LOOP lable_fetch_total_loop;
+		
+		#增加 优免
+		INSERT INTO t_temp_res_detail (pid,pname,ptype,payamount) VALUES ('youmian', '会员优免' , 'ym' , 0);
+		
+		SELECT group_concat(t.value_detail SEPARATOR '|')
+			INTO
+			  v_value_total
+			FROM
+			 (
+			  SELECT concat(pid, ',', pname, ',', payamount) AS value_detail
+			  FROM
+				t_temp_res_detail
+			  ) t;
+		
+		CLOSE cur_total;
+	END;
+	
+ #遍历分店
+  BEGIN
+  
+	DECLARE cur_branchid CURSOR FOR SELECT DISTINCT branchid
+										FROM t_temp_order USE INDEX (ix_t_temp_order_branchid)  GROUP BY branchid;
+										
+	#设置统计时间
+	IF DATEDIFF(v_date_end,v_date_start) > 0 THEN 
+		SET v_datetime = concat(date_format(v_date_start,'%Y-%m-%d'),' - ',date_format(v_date_end,'%Y-%m-%d'));
+	ELSE
+		SET v_datetime = concat(date_format(v_date_start,'%Y-%m-%d'));
+	END IF;
+	
+	SET v_fetch_done = FALSE;
+	
+	OPEN cur_branchid;
+	
+	label_fetch_loop:
+		LOOP
+			FETCH cur_branchid into v_branchid;
+			
+			IF v_fetch_done THEN
+				leave label_fetch_loop;
+			END IF;	
+			
+			SELECT branchname into v_branchname 
+			FROM t_temp_branch
+			WHERE branchid = v_branchid;
+			
+			TRUNCATE t_temp_orderid;
+			
+			INSERT INTO t_temp_orderid
+			SELECT DISTINCT orderid,begintime
+			FROM t_temp_order USE INDEX (ix_t_temp_order_branchid) WHERE branchid = v_branchid;
+			
+			#清空订单详情临时表
+			TRUNCATE t_temp_order_detail_sub;
+			
+			#计算该分店所包括的订单号
+			INSERT INTO t_temp_order_detail_sub
+		    SELECT a.orderid
+			     , a.dishnum
+			     , a.orignalprice
+				 , a.payamount
+			     , a.ordertype
+			     , a.pricetype
+			     , a.childdishtype
+			     , a.primarykey
+			     , a.superkey
+		    FROM
+			  t_temp_order_detail a, t_temp_orderid b
+		    WHERE
+			  a.orderid = b.orderid
+			AND orignalprice > 0;
+			
+			#清空订单详情临时表
+			TRUNCATE t_temp_settlement_detail_sub;
+			
+			  INSERT INTO t_temp_settlement_detail_sub
+			  SELECT a.orderid
+				   , a.payway
+				   , a.payamount
+				   , a.couponid
+				   , a.ordertype
+				   , a.payway
+				   , a.coupondetailid
+				   , a.couponNum
+				   , a.bankcardno
+				   , a.membercardno
+			  FROM
+				t_temp_settlement_detail a, t_temp_orderid b
+			  WHERE
+				a.orderid = b.orderid;
+			
+			#计算应收
+			SELECT ifnull(sum(orignalprice * dishnum), 0)
+			INTO
+			  v_shouldamount
+			FROM
+			  t_temp_order_detail_sub;
+			  
+
+			#计算每种结算方式的结算金额
+		    SELECT ifnull(sum(
+				 CASE
+				 WHEN payway = 0 THEN #现金
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+				,ifnull(sum(
+				 CASE
+				 WHEN payway = 6 THEN #优免
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+				,ifnull(sum(
+				 CASE
+				 WHEN payway = 13 THEN #挂账2
+				   payamount
+				 ELSE
+				   0
+				 END), 0) 
+			   ,ifnull(sum(
+				 CASE
+				 WHEN payway = 1 and membercardno='0' and payamount<>0 THEN #刷它行卡
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 1 and membercardno='1' and payamount<>0 THEN #刷工行卡
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 5 AND payamount > 0 THEN #挂账
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 8 THEN #会员卡消费
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 11 THEN #会员积分消费
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 12 THEN #会员券消费
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 7 THEN #抹零
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , 0 - ifnull(sum(
+				 CASE
+				 WHEN payway = 20 THEN #四舍五入调整
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 17 THEN #微信支付
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 18 THEN #支付宝支付
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+		    INTO
+			  v_pa_cash,v_da_free,v_da_credit2, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_pa_weixin, v_pa_zhifubao
+		    FROM
+			  t_temp_settlement_detail_sub;
+				
+			#赠送金额
+			SELECT 
+				ifnull(sum(
+						CASE pricetype
+						WHEN '1' THEN
+						orignalprice * dishnum
+						ELSE
+							0
+						END), 0) 
+			INTO
+				v_da_give 
+			FROM
+				t_temp_order_detail_sub;
+			
+			#计算虚增
+			SELECT ifnull(sum(Inflated), 0)
+			INTO
+			  v_da_mebervalueadd
+			FROM
+			  t_temp_order_member
+			JOIN  t_temp_orderid
+			ON
+				t_temp_order_member.orderid = t_temp_orderid.orderid;
+				
+			#设置实收（全部） = 现金 + 挂账 + 刷他行卡 + 会员储值消费 - 会员储值消费虚增 + 刷工行卡 + 微信支付 + 支付宝支付+挂账2
+			SET v_paidinamount = v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin + v_pa_zhifubao+v_da_credit2;
+				
+			#清空所有的中间临时小表
+			TRUNCATE t_temp_settlement_new_sub;
+
+			#把t_temp_settlement_new拆分成一个个字表，加快循环速度(只计算优免信息)
+			INSERT INTO t_temp_settlement_new_sub
+			SELECT a.orderid ,a.payway,a.payamount,a.pid,a.pname,a.ptype
+			FROM
+			  t_temp_settlement_new a
+			 JOIN t_temp_orderid b
+			ON
+			  a.orderid = b.orderid
+			WHERE
+			 a.payway = '6';
+
+			BEGIN
+			
+			DECLARE cur_pname CURSOR FOR SELECT DISTINCT pname
+										   FROM
+											 t_temp_settlement_new_sub;
+			
+			SET v_fetch_done = FALSE;
+			OPEN cur_pname;
+			  
+			UPDATE t_temp_res_detail SET payamount = 0;
+			 
+			lable_fetch_pname_loop:
+			  LOOP
+				FETCH cur_pname INTO v_pname;
+				IF v_fetch_done THEN
+				  SET v_fetch_done = FALSE;
+				  LEAVE lable_fetch_pname_loop;
+				END IF;
+
+				SELECT pid,max(ptype)
+					 , ifnull(sum(payamount), 0)
+				INTO
+				  v_pid,v_ptype, v_pamount
+				FROM
+				  t_temp_settlement_new_sub
+				WHERE
+				  pname = v_pname;
+				  
+				UPDATE t_temp_res_detail SET payamount = v_pamount  WHERE pid = v_pid;
+
+			  END LOOP lable_fetch_pname_loop;
+			  
+			  #最后关闭游标.
+			  CLOSE cur_pname;
+			  
+			 END;
+			 
+			SET v_da_totalfree = 0;
+			SELECT ifnull(sum(payamount),0) INTO
+			     v_da_totalfree
+			FROM  t_temp_res_detail;
+			
+		    #设置优免金额(实际值来源于会员VIP菜价) =应收 - 实收 - 四舍五入调整 - 会员积分消费 - 会员券消费 - 优惠活动优免 - 抹零 - 赠送 - 虚增
+		    SET v_da_free2 = v_shouldamount - v_paidinamount - ifnull(v_da_roundoff,0)- ifnull(v_da_integralconsum,0)- ifnull(v_da_meberTicket,0)
+							- ifnull(v_da_totalfree,0)- ifnull(v_da_fraction,0)- ifnull(v_da_give,0)- ifnull(v_da_mebervalueadd,0);		
+							
+			SELECT SUM(b.orignalprice*b.dishnum - ifnull(b.payamount,0)) into v_da_free FROM t_temp_order_detail_sub b  WHERE  b.pricetype = 0 AND b.orignalprice*b.dishnum <> IFNULL(b.payamount,0);
+			
+			UPDATE t_temp_res_detail SET payamount = v_da_free2  WHERE pid = 'youmian';
+			 
+			SELECT group_concat(t.value_detail SEPARATOR '|')
+			INTO
+			  v_value_detail
+			FROM
+			 (
+			  SELECT concat(pid, ',', pname, ',', payamount) AS value_detail
+			  FROM
+				t_temp_res_detail
+			  ) t;
+				
+			SELECT ifnull(branch_id,0)
+			INTO v_jde
+			FROM t_branch_code a WHERE a.branch_id_code = v_branchid;
+			
+			#生成一条分店统计结果
+			INSERT INTO t_temp_res 
+				(brandid,brandname,marketid,market,areaid,area,managePattern,managePatternid ,jde,datetime,
+				 branchid,branchname,shouldamount,paidinamount,discountamount,cash,credit,credit2,card,icbccard,weixin,zhifubao,merbervaluenet,
+				integralconsum,meberTicket,fraction,give,roundoff,mebervalueadd,free,free2,preferentialdetail,totalfree) 
+			VALUES 
+				(v_brandid,v_brand_name,v_marketid,v_market_name,v_areaid,v_area_name,1,'自营',v_jde,v_datetime,
+				v_branchid,v_branchname,v_shouldamount,v_paidinamount,v_shouldamount-v_paidinamount,v_pa_cash,v_pa_credit,v_da_credit2,v_pa_card,v_pa_icbc_card,
+				v_pa_weixin,v_pa_zhifubao,v_pa_paidinamount - v_da_mebervalueadd,v_da_integralconsum,v_da_meberTicket,v_da_fraction,v_da_give,v_da_roundoff,
+				v_da_mebervalueadd,v_da_free2,v_da_free,v_value_detail,v_da_totalfree);
+				
+		END LOOP label_fetch_loop;
+		
+		#最后关闭游标.
+		CLOSE cur_branchid;
+  END;
+  
+  SELECT COUNT(1) INTO v_num FROM t_temp_res ;
+  
+  IF v_num <> 0 THEN 
+  #合计
+  SELECT 
+	  ifnull(sum(shouldamount),0),ifnull(sum(paidinamount),0),ifnull(sum(discountamount),0),ifnull(sum(cash),0),ifnull(sum(credit),0),ifnull(sum(credit2),0),
+	  ifnull(sum(card),0),ifnull(sum(icbccard),0),ifnull(sum(weixin),0),ifnull(sum(zhifubao),0),ifnull(sum(merbervaluenet),0),ifnull(sum(integralconsum),0),
+	  ifnull(sum(meberTicket),0),ifnull(sum(fraction),0),ifnull(sum(give),0),ifnull(sum(roundoff),0),ifnull(sum(mebervalueadd),0),ifnull(sum(free),0),
+	  ifnull(sum(totalfree),0)
+  INTO 
+	v_shouldamount,v_paidinamount,v_da_discount,v_pa_cash,v_pa_credit,v_da_credit2,v_pa_card,v_pa_icbc_card,
+	v_pa_weixin,v_pa_zhifubao,v_da_mebervalueaddnet,v_da_integralconsum,v_da_meberTicket,v_da_fraction,v_da_give,v_da_roundoff,
+	v_da_mebervalueadd,v_da_free2,v_da_totalfree
+  FROM 
+      t_temp_res;
+	  
+	SELECT REPLACE(v_value_total,'youmian,会员优免,0.00',CONCAT('youmian,会员优免,',v_da_free2)) INTO v_value_total;
+	
+    INSERT INTO t_temp_res
+	  (branchid,jde,branchname,shouldamount,paidinamount,discountamount,cash,credit,credit2,card,icbccard,weixin,zhifubao,merbervaluenet,
+	  integralconsum,meberTicket,fraction,give,roundoff,mebervalueadd,free,preferentialdetail,totalfree)
+	VALUES
+	  (NULL,'最终合计',NULL,v_shouldamount,v_paidinamount,v_da_discount,v_pa_cash,v_pa_credit,v_da_credit2,v_pa_card,v_pa_icbc_card,
+	   v_pa_weixin,v_pa_zhifubao,v_da_mebervalueaddnet,v_da_integralconsum,v_da_meberTicket,v_da_fraction,v_da_give,v_da_roundoff,
+	   v_da_mebervalueadd,v_da_free2,v_value_total,v_da_totalfree
+	  );
+	  
+  SELECT * FROM t_temp_res ORDER BY id asc;
+  END IF;
+  
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_yyhzbxq
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yyhzbxq`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_report_yyhzbxq`(IN `pi_branchid` int(11)
+																,IN  pi_sb	SMALLINT
+																,IN `pi_ksrq` datetime
+																,IN `pi_jsrq` datetime
+																,IN `pi_brandid` int(11)
+																,IN `pi_marketid` int(11)
+																,IN `pi_areaid` int(11)
+																,OUT `po_errormsg` varchar(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业活动汇总表详情'
+label_main:
+BEGIN
+  DECLARE v_date_start    DATETIME;
+  DECLARE v_date_end      DATETIME;
+  DECLARE v_cur_orderid  VARCHAR(50);#当前订单id
+  DECLARE v_fetch_done BOOL DEFAULT FALSE; 
+  DECLARE v_branchid VARCHAR(50); 
+  DECLARE v_branchname VARCHAR(50); 
+  DECLARE v_shouldamount VARCHAR(50); 
+  DECLARE v_paidinamount  VARCHAR(128); #实收总额
+  DECLARE v_brandid  VARCHAR(128); #品牌
+  DECLARE v_marketid  VARCHAR(128); #市场
+  DECLARE v_areaid  VARCHAR(128); #区域
+  DECLARE v_jde  VARCHAR(128); #jde
+  DECLARE v_brand_name  VARCHAR(128); #品牌
+  DECLARE v_market_name  VARCHAR(128); #市场
+  DECLARE v_area_name  VARCHAR(128); #区域
+  DECLARE v_datetime  VARCHAR(128); #日期
+
+  #以下为实收明细统计项
+  DECLARE v_pa_cash               DOUBLE(13, 2) DEFAULT 0; #实收（现金）
+  DECLARE v_pa_credit             DOUBLE(13, 2) DEFAULT 0; #实收（挂账）
+  DECLARE v_pa_card               DOUBLE(13, 2) DEFAULT 0; #实收（刷卡——刷他行卡）
+  DECLARE v_pa_icbc_card          DOUBLE(13, 2) DEFAULT 0; #实收（刷卡——刷工行卡）
+  DECLARE v_pa_paidinamount       DOUBLE(13, 2) DEFAULT 0; #会员储值消费（含虚增）
+  DECLARE v_pa_weixin             DOUBLE(13, 2) DEFAULT 0; #实收（微信）
+  DECLARE v_pa_zhifubao           DOUBLE(13, 2) DEFAULT 0; #实收（支付宝）
+  
+  #以下为折扣明细统计项
+  DECLARE v_da_free               DOUBLE(13, 2) DEFAULT 0; #折扣(优免）
+  DECLARE v_da_integralconsum     DOUBLE(13, 2) DEFAULT 0; #折扣(会员积分消费）
+  DECLARE v_da_meberTicket        DOUBLE(13, 2) DEFAULT 0; #折扣(会员券）
+  DECLARE v_da_discount           DOUBLE(13, 2) DEFAULT 0; #折扣(折扣额）
+  DECLARE v_da_fraction           DOUBLE(13, 2) DEFAULT 0; #折扣(抹零）
+  DECLARE v_da_roundoff           DOUBLE(13, 2) DEFAULT 0; #折扣(四舍五入调整）
+  DECLARE v_da_give               DOUBLE(13, 2) DEFAULT 0; #折扣(赠送）
+  DECLARE v_da_mebervalueadd      DOUBLE(13, 2) DEFAULT 0; #折扣(会员储值消费虚增）
+  DECLARE v_da_credit2      	  DOUBLE(13, 2) DEFAULT 0; #挂账2
+  DECLARE v_da_free2      		  DOUBLE(13, 2) DEFAULT 0; #优惠2
+  DECLARE v_da_totalfree      	  DOUBLE(13, 2) DEFAULT 0; #优惠活动优免
+  DECLARE v_da_mebervalueaddnet   DOUBLE(13, 2) DEFAULT 0; #会员净增
+  
+  #以下是活动明细统计项
+  DECLARE v_pid         VARCHAR(50); #活动id
+  DECLARE v_pname         VARCHAR(128); #活动名称
+  DECLARE v_ptype         CHAR(4); #活动分类编码
+  DECLARE v_pamount       DOUBLE(13, 2); #活动发生金额
+  DECLARE v_value_detail  VARCHAR(10000); #活动发生金额
+  DECLARE v_value_total  VARCHAR(10000); #活动发生金额统计
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  BEGIN
+    SET v_fetch_done = TRUE; #当读到数据的最后一条时,设置v_fetch_done变量为TRUE
+  END;
+
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+	SELECT NULL;
+	GET DIAGNOSTICS CONDITION 1 po_errormsg = MESSAGE_TEXT;
+  END;
+	
+  IF pi_branchid IS NULL THEN
+  SELECT NULL;
+  SET po_errormsg = '分店ID输入不能为空';
+  LEAVE label_main;
+  END IF;
+  
+  IF pi_brandid > -1 THEN
+  #设置当前品牌id
+	SELECT id,name INTO v_brandid,v_brand_name  FROM t_c_brand WHERE id = pi_brandid;
+  ELSE
+	SELECT id,name INTO v_brandid,v_brand_name FROM t_c_brand LIMIT 1;
+  END IF;  
+  
+  IF pi_marketid > -1 THEN
+  #设置当前市场id
+	SELECT id,name INTO v_marketid,v_market_name  FROM t_c_market WHERE id = pi_marketid;
+  ELSE
+	SELECT id,name INTO v_marketid,v_market_name FROM t_c_market LIMIT 1;
+  END IF;  
+  
+  IF pi_areaid > -1 THEN
+  #设置当前区域id
+	SELECT id,name INTO v_areaid,v_area_name  FROM t_c_area WHERE id = pi_areaid;
+  ELSE
+	SELECT id,name INTO v_areaid,v_area_name FROM t_c_area LIMIT 1;
+  END IF; 
+	
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+  SET SESSION group_concat_max_len=102400;
+
+  SET v_date_start = str_to_date(concat(date_format(pi_ksrq,'%Y-%m-%d'),'00:00:00'),'%Y-%m-%d %H:%i:%s');
+  SET v_date_end = str_to_date(concat(date_format(pi_jsrq,'%Y-%m-%d'),'23:59:59'),'%Y-%m-%d %H:%i:%s');
+  SET v_branchid = pi_branchid;
+	
+  DROP TEMPORARY TABLE IF EXISTS t_temp_branch;
+  CREATE TEMPORARY TABLE t_temp_branch
+  (
+	branchid VARCHAR(50),
+    branchname VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  INSERT INTO t_temp_branch
+  SELECT branchid
+	   , branchname
+  FROM
+	t_branch;
+	
+  SELECT branchname INTO v_branchname FROM
+  t_temp_branch WHERE branchid = v_branchid;
+  
+  IF v_branchname IS NULL THEN 
+  SELECT NULL;
+  SET po_errormsg = '分店id不存在';
+  LEAVE label_main;
+  END IF;
+	
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+	orderid VARCHAR(50),
+    begintime DATETIME,
+    endtime DATETIME
+	
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  #创建orderid索引
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+  #早市晚市
+  IF pi_sb > -1 THEN
+    INSERT INTO t_temp_order
+    SELECT orderid
+         , begintime
+         , endtime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime)
+    WHERE
+	  t_order.branchid = v_branchid
+      AND begintime BETWEEN v_date_start AND v_date_end 
+      AND shiftid = pi_sb
+      AND orderstatus = 3;
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid
+         , begintime
+         , endtime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime)
+    WHERE
+	  t_order.branchid = v_branchid
+      AND begintime BETWEEN v_date_start AND v_date_end 
+      AND orderstatus = 3;
+  END IF;
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    pricetype CHAR(1),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishtype TINYINT
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
+  
+  INSERT INTO t_temp_order_detail
+  SELECT b.orderid
+       , b.dishnum
+       , b.orignalprice
+       , b.pricetype
+       , b.childdishtype
+       , b.primarykey
+       , b.superkey
+       , b.dishtype
+  FROM
+    t_temp_order a, t_order_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND orignalprice > 0;  
+	
+   -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
+
+  # 删除套餐明细
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+	
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponid VARCHAR(50),
+    isviporder TINYINT, #是否会员卡消费 1:是; 0:否;
+    coupondetailid VARCHAR(50),
+	couponNum INT,
+	bankcardno VARCHAR(50),
+    membercardno VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_settlement_detail_orderid ON t_temp_settlement_detail (orderid);
+  
+  INSERT INTO t_temp_settlement_detail
+  SELECT b.orderid
+       , b.payway
+       , b.payamount
+       , b.couponid
+       , CASE
+         WHEN b.payway = 8 AND char_length(b.membercardno) > 1 THEN
+           1
+         ELSE
+           0
+         END
+		, b.coupondetailid
+		, b.couponNum
+		, b.bankcardno
+        , b.membercardno
+  FROM
+    t_temp_order a, t_settlement_detail b
+  WHERE
+    a.orderid = b.orderid;
+	
+  #除会员验证的那条数据外，删除其它无效数据  
+  DELETE
+  FROM
+    t_temp_settlement_detail
+  WHERE
+    isviporder = 0
+    AND payamount = 0;
+  
+  #创建会员消费内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
+  CREATE TEMPORARY TABLE t_temp_order_member
+  (
+    orderid VARCHAR(50),
+    Inflated DOUBLE(13, 2),
+    netvalue DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_member_orderid ON t_temp_order_member (orderid);
+
+  #生成临时会员结算数据  
+  INSERT INTO t_temp_order_member
+  SELECT b.orderid
+       , b.Inflated
+       , b.netvalue
+  FROM
+    t_temp_order a, t_order_member b
+  WHERE
+    a.orderid = b.orderid;
+	
+  #创建优惠活动内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_preferential;
+  CREATE TEMPORARY TABLE t_temp_preferential
+  (
+    pid VARCHAR(50),
+    pname VARCHAR(128),
+    ptype CHAR(4),
+    ptypename VARCHAR(32)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+  #生成正常的优惠券数据，包括将其他优惠中的具体原因和合作单位也看成单独的优惠
+  INSERT INTO t_temp_preferential
+  SELECT a.id
+       , (
+         CASE
+         WHEN a.preferential = a.id THEN
+           b.name
+         ELSE
+           ifnull(ifnull(a.free_reason, a.company_name), b.name)
+         END) AS name
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type
+         ELSE
+           b.type
+         END
+       , CASE
+         WHEN b.type = '06' THEN
+           b.sub_type_name
+         ELSE
+           b.type_name
+         END
+  FROM
+    t_p_preferential_detail a, t_p_preferential_activity b
+  WHERE
+    a.preferential = b.id
+  ORDER BY b.code; #按code排序
+  
+    #创建订单详情临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_order_detail_sub
+  (
+    orderid VARCHAR(50),
+    dishnum DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+    pricetype CHAR(1),
+    childdishtype TINYINT,
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_order_detail_sub_orderid ON t_temp_order_detail_sub (orderid);
+
+  #生成结算详情活动联合表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new;
+  CREATE TEMPORARY TABLE t_temp_settlement_new
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+	pid VARCHAR(50),#活动id
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4) #活动分类
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  CREATE INDEX ix_t_temp_settlement_new ON t_temp_settlement_new(orderid);
+
+  #生成挂账和优免数据（不包含金总挂账数据,另外统计在结果表中）
+  INSERT INTO t_temp_settlement_new
+  SELECT a.orderid
+       , a.payway
+       , a.payamount
+	   , b.pid
+       , b.pname
+       , b.ptype
+  FROM
+    t_temp_settlement_detail a, t_temp_preferential b
+  WHERE
+    a.payway = 6
+    AND a.coupondetailid = b.pid;
+
+  #创建优惠中间临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_new_sub;
+  CREATE TEMPORARY TABLE t_temp_settlement_new_sub
+  (
+    orderid VARCHAR(50),
+    payway INT, #结算方式
+    payamount DOUBLE(13, 2), #结算金额
+    pid VARCHAR(50), #活动id
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4) #活动分类
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  CREATE INDEX ix_t_temp_settlement_new_sub ON t_temp_settlement_new_sub(orderid);
+  
+  #创建结算详情临时表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail_sub;
+  CREATE TEMPORARY TABLE t_temp_settlement_detail_sub
+  (
+    orderid VARCHAR(50),
+    payway INT,
+    payamount DOUBLE(13, 2),
+    couponid VARCHAR(50),
+    isviporder TINYINT, #是否会员卡消费 1:是; 0:否;
+    coupondetailid VARCHAR(50),
+	couponNum INT,
+	bankcardno VARCHAR(50),
+    membercardno VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  
+  CREATE INDEX ix_t_temp_settlement_detail_sub_orderid ON t_temp_settlement_detail_sub (orderid);
+  
+  ##创建结果内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	datetime date,
+	brandid VARCHAR(50),
+	brandname VARCHAR(50),
+	marketid VARCHAR(50),
+	market  VARCHAR(50),
+	areaid VARCHAR(50),
+	area  VARCHAR(50),
+	managePattern  VARCHAR(50),
+	managePatternid VARCHAR(50),
+	jde VARCHAR(50),#jde
+	branchid VARCHAR(50),  #活动id
+	branchname VARCHAR(50), #活动名称
+	orderid VARCHAR(50), #订单id
+    shouldamount decimal(13, 2), #应收总额
+    paidinamount decimal(13, 2), #实收总额
+    discountamount decimal(13, 2), #折扣总额
+    cash decimal(13, 2) DEFAULT 0.00, #实收（现金）
+    credit decimal(13, 2) DEFAULT 0.00, #实收（挂账）
+    credit2 decimal(13, 2) DEFAULT 0.00, #实收（挂账2）
+    card decimal(13, 2) DEFAULT 0.00, #实收（刷他行卡）
+    icbccard decimal(13, 2) DEFAULT 0.00, #实收（刷工行卡）
+    weixin decimal(13, 2) DEFAULT 0.00, #实收（微信）
+    zhifubao decimal(13, 2) DEFAULT 0.00, #实收（支付宝）
+    merbervaluenet decimal(13, 2) DEFAULT 0.00, #实收（会员储值消费净值）
+    integralconsum decimal(13, 2) DEFAULT 0.00, #折扣(会员积分消费）
+    meberTicket decimal(13, 2) DEFAULT 0.00, #折扣(会员券）
+    fraction decimal(13, 2) DEFAULT 0.00, #折扣(抹零）
+    give decimal(13, 2) DEFAULT 0.00, #折扣(赠送）
+    roundoff decimal(13, 2) DEFAULT 0.00, #折扣(四舍五入调整）
+    mebervalueadd decimal(13, 2) DEFAULT 0.00, #折扣(虚增）
+    free decimal(13, 2) DEFAULT 0.00, #折扣(优免)
+	preferentialdetail VARCHAR(10000), #活动详细信息
+	totalfree VARCHAR(10000), #测试
+	PRIMARY KEY (id)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+  
+  ##创建结果内存优惠详情页
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_detail;
+  CREATE TEMPORARY TABLE t_temp_res_detail
+  (
+	pid VARCHAR(50),#活动id
+    pname VARCHAR(128), #活动名称
+    ptype CHAR(4), #活动分类
+    payamount DOUBLE(13, 2) #结算金额
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  	#创建所有优惠集合
+	BEGIN
+		DECLARE cur_total CURSOR FOR SELECT DISTINCT pname,pid
+										   FROM
+											 t_temp_settlement_new;
+			
+		SET v_fetch_done = FALSE;
+		OPEN cur_total;
+		TRUNCATE t_temp_res_detail;
+			 
+		lable_fetch_total_loop:
+		LOOP
+			FETCH cur_total INTO v_pname,v_pid;
+			
+			IF v_fetch_done THEN
+			SET v_fetch_done = FALSE;
+			LEAVE lable_fetch_total_loop;
+			END IF;
+
+			SELECT max(ptype)
+				, ifnull(sum(payamount), 0)
+			INTO
+				v_ptype, v_pamount
+			FROM
+				t_temp_settlement_new
+			WHERE
+				pname = v_pname
+			AND pid = v_pid;
+				  
+			INSERT INTO t_temp_res_detail (pid,pname,ptype,payamount) VALUES( v_pid, v_pname , v_ptype , v_pamount );
+
+		END LOOP lable_fetch_total_loop;
+		
+		#增加 优免
+		INSERT INTO t_temp_res_detail (pid,pname,ptype,payamount) VALUES ('youmian', '会员优免' , 'ym' , 0);
+		
+		SELECT group_concat(t.value_detail SEPARATOR '|')
+			INTO
+			  v_value_total
+			FROM
+			 (
+			  SELECT concat(pid, ',', pname, ',', payamount) AS value_detail
+			  FROM
+				t_temp_res_detail) t;
+		
+		CLOSE cur_total;
+	END;
+	
+ #遍历分店
+  BEGIN
+	DECLARE cur_orderid CURSOR FOR SELECT orderid,begintime
+										FROM t_temp_order USE INDEX (ix_t_temp_order_orderid);
+	
+	SET v_fetch_done = FALSE;
+	
+	OPEN cur_orderid;
+	
+	label_fetch_loop:
+		LOOP
+			FETCH cur_orderid into v_cur_orderid,v_datetime;
+			
+			IF v_fetch_done THEN
+				leave label_fetch_loop;
+			END IF;	
+			
+			
+			#清空订单详情临时表
+			TRUNCATE t_temp_settlement_detail_sub;
+			
+			  INSERT INTO t_temp_settlement_detail_sub
+			  SELECT a.orderid
+				   , a.payway
+				   , a.payamount
+				   , a.couponid
+				   , a.payway
+				   , a.coupondetailid
+				   , a.couponNum
+				   , a.bankcardno
+				   , a.membercardno
+			  FROM
+				t_temp_settlement_detail a
+			  WHERE
+				a.orderid = v_cur_orderid;
+				
+			#清空订单临时表
+			TRUNCATE t_temp_order_detail_sub;
+			
+			INSERT INTO t_temp_order_detail_sub
+			SELECT a.orderid
+			     , a.dishnum
+			     , a.orignalprice
+			     , a.pricetype
+			     , a.childdishtype
+			     , a.primarykey
+			     , a.superkey
+		    FROM
+			  t_temp_order_detail a
+		    WHERE
+				a.orderid = v_cur_orderid
+			AND a.orignalprice > 0;
+			
+			#计算应收
+			SELECT ifnull(sum(orignalprice * dishnum), 0)
+			INTO
+			  v_shouldamount
+			FROM
+			  t_temp_order_detail_sub;
+
+			#计算每种结算方式的结算金额
+		    SELECT ifnull(sum(
+				 CASE
+				 WHEN payway = 0 THEN #现金
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+				,ifnull(sum(
+				 CASE
+				 WHEN payway = 6 THEN #优免
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+				,ifnull(sum(
+				 CASE
+				 WHEN payway = 13 THEN #挂账2
+				   payamount
+				 ELSE
+				   0
+				 END), 0) 
+			   ,ifnull(sum(
+				 CASE
+				 WHEN payway = 1 and membercardno='0' and payamount<>0 THEN #刷它行卡
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 1 and membercardno='1' and payamount<>0 THEN #刷工行卡
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 5 AND payamount > 0 THEN #挂账
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 8 THEN #会员卡消费
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 11 THEN #会员积分消费
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 12 THEN #会员券消费
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 7 THEN #抹零
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , 0 - ifnull(sum(
+				 CASE
+				 WHEN payway = 20 THEN #四舍五入调整
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 17 THEN #微信支付
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+			   , ifnull(sum(
+				 CASE
+				 WHEN payway = 18 THEN #支付宝支付
+				   payamount
+				 ELSE
+				   0
+				 END), 0)
+		    INTO
+			  v_pa_cash,v_da_free,v_da_credit2, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_pa_weixin, v_pa_zhifubao
+		    FROM
+			  t_temp_settlement_detail_sub;
+					
+			#赠送金额
+			SELECT 
+				ifnull(sum(
+						CASE pricetype
+						WHEN '1' THEN
+						orignalprice * dishnum
+						ELSE
+							0
+						END), 0) 
+			INTO
+				v_da_give 
+			FROM
+				t_temp_order_detail_sub;
+			
+			#计算虚增
+			SELECT ifnull(sum(Inflated), 0)
+			INTO
+			  v_da_mebervalueadd
+			FROM
+			  t_temp_order_member a
+			WHERE
+			  a.orderid = v_cur_orderid;
+				
+			#设置实收（全部） = 现金 + 挂账 + 刷他行卡 + 会员储值消费 - 会员储值消费虚增 + 刷工行卡 + 微信支付 + 支付宝支付+挂账2
+			SET v_paidinamount = v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin + v_pa_zhifubao+v_da_credit2;
+				
+			#清空所有的中间临时小表
+			TRUNCATE t_temp_settlement_new_sub;
+
+			#把t_temp_settlement_new拆分成一个个字表，加快循环速度(只计算优免信息)
+			INSERT INTO t_temp_settlement_new_sub
+			SELECT a.orderid ,a.payway,a.payamount,a.pid,a.pname,a.ptype
+			FROM
+			  t_temp_settlement_new a
+			WHERE
+			  a.orderid = v_cur_orderid
+			AND
+			 a.payway = '6';
+
+			BEGIN
+			
+			DECLARE cur_pname CURSOR FOR SELECT DISTINCT pname
+										   FROM
+											 t_temp_settlement_new_sub;
+							
+			SET v_fetch_done = FALSE;
+			OPEN cur_pname;
+			  
+			UPDATE t_temp_res_detail SET payamount = 0;
+			 
+			lable_fetch_pname_loop:
+			  LOOP
+				FETCH cur_pname INTO v_pname;
+				
+				IF v_fetch_done THEN
+				  SET v_fetch_done = FALSE;
+				  LEAVE lable_fetch_pname_loop;
+				END IF;
+
+				SELECT pid,max(ptype)
+					 , ifnull(sum(payamount), 0)
+				INTO
+				  v_pid,v_ptype, v_pamount
+				FROM
+				  t_temp_settlement_new_sub
+				WHERE
+				  pname = v_pname;
+				  
+				UPDATE t_temp_res_detail SET payamount = v_pamount  WHERE pid = v_pid;
+
+			  END LOOP lable_fetch_pname_loop;
+			  
+			  #最后关闭游标.
+			  CLOSE cur_pname;
+			  
+			 END;
+			 
+			SET v_da_totalfree = 0;
+			SELECT ifnull(sum(payamount),0) INTO
+			     v_da_totalfree
+			FROM  t_temp_res_detail;
+			
+		    #设置优免金额(实际值来源于会员VIP菜价) =应收 - 实收 - 四舍五入调整 - 会员积分消费 - 会员券消费 - 优惠活动优免 - 抹零 - 赠送 - 虚增
+		    SET v_da_free2 = v_shouldamount - v_paidinamount - ifnull(v_da_roundoff,0)- ifnull(v_da_integralconsum,0)- ifnull(v_da_meberTicket,0)
+							- ifnull(v_da_totalfree,0)- ifnull(v_da_fraction,0)- ifnull(v_da_give,0)- ifnull(v_da_mebervalueadd,0);		
+
+			UPDATE t_temp_res_detail SET payamount = v_da_free2  WHERE pid = 'youmian';
+			 
+			SELECT group_concat(t.value_detail SEPARATOR '|')
+			INTO
+			  v_value_detail
+			FROM
+			 (
+			  SELECT concat(pid, ',', pname, ',', payamount) AS value_detail
+			  FROM
+				t_temp_res_detail) t;
+				
+			SELECT ifnull(branch_id,0)
+			INTO v_jde
+			FROM t_branch_code a WHERE a.branch_id_code = v_branchid;
+				
+			#生成一条分店统计结果
+			INSERT INTO t_temp_res 
+				(brandid,brandname,marketid,market,areaid,area,managePattern,managePatternid ,jde,datetime,
+				branchid,branchname,orderid,shouldamount,paidinamount,discountamount,cash,credit,credit2,card,icbccard,weixin,zhifubao,merbervaluenet,
+				integralconsum,meberTicket,fraction,give,roundoff,mebervalueadd,free,preferentialdetail,totalfree) 
+			VALUES 
+				(v_brandid,v_brand_name,v_marketid,v_market_name,v_areaid,v_area_name,1,'自营',v_jde,v_datetime,
+				v_branchid,v_branchname,v_cur_orderid,v_shouldamount,v_paidinamount,v_shouldamount-v_paidinamount,v_pa_cash,v_pa_credit,v_da_credit2,v_pa_card,v_pa_icbc_card,
+				v_pa_weixin,v_pa_zhifubao,v_pa_paidinamount - v_da_mebervalueadd,v_da_integralconsum,v_da_meberTicket,v_da_fraction,v_da_give,v_da_roundoff,
+				v_da_mebervalueadd,v_da_free2,v_value_detail,v_da_totalfree);
+				
+		END LOOP label_fetch_loop;
+		
+		#最后关闭游标.
+		CLOSE cur_orderid;
+  END;
+  
+    SELECT 
+	  ifnull(sum(shouldamount),0),ifnull(sum(paidinamount),0),ifnull(sum(discountamount),0),ifnull(sum(cash),0),ifnull(sum(credit),0),ifnull(sum(credit2),0),
+	  ifnull(sum(card),0),ifnull(sum(icbccard),0),ifnull(sum(weixin),0),ifnull(sum(zhifubao),0),ifnull(sum(merbervaluenet),0),ifnull(sum(integralconsum),0),
+	  ifnull(sum(meberTicket),0),ifnull(sum(fraction),0),ifnull(sum(give),0),ifnull(sum(roundoff),0),ifnull(sum(mebervalueadd),0),ifnull(sum(free),0),
+	  ifnull(sum(totalfree),0)
+	INTO 
+	  v_shouldamount,v_paidinamount,v_da_discount,v_pa_cash,v_pa_credit,v_da_credit2,v_pa_card,v_pa_icbc_card,
+				v_pa_weixin,v_pa_zhifubao,v_da_mebervalueaddnet,v_da_integralconsum,v_da_meberTicket,v_da_fraction,v_da_give,v_da_roundoff,
+				v_da_mebervalueadd,v_da_free2,v_da_totalfree
+	FROM 
+      t_temp_res;
+	#更新优免信息
+	SELECT REPLACE(v_value_total,'youmian,会员优免,0.00',CONCAT('youmian,会员优免,',v_da_free2)) INTO v_value_total;
+	#合计
+    INSERT INTO t_temp_res
+	  (branchid,orderid,branchname,shouldamount,paidinamount,discountamount,cash,credit,credit2,card,icbccard,weixin,zhifubao,merbervaluenet,
+	  integralconsum,meberTicket,fraction,give,roundoff,mebervalueadd,free,preferentialdetail,totalfree)
+	VALUES
+	  (NULL,'最终合计',NULL,v_shouldamount,v_paidinamount,v_da_discount,v_pa_cash,v_pa_credit,v_da_credit2,v_pa_card,v_pa_icbc_card,
+	   v_pa_weixin,v_pa_zhifubao,v_da_mebervalueaddnet,v_da_integralconsum,v_da_meberTicket,v_da_fraction,v_da_give,v_da_roundoff,
+	   v_da_mebervalueadd,v_da_free2,v_value_total,v_da_totalfree );
+  
+  SELECT * FROM t_temp_res ORDER BY id asc;
+  
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for p_report_yysjmxb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_report_yysjmxb`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11), -- 分店id
                                   IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
                                   IN  pi_ksrq     DATETIME, -- 开始日期，
                                   IN  pi_jsrq     DATETIME, -- 结束日期
-                                  OUT po_errmsg   VARCHAR(100)
-                                  -- 错误信息
-)
-SQL SECURITY INVOKER
-COMMENT '营业数据明细表'
+                                  OUT po_errmsg   VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '营业数据明细表'
 label_main:
 BEGIN
   -- 返回字段说明如下(23个字段)：
@@ -6290,6 +9739,19 @@ BEGIN
   DECLARE v_other_vipordercount   INT DEFAULT 0; #会员消费笔数
   DECLARE v_other_viporderpercent DOUBLE(13, 2) DEFAULT 0; #会员消费占比
 
+  #账单信息统计
+  DECLARE v_closed_bill_nums          INT DEFAULT 0; #已结账单数
+  DECLARE v_closed_bill_shouldamount  DOUBLE(13, 2) DEFAULT 0; #已结账单应收
+  DECLARE v_closed_person_nums        INT DEFAULT 0; #已结人数
+  DECLARE v_no_bill_nums          INT DEFAULT 0; #未结账单数
+  DECLARE v_no_bill_shouldamount  DOUBLE(13, 2) DEFAULT 0; #未结账单应收
+  DECLARE v_no_person_nums        INT DEFAULT 0; #未结人数
+  DECLARE v_bill_nums             INT DEFAULT 0; #全部账单数
+  DECLARE v_bill_shouldamount     DOUBLE(13, 2) DEFAULT 0; #全部账单应收
+  DECLARE v_person_nums           INT DEFAULT 0; #全部人数
+  DECLARE v_zaitaishu             INT DEFAULT 0; #在台数
+  DECLARE v_kaitaishu             INT DEFAULT 0; #开台数
+
 
 
   -- 异常处理模块，出现异常返回null
@@ -6324,7 +9786,10 @@ BEGIN
     mannum TINYINT UNSIGNED,
     ordertype TINYINT,
     begintime DATETIME,
-    endtime DATETIME
+    endtime DATETIME,
+    orderstatus TINYINT UNSIGNED,
+    custnum TINYINT UNSIGNED,
+    shiftid TINYINT UNSIGNED
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   IF pi_sb > -1 THEN
@@ -6336,13 +9801,16 @@ BEGIN
          , ordertype
          , begintime
          , endtime
+         , orderstatus
+         , custnum
+         , shiftid
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
       AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
-      AND shiftid = pi_sb
-      AND orderstatus = 3;
+      AND shiftid = pi_sb;
+      #AND orderstatus = 3;
   ELSE
     INSERT INTO t_temp_order
     SELECT orderid
@@ -6352,12 +9820,15 @@ BEGIN
          , ordertype
          , begintime
          , endtime
+				 , orderstatus
+         , custnum
+         , shiftid
     FROM
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end -- 需要创建索引IX_t_order_begintime  
-      AND orderstatus = 3;
+      AND begintime BETWEEN v_date_start AND v_date_end; -- 需要创建索引IX_t_order_begintime  
+      #AND orderstatus = 3;
   END IF;
   #为订单内存表创建索引
   CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
@@ -6374,7 +9845,8 @@ BEGIN
     pricetype CHAR(1),
     childdishtype TINYINT,
     primarykey VARCHAR(50),
-    superkey VARCHAR(50)
+    superkey VARCHAR(50),
+	  dishtype TINYINT
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   # 向临时订单详情内存表中放值
@@ -6387,33 +9859,27 @@ BEGIN
        , b.childdishtype
        , b.primarykey
        , b.superkey
+	   , b.dishtype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
     a.orderid = b.orderid
-    AND orignalprice > 0;
+    AND b.orignalprice > 0;
+    #AND a.orderstatus = 3;
+
+  -- 计算套餐金额开始
+   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   CREATE TEMPORARY TABLE t_temp_taocan
+  (
+    primarykey VARCHAR(50),
+    orignalprice DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   --  计算套餐金额结束 
 
   # 删除套餐明细
-  DROP TEMPORARY TABLE IF EXISTS t_temp_keys;
-  CREATE TEMPORARY TABLE t_temp_keys
-  (
-    primarykey VARCHAR(50)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_keys
-  SELECT primarykey
-  FROM
-    t_temp_order_detail
-  WHERE
-    childdishtype = 2;
-
-  DELETE
-  FROM
-    t_temp_order_detail
-  USING
-    t_temp_order_detail, t_temp_keys
-  WHERE
-    t_temp_order_detail.superkey = t_temp_keys.primarykey
-    AND t_temp_order_detail.primarykey != t_temp_keys.primarykey;
+   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
 
   #创建结算明细内存表
   DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
@@ -6445,7 +9911,8 @@ BEGIN
   FROM
     t_temp_order a, t_settlement_detail b
   WHERE
-    a.orderid = b.orderid;
+    a.orderid = b.orderid
+  AND a.orderstatus = 3;
 
 
   #除会员验证的那条数据外，删除其它无效数据
@@ -6475,7 +9942,8 @@ BEGIN
   FROM
     t_temp_order a, t_order_member b
   WHERE
-    a.orderid = b.orderid;
+    a.orderid = b.orderid
+  AND a.orderstatus = 3;
 
 
   ####################开始计算数据##################
@@ -6504,35 +9972,40 @@ BEGIN
   INTO
     v_sa_ordercount, v_sa_settlementnum, v_oa_ordercount
   FROM
-    t_temp_order;
+    t_temp_order
+  WHERE orderstatus = 3;
 
 
   #计算应收总额
   SELECT ifnull(sum(
-         CASE ordertype
+         CASE b.ordertype
          WHEN 0 THEN
-           orignalprice * dishnum
+           b.orignalprice * b.dishnum
          ELSE
            0
          END), 0) #堂吃应收
          , ifnull(sum(
-         CASE ordertype
+         CASE b.ordertype
          WHEN 0 THEN
            0
          ELSE
-           orignalprice * dishnum
+           b.orignalprice * b.dishnum
          END), 0) #外卖应收
          , ifnull(sum(
-         CASE pricetype
+         CASE b.pricetype
          WHEN '1' THEN
-           orignalprice * dishnum
+           b.orignalprice * b.dishnum
          ELSE
            0
          END), 0) #赠送金额
   INTO
     v_sa_shouldamount, v_oa_shouldamount, v_da_give
-  FROM
-    t_temp_order_detail;
+  FROM 
+    t_temp_order a, t_temp_order_detail b
+  WHERE
+    a.orderid = b.orderid
+    AND b.orignalprice > 0
+    AND a.orderstatus = 3;
 
   #计算虚增，储值消费净值
   SELECT ifnull(sum(Inflated), 0)
@@ -6571,7 +10044,7 @@ BEGIN
          END), 0)
        , ifnull(sum(
          CASE
-         WHEN payway = 1 and membercardno='0' and payamount<>0 THEN #刷它行卡
+         WHEN payway = 1 and membercardno<>'1' and payamount<>0 THEN #刷它行卡
            payamount
          ELSE
            0
@@ -6585,7 +10058,7 @@ BEGIN
          END), 0)
        , ifnull(sum(
          CASE
-         WHEN payway in(5,13) AND payamount > 0 THEN #挂账 --SHANGWENCHAO 2015/12/21 23:28:59 13也是挂账
+         WHEN payway in(5,13) AND payamount > 0 THEN #挂账
            payamount
          ELSE
            0
@@ -6676,6 +10149,70 @@ BEGIN
     AND b.branchid = pi_branchid
     AND a.status IN (0, 1);
 
+  #已结人数、已结账单数
+	SELECT IFNULL(sum(too.custnum),0),    
+    IFNULL(count(too.orderid),0)
+  INTO v_closed_person_nums,v_closed_bill_nums
+	FROM
+	  t_temp_order too
+  WHERE too.orderstatus = 3;
+
+  #已结账单应收
+  SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0) 
+  INTO v_closed_bill_shouldamount
+  FROM t_temp_order_detail tod
+  WHERE tod.orderid in (select orderid from t_temp_order where orderstatus = 3);
+
+  #未结人数、未结账单数
+  SELECT IFNULL(sum(too.custnum),0),
+    IFNULL(count(too.orderid),0)
+  INTO v_no_person_nums,v_no_bill_nums
+  FROM
+	  t_temp_order too
+  WHERE too.orderstatus = 0;
+
+  #未结账单应收
+  SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0) 
+  INTO v_no_bill_shouldamount
+  FROM t_temp_order_detail tod
+  WHERE tod.orderid in (select orderid from t_temp_order where orderstatus = 0);
+
+  #在台数
+IF pi_sb > -1 THEN
+  SELECT count(orderid)
+  INTO v_zaitaishu
+  FROM t_order USE INDEX (IX_t_order_begintime)
+  WHERE branchid = pi_branchid AND orderstatus <> 2 AND shiftid = pi_sb
+  AND ((begintime BETWEEN v_date_start and v_date_end) OR (endtime BETWEEN v_date_start and v_date_end)); 
+ELSE
+  SELECT count(orderid)
+  INTO v_zaitaishu
+  FROM t_order USE INDEX (IX_t_order_begintime)
+  WHERE branchid = pi_branchid AND orderstatus <> 2
+  AND ((begintime BETWEEN v_date_start and v_date_end) OR (endtime BETWEEN v_date_start and v_date_end)); 
+END IF;
+
+  #开台数
+IF pi_sb > -1 THEN
+  SELECT count(orderid)
+  INTO v_kaitaishu
+  FROM t_temp_order
+  WHERE orderstatus <> 2 AND shiftid = pi_sb; 
+ELSE
+  SELECT count(orderid)
+  INTO v_kaitaishu
+  FROM t_temp_order
+  WHERE orderstatus <> 2;
+END IF;
+
+  #全部账单数 = 已结账单数 + 未结账单数
+  SET v_bill_nums = v_closed_bill_nums + v_no_bill_nums;
+  
+  #全部账单应收 = 已结账单应收 + 外卖应收 + 赠送金额 + 未结账单应收
+  SET v_bill_shouldamount = v_closed_bill_shouldamount + v_no_bill_shouldamount;
+   
+  #全部人数 = 已结人数 + 未结人数
+  SET v_person_nums = v_closed_person_nums + v_no_person_nums;
 
   IF v_sa_ordercount > 0 THEN
     #计算上座率  总人数/总天数=平均每天总人数；平均每天总人数/标准座位数=上座率
@@ -6701,7 +10238,8 @@ BEGIN
       t_temp_order
     WHERE
       ordertype = 0
-      AND endtime IS NOT NULL;
+      AND endtime IS NOT NULL
+      AND orderstatus = 3;
   END IF;
 
   IF v_oa_ordercount > 0 THEN
@@ -6753,10 +10291,21 @@ BEGIN
     avgprice_takeout DOUBLE(13, 2), #外卖统计(订单平均价格）
     vipordercount INT(11), #会员消费笔数
     viporderpercent DOUBLE(13, 2), #会员消费占比
-    membertotal DOUBLE(13, 2) #会员消费合计
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+    membertotal DOUBLE(13, 2), #会员消费合计
+    closedbillnums INT(11), #已结账单数
+    closedbillshouldamount DOUBLE(13, 2), #已结账单应收
+    closedpersonnums  INT(11), #已结人数
+    nobillnums    INT(11), #未结账单数
+		nobillshouldamount  DOUBLE(13, 2), #未结账单应收
+		nopersonnums  INT(11), #未结人数
+		billnums   INT(11), #全部账单数
+		billshouldamount  DOUBLE(13, 2), #全部账单应收
+		personnums  DOUBLE(13, 2), #全部人数
+		zaitaishu   INT(11), #在台数
+		kaitaishu    INT(11) #开台数
+	) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  INSERT INTO t_temp_res VALUES (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount - v_paidinamount, v_pa_cash, v_pa_credit, v_pa_card, v_pa_icbc_card, v_pa_weixin, v_pa_zhifubao, v_pa_paidinamount - v_da_mebervalueadd, v_da_free, v_da_integralconsum, v_da_meberTicket, v_da_discount, v_da_fraction, v_da_give, v_da_roundoff, v_da_mebervalueadd, v_sa_ordercount, v_sa_tableconsumption, v_sa_settlementnum, v_sa_shouldaverage, v_sa_paidinaverage, v_sa_attendance, v_sa_overtaiwan, v_sa_avgconsumtime, v_sa_shouldamount, v_oa_shouldamount, v_oa_paidinamount, v_oa_ordercount, v_oa_avgprice, v_other_vipordercount, v_other_viporderpercent, v_ma_total);
+  INSERT INTO t_temp_res VALUES (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount - v_paidinamount, v_pa_cash, v_pa_credit, v_pa_card, v_pa_icbc_card, v_pa_weixin, v_pa_zhifubao, v_pa_paidinamount - v_da_mebervalueadd, v_da_free, v_da_integralconsum, v_da_meberTicket, v_da_discount, v_da_fraction, v_da_give, v_da_roundoff, v_da_mebervalueadd, v_sa_ordercount, v_sa_tableconsumption, v_sa_settlementnum, v_sa_shouldaverage, v_sa_paidinaverage, v_sa_attendance, v_sa_overtaiwan, v_sa_avgconsumtime, v_sa_shouldamount, v_oa_shouldamount, v_oa_paidinamount, v_oa_ordercount, v_oa_avgprice, v_other_vipordercount, v_other_viporderpercent, v_ma_total,v_closed_bill_nums,v_closed_bill_shouldamount,v_closed_person_nums, v_no_bill_nums, v_no_bill_shouldamount, v_no_person_nums, v_bill_nums, v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu);
   SELECT *
   FROM
     t_temp_res;
@@ -6768,11 +10317,435 @@ BEGIN
 --   DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
 --   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
 END
-$$
-
+;;
 DELIMITER ;
 
--- 
--- Enable foreign keys
--- 
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+-- ----------------------------
+-- Procedure structure for p_pbckbb
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `p_pbckbb`;
+DELIMITER ;;
+CREATE DEFINER=`zjl`@`%` PROCEDURE `p_pbckbb`(IN  pi_branchid INT(11), -- 分店id 
+                                      IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
+                                      IN  pi_ksrq     DATETIME, -- 开始日期，
+                                      IN  pi_jsrq     DATETIME, -- 结束日期 
+                                      IN  pi_sjjg     SMALLINT, -- 时间间隔  -- IN  pi_zsjxz       INT(11), -- 周时间选择
+                                      IN  pi_week     VARCHAR(100), -- 周时间，0-星期一，1-星期二，2-星期三，3-星期四，4-星期五，5-星期六，6-星期天(不选择返回-1)
+                                      OUT po_errmsg   VARCHAR(100)
+                                      )
+    SQL SECURITY INVOKER
+    COMMENT '排班参考报表'
+label_main:
+BEGIN -- 返回字段说明如下
+  -- 日期 时间段 开台数 上客数 已点餐金额 已结账台数 结账金额 未结账台数 在台数
+  --
+  -- 返回数据举例（返回值包含多条数据）：
+  -- 2015-12-23 09:00-09:30 2 3 34.00 4 78.00 8 8
+
+  DECLARE v_datetimeStr     DATETIME; #日期
+  DECLARE v_dateinterval    VARCHAR(50); #时间区间
+  DECLARE v_openNum         INT; #开台数
+  DECLARE v_guestNum        INT; #上客数
+  DECLARE v_orderamount     DOUBLE(13, 2); #已点餐金额
+  DECLARE v_alreadycheckNum INT; #已结账台数
+  DECLARE v_checkamount     DOUBLE(13, 2); #结账金额
+  DECLARE v_notcheckNum     INT; #未结账台数
+  DECLARE v_IntheNum        INT; #在台数
+  DECLARE v_countNum        INT;
+  DECLARE v_status          INT;
+
+  DECLARE v_openTime        TIME; #最小的开业时间
+  DECLARE v_endTime         TIME; #最大的结业时间
+  DECLARE v_isacrossday     INT; #是否有跨天的数据
+  DECLARE v_date_count      INT;
+  DECLARE v_dateCount       INT;
+
+
+  DECLARE v_count           INT;
+  DECLARE v_date_start      DATETIME;
+  DECLARE v_date_end        DATETIME;
+  #DECLARE v_date_interval   DATETIME; #时间间隔  
+  DECLARE v_time_interval   DATETIME; #时间间隔
+  #DECLARE v_loop_num        INT DEFAULT 0; #根据开始结束时间和显示类型，来设置循环次数
+  DECLARE v_table_index     INT;
+  DECLARE v_table_id        VARCHAR(50);
+  DECLARE v_fetch_done      INT DEFAULT FALSE;
+
+  # 定义游标
+  DECLARE c_begintime       VARCHAR(50);
+  DECLARE c_endtime         VARCHAR(50);
+
+  DECLARE c_datetimeStr     VARCHAR(50); #日期
+  DECLARE c_dateinterval    VARCHAR(50); #时间区间
+  DECLARE c_openNum         INT; #开台数
+  DECLARE c_guestNum        INT; #上客数
+  DECLARE c_orderamount     DOUBLE(13, 2); #已点餐金额
+  DECLARE c_alreadycheckNum INT; #已结账台数
+  DECLARE c_checkamount     DOUBLE(13, 2); #结账金额
+  DECLARE c_notcheckNum     INT; #未结账台数
+  DECLARE c_IntheNum        INT; #在台数
+  DECLARE c_countNum        INT;
+  DECLARE c_now             DATETIME DEFAULT now();
+
+  DECLARE Select_cursor CURSOR FOR SELECT date(begintime)
+                                        , date(begintime)
+                                   FROM
+                                     t_temp_order
+                                   WHERE
+                                     1 = 1
+                                   GROUP BY
+                                     date(begintime);
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  BEGIN
+    SET v_fetch_done = TRUE;
+  END;
+
+
+
+  --   DECLARE CONTINUE HANDLER FOR NOT FOUND
+  --   BEGIN
+  --     SET v_fetch_done = TRUE;
+  --   END;
+
+
+
+  -- 异常处理模块，出现异常返回null
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+  -- SELECT NULL;
+  -- GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
+  END;
+
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+
+  #设置循环次数,处理开始结算时间
+  -- SET v_date_start = str_to_date(concat(date_format(pi_ksrq, '%Y-%m-%d'), '00:00:00'), '%Y-%m-%d %H:%i:%s');
+  -- SET v_date_end = str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+  SET v_date_start = str_to_date(pi_ksrq, '%Y-%m-%d %H:%i:%s');
+  SET v_date_end = str_to_date(pi_jsrq, '%Y-%m-%d %H:%i:%s');
+  SET v_date_count = day(v_date_end) - day(v_date_start);
+  --   SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
+  --   SET v_loop_num = timestampdiff(DAY, v_date_start, v_date_end) + 1; #获取两个时间算相差的天数
+
+
+  #创建订单临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+    orderid VARCHAR(50),
+    orderstatus INT,
+    branchid INT,
+    womanNum INT,
+    childNum INT,
+    mannum INT,
+    begintime DATETIME,
+    endtime DATETIME
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  IF pi_sb = '-1' THEN
+    INSERT INTO t_temp_order
+    SELECT orderid
+         , orderstatus
+         , branchid
+         , womanNum
+         , childNum
+         , mannum
+         , begintime
+         , endtime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime)
+    WHERE
+      CASE
+      WHEN pi_week = '-1' THEN
+        branchid = pi_branchid
+        AND begintime BETWEEN v_date_start AND v_date_end
+      ELSE
+        branchid = pi_branchid
+        AND begintime BETWEEN v_date_start AND v_date_end
+        AND find_in_set(weekday(begintime), pi_week)
+      END;
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid
+         , orderstatus
+         , branchid
+         , womanNum
+         , childNum
+         , mannum
+         , begintime
+         , endtime
+    FROM
+      t_order USE INDEX (IX_t_order_begintime)
+    WHERE
+      CASE
+      WHEN pi_week = '-1' THEN
+        branchid = pi_branchid
+        AND begintime BETWEEN v_date_start AND v_date_end
+        AND shiftid = pi_sb
+      ELSE
+        branchid = pi_branchid
+        AND begintime BETWEEN v_date_start AND v_date_end
+        AND shiftid = pi_sb
+        AND find_in_set(weekday(begintime), pi_week)
+      END;
+  END IF;
+
+  #为订单内存表创建索引
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+
+  SET v_openTime = (SELECT concat(substring_index(time(begintime), ":", 1), ":00")
+                    FROM
+                      t_temp_order
+                    ORDER BY
+                      time(begintime) ASC
+                    LIMIT
+                      1); #获取最小的订单时间
+  SET v_endTime = (SELECT time(endtime)
+                   FROM
+                     t_temp_order
+                   ORDER BY
+                     time(endtime) DESC
+                   LIMIT
+                     1); #获取最大的订单时间
+
+
+
+  SELECT sum(day(endtime) - day(begintime))
+  INTO
+    v_dateCount
+  FROM
+    t_temp_order;
+
+
+  #如果一个订单跨天结账
+  IF v_dateCount > 0 THEN
+    SET v_endTime = '23:59:59';
+  END IF;
+
+  #传入的时间为今天
+  IF v_date_count = 0 AND v_date_end >= c_now AND v_date_start <= c_now THEN
+    SET v_endTime = c_now;
+  END IF;
+
+
+  #创建订单详情内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail
+  (
+    orderid VARCHAR(50),
+    dishid VARCHAR(50),
+    dishnum INT,
+    orignalprice DECIMAL(13, 2),
+    begintime DATETIME,
+    endtime DATETIME
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+
+  #向临时订单详情内存表中放值
+  INSERT INTO t_temp_order_detail
+  SELECT tod.orderid
+       , tod.dishid
+       , tod.dishnum
+       , tod.orignalprice
+       , tod.begintime
+       , tod.endtime
+  FROM
+    t_temp_order too, t_order_detail tod
+  WHERE
+    too.orderid = tod.orderid;
+  CREATE INDEX ix_t_temp_order_detail_orderid ON t_temp_order_detail (orderid);
+
+  -- 存放结果集
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    datetimeStr DATE, #日期
+    dateinterval VARCHAR(50), #时间区间
+    openNum INT, #开台数
+    guestNum INT, #上客数
+    orderamount DECIMAL(13, 2), #已点餐金额
+    alreadycheckNum INT, #已结账台数
+    checkamount DECIMAL(13, 2), #结账金额
+    notcheckNum INT, #未结账台数
+    IntheNum INT, #在台数
+    countNum INT #数据条数
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  -- 存放avg结果集
+  DROP TEMPORARY TABLE IF EXISTS t_temp_res_two;
+  CREATE TEMPORARY TABLE t_temp_res_two
+  (
+    datetimeStr VARCHAR(50), #日期
+    dateinterval VARCHAR(50), #时间区间
+    openNum DECIMAL(13, 2), #开台数
+    guestNum DECIMAL(13, 2), #上客数
+    orderamount DECIMAL(13, 2), #已点餐金额
+    alreadycheckNum DECIMAL(13, 2), #已结账台数
+    checkamount DECIMAL(13, 2), #结账金额
+    notcheckNum DECIMAL(13, 2), #未结账台数
+    IntheNum DECIMAL(13, 2), #在台数
+    countNum INT #数据条数
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+
+  OPEN Select_cursor;
+
+#日期拆分时间区间
+  Select_cursor_loop:
+  LOOP
+    FETCH Select_cursor INTO c_begintime, c_endtime;
+    IF v_fetch_done THEN
+      LEAVE Select_cursor_loop;
+    END IF;
+    -- SET c_begintime = concat(substring_index(time(c_begintime), ":", 1), ":00:00");
+    SET c_begintime = concat(date(c_begintime), " ", substring_index(time(v_openTime), ":", 2));
+    SET c_endtime = concat(date(c_begintime), " ", substring_index(time(v_endTime), ":", 2));
+
+    WHILE c_begintime <= c_endtime
+    DO
+      -- 根据开始和结束时间来查分时间段的值 15分钟
+      SET v_time_interval = date_sub(date_add(c_begintime, INTERVAL pi_sjjg MINUTE) + 1, INTERVAL 1 SECOND);
+
+      SET v_countNum = 1;
+      #开台数
+      SET v_openNum = (SELECT count(1)
+                       FROM
+                         t_temp_order too
+                       WHERE
+                         branchid = pi_branchid
+                         AND begintime > c_begintime
+                         AND begintime < v_time_interval);
+
+      #日期
+      SET v_datetimeStr = date(c_begintime);
+      #时间区间
+      SET v_dateinterval = concat(concat(substring_index(time(c_begintime), ":", 2), "-"), substring_index(time(v_time_interval), ":", 2));
+      #上客数
+      SET v_guestNum = (SELECT ifnull(sum(womanNum + childNum + mannum), 0)
+                        FROM
+                          t_temp_order
+                        WHERE
+                          branchid = pi_branchid
+                          AND begintime > c_begintime
+                          AND begintime < v_time_interval);
+      #已点餐金额
+      SET v_orderamount = (SELECT sum(tod.dishnum * tod.orignalprice)
+                           FROM
+                             t_temp_order too, t_temp_order_detail tod, t_dish dd
+                           WHERE
+                             too.orderid = tod.orderid
+                             AND tod.dishid = dd.dishid
+                             AND dd.dishtype NOT IN (2)
+                             AND too.branchid = pi_branchid
+                             AND tod.begintime > c_begintime
+                             AND tod.begintime < v_time_interval);
+
+      #已结账台数
+      SET v_alreadycheckNum = (SELECT count(1)
+                               FROM
+                                 t_temp_order too
+                               WHERE
+                                 orderstatus = '3'
+                                 AND branchid = pi_branchid
+                                 AND endtime > c_begintime
+                                 AND endtime < v_time_interval);
+
+      #已结账点餐金额
+      SET v_checkamount = (SELECT sum(tod.dishnum * tod.orignalprice)
+                           FROM
+                             t_temp_order too, t_temp_order_detail tod, t_dish dd
+                           WHERE
+                             too.orderid = tod.orderid
+                             AND too.orderstatus = '3'
+                             AND tod.dishid = dd.dishid
+                             AND dd.dishtype NOT IN (2)
+                             AND too.branchid = pi_branchid
+                             AND too.endtime > c_begintime
+                             AND too.endtime < v_time_interval);
+
+      #未结账台数
+      SET v_notcheckNum = (SELECT count(1)
+                           FROM
+                             t_temp_order
+                           WHERE
+                             branchid = pi_branchid
+                             AND begintime < v_time_interval
+                             AND (endtime > v_time_interval
+                             OR endtime IS NULL));
+
+
+      #在台数
+      SET v_IntheNum = v_alreadycheckNum + v_notcheckNum;
+
+      INSERT INTO t_temp_res (datetimeStr, dateinterval, openNum, guestNum, orderamount, alreadycheckNum, checkamount, notcheckNum, IntheNum, countNum) VALUES (v_datetimeStr, v_dateinterval, v_openNum, v_guestNum, v_orderamount, v_alreadycheckNum, v_checkamount, v_notcheckNum, v_IntheNum, v_countNum);
+
+      SET c_begintime = date_add(c_begintime, INTERVAL pi_sjjg MINUTE);
+      SET v_time_interval = date_add(v_time_interval, INTERVAL pi_sjjg MINUTE);
+    END WHILE;
+  END LOOP Select_cursor_loop;
+  COMMIT;
+
+  CLOSE Select_cursor;
+  SET v_fetch_done = FALSE;
+
+  -- 第二个游标开始
+  BEGIN DECLARE Select_cursor_detail CURSOR FOR SELECT 'avg'
+                                                     , dateinterval
+                                                     , sum(openNum)
+                                                     , sum(guestNum)
+                                                     , sum(ifnull(orderamount, 0))
+                                                     , sum(alreadycheckNum)
+                                                     , sum(ifnull(checkamount, 0))
+                                                     , sum(notcheckNum)
+                                                     , sum(IntheNum)
+                                                     , sum(countNum)
+                                                FROM
+                                                  t_temp_res
+                                                GROUP BY
+                                                  dateinterval;
+
+    OPEN Select_cursor_detail;
+
+  Select_cursor_detail_loop:
+    LOOP
+      FETCH Select_cursor_detail INTO c_datetimeStr, c_dateinterval, c_openNum, c_guestNum, c_orderamount, c_alreadycheckNum, c_checkamount, c_notcheckNum, c_IntheNum, c_countNum;
+      IF v_fetch_done THEN
+        LEAVE Select_cursor_detail_loop;
+      END IF;
+
+      INSERT INTO t_temp_res_two (datetimeStr, dateinterval, openNum, guestNum, orderamount, alreadycheckNum, checkamount, notcheckNum, IntheNum, countNum) VALUES (c_datetimeStr, c_dateinterval, c_openNum / c_countNum, c_guestNum / c_countNum, c_orderamount / c_countNum, c_alreadycheckNum / c_countNum, c_checkamount / c_countNum, c_notcheckNum / c_countNum, c_IntheNum / c_countNum, c_countNum);
+
+    -- 第二个游标结束
+    END LOOP Select_cursor_detail_loop;
+    COMMIT;
+    CLOSE Select_cursor_detail;
+  END;
+
+  #返回数据
+  SELECT date_format(datetimeStr, '%Y/%m/%d') AS datetimeStr
+       , dateinterval
+       , openNum
+       , guestNum
+       , ifnull(orderamount, 0) AS orderamount
+       , alreadycheckNum
+       , ifnull(checkamount, 0) AS checkamount
+       , notcheckNum
+       , IntheNum
+  FROM
+    t_temp_res
+  UNION
+  SELECT datetimeStr
+       , dateinterval
+       , openNum
+       , guestNum
+       , ifnull(orderamount, 0) AS orderamount
+       , alreadycheckNum
+       , ifnull(checkamount, 0) AS checkamount
+       , notcheckNum
+       , IntheNum
+  FROM
+    t_temp_res_two;
+
+END
+;;
+DELIMITER ;
