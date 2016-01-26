@@ -52,8 +52,14 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	 
 
 	@Override
-	public int delete(java.lang.String id) {
+	public int delete(java.lang.String id,String reason) {
 		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("reason", reason);
+		
+		dao.delete(PREFIX + ".insertHistory", params);
+		
+		dao.delete(PREFIX + ".insertDetailHistory", params);
+		 
 		params.put("orderid", id);
 		return dao.delete(PREFIX + ".delete", params);
 	}
@@ -108,7 +114,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * ¸ù¾İ¶©µ¥ºÅ²éÑ¯·´½á´ÎÊı
+	 * æ ¹æ®è®¢å•å·æŸ¥è¯¢åç»“æ¬¡æ•°
 	 * @author weizhifang
 	 * @since 2016-1-12
 	 * @param orderId
@@ -121,7 +127,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * ¸ù¾İ¶©µ¥ºÅĞŞ¸Ä·´½áËã´ÎÊı
+	 * æ ¹æ®è®¢å•å·ä¿®æ”¹åç»“ç®—æ¬¡æ•°
 	 * @author weizhifang
 	 * @since 2016-1-12
 	 * @param orderId
@@ -138,7 +144,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * Íù½áËã±íÀïĞ´Êı¾İ
+	 * å¾€ç»“ç®—è¡¨é‡Œå†™æ•°æ®
 	 * @author weizhifang
 	 * @since 2016-01-14
 	 * @param id
@@ -162,7 +168,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * µÃµ½»áÔ±Ïû·ÑĞéÔöÖµ
+	 * å¾—åˆ°ä¼šå‘˜æ¶ˆè´¹è™šå¢å€¼
 	 * @author weizhifang
 	 * @since 2016-1-19
 	 * @param orderid

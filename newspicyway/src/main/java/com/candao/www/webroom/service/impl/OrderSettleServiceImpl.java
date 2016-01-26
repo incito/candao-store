@@ -295,20 +295,9 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		//2.減去會員優惠，折扣 等信息
 
 		//3.計算總額  減去所對應的優惠
-		String orderId = settlementInfo.getOrderNo();
-		//查询反结算次数
-		String againSettleNums = settlementMapper.queryAgainSettleNums(orderId);
-		if(againSettleNums == null || againSettleNums.equals("0")){
-			//插入反结算 主记录，先判断是否有会员消费虚增
-			Double inflated = settlementMapper.getMemberInflated(orderId);  
-			settlementMapper.insertSettlementHistory(orderId,settlementInfo.getReason(),1,settlementInfo.getUserName(),inflated);
-		}else{
-			//如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
-			int nums = Integer.parseInt(againSettleNums)+1;
-			settlementMapper.updateSettlementHistory(orderId, nums, settlementInfo.getUserName(),settlementInfo.getReason());
-	    }
-		//删除原结算信息
-		settlementMapper.delete(orderId);
+		String orderId = settlementInfo.getOrderNo();     //插入反结算 主记录 在 delete 操作中处理	  
+		settlementMapper.delete(orderId,settlementInfo.getReason());
+		 
 		tsettlementDetailMapper.deleteBySettleId(orderId);
 	 
 //	 //已經結清 0 已下单 1 单桌结清 2 相关联桌号已经结清  3 内部结算 4 正在下单

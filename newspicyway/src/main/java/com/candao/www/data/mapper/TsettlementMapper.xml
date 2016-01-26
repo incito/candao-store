@@ -49,10 +49,10 @@
      insert into t_settlement_history (
 	  settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
 	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
-	id,  reason,  rebacktime, again_settle_nums, authorizer_name
+	id,  reason,  rebacktime
 	) select   settledId,  debitamount,  creditamount,  orderid,  inserttime,  indiscount,  outdiscount,  userid,  settleddetailid ,  cashamount,
 	  bankamount,  memeberamount ,  status ,  couponamount ,  feeamount,  incometype,  opendate,  shiftid,  isclear,  
-	   UUID(),#{reason},now(),#{againSettleNums},#{authorizerName}
+	   UUID(),#{reason},now()
 	 from t_settlement where orderid =#{orderid}
   </insert>
   
