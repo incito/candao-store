@@ -1,5 +1,8 @@
 package com.candao.www.webroom.service;
 
+import java.util.List;
+import java.util.Map;
+
 import net.sf.json.JSONObject;
 
 /**
@@ -21,5 +24,7 @@ public interface CallWaiterService {
 	
 	
 	public void updateCallStatus(String orderid);
+	
+	public String findrelateUserid(List<Map<String, Object>> retableList,String tableno);
 
 }

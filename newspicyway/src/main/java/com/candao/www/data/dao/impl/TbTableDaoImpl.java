@@ -160,6 +160,12 @@ public class TbTableDaoImpl implements TbTableDao {
 		return dao.get(PREFIX+".findByOrder",map);
 	}
 
+	@Override
+	public TbTable findTableByOrder(String orderid) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("orderid", orderid);
+		return dao.get(PREFIX + ".findTableByOrder", params);
+	}
 	
 }
 

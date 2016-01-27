@@ -381,4 +381,27 @@
 	   and tt.status !=5
 	   
 </select>
+
+<select id="findTableByOrder" parameterType="map" resultMap="tbTableResultMap">
+	select 
+		  tt. tableid
+		 ,tt.`position`
+		 ,tt.status
+		 ,tt.restaurantId
+		 ,tt.isVip
+		 ,tt.iscompartment
+		 ,tt.isavailable
+		 ,tt.buildingNo
+		 ,tt.minprice
+		 ,tt.fixprice
+		 ,tt.tableNo
+		 ,tt.personNum
+		 ,tt.tabletype
+		 ,tt.areaid
+		 ,tt.tableName
+		 ,tt.orderid
+		 ,tt.custPrinter
+	   from t_table tt left join t_order tod on tod.currenttableid = tt.tableid
+	   where tod.orderid = #{orderid}
+</select>
 </mapper> 
