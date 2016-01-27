@@ -38,7 +38,7 @@
 	<!-- 按照订单信息查询赠送礼物记录 -->
     <select id="getGiftLog" parameterType="java.util.Map" resultMap="base_result_map">
 	    select id,gift_id,gift_type_id,give_table_no,receive_table_no,gift_no,gift_status,order_id from t_gift_log
-	    where (order_id = #{sendOrderId} and receive_orderid =#{recOrderId}) or (order_id = #{recOrderId} and receive_orderid =#{sendOrderId}) and gift_status = 2 
+	    where (order_id = #{sendOrderId} or receive_orderid =#{recOrderId}) or (order_id = #{recOrderId} or receive_orderid =#{sendOrderId})
 	</select>
 	
 	<!-- 按照订单信息查询赠送礼物记录 -->
