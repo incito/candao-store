@@ -375,13 +375,15 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    					}
 	    				}
 	    				String areaname = null;
+						String tableNo = null;
 	    				try {
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
+							 tableNo = java.net.URLEncoder.encode(finaltableno,"utf-8");
 	    				} catch (UnsupportedEncodingException e) {
 	    					e.printStackTrace();
 	    				}
 	    				if(!userid.equals("")){
-	    					messageinfo.append(userid+"|"+finalmsgType+"|"+finalcallStatus+"|"+areaname+"|"+finaltableno+"|"+finalmessid);
+	    					messageinfo.append(userid+"|"+finalmsgType+"|"+finalcallStatus+"|"+areaname+"|"+tableNo+"|"+finalmessid);
 	        				//new TsThread(messageinfo.toString()).start();
 	    					URL urlobj;
 	    					try {
