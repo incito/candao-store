@@ -126,6 +126,11 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	public List<TorderDetail> find(Map<String, String> mapDetail){
 		return torderDetailMapper.find(mapDetail);
 	}
+	
+	@Override
+	public List<Map<String,String>> findTemp(Map<String, String> mapDetail){
+		return torderDetailMapper.findTemp(mapDetail);
+	}
 
 	
 	//从传过来的数据中，获取订单详情的所有信息

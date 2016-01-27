@@ -17,6 +17,8 @@ public interface TorderDetailMapper {
 	public <K, V> Map<K, V> findOne(java.lang.String id);
 	
 	public <T, K, V> List<T> find(Map<K, V> params);
+	
+	public <T, K, V> List<T> findTemp(Map<K, V> params);
 	/**
 	 * 更换pad使用
 	 * @author shen

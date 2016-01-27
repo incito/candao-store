@@ -48,6 +48,11 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	public <T, K, V> List<T> find(Map<K, V> params) {
 		return dao.find(PREFIX + ".find", params);
 	}
+	
+	@Override
+	public <T, K, V> List<T> findTemp(Map<K, V> params) {
+		return dao.find(PREFIX + ".findTemp", params);
+	}
 
 	@Override
 	public int insert(TorderDetail torderDetail) {

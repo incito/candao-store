@@ -581,6 +581,14 @@
             </if>
 		</where>
 	</select>
+	<select id="findTemp" parameterType="map" resultType="map">
+	select dishid from t_order_detail_temp
+    <where>
+			<if test="orderid != null and orderid != ''">
+				and orderid=#{orderid}
+			</if>
+		</where>
+	</select>
 	<select id="findOrderDetailPad" parameterType="map" resultMap="findResultMap">
 	select t.orderprice,t.dishunit,t.primarykey,t.dishid,d.title dishname,t.userName,t.orderid,t.orderseq,
 	t.dishtype,t.ispot,t.dishnum,t.sperequire,t.dishstatus,t.islatecooke

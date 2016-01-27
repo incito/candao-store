@@ -95,4 +95,5 @@ public boolean deleteTablesByAreaid(String areaid);
 public TbTable findByOrder(
 		Map<String, Object> map);
 
+public TbTable findTableByOrder(String orderid);
 }

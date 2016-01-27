@@ -81,7 +81,7 @@ public interface TbTableDao {
 	public TbTable getByTableNO(String tableNo);
 
 	public TbTable findByOrder(Map<String, Object> map);
-
+	public TbTable findTableByOrder(String orderid);
 }
 
 

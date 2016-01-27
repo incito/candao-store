@@ -35,6 +35,8 @@ public interface OrderDetailService {
 //	public TorderDetail findByOrderNoAndDishNo(Map<String, String> mapDetail);
 	
 	public List<TorderDetail> find(Map<String, String> mapDetail);
+	
+	public List<Map<String,String>> findTemp(Map<String, String> mapDetail);
 
 	public String cleantable(Table table);
 
