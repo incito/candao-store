@@ -41,13 +41,6 @@ public interface GiftLogService {
 	public List<TGiftLog> getGiftLogInfo(Map<String,String> params);
 	/**
 	 * 
-	 * 根据送礼订单和收礼订单查询送礼记录
-	 *
-	 * @return
-	 */
-	public List<TGiftLog> getGiftLogInfo(Map<String,String> params);
-	/**
-	 * 
 	 * 查询当前桌子赠送到目的桌的礼物列表
 	 *
 	 * @return
