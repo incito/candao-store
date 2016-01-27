@@ -31,6 +31,14 @@ public interface GiftLogService {
 	 * @return
 	 */
 	public TGiftLog getGiftLogInfo(String giftLogId);
+	
+	/**
+	 * 
+	 * 根据送礼订单和收礼订单查询送礼记录
+	 *
+	 * @return
+	 */
+	public List<TGiftLog> getGiftLogInfo(Map<String,String> params);
 	/**
 	 * 
 	 * 根据送礼订单和收礼订单查询送礼记录

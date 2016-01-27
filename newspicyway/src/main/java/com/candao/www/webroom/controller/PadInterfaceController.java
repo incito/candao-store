@@ -56,6 +56,7 @@ import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
@@ -318,19 +319,23 @@ public class PadInterfaceController {
 		toperationLog.setOperationtype(Constant.operationType.SAVEORDERINFOLIST);
 		toperationLog.setSequence(order.getSequence());
 		int flag= judgeRepeatData(toperationLog);
+		
+		Map<String, String> mapDetail = new HashMap<String,String>();
+		mapDetail.put("orderid", order.getOrderid());
+		List<Map<String,String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
+		
+		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
+		
 		if(flag==0){
 			String returnStr = orderDetailService.saveOrderDetailList(order,toperationLog);
 			if(returnStr.equals(Constant.SUCCESSMSG)){
 			}
 			try{
-				TbTable table = tableService.findById(order.getCurrenttableid());
 				String type = "12";
-				if(order!=null&&order.getRows()!=null&&order.getRows().size()>0&&order.getRows().get(0).getOrderseq()>1){
+				if((orderDetileList!=null&&orderDetileList.size()>0)||(orderDetileTempList!=null&&orderDetileTempList.size()>0)){
 					type = "13";
 				}
-				if(table!=null&&StringUtils.isNotBlank(table.getTableNo())){
-					executor.execute(new PadThread(table.getTableNo(),type));
-				}
+				executor.execute(new PadThread(order.getCurrenttableid(),type));
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
