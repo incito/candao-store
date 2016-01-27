@@ -19,6 +19,8 @@ public class Torder {
     
     private String invoice_id;
     
+    private String isShield;
+    
 
     public String getMemberno() {
 		return memberno;
@@ -227,5 +229,11 @@ public class Torder {
 		this.currenttableid = currenttableid;
 	}
 
- 
+	public String getIsShield() {
+		return isShield;
+	}
+
+	public void setIsShield(String isShield) {
+		this.isShield = isShield;
+	}
 }

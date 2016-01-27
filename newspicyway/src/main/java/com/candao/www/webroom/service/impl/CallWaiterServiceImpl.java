@@ -110,7 +110,6 @@ public class CallWaiterServiceImpl implements CallWaiterService{
     			return 3;
     		}
 		}
-
 		//首先查询有没有对应的呼叫类型的信息
 		Map<String,String> paramMap = new HashMap<String,String>();
 		paramMap.put("msgType", msgType);
@@ -170,11 +169,9 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		}else {
 			  returnnum = 99;
 		}
-
         if(returnnum>0&&returnnum!=99){
         	executor.execute(new WiterThread(tableno,msgType,callStatus,message.getId()));
         }
-
 		return returnnum;
 	}
 	
@@ -182,6 +179,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	 * 查找最近桌子的服务员的编号
 	 * @return
 	 */
+	@Override
 	public String findrelateUserid(List<Map<String, Object>> retableList,String tableno){
 		String  useridStr="";
 		int tablenoint = parInt(tableno);
@@ -379,7 +377,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    				String areaname = null;
 	    				try {
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
-                             finaltableno = java.net.URLEncoder.encode(finaltableno,"utf-8");	    				} catch (UnsupportedEncodingException e) {
+	    				} catch (UnsupportedEncodingException e) {
 	    					e.printStackTrace();
 	    				}
 	    				if(!userid.equals("")){

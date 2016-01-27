@@ -271,11 +271,13 @@ public class Constant {
 		public static final String msg_1007 = "1007"; // 菜品取消沽清消息			
 		public static final String msg_9999 = "9999"; // 退出系统消息
 		public static final String msg_2001 = "2001"; // 手环消息推送
+		public static final String msg_2011 = "2011"; // 开发票消息推送
 		public static final String msg_2003 = "2003"; // 手环登录消息推送
 		public static final String msg_2101 = "2101"; // 社交 送菜信息
 		public static final String msg_2102 = "2102"; // 社交 菜品处理信息
+		public static final String msg_2103 = "2103"; // 送礼 消息推送
 		
-
+		public static final String msg_2104 = "2104"; // 微信推送
 	}
 	 
 }

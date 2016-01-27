@@ -462,6 +462,10 @@ public class TableServiceImpl implements TableService {
 		// TODO Auto-generated method stub
 		return tableDao.findByOrder(map);
 	}
+	@Override
+	public TbTable findTableByOrder(String orderid) {
+		return tableDao.findTableByOrder(orderid);
+	}
 
 }
 

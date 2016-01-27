@@ -33,6 +33,13 @@ public interface GiftLogService {
 	public TGiftLog getGiftLogInfo(String giftLogId);
 	/**
 	 * 
+	 * 根据送礼订单和收礼订单查询送礼记录
+	 *
+	 * @return
+	 */
+	public List<TGiftLog> getGiftLogInfo(Map<String,String> params);
+	/**
+	 * 
 	 * 查询当前桌子赠送到目的桌的礼物列表
 	 *
 	 * @return
@@ -66,6 +73,13 @@ public interface GiftLogService {
 	 * @return
 	 */
 	public List<TGiftLog> getGiftLogByRecOrder(String orderid);
+	/**
+	 * 
+	 * 更新订单收礼状态
+	 * @param orderid
+	 * @return
+	 */
+	public int updateOrderStatus(String orderid);
 	
 		
 }

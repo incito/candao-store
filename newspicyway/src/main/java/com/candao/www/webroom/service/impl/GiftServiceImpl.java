@@ -191,6 +191,11 @@ public class GiftServiceImpl implements GiftLogService{
 	public TGiftLog getGiftLogInfo(String giftLogId) {
 		return giftDao.getGiftLogInfo(giftLogId);
 	}
+	
+	@Override
+	public List<TGiftLog> getGiftLogInfo(Map<String,String> params) {
+		return giftDao.getGiftLogInfo(params);
+	}
 
 	@Override
 	public Map<String, String> getGiftInfo(String giftId) {
@@ -227,5 +232,10 @@ public class GiftServiceImpl implements GiftLogService{
 		else{
 			return 0;
 		}
+	}
+
+	@Override
+	public int updateOrderStatus(String orderid) {
+		return giftDao.updateOrderStatus(orderid);
 	}
 }
