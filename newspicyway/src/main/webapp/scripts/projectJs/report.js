@@ -1876,6 +1876,7 @@ function getWaiterDetails(){
 /***********************服务员考核 END****************************/
 /***********************排班参考报表 start************************/
 function getScheduleReport(){
+	showLoading();
 	var week  = '-1';
 	$("input[name='weeky']:checked").each(function(i, o){
 		if(i == 0){
@@ -1893,6 +1894,7 @@ function getScheduleReport(){
 	}, function(result){
 		console.log(result);
 		initScheduleTb(result);
+		hideLoading();
 	},'json');
 }
 function initScheduleTb(result){
