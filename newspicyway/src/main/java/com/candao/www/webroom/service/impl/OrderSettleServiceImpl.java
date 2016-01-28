@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.data.dao.TbOpenBizLogDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
@@ -22,9 +23,7 @@ import com.candao.www.data.dao.TsettlementDetailMapper;
 import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
-import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.Torder;
-import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.Tsettlement;
 import com.candao.www.data.model.TsettlementDetail;
 import com.candao.www.webroom.model.SettlementDetail;
@@ -69,7 +68,10 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	@Autowired
 	private ToperationLogService  toperationLogService;
 	
+	@Autowired
+	private TRethinkSettlementDao tRethinkSettlementDao;
 	
+
  	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
 	public String saveposcash(SettlementInfo settlementInfo) {
@@ -310,6 +312,11 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		//删除原结算信息
 		settlementMapper.delete(orderId);
 		tsettlementDetailMapper.deleteBySettleId(orderId);
+		//查询会员消费虚增
+	    BigDecimal inflated = tRethinkSettlementDao.queryMemberInflate(orderId);
+	    if(inflated != null){
+	    	settlementMapper.updateTorderMember(orderId);
+	    }
 	 
 //	 //已經結清 0 已下单 1 单桌结清 2 相关联桌号已经结清  3 内部结算 4 正在下单
 //	 Map<String, Object> mapOrder = orderService.findOrderById(orderId);
