@@ -41,7 +41,10 @@ var T_role = {
 	H : "menu-detail8",
 	I : "menu-detail9",
 	J : "menu-detail10",
-	L : "menu-detail12"
+	K : "menu-detail11",
+	L : "menu-detail12",
+	M : "menu-detail13",
+	N : "menu-detail14"
 };
 var T_role_reverse = {
 	"menu-detail1": "A",
@@ -54,7 +57,10 @@ var T_role_reverse = {
 	"menu-detail8":	"H",
 	"menu-detail9":	"I",
 	"menu-detail10": "J",
-	"menu-detail12":"L"
+	"menu-detail11": "K",
+	"menu-detail12": "L",
+	"menu-detail13": "M",
+	"menu-detail14": "N"
 };
 //裁剪图片
 var jcrop_api =null;
@@ -476,6 +482,10 @@ $(document).ready(function(){
 			dataStyle[thumb_num].menu_content["L1"]={menu_content_img: global_Path+"/images/menu-detail-bg-upload.png"};
 		}else if(T_role_reverse[detail_id] == "J"){
 			dataStyle[thumb_num].menu_content["J1"]={menu_content_img: global_Path+"/images/menu-detail-bg-upload-ver.png"};
+		}else if(T_role_reverse[detail_id] == "K"){
+			dataStyle[thumb_num].menu_content["K1"]={menu_content_img: global_Path+"/images/menu-detail-bg-upload-ver.png"};
+		}else if(T_role_reverse[detail_id] == "M"){
+			dataStyle[thumb_num].menu_content["M1"]={menu_content_img: global_Path+"/images/menu-detail-bg-upload.png"};
 		}
 		
 		//add by lisafan
@@ -1070,7 +1080,11 @@ function doTail(){
 			$imgObj = $("#"+dropid).find("img");
 			var temp_img = '<img dishid="'+$imgObj.attr("dishid")+'" value="'+$imgObj.attr("value")+'" text="'+$imgObj.attr("text")+'" src="'+src+'">';
 			tmpllist[thumbnum].detaillist[dropid].image = imgsrc;
-			dataStyle[thumbnum].menu_content[dropid].menu_content_img = temp_img;
+			if(dropid == "L1" || dropid == "J1" || dropid == "K1" || dropid == "M1"){
+				dataStyle[thumbnum].menu_content[dropid].menu_content_img = src;
+			}else{
+				dataStyle[thumbnum].menu_content[dropid].menu_content_img = temp_img;
+			}
 		}else{
 			$("#menuImg-adjust-dialog").modal("hide");
 			alert("裁剪图片失败！请重试..");
@@ -1631,7 +1645,7 @@ function initEditTmpl(menuid){
 			}
 			//若是第九板式或是第十二板式，显示无缩略图
 			var imgSrc = '../images/menubox/' + img;
-			if(T_role[tmpl.type] == "menu-detail9" || T_role[tmpl.type] == "menu-detail12"){
+			if(tmpl.type == "I" || tmpl.type == "J" || tmpl.type == "K" || tmpl.type == "L" || tmpl.type == "M"){
 				imgSrc = '../images/' + img;
 			}
 			//版式menu-count-box上添加typeid区分属于哪个分类
@@ -1657,7 +1671,7 @@ function initEditTmpl(menuid){
 				var dishtype = detail.dishtype;
 				//只返回图片的情况 如第十二版式
 				if(detail.dishunitlist == null || detail.dishunitlist == undefined || detail.redishid == "TEMPLATE-IMAGE"){
-					$("#"+detail.location).find("img").attr("src", detail.image);
+					$("#"+detail.location).find("img").attr("src", img_Path +"/" + detail.image);
 					dataStyle[thumb_num].menu_content[detail.location] = {
 							menu_content_img: detail.image==null?global_Path+"/images/menu-detail-bg-upload.png":replaceEscape(img_Path + detail.image)
 					};
@@ -1704,7 +1718,7 @@ function initEditTmpl(menuid){
 				
 					var obj = $("#"+detail.location);
 					var hide = '';
-					if(tmpl.type == "I" || tmpl.type == "L" || tmpl.type == "J"){
+					if(tmpl.type == "I" || tmpl.type == "L" || tmpl.type == "J" || tmpl.type == "K" || tmpl.type == "M"){
 						hide = 'style="display: none"';
 						obj.css("background","#e6e6e6");
 					}else{
@@ -1931,15 +1945,16 @@ function showDishDesc(obj, data, src, oldsrc, manyTimes){
 	obj.find("img").remove();
 	obj.find("div.menu-desc").remove();
 	var hide = '';
-	if(drop_id.indexOf("I") < 0 && drop_id.indexOf("L")<0  && drop_id.indexOf("J")<0){
+	//样式九以后的样式不放入菜品图片
+	if(drop_id.indexOf("I") < 0 && drop_id.indexOf("L")<0  && drop_id.indexOf("J")<0 && drop_id.indexOf("K")<0 && drop_id.indexOf("M")<0){
 		hide = 'style="display: block;"';
 	}else{
 		hide = 'style="display: none;"';
 	}
 	var temp_img = '<img dishid="'+dishid+'" value="'+$("#"+data).attr("value")+'" text="'+text+'" src="'+show_src+'" '+hide+'>';
 	obj.append(temp_img);
-	
-	if(drop_id.indexOf("I") < 0 && drop_id.indexOf("L") < 0 && drop_id.indexOf("J") < 0){//样式九和样式十二的图片不用放入
+	//样式九以后的样式不放入菜品图片，显示灰色
+	if(drop_id.indexOf("I") < 0 && drop_id.indexOf("L") < 0 && drop_id.indexOf("J") < 0 && drop_id.indexOf("K")<0 && drop_id.indexOf("M")<0){
 	}else{
 		obj.css("background","#e6e6e6");
 	}
@@ -2126,7 +2141,7 @@ function menuDetailDis(e){
 		var id = $(this).attr("id");
 		$("#"+id).find("div.recommend_div").remove();
 		if(typeof(dataStyle[curr_num].menu_content[id])!='undefined'){
-			if(id == "L1" || id == "J1"){
+			if(id == "L1" || id == "J1" || id == "M1" || id == "K1"){
 				//L1栏上传图片，只展示图片
 				$("#"+id).find("img.show-pic").attr("src", dataStyle[curr_num].menu_content[id].menu_content_img);
 			}else{
@@ -2135,9 +2150,9 @@ function menuDetailDis(e){
 				$(this).append(dataStyle[curr_num].menu_content[id].menu_content_desc);
 			}
 		}else {
-			if(id == "L1"){
+			if(id == "L1" || id == "M1"){
 				$("#"+id).find("img.show-pic").attr("src", global_Path+"/images/menu-detail-bg-upload.png");
-			}else if(id == "J1"){
+			}else if(id == "J1" || id == "K1"){
 				$("#"+id).find("img.show-pic").attr("src", global_Path+"/images/menu-detail-bg-upload-ver.png");
 			}
 		}
@@ -2272,9 +2287,9 @@ function compress($o, src){
 	var type = 5;
 	var curr_num = $o.attr("thumb-detail");
 	var id = $o.attr("id");
-	if(id == "L1"){//上图下菜
+	if(id == "L1" || id == "M1"){//上图下菜
 		type = 5;
-	} else if(id == "J1"){//左图右菜
+	} else if(id == "J1" || id == "K1"){//左图右菜
 		type = 6;
 	}
 	doAdjust(1,{
