@@ -77,10 +77,10 @@
  							</ul>
  					 	</li>
  					 	<li class="ky-dropdown-sec report-dropdown-sec">
- 							<a href="#" class="ky-menu-success" onclick="toScheduleReport()">统计报表</a>
+ 							<a href="#" class="ky-menu-success" onclick="toTheSettlementStatistics()">统计报表</a>
  							<ul class="ky-dropdown-sec-menu ky-nav ky-nav-pills">
- 								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toTheSettlementStatistics()">反结算统计表</a></li>
- 								<li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toTheSettlementStatistics()">反结算统计表</a></li>
+ 								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toScheduleReport()">排班参考统计表</a></li>
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterAssess()">服务员考核统计表</a></li>
  							</ul>
