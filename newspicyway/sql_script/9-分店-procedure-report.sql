@@ -2487,8 +2487,8 @@ BEGIN
     shouldamount DOUBLE(13, 2), #应收
     paidinamount DOUBLE(13, 2), #实收
     discountamount DOUBLE(13, 2), #折扣
-    personcon  DOUBLE(13, 2), #人均
-    tablenum   INT DEFAULT 0 #桌数
+    personpercent  DOUBLE(13, 2), #人均
+    tablecount   INT DEFAULT 0 #桌数
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #循环计算所需的数据
