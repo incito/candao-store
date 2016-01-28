@@ -7800,7 +7800,7 @@ BEGIN
   
   SELECT (CASE payway WHEN 1 THEN (select c.itemDesc from t_dictionary c where c.type ='BANK' and c.itemid = a.membercardno) ELSE b.itemDesc END)  AS payway
        , b.itemid
-       , a.nums AS nums
+       , sum(a.nums) AS nums
        , sum(a.prices) AS prices
        , a.membercardno
   FROM
@@ -7810,7 +7810,7 @@ BEGIN
   GROUP BY
     b.itemDesc,a.membercardno
   ORDER BY
-    b.itemSort;
+    payway;
 END$$
 DELIMITER ;
 
