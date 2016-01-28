@@ -109,9 +109,8 @@
         <property name="destination" ref="multiDishQueue" />  
         <property name="messageListener" ref="multiMessageListenerAdapter" />  
         
-            <property name="maxConcurrentConsumers" value="1" />
-        <property name="concurrentConsumers" value="1" />
-<!--         <property name="connectionFactory" ref="MotionJMSConnectionFactory" /> -->
+         <property name="maxConcurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="2" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
         
@@ -133,6 +132,10 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="custDishQueue" />  
         <property name="messageListener" ref="custMessageListenerAdapter" />  
+          <property name="maxConcurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="2" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="custMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
@@ -150,6 +153,10 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="normalDishQueue" />  
         <property name="messageListener" ref="messageListenerAdapter" />  
+          <property name="maxConcurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="2" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="messageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
@@ -166,6 +173,10 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="weightQueue" />  
         <property name="messageListener" ref="weightListenerAdapter" />  
+          <property name="maxConcurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="2" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="weightListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
@@ -186,6 +197,10 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="tableSwitchQueue" />  
         <property name="messageListener" ref="tableChangeListenerAdapter" />  
+          <property name="maxConcurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="2" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="tableChangeListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  

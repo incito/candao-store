@@ -81,6 +81,14 @@ public class TbPrinterImpl implements TbPrinterDao {
 		params.put("printerno", printerCode);
 		return dao.get(PREFIX + ".findByCode", params);
 	}
+	
+	@Override
+	public Map<String, Object> queryPrintIsExsit(String customerPrinterIp, String customerPrinterPort) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("customerPrinterIp", customerPrinterIp);
+		params.put("customerPrinterPort", customerPrinterPort);
+		return dao.get(PREFIX + ".queryPrintIsExsit", params);
+	}
 }
 
 

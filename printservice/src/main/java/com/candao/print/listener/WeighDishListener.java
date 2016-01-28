@@ -23,6 +23,7 @@ import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.service.NormalDishProducerService;
+import com.candao.print.service.PrinterService;
 import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
@@ -178,7 +179,13 @@ public class WeighDishListener {
 			socket.close();
 
 		} catch (Exception e) {
-			jmsTemplate.convertAndSend(destination, object);
+			//查询object下的打印机ip与端口是否存在，如果数据库中存在，表示打印机故障，重新加入队列等待打印机修复
+			int result=printerService.queryPrintIsExsit(object.getCustomerPrinterIp(),object.getCustomerPrinterPort());
+			if(result>0){
+				//该数据存在，重新加入队列等待打印机修复
+				jmsTemplate.convertAndSend(destination, object);
+			}
+			//不存在则表示垃圾数据直接清除
 		} finally {
 
 		}
@@ -190,5 +197,7 @@ public class WeighDishListener {
 	@Autowired
 	@Qualifier("weightQueue")
 	private Destination destination;
+	@Autowired
+	PrinterService    printerService;
 }
 

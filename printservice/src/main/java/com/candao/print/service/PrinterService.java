@@ -50,4 +50,5 @@ public interface PrinterService {
  
   public List<Map<String,Object>> getTableTag();
   public TbPrinter findByCode(String string);
-}
+  public int queryPrintIsExsit(String customerPrinterIp, String customerPrinterPort);
+} 

@@ -35,4 +35,6 @@ public final static String PREFIX = TbPrinterDao.class.getName();
 	public List<Map<String,Object>> getTableTag();
 
 	public TbPrinter findByCode(String printerCode);
+
+	public Map<String, Object> queryPrintIsExsit(String customerPrinterIp, String customerPrinterPort);
 }
