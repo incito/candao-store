@@ -1172,8 +1172,8 @@ DROP TABLE IF EXISTS t_open_log;
 CREATE TABLE t_open_log (
   id VARCHAR(10) NOT NULL,
   username VARCHAR(20) DEFAULT NULL,
-  inserttime DATE DEFAULT NULL,
-  opendate DATE DEFAULT NULL,
+  inserttime datetime DEFAULT NULL,
+  opendate datetime DEFAULT NULL,
   ipaddress VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (id)
 )
