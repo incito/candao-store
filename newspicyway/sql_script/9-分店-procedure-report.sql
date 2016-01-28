@@ -7815,7 +7815,8 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`zjl`@`%` PROCEDURE `p_pbckbb`(IN  pi_branchid INT(11), -- 分店id 
+DROP PROCEDURE IF EXISTS p_pbckbb$$
+CREATE PROCEDURE p_pbckbb(IN  pi_branchid INT(11), -- 分店id 
                                       IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
                                       IN  pi_ksrq     DATETIME, -- 开始日期，
                                       IN  pi_jsrq     DATETIME, -- 结束日期 
