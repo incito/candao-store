@@ -139,12 +139,14 @@ loop_lable:
       LEAVE loop_lable;
     END IF;
 
-    UPDATE t_temp_order_detail
-    SET
-      debitamount = dishnum * orignalprice / v_dishset_orignalprice * v_dishset_debitamount
-    WHERE
-      superkey = v_primarykey
-      AND primarykey != v_primarykey;
+    IF v_dishset_orignalprice * v_dishset_debitamount IS NOT NULL AND v_dishset_orignalprice * v_dishset_debitamount != 0 THEN
+      UPDATE t_temp_order_detail
+      SET
+        debitamount = dishnum * orignalprice / v_dishset_orignalprice * v_dishset_debitamount
+      WHERE
+        superkey = v_primarykey
+        AND primarykey != v_primarykey;
+    END IF;
   END LOOP;
   CLOSE cur_dish_set;
 END
@@ -245,18 +247,19 @@ BEGIN
       t_temp_dish;
 
     #计算实收价格
-    UPDATE t_temp_order_detail a, t_temp_dish b
-    SET
-      a.debitamount =
-      CASE
-      WHEN a.debitamount IS NOT NULL THEN
-        a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
-      ELSE
-        a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
-      END
-    WHERE
-      a.primarykey = b.primarykey;
-
+    IF v_sum_dishprice IS NOT NULL AND v_sum_dishprice != 0 THEN
+      UPDATE t_temp_order_detail a, t_temp_dish b
+      SET
+        a.debitamount =
+        CASE
+        WHEN a.debitamount IS NOT NULL THEN
+          a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
+        ELSE
+          a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
+        END
+      WHERE
+        a.primarykey = b.primarykey;
+    END IF;
 
   #针对“除某一分类”的优惠
   ELSE
@@ -280,20 +283,23 @@ BEGIN
 
 
     #计算实收价格
-    UPDATE t_temp_order_detail a
-    SET
-      a.debitamount =
-      CASE
-      WHEN a.debitamount IS NOT NULL THEN
-        a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
-      ELSE
-        a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
-      END
-    WHERE
-      orderprice > 0
-      AND primarykey NOT IN (SELECT primarykey
-                             FROM
-                               t_temp_dish);
+    IF v_sum_dishprice IS NOT NULL AND v_sum_dishprice != 0 THEN
+
+      UPDATE t_temp_order_detail a
+      SET
+        a.debitamount =
+        CASE
+        WHEN a.debitamount IS NOT NULL THEN
+          a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
+        ELSE
+          a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
+        END
+      WHERE
+        orderprice > 0
+        AND primarykey NOT IN (SELECT primarykey
+                               FROM
+                                 t_temp_dish);
+    END IF;
   END IF;
 
 
@@ -417,7 +423,8 @@ BEGIN DECLARE v_fetch_done     NUMERIC DEFAULT 0;
     t_settlement_detail tsd
   WHERE
     tsd.orderid = i_orderid
-    AND tsd.payway IN ('6', '7', '12');
+    AND tsd.payway IN (6, 7, 11, 12)
+    AND tsd.payamount != 0;
 
   #循环遍历使用的优惠券,计算每一张优惠券的减免金额
   OPEN cur_order;
@@ -585,17 +592,19 @@ BEGIN
       t_temp_dish;
 
     #计算实收价格
-    UPDATE t_temp_order_detail a, t_temp_dish b
-    SET
-      a.debitamount =
-      CASE
-      WHEN a.debitamount IS NOT NULL THEN
-        a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
-      ELSE
-        a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
-      END
-    WHERE
-      a.primarykey = b.primarykey;
+    IF v_sum_dishprice IS NOT NULL AND v_sum_dishprice != 0 THEN
+      UPDATE t_temp_order_detail a, t_temp_dish b
+      SET
+        a.debitamount =
+        CASE
+        WHEN a.debitamount IS NOT NULL THEN
+          a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
+        ELSE
+          a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
+        END
+      WHERE
+        a.primarykey = b.primarykey;
+    END IF;
 
 
   #针对“除某一单品”的优惠
@@ -620,20 +629,23 @@ BEGIN
 
 
     #计算实收价格
-    UPDATE t_temp_order_detail a
-    SET
-      a.debitamount =
-      CASE
-      WHEN a.debitamount IS NOT NULL THEN
-        a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
-      ELSE
-        a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
-      END
-    WHERE
-      orderprice > 0
-      AND primarykey NOT IN (SELECT primarykey
-                             FROM
-                               t_temp_dish);
+    IF v_sum_dishprice IS NOT NULL AND v_sum_dishprice != 0 THEN
+
+      UPDATE t_temp_order_detail a
+      SET
+        a.debitamount =
+        CASE
+        WHEN a.debitamount IS NOT NULL THEN
+          a.debitamount - (a.debitamount / v_sum_dishprice) * i_dz_amount
+        ELSE
+          a.orderprice * a.dishnum - (a.dishnum * a.orderprice / v_sum_dishprice) * i_dz_amount
+        END
+      WHERE
+        orderprice > 0
+        AND primarykey NOT IN (SELECT primarykey
+                               FROM
+                                 t_temp_dish);
+    END IF;
   END IF;
 END
 $$
@@ -705,17 +717,19 @@ BEGIN
     orderprice > 0;
 
   #计算每个菜品的实收价格
-  UPDATE t_temp_order_detail
-  SET
-    debitamount =
-    CASE
-    WHEN debitamount IS NOT NULL THEN
-      debitamount - (debitamount / v_sum_dishprice) * i_dz_amount
-    ELSE
-      orderprice * dishnum - (dishnum * orderprice / v_sum_dishprice) * i_dz_amount
-    END
-  WHERE
-    orderprice > 0;
+  IF v_sum_dishprice IS NOT NULL AND v_sum_dishprice != 0 THEN
+    UPDATE t_temp_order_detail
+    SET
+      debitamount =
+      CASE
+      WHEN debitamount IS NOT NULL THEN
+        debitamount - (debitamount / v_sum_dishprice) * i_dz_amount
+      ELSE
+        orderprice * dishnum - (dishnum * orderprice / v_sum_dishprice) * i_dz_amount
+      END
+    WHERE
+      orderprice > 0;
+  END IF;
 END
 $$
 
