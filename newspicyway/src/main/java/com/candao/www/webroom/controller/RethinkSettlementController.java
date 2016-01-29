@@ -143,7 +143,7 @@ public class RethinkSettlementController {
 		String branchId = PropertiesUtils.getValue("current_branch_id");
 		Map<String,Object> params = setItemQueryParams(beginTime,endTime,branchId,searchType);
 		String branchName = itemDetailService.getBranchName(branchId);
-		params.put("branchName", branchName);
+		params.put("branchname", branchName);
 		params.put("shiftid", "-1");
 		Map<String,Object> map = new HashMap<String,Object>();
 	    try{

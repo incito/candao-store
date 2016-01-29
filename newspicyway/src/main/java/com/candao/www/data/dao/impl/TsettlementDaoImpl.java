@@ -108,7 +108,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * ¸ù¾İ¶©µ¥ºÅ²éÑ¯·´½á´ÎÊı
+	 * æ ¹æ®è®¢å•å·æŸ¥è¯¢åç»“æ¬¡æ•°
 	 * @author weizhifang
 	 * @since 2016-1-12
 	 * @param orderId
@@ -121,7 +121,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * ¸ù¾İ¶©µ¥ºÅĞŞ¸Ä·´½áËã´ÎÊı
+	 * æ ¹æ®è®¢å•å·ä¿®æ”¹åç»“ç®—æ¬¡æ•°
 	 * @author weizhifang
 	 * @since 2016-1-12
 	 * @param orderId
@@ -138,7 +138,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * Íù½áËã±íÀïĞ´Êı¾İ
+	 * å¾€ç»“ç®—è¡¨é‡Œå†™æ•°æ®
 	 * @author weizhifang
 	 * @since 2016-01-14
 	 * @param id
@@ -162,7 +162,7 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	}
 	
 	/**
-	 * µÃµ½»áÔ±Ïû·ÑĞéÔöÖµ
+	 * å¾—åˆ°ä¼šå‘˜æ¶ˆè´¹è™šå¢å€¼
 	 * @author weizhifang
 	 * @since 2016-1-19
 	 * @param orderid
@@ -172,5 +172,18 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("orderid", orderid);
 		return dao.getSqlSessionTemplate().selectOne(PREFIX + ".getMemberInflated", params);
+	}
+	
+	/**
+	 * åç»“ç®—æ—¶ä¿®æ”¹ä¼šå‘˜æ¶ˆè´¹è™šå¢å€¼ä¸º0
+	 * @author weizhifang
+	 * @since 2016-1-26
+	 * @param orderid
+	 * @return
+	 */
+	public int updateTorderMember(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return dao.update(PREFIX + ".updateTorderMember", params);
 	}
 }

@@ -55,7 +55,7 @@
 						<div class="input-group">
 							<input type="text" class="form-control"
 								aria-describedby="basic-addon1"
-								onFocus="WdatePicker({startDate:'+%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'endTime\')}',minDate:'#F{$dp.$D(\'endTime\',{y:-1});}'})"
+								onFocus="WdatePicker({startDate:'+%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'endTime\')}',minDate:'#F{$dp.$D(\'endTime\',{M:-1});}'})"
 								id="beginTime" name="beginTime" readOnly="true" /> <span
 								class="input-group-addon arrow-down" id="basic-addon1"><i
 								class="icon-chevron-down" style="color: #000000"></i></span>
@@ -66,7 +66,7 @@
 						<div class="input-group">
 							<input type="text" class="form-control"
 								aria-describedby="basic-addon1"
-								onFocus="WdatePicker({startDate:'+%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'beginTime\')}',maxDate:'#F{$dp.$D(\'beginTime\',{y:1, s:-1});}'})"
+								onFocus="WdatePicker({startDate:'+%Y-%m-%d %H:%M:%S',dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'beginTime\')}',maxDate:'#F{$dp.$D(\'beginTime\',{M:1});}'})"
 								id="endTime" name="endTime" readOnly="true" /> <span
 								class="input-group-addon arrow-down" id="basic-addon1"><i
 								class="icon-chevron-down" style="color: #000000"></i></span>
@@ -159,6 +159,18 @@
  			</div> 
  		</div> 
  	</div>
+ 	<div class="modal fade dialog in " id="prompt-dialog"
+		data-backdrop="static">
+		<div class="modal-dialog" style="margin-top: 100px; position: absolute; left: 35%;width: 250px;">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div style="text-align: center;">
+						<p id="prompt-msg">处理中，请稍后...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
  	<script src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
 	<script src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/report.js"></script>
