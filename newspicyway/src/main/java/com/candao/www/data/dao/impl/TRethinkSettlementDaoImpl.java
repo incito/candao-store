@@ -1,5 +1,6 @@
 package com.candao.www.data.dao.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,5 +108,18 @@ public class TRethinkSettlementDaoImpl implements TRethinkSettlementDao {
 	 */
 	public String queryTableNo(Map<String,Object> params){
 		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".queryTableNo", params);
+	}
+	
+	/**
+	 * 查询会员消费虚增值
+	 * @author weizhifang
+	 * @since 2016-01-25
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal queryMemberInflate(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".queryMemberInflate", params);
 	}
 }

@@ -44,9 +44,6 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 				//服务员
 				String waiterId = (String)rethinkBefore.get(i).get("waiter");
 				String waiter = tRethinkSettlementDao.queryUserNameByJobNumber(waiterId,params.get("branchId").toString());
-				//收银员
-				String cashierId = (String)rethinkBefore.get(i).get("cashier");
-				String cashier = tRethinkSettlementDao.queryUserNameByJobNumber(cashierId,params.get("branchId").toString());
 				//授权人
 				String authorizerName = (String)rethinkBefore.get(i).get("authorizer_name");
 				//根据订单号查询结算后的数据
@@ -59,6 +56,14 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 					Double after_shouldamount = (Double)rethinkAfter.get("after_shouldamount");
 					//反结算后实收
 					BigDecimal after_paidamount = (BigDecimal)rethinkAfter.get("after_paidamount");
+					//查询会员消费虚增
+					BigDecimal inflated = tRethinkSettlementDao.queryMemberInflate(orderId);
+					if(inflated != null){
+						after_paidamount = after_paidamount.subtract(inflated).setScale(2,BigDecimal.ROUND_HALF_UP);
+					}
+					//收银员
+					String cashierId = (String)rethinkAfter.get("cashier");
+					String cashier = tRethinkSettlementDao.queryUserNameByJobNumber(cashierId,params.get("branchId").toString());
 					//计算时间差异
 					int timedifference = DateUtils.daysOfTwo(before_clearTime, after_clearTime);
 					//计算实收差异

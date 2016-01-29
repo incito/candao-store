@@ -77,10 +77,10 @@
  							</ul>
  					 	</li>
  					 	<li class="ky-dropdown-sec report-dropdown-sec">
- 							<a href="#" class="ky-menu-success" onclick="toScheduleReport()">统计报表</a>
+ 							<a href="#" class="ky-menu-success" onclick="toTheSettlementStatistics()">统计报表</a>
  							<ul class="ky-dropdown-sec-menu ky-nav ky-nav-pills">
- 								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toTheSettlementStatistics()">反结算统计表</a></li>
- 								<li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toTheSettlementStatistics()">反结算统计表</a></li>
+ 								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toScheduleReport()">排班参考统计表</a></li>
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterAssess()">服务员考核统计表</a></li>
  							</ul>
@@ -104,20 +104,6 @@
 					<li>
 						<a href="#" class="ky-menu-setup" onclick="toSetup()">系统设置</a>
 					</li>
-				</c:if>
-				<c:if test="${item.key  == '0311' || item.key=='020101'}">
-				<li  class="ky-dropdown" id="psi">
-					<a href="#" class="ky-menu-psi ky-menu-erp" onclick="toBasic()">进销存管理</a>
-					 <ul class="ky-dropdown-menu ky-nav ky-nav-pills ky-dropdown-menu-erp">
-						<li><a href="#" class="ky-menu-psi ky-menu-erp" onclick="toBasic()">基础信息管理</a></li>
-						<li><a href="#" class="ky-menu-psi ky-menu-erp sub_bussi_menu" onclick="toInStorage()">入库管理</a></li>
-						<li><a href="#" class="ky-menu-psi ky-menu-erp" onclick="toOutStorage()">出库管理</a></li>
-						<li><a href="#" class="ky-menu-psi ky-menu-erp sub_item_menu" onclick="toInventory()">库存一览</a></li>
-						<li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toInventoryBill()">库存盘点</a></li>
-						<li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toOrder()">销售管理</a></li>
-						<li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toChart()">报表分析</a></li>
-					</ul>
-				</li>
 				</c:if>
 			</c:forEach>	
 			</ul>
