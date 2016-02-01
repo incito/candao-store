@@ -30,6 +30,7 @@ import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbHandFreeDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TbVoucherDao;
+import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.model.TbDiscountTickets;
 import com.candao.www.data.model.TbHandFree;
@@ -73,6 +74,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
   private TbHandFreeDao tbHandFreeDao;
   @Autowired
   private TorderDetailMapper torderDetailDao;
+  @Autowired
+  private TdishDao tdishDao;
   
   /* (non-Javadoc)
    * @see com.candao.www.webroom.service.PreferentialActivityService#grid(java.util.Map, int, int)
@@ -1057,22 +1060,30 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					Map detailMap=detailList.get(0);
 					discount=(BigDecimal) detailMap.get("discount");
-					//2.获取特价券 不参与折扣的菜品。并放入map
-					noDiscountDishlist=this.tbDiscountTicketsDao.getNoDiscountDishsByDiscount( activity.getId());
-					for(TbNoDiscountDish t:noDiscountDishlist){
-						//根据有鱼锅的dishid对应的锅底和鱼的dishid
-						 List<Tdish> tdishList =  this.tbDiscountTicketsDao.getDishidList(t.getDish());
-						 if(tdishList.size()>0){
-							for(Tdish dish:tdishList){
-								noDiscountDishMap.put(dish.getDishid(),dish.getDishid());
-							}
-						 }
-						 noDiscountDishMap.put(t.getDish(),t.getDish());
-					}
+
 					//3.获取当前账单的 菜品列表
 					Map orderDetail_params=new HashMap();
 					orderDetail_params.put("orderid", orderid);
 					List<TorderDetail> orderDetailList= this.torderDetailDao.find(orderDetail_params);
+					
+					//2.获取特价券 不参与折扣的菜品。并放入map
+					noDiscountDishlist=this.tbDiscountTicketsDao.getNoDiscountDishsByDiscount( activity.getId());
+					for(TbNoDiscountDish t:noDiscountDishlist){
+						boolean hasFish = hasFishInOrder(orderDetailList, t);
+						//根据有鱼锅的dishid对应的锅底和鱼的dishid
+						 Tdish tdish = tdishDao.get(t.getDish());
+						 
+						 //只有鱼锅且订单点了该鱼锅才把鱼锅中的子菜品加入到不参与折扣列表中
+						 if(tdish.getDishtype() == 1 && hasFish){  
+							 List<Tdish> tdishList =  this.tbDiscountTicketsDao.getDishidList(t.getDish());
+							 if(tdishList.size()>0){
+								for(Tdish dish:tdishList){
+									noDiscountDishMap.put(dish.getDishid(),dish.getDishid());
+								}
+							 }
+						 }
+						 noDiscountDishMap.put(t.getDish(),t.getDish());
+					}
 					//4.遍历账单的菜品，如果输入不进行折扣的菜品，则不处理。否则，认为是需要计算优惠。
 					String nd=null;
 					Map< String , Object > tmpMap=null;
@@ -1256,6 +1267,21 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		}
 		
 		return result;
+	}
+
+	/**
+	 * 判断订单中是否点了不参与折扣的鱼锅
+	 * @param orderDetailList
+	 * @param t
+	 * @return
+	 */
+	private boolean hasFishInOrder(List<TorderDetail> orderDetailList, TbNoDiscountDish t) {
+		for (TorderDetail d : orderDetailList) {
+			 if(d.getDishid().equals(t.getDish())){
+				 return true;
+			 }
+		}
+		return false;
 	} 
 	
 	
