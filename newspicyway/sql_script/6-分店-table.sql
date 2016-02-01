@@ -2070,7 +2070,10 @@ CREATE TABLE t_settlement_history (
   isclear INT(11) DEFAULT 0 COMMENT '1表示已经清过机',
   id VARCHAR(50) DEFAULT NULL,
   reason VARCHAR(100) DEFAULT NULL,
-  rebacktime DATETIME DEFAULT NULL
+  rebacktime DATETIME DEFAULT NULL,
+  again_settle_nums int(3) DEFAULT 1,
+  authorizer_name VARCHAR(50),
+  Inflated decimal(8,2)
 )
 ENGINE = INNODB
 AVG_ROW_LENGTH = 496
