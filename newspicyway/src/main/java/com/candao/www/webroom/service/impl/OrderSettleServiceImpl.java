@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -125,10 +126,24 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
-		
-		if(! "1".equals(String.valueOf(resultMap.get(0).get("status")))){
-			mapRet.put("result", "1");
-			return JacksonJsonMapper.objectToJson(mapRet); 
+		//added by caicai : hotfix
+		if (resultMap.size() > 1) {
+			boolean flag = false;
+			for (Iterator<Map<String, Object>> iterator = resultMap.iterator(); iterator.hasNext();) {
+				Map<String, Object> it = (Map<String, Object>) iterator.next();
+				if("1".equals(String.valueOf(it.get("status"))))
+					flag = true;
+			}
+			if(!flag){
+				//所有匹配的餐桌都是已结算状态
+				mapRet.put("result", "3");
+				return JacksonJsonMapper.objectToJson(mapRet);
+			}
+		} else {
+			if(! "1".equals(String.valueOf(resultMap.get(0).get("status")))){
+				mapRet.put("result", "1");
+				return JacksonJsonMapper.objectToJson(mapRet); 
+			}
 		}
 	 
 //	 BigDecimal totalAmount = new BigDecimal(0);
