@@ -182,7 +182,7 @@
 	<script type="text/javascript">
 		var shiftid;
 		var itemId;
-		var dishtype;
+		var _dishType;
 		var searchType;
 		$(document).ready(function() {
 			$(".long-search button").click(function() {

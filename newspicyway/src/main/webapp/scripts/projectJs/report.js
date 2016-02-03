@@ -1574,7 +1574,7 @@ function initItemDetailsData() {
 	if(compareBeginEndTime()){
 		shiftid = $("#shiftid").val();
 		itemId = $("#itemID").val()==null?"-1":$("#itemID").val();
-		dishtype = $("#dishType").val();
+		_dishType = $("#dishType").val();
 		doItemDetailsPost(initItemTb);
 	}
 }
@@ -1584,7 +1584,7 @@ function doItemDetailsPost(callback){
 		endTime : $("#endTime").val(),
 		shiftid : $("#shiftid").val(),
 		id : itemId,
-		dishType : dishtype
+		dishType : _dishType
 	}, function(result) {
 		callback(result);
 	},'json');
@@ -1744,25 +1744,24 @@ function exportReportsItem(f) {
 		shiftid = "null";
 	}
 	var id = itemId;
-	var dishType = dishtype;
 	if(id == null || id == ""){
 		id = "null";
 	}
-	if(dishType == null || dishType == ""){
-		dishType = "null";
+	if(_dishType == null || _dishType == ""){
+		_dishType = "null";
 	}
 	
 	var itemids = "";
 	if(f == 1){
 		var itemid = $("#p-item-id").val();
-		var dishtype = $("#p-dish-type").val();
-		itemids = itemid+","+dishtype+"|";
+		var dishtype1 = $("#p-dish-type").val();
+		itemids = itemid+","+dishtype1+"|";
 	}else{
 		itemids = "null";
 	}
 	
 	location.href = global_Path + "/itemDetail/exportxlsA/"
-			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ dishType + "/"+itemids+"/"+searchType+".json";
+			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
 	}
 }
 /***********************品项销售明细表 END***************************************/
