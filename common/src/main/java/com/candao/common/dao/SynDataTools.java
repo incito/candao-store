@@ -118,6 +118,7 @@ public class SynDataTools {
 		
 		insertSQLBuilder.append(");");
 
+		//System.out.println(insertSQLBuilder.toString());
 		return insertSQLBuilder.toString();
 	}
 
@@ -236,6 +237,13 @@ public class SynDataTools {
 		    case "t_nodeclass":
 		    	retStr = prifixSql + " pritertime   " + sufixSql;
 				break;
+		    case "t_order_history":
+		    	retStr = prifixSql + " begintime   " + sufixSql;
+				break;
+		    case "t_order_detail_history":
+		    	retStr = prifixSql + " begintime   " + sufixSql;
+				break;
+				
 			 default:
 				 retStr = "";
 					break;
@@ -291,6 +299,12 @@ public class SynDataTools {
 		    	break;
 		    case "t_nodeclass":	
 		    	retStr = "id";
+		    	break;
+		    case "t_order_history":	
+		    	retStr = "orderid";
+		    	break;
+		    case "t_order_detail_history":	
+		    	retStr = "orderdetailid";
 		    	break;
 			 default:
 				 retStr = "";

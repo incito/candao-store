@@ -1,5 +1,6 @@
 package com.candao.www.data.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -83,5 +84,14 @@ public interface TRethinkSettlementDao {
 	 * @return
 	 */
 	public String queryTableNo(Map<String,Object> params);
+	
+	/**
+	 * 查询会员消费虚增值
+	 * @author weizhifang
+	 * @since 2016-01-25
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal queryMemberInflate(String orderid);
 	
 }

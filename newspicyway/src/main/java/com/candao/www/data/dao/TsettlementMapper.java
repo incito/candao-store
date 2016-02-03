@@ -39,7 +39,7 @@ public interface TsettlementMapper {
 		public void insertRebackSettleDetail(SettlementInfo settlementInfo);
 		
 		/**
-		 * ¸ù¾İ¶©µ¥ºÅ²éÑ¯·´½á´ÎÊı
+		 * æ ¹æ®è®¢å•å·æŸ¥è¯¢åç»“æ¬¡æ•°
 		 * @author weizhifang
 		 * @since 2016-1-12
 		 * @param orderId
@@ -48,7 +48,7 @@ public interface TsettlementMapper {
 		public String queryAgainSettleNums(String orderId);
 		
 		/**
-		 * ¸ù¾İ¶©µ¥ºÅĞŞ¸Ä·´½áËã´ÎÊı
+		 * æ ¹æ®è®¢å•å·ä¿®æ”¹åç»“ç®—æ¬¡æ•°
 		 * @author weizhifang
 		 * @since 2016-1-12
 		 * @param orderId
@@ -58,7 +58,7 @@ public interface TsettlementMapper {
 		public int updateSettlementHistory(String orderId,int againSettleNums,String authorizerName,String reason);
 		
 		/**
-		 * Íù½áËã±íÀïĞ´Êı¾İ
+		 * å¾€ç»“ç®—è¡¨é‡Œå†™æ•°æ®
 		 * @author weizhifang
 		 * @since 2016-01-14
 		 * @param id
@@ -70,12 +70,21 @@ public interface TsettlementMapper {
 		public int insertSettlementHistory(java.lang.String id ,String reason,int againSettleNums,String authorizerName,Double inflated);
 		
 		/**
-		 * µÃµ½»áÔ±Ïû·ÑĞéÔöÖµ
+		 * å¾—åˆ°ä¼šå‘˜æ¶ˆè´¹è™šå¢å€¼
 		 * @author weizhifang
 		 * @since 2016-1-19
 		 * @param orderid
 		 * @return
 		 */
 		public Double getMemberInflated(String orderid);
+		
+		/**
+		 * åç»“ç®—æ—¶ä¿®æ”¹ä¼šå‘˜æ¶ˆè´¹è™šå¢å€¼ä¸º0
+		 * @author weizhifang
+		 * @since 2016-1-26
+		 * @param orderid
+		 * @return
+		 */
+		public int updateTorderMember(String orderid);
 		
 }

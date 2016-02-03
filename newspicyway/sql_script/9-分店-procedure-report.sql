@@ -2487,8 +2487,8 @@ BEGIN
     shouldamount DOUBLE(13, 2), #应收
     paidinamount DOUBLE(13, 2), #实收
     discountamount DOUBLE(13, 2), #折扣
-    personcon  DOUBLE(13, 2), #人均
-    tablenum   INT DEFAULT 0 #桌数
+    personpercent  DOUBLE(13, 2), #人均
+    tablecount   INT DEFAULT 0 #桌数
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   #循环计算所需的数据
@@ -5917,7 +5917,7 @@ read_loop:
     LIMIT
       1;
 
-    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number,round(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_sum_price/v_total_shouldmount_count, round(v_number / v_total_count * 100, 2));
+    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number,round(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_sum_price/v_total_shouldmount_count*100, round(v_number / v_total_count * 100, 2));
   END LOOP;
   COMMIT;
   
@@ -5946,7 +5946,7 @@ read_loop:
       1;
 
     IF @cnt > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt,round(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@sumprice/v_total_shouldmount_count, round(@cnt / v_total_count * 100, 2));
+      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt,round(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@sumprice/v_total_shouldmount_count*100, round(@cnt / v_total_count * 100, 2));
     END IF;
   END IF;
 
@@ -6292,7 +6292,7 @@ BEGIN
   
   UPDATE t_temp_res
   SET
-    share = number / v_total_count * 100,thousandstimes= number/v_total_custnum_count * 1000,turnover = orignalprice/v_total_shouldmount_count;
+    share = number / v_total_count * 100,thousandstimes= number/v_total_custnum_count * 1000,turnover = orignalprice/v_total_shouldmount_count*100;
 
 
   
@@ -6306,7 +6306,7 @@ BEGIN
       dishid = 'DISHES_98';
 
     IF v_sum > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', '餐具', 0, '单品', v_sum,v_sum/v_total_custnum_count*1000,v_canju_mount,v_canju_mount/v_total_shouldmount_count,v_sum / v_total_count * 100); -- 字段问题
+      INSERT INTO t_temp_res VALUES ('DISHES_98', '餐具', 0, '单品', v_sum,v_sum/v_total_custnum_count*1000,v_canju_mount,v_canju_mount/v_total_shouldmount_count*100,v_sum / v_total_count * 100); -- 字段问题
     END IF;
   END IF;
   COMMIT;
@@ -7800,7 +7800,7 @@ BEGIN
   
   SELECT (CASE payway WHEN 1 THEN (select c.itemDesc from t_dictionary c where c.type ='BANK' and c.itemid = a.membercardno) ELSE b.itemDesc END)  AS payway
        , b.itemid
-       , a.nums AS nums
+       , sum(a.nums) AS nums
        , sum(a.prices) AS prices
        , a.membercardno
   FROM
@@ -7810,12 +7810,13 @@ BEGIN
   GROUP BY
     b.itemDesc,a.membercardno
   ORDER BY
-    b.itemSort;
+    payway;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`zjl`@`%` PROCEDURE `p_pbckbb`(IN  pi_branchid INT(11), -- 分店id 
+DROP PROCEDURE IF EXISTS p_pbckbb$$
+CREATE PROCEDURE p_pbckbb(IN  pi_branchid INT(11), -- 分店id 
                                       IN  pi_sb       SMALLINT, -- 市别，0:午市；1:晚市；-1:全天
                                       IN  pi_ksrq     DATETIME, -- 开始日期，
                                       IN  pi_jsrq     DATETIME, -- 结束日期 
