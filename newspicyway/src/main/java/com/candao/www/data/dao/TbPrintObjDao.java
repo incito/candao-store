@@ -56,4 +56,6 @@ public interface TbPrintObjDao {
 
 		public void updateDetailByObjId(Map<String, Object> map0);
 
+		public int findPrintTable(Map<String, Object> paramMap);
+
 }

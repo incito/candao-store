@@ -153,6 +153,11 @@ public class TbPrintObjDaoImpl implements TbPrintObjDao {
 		 dao.update(PREFIX + ".updateDetailByObjId", map0);
 		
 	}
+
+	@Override
+	public int findPrintTable(Map<String, Object> paramMap) {
+		 return dao.get(PREFIX + ".findPrintTable", paramMap);
+	}
 }
 
 
