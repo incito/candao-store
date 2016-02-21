@@ -33,6 +33,18 @@ public interface PrinterManagerService {
   */
  public boolean update(TbPrinterManager tbPrinterManager);
  /**
+  * 设置菜品分组
+  * @param list
+  * @return
+  */
+ public boolean updateDishGroup(List<Map<String, Object>> list);
+ /**
+  * 清理菜品分组
+  * @param printerid
+  * @return
+  */
+ public boolean cleanDishGroup(String printerid);
+ /**
   * 查询单个数据
   * @param id
   * @return
@@ -54,7 +66,7 @@ public interface PrinterManagerService {
   public TbPrinterManager findByCode(String string);
   public int addPrinterTables(List<Map<String, Object>> list);
 public List<TbPrinterArea> findArea( Map<String, Object> params);
-public List<TbPrinterDetail> findDishes(Map<String, Object> params);
+public List<Map<String, Object>> findDishes(Map<String, Object> params);
 public List<Map<String, Object>> getDishTypeslistTag(String printerid);
 public int addPrinterDishes(List<Map<String, Object>> list);
 public boolean deleteTablesByPrinterd(String printerid);

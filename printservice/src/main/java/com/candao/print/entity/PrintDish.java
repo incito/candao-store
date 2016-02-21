@@ -79,7 +79,7 @@ public class PrintDish implements Serializable,Comparable<PrintDish>{
     private int printnum;
     private int ispot;
     
-    
+    private String parentDishName;
 
 
 	public int getIspot() {
@@ -327,6 +327,14 @@ public class PrintDish implements Serializable,Comparable<PrintDish>{
 
 	public void setIsadddish(int isadddish) {
 		this.isadddish = isadddish;
+	}
+
+	public String getParentDishName() {
+		return parentDishName;
+	}
+
+	public void setParentDishName(String parentDishName) {
+		this.parentDishName = parentDishName;
 	}
 
 }

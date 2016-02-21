@@ -6,6 +6,7 @@ public class TbPrinterDetail {
 	private String dishid;
 	private Integer status;
 	private String columnid;
+	private String groupSequence;
 	public String getId() {
 		return id;
 	}
@@ -35,6 +36,12 @@ public class TbPrinterDetail {
 	}
 	public void setColumnid(String columnid) {
 		this.columnid = columnid;
+	}
+	public String getGroupSequence() {
+		return groupSequence;
+	}
+	public void setGroupSequence(String groupSequence) {
+		this.groupSequence = groupSequence;
 	}
 	
 }

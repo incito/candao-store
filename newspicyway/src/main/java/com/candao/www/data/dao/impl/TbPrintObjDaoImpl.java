@@ -153,6 +153,11 @@ public class TbPrintObjDaoImpl implements TbPrintObjDao {
 		 dao.update(PREFIX + ".updateDetailByObjId", map0);
 		
 	}
+
+	@Override
+	public List<PrintDish> findDishGroupBySuperKey(Map<String, Object> map) {
+		 return dao.find(PREFIX + ".findDishGroupBySuperKey", map);
+	}
 }
 
 

@@ -55,5 +55,7 @@ public interface TbPrintObjDao {
 		public void updateDishByObjId(Map<String, Object> map0);
 
 		public void updateDetailByObjId(Map<String, Object> map0);
+		
+		public List<PrintDish> findDishGroupBySuperKey(Map<String,Object> map);
 
 }

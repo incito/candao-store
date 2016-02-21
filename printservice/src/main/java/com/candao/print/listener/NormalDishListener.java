@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.jms.Destination;
@@ -67,7 +68,7 @@ public class NormalDishListener {
 			socketOut.write(27);
 			socketOut.write(27);
 			
-			PrintDish printDish = object.getpDish();
+			PrintDish printDish = object.getpDish().get(0);//TODO 临时处理
 			writer.flush();//
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 			// 单号
@@ -140,19 +141,28 @@ public class NormalDishListener {
 			
 			writer.write("     " + "\r\n");
 			writer.flush();// 
-			socketOut.write(PrinterConstant.getFd8Font());
-			String dishName2 = StringUtils.bSubstring2(StringUtils.BtoQ(
-					printDish.getDishName()), 12);
-			String dishNum2 = StringUtils.bSubstring3(
-					printDish.getDishNum(), 4);
-			String dishunit2 = StringUtils.bSubstring2(printDish.getDishUnit(),
-					2);
 
-			writer.write(dishName2 );
-			writer.flush();//  
-			socketOut.write(PrinterConstant.getFdDoubleFont());
-			writer.write( " "+dishNum2 + dishunit2				+ "                    \r\n");
-			writer.flush();//  
+			//合并打印
+			for (PrintDish singleDish : object.getpDish()) {
+				socketOut.write(PrinterConstant.getFd8Font());
+				String dishNum2 = StringUtils.bSubstring3(
+						singleDish.getDishNum(), 4);
+				String dishunit2 = StringUtils.bSubstring2(singleDish.getDishUnit(),
+						2);
+				
+				int spaceNum = 12;
+				if (2 == printDish.getDishtype()){
+					spaceNum = 9;
+					writer.write("（套）");
+				}
+				String dishName2 = StringUtils.bSubstring2(StringUtils.BtoQ(
+						singleDish.getDishName()), spaceNum );
+				writer.write(dishName2);
+				writer.flush();//  
+				socketOut.write(PrinterConstant.getFdDoubleFont());
+				writer.write( " "+dishNum2 + dishunit2				+ "                    \r\n");
+				writer.flush();//  
+			}
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("------------------------------------------\r\n");
 			writer.flush();//  
@@ -166,9 +176,47 @@ public class NormalDishListener {
 //				special = StringUtils.bSubstring2(printDish
 //						.getSperequire(), 30);
 //			}
+			//菜品套餐信息
+			String parentDishName = "";
+			List<String> buffer = new LinkedList<>();
+			for (PrintDish it : object.getpDish()) {
+				if(it.getParentDishName() != null && !"".equals(it.getParentDishName())){
+					if(!buffer.contains(it.getParentDishName()))
+						buffer.add(it.getParentDishName());
+				}
+			}
+			for (int i = 0; i < buffer.size(); i++) {
+				if (i != 0) {
+					parentDishName = parentDishName.concat("，").concat(buffer.get(i));
+				} else {
+					parentDishName = parentDishName.concat(buffer.get(i));
+				}
+			}
+			
+			//合并打印的忌口处理
+			boolean isSame = true; //判断所有菜品的备注信息是否一样
+			String preSperequire = object.getpDish().get(0).getSperequire();
+			for (PrintDish singleDish : object.getpDish()) {
+				if(preSperequire != singleDish.getSperequire() && (preSperequire != null && !preSperequire.equals(singleDish.getSperequire()))){
+					isSame = false;
+				}
+				preSperequire = singleDish.getSperequire();
+			}
+			//非全单备注
+			if(!isSame){
+				special = "";
+				for (PrintDish singleDish : object.getpDish()) {
+					if(singleDish.getSperequire() != null && !singleDish.getSperequire().isEmpty()){
+						special += singleDish.getDishName() + "：" + singleDish.getSperequire() + "\r\n";
+					}
+				}
+			}
 			
 			if (special == null || "null".equals(special)) {
 				special = "";
+			}
+			if(!special.isEmpty() && isSame && object.getpDish().size() > 1){//合并打印时全单备注特殊处理
+				special = "全单" + special;
 			}
 			// 只显示出时分秒
 //			writer.write(StringUtils.bSubstring3(String.valueOf(Integer.toString(printDishList.get(0)
@@ -183,6 +231,12 @@ public class NormalDishListener {
 
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 
+			socketOut.write(PrinterConstant.getFdDoubleFont());
+			//填写菜品套餐信息
+			if (parentDishName != null && !"".equals(parentDishName)) {
+				writer.write("备注：" + parentDishName + "\r\n");
+			}
+			
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 			writer.write(special + "\r\n");
 

@@ -15,6 +15,7 @@
 	<script src="../scripts/jquery.js"></script>
 	<script src="../tools/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../scripts/projectJs/index.js"></script>
+	<script src="../scripts/global.js"></script>
 	<script src="../scripts/projectJs/print.js"></script>
 	<script src="<%=request.getContextPath()%>/tools/jquery-validation/jquery.validate.js"></script>
 	<script type="text/javascript">
@@ -118,14 +119,27 @@
 								</div>
 								<font color="red" id="print-dishes-add_tip" class="error"></font>
 							</div>
-						</div>	
+						</div>
+						<div class="form-group hidden" id="print-groupdishes" style="margin: auto;width: 88%;">
+							<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="1">
+								<button type="button" style="font-size: 13px;" class="btn btn-default required " data-html="true" title=""
+							     data-container=""  data-toggle="popover" data-placement="bottom" 
+							     data-content="" onclick="showGroupDialog(this)">+添加组合</button>
+							     <div class="popover fade bottom in" style="top: 30px; left: -145px; display: none;">
+
+								    <div class="arrow"></div>
+								    <h3 class="popover-title" style="display: none;"></h3>
+								    <div class="popover-content">
+								        <div class="tableOrdiah-detail-box"></div>
+								        <div class="tableOrdiah-detail-box"></div>
+								        <div class="tableOrdiah-detail-box"></div>
+								    </div>
 								
-<!-- 						<div class="btn-operate"> -->
-<!-- 							<button class="btn btn-cancel" type="button">取消</button> -->
-<!-- 							<div  class="btn-division"></div> -->
-							
-<!-- 							<button class="btn btn-save"  type="submit">确认</button> -->
-<!-- 						</div> -->
+								</div>
+								<font color="red" id="print-groupdishes-add_tip" class="error"></font>
+							</div>
+						</div>		
+								
 						<div class="btn-operate  " id="add-btn">
 								<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal" >取消</button>
 								<div  class="btn-division"></div>
@@ -255,6 +269,42 @@
 								<button class="btn btn-cancel in-btn135" data-dismiss="modal">取消</button>
 								<div  class="btn-division"></div>
 								<button class="btn btn-save in-btn135" id="print-dishes-confirm">确认</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+		<!-- /.modal-dialog -->
+		</div>
+		
+		<!--菜品组合弹出框-->
+		<div class="modal fade " data-backdrop="static" id="printGroup-add-dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="ky-print-title">
+							<span>选择组合<font >(已选<font id="group-count">0</font>个菜品 )</font></span>
+							<span class=" ky-print-empty">
+								<label class="radio-inline">
+									<input type="radio" name="selectRadio" id="group-radio-check" value="" >全选</label>
+								<label class="radio-inline">
+									<input type="radio" name="selectRadio" id="group-radio-uncheck" value="" >全不选</label>
+							</span>
+							<img src="../images/close.png" class="img-close" data-dismiss="modal">
+
+						</div>
+						<hr class="ky-hr">
+						<div class="ky-print-content" style="height: 400px;overflow: auto;">
+							<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+							</div>
+						</div>
+						<div class="ky-print-footer">
+							<div class="btn-operate">
+								<button class="btn btn-cancel in-btn135" data-dismiss="modal">取消</button>
+								<div  class="btn-division"></div>
+								<button class="btn btn-save in-btn135" id="print-groupdishes-confirm">确认</button>
 							</div>
 						</div>
 					</div>

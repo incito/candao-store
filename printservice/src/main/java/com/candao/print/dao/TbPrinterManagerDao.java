@@ -43,7 +43,7 @@ public final static String PREFIX = TbPrinterManagerDao.class.getName();
 
 	public List<TbPrinterArea> findArea(Map<String,Object> params);
 
-	public List<TbPrinterDetail> findDishes(Map<String,Object> params);
+	public List<Map<String, Object>> findDishes(Map<String,Object> params);
 
 	public List<Map<String, Object>> getDishTypeslistTag(String printerid);
 
@@ -69,5 +69,11 @@ public final static String PREFIX = TbPrinterManagerDao.class.getName();
 	 * @Description: TODO
 	 */
 	public List<TbPrinterManager> findPrintByType(Map<String, Object> paramMap);
+	
+	public int updateDishGroup(Map<String, Object> paramMap);
+	
+	public List<TbPrinterDetail> findPrintDetail(Map<String, Object> paramMap);
+
+	public int cleanDishGroup(String printerid);
 
 }
