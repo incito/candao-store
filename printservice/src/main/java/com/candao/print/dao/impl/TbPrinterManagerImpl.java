@@ -105,7 +105,7 @@ public class TbPrinterManagerImpl implements TbPrinterManagerDao {
 	}
 
 	@Override
-	public List<TbPrinterDetail> findDishes(Map<String,Object> params) {
+	public List<Map<String, Object>> findDishes(Map<String,Object> params) {
 		return dao.find(PREFIX + ".findDishesByPrinterid", params);
 	}
 
@@ -150,6 +150,24 @@ public class TbPrinterManagerImpl implements TbPrinterManagerDao {
 		// TODO Auto-generated method stub
 		return dao.find(PREFIX + ".findPrintByType", paramMap);
 	}
+
+	@Override
+	public int updateDishGroup(Map<String, Object> paramMap) {
+		return dao.update(PREFIX + ".updateDishGroup", paramMap);
+	}
+
+	@Override
+	public List<TbPrinterDetail> findPrintDetail(Map<String, Object> paramMap) {
+		return dao.find(PREFIX + ".findPrintDetail", paramMap);
+	}
+
+	@Override
+	public int cleanDishGroup(String printerid) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("printerid", printerid);
+		return dao.update(PREFIX + ".cleanDishGroup", params);
+	}
+	
 }
 
 

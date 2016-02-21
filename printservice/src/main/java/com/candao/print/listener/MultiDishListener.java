@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.jms.Destination;
@@ -143,6 +144,23 @@ public class MultiDishListener {
 			writer.write(StringUtils.bSubstring2((printDishList.get(0)
 					.getAbbrname() == null ? "　" : printDishList.get(0)
 					.getAbbrname()), 4));
+			
+			//菜品套餐信息
+			String parentDishName = "";
+			List<String> buffer = new LinkedList<>();
+			for (PrintDish it : printDishList) {
+				if(it.getParentDishName() != null && !"".equals(it.getParentDishName())){
+					if(!buffer.contains(it.getParentDishName()))
+						buffer.add(it.getParentDishName());
+				}
+			}
+			for (int i = 0; i < buffer.size(); i++) {
+				if (i != 0) {
+					parentDishName = parentDishName.concat("，").concat(buffer.get(i));
+				} else {
+					parentDishName = parentDishName.concat(buffer.get(i));
+				}
+			}
 
 			String special = "";
 			special = StringUtils.bSubstring2(printDishList.get(0)
@@ -164,6 +182,11 @@ public class MultiDishListener {
 
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
+			//填写菜品套餐信息
+			if (parentDishName != null && !"".equals(parentDishName)) {
+				writer.write("备注：" + parentDishName + "\r\n");
+			}
+			
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 			writer.write(special + "\r\n");
 
