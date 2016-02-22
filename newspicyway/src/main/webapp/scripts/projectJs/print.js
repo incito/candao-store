@@ -303,7 +303,6 @@ $(document).ready(function(){
 		
 		//解析获取到的菜品/菜品分类，然后显示在 弹出层中。
 		$.getJSON(global_Path+"/dish/getTypeAndDishMap.json", function(json){
-			console.log(json);
 			var html="";
 			var tmpJson={};
 			var haveDishId=[];
@@ -472,6 +471,7 @@ $(document).ready(function(){
 	});
 	//绑定确定按钮
 	$("#printDishes-add-dialog #print-dishes-confirm").click(function(){
+		var oldDishIds = findDishids.slice();//将已有的数据赋给一个新的数组
 		$("#print-dishes-add_tip").text("");
 		var checkedDishs=$("#printDishes-add-dialog #accordion").find("input[type=checkbox]:checked");
 		findDishids=[];
@@ -510,14 +510,16 @@ $(document).ready(function(){
 		$("#printDishes-add-dialog").modal("hide");
 		showSelectStoreDiv(findDishnames,"#div-print-dishes-add");
 		if(findDishids.length>0){
-			$("#print-groupdishes").removeClass("hidden");
-			initGroupDiv();
+			if(oldDishIds.sort().toString() == findDishids.sort().toString()){
+				//选择的菜品没有变化
+			}else{
+				$("#print-groupdishes").removeClass("hidden");
+				clearGroup();
+				initGroupDiv();
+			}
 		}else{
 			$("#print-groupdishes").addClass("hidden");
 			clearGroup();
-			groupid=1;
-			findGroupDishidMap = new HashMap();
-			findGroupDishnameMap = new HashMap();
 		}
 	});
 	//绑定确定按钮
@@ -533,8 +535,15 @@ $(document).ready(function(){
 			}
 		});
 		var group = $(curGroupObjDiv).attr("groupid");
-		findGroupDishidMap.put(group, findGroupDishids);
-		findGroupDishnameMap.put(group, findGroupDishnames);
+		if(findGroupDishids!=null && findGroupDishids.length>0){
+			findGroupDishidMap.put(group, findGroupDishids);
+			findGroupDishnameMap.put(group, findGroupDishnames);
+		}else{
+			//若将选择的自合删除 则要清空map中的值
+			findGroupDishidMap.remove(group);
+			findGroupDishnameMap.remove(group);
+			reInitGroupDiv();
+		}
 		
 		var checkedDishes=$("#printGroup-add-dialog #accordion").find(".panel-heading img");
 		var showDishtypes=[];
@@ -548,6 +557,83 @@ $(document).ready(function(){
 		showSelectStoreDivGroup(findGroupDishnames);
 	});
 });
+/**
+ * 将数组中的value转换为int
+ * @param key
+ * @returns
+ */
+function keyValueToInt(key){
+	var newKey = [];
+	for(var i=0; i<key.length; i++){
+		newKey.push(parseInt(key[i]));
+	}
+	return newKey.sort();
+}
+/**
+ * 重新组合
+ */
+function reInitGroupDiv(){
+	$("#print-groupdishes .group-div").remove();
+	initGroupDiv();
+	var keys = findGroupDishidMap.keySet();
+	var map = new HashMap();
+	var mapname = new HashMap();
+	keys = keyValueToInt(keys);
+	$.each(keys, function(i, key){
+		var values = findGroupDishidMap.get(key);
+		var newKey = i+1;
+		map.put(newKey, values);
+		
+		var names = findGroupDishnameMap.get(key);
+		mapname.put(newKey, names);
+	});
+	console.log(map.keySet());
+	console.log(map.values());
+	
+	var newGroups = map.keySet();
+	newGroups = keyValueToInt(newGroups);
+	groupid = newGroups[newGroups.length-1]+1;//取最后一个加1
+	var lastDiv = $("#print-groupdishes").find(".group-div").eq(0);
+	$("#print-groupdishes").find(".group-div").eq(0).attr("groupid", groupid);
+	
+	findGroupDishidMap = new HashMap();
+	findGroupDishnameMap = new HashMap();
+	$.each(newGroups, function(i, group){
+		findGroupDishidMap.put(group, map.get(group));
+		findGroupDishnameMap.put(group, mapname.get(group));
+		
+		var branchnames = mapname.get(group);
+		if(branchnames.length > 0){
+			var	groupdiv = $('<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="'+group+'">'
+					+'<button type="button" style="font-size: 13px;" class="btn btn-default selectBranch required " data-html="true" title=""'
+					+'ata-container=""  data-toggle="popover" data-placement="bottom" '
+					+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(group)+'</button></div>');
+			$(lastDiv).before(groupdiv);
+			var ul = $("<ul/>").addClass("storesDiv");
+			$.each(branchnames,function(i,item){
+				
+				ul.append("<li>"+item+"</li>");
+			});
+			var ileft = iwidth ="";
+			if(branchnames.length >= 3){
+				iwidth = "460px";
+				ileft = "-155px";
+			}
+			var div = $("<div>").addClass("popover fade bottom in").css({
+				width : iwidth,
+				top : "38px",
+				left: ileft
+			}).append('<div class="arrow" style="left: 50%;"></div>');
+			div.append(ul);
+			groupdiv.append(div);
+		}
+	});
+	$(".group-div").hover(function(){
+		$(this).find(".popover").show();
+	}, function(){
+		$(this).find(".popover").hide();
+	});
+}
 //打开选择组合dialog
 function showGroupDialog(obj){
 	curGroupObjDiv=$(obj).parent();
@@ -556,24 +642,20 @@ function showGroupDialog(obj){
 	$("#printGroup-add-dialog").modal("show");
 	$("#printGroup-add-dialog #accordion").html("数据正在加载中......");
 	
-	console.log(findDishids);
 	var group = $(curGroupObjDiv).attr("groupid");
 	var curValues = findGroupDishidMap.get(group);
 	if(curValues!=null && curValues.length>0){
 		findDishidsNew = findDishids.slice();
 	}
-	console.log(findDishidsNew);
 	var keys = findGroupDishidMap.keySet();
 	$.each(keys, function(i, key){
 		if(key != group){
 			var values = findGroupDishidMap.get(key);
-			console.log(values);
 			$.each(values, function(j, value){
 				findDishidsNew.remove(value);
 			});
 		}
 	});
-	console.log(findDishidsNew);
 	//解析获取到的菜品/菜品分类，然后显示在 弹出层中。
 	$.post(global_Path+"/printerManager/getDishOfPrinter.json", {//getTypeAndDishMap //printerManager/getDishOfPrinter
 		dishids: JSON.stringify(findDishidsNew)
@@ -710,7 +792,6 @@ function editPrintBox(e){
 		url : global_Path+"/printerManager/findById/"+$(e).attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
-			console.log(result);
 			$("#printerid").val(result.printerid);
 			
 			$("#printConfig-name").val(result.printername);
@@ -749,7 +830,7 @@ function editPrintBox(e){
 				});
 				$.each( result.groupDishList, function(i, item){//groupSequences
 //					var key = result.groupSequences[i];
-					var key = item.groupid;
+					var key = parseInt(item.groupid);
 					var values = item.values;
 					var findGroupDishids = [];
 					var findGroupDishnames = [];
@@ -945,6 +1026,7 @@ function addGroupDishesToPrinter(){
 			};
 			list.push(obj);
 		});
+		
 		$.ajax({
 			type:"post",
 			async:false,
@@ -1038,7 +1120,6 @@ function initPrinter(){
 	$("#print-dishes").removeClass("hidden");
 	clearGroup();
 	initGroupDiv();
-	groupid=1;
 	$("#print-groupdishes").addClass("hidden");
 	$(".error").text("");
 	$(".popover").remove();
@@ -1265,7 +1346,8 @@ function showAllSelectStoreDivGroup(){
 	if(findGroupDishidMap!=null && findGroupDishidMap.size()>0){
 		var keys = findGroupDishidMap.keySet();
 		//当前最后一个组合id
-		groupid = keys.length+1;
+		keys = keyValueToInt(keys);//排序
+		groupid = keys[keys.length-1]+1;//取最后一个加1
 		var lastDiv = $("#print-groupdishes").find(".group-div").eq(0);
 		$("#print-groupdishes").find(".group-div").eq(0).attr("groupid", groupid);
 		$.each(keys, function(i, key){
@@ -1362,6 +1444,9 @@ function showSelectStoreDivGroup(branchnames){
 	
 }
 function initGroupDiv(){
+//	groupid=1;
+//	findGroupDishidMap = new HashMap();
+//	findGroupDishnameMap = new HashMap();
 	var htm = '<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="1">'
 		+'<button type="button" style="font-size: 13px;" class="btn btn-default required " data-html="true" title=""'
 		+'data-container=""  data-toggle="popover" data-placement="bottom" '
@@ -1379,6 +1464,9 @@ function initGroupDiv(){
 }
 function clearGroup(){
 	$("#print-groupdishes .group-div").remove();
+	groupid=1;
+	findGroupDishidMap = new HashMap();
+	findGroupDishnameMap = new HashMap();
 }
 function DX(n) {
 	if (!/^(0|[1-9]\d*)(\.\d+)?$/.test(n))
