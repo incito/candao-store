@@ -293,8 +293,7 @@
         class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
         <property name="connectionFactory" ref="centerConnectionFactory" />  
         <property name="destination" ref="branchDataTopic" />  
-        <property name="messageListener" ref="branchTopicListenerAdapter" /> 
-        <property name="autoStartup" value="false" />   
+        <property name="messageListener" ref="branchTopicListenerAdapter" />  
     </bean>  
     
      <bean id="branchTopicListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
@@ -304,10 +303,5 @@
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!--  总店发送给分店数据的 监听  end -->
-        
-    <!-- 异步启动Mq总店监听,不改变本地mq监听 -->
-    <bean id="initAsynchronousBranchTopicListener" class="com.candao.www.activemq.MqAsynchronousInitListener" init-method="start">
-    	<property name="branchTopicListenerAdapterContainer" ref="branchTopicListenerAdapterContainer" />
-    </bean>
  
 </beans>
