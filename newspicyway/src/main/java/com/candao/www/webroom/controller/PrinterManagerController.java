@@ -223,18 +223,11 @@ public class PrinterManagerController {
 		mav.addObject("tbPrinterManager", tbPrinterManager);
 		return mav;
 	}
-	private List<String> findGroupSequences(Map<String, List<TbPrinterDetail>> groupDishList) {
-		List<String> groupSequences = new ArrayList<String>(groupDishList.keySet());
-		Collections.sort(groupSequences, new Comparator<String>() {
-
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
-			}
-			
-		});
-		return groupSequences;
-	}
+	/**
+	 * 获取菜品的分组信息
+	 * @param dishesList
+	 * @return
+	 */
 	private List<GroupDishBusiness> findGroupDishList(List<Map<String, Object>> dishesList) {
 		List<GroupDishBusiness> groupDishList = new ArrayList<>();
 		Map<String, List<Map<String, Object>>> groupMap = new HashMap<>();
@@ -250,7 +243,18 @@ public class PrinterManagerController {
 					groupMap.put(groupSequence, dishList);
 					groupDishList.add(groupDish);
 				}
-				dishList.add(map);
+				//菜品去重
+				boolean isExist = false;
+				String dishid = (String) map.get("dishid");
+				for (Map<String, Object> existDish : dishList) {
+					if(dishid.equals(existDish.get("dishid"))){
+						isExist = true;
+						break;
+					}
+				}
+				if(!isExist){
+					dishList.add(map);
+				}
 			}
 		}
 		return groupDishList;
