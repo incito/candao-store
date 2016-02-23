@@ -71,7 +71,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	
 	/**
-	 * »ñÈ¡¿ªÒµ½áÒµÊ±¼ä£¨È«Ìì£©
+	 * æŸ¥çœ‹å¼€ä¸šç»“ä¸šæ—¶é—´
 	 * @param type
 	 * @return
 	 */
@@ -80,9 +80,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		List<Map<String, Object>> dataDictionaries = tbdatadictionaryDao.getDicListByType(type);
 		Map<String, Object> timeMap = new HashMap<>();
 		for(Map<String, Object> map : dataDictionaries){
-			if("È«Ìì".equals(map.get("itemDesc")) || map.get("itemid").equals("2")){ //2±íÊ¾È«Ìì
+			if("å…¨å¤©".equals(map.get("itemDesc")) || map.get("itemid").equals("2")){ //2è¡¨ç¤ºå…¨å¤©
 				timeMap.put("begintime", map.get("begintime"));
 				timeMap.put("endtime", map.get("endtime"));
+				timeMap.put("datetype", map.get("datetype"));
 			}
 		}
 		return timeMap;
