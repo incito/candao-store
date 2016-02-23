@@ -73,6 +73,11 @@
         <constructor-arg value="custDishQueue" />  
     </bean>  
     
+     <!-- 套餐小票打印消息队列 -->  
+    <bean id="dishSetQueue" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="dishSetQueue" />  
+    </bean> 
+    
 	    <!-- 多个菜品的消息队列 -->  
 	<bean id ="multiDishQueue" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg>
@@ -176,6 +181,20 @@
     </bean>  
     <!-- 称重单的 监听 end -->
     
+    <!-- 套餐小票的监听 -->
+	  <bean id="dishSetmessageListenerAdapterContainer"  
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="dishSetQueue" />  
+        <property name="messageListener" ref="dishSetMessageListenerAdapter" />  
+    </bean>  
+    
+     <bean id="dishSetMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+        <property name="delegate">
+            <bean class="com.candao.print.listener.DishSetListener"/>  
+        </property>  
+        <property name="defaultListenerMethod" value="receiveMessage"/>  
+    </bean>     
     
        
     <!--  发送给分店数据的 监听  end -->

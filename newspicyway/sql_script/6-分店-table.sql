@@ -858,8 +858,8 @@ CREATE TABLE t_gift_log (
   id VARCHAR(50) NOT NULL,
   gift_id VARCHAR(50) DEFAULT NULL,
   gift_type_id VARCHAR(50) DEFAULT NULL,
-  give_table_no INT(4) DEFAULT NULL,
-  receive_table_no INT(4) DEFAULT NULL,
+  give_table_no VARCHAR(50) DEFAULT NULL,
+  receive_table_no VARCHAR(50) DEFAULT NULL,
   gift_no VARCHAR(50) DEFAULT NULL,
   gift_status CHAR(1) DEFAULT NULL,
   order_id VARCHAR(50) DEFAULT NULL,
@@ -874,7 +874,6 @@ CREATE TABLE t_gift_log (
   PRIMARY KEY (id)
 )
 ENGINE = INNODB
-AVG_ROW_LENGTH = 1170
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
