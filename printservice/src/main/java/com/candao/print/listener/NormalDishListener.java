@@ -117,7 +117,7 @@ public class NormalDishListener {
 				}
 				String prefixMsg = " ("+ subMsg.split("-")[0] + "台送)";
 				subMsg =   subMsg.split("-")[1] ;
-				writer.write(StringUtils.bSubstring2(subTableMsg + subMsg + prefixMsg, 12)+ "\r\n");
+				writer.write(StringUtils.bSubstring2(subTableMsg + subMsg + prefixMsg, 15)+ "\r\n");
 				
 			    if(special.endsWith(",")){
 			    	special = special.substring(0, special.indexOf("[")).concat(special.substring(special.indexOf("]")+2,special.length()));
