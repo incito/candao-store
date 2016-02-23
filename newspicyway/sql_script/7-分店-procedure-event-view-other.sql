@@ -1924,7 +1924,7 @@ CREATE PROCEDURE p_setordermember(IN v_orderid varchar(50), IN v_pricetype int)
 BEGIN
   DECLARE done numeric;
   DECLARE v_dishid varchar(50);
-  DECLARE v_orderdetailid int;
+  DECLARE v_orderdetailid varchar(50);
   DECLARE v_dishunit varchar(50);
   DECLARE v_template_vipprice decimal(10, 2);
   declare v_menuid varchar(100);
