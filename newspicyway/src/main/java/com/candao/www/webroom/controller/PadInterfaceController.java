@@ -39,6 +39,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
@@ -2023,6 +2025,52 @@ public class PadInterfaceController {
 	
 	
 	/**
+	 * 获取开业结业时间
+	 * @return
+	 */
+	@RequestMapping("/getOpenEndTime")
+	@ResponseBody
+	public String getOpenEndTime(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
+			retMap.put("result", "0");
+			retMap.put("detail", timeMap);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 查询是否结业
+	 * @return
+	 */
+	@RequestMapping("/isEndWork")
+	@ResponseBody
+	public String isEndWork(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+			if(tbOpenBizLog == null){
+				retMap.put("result", "0");
+				retMap.put("detail", true);
+			}else{
+				retMap.put("result", "0");
+				retMap.put("detail", false);
+			}
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	
+	/**
 	 * 消息中心查询信息
 	 * @param json
 	 * @return
@@ -2127,5 +2175,7 @@ public class PadInterfaceController {
 	TorderMapper  torderMapper;
 	@Autowired
 	private CallWaiterService callService;
+	
+	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 }

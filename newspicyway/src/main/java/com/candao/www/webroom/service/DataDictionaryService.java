@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.candao.common.page.Page;
 import com.candao.www.data.model.TbDataDictionary;
-import com.candao.www.data.model.TbUser;
 
 
 public interface DataDictionaryService {
@@ -59,7 +58,15 @@ public interface DataDictionaryService {
    * @author zhao
    * @param string
    */
-  public String find(String string);
-public boolean delDishTasteService(String dishTasteId);
-public List<Map<String, Object>> findByParams(Map<String, Object> map);
-}
+ 	public String find(String string);
+  
+ 	public boolean delDishTasteService(String dishTasteId);
+  
+ 	public List<Map<String, Object>> findByParams(Map<String, Object> map);
+ 	
+ 	/**
+ 	 * 获取开业结业时间
+ 	 * @return
+ 	 */
+ 	public Map<String, Object> getOpenEndTime(String type);
+ }

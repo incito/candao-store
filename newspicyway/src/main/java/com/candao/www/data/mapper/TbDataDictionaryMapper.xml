@@ -254,7 +254,8 @@
     
         <!--查询分类下的子项  -->
     <select id="getDicListByType" resultMap="findResultMap" parameterType="map">
-        select dictid,itemid,itemDesc,itemSort,type,typename,item_value from t_dictionary
+        select dictid,itemid,itemDesc,itemSort,type,typename,item_value,begin_time,end_time
+        from t_dictionary 
         <where>
              status = 1
             <if test="type != null and type != ''">
