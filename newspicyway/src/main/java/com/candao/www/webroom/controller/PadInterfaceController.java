@@ -1,7 +1,13 @@
 package com.candao.www.webroom.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,24 +39,24 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
-import com.candao.common.log.LoggerFactory;
-import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
-import com.candao.www.data.dao.TtellerCashDao;
+import com.candao.www.data.dao.TbUserInstrumentDao;
+import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.EmployeeUser;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TbMessageInstrument;
 import com.candao.www.data.model.TbOpenBizLog;
+import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.TbUserInstrument;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.Torder;
-import com.candao.www.data.model.TtellerCash;
+import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
@@ -54,6 +64,7 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
+import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -68,8 +79,11 @@ import com.candao.www.webroom.service.ComboDishService;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.DishService;
 import com.candao.www.webroom.service.DishTypeService;
+import com.candao.www.webroom.service.GiftLogService;
+import com.candao.www.webroom.service.InstrumentService;
 import com.candao.www.webroom.service.InvoiceService;
 import com.candao.www.webroom.service.JsonRecordService;
+import com.candao.www.webroom.service.MemeberService;
 import com.candao.www.webroom.service.MenuService;
 import com.candao.www.webroom.service.MessageInstrumentService;
 import com.candao.www.webroom.service.OpenBizService;
@@ -101,83 +115,7 @@ import net.sf.json.JSONObject;
 @RequestMapping("/padinterface")
 public class PadInterfaceController {
 	
-	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
-	
-	@Autowired
-	private BranchDataSyn branchDataSyn;
-	
-	@Autowired
-	private FileService fileService;
-	
-	@Autowired
-	private MenuService menuService;
-	
-	@Autowired
-	private PicturesService picturesService;
-	
-	@Autowired
-	private ToperationLogService toperationLogService;
-	
-	@Autowired
-	private DishTypeService dishTypeService;
-	
-	@Autowired
-	private  OrderService orderService;
-	
-	@Autowired
-	private OrderDetailService orderDetailService;
-
-	@Autowired
-	private LoginService loginService;
-
-	@Autowired
-	private TableService tableService;
-
-	@Autowired
-	private OrderSettleService orderSettleService ;
-
-	@Autowired
-	private DishService dishService;
-
-	@Autowired
-	private OpenBizService openBizService;
-
-	@Autowired
-	private DataDictionaryService dataDictionaryService;
-
-	@Autowired
-	private JsonRecordService jsonRecordService;
-
-	@Autowired
-	@Qualifier("t_userService")
-	private UserService userService;//新用户service对象
-
-	@Autowired
-	private FunctionService functionService;//新方法service对象
-
-	@Autowired
-	private EmployeeUserService employeeUserService;
-
-	@Autowired
-	private ComboDishService comboDishService;
-
-	@Autowired
-	private PreferentialActivityService preferentialActivityService;
-	
-	@Autowired
-	private UserInstrumentService userInstrumentService;
-	
-	@Autowired
-	private MessageInstrumentService messageInstrumentService;
-	
-	@Autowired
-	private CallWaiterService callWaiterService;
-	
-	@Autowired
-	private InvoiceService invoiceService;
-	
-	@Autowired
-	private TtellerCashDao tellerCashService;
+	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
 	
 	/**ti
 	 * 菜品分类接口，全部页菜品数据获取
@@ -277,7 +215,23 @@ public class PadInterfaceController {
 		record.setPadpath("setorder");
 		jsonRecordService.insertJsonRecord(record);
 
-		return orderService.startOrder(order);
+		String returnStr =  orderService.startOrder(order);
+		
+		JSONObject returnobject = JSONObject.fromObject(returnStr);
+		
+		
+		if(!StringUtils.isBlank(order.getIsShield())&&order.getIsShield().equals("0")&&returnobject.containsKey("result")&&!StringUtils.isBlank(returnobject.getString("result"))&&returnobject.getString("result").equals("0")){
+			try{
+				String orderid = returnobject.containsKey("orderid")?returnobject.getString("orderid"):"";
+				if(!StringUtils.isBlank(orderid)){
+					giftService.updateOrderStatus(orderid);
+				}
+				
+			}catch(Exception ex){
+				
+			}
+		}
+		return returnStr;
 	}
 
 
@@ -365,8 +319,27 @@ public class PadInterfaceController {
 		toperationLog.setOperationtype(Constant.operationType.SAVEORDERINFOLIST);
 		toperationLog.setSequence(order.getSequence());
 		int flag= judgeRepeatData(toperationLog);
+		
+		Map<String, String> mapDetail = new HashMap<String,String>();
+		mapDetail.put("orderid", order.getOrderid());
+		List<Map<String,String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
+		
+		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
+		
 		if(flag==0){
-			return orderDetailService.saveOrderDetailList(order,toperationLog);
+			String returnStr = orderDetailService.saveOrderDetailList(order,toperationLog);
+			if(returnStr.equals(Constant.SUCCESSMSG)){
+			}
+			try{
+				String type = "12";
+				if((orderDetileList!=null&&orderDetileList.size()>0)||(orderDetileTempList!=null&&orderDetileTempList.size()>0)){
+					type = "13";
+				}
+				executor.execute(new PadThread(order.getCurrenttableid(),type));
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			return returnStr;
 		}else if(flag==1){
 			return Constant.FAILUREMSG;
 		}else{
@@ -418,16 +391,10 @@ public class PadInterfaceController {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 			String cardno= (String) params.get("memberNo");  //会员卡号
+			String tableno= (String) params.get("tableno");  //桌号
 			String device_no= (String) params.get("deviceId");  //设备编号
 			String invoice_title= (String) params.get("invoiceTitle");//发票的名称
-//			String orderid= (String) params.get("orderid");  //订单号
-			//根据orderid查询订单信息
-//			Torder torder =  orderService.get(orderid);
-//			torder.setInvoice_id(cardno);
-//			orderService.updateInvoiceid(torder);
-			
-//			int id = invoiceService.findTinvoiceLimit1(params);//查询最大的id
-//			
+
 			Tinvoice tinvoice = new Tinvoice();
 			//节省 空间 和 去除 使用 - 符号的一些问题
 			tinvoice.setId(UUID.randomUUID().toString().replaceAll("-", ""));
@@ -441,6 +408,19 @@ public class PadInterfaceController {
 			map.put("code","001");
 			map.put("desc","操作成功");
 			map.put("data","[]");
+			try{
+				if(StringUtils.isNotBlank((String) params.get("orderid"))){
+					TbTable table = tableService.findTableByOrder((String) params.get("orderid"));
+					if(table!=null&&StringUtils.isNotBlank(table.getTableNo())){
+						executor.execute(new PadThread(table.getTableNo(),"11"));
+					}
+				}
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			
+			
+			
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    map.put("flag","0");
@@ -785,6 +765,8 @@ public class PadInterfaceController {
 
 		SettlementInfo  settlementInfo =  JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
 		String result = orderSettleService.rebackSettleOrder(settlementInfo);
+		
+		 
 		if("0".equals(result)){
 			return Constant.SUCCESSMSG;
 		}else {
@@ -1565,6 +1547,10 @@ public class PadInterfaceController {
 		return JacksonJsonMapper.objectToJson(resultMap);
 	}
 
+
+	@Autowired
+	JmsTemplate jmsTemplate;
+
 	/**
 	 * 登录接口，验证成功后 返回信息需要有PAD IP和房号绑定状态，并且房号是否是在用餐状态
 	 * 0 成功 1 失败
@@ -1937,27 +1923,6 @@ public class PadInterfaceController {
 	}
 	
 	/**
-	 * 查询所有未清机的POS列表
-	 * @return
-	 */
-	@RequestMapping("/findUncleanPosList")
-	@ResponseBody
-	public String findUncleanPosList() {
-		
-		Map<String,Object> retMap = new HashMap<>();
-		try{
-			List<TtellerCash> list = tellerCashService.findUncleanPosList();
-			retMap.put("result", "0");
-			retMap.put("detail", list);
-		}catch(Exception e){
-			retMap.put("result", "1");
-			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
-		}
-		return JacksonJsonMapper.objectToJson(retMap);
-	}
-	
-	/**
 	 * 消息中心插入信息
 	 * @param json
 	 * @return
@@ -1971,6 +1936,91 @@ public class PadInterfaceController {
  
 	 return Constant.SUCCESSMSG;
 	}
+	
+	/**
+	 * 消息推送
+	 * @param json
+	 * @return
+	 */
+	class PadThread implements Runnable {
+		   String finaltableno ;
+    	   String finalmsgType ;
+    	   String finalcallStatus;
+    	   String backno ;
+    	
+		   public PadThread(String finaltableno,String msgType){
+			   this.finaltableno = finaltableno;
+			   this.finalmsgType = msgType;
+			   this.finalcallStatus = "0";
+		   }
+		   @Override
+		   public void run(){
+	        	StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2011+"/");
+	        	Map<String, Object> params = new HashMap<String, Object>(1);
+	        	params.put("tableNo", finaltableno);
+	    		List<Map<String, Object>> tableList=tableService.find(params);
+	    		if(tableList!=null&&tableList.size()>0){
+	    			String orderinfoid=String.valueOf(tableList.get(0).get("orderid"));
+	    			Torder torder=torderMapper.get(orderinfoid);
+	    			if(torder!=null&&torder.getUserid()!=""){
+	    				String userid=torder.getUserid();
+	    				Map<String,Object> map1=new HashMap<String,Object>();
+	    				map1.put("status", "0");
+	    				map1.put("userid", userid);
+	    				List<TbUserInstrument> listuser=tbUserInstrumentDao.findByParams(map1);
+	    				if(listuser!=null&&listuser.size()>0){
+	    					//服务员还在线
+	    					//服务员编号|消息类型|区号|台号|消息id
+	    				}else{
+	    					//服务员退出了,找到同一区的服务员 进行推送
+	    					String areaid=String.valueOf(tableList.get(0).get("areaid"));
+	    					Map<String,Object> map=new HashMap<String,Object>();
+	    					map.put("areaid", areaid);
+	    					map.put("status", "1");
+	    					List<Map<String, Object>> retableList=tableService.find(map);
+	    					String useridstr=callService.findrelateUserid(retableList,finaltableno);
+	    					if(useridstr!=null&&!useridstr.equals("")){
+	    						userid = useridstr;
+	    					}
+	    				}
+	    				String areaname = null;
+						String tableNo = null;
+	    				try {
+	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
+							 tableNo = java.net.URLEncoder.encode(finaltableno,"utf-8");
+	    				} catch (UnsupportedEncodingException e) {
+	    					e.printStackTrace();
+	    				}
+	    				if(!userid.equals("")){
+	    					messageinfo.append(userid+"|"+finalmsgType+"|"+finalcallStatus+"|"+areaname+"|"+tableNo+"|"+IdentifierUtils.getId().generate().toString());
+	        				//new TsThread(messageinfo.toString()).start();
+	    					URL urlobj;
+	    					try {
+	    					urlobj = new URL(messageinfo.toString());
+	    					URLConnection	urlconn = urlobj.openConnection();
+	    					urlconn.connect();
+	    					InputStream myin = urlconn.getInputStream();
+	    					BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+	    					String content = reader.readLine();
+	    					JSONObject object = JSONObject.fromObject(content.trim());
+	    					@SuppressWarnings("unchecked")
+	    					List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
+	    					if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
+	    						System.out.println("推送成功");
+	    					}else{
+	    						System.out.println("推送失败");
+	    					}
+	    					} catch (IOException e) {
+	    						// TODO Auto-generated catch block
+	    						e.printStackTrace();
+	    					}
+	    				}
+	    			}
+	    		}
+			   //根据动作打印不同的小票
+		   }
+	}
+	
 	
 	/**
 	 * 消息中心查询信息
@@ -1997,51 +2047,85 @@ public class PadInterfaceController {
  
 	 return Constant.SUCCESSMSG;
 	}
+	
+	@Autowired
+	BranchDataSyn  branchDataSyn;
+	
+	@Autowired
+	private FileService fileService;
+	@Autowired
+	private MenuService menuService;
+	@Autowired
+	private PicturesService picturesService;
+	@Autowired
+	private ToperationLogService toperationLogService;
+	@Autowired
+	private DishTypeService dishTypeService;
 
+	@Autowired
+	private  OrderService   orderService;
+
+
+	@Autowired
+	OrderDetailService   orderDetailService;
+
+	@Autowired
+	private  MemeberService   memeberService;
+
+	@Autowired
+	private LoginService  loginService;
+
+	@Autowired
+	private TableService  tableService;
+
+	@Autowired
+	OrderSettleService  orderSettleService ;
+
+	@Autowired
+	DishService    dishService;
+
+	@Autowired
+	OpenBizService  openBizService;
+
+	@Autowired
+	DataDictionaryService dataDictionaryService;
+
+	@Autowired
+	JsonRecordService  jsonRecordService;
+
+	@Autowired
+	@Qualifier("t_userService")
+	UserService   userService;//新用户service对象
+
+	@Autowired
+	FunctionService   functionService;//新方法service对象
+
+	@Autowired
+	EmployeeUserService employeeUserService;
+
+	@Autowired
+	private ComboDishService comboDishService;
+
+	@Autowired
+	private PreferentialActivityService preferentialActivityService;
+	@Autowired
+	private InstrumentService instrumentService;
+	@Autowired
+	private UserInstrumentService userInstrumentService;
+	@Autowired
+	private MessageInstrumentService messageInstrumentService;
 	
-	/**
-	 * 获取开业结业时间
-	 * @return
-	 */
-	@RequestMapping("/getOpenEndTime")
-	@ResponseBody
-	public String getOpenEndTime(){
-		Map<String,Object> retMap = new HashMap<>();
-		try{
-			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
-			retMap.put("result", "0");
-			retMap.put("detail", timeMap);
-		}catch(Exception e){
-			retMap.put("result", "1");
-			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
-		}
-		return JacksonJsonMapper.objectToJson(retMap);
-	}
-	
-	/**
-	 * 查询是否结业
-	 * @return
-	 */
-	@RequestMapping("/isEndWork")
-	@ResponseBody
-	public String isEndWork(){
-		Map<String,Object> retMap = new HashMap<>();
-		try{
-			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
-			if(tbOpenBizLog == null){
-				retMap.put("result", "0");
-				retMap.put("detail", true);
-			}else{
-				retMap.put("result", "0");
-				retMap.put("detail", false);
-			}
-		}catch(Exception e){
-			retMap.put("result", "1");
-			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
-		}
-		return JacksonJsonMapper.objectToJson(retMap);
-	}
+	@Autowired
+	private CallWaiterService callWaiterService;
+	@Autowired
+	private InvoiceService invoiceService;
+	@Autowired
+	private GiftLogService giftService;
+	@Autowired
+    private TbUserInstrumentDao tbUserInstrumentDao;
+	@Autowired
+	TorderMapper  torderMapper;
+	@Autowired
+	private CallWaiterService callService;
 	
 }

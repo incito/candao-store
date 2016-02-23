@@ -1,6 +1,7 @@
 package com.candao.www.data.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 
