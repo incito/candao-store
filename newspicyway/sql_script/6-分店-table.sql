@@ -874,7 +874,6 @@ CREATE TABLE t_gift_log (
   PRIMARY KEY (id)
 )
 ENGINE = INNODB
-AVG_ROW_LENGTH = 1170
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
