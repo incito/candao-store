@@ -531,7 +531,7 @@ INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typen
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('vipaddress', '192.168.104.252:8081', '雅座的VIP地址', 1, 1, 'VIPADDRESS', '雅座的VIP地址', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('110', '17', '微信支付', '17', '1', 'PAYWAY', '支付方式', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('111', '18', '支付宝支付', '18', '1', 'PAYWAY', '支付方式', NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
---POS结账银行列表
+-- POS结账银行列表
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('200', '0', '其他银行', 100, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('201', '1', '工商银行', 1, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('202', '2', '农业银行', 2, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);

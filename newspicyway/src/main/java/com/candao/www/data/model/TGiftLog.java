@@ -20,8 +20,8 @@ public class TGiftLog implements Serializable {
 	private String id;                 //主键
 	private String giftId;             //礼物id
 	private String giftTypeId;         //礼物分类id
-	private Integer giveTableNo;       //赠送礼物桌号
-	private Integer receiveTableNo;    //接收礼物桌号
+	private String giveTableNo;       //赠送礼物桌号
+	private String receiveTableNo;    //接收礼物桌号
 	private String receiveOrderId;    //接收礼物ID
 	private String giftNo;             //礼物编号
 	private String giftStatus;         //礼物状态
@@ -52,16 +52,16 @@ public class TGiftLog implements Serializable {
 	public void setGiftTypeId(String giftTypeId) {
 		this.giftTypeId = giftTypeId;
 	}
-	public Integer getGiveTableNo() {
+	public String getGiveTableNo() {
 		return giveTableNo;
 	}
-	public void setGiveTableNo(Integer giveTableNo) {
+	public void setGiveTableNo(String giveTableNo) {
 		this.giveTableNo = giveTableNo;
 	}
-	public Integer getReceiveTableNo() {
+	public String getReceiveTableNo() {
 		return receiveTableNo;
 	}
-	public void setReceiveTableNo(Integer receiveTableNo) {
+	public void setReceiveTableNo(String receiveTableNo) {
 		this.receiveTableNo = receiveTableNo;
 	}
 	public String getGiftNo() {
@@ -138,8 +138,8 @@ public class TGiftLog implements Serializable {
 		TGiftLog giftlog = new TGiftLog();
 		try{
 			giftlog.setGiftId(StringUtils.isBlank(giftInfo.getString("giftId"))?"":giftInfo.getString("giftId"));
-			giftlog.setGiveTableNo(giftInfo.getInt("giveTableNo"));
-			giftlog.setReceiveTableNo(giftInfo.getInt("receiveTableNo"));
+			giftlog.setGiveTableNo(StringUtils.isBlank(giftInfo.getString("giveTableNo"))?"":giftInfo.getString("giveTableNo"));
+			giftlog.setReceiveTableNo(StringUtils.isBlank(giftInfo.getString("receiveTableNo"))?"":giftInfo.getString("receiveTableNo"));
 			giftlog.setGiftNo(StringUtils.isBlank(giftInfo.getString("giftNo"))?"":giftInfo.getString("giftNo"));
 			giftlog.setOrderId(StringUtils.isBlank(giftInfo.getString("orderId"))?"":giftInfo.getString("orderId"));
 			giftlog.setReceiveOrderId(StringUtils.isBlank(giftInfo.getString("receiveOrderId"))?"":giftInfo.getString("receiveOrderId"));

@@ -874,7 +874,6 @@ CREATE TABLE t_gift_log (
   PRIMARY KEY (id)
 )
 ENGINE = INNODB
-AVG_ROW_LENGTH = 1170
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
@@ -1874,6 +1873,7 @@ CREATE TABLE t_printer_detail (
   dishid VARCHAR(50) DEFAULT NULL,
   status INT(2) DEFAULT NULL COMMENT '0 有效 1 无效',
   columnid VARCHAR(50) DEFAULT NULL COMMENT '菜品分类id',
+  groupsequence varchar(20) DEFAULT NULL COMMENT '组合的序号',
   PRIMARY KEY (id)
 )
 ENGINE = INNODB

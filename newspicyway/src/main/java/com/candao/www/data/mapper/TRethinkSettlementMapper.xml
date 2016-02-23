@@ -152,7 +152,7 @@
 			(select tp.payway from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (7,20)) as payway,
 			(select tp.payamount from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (7,20)) as payamount,
 			IFNULL(sum(tsd.couponamount),0) AS couponamount,
-			(select orignalprice from t_order_detail where orderid = #{orderid} and pricetype = 1) AS giveamount,
+			(select sum(orignalprice) from t_order_detail where orderid = #{orderid} and pricetype = 1) AS giveamount,
 			(select sum(tp.payamount) from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (0,1,5,8,13,17,18)) as paidamount,
 			0.00 AS invoiceamount
 			from t_settlement_detail tsd 
