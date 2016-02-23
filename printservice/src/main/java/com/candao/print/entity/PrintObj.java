@@ -58,7 +58,7 @@ public class PrintObj implements Serializable,Cloneable {
 	 */
 	private String discardUserId;
 	
-	private PrintDish pDish;
+	private List<PrintDish> pDish;
 	
 	
 	
@@ -79,11 +79,11 @@ public class PrintObj implements Serializable,Cloneable {
 		this.orderseq = orderseq;
 	}
 
-	public PrintDish getpDish() {
+	public List<PrintDish> getpDish() {
 		return pDish;
 	}
 
-	public void setpDish(PrintDish pDish) {
+	public void setpDish(List<PrintDish> pDish) {
 		this.pDish = pDish;
 	}
 

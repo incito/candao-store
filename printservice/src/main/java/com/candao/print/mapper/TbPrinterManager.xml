@@ -93,6 +93,23 @@
 		where
 		printerid=#{printerid}
 	</update>
+	<update id="updateDishGroup" parameterType="map">
+		update t_printer_detail
+		<set>
+			<if test="groupsequence != null">
+				groupsequence=#{groupsequence}
+			</if>
+		</set>
+		where
+		printerid=#{printerid} AND dishid in (
+		<foreach collection="dishid" item="item" index="index" separator=",">
+		 #{item}
+		</foreach>
+		)
+	</update>
+	<update id="cleanDishGroup" parameterType="map">
+		update t_printer_detail set groupsequence = null where printerid=#{printerid}
+	</update>
 
 	<delete id="delete" parameterType="map">
 		update t_printer set `status` =0 WHERE printerid =#{id}
@@ -285,7 +302,7 @@
 		
 	</select>
 	<select id="findDishesByPrinterid" parameterType="map" resultMap="findResultMap">
-		select a.id,a.printerid,a.dishid,a.status,a.columnid,b.title
+		select a.id,a.printerid,a.dishid,a.status,a.columnid,a.groupsequence,b.title
 		from t_printer_detail a,t_dish b,t_dish_dishtype c,t_basicdata d
 		<where>
 			a.dishid = b.dishid and b.dishid = c.dishid and c.columnid=d.id and d.status=1
@@ -378,8 +395,7 @@
     <select id ="findPrintByType" parameterType="map" resultType="com.candao.print.entity.TbPrinterManager">
 	      select distinct printertype,ipaddress,port from t_printer where `status`=#{status} and printertype=#{printertype}
 	</select>
-	
-	 <select id ="findDishPrinter" parameterType="map" resultType="com.candao.print.entity.TbPrinterManager">
+	<select id ="findDishPrinter" parameterType="map" resultType="com.candao.print.entity.TbPrinterManager">
 			SELECT DISTINCT  tp.printerid,tp.printerNo,tp.printername,tp.printertype,
 			tp.createuserid,tp.inserttime,tp.ipaddress,tp.port,tp.status,tp.printnum FROM 
 			  t_table tt , t_printer_area tpa,t_printer tp,t_printer_detail tpd
@@ -393,4 +409,28 @@
 			and tpd.dishid = #{dishid}
 			
 	</select>
+	<select id ="findPrintDetail" parameterType="map" resultType="com.candao.print.entity.TbPrinterDetail">
+			SELECT id,printerid,dishid,columnid,groupsequence,status FROM 
+			  t_printer_detail
+			WHERE 1=1
+			<if test="id != null and id != ''">
+				and id=#{id}
+			</if>
+			<if test="printerid != null and printerid != ''">
+				and printerid=#{printerid}
+			</if>
+			<if test="dishid != null and dishid != ''">
+				and dishid=#{dishid}
+			</if>
+			<if test="status != null and status != ''">
+				and status=#{status}
+			</if>
+			<if test="columnid != null and columnid != ''">
+				and columnid=#{columnid}
+			</if>
+			<if test="groupsequence != null and groupsequence != ''">
+				and groupsequence=#{groupsequence}
+			</if>
+	</select>
+
 </mapper> 

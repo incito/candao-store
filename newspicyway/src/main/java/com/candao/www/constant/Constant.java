@@ -184,6 +184,8 @@ public class Constant {
 		public static final String NORMALDISHNAME = "厨打单";
 		
 		public static final String CUSTADDDISHNAME = "加菜单";
+		
+		public static final String DISHSETNAME = "套餐";
  
 		
 	}

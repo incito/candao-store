@@ -1,13 +1,14 @@
 package com.candao.www.webroom.controller;
 //在响应中查看jason数据
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.groovy.tools.GrapeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,18 +22,23 @@ import com.candao.common.page.Page;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.ValidateUtils;
+import com.candao.print.entity.GroupDishBusiness;
 import com.candao.print.entity.TbPrinterArea;
 import com.candao.print.entity.TbPrinterDetail;
 import com.candao.print.entity.TbPrinterManager;
 import com.candao.print.service.PrinterManagerService;
-import com.candao.www.constant.Constant;
-import com.candao.www.data.model.Tdish;
+import com.candao.www.webroom.service.DishService;
+import com.candao.www.webroom.service.DishTypeService;
 //*
 @Controller
 @RequestMapping("/printerManager")
 public class PrinterManagerController {
 	@Autowired
 	private PrinterManagerService printerManagerService;
+	@Autowired
+	private DishService dishService;
+	@Autowired
+	private DishTypeService dishTypeService;
 
 	@RequestMapping("/page")
 	@ResponseBody
@@ -88,7 +94,7 @@ public class PrinterManagerController {
 	public ModelAndView findPrinterDish(@RequestParam Map<String, Object> params) {
 		ModelAndView mav = new ModelAndView();
 		TbPrinterManager tbPrinterManager = new TbPrinterManager();
-		List<TbPrinterDetail> dishesList = printerManagerService.findDishes(params);
+		List<Map<String, Object>> dishesList = printerManagerService.findDishes(params);
 		tbPrinterManager.setTbPrinterDetailList(dishesList);
 
 		mav.addObject("tbPrinterManager", tbPrinterManager);
@@ -189,18 +195,22 @@ public class PrinterManagerController {
 		String printerid = id;
 		params.put("printerid", id);
 		
-		if(printerType==1){
+		if(printerType==1){//厨打单
 			
 			List<TbPrinterArea> areaList = printerManagerService.findArea(params);
 			tbPrinterManager.setTbPrinterAreaList(areaList);
-			List<TbPrinterDetail> dishesList = printerManagerService.findDishes(params);
+			List<Map<String, Object>> dishesList = printerManagerService.findDishes(params);
 			tbPrinterManager.setTbPrinterDetailList(dishesList);
+			//菜谱分组信息
+			List<GroupDishBusiness> groupDishList = findGroupDishList(dishesList);
+			tbPrinterManager.setGroupDishList(groupDishList);
+			
 			List<Map<String, Object>> areaslistTag = printerManagerService.getAreaslistTag(printerid);
 			tbPrinterManager.setAreaslistTag(areaslistTag);
 			List<Map<String, Object>> dishTypeslistTag = printerManagerService.getDishTypeslistTag(printerid);
 			tbPrinterManager.setDishTypeslistTag(dishTypeslistTag);
 			
-		}else if(printerType==2){
+		}else if(printerType==2){//客用单
 			List<TbPrinterArea> areaList = printerManagerService.findArea(params);
 			tbPrinterManager.setTbPrinterAreaList(areaList);
 			List<Map<String, Object>> areaslistTag = printerManagerService.getAreaslistTag(printerid);
@@ -213,6 +223,72 @@ public class PrinterManagerController {
 		mav.addObject("tbPrinterManager", tbPrinterManager);
 		return mav;
 	}
+	/**
+	 * 获取菜品的分组信息
+	 * @param dishesList
+	 * @return
+	 */
+	private List<GroupDishBusiness> findGroupDishList(List<Map<String, Object>> dishesList) {
+		List<GroupDishBusiness> groupDishList = new ArrayList<>();
+		Map<String, List<Map<String, Object>>> groupMap = new HashMap<>();
+		for (Map<String, Object> map : dishesList) {
+			String groupSequence = (String) map.get("groupsequence");
+			if(groupSequence != null){
+				List<Map<String, Object>> dishList = groupMap.get(groupSequence);
+				if(dishList == null){
+					GroupDishBusiness groupDish = new GroupDishBusiness();
+					groupDish.setGroupid(groupSequence);
+					dishList = new ArrayList<>();
+					groupDish.setValues(dishList);
+					groupMap.put(groupSequence, dishList);
+					groupDishList.add(groupDish);
+				}
+				//菜品去重
+				boolean isExist = false;
+				String dishid = (String) map.get("dishid");
+				for (Map<String, Object> existDish : dishList) {
+					if(dishid.equals(existDish.get("dishid"))){
+						isExist = true;
+						break;
+					}
+				}
+				if(!isExist){
+					dishList.add(map);
+				}
+			}
+		}
+		return groupDishList;
+	}
+	@RequestMapping("/getDishOfPrinter")
+	@ResponseBody
+	public ModelAndView getDishOfPrinter(@RequestParam Map<String, Object> params) {
+		ModelAndView mav = new ModelAndView();
+		List<String> idList = JacksonJsonMapper.jsonToList((String) params.get("dishids"), String.class);
+		//
+		List<Map<String, List<Map<String, Object>>>> list = new ArrayList<Map<String, List<Map<String, Object>>>>();
+		List<Map<String, Object>> listDishType = dishTypeService.findAll("0");
+		for (Map<String, Object> map : listDishType) {
+			Map<String, List<Map<String, Object>>> maptotal = new HashMap<String, List<Map<String, Object>>>();
+			// 只获取"打印菜品"中已勾选的单品菜
+			List<Map<String, Object>> choosedDish = new ArrayList<>();
+			List<Map<String, Object>> dishlist = dishService.getDishMapByType(map.get("id").toString());
+			for (Map<String, Object> dish : dishlist) {
+				for (String dishId : idList) {
+					if (dish.get("dishid").equals(dishId) && (Integer)dish.get("dishtype") == 0) {
+						choosedDish.add(dish);
+					}
+				}
+			}
+			if (!choosedDish.isEmpty()) {
+				maptotal.put(JacksonJsonMapper.objectToJson(map), choosedDish);
+				list.add(maptotal);
+			}
+		}
+
+		mav.addObject("dishesList", list);
+		return mav;
+	}
+	
 	@RequestMapping("/findById2/{id}")
 	@ResponseBody
 	public ModelAndView findById2(@PathVariable(value = "id") String id, Model model) {
@@ -298,6 +374,28 @@ public class PrinterManagerController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int b=printerManagerService.addPrinterTables(list);
 		if(b>=0){
+			map.put("messageAdd", "success");
+		}else{
+			map.put("messageAdd", "fail");
+		}
+		mav.addObject(map);
+		return mav; 
+	}
+	
+	@RequestMapping("/addGroupDishes")
+	public ModelAndView  addGroupDishes(@RequestBody List<Map<String,Object>> list){
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> map = new HashMap<String, Object>();
+		boolean a = printerManagerService.cleanDishGroup((String) list.get(0).get("printerid"));
+		if (a) {
+			map.put("messageDelete", "删除成功");
+		} else {
+			map.put("messageDelete", "删除失败");
+		}
+		
+		boolean success = printerManagerService.updateDishGroup(list);
+		
+		if(success){
 			map.put("messageAdd", "success");
 		}else{
 			map.put("messageAdd", "fail");

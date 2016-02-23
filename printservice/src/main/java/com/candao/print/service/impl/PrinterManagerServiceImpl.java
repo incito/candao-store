@@ -88,7 +88,7 @@ public class PrinterManagerServiceImpl implements PrinterManagerService {
 		return tbPrinterManagerDao.findArea(params);
 	}
 	@Override
-	public List<TbPrinterDetail> findDishes(Map<String, Object> params) {
+	public List<Map<String, Object>> findDishes(Map<String, Object> params) {
 		// TODO Auto-generated method stub
 		return tbPrinterManagerDao.findDishes(params);
 	}
@@ -114,5 +114,24 @@ public class PrinterManagerServiceImpl implements PrinterManagerService {
 			Map<String, Object> paramsDish) {
 		return tbPrinterManagerDao.findPrinternameByDishids(paramsDish);
 	}
+	@Override
+	public boolean updateDishGroup(List<Map<String, Object>> list) {
+		if(list != null && !list.isEmpty()){
+			for (Map<String, Object> map : list) {
+				Map<String, Object> paramMap = new HashMap<>();
+				paramMap.put("printerid", map.get("printerid"));
+				paramMap.put("groupsequence", map.get("groupsequence"));
+				paramMap.put("dishid", map.get("dishid"));
+				tbPrinterManagerDao.updateDishGroup(paramMap);
+			}
+			return true;
+		}
+		return false;
+	}
+	@Override
+	public boolean cleanDishGroup(String printerid) {
+		return tbPrinterManagerDao.cleanDishGroup(printerid) > 0;
+	}
+	
 }
 

@@ -4,6 +4,7 @@ var findTableids=[];
 var findTablenames=[];
 var findDishids=[];
 var findDishnames=[];
+var findDishidsNew=[];
 var getAreaslistTag=[];
 var areaidListStatus0=[];
 var areaidListStatus1=[];
@@ -12,6 +13,11 @@ var dishTypeIdListTag=[];
 var flagIpAddress=true;
 var findTDid=[];
 var findTDname=[];
+
+var curGroupObjDiv=null;
+var findGroupDishidMap=new HashMap();
+var findGroupDishnameMap=new HashMap();
+var groupid=1;
 $(document).ready(function(){
 	$("#printConfig-name").change(function(){
 		  $("#printConfig-name_tip").text("");
@@ -140,6 +146,27 @@ $(document).ready(function(){
 		generalDishTitle("printDishes-add-dialog");
 	});
 	
+//绑定反选功能
+	
+	$("#printGroup-add-dialog #group-radio-uncheck").click(function(){
+		$("#printGroup-add-dialog #accordion").find("input[type=checkbox]").prop("checked",false);
+		$("#printGroup-add-dialog #accordion").find("img").attr("alt", "0");
+		$("#printGroup-add-dialog #accordion").find("img").attr("src", global_Path+ "/images/none_select.png");
+		$("#printGroup-add-dialog #accordion").find(".dish-label").html('');
+		checkedBoxLength("#printGroup-add-dialog #group-count");
+		$("#printGroup-add-dialog #group-radio-check").attr("checked",false);
+	});
+	//绑定全选功能
+	$("#printGroup-add-dialog #group-radio-check").click(function(){
+		$("#printGroup-add-dialog #accordion").find("input[type=checkbox]").prop("checked",true);
+		$("#printGroup-add-dialog #accordion").find("img").attr("alt", "2");
+		$("#printGroup-add-dialog #accordion").find("img").attr("src", global_Path+ "/images/all_select.png");
+		$("#printGroup-add-dialog #accordion").find(".dish-label").html('');
+		checkedBoxLength("#printGroup-add-dialog #group-count");
+		$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
+		generalDishTitle("printGroup-add-dialog");
+	});
+	
 	/*打印区域按钮点击*/
 	$("#print-area-add").click(function(){
 		$("#printArea-add-dialog").modal("show");
@@ -265,7 +292,6 @@ $(document).ready(function(){
 			checkedBoxLength("#printArea-add-dialog #table-count");
 		});
 	});
-	
 	
 	/*打印菜品按钮点击*/
 	$("#print-dishes-add").click(function(){
@@ -445,14 +471,17 @@ $(document).ready(function(){
 	});
 	//绑定确定按钮
 	$("#printDishes-add-dialog #print-dishes-confirm").click(function(){
+		var oldDishIds = findDishids.slice();//将已有的数据赋给一个新的数组
 		$("#print-dishes-add_tip").text("");
 		var checkedDishs=$("#printDishes-add-dialog #accordion").find("input[type=checkbox]:checked");
 		findDishids=[];
 		findDishnames=[];
+		findDishidsNew=[];
 		$.each(checkedDishs,function(i,obj){
 			if(findDishids.indexOf($(obj).val())==-1){
 				findDishids.push($(obj).val());
 				findDishnames.push($(obj).next("span").text());
+				findDishidsNew.push($(obj).val());
 			}
 			
 		});
@@ -480,8 +509,269 @@ $(document).ready(function(){
 
 		$("#printDishes-add-dialog").modal("hide");
 		showSelectStoreDiv(findDishnames,"#div-print-dishes-add");
+		if(findDishids.length>0){
+			if(oldDishIds.sort().toString() == findDishids.sort().toString()){
+				//选择的菜品没有变化
+			}else{
+				$("#print-groupdishes").removeClass("hidden");
+				clearGroup();
+				initGroupDiv();
+			}
+		}else{
+			$("#print-groupdishes").addClass("hidden");
+			clearGroup();
+		}
+	});
+	//绑定确定按钮
+	$("#printGroup-add-dialog #print-groupdishes-confirm").click(function(){
+		$("#print-groupdishes-add_tip").text("");
+		var checkedDishs=$("#printGroup-add-dialog #accordion").find("input[type=checkbox]:checked");
+		var findGroupDishids=[];
+		var findGroupDishnames=[];
+		$.each(checkedDishs,function(i,obj){
+			if(findGroupDishids.indexOf($(obj).val())==-1){
+				findGroupDishids.push($(obj).val());
+				findGroupDishnames.push($(obj).next("span").text());
+			}
+		});
+		var group = $(curGroupObjDiv).attr("groupid");
+		if(findGroupDishids!=null && findGroupDishids.length>0){
+			findGroupDishidMap.put(group, findGroupDishids);
+			findGroupDishnameMap.put(group, findGroupDishnames);
+		}else{
+			//若将选择的自合删除 则要清空map中的值
+			findGroupDishidMap.remove(group);
+			findGroupDishnameMap.remove(group);
+			reInitGroupDiv();
+		}
+		
+		var checkedDishes=$("#printGroup-add-dialog #accordion").find(".panel-heading img");
+		var showDishtypes=[];
+		$.each(checkedDishes,function(i,obj){
+			if($(obj).attr("alt")==1||$(obj).attr("alt")==2){
+				showDishtypes.push($(obj).parent().siblings().children(":first").text());
+			}
+		});
+
+		$("#printGroup-add-dialog").modal("hide");
+		showSelectStoreDivGroup(findGroupDishnames);
 	});
 });
+/**
+ * 将数组中的value转换为int
+ * @param key
+ * @returns
+ */
+function keyValueToInt(key){
+	var newKey = [];
+	for(var i=0; i<key.length; i++){
+		newKey.push(parseInt(key[i]));
+	}
+	return newKey.sort();
+}
+/**
+ * 重新组合
+ */
+function reInitGroupDiv(){
+	$("#print-groupdishes .group-div").remove();
+	initGroupDiv();
+	var keys = findGroupDishidMap.keySet();
+	var map = new HashMap();
+	var mapname = new HashMap();
+	keys = keyValueToInt(keys);
+	$.each(keys, function(i, key){
+		var values = findGroupDishidMap.get(key);
+		var newKey = i+1;
+		map.put(newKey, values);
+		
+		var names = findGroupDishnameMap.get(key);
+		mapname.put(newKey, names);
+	});
+	console.log(map.keySet());
+	console.log(map.values());
+	
+	var newGroups = map.keySet();
+	newGroups = keyValueToInt(newGroups);
+	groupid = newGroups[newGroups.length-1]+1;//取最后一个加1
+	var lastDiv = $("#print-groupdishes").find(".group-div").eq(0);
+	$("#print-groupdishes").find(".group-div").eq(0).attr("groupid", groupid);
+	
+	findGroupDishidMap = new HashMap();
+	findGroupDishnameMap = new HashMap();
+	$.each(newGroups, function(i, group){
+		findGroupDishidMap.put(group, map.get(group));
+		findGroupDishnameMap.put(group, mapname.get(group));
+		
+		var branchnames = mapname.get(group);
+		if(branchnames.length > 0){
+			var	groupdiv = $('<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="'+group+'">'
+					+'<button type="button" style="font-size: 13px;" class="btn btn-default selectBranch required " data-html="true" title=""'
+					+'ata-container=""  data-toggle="popover" data-placement="bottom" '
+					+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(group)+'</button></div>');
+			$(lastDiv).before(groupdiv);
+			var ul = $("<ul/>").addClass("storesDiv");
+			$.each(branchnames,function(i,item){
+				
+				ul.append("<li>"+item+"</li>");
+			});
+			var ileft = iwidth ="";
+			if(branchnames.length >= 3){
+				iwidth = "460px";
+				ileft = "-155px";
+			}
+			var div = $("<div>").addClass("popover fade bottom in").css({
+				width : iwidth,
+				top : "38px",
+				left: ileft
+			}).append('<div class="arrow" style="left: 50%;"></div>');
+			div.append(ul);
+			groupdiv.append(div);
+		}
+	});
+	$(".group-div").hover(function(){
+		$(this).find(".popover").show();
+	}, function(){
+		$(this).find(".popover").hide();
+	});
+}
+//打开选择组合dialog
+function showGroupDialog(obj){
+	curGroupObjDiv=$(obj).parent();
+	$("#printGroup-add-dialog #group-radio-check").attr("checked", false);
+	$("#printGroup-add-dialog #group-radio-uncheck").attr("checked", false);
+	$("#printGroup-add-dialog").modal("show");
+	$("#printGroup-add-dialog #accordion").html("数据正在加载中......");
+	
+	var group = $(curGroupObjDiv).attr("groupid");
+	var curValues = findGroupDishidMap.get(group);
+	if(curValues!=null && curValues.length>0){
+		findDishidsNew = findDishids.slice();
+	}
+	var keys = findGroupDishidMap.keySet();
+	$.each(keys, function(i, key){
+		if(key != group){
+			var values = findGroupDishidMap.get(key);
+			$.each(values, function(j, value){
+				findDishidsNew.remove(value);
+			});
+		}
+	});
+	//解析获取到的菜品/菜品分类，然后显示在 弹出层中。
+	$.post(global_Path+"/printerManager/getDishOfPrinter.json", {//getTypeAndDishMap //printerManager/getDishOfPrinter
+		dishids: JSON.stringify(findDishidsNew)
+	}, function(json){
+		console.log(json);
+		var html="";
+		var tmpJson={};
+		var haveDishId=[];
+		$(".nav-dishes-tab .dishes-detail-box").each(function(){
+			haveDishId.push($(this).attr("id"));
+		});
+		if(json!=null && json.length>0){
+			$.each(json, function(index,item) {
+				$.each(item, function(key,obj) {
+					tmpJson=JSON.parse(key);
+					if($("li.nav-dishes-type.active").attr('id')!=tmpJson.id){
+					html +="<div class='panel panel-default'>      "
+							+"	<div class='panel-heading clearfix' role='tab' id='gheadingDish_"+tmpJson.id+"'>      "
+							+"		<div style='width:18px;float:left'><img alt='0' src='"+global_Path+ "/images/none_select.png' panelCheckedStatus='' style='width:15px;height:15px'></div>"
+							+"		<div class='panel-title' style='width:470px;float:left' data-toggle='collapse' data-parent='#printGroup-add-dialog #accordion' href='#gcollapseDish_"+tmpJson.id+"' aria-expanded='true' aria-controls='collapseFour'>      "
+							+"			<span>"+ tmpJson.itemdesc+"</span>      "
+							+			"<span class='dish-label'></span>"
+							+"			<a  class='pull-right'>      "
+							+"			 <i class='glyphicon glyphicon-chevron-down'></i>      "
+							+"			</a>      "
+							+"		</div>      "
+							+"	</div>      "
+							+"	<div id='gcollapseDish_"+tmpJson.id+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='gheadingDish_"+tmpJson.id+"'>      "
+							+"		<div class='panel-body'>      ";
+					//计算该菜品分类是否存在菜品。如果存在，则遍历，并显示。
+					if( obj.length>0){
+						$.each(obj,function(i,dishObj){
+							var checkboxId;
+							var checkboxContent;
+							
+								checkboxId = dishObj.dishid;
+								checkboxContent = dishObj.title;
+							html += "<label class='checkbox-inline col-xs-3'><input type='checkbox' id='gdish_"
+									+checkboxId+"' value='"+dishObj.dishid+"' data-title='"+dishObj.title
+									+"' code='"+dishObj.dishno+"'><span>"+substrControl(checkboxContent,12)+"</span></label>";
+							
+						});
+					}
+					html+=  "		</div>      "
+							+"	</div>      "
+							+"</div>      ";
+					}		
+				});
+			});
+			$("#printGroup-add-dialog #accordion").html(html);
+			$("#printGroup-add-dialog #accordion").children(":first").find(".panel-collapse").removeClass("collapse");
+			$("#printGroup-add-dialog #accordion").children(":first").find(".panel-collapse").removeClass("in");
+		}else{
+			$("#printGroup-add-dialog #accordion").html("没有可选择的菜品");
+		}
+		
+		//在菜品分类绑定选择框点击事件
+		$(".panel").find("img").click(function(){
+			var panelCheckedStatus = $(this).attr("alt");
+			if( panelCheckedStatus == 1){
+				$(this).parent().parent().parent().find("input[type=checkbox]").attr("checked",false);
+			}
+			$(this).parent().parent().parent().find("input[type=checkbox]").click();
+			$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
+			generalDishTitle("printGroup-add-dialog");
+			checkedBoxLength("#printGroup-add-dialog #group-count");
+			
+		});
+		
+		
+		$("#printGroup-add-dialog input[type='checkbox']").click(function(){
+			var selectedDish = parseInt($("#group-count").text());
+			if($(this).prop("checked")){
+				selectedDish++;
+				$("#printGroup-add-dialog").find("input[type='checkbox'][id='"+$(this).attr("id")+"']").prop("checked", true);
+			} else {
+				selectedDish--;
+				$("#printGroup-add-dialog").find("input[type='checkbox'][id='"+$(this).attr("id")+"']").prop("checked", false);
+			}
+			if(selectedDish==0){
+				$("#printGroup-add-dialog #group-count").parent().css("display","none");
+			}else{
+				$("#printGroup-add-dialog #group-count").parent().css("display","inline");
+			}
+			$("#printGroup-add-dialog #group-count").text(selectedDish);
+			if($("#printGroup-add-dialog #accordion").find("input[type=checkbox]:checked").length==0){
+				$("#printGroup-add-dialog #group-radio-uncheck").click();
+				$("#printGroup-add-dialog #group-radio-check").attr("checked",false);
+			}else if($("#printGroup-add-dialog #accordion").find("input[type=checkbox]:checked").length==$("#printGroup-add-dialog #accordion").find("input[type=checkbox]").length){
+				$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
+				$("#printGroup-add-dialog #group-radio-check").click();
+			}else{
+				$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
+				$("#printGroup-add-dialog #group-radio-check").attr("checked",false);
+			}
+			
+			generalDishTitle("printGroup-add-dialog");
+		});
+		var group = $(curGroupObjDiv).attr("groupid");
+		var findGroupDishids = findGroupDishidMap.get(group);
+		if(findGroupDishids!=null && findGroupDishids.length>0){
+			$.each(findGroupDishids, function(key,obj) {
+				$("#gdish_"+obj).click();
+			});
+		}
+		if(findGroupDishids!=null && findGroupDishids.length==0){
+			$("#printGroup-add-dialog #group-radio-uncheck").click();
+			$("#printGroup-add-dialog #group-radio-check").attr("checked",false);
+		}else if($("#printGroup-add-dialog #accordion").find("input[type=checkbox]:checked").length==$("#printGroup-add-dialog #accordion").find("input[type=checkbox]").length){
+			$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
+			$("#printGroup-add-dialog #group-radio-check").click();
+		}
+		checkedBoxLength("#printGroup-add-dialog #group-count");
+		
+	});
+}
 //-------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 function showPrintDel(e)
@@ -522,23 +812,38 @@ function editPrintBox(e){
 					findTableids.push(item.tableid);
 					findTablenames.push(item.tableName);
 				}
-				
-				
 			});
 			}
 			if($("#print-bill").val()==1){
-			$.each( result.dishTypeslistTag, function(i,item){
-				dishTypeIdListTag.push(item.id);
-				getDishTypeslistTag.push(item.itemDesc);
+				$.each( result.dishTypeslistTag, function(i,item){
+					dishTypeIdListTag.push(item.id);
+					getDishTypeslistTag.push(item.itemDesc);
+					
+				});
 				
-			});
-			
-			$.each( result.tbPrinterDetailList, function(i,item){
-				if(findDishids.indexOf(item.dishid)==-1){
-					findDishids.push(item.dishid);
-					findDishnames.push(item.title);
-				}
-			});
+				$.each( result.tbPrinterDetailList, function(i,item){
+					if(findDishids.indexOf(item.dishid)==-1){
+						findDishids.push(item.dishid);
+						findDishnames.push(item.title);
+						findDishidsNew.push(item.dishid);
+					}
+				});
+				$.each( result.groupDishList, function(i, item){//groupSequences
+//					var key = result.groupSequences[i];
+					var key = parseInt(item.groupid);
+					var values = item.values;
+					var findGroupDishids = [];
+					var findGroupDishnames = [];
+					$.each( values, function(j, obj){
+						findGroupDishids.push(obj.dishid);
+						findGroupDishnames.push(obj.title);
+					});
+					if(findGroupDishidMap.get(key) ==null || findGroupDishidMap.get(key).size()<=0){
+						findGroupDishidMap.put(key, findGroupDishids);
+						findGroupDishnameMap.put(key, findGroupDishnames);
+					}
+				});
+				showAllSelectStoreDivGroup();
 			}
 			if(!jQuery.isEmptyObject(findTableids)){
 //				$("#print-area-add").html(getAreaslistTag.join(","));
@@ -617,6 +922,11 @@ function clickFormAddPrintConfig(){
 			
 			//使用选择的菜品，构建一个显示在页面表单中的列表。
 			addDishesToPrinter(selectedDishs);
+			}
+			//保存菜品组合
+			if($("#print-bill").val()==1){
+				//使用选择的菜品，构建一个显示在页面表单中的列表。
+				addGroupDishesToPrinter();
 			}
 			var text = $("#printConfig-name").val();
 			if(result.maessge=="添加成功"){
@@ -701,6 +1011,34 @@ function addDishesToPrinter(selectedDishs){
 	
 	}
 }
+//保存菜品组合
+function addGroupDishesToPrinter(){
+	if(findGroupDishidMap !=null && findGroupDishidMap.size()>0){
+		var printerid = $("#printerid").val();
+		var keys = findGroupDishidMap.keySet();
+		var list = [];
+		$.each(keys, function(i, key){
+			var dishid = findGroupDishidMap.get(key);
+			var obj = {
+					printerid: printerid,
+					groupsequence: key,
+					dishid: dishid
+			};
+			list.push(obj);
+		});
+		
+		$.ajax({
+			type:"post",
+			async:false,
+			url : global_Path+'/printerManager/addGroupDishes.json',
+			contentType:'application/json;charset=UTF-8',
+		    data:JSON.stringify(list), 
+			dataType : "json",
+			success : function(result) {
+			}
+		});
+	}
+}
 /**
  * 生成菜品选择分类的显示内容
  */
@@ -770,6 +1108,9 @@ function initPrinter(){
 	findTablenames=[];
 	findDishids=[];
 	findDishnames=[];
+	findDishidsNew=[];//findDishids的拷贝（组合中删除元素的时候使用）
+	findGroupDishidMap = new HashMap();
+	findGroupDishnameMap = new HashMap();
 	getAreaslistTag=[];
 	areaidListStatus0=[];
 	areaidListStatus1=[];
@@ -777,6 +1118,9 @@ function initPrinter(){
 	dishTypeIdListTag=[];
 	$("#print-area").removeClass("hidden");
 	$("#print-dishes").removeClass("hidden");
+	clearGroup();
+	initGroupDiv();
+	$("#print-groupdishes").addClass("hidden");
 	$(".error").text("");
 	$(".popover").remove();
 	
@@ -807,14 +1151,16 @@ function printerBillChange(text){
 	if(text =='1'){
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").removeClass("hidden");
+		$("#print-groupdishes").removeClass("hidden");
 	}else if(text ==='2')
 	{
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").addClass("hidden");
-
+		$("#print-groupdishes").addClass("hidden");
 	}else{
 		$("#print-area").addClass("hidden");
 		$("#print-dishes").addClass("hidden");
+		$("#print-groupdishes").addClass("hidden");
 	}
 }
 function check_same_printerName(){
@@ -995,3 +1341,167 @@ function showSelectStoreDiv(branchnames,selectType){
 	});
 	
 }
+//鼠标停留按钮显示已选择div---菜品组合
+function showAllSelectStoreDivGroup(){
+	if(findGroupDishidMap!=null && findGroupDishidMap.size()>0){
+		var keys = findGroupDishidMap.keySet();
+		//当前最后一个组合id
+		keys = keyValueToInt(keys);//排序
+		groupid = keys[keys.length-1]+1;//取最后一个加1
+		var lastDiv = $("#print-groupdishes").find(".group-div").eq(0);
+		$("#print-groupdishes").find(".group-div").eq(0).attr("groupid", groupid);
+		$.each(keys, function(i, key){
+//			var dishids = findGroupDishidMap.get(key);
+			var branchnames = findGroupDishnameMap.get(key);
+			if(branchnames.length > 0){
+				var	groupdiv = $('<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="'+key+'">'
+						+'<button type="button" style="font-size: 13px;" class="btn btn-default selectBranch required " data-html="true" title=""'
+						+'ata-container=""  data-toggle="popover" data-placement="bottom" '
+						+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(key)+'</button></div>');
+				$(lastDiv).before(groupdiv);
+				var ul = $("<ul/>").addClass("storesDiv");
+				$.each(branchnames,function(i,item){
+					
+					ul.append("<li>"+item+"</li>");
+				});
+				var ileft = iwidth ="";
+				if(branchnames.length >= 3){
+					iwidth = "460px";
+					ileft = "-155px";
+				}
+				var div = $("<div>").addClass("popover fade bottom in").css({
+					width : iwidth,
+					top : "38px",
+					left: ileft
+				}).append('<div class="arrow" style="left: 50%;"></div>');
+				div.append(ul);
+				groupdiv.append(div);
+			}
+		});
+	}
+	$(".group-div").hover(function(){
+		$(this).find(".popover").show();
+	}, function(){
+		$(this).find(".popover").hide();
+	});
+	
+}
+//鼠标停留按钮显示已选择div---菜品组合
+function showSelectStoreDivGroup(branchnames){
+	var group = $(curGroupObjDiv).attr("groupid");
+		if(branchnames.length > 0){
+			$(curGroupObjDiv).find("div.popover").remove();
+			var ul = $("<ul/>").addClass("storesDiv");
+			$.each(branchnames,function(i,item){
+				
+				ul.append("<li>"+item+"</li>");
+			});
+			var ileft = iwidth ="";
+			if(branchnames.length >= 3){
+				iwidth = "460px";
+				ileft = "-155px";
+			}
+			var div = $("<div>").addClass("popover fade bottom in").css({
+				width : iwidth,
+				top : "38px",
+				left: ileft
+			}).append('<div class="arrow" style="left: 50%;"></div>');
+			div.append(ul);
+			$(curGroupObjDiv).append(div);
+			$(curGroupObjDiv).find("button").text("组合"+DX(group)).addClass("selectBranch");
+			
+		}else{
+			if(group < groupid){
+				$(curGroupObjDiv).remove();
+			}else{
+				$(curGroupObjDiv).find("button").text('+添加组合');
+				$(curGroupObjDiv).find(".popover").remove();
+			}
+		}
+		var ids=findGroupDishidMap.get(groupid);
+		if(ids!=null && ids.length>0){
+			groupid++;
+			var htm = '<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="'+groupid+'">'
+				+'<button type="button" style="font-size: 13px;" class="btn btn-default required " data-html="true" title=""'
+				+'data-container=""  data-toggle="popover" data-placement="bottom" '
+				+'data-content="" onclick="showGroupDialog(this)">+添加组合</button>'
+				+'<div class="popover fade bottom in" style="top: 30px; left: -145px; display: none;">'
+				+'<div class="arrow"></div>'
+				+'<h3 class="popover-title" style="display: none;"></h3>'
+				+'<div class="popover-content">'
+				+'<div class="tableOrdiah-detail-box"></div>'
+				+'<div class="tableOrdiah-detail-box"></div>'
+				+'<div class="tableOrdiah-detail-box"></div>'
+				+'</div>'
+				+'</div><font color="red" id="print-groupdishes-add_tip" class="error"></font></div>';
+			$(curGroupObjDiv).parent().append(htm);
+		}
+	$(curGroupObjDiv).hover(function(){
+		$(this).find(".popover").show();
+	}, function(){
+		$(this).find(".popover").hide();
+	});
+	
+}
+function initGroupDiv(){
+//	groupid=1;
+//	findGroupDishidMap = new HashMap();
+//	findGroupDishnameMap = new HashMap();
+	var htm = '<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="1">'
+		+'<button type="button" style="font-size: 13px;" class="btn btn-default required " data-html="true" title=""'
+		+'data-container=""  data-toggle="popover" data-placement="bottom" '
+		+'data-content="" onclick="showGroupDialog(this)">+添加组合</button>'
+		+'<div class="popover fade bottom in" style="top: 30px; left: -145px; display: none;">'
+		+'<div class="arrow"></div>'
+		+'<h3 class="popover-title" style="display: none;"></h3>'
+		+'<div class="popover-content">'
+		+'<div class="tableOrdiah-detail-box"></div>'
+		+'<div class="tableOrdiah-detail-box"></div>'
+		+'<div class="tableOrdiah-detail-box"></div>'
+		+'</div>'
+		+'</div><font color="red" id="print-groupdishes-add_tip" class="error"></font></div>';
+	$("#print-groupdishes").html(htm);
+}
+function clearGroup(){
+	$("#print-groupdishes .group-div").remove();
+	groupid=1;
+	findGroupDishidMap = new HashMap();
+	findGroupDishnameMap = new HashMap();
+}
+function DX(n) {
+	if (!/^(0|[1-9]\d*)(\.\d+)?$/.test(n))
+		return "数据非法";
+	var arr1=['1','2','3','4','5','6','7','8','9','10'];
+	var arr2=['一','二','三','四','五','六','七','八','九','十'];
+	var dxnum=n;
+	if(n<=10){
+		var index = arr1.indexOf(n+"");
+		dxnum = arr2[index];
+	}else if(n<100){
+		var sw = (n+"").charAt(0);
+		if(sw == 1){
+			sw = "十";
+		}else{
+			var index = arr1.indexOf(sw);
+			sw = arr2[index];
+		}
+		
+		var gw = (n+"").charAt(1);
+		var index = arr1.indexOf(gw);
+		gw = arr2[index];
+		dxnum = sw+gw;
+	}
+	return dxnum;
+}
+Array.prototype.indexOf = function(val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == val) return i;
+    }
+    return -1;
+};
+Array.prototype.remove = function(val) {
+    var index = this.indexOf(val);
+    if (index > -1) {
+        this.splice(index, 1);
+    }
+};
