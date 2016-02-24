@@ -34,6 +34,7 @@ import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.TbPrinterDetail;
 import com.candao.print.entity.TbPrinterManager;
 import com.candao.print.service.CustDishProducerService;
+import com.candao.print.service.DishSetProducerService;
 import com.candao.print.service.MutilDishProducerService;
 import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.PrinterService;
@@ -133,10 +134,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	}
 	
 	@Override
-	public List<Map<String,String>> findTemp(Map<String, String> mapDetail){
+	public List<Map<String, String>> findTemp(Map<String, String> mapDetail) {
 		return torderDetailMapper.findTemp(mapDetail);
 	}
-
 	
 	//从传过来的数据中，获取订单详情的所有信息
 		/**
@@ -604,7 +604,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 						}
 						printObj.setCustomerPrinterIp(pm.getIpaddress());
 						printObj.setCustomerPrinterPort(pm.getPort());
-						new Thread(new PrintMutiThread(printObj)).run();
+						new Thread(new PrintDishSetThread(printObj)).run();
 					}
 				}
 
@@ -1749,6 +1749,21 @@ public class WeigthThread  implements Runnable{
 		   }
 	   }
 	   
+	   public class PrintDishSetThread implements Runnable{
+		   
+		   PrintObj printObj;
+		   
+		   public PrintDishSetThread(PrintObj printObj ) {
+			   this.printObj = printObj;
+		   }
+
+		   @Override
+		   public void run() {
+			   dishSetService.sendMessage(printObj);
+		   }
+		   
+	   }
+	   
 	   public class PrintCustThread  implements Runnable{
 		   
 		   PrintObj printObj ;
@@ -1821,6 +1836,9 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
+	
+	@Autowired
+	private DishSetProducerService dishSetService;
 
 
 }
