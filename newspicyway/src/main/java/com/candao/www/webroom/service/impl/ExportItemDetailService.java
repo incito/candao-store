@@ -91,7 +91,7 @@ public class ExportItemDetailService {
              jxl.write.Label labelTitle2 = new jxl.write.Label(0, 0, title2);
              labelTitle2.setCellFormat(wcfTitle); 
              sheet2.addCell(labelTitle2);// 放入工作簿  
-             String text2[] = {"品项名称","品项编号","单价","单位","数量","千次" ,"金额","营业额占比"};
+             String text2[] = {"品项名称","品项编号","单价","单位","数量","千次" ,"金额","营业额占比(%)"};
              for(int i=0;i<text2.length;i++){
             	 sheet2.setColumnView(i,25);
             	 sheet2.addCell(new Label(i,1,text2[i],wcfHead));
