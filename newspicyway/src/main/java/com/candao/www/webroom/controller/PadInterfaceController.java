@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -50,6 +49,7 @@ import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.dao.TtellerCashDao;
 import com.candao.www.data.model.EmployeeUser;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TbMessageInstrument;
@@ -61,6 +61,7 @@ import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
+import com.candao.www.data.model.TtellerCash;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
@@ -68,7 +69,6 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -2025,6 +2025,26 @@ public class PadInterfaceController {
 		   }
 	}
 	
+	/**
+	 * 查询所有未清机的POS列表
+	 * @return
+	 */
+	@RequestMapping("/findUncleanPosList")
+	@ResponseBody
+	public String findUncleanPosList() {
+		
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			List<TtellerCash> list = tellerCashService.findUncleanPosList();
+			retMap.put("result", "0");
+			retMap.put("detail", list);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
 	
 	/**
 	 * 获取开业结业时间
@@ -2220,6 +2240,8 @@ public class PadInterfaceController {
 	TorderMapper  torderMapper;
 	@Autowired
 	private CallWaiterService callService;
+	@Autowired
+	private TtellerCashDao tellerCashService;
 	
 	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
