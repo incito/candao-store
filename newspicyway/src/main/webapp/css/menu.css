@@ -223,28 +223,59 @@
 .menu-detail-view .menu-detail10 .menu-detail-box{
 	background:#e6e6e6;
 }
-
-#menu-detail12 .row
+#menu-detail11 .row, .menu-detail11 .row
 {
-	height: 13.3%; /*14.28%;*/
+	height: 20.05%;
+	width: 58.85%;
+	float: left;
 }
-#menu-detail12 .row1{
-	height: 33.5%; /*28.56%;*/
+#menu-detail11 .col-xs-6.menu-detail-box
+{
+	width: 100%;
 }
-#menu-detail10 .row-left.menu-detail-box, #menu-detail12 .row1.menu-detail-box{
+#menu-detail11 .row-left, .menu-detail11 .row-left
+{
+	height:100%;
+	width: 41.15%;
+	float: left;
+}
+.menu-detail11 .col-xs-6.menu-detail-box
+{
+	width: 100%;
+}
+.menu-detail-view .menu-detail11 .menu-detail-box{
+	background:#e6e6e6;
+}
+#menu-detail12 .row, .menu-detail12 .row
+{
+	height: 13.3%;
+}
+#menu-detail12 .row1, .menu-detail12 .row1{
+	height: 33.5%;
+}
+#menu-detail10 .row-left.menu-detail-box, #menu-detail11 .row-left.menu-detail-box, #menu-detail12 .row1.menu-detail-box, #menu-detail13 .row1.menu-detail-box{
 	background: #e6e6e6;
-/*	background: url("../images/menu-detail-bg-upload.png") no-repeat center center #e6e6e6 ;*/
-}
-.menu-detail12 .row
-{
-	height: 13.3%; /*14.28%;*/
-}
-.menu-detail12 .row1
-{
-	height: 33.5%; /*28.56%;*/
 }
 .menu-detail-view .menu-detail12 .menu-detail-box{
 	background:#e6e6e6;
+}
+
+#menu-detail13 .row, .menu-detail13 .row
+{
+	height: 22.17%;
+}
+#menu-detail13 .row1, .menu-detail13 .row1{
+	height: 33.5%;
+}
+.menu-detail-view .menu-detail13 .menu-detail-box{
+	background:#e6e6e6;
+}
+#menu-detail14 .row, .menu-detail14 .row{
+	height:33.3%;
+}
+#menu-detail14 .row .col-xs-6, .menu-detail14 .row .col-xs-6{
+	height:100%;
+	width: 33.3%;
 }
 .menu-detail-view .row1.menu-detail-box, .menu-detail-view .row-left.menu-detail-box{
 	margin: 0;

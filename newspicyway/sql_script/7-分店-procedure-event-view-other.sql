@@ -2124,6 +2124,12 @@ BEGIN
       PREPARE v_sql FROM @sqlstr;
       EXECUTE v_sql;
       DEALLOCATE PREPARE v_sql;
+			
+	  SET @vid = v_id;
+	  SET @delete_temp_data = CONCAT('delete from t_syn_sql_temp where id = ?');
+	  PREPARE del_sql FROM @delete_temp_data;
+	  EXECUTE del_sql USING @vid;
+	  DEALLOCATE PREPARE del_sql;
 
     END IF;
 

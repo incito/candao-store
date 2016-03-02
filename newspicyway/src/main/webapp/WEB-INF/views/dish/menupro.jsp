@@ -227,7 +227,7 @@
 				</div>
 				<div class="btn-operate" style="margin: 20px 0px 0px;">
 					<button class="btn btn-cancel" id="cancel-btn" type="button" data-dismiss="modal">取消</button>
-					<div class="btn-division"></div>
+					<div class="btn-division" style="margin: 0px 1px -15px;"></div>
 					<button class="btn btn-save" id="adjust-save" type="button">确认</button>
 				</div>
 			</div>

@@ -1864,17 +1864,28 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/jdesyndata")
 	@ResponseBody
-	public String   jdeSynData(@RequestBody String json){
-	  
-	  @SuppressWarnings("unchecked")
-	Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
-	  String key = map.get("synkey");
-	  String synKey = PropertiesUtils.getValue("SYNKEY");
-	  if(! synKey.equalsIgnoreCase(key)){
-		  return Constant.FAILUREMSG;
-	  }
-	  branchDataSyn.synBranchData();
-	 return Constant.SUCCESSMSG;
+	public String jdeSynData(@RequestBody String json) {
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		@SuppressWarnings("unchecked")
+		Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+		String key = map.get("synkey");
+		String synKey = PropertiesUtils.getValue("SYNKEY");
+		if (!synKey.equalsIgnoreCase(key)) {
+			return Constant.FAILUREMSG;
+		}
+		try {
+			if (branchDataSyn.synBranchData()) {
+				resultMap.put("result", 0);
+			}else{
+				resultMap.put("result", 1);
+				resultMap.put("msg", "修改数据同步的状态失败");
+			}
+		} catch (Exception e) {
+			resultMap.put("result", 1);
+			resultMap.put("msg", e.getMessage());
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
 	}
 	
 	/**
@@ -1914,11 +1925,16 @@ public class PadInterfaceController {
 	  if("1".equals(isSucess) ){
 		  retMap.put("result", "4");
 		  return JacksonJsonMapper.objectToJson(retMap);
-	  }else{
-		  branchDataSyn.synBranchData();
-		  retMap.put("result", "0");
-		  return JacksonJsonMapper.objectToJson(retMap);
-	  }
+		} else {
+			try {
+				branchDataSyn.synBranchData();
+				retMap.put("result", "0");
+			} catch (Exception e) {
+				retMap.put("result", "1");
+				retMap.put("msg", e.getMessage());
+			}
+			return JacksonJsonMapper.objectToJson(retMap);
+		}
 	 
 	}
 	

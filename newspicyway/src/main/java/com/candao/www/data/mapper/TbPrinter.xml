@@ -229,5 +229,7 @@
 		</where>
 	</select>
 
-	
+	<select id="queryPrintIsExsit" resultType="java.util.HashMap" parameterType="map">
+		select count(1) isExsit from t_printer where ipaddress=#{customerPrinterIp} and port=#{customerPrinterPort} and status=1
+	</select>
 </mapper> 
