@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.BranchDataSynDao;
 import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.support.FunctionTag;
 import com.candao.www.webroom.model.SynSqlObject;
 import com.candao.www.webroom.service.BranchProducerService;
 import com.candao.www.webroom.service.BranchShopService;
@@ -35,7 +38,9 @@ import com.candao.www.webroom.service.BranchShopService;
  */
 @Service
 public class BranchDataSyn   {
- 
+	
+	private static final Logger logger = LoggerFactory.getLogger(BranchDataSyn.class);
+	
 	 @Autowired
 	 BranchDataSynDao  branchDataSynDao;
 	 
@@ -50,21 +55,25 @@ public class BranchDataSyn   {
 	 @Autowired
 	 BranchProducerService  service;
 	 
-   public void synBranchData(){
+   public boolean synBranchData() throws Exception{
 	   synData();
-	   updateSynRecord();
+	   return updateSynRecord();
    }
    
-   public void reSynData(){
-	   
-	   int bizFlag = branchDataSynDao.checkSynDataFinish();
-	   if(bizFlag > 0){
-		   synData();
-	   }
-	   
-   }
+	public void reSynData() {
+
+		int bizFlag = branchDataSynDao.checkSynDataFinish();
+		if (bizFlag > 0) {
+			try {
+				synData();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+
+	}
    
-   public void synData(){
+   public void synData() throws Exception{
 	   int bizFlag = branchDataSynDao.checkBizData();
 	  // bizFlag = 0;
 	   //表示已经结业或未开业状态
@@ -134,16 +143,17 @@ public class BranchDataSyn   {
 				      
  
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
+					throw new Exception(e.getMessage());
 				}
 			  
 		   }else{
- 
+			   throw new RuntimeException("门店未配置current_branch_id");
 		   }
 	   } 
    }
-   private void updateSynRecord(){
-	   branchDataSynDao.updateSynRecord(null);
+   private boolean updateSynRecord(){
+	   return branchDataSynDao.updateSynRecord(null) > 0;
    }
    
    public void deleteRecord(){

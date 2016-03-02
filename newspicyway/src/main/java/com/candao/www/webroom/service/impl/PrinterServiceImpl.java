@@ -58,5 +58,19 @@ public class PrinterServiceImpl implements PrinterService {
 	public TbPrinter findByCode(String printerCode){
 		return tbPrinterDao.findByCode(printerCode);
 	}
+	@Override
+	public int queryPrintIsExsit(String customerPrinterIp, String customerPrinterPort) {
+		Map<String, Object>  result=tbPrinterDao.queryPrintIsExsit(customerPrinterIp,customerPrinterPort);
+		 if(result!=null){
+				Object isExsit=result.get("isExsit");
+				if(isExsit!=null){
+					int num=Integer.parseInt(String.valueOf(isExsit));
+					if(num>0){
+						return num;
+					}
+				}
+			}
+		 return 0;
+	}
 }
 

@@ -605,4 +605,9 @@
 <!--    <update id ="updateDetailByPrimaryKey" parameterType="map" > -->
 <!--         update t_order_detail set islatecooke = '0' where   orderid  = #{orderid}  -->
 <!--   </update> -->
+<select id="findPrintTable" parameterType="java.util.HashMap" resultType="int">
+	select count(1) result from t_printer t
+	LEFT OUTER JOIN t_printer_area a on t.printerid=a.printerid
+	 where t.printertype=#{printertype} and a.tableid=#{tableid} and t.`status`=#{status}
+</select>
 </mapper>

@@ -658,6 +658,11 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			  paramMap.put("tableid", printObj.getTableid());
 				
 			  List<TbPrinterManager> tps = tbPrinterManagerDao.findNoDishPrinter(paramMap);
+			  //该餐厅是否设置为不打印
+			  int  result  =tbPrintObjDao.findPrintTable(paramMap);
+				if(result==0){//该餐厅不打印
+					listall=null;
+			 }
 			  if(listall != null && listall.size() > 0){
 				 for(TbPrinterManager  tPrinterManager : tps){
 				  printObj.setCustomerPrinterIp(tPrinterManager.getIpaddress());

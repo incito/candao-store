@@ -64,11 +64,9 @@ public class SqlDataSyn   {
 		       mapParam.put("id", null);
 		       mapParam.put("result", null);
 		       tSynSqlMapper.synData(mapParam);
+//		       tSynSqlMapper.deleteDataTemp();
 		   }
-		   tSynSqlMapper.deleteDataTemp();
 	   }
-	
-          
    }
    
 }

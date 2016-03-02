@@ -251,7 +251,7 @@
 	        and a.custPrinter=#{custPrinter}
 	     </if>
 	   </where>
-	     order by  CAST( a.tableNo as SIGNED) asc
+	     order by b.areaname asc, a.tableNo asc
 	   
 	</select>
 	
