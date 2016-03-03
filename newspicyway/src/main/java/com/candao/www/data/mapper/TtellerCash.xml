@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TtellerCashDao">
+
+	<resultMap id="BaseResultMap" type="com.candao.www.data.model.TtellerCash" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="opendate" property="opendate" jdbcType="TIMESTAMP" />
+    <result column="ipaddress" property="ipaddress" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="cashamount" property="cashamount" jdbcType="INTEGER" />
+  </resultMap>
+
+	<select id="findUncleanPosList" resultMap="BaseResultMap">
+		select tc.id, tc.username, tc.opendate, tc.ipaddress, tc.cashamount, tc.`status` from t_teller_cash tc, t_open_log ol where date_format(tc.opendate,'%y-%m-%d') = date_format(ol.opendate,'%y-%m-%d') and tc.`status` = 0;
+	</select>
+	
+</mapper> 

@@ -39,6 +39,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
+import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
@@ -46,6 +49,7 @@ import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.dao.TtellerCashDao;
 import com.candao.www.data.model.EmployeeUser;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TbMessageInstrument;
@@ -57,6 +61,7 @@ import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
+import com.candao.www.data.model.TtellerCash;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
@@ -64,7 +69,6 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -2037,6 +2041,115 @@ public class PadInterfaceController {
 		   }
 	}
 	
+	/**
+	 * 查询所有未清机的POS列表
+	 * @return
+	 */
+	@RequestMapping("/findUncleanPosList")
+	@ResponseBody
+	public String findUncleanPosList() {
+		
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			List<TtellerCash> list = tellerCashService.findUncleanPosList();
+			retMap.put("result", "0");
+			retMap.put("detail", list);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 获取开业结业时间
+	 * @return
+	 */
+	@RequestMapping("/getOpenEndTime")
+	@ResponseBody
+	public String getOpenEndTime(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
+			timeMap.remove("datetype");
+			retMap.put("result", "0");
+			retMap.put("detail", timeMap);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 查询是否结业
+	 * @return
+	 */
+	@RequestMapping("/isEndWork")
+	@ResponseBody
+	public String isEndWork(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+			if(tbOpenBizLog == null){
+				retMap.put("result", "0");
+				retMap.put("detail", true);
+			}else{
+				retMap.put("result", "0");
+				retMap.put("detail", false);
+			}
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	
+	/**
+	 * 查询昨天是否结业
+	 * @return
+	 */
+	@RequestMapping("/isYesterdayEndWork")
+	@ResponseBody
+	public String isYesterdayEndWork(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+			if(tbOpenBizLog == null){
+				retMap.put("result", "0");
+				retMap.put("detail", true);
+			}else{
+				Date date = tbOpenBizLog.getOpendate();
+				if(DateUtils.isToday(date)){
+//					如果是今天，则已经结业
+					retMap.put("result", "0");
+					retMap.put("detail", true);
+				}else{
+//					如果不是今天
+					Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
+					if("T".equals(timeMap.get("datetype"))){ //"T"代表当日
+						retMap.put("result", "0");
+						retMap.put("detail", false);
+					}else{
+						retMap.put("result", "0");
+						retMap.put("detail", true);
+					}
+				}
+//				retMap.put("result", "0");
+//				retMap.put("detail", false);
+			}
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
 	
 	/**
 	 * 消息中心查询信息
@@ -2143,5 +2256,9 @@ public class PadInterfaceController {
 	TorderMapper  torderMapper;
 	@Autowired
 	private CallWaiterService callService;
+	@Autowired
+	private TtellerCashDao tellerCashService;
+	
+	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 }

@@ -69,5 +69,23 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		// TODO Auto-generated method stub
 		return tbdatadictionaryDao.find(map);
 	}
-
+	
+	/**
+	 * 查看开业结业时间
+	 * @param type
+	 * @return
+	 */
+	@Override
+	public Map<String, Object> getOpenEndTime(String type) {
+		List<Map<String, Object>> dataDictionaries = tbdatadictionaryDao.getDicListByType(type);
+		Map<String, Object> timeMap = new HashMap<>();
+		for(Map<String, Object> map : dataDictionaries){
+			if("全天".equals(map.get("itemDesc")) || map.get("itemid").equals("2")){ //2表示全天
+				timeMap.put("begintime", map.get("begintime"));
+				timeMap.put("endtime", map.get("endtime"));
+				timeMap.put("datetype", map.get("datetype"));
+			}
+		}
+		return timeMap;
+	}
 }
