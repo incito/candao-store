@@ -34,6 +34,10 @@ import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.weixin.dao.WeixinDao;
+import com.candao.www.weixin.dto.PayDetail;
+import com.candao.www.weixin.dto.SettlementStrInfoDto;
+import com.candao.www.weixin.dto.WxPayResult;
 
 
 @Service
@@ -53,6 +57,9 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	private TdishDao tdishDao;
+	
+	@Autowired
+	private WeixinDao   weixinDao;
 	
 	@Autowired
 	OrderService  orderService;
@@ -342,4 +349,67 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		return 0;
 	}
 
+	@Override
+	@Transactional
+	public SettlementStrInfoDto setInitData(SettlementStrInfoDto settlementStrInfoDto,WxPayResult payResult) {
+		String[]  infos=payResult.getAttach().split(";");
+		payResult.setAttach(payResult.getAttach().replaceAll(";", "|"));
+		settlementStrInfoDto.setOrderNo(infos[0]);
+		String orderno=settlementStrInfoDto.getOrderNo();
+		//根据订单id查询出订单信息
+		Map<String, Object>  orderinfo= orderService.findOrderById(orderno);
+		if(orderinfo!=null){
+			String  userName=orderinfo.get("userid").toString();
+			settlementStrInfoDto.setUserName(userName);
+		}
+		//订单详情
+		List<PayDetail>  payDetails=   new ArrayList<>();
+		
+		for(int i=1;i<infos.length-2;i++){
+				PayDetail  detail=new PayDetail();
+				detail.setBankCardNo("");
+				detail.setCoupondetailid("");
+				detail.setCouponid("");
+				detail.setCouponnum("");
+				detail.setMemerberCardNo("");
+				detail.setPayAmount(infos[i]);
+				if(i==1){
+					detail.setPayWay(Constant.PAYWAY.PAYWAY_WEIXIN);
+				}
+				if(i==2){
+					detail.setPayWay(String.valueOf(Constant.PAYWAY.PAYWAY_FREE));
+				}
+				payDetails.add(detail);
+		}
+		
+		settlementStrInfoDto.setPayDetail(payDetails);
+		//
+		weixinDao.saveTempoldOrderid(payResult.getOutTradeNo(),infos[0]);
+		return settlementStrInfoDto;
+	}
+	
+	
+	@Override
+	public void updatePadData(String attach) {
+		if(attach!=null){
+			String[] args=attach.split(";");
+			if(args.length>2){
+				Map<String, Object> map=new HashMap<>();
+				map.put("orderno", args[0]);
+				map.put("castmoney", args[1]);
+				map.put("paymoney", args[2]);
+				BigDecimal  b1=new BigDecimal(args[1]);
+				BigDecimal  b2=new BigDecimal(args[2]);
+				BigDecimal  b3= b1.subtract(b2);
+				map.put("youmian", b3);
+				torderDetailMapper.updateOrderinfo(map);
+			}
+		}
+	}
+	
+	
+	@Override
+	public Map<String, Object> selectorderinfos(String orderid) {
+		return torderDetailMapper.selectorderinfos(orderid);
+	}
 }

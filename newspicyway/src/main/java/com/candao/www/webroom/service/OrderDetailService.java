@@ -46,5 +46,5 @@ public interface OrderDetailService {
 
 	public String getOrderDetailByOrderId(String orderid);
 	
- 
+	public void printStatement(String orderno);
 }

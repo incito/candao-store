@@ -144,6 +144,10 @@ public class Constant {
 		
 		//优免
 		public static final int PAYWAY_FREE = 6;
+		
+		//微信扫码支付
+		
+		public static final String PAYWAY_WEIXIN = "30";
 	}
 	
 	public class SETTLE{
@@ -186,6 +190,8 @@ public class Constant {
 		public static final String CUSTADDDISHNAME = "加菜单";
 		
 		public static final String DISHSETNAME = "套餐";
+		
+		public static final String STATEMENTDISHNAME = "结账单";
  
 		
 	}
