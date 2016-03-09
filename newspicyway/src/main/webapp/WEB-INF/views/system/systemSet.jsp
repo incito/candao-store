@@ -43,6 +43,8 @@
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/system.css" />
 </head>
+
+
 <body>
 	<div style="margin: 10px 10px 200px 10px;">
 		<div class="setup_div">
@@ -432,6 +434,57 @@
 			</div>
 			</form>
 		</div>
+		
+		
+		<!-- <div class="setup_div">
+			<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
+			<div style="height: 30px;">
+				<div class="system-setup-title">LOGO图片设置</div>
+				<button type="button" id="editDishes" class="btn btn-default">编辑</button>
+				<button type="submit" id="saveDishes" class="btn btn-default hide">保存</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+			<div class="modal-body" style="padding-top: 0px;">
+				 <img src='../images/defaultlogo.png' style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
+
+                <div class="tag">
+                    <div class="arrow">
+                        <em></em><span></span>
+                    </div>
+                    <span class="tagspan">1ooi</span>
+                   <span class="tagspan">1ooi</span>
+                   <span class="tagspan">1ooi</span>
+                </div>
+				</div>
+				</form>
+			</div>
+		
+		
+		
+		
+			<div class="setup_div clear">
+			<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
+			<div style="height: 30px;">
+				<div class="system-setup-title">LOGO图片设置</div>
+				<button type="button" id="editDishes" class="btn btn-default">编辑</button>
+				<button type="submit" id="saveDishes" class="btn btn-default hide">保存</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+			<div class="modal-body" style="padding-top: 0px;">
+				 <img src='../images/defaultlogo.png' style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
+
+                <div class="tag">
+                    <div class="arrow">
+                        <em></em><span></span>
+                    </div>
+                    <span class="tagspan">1ooi</span>
+                   <span class="tagspan">1ooi</span>
+                   <span class="tagspan">1ooi</span>
+                </div>
+				</div>
+				</form>
+			</div> -->
+		
 	</div>
 	<div class="modal fade " id="dish-select-dialog" aria-hidden="true">
 	</div>
@@ -440,6 +493,20 @@
 		src="<%=request.getContextPath()%>/scripts/projectJs/systemSetting.js"></script>
 	<script>
 		var haveSelected = null;
+		
+		function changImg(){
+			$('#saveLOGO').removeClass('hide');
+			$('#editLOGO').hide();
+			$('#defaultlogo').attr('src','../images/uplogo.png');
+			
+			$('#defaultlogo').css("border","1px dashed #ddd")
+			$('#defaultlogo').click(function(){
+				alert("jjjj");
+				
+			})
+		}
 	</script>
+	
+	
 </body>
 </html>
