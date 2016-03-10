@@ -331,6 +331,7 @@ public class WeixinController extends BaseJsonController {
 						+ "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
 			}
 			sendmessage2Android(isSuucess,wpr.getAttach());
+			sendmessage2Android2QT(isSuucess,wpr.getAttach());
 			sendmessage2Handler(isSuucess, wpr.getAttach());
 			System.out.println("微信支付回调数据结束");
 	
@@ -395,6 +396,15 @@ public class WeixinController extends BaseJsonController {
 		new TsThread(messageinfo.toString()).run();
 	}
 
+	//清台
+	
+	private void sendmessage2Android2QT(String str,String orderno) {
+		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2002 + "" + "/");
+		messageinfo.append(str).append("|").append(orderno);
+		System.out.println("清台推送");
+		new TsThread(messageinfo.toString()).run();
+	}
+	
 	private void sendmessage2Handler(String str,String orderno) {
 		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2011 + "" + "/");
 		String[] handlers= orderno.split("\\|");
