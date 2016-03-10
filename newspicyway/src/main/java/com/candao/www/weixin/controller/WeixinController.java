@@ -92,59 +92,6 @@ public class WeixinController extends BaseJsonController {
 	private static String partnerkey = null;
 	
 	
-	
-	@RequestMapping(value = "/createurl", produces = { "application/json;charset=UTF-8" })
-	public Map<String, Object> createurl(HttpServletRequest request) {
-		
-		WeixinRequestParam weixinRequestParam = new WeixinRequestParam();
-		weixinRequestParam.setInfos("125.50;100.05");
-		SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		String orderid="H"+simpleDateFormat.format(new Date());
-		System.out.println(orderid);
-		weixinRequestParam.setAttach(orderid);
-		weixinRequestParam.setOrderid(UUID.randomUUID().toString().replaceAll("-", ""));
-		weixinRequestParam.setBody("北京微信测试001");
-		weixinRequestParam.setSpbillCreateIp("192.168.0.1");
-		weixinRequestParam.setTotalFee("0.01");
-		System.out.println(weixinRequestParam);
-		
-		if (isNull(weixinRequestParam.getBody())) {
-			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
-		}
-		if (isNull(weixinRequestParam.getAttach())) {
-			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
-		}
-		if (isNull(weixinRequestParam.getSpbillCreateIp())) {
-			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
-		}
-		if (isNull(weixinRequestParam.getTotalFee())) {
-			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
-		}
-		//
-		String branchid = PropertiesUtils.getValue("current_branch_id");// 当前门店id
-		Map<String, Object> map = weixinService.queryWeixinInfoBybranchid(branchid);
-		if (map != null) {
-			this.appid = map.get("appid").toString();
-			this.appsecret = map.get("appsecret").toString();
-			this.partner = map.get("partner").toString();
-			this.partnerkey = map.get("appsecret").toString();
-		}
-		//
-		WxPayDto tpWxPay1 = new WxPayDto();
-		tpWxPay1.setBody(weixinRequestParam.getBody());
-		tpWxPay1.setOrderId(weixinRequestParam.getOrderid());
-		tpWxPay1.setSpbillCreateIp(weixinRequestParam.getSpbillCreateIp());
-		tpWxPay1.setTotalFee(weixinRequestParam.getTotalFee());
-		tpWxPay1.setAttach(weixinRequestParam.getAttach());
-		String codeurl = getCodeurl(tpWxPay1);
-		if(codeurl!=null && !"".equals(codeurl)){
-			return renderSuccessJSONString(SUCCESSCODE, codeurl);
-		}
-		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
-	}
-
-	
-	
 	/**
 	 * android接口 生成二维码url
 	 * 
@@ -221,16 +168,7 @@ public class WeixinController extends BaseJsonController {
 		return renderErrorJSONString(null, "门店没有配置微信相关信息");
 	}
 	
-	@RequestMapping(value = "/testweixin")
-	@ResponseBody
-	public Map<String, Object> testweixin() {
-		int result=weixinService.getweixinstatus("579744");
-		if(result>0){
-			System.out.println(renderSuccessJSONString(SUCCESSCODE,null));
-			return renderSuccessJSONString(SUCCESSCODE,null);
-		}
-		return renderErrorJSONString(null, "门店没有配置微信相关信息");
-	}
+	
 	/**
 	 * 微信退款
 	 * @param orderno
@@ -262,29 +200,7 @@ public class WeixinController extends BaseJsonController {
 		return JacksonJsonMapper.objectToJson(getFailInstance(null, "操作失败"));
 	}
 	
-	/**
-	 * 扫码支付回调新浪云回调
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws Exception
-	 */
-	@Deprecated
-	@RequestMapping(value = "/sinanotify", produces = { "application/json;charset=UTF-8" })
-	public void sinanotify(String isSuccess, HttpServletResponse response) throws Exception {
-		System.out.println("--------" + isSuccess);
-		@SuppressWarnings("unused")
-		String resXml = "";
-		if ("0".equals(isSuccess)) {
-			// 支付成功
-			resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
-					+ "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
-		} else {
-			resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>"
-					+ "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
-		}
-		System.out.println("微信支付回调数据结束");
-	}
+	
 
 	/**
 	 * 扫码支付回调
@@ -401,7 +317,7 @@ public class WeixinController extends BaseJsonController {
 										//成功
 										TOrderMember member=new TOrderMember();
 										member.setOrderid(args[0]);
-										member.setCardno("100016000001");
+										member.setCardno(args[3]);
 										member.setBusiness(PropertiesUtils.getValue("current_branch_id"));
 										member.setBusinessname("上海餐道");
 										member.setUserid(username);
