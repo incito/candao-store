@@ -91,6 +91,55 @@ public class WeixinController extends BaseJsonController {
 	// 这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全
 	private static String partnerkey = null;
 	
+	@RequestMapping(value = "/createurl", produces = { "application/json;charset=UTF-8" })
+	public Map<String, Object> createurl(HttpServletRequest request) {
+		
+		WeixinRequestParam weixinRequestParam = new WeixinRequestParam();
+		//weixinRequestParam.setInfos("125.50;100.05;100017000000;0");
+		SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		String orderid="H"+simpleDateFormat.format(new Date());
+		System.out.println(orderid);
+		weixinRequestParam.setAttach(orderid+";"+"125.50;100.05;100017000000;0");
+		weixinRequestParam.setOrderid(UUID.randomUUID().toString().replaceAll("-", ""));
+		weixinRequestParam.setBody("北京微信测试001");
+		weixinRequestParam.setSpbillCreateIp("192.168.0.1");
+		weixinRequestParam.setTotalFee("0.01");
+		System.out.println(weixinRequestParam);
+		
+		if (isNull(weixinRequestParam.getBody())) {
+			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
+		}
+		if (isNull(weixinRequestParam.getAttach())) {
+			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
+		}
+		if (isNull(weixinRequestParam.getSpbillCreateIp())) {
+			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
+		}
+		if (isNull(weixinRequestParam.getTotalFee())) {
+			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
+		}
+		//
+		String branchid = PropertiesUtils.getValue("current_branch_id");// 当前门店id
+		Map<String, Object> map = weixinService.queryWeixinInfoBybranchid(branchid);
+		if (map != null) {
+			this.appid = map.get("appid").toString();
+			this.appsecret = map.get("appsecret").toString();
+			this.partner = map.get("partner").toString();
+			this.partnerkey = map.get("appsecret").toString();
+		}
+		//
+		WxPayDto tpWxPay1 = new WxPayDto();
+		tpWxPay1.setBody(weixinRequestParam.getBody());
+		tpWxPay1.setOrderId(weixinRequestParam.getOrderid());
+		tpWxPay1.setSpbillCreateIp(weixinRequestParam.getSpbillCreateIp());
+		tpWxPay1.setTotalFee(weixinRequestParam.getTotalFee());
+		tpWxPay1.setAttach(weixinRequestParam.getAttach());
+		String codeurl = getCodeurl(tpWxPay1);
+		if(codeurl!=null && !"".equals(codeurl)){
+			return renderSuccessJSONString(SUCCESSCODE, codeurl);
+		}
+		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
+	}
 	
 	/**
 	 * android接口 生成二维码url
@@ -300,8 +349,9 @@ public class WeixinController extends BaseJsonController {
 				jsonObject.put("Serial", args[0]);
 				jsonObject.put("FCash", "0.0");
 				jsonObject.put("FWeChat", args[1]);
+				//args[3]="100017000000";
 				jsonObject.put("cardno", args[3]);
-				//jsonObject.put("cardno", "100016000001");
+				//jsonObject.put("cardno", "100017000000");
 				jsonObject.put("password", "0");
 				//
 				jsonObject.put("securityCode", "");
