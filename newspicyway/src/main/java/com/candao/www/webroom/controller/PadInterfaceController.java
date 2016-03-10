@@ -39,6 +39,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
@@ -64,7 +66,6 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -737,15 +738,19 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/debitamout")
 	@ResponseBody
-	public String debitamout(@RequestBody String orderId){
-		@SuppressWarnings({"unchecked" })
-		Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
-		String result =  orderSettleService.calDebitAmount(map.get("orderNo"));
-		if("0".equals(result)){
-			return Constant.SUCCESSMSG;
-		}else {
-			return Constant.FAILUREMSG;
-		}
+	public String debitamout(@RequestBody final String orderId){
+		new Thread(new Runnable(){
+			public void run(){
+				@SuppressWarnings({"unchecked" })
+				Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
+				try {
+					orderSettleService.calDebitAmount(map.get("orderNo"));
+				} catch (Exception e) {
+					logger.error("计算实收失败，订单号：" + orderId, e, "");
+				}
+			}
+		}).start();
+		return Constant.SUCCESSMSG;
 	}
 	
 
@@ -2063,6 +2068,8 @@ public class PadInterfaceController {
  
 	 return Constant.SUCCESSMSG;
 	}
+	
+	static LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 	@Autowired
 	BranchDataSyn  branchDataSyn;
