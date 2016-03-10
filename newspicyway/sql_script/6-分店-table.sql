@@ -2544,6 +2544,25 @@ ENGINE = INNODB
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
+DROP TABLE IF EXISTS `t_b_weixin`;
+CREATE TABLE `t_b_weixin` (
+  `id` varchar(50) NOT NULL COMMENT 'id',
+  `branchid` varchar(50) NOT NULL,
+  `appid` varchar(50) NOT NULL,
+  `partner` varchar(50) NOT NULL,
+  `appsecret` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `t_b_weixin_temp`;
+CREATE TABLE `t_b_weixin_temp` (
+  `id` varchar(50) NOT NULL,
+  `orderno` varchar(50) NOT NULL,
+  `outorderno` varchar(50) NOT NULL,
+  `status` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 
 -- Enable foreign keys
