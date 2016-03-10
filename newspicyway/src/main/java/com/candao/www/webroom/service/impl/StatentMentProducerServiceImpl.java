@@ -1,4 +1,4 @@
-package com.candao.print.service.impl;
+package com.candao.www.webroom.service.impl;
 
 import javax.jms.Destination;
 
@@ -18,6 +18,7 @@ public class StatentMentProducerServiceImpl implements StatentMentProducerServic
 	
 	@Autowired
 	private JmsTemplate jmsTemplate;
+	
 	@Autowired
 	@Qualifier("statementQueue")
 	private Destination statementQueue;
