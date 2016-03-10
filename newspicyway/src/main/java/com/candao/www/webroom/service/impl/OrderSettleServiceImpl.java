@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.data.dao.TbOpenBizLogDao;
@@ -26,6 +31,7 @@ import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.Tsettlement;
 import com.candao.www.data.model.TsettlementDetail;
+import com.candao.www.utils.HttpRequestor;
 import com.candao.www.webroom.model.SettlementDetail;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.DishService;
@@ -77,7 +83,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	private TRethinkSettlementDao tRethinkSettlementDao;
-	
+	@Autowired
+	 DataSourceTransactionManager transactionManager ;
 
  	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
@@ -296,15 +303,24 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		  return "0";
  	}
  	
-	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
 	public String rebackSettleOrder(SettlementInfo settlementInfo) {
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
+		  TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
 		// TODO Auto-generated method stub
 		//1.根據訂單 查詢金額  
 		//2.減去會員優惠，折扣 等信息
 
 		//3.計算總額  減去所對應的優惠
 		String orderId = settlementInfo.getOrderNo();
+		
+		 //start先查询是不是微信扫码支付
+		 Map<String, String> dataMap = new HashMap<String, String>();
+		 dataMap.put("orderno", orderId);
+		 dataMap.put("payway", Constant.PAYWAY.PAYWAY_WEIXIN);
+		 int isweixin=settlementMapper.selectIsPayWeixin(dataMap);
+		 //end
 		//查询反结算次数
 		String againSettleNums = settlementMapper.queryAgainSettleNums(orderId);
 		if(againSettleNums == null || againSettleNums.equals("0")){
@@ -339,7 +355,28 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 tbTable.setOrderid(orderId);
 	 
 	 tableService.updateSettleStatus(tbTable);
-	 
+	 //AUTO事物处理
+	 //微信扫码支付反结算调用
+	 if(isweixin>0){//是微信扫码结算的
+				 try {
+					 String weixinturnback=PropertiesUtils.getValue("NOTIFYURL").substring(0, PropertiesUtils.getValue("NOTIFYURL").length()-6)+"turnback";
+					String retPSI=new HttpRequestor().doPost(weixinturnback, dataMap);
+					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+					System.out.println("微信扫码反结算");
+					 if(retMap == null || "1".equals(retMap.get("code"))){	
+						    transactionManager.rollback(status);  //强制回滚
+							return Constant.FAILUREMSG;
+					 }
+					 transactionManager.commit(status);
+					 return "2";//微信扫码反结算成功
+				} catch (Exception e) {
+					e.printStackTrace();
+					transactionManager.rollback(status);
+					return "1";
+				}
+	 }
+	 //
+	 transactionManager.commit(status);
      return "0";
 	}
 

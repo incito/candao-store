@@ -63,6 +63,8 @@ public class Constant {
 	
 	public static final String SUCCESSMSG = "{\"result\":\"0\"}";
 	
+	public static final String WEIXINSUCCESSMSG = "{\"result\":\"0\",\"msg\":\"反结算成功，已通过微信退款！\"}";
+	
 	public static final String PRINTERENCODE = "GBK";
 	
 	public static final String NOMSG = "无";

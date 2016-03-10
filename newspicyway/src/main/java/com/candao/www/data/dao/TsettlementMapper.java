@@ -87,4 +87,6 @@ public interface TsettlementMapper {
 		 */
 		public int updateTorderMember(String orderid);
 		
+		public int selectIsPayWeixin(Map<String, String> dataMap);
+		
 }

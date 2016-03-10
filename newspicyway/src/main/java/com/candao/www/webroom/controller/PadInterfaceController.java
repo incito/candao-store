@@ -772,7 +772,26 @@ public class PadInterfaceController {
 		
 		 
 		if("0".equals(result)){
+			  //反结算
+				   /* String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
+			        //String retPSI = HttpUtils.httpPostBookorderArray(PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER"), retString);
+					String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
+					Map<String, String> dataMap = new HashMap<String, String>();
+					 dataMap.put("data", retString);
+					String retPSI = null;
+					try {
+						retPSI = new HttpRequestor().doPost(url, dataMap);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+					 if(retMap == null || "1".equals(retMap.get("code"))){	
+							return Constant.FAILUREMSG;
+					 }*/
+				//end 
 			return Constant.SUCCESSMSG;
+		}else if("2".equals(result)){
+			return Constant.WEIXINSUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
 		}
