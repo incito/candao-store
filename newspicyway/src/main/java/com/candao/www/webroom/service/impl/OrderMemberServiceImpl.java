@@ -23,17 +23,22 @@ public class OrderMemberServiceImpl implements OrderMemberService {
 	}
 
 	@Override
+	public int update(TOrderMember tOrderMember) {
+		return tOrderMemberDao.update(tOrderMember);
+	}
+
+	@Override
 	public int updateValid(String orderid) {
 		// TODO Auto-generated method stub
 		return tOrderMemberDao.updateValid(orderid);
 	}
 
 	@Override
-	public TOrderMember get(String orderid) {
+	public TOrderMember get(String orderid, Integer valid) {
 		// TODO Auto-generated method stub
 		
 		
-		return tOrderMemberDao.get(orderid);
+		return tOrderMemberDao.get(orderid, valid);
 	}
 
 }
