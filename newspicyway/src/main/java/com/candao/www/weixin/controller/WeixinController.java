@@ -214,7 +214,7 @@ public class WeixinController extends BaseJsonController {
 			System.out.println(renderSuccessJSONString(SUCCESSCODE,null));
 			return renderSuccessJSONString(SUCCESSCODE,null);
 		}
-		return renderErrorJSONString(null, "门店没有配置微信相关信息");
+		return renderErrorJSONString(ERRORCODE, "门店没有配置微信相关信息");
 	}
 	
 	
