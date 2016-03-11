@@ -18,6 +18,7 @@
         <result property="chargesstatus" column="chargesstatus" />
         <result property="endtime" column="end_time" />
         <result property="begintime" column="begin_time" />
+        <result property="itemValue" column="item_value"/>
     </resultMap>
     <resultMap id="pageResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>
     <resultMap id="findResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>

@@ -1,5 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,18 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	@Override
 	public List<Map<String, Object>> getDatasByType(String type) {
-		// TODO Auto-generated method stub
-		return tbdatadictionaryDao.getDatasByType(type);
+		List<Map<String, Object>> dictionaryMap = tbdatadictionaryDao.getDatasByType(type);
+		List<Map<String, Object>> info = new ArrayList<>();
+		for(Map<String, Object> map : dictionaryMap){
+			Map<String, Object> dictionary = new HashMap<>();
+			dictionary.put("dictid", map.get("id"));
+			dictionary.put("itemid", map.get("itemid"));
+			dictionary.put("itemDesc", map.get("itemDesc"));
+			dictionary.put("type", map.get("type"));
+			dictionary.put("item_value", map.get("itemValue"));
+			info.add(dictionary);
+		}
+		return info;
 	}
 	
 	@Override
