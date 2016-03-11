@@ -69,6 +69,7 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -772,26 +773,7 @@ public class PadInterfaceController {
 		
 		 
 		if("0".equals(result)){
-			  //反结算
-				   /* String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
-			        //String retPSI = HttpUtils.httpPostBookorderArray(PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER"), retString);
-					String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
-					Map<String, String> dataMap = new HashMap<String, String>();
-					 dataMap.put("data", retString);
-					String retPSI = null;
-					try {
-						retPSI = new HttpRequestor().doPost(url, dataMap);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
-					 if(retMap == null || "1".equals(retMap.get("code"))){	
-							return Constant.FAILUREMSG;
-					 }*/
-				//end 
 			return Constant.SUCCESSMSG;
-		}else if("2".equals(result)){
-			return Constant.WEIXINSUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
 		}
@@ -1091,7 +1073,11 @@ public class PadInterfaceController {
 	 * @return
 	 */
 	private int judgeRepeatData(ToperationLog toperationLog){
-		Map<String,Object> map=new HashMap<String,Object>();
+		//因为 (newtoperationLog.getSequence()==toperationLog.getSequence()) 这个条件永远不成立，应该使用equals方法；
+		//如果加上这个判断条件，会导致PAD、POS同时给一个餐台下单时，可能误认为是重复下单，sequence没有同步，所以调用该方法的逻辑以后要去掉，暂时先返回0
+		return 0;
+		
+		/*Map<String,Object> map=new HashMap<String,Object>();
 		map.put("tableno", toperationLog.getTableno());
 		map.put("operationType", toperationLog.getOperationtype());
 		ToperationLog newtoperationLog=toperationLogService.findByparams(map);
@@ -1107,7 +1093,7 @@ public class PadInterfaceController {
 //		}
 		else{
 			return 0;
-		}
+		}*/
 	}
 
 	/**
@@ -2167,6 +2153,28 @@ public class PadInterfaceController {
 			logger.error(e, "");
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 获取手环通知消息的类型
+	 * @return
+	 */
+	@RequestMapping("/getNotification")
+	@ResponseBody
+	public Map<String,Object> getNotification(){
+		List<Map<String, Object>> maps = new ArrayList<>();
+		try{
+			maps = dataDictionaryService.getDatasByType("NOTIFICATION");
+		}catch(Exception e){
+			e.printStackTrace();
+			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
+		}
+		if(maps == null || maps.size() <= 0){
+			return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
+		}
+		Map<String,Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");
+		returnMap.put("data", maps);
+		return returnMap;
 	}
 	
 	
