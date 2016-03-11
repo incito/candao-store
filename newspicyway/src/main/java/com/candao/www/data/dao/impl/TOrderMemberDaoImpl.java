@@ -17,9 +17,10 @@ public class TOrderMemberDaoImpl implements TOrderMemberDao {
 	private DaoSupport dao;
 	 
 	@Override
-	public TOrderMember get(String orderId) {
+	public TOrderMember get(String orderId, Integer valid) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("orderid", orderId);
+		params.put("valid", valid);
 		return dao.get(PREFIX + ".get", params);
 	}
 

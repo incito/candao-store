@@ -8,7 +8,7 @@ import com.candao.www.data.model.TOrderMember;
 public interface TOrderMemberDao {
     public final static String PREFIX = TOrderMemberDao.class.getName();
     
-  	public TOrderMember get(java.lang.String orderId);
+  	public TOrderMember get(java.lang.String orderId, Integer valid);
   	
   	public int insert(TOrderMember tOrderMember);
   	
