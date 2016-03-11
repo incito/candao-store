@@ -399,8 +399,8 @@ public class WeixinController extends BaseJsonController {
 	//清台
 	
 	private void sendmessage2Android2QT(String str,String orderno) {
-		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2002 + "" + "/");
-		messageinfo.append(str).append("|").append(orderno);
+		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_1002 + "" + "/");
+		messageinfo.append(orderno.substring(0, orderno.indexOf("|")));
 		System.out.println("清台推送");
 		new TsThread(messageinfo.toString()).run();
 	}
