@@ -719,6 +719,20 @@
 	     select t.dishid,t.dishnum,(SELECT id from t_dish_unit u where u.dishid=t.dishid and u.unit=t.dishunit) as dishunit from t_order_detail t where t.orderid =#{orderid}
 	 </select>
 	
+	<select id="getDishesInfoByOrderId" resultType="java.util.HashMap" parameterType="map">
+		select 
+		t.dishnum,d.title,t.orderprice
+		from t_order_detail t
+		LEFT OUTER JOIN t_dish d on t.dishid=d.dishid
+		where t.orderid=#{orderid}
+		order by t.begintime desc
+	</select>
+	<select id="selectorderinfos" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select o.userid,t.tableNo,a.areaname from t_order o 
+		LEFT OUTER JOIN t_table t on o.tableids=t.tableid
+		LEFT OUTER JOIN t_tablearea a on t.areaid=a.areaid
+		where o.orderid=#{orderid}
+	</select>
 	
 	<update id="updateOrderinfo" parameterType="map">
 		update t_order set dueamount=#{castmoney},ymamount=#{youmian},ssamount=#{paymoney} where orderid=#{orderno}
