@@ -3,6 +3,7 @@ package com.candao.www.weixin.controller;
 import java.io.BufferedOutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -239,7 +240,9 @@ public class WeixinController extends BaseJsonController {
 		if(weixininfos!=null){
 				String outorderno=getStringFromMap(weixininfos, "outorderno");
 				String totalmoney=getStringFromMap(weixininfos, "dueamount");
-				Refund refund=new Refund(this.appid, this.appsecret, this.partner, outorderno, "1");
+				BigDecimal  decimal01=new BigDecimal(totalmoney);
+				BigDecimal  turnbackno=decimal01.multiply(new BigDecimal("100"));
+				Refund refund=new Refund(this.appid, this.appsecret, this.partner, outorderno, turnbackno.toString());
 				int result=refund.wechatRefund(realpath);
 				if(result==1){
 					weixinService.deletetemp(orderno);

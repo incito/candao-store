@@ -68,7 +68,7 @@
 		insert into t_b_weixin_temp(id,orderno,outorderno,status) values(#{id},#{orderno},#{outTradeNo},0)
 	</insert>
 	<select id="selectinfos" resultType="java.util.HashMap" parameterType="java.util.HashMap">
-		select t.outorderno,t.status,o.dueamount from  t_b_weixin_temp t
+		select t.outorderno,t.status,o.dueamount-o.ymamount as dueamount  from  t_b_weixin_temp t
 							LEFT OUTER JOIN t_order o on o.orderid=t.orderno
 							where orderno=#{orderno}
 	</select>

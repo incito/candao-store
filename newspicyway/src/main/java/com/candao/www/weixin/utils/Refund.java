@@ -24,6 +24,9 @@ public class Refund {
 		this.appsecret = appsecret;
 		this.mch_id = mch_id;
 		this.out_trade_no = out_trade_no;
+		if(total_fee!=null){
+			total_fee=total_fee.substring(0, total_fee.indexOf("."));
+		}
 		this.total_fee = total_fee;
 	}
 

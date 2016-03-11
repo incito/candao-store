@@ -774,6 +774,8 @@ public class PadInterfaceController {
 		 
 		if("0".equals(result)){
 			return Constant.SUCCESSMSG;
+		}else if("2".equals(result)){
+			return Constant.WEIXINSUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
 		}
