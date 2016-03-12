@@ -359,7 +359,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 //微信扫码支付反结算调用
 	 if(isweixin>0){//是微信扫码结算的
 				 try {
-					 String weixinturnback=PropertiesUtils.getValue("NOTIFYURL").substring(0, PropertiesUtils.getValue("NOTIFYURL").length()-6)+"turnback";
+					 String weixinturnback="http://"+PropertiesUtils.getValue("PSI_URL")+"/newspicyway/weixin/turnback";
 					String retPSI=new HttpRequestor().doPost(weixinturnback, dataMap);
 					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
 					System.out.println("微信扫码反结算");
