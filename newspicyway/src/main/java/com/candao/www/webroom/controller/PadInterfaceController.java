@@ -99,7 +99,9 @@ import com.candao.www.webroom.service.PreferentialActivityService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.UserInstrumentService;
+import com.candao.www.webroom.service.impl.SystemServiceImpl;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 /**
  * 所有pad 端处理的接口
@@ -2150,6 +2152,28 @@ public class PadInterfaceController {
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
 	
+	/**
+	 * Pad端获取Logo图和背景图
+	 * @return
+	 */
+	@RequestMapping("/getPadImg.json")
+	@ResponseBody
+	public String getPadImg(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			List<Map<String, Object>> maps = systemServiceImpl.getImgByType("PADIMG");
+			retMap.put("ImgIp", PropertiesUtils.getValue("fastdfs.url"));
+			retMap.put("result", "0");
+			retMap.put("msg", "成功");
+			retMap.put("detail", maps);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
 	
 	/**
 	 * 消息中心查询信息
@@ -2258,6 +2282,8 @@ public class PadInterfaceController {
 	private CallWaiterService callService;
 	@Autowired
 	private TtellerCashDao tellerCashService;
+	@Autowired
+	private SystemServiceImpl systemServiceImpl;
 	
 	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	

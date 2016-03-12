@@ -24,7 +24,16 @@ public class TbDataDictionary implements Serializable {
 	private String memberprice; //会员价格
 	private String price; //单价
 	private String datetype;
+	private String itemVale; //
 
+
+	public String getItemVale() {
+		return itemVale;
+	}
+
+	public void setItemVale(String itemVale) {
+		this.itemVale = itemVale;
+	}
 
 	public String getEndtime() {
 		return endtime;
