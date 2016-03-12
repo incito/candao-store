@@ -2166,7 +2166,7 @@ public class PadInterfaceController {
 	public Map<String,Object> getNotification(){
 		List<Map<String, Object>> maps = new ArrayList<>();
 		try{
-			maps = dataDictionaryService.getDatasByType("NOTIFICATION");
+			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
 		}catch(Exception e){
 			e.printStackTrace();
 			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");

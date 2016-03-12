@@ -54,6 +54,13 @@ public interface DataDictionaryService {
   public List<Map<String,Object>> getDatasByType(String type);
   
   /**
+   * 获取通知消息类型
+   * @param type
+   * @return
+   */
+  public List<Map<String, Object>> getNotificationDate(String type);
+  
+  /**
    * 获取公共密码
    * @author zhao
    * @param string

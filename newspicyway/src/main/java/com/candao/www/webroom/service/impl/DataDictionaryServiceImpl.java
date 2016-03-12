@@ -48,6 +48,14 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	@Override
 	public List<Map<String, Object>> getDatasByType(String type) {
+		return tbdatadictionaryDao.getDatasByType(type);
+	}
+	
+	/**
+	 * 获取通知消息类型
+	 */
+	@Override
+	public List<Map<String, Object>> getNotificationDate(String type){
 		List<Map<String, Object>> dictionaryMap = tbdatadictionaryDao.getDatasByType(type);
 		List<Map<String, Object>> info = new ArrayList<>();
 		for(Map<String, Object> map : dictionaryMap){
