@@ -2074,9 +2074,11 @@ $$
 --
 -- Definition for procedure p_syndata
 --
-DROP PROCEDURE IF EXISTS p_syndata$$
-CREATE PROCEDURE p_syndata(IN i_branch_id varchar(50), INOUT i_result varchar(10))
-  SQL SECURITY INVOKER
+
+DROP PROCEDURE IF EXISTS `p_syndata`$$
+DELIMITER ;;
+CREATE PROCEDURE `p_syndata`(IN i_branch_id varchar(50), INOUT i_result varchar(500))
+    SQL SECURITY INVOKER
 BEGIN
   
   DECLARE done int DEFAULT 0;
@@ -2088,9 +2090,9 @@ BEGIN
   DECLARE v_generatetime datetime;
   DECLARE v_insert_str varchar(50);
   DECLARE v_orderSeqno integer;
-
+  DECLARE v_error boolean DEFAULT FALSE;
+  
   DECLARE cur_order CURSOR FOR
-
   SELECT
     id,
     branchid,
@@ -2100,52 +2102,71 @@ BEGIN
     generattime,
     orderSeqno
   FROM t_syn_sql t
-  WHERE t.status = '0' AND (sqltext != NULL OR sqltext != '')
-  ORDER BY orderseqno, generattime
-  ;
+  WHERE t.status = '0' 
+  AND t.sqltext IS NOT NULL AND t.sqltext <> ''
+  ORDER BY orderseqno, generattime;
+
+  DROP TEMPORARY TABLE IF EXISTS t_temp_syn_sqlid;
+  CREATE TEMPORARY TABLE t_temp_syn_sqlid
+    (
+      id VARCHAR(50) NOT NULL
+    ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+	DROP TEMPORARY TABLE IF EXISTS t_temp_syn_delid;
+  CREATE TEMPORARY TABLE t_temp_syn_delid
+    (
+      id VARCHAR(50) NOT NULL
+    ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+  BEGIN
   
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    #sql执行错误继续运行
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET v_error = TRUE;
 
+    OPEN cur_order;
+  
+    REPEAT
+  
+      FETCH cur_order INTO v_id, v_branchid, v_sqltext, v_inserttime, v_status, v_generatetime, v_orderSeqno;
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-  OPEN cur_order;
-
-  REPEAT
-
-    FETCH cur_order INTO v_id, v_branchid, v_sqltext, v_inserttime, v_status, v_generatetime, v_orderSeqno;
-
-    IF done <> 1 THEN
-
-      SET v_insert_str = UPPER(SUBSTRING(TRIM(v_sqltext), 1, 6));
-      IF v_insert_str = 'INSERT' THEN
-        SET v_sqltext = CONCAT('INSERT IGNORE ', SUBSTRING(TRIM(v_sqltext), 7));
+      IF done <> 1 AND v_error = FALSE  THEN
+        SET v_insert_str = UPPER(SUBSTRING(TRIM(v_sqltext), 1, 6));
+        IF v_insert_str = 'INSERT' THEN
+          SET v_sqltext = CONCAT('INSERT IGNORE ', SUBSTRING(TRIM(v_sqltext), 7));
+        END IF;
+        SET @sqlstr = v_sqltext;
+        PREPARE v_sql FROM @sqlstr;
+        EXECUTE v_sql;
+        DEALLOCATE PREPARE v_sql;
       END IF;
-      SET @sqlstr = v_sqltext;
-      PREPARE v_sql FROM @sqlstr;
-      EXECUTE v_sql;
-      DEALLOCATE PREPARE v_sql;
-			
-	  SET @vid = v_id;
-	  SET @delete_temp_data = CONCAT('delete from t_syn_sql_temp where id = ?');
-	  PREPARE del_sql FROM @delete_temp_data;
-	  EXECUTE del_sql USING @vid;
-	  DEALLOCATE PREPARE del_sql;
+	  
+	  INSERT INTO t_temp_syn_delid (id) VALUES (v_id);
+	  
+      IF  v_error = TRUE THEN
+		SET v_error = FALSE;
+	  ELSE
+		INSERT INTO t_temp_syn_sqlid (id) VALUES (v_id);
+      END  IF;
 
-    END IF;
+    UNTIL done = 1
 
+    END REPEAT;
 
-  UNTIL done = 1
-  END REPEAT;
+	CLOSE cur_order;
+  END;
+  
+  #根据条件删除临时表数据，防止刚下发的数据被误删除
+  DELETE FROM t_syn_sql_temp  using  t_temp_syn_delid ,t_syn_sql_temp  WHERE  t_temp_syn_delid.id = t_syn_sql_temp.id;
 
-  CLOSE cur_order;
-
-  UPDATE t_syn_sql
-  SET STATUS = '1'; 
-
+  #只更新成功执行sql的数据状态
+  UPDATE t_syn_sql a,t_temp_syn_sqlid b SET a.STATUS = '1' WHERE a.id = b.id; 
+	
   SET i_result = '1';
 
 END
-$$
+;;
+DELIMITER $$
 
 --
 -- Definition for procedure p_update2vipprice

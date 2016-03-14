@@ -1,0 +1,121 @@
+.payment-title {
+	font-size: 16px;
+}
+
+hr {
+	margin: 15px 0;
+}
+
+.payment-btn {
+	margin-top: 10px;
+}
+
+.payment-btn .btn-first {
+	background: #E7DF50;
+}
+
+.payment-search {
+	padding: 5px 0px;
+	margin-bottom: 15px;
+	font-size: 14px;
+}
+
+.payment-search .control-label {
+	padding-right: 0px;
+	margin-top: -5px;
+	font-weight: normal;
+	text-align: right;
+	width: auto;
+	padding-left: 0px;
+}
+
+.payment-search .col-xs-3 {
+	margin-top: -10px;
+	width: 200px;
+}
+
+.payment-search .col-xs-1 {
+	margin-top: -10px;
+}
+
+.payment-search-btn .btn,.payment-search-btn .btn:active,.payment-search-btn .btn:focus
+	{
+	background: #fff;
+	color: #333333;
+}
+
+.payment-search-btn .btn:hover {
+	background-color: rgb(231, 223, 80);
+	border-color: rgb(231, 223, 80);
+	color: #ffffff;
+}
+
+.payment-dialog .modal-title {
+	font-size: 16px;
+}
+
+.payment-dialog .mt20 {
+	margin-top: 0px !important;
+}
+
+.payment-dialog .btn-operate {
+	margin: 20px 0 0;
+}
+
+.payment-dialog .modal-content {
+	margin: 20px 0 0;
+}
+
+.shop-store-table td.manager {
+	text-align: left;
+	padding-left: 15px;
+}
+
+.shop-store-table td.name {
+	text-align: left;
+	padding-left: 70px;
+}
+
+.payment-dialog .ky-group-radius {
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+}
+
+.payment-dialog .form-group {
+	margin-bottom: 10px;
+	height: 40px;
+}
+.form-group .col-xs-8{
+	height: 35px;
+}
+.popover-errorTips {
+	color: red;
+}
+
+.table-list div.operate a {
+	padding-left: 5px;
+	text-decoration: none;
+}
+
+.table-list div.operate a:hover {
+	color: #428bca;
+	text-decoration: underline;
+}
+
+.tipP {
+	text-align: center;
+	font-size: 16px;
+}
+
+ul.paging .disabled {
+	display: none;
+}
+
+ul.paging li {
+	list-style: none;
+	display: inline-block;
+}
+.page.active a {
+  background-color: #646464;
+  color: #fff;
+}

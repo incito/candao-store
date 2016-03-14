@@ -1121,7 +1121,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						}
 					}
 					//System.out.println("map:" + JacksonJsonMapper.objectToJson( discountDishList ));
-					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+//					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
 					result.setAmount(amount.setScale(2,RoundingMode.HALF_UP));
@@ -1191,7 +1192,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					}
 					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
-					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+//					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					result.setAmount(amount.setScale(2, RoundingMode.HALF_UP));
 					result.setResult(1);
 					
@@ -1251,7 +1253,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					}
 					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
-					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+//					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					result.setAmount(amount.setScale(2, RoundingMode.HALF_UP));
 					result.setResult(1);
 					 

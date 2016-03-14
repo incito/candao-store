@@ -293,6 +293,14 @@ function toNormal(){
 	$(parent.document).find("#searchText").val("");
 	$("#allSearch .autoComplete").remove();
 }
+
+/**
+ * 跳转到支付管理
+ */
+function toPayment(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=payment/paymentlist");
+	$("#allSearch").css("visibility","hidden");
+}
 /**
  * 跳转到我的账户
  */

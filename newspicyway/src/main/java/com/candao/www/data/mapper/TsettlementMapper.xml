@@ -293,4 +293,7 @@
   <update id="updateTorderMember" parameterType="map">
      update t_order_member set Inflated = 0 where orderid = #{orderid}   
   </update>
+  <select id="selectIsPayWeixin" parameterType="map" resultType="int">
+  	select count(1) from t_settlement_detail t where t.payway=#{payway} and t.orderid=#{orderno}
+  </select>
 </mapper>

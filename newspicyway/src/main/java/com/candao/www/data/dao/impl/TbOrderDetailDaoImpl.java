@@ -230,6 +230,22 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("orderid", orderid);
 		return dao.find(PREFIX + ".getOrderDetailByOrderId", params);
 	}
- 
+	@Override
+	public int updateOrderinfo(Map<String, Object> map) {
+		return dao.update(PREFIX + ".updateOrderinfo", map);
+	}
+	
+	@Override
+	public List<Map<String, Object>> getDishesInfoByOrderId(String orderid) {
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("orderid", orderid);
+		return dao.find(PREFIX + ".getDishesInfoByOrderId", params);
+	}
+	@Override
+	public Map<String, Object> selectorderinfos(String orderid) {
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("orderid", orderid);
+		return dao.get(PREFIX + ".selectorderinfos", params);
+	}
 }
  

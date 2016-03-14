@@ -1,6 +1,6 @@
-/*去除a标签带来的虚框*/
-a:focus { -moz-outline-style: none; } /* IE不支持 */
-a:focus{outline:none;}/* IE支持 */
+/*鍘婚櫎a鏍囩甯︽潵鐨勮櫄妗�/
+a:focus { -moz-outline-style: none; } /* IE涓嶆敮鎸�*/
+a:focus{outline:none;}/* IE鏀寔 */
 .ky-navbar{
 	width: 100px;
 	float: left;
@@ -39,33 +39,36 @@ a:focus{outline:none;}/* IE支持 */
 .ky-nav-pills > li > a:hover{
 	text-decoration: none;
 }
-
-/* 门店管理 */
+/* 鏀粯绠＄悊 */
+.ky-menu-pay{
+	border-left: 2px solid #E7DF50;
+}
+/* 闂ㄥ簵绠＄悊 */
 .ky-menu-primary{
 	border-left: 2px solid #7AC454;
 }
 
-/* 菜品管理 */
+/* 鑿滃搧绠＄悊 */
 .ky-menu-info{
 	border-left: 2px solid #FF6A4D;
 }
 
-/* 餐台管理 */
+/* 椁愬彴绠＄悊 */
 .ky-menu-warning{
 	border-left: 2px solid #FFCC4C;
 }
 
-/* 报表管理 */
+/* 鎶ヨ〃绠＄悊 */
 .ky-rpt-menu-warning{
 	border-left: 2px solid #FFCC4C;
 }
 
-/* 打印管理 */
+/* 鎵撳嵃绠＄悊 */
 .ky-menu-danger{
 	border-left: 2px solid #00C4E9;
 }
 
-/* 优惠管理 */
+/* 浼樻儬绠＄悊 */
 .ky-menu-minor{
 	border-left: 2px solid #00D3AC;
 }
@@ -79,47 +82,51 @@ a:focus{outline:none;}/* IE支持 */
 	border-left: 2px solid #34495e;
 }
 
-/* 报表分析 */
+/* 鎶ヨ〃鍒嗘瀽 */
 .ky-menu-success{
 	border-left: 2px solid #ff6c77;
 }
-/* 进销存 */
+/* 杩涢攢瀛�*/
 .ky-menu-psi{
 	border-left: 2px solid #0CB505;
 }
-/* 报表二级菜单 */
+/* 鎶ヨ〃浜岀骇鑿滃崟 */
 /*
 .ky-menu-report-sub{
 	background-color: rgb(255, 108, 119) !important;
 	color: #ffffff !important;
 }
 */
-
-/* 门店管理 */
+/* 鏀粯绠＄悊 */
+.ky-menu-pay:hover{
+	background-color: #E7DF50 !important;
+	color: #ffffff !important;
+}
+/* 闂ㄥ簵绠＄悊 */
 .ky-menu-primary:hover{
 	background-color: #7AC454 !important;
 	color: #ffffff !important;
 }
 
-/* 菜品管理 */
+/* 鑿滃搧绠＄悊 */
 .ky-menu-info:hover{
 	background-color: #FF6A4D !important;
 	color: #ffffff !important;
 }
 
-/* 餐台管理 */
+/* 椁愬彴绠＄悊 */
 .ky-menu-warning:hover{
 	background-color: #FFCC4C !important;
 	color: #ffffff !important;
 }
 
-/* 打印管理 */
+/* 鎵撳嵃绠＄悊 */
 .ky-menu-danger:hover{
 	background-color: #00C4E9 !important;
 	color: #ffffff !important;
 }
 
-/* 优惠管理 */
+/* 浼樻儬绠＄悊 */
 .ky-menu-minor:hover{
 	background-color: #00D3AC !important;
 	color: #ffffff !important;
@@ -136,13 +143,13 @@ a:focus{outline:none;}/* IE支持 */
 	background-color: #34495e !important;
 	color: #ffffff !important;
 }
-/* 报表分析 */
-/* 报表一级菜单*/
+/* 鎶ヨ〃鍒嗘瀽 */
+/* 鎶ヨ〃涓�骇鑿滃崟*/
 .ky-menu-report:hover{
 	background-color: #FF313E !important;
 	color: #ffffff !important;
 }
-/* 进销存 */
+/* 杩涢攢瀛�*/
 .ky-menu-erp:hover{
 	background-color: #088803 !important;
 	color: #ffffff !important;
@@ -159,7 +166,7 @@ a:focus{outline:none;}/* IE支持 */
 	background-color: #088803 !important;
 	color: #ffffff !important;
 }
-/* 系统设置 */
+/* 绯荤粺璁剧疆 */
 .ky-menu-setup{
 	border-left: 2px solid #c276e2;
 }
@@ -167,7 +174,7 @@ a:focus{outline:none;}/* IE支持 */
 	background-color: #c276e2 !important;
 	color: #ffffff !important;
 }
-/* 选中菜单 */
+/* 閫変腑鑿滃崟 */
 .ky-menu-focus{
 	background-color: #7AC454;
 	color: #ffffff !important;
@@ -308,21 +315,21 @@ a:focus{outline:none;}/* IE支持 */
 	font-size: 12px;
 	color: #ffffff;
 }
-/* iframe框架 */
+/* iframe妗嗘灦 */
 .ky-container-iframe{
 	margin-left:100px;
 	color:#fafafa;
 	min-width:920px;
 	height: 100%;/*20150522 by fandan*/
 } 
-/* iframe 框架样式 */
+/* iframe 妗嗘灦鏍峰紡 */
 .ky-content.content-iframe{
 	margin-top: 20px;
 	margin-left:15px;
 	margin-right:15px;
 	margin-bottom: 40px;/*add by lisa*/
 }
-/* 内容 */
+/* 鍐呭 */
 .ky-content{
 	min-width:864px;
 	margin-left:109px;

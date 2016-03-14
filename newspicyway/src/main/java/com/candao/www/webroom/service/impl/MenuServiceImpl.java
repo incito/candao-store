@@ -352,8 +352,10 @@ public class MenuServiceImpl implements MenuService {
 	public Map<String, Object> getMenuData() {
 		Map<String, Object> branchInfoMap = tbBranchDao.getBranchInfo();
 		String branchid=null;
+		String tenantid = null;
 		if( branchInfoMap!=null ){
 			branchid=(String) branchInfoMap.get("branchid");
+			tenantid = (String) branchInfoMap.get("tenantid");
 		}
 		Map<String,Object> params=new HashMap<String,Object>();
 		params.put("branchid", branchid);
@@ -415,6 +417,7 @@ public class MenuServiceImpl implements MenuService {
 		}
 		menu.put("dinnerware", dinnerware);
 		menu.put("imgserver", Constant.FILEURL_PREFIX);
+		menu.put("tenantid", tenantid);
 		return menu;
 	}
 

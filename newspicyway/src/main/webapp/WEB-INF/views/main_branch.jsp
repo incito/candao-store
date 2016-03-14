@@ -94,7 +94,13 @@
 					</ul>
 				</li>
 				</c:if>
-			
+				
+				<c:if test="${item.key  == '020101'}">
+             	
+					<li>
+						<a href="#" class="ky-menu-pay" onclick="toPayment()">支付管理</a>
+					</li>
+				</c:if>
 				<c:if test="${item.key  == '0309' || item.key=='020101'}">
 					<li>
  						<a href="#" class="ky-menu-employees" onclick="toEmployees()">员工管理</a>

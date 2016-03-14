@@ -63,6 +63,8 @@ public class Constant {
 	
 	public static final String SUCCESSMSG = "{\"result\":\"0\"}";
 	
+	public static final String WEIXINSUCCESSMSG = "{\"result\":\"0\",\"msg\":\"反结算成功，已通过微信退款！\"}";
+	
 	public static final String PRINTERENCODE = "GBK";
 	
 	public static final String NOMSG = "无";
@@ -144,6 +146,10 @@ public class Constant {
 		
 		//优免
 		public static final int PAYWAY_FREE = 6;
+		
+		//微信扫码支付
+		
+		public static final String PAYWAY_WEIXIN = "30";
 	}
 	
 	public class SETTLE{
@@ -186,6 +192,8 @@ public class Constant {
 		public static final String CUSTADDDISHNAME = "加菜单";
 		
 		public static final String DISHSETNAME = "套餐";
+		
+		public static final String STATEMENTDISHNAME = "结账单";
  
 		
 	}

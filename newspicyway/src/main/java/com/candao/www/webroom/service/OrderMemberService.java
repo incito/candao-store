@@ -8,8 +8,10 @@ public interface OrderMemberService {
 
 	public int saveOrderMember(TOrderMember tOrderMember );
 	
+	public int update(TOrderMember tOrderMember );
+	
 	public int updateValid(java.lang.String orderid);
 	
-	public TOrderMember get(java.lang.String orderid);
+	public TOrderMember get(java.lang.String orderid, Integer valid);
 	
 }

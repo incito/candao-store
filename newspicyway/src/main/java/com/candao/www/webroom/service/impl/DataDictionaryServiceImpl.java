@@ -1,5 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,26 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	@Override
 	public List<Map<String, Object>> getDatasByType(String type) {
-		// TODO Auto-generated method stub
 		return tbdatadictionaryDao.getDatasByType(type);
+	}
+	
+	/**
+	 * 获取通知消息类型
+	 */
+	@Override
+	public List<Map<String, Object>> getNotificationDate(String type){
+		List<Map<String, Object>> dictionaryMap = tbdatadictionaryDao.getDatasByType(type);
+		List<Map<String, Object>> info = new ArrayList<>();
+		for(Map<String, Object> map : dictionaryMap){
+			Map<String, Object> dictionary = new HashMap<>();
+			dictionary.put("dictid", map.get("id"));
+			dictionary.put("itemid", map.get("itemid"));
+			dictionary.put("itemDesc", map.get("itemDesc"));
+			dictionary.put("type", map.get("type"));
+			dictionary.put("item_value", map.get("itemValue"));
+			info.add(dictionary);
+		}
+		return info;
 	}
 	
 	@Override
@@ -69,5 +88,23 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		// TODO Auto-generated method stub
 		return tbdatadictionaryDao.find(map);
 	}
-
+	
+	/**
+	 * 查看开业结业时间
+	 * @param type
+	 * @return
+	 */
+	@Override
+	public Map<String, Object> getOpenEndTime(String type) {
+		List<Map<String, Object>> dataDictionaries = tbdatadictionaryDao.getDicListByType(type);
+		Map<String, Object> timeMap = new HashMap<>();
+		for(Map<String, Object> map : dataDictionaries){
+			if("全天".equals(map.get("itemDesc")) || map.get("itemid").equals("2")){ //2表示全天
+				timeMap.put("begintime", map.get("begintime"));
+				timeMap.put("endtime", map.get("endtime"));
+				timeMap.put("datetype", map.get("datetype"));
+			}
+		}
+		return timeMap;
+	}
 }
