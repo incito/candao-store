@@ -280,12 +280,14 @@
 	t.end_time,
 	t.charges_status,
 	t.member_price,
-	t.price ,t.date_type
+	t.price ,
+	t.date_type,
+	t.item_value
 FROM
 	t_dictionary t
 
 
-where type in ('SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY")
+where type in ('SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY","PADIMG")
 order by t.type, 
 t.itemSort ASC
 

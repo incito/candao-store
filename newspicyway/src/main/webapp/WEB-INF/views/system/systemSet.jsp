@@ -435,55 +435,46 @@
 			</form>
 		</div>
 		
+		<!-- -------------------------------------PAD端图片设置------------------------------------- -->
 		
-		<!-- <div class="setup_div">
+		<div class="setup_div clear">
 			<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
-			<div style="height: 30px;">
-				<div class="system-setup-title">LOGO图片设置</div>
-				<button type="button" id="editDishes" class="btn btn-default">编辑</button>
-				<button type="submit" id="saveDishes" class="btn btn-default hide">保存</button>
-			</div>
-			<hr style="margin: 5px 0px;" />
-			<div class="modal-body" style="padding-top: 0px;">
-				 <img src='../images/defaultlogo.png' style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
-
-                <div class="tag">
-                    <div class="arrow">
-                        <em></em><span></span>
-                    </div>
-                    <span class="tagspan">1ooi</span>
-                   <span class="tagspan">1ooi</span>
-                   <span class="tagspan">1ooi</span>
-                </div>
+				<div style="height: 30px;">
+					<div class="system-setup-title">LOGO图片设置</div>
 				</div>
-				</form>
-			</div>
+				<hr style="margin: 5px 0px;" />
+				<div class="modal-body" style="padding-top: 0px;">
+					<img src='../images/defaultlogo.png' id="defaultlogo" />
+	                <div class="tag">
+	                    <div class="arrow">
+	                        <em></em><span></span>
+	                    </div>
+	                    <span class="tagspan">更改LOGO请登录总店后台修改</span>
+	                </div>
+				</div>
+			</form>
+		</div>
 		
 		
-		
-		
-			<div class="setup_div clear">
+		<div class="setup_div clear">
 			<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
-			<div style="height: 30px;">
-				<div class="system-setup-title">LOGO图片设置</div>
-				<button type="button" id="editDishes" class="btn btn-default">编辑</button>
-				<button type="submit" id="saveDishes" class="btn btn-default hide">保存</button>
-			</div>
-			<hr style="margin: 5px 0px;" />
-			<div class="modal-body" style="padding-top: 0px;">
-				 <img src='../images/defaultlogo.png' style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
-
-                <div class="tag">
-                    <div class="arrow">
-                        <em></em><span></span>
-                    </div>
-                    <span class="tagspan">1ooi</span>
-                   <span class="tagspan">1ooi</span>
-                   <span class="tagspan">1ooi</span>
-                </div>
+				<div style="height: 30px;">
+					<div class="system-setup-title">PAD启动背景图片设置</div>
 				</div>
-				</form>
-			</div> -->
+				<hr style="margin: 5px 0px;" />
+				<div class="modal-body" style="padding-top: 0px;">
+					<img src='../images/def_background.png' id="def_background" style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
+	                <div class="tag">
+	                    <div class="arrow" >
+	                        <em></em><span></span>
+	                    </div>
+	                    <span class="tagspan">更改PAD背景图请登录总店后台修改</span>
+	                </div>
+				</div>
+			</form>
+		</div>
+		
+	<!-- --------------------------PAD端图片设置结束----------------------------------------- -->				
 		
 	</div>
 	<div class="modal fade " id="dish-select-dialog" aria-hidden="true">

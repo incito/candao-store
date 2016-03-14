@@ -251,6 +251,7 @@ public class SystemServiceImpl {
 		jsonObject.put("CALLTYPE", getJsonArrary(mapList, "CALLTYPE"));
 		jsonObject.put("ROUNDING", getJsonArrary(mapList, "ROUNDING"));
 		jsonObject.put("ACCURACY", getJsonArrary(mapList, "ACCURACY"));
+		jsonObject.put("PADIMG", getJsonArrary(mapList, "PADIMG"));
 		return jsonObject;
 	}
 
@@ -304,6 +305,7 @@ public class SystemServiceImpl {
 		jsonObject.put("member_price", m.get("member_price") == null ? "" : m.get("member_price").toString());
 		jsonObject.put("price", m.get("price") == null ? "" : m.get("price").toString());
 		jsonObject.put("date_type", m.get("datetype") == null ? "" : m.get("datetype").toString());
+		jsonObject.put("item_value", m.get("itemVale") == null ? "" : m.get("itemVale").toString());
 	}
 
 	
