@@ -582,6 +582,7 @@ INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) V
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
 
+insert into t_dictionary(dictid,itemid,itemDesc,itemSort,status,type,typename) VALUES('2fd28343-be4a-4276a439-b32babb2342f','30','微信扫码支付',30,1,'PAYWAY','支付方式')
 commit;
 -- 
 -- Enable foreign keys
