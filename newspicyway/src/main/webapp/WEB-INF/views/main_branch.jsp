@@ -106,6 +106,39 @@
  						<a href="#" class="ky-menu-employees" onclick="toEmployees()">员工管理</a>
  					</li> 
 				</c:if>
+				
+				<c:if test="${psishow=='Y' }">
+						<c:if test="${item.key  == '0315' || item.key=='020101'}">
+						<li  class="ky-dropdown" id="psi">
+							<a href="#" class="ky-menu-psi ky-menu-erp" >进销存管理</a>
+							 <ul class="ky-dropdown-menu ky-nav ky-nav-pills ky-dropdown-menu-erp">
+							 <c:forEach items="${menumap }" var="ite">
+							 <c:if test="${ite.key  == '031501' || ite.key=='020101'}">
+								<li><a href="#" class="ky-menu-psi ky-menu-erp" onclick="toBasic()">基础信息管理</a></li>
+							 </c:if>
+							  <c:if test="${ite.key  == '031502' || ite.key=='020101'}">
+							 	 <li><a href="#" class="ky-menu-psi ky-menu-erp sub_bussi_menu" onclick="toInStorage()">入库管理</a></li>
+							  </c:if>
+							  <c:if test="${ite.key  == '031503' || ite.key=='020101'}">
+							  	<li><a href="#" class="ky-menu-psi ky-menu-erp" onclick="toOutStorage()">出库管理</a></li>
+							  </c:if>
+							   <c:if test="${ite.key  == '031504' || ite.key=='020101'}">
+							   <li><a href="#" class="ky-menu-psi ky-menu-erp sub_item_menu" onclick="toInventory()">库存一览</a></li>
+							  </c:if>
+							   <c:if test="${ite.key  == '031505' || ite.key=='020101'}">
+							   <li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toInventoryBill()">库存盘点</a></li>
+							  </c:if>
+							   <c:if test="${ite.key  == '031506' || ite.key=='020101'}">
+							   <li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toOrder()">销售管理</a></li>
+							  </c:if>
+							   <c:if test="${ite.key  == '031507' || ite.key=='020101'}">
+							   <li><a href="#" class="ky-menu-psi ky-menu-erp sub_coup_menu" onclick="toChart()">报表分析</a></li>
+							  </c:if>
+							  </c:forEach>
+							</ul>
+						</li>
+						</c:if> 
+				</c:if>
 			   	<c:if test="${item.key  == '0311' || item.key=='020101'}">
 					<li>
 						<a href="#" class="ky-menu-setup" onclick="toSetup()">系统设置</a>
