@@ -742,15 +742,19 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/debitamout")
 	@ResponseBody
-	public String debitamout(@RequestBody String orderId){
-		@SuppressWarnings({"unchecked" })
-		Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
-		String result =  orderSettleService.calDebitAmount(map.get("orderNo"));
-		if("0".equals(result)){
-			return Constant.SUCCESSMSG;
-		}else {
-			return Constant.FAILUREMSG;
-		}
+	public String debitamout(@RequestBody final String orderId){
+		new Thread(new Runnable(){
+			public void run(){
+				@SuppressWarnings({"unchecked" })
+				Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
+				try {
+					orderSettleService.calDebitAmount(map.get("orderNo"));
+				} catch (Exception e) {
+					logger.error("计算实收失败，订单号：" + orderId, e, "");
+				}
+			}
+		}).start();
+		return Constant.SUCCESSMSG;
 	}
 	
 
