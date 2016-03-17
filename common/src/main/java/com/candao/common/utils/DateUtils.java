@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,11 +343,13 @@ public class DateUtils {
 		return time; 
 	}
 	public static void main(String[] args) {
-		Calendar calendar = Calendar.getInstance();
+		/*Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2015);
 		calendar.set(Calendar.MONTH, 1);
 		calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));  
-		System.out.println(toString(calendar.getTime()));
+		System.out.println(toString(calendar.getTime()));*/
+		System.out.println(weekOfFirstDay());
+		System.out.println(weekOfLastDay());
 	}
 
 
@@ -494,18 +498,37 @@ public class DateUtils {
 		return time;
 	}
 	
+	
+	public static Map<String, String> getWeekDay() {
+		 Map<String,String> map = new HashMap<String,String>();
+		 Calendar cal =Calendar.getInstance();
+		 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); //获取本周一的日期
+		 map.put("mon", df.format(cal.getTime()));
+		 System.out.println("********得到本周一的日期*******" + df.format(cal.getTime()));
+		 
+		 //这种输出的是上个星期周日的日期，因为老外那边把周日当成第一天
+		 cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		 //增加一个星期，才是我们中国人理解的本周日的日期
+		 cal.add(Calendar.WEEK_OF_YEAR, 1);
+		 map.put("sun", df.format(cal.getTime()));
+		 System.out.println("********得到本周天的日期*******" + df.format(cal.getTime()));
+		 return map;
+	}
+	
+	
+	
 	/**
 	 * 本周第一天
 	 * @return
 	 */
 	public static String weekOfFirstDay(){
-		/*java.util.Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.WEEK_OF_MONTH,0);
-		cal.set(Calendar.DAY_OF_MONTH,1);
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); //获取本周一的日期
 		Date date = cal.getTime();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		String time = format.format(date);*/
-		return "";
+		String time = format.format(date);
+		return time;
 	}
 	
 	/**
@@ -513,8 +536,13 @@ public class DateUtils {
 	 * @return
 	 */
 	public static String weekOfLastDay(){
-		
-		return "";
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		cal.add(Calendar.WEEK_OF_YEAR, 1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
 	}
 	
 	/**

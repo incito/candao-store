@@ -2200,8 +2200,8 @@ public class PadInterfaceController {
 			startTime = DateUtils.today() + "00:00:00";
 			endTime = DateUtils.today() + "23:59:59";
 		}else if(falg == "2"){
-			startTime = DateUtils.today() + "00:00:00";
-			endTime = DateUtils.today() + "23:59:59";
+			startTime = DateUtils.weekOfFirstDay() + "00:00:00";
+			endTime = DateUtils.weekOfLastDay() + "23:59:59";
 		}else if(falg == "3"){
 			startTime = DateUtils.today() + "00:00:00";
 			endTime = DateUtils.today() + "23:59:59";
