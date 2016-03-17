@@ -473,4 +473,10 @@
  
   </select>
  
+ <select id="selectIsJZ" parameterType="java.util.HashMap" resultType="int">
+ 		select 
+		case when t.endtime is null then 0 else 1 end as result
+		from t_order t
+		where orderid=#{orderid}
+ </select>
 </mapper>

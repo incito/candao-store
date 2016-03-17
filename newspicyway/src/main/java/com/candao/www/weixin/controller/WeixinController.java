@@ -92,6 +92,8 @@ public class WeixinController extends BaseJsonController {
 	// 这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全
 	private static String partnerkey = null;
 	
+	
+	
 	@RequestMapping(value = "/createurl", produces = { "application/json;charset=UTF-8" })
 	public Map<String, Object> createurl(HttpServletRequest request) {
 		

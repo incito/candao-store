@@ -65,5 +65,12 @@ public interface TorderMapper {
 
 	public String callEndWork(String userName, String isSucess);
 
+	/**
+	 * 查询是否结账
+	 * @param orderid
+	 * @return
+	 */
+	public int selectIsJZ(String orderid);
+
  
 }

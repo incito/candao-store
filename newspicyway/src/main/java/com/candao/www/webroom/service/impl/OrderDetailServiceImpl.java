@@ -321,8 +321,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
 ////	    	   flag=4;
 ////	       }
-	       printOrderList( orders.getOrderid(),table.getTableid(), flag);
-	       printweigth(listall,orders.getOrderid());
+	       //printOrderList( orders.getOrderid(),table.getTableid(), flag);
+	      // printweigth(listall,orders.getOrderid());
 			   	 //操作成功了，插入操作日记
 	        if(toperationLogService.save(toperationLog)){
 	    	  transactionManager.commit(status);
@@ -338,6 +338,24 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			} 	
 	
 		}
+ 
+ 
+ /**
+  * 结账后打印
+  * @param order
+  * @param flag
+  */
+   public void   afterprint(String orderid){
+	   			int flag=0;//=torderMapper.selectIsJZ(orderid);//0表示厨打单
+				Map<String, Object> mapParam1 = new HashMap<String, Object>();
+			    mapParam1.put("orderid", orderid);
+				List<TorderDetail> detailList =   torderDetailMapper.find(mapParam1);   
+				List<TorderDetail> listall = getallTorderDetail(detailList);
+				TbTable table = tableService.findTableByOrder(orderid);
+				printOrderList( orderid,table.getTableid(), flag);
+				printweigth(listall,orderid);
+       }
+ 
 		/**
 		 * 打印订单中的需要称重的数据，打印称重单
 		 * @author shen
@@ -436,7 +454,6 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 //		     int PrintType=printObj.getPrintType();
 //			  String billName=printObj.getBillName();
 //			  String AbbrbillName=printObj.getAbbrbillName();
-		     
 		     //打印单品
 		     printSingleDish(printObj,paramsMap);
 			 // 打印锅和鱼
@@ -480,7 +497,6 @@ public class OrderDetailServiceImpl implements OrderDetailService{
  * @author tom_zhao
  * @param printObj
  */
-
 		private void printSingleDish(PrintObj printObj,Map<String,Object> paramsMap) {
 			//打印还没有打印的单品
 		     Map<String, Object> map0 = new HashMap<String, Object>();
@@ -1524,6 +1540,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	    */
 		@Override
 		public void printStatement(String orderno) {
+			
+			afterprint(orderno);//打印客用厨打单等
 			
 			 Map<String,Object> map = new HashMap<String, Object>();
 			 map.put("orderno", orderno);

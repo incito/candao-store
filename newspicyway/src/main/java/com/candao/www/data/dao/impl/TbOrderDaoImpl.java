@@ -155,6 +155,14 @@ public class TbOrderDaoImpl implements TorderMapper {
 	public void setOrderMember(Map<String, Object> mapParam){
 		dao.get(PREFIX + ".setOrderMember", mapParam);
 	}
+
+	@Override
+	public int selectIsJZ(String orderid) {
+		Map<String,String> parameter = new HashMap<String,String>();
+		parameter.put("orderid", orderid);
+		 
+		return dao.get(PREFIX + ".selectIsJZ",parameter);
+	}
  
 }
 

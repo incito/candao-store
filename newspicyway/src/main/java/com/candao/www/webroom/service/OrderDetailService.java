@@ -47,4 +47,6 @@ public interface OrderDetailService {
 	public String getOrderDetailByOrderId(String orderid);
 	
 	public void printStatement(String orderno);
+	
+	public void   afterprint(String orderid);
 }
