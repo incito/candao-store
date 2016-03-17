@@ -305,7 +305,7 @@ public class SystemServiceImpl {
 		jsonObject.put("member_price", m.get("member_price") == null ? "" : m.get("member_price").toString());
 		jsonObject.put("price", m.get("price") == null ? "" : m.get("price").toString());
 		jsonObject.put("date_type", m.get("datetype") == null ? "" : m.get("datetype").toString());
-		jsonObject.put("item_value", m.get("itemVale") == null ? "" : m.get("itemVale").toString());
+		jsonObject.put("item_value", m.get("itemValue") == null ? "" : m.get("itemValue").toString());
 	}
 
 	
@@ -450,7 +450,7 @@ public class SystemServiceImpl {
 			infomap.put("itemid", info.containsKey("itemid")?info.get("itemid").toString():"");
 			infomap.put("itemDesc", info.containsKey("itemDesc")?info.get("itemDesc").toString():"");
 			infomap.put("type", "RESPONSETIME");
-			infomap.put("item_value", info.containsKey("item_value")?info.get("item_value").toString():"");
+			infomap.put("item_value", info.containsKey("itemValue")?info.get("itemValue").toString():"");
 			infomap.put("dictid", info.containsKey("id")?info.get("id").toString():"");
 			returnList.add(infomap);
 		}
