@@ -2185,29 +2185,47 @@ public class PadInterfaceController {
 	 * 获取品项销售明细的打印数据
 	 * @return
 	 */
-	public String getItemSellDetail(@RequestBody String jsonString){
-		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-		String falg = (String) params.get("falg");
+	@RequestMapping("/getItemSellDetail")
+	@ResponseBody
+	public String getItemSellDetail(String falg){
 		Map<String, Object> timeMap = getTime(falg);
-		return "";
+		Map<String, Object> resultMap = new HashMap<>();
+		try {
+			List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
+			resultMap.put("result", 0);
+			resultMap.put("mag","");
+			resultMap.put("data",result);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), "");
+			resultMap.put("result", 1);
+			resultMap.put("mag","获取数据失败");
+			resultMap.put("data","");
+			e.printStackTrace();
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
 	}
 	
+	/**
+	 * 获取开始结束时间
+	 * @param falg
+	 * @return
+	 */
 	private Map<String, Object> getTime(String falg){
 		Map<String, Object> map = new HashMap<>();
 		String startTime = null;
 		String endTime = null;
-		if(falg == "1"){
-			startTime = DateUtils.today() + "00:00:00";
-			endTime = DateUtils.today() + "23:59:59";
-		}else if(falg == "2"){
-			startTime = DateUtils.weekOfFirstDay() + "00:00:00";
-			endTime = DateUtils.weekOfLastDay() + "23:59:59";
-		}else if(falg == "3"){
-			startTime = DateUtils.today() + "00:00:00";
-			endTime = DateUtils.today() + "23:59:59";
-		}else if(falg == "4"){
-			startTime = DateUtils.today() + "00:00:00";
-			endTime = DateUtils.today() + "23:59:59";
+		if(falg.equals("1")){  //今日
+			startTime = DateUtils.today() + " 00:00:00";
+			endTime = DateUtils.today() + " 23:59:59";
+		}else if(falg.equals("2")){  //本周
+			startTime = DateUtils.weekOfFirstDay() + " 00:00:00";
+			endTime = DateUtils.weekOfLastDay() + " 23:59:59";
+		}else if(falg.equals("3")){  //本月
+			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
+			endTime = DateUtils.monthOfLastDay() + " 23:59:59";
+		}else if(falg.equals("4")){   //上月
+			startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
+			endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";
 		}
 		map.put("startTime",startTime);
 		map.put("endTime", endTime);

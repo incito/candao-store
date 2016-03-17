@@ -499,25 +499,6 @@ public class DateUtils {
 	}
 	
 	
-	public static Map<String, String> getWeekDay() {
-		 Map<String,String> map = new HashMap<String,String>();
-		 Calendar cal =Calendar.getInstance();
-		 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-		 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); //获取本周一的日期
-		 map.put("mon", df.format(cal.getTime()));
-		 System.out.println("********得到本周一的日期*******" + df.format(cal.getTime()));
-		 
-		 //这种输出的是上个星期周日的日期，因为老外那边把周日当成第一天
-		 cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-		 //增加一个星期，才是我们中国人理解的本周日的日期
-		 cal.add(Calendar.WEEK_OF_YEAR, 1);
-		 map.put("sun", df.format(cal.getTime()));
-		 System.out.println("********得到本周天的日期*******" + df.format(cal.getTime()));
-		 return map;
-	}
-	
-	
-	
 	/**
 	 * 本周第一天
 	 * @return
