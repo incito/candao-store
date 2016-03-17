@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -2179,6 +2180,39 @@ public class PadInterfaceController {
 		return returnMap;
 	}
 	
+	
+	/**
+	 * 获取品项销售明细的打印数据
+	 * @return
+	 */
+	public String getItemSellDetail(@RequestBody String jsonString){
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+		String falg = (String) params.get("falg");
+		Map<String, Object> timeMap = getTime(falg);
+		return "";
+	}
+	
+	private Map<String, Object> getTime(String falg){
+		Map<String, Object> map = new HashMap<>();
+		String startTime = null;
+		String endTime = null;
+		if(falg == "1"){
+			startTime = DateUtils.today() + "00:00:00";
+			endTime = DateUtils.today() + "23:59:59";
+		}else if(falg == "2"){
+			startTime = DateUtils.today() + "00:00:00";
+			endTime = DateUtils.today() + "23:59:59";
+		}else if(falg == "3"){
+			startTime = DateUtils.today() + "00:00:00";
+			endTime = DateUtils.today() + "23:59:59";
+		}else if(falg == "4"){
+			startTime = DateUtils.today() + "00:00:00";
+			endTime = DateUtils.today() + "23:59:59";
+		}
+		map.put("startTime",startTime);
+		map.put("endTime", endTime);
+		return map;
+	}
 	
 	/**
 	 * 消息中心查询信息
