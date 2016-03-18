@@ -768,46 +768,54 @@ public class OrderServiceImpl implements OrderService{
 	public String createChildOrderid(String tableNo) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("tableNo", tableNo);
-		List<Map<String, Object>> resultMap = tableService.find(map);
-		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
-			throw new Exception("餐台编号不唯一:" + tableNo);
+		synchronized (this) {
+			List<Map<String, Object>> resultMap = tableService.find(map);
+			if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
+				throw new Exception("餐台编号不唯一:" + tableNo);
+			}
+			// 生成子订单号
+			int number = 1;
+			String lastOrderid = (String) resultMap.get(0).get("orderid");
+			String masterOrderid = lastOrderid;
+			int index = lastOrderid.indexOf("-");
+			if (index > 0) {
+				masterOrderid = lastOrderid.substring(0, index - 1);
+				number = Integer.parseInt(lastOrderid.substring(index));
+			}
+			String newOrderid = masterOrderid + "-" + number;
+			String currenttableid = (String) resultMap.get(0).get("tableid");
+
+			// 查询主订单
+			Map<Object, Object> masterOrder = torderMapper.findOne(masterOrderid);
+			// 创建子订单
+			Torder order = new Torder();
+			order.setTableids((String) masterOrder.get("tableids"));
+			order.setOrderid(newOrderid);
+			order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
+			order.setChildNum((Integer) masterOrder.get("childNum"));
+			order.setCurrenttableid(currenttableid);
+			order.setCustnum((Integer) masterOrder.get("custnum"));
+			order.setManNum((Integer) masterOrder.get("mannum"));
+			order.setSpecialrequied((String) masterOrder.get("specialrequied"));
+			order.setUserid((String) masterOrder.get("userid"));
+			order.setWomanNum((Integer) masterOrder.get("womanNum"));
+			order.setBranchid((int) masterOrder.get("branchid"));
+			order.setShiftid((int) masterOrder.get("shiftid"));
+			order.setAgeperiod((String) masterOrder.get("ageperiod"));
+			order.setMeid((String) masterOrder.get("meid"));
+			torderMapper.insert(order);
+			
+			//更新餐台当前订单
+			TbTable tTable = new TbTable();
+			tTable.setTableid(currenttableid);
+			tTable.setOrderid(newOrderid);
+			tableService.updateStatus(tTable);
+
+			// 更新服务员订单数量
+			User tbUser = userService.findMaxOrderNum();
+			userService.updateUserOrderNum(order.getUserid(), tbUser.getOrderNum());
+			return newOrderid;
 		}
-		//生成子订单号
-		int number = 1;
-		String lastOrderid = (String) resultMap.get(0).get("orderid");
-		String masterOrderid = lastOrderid;
-		int index = lastOrderid.indexOf("-");
-		if(index > 0){
-			masterOrderid = lastOrderid.substring(0, index - 1);
-			number = Integer.parseInt(lastOrderid.substring(index));
-		}
-		String newOrderid = masterOrderid + "-" + number;
-		
-		//查询主订单
-		Map<Object, Object> masterOrder = torderMapper.findOne(masterOrderid);
-		//创建子订单
-		Torder  order = new Torder();
-		order.setTableids((String) masterOrder.get("tableids"));
-		order.setOrderid(newOrderid);
-		order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
-		order.setChildNum((Integer) masterOrder.get("childNum"));
-		order.setCurrenttableid((String) resultMap.get(0).get("tableid"));
-		order.setCustnum( (Integer) masterOrder.get("custnum"));
-		order.setManNum((Integer) masterOrder.get("mannum"));
-		order.setSpecialrequied((String) masterOrder.get("specialrequied"));
-		order.setUserid((String) masterOrder.get("userid"));
-		order.setWomanNum((Integer) masterOrder.get("womanNum"));
-		order.setBranchid((int) masterOrder.get("branchid"));
-		order.setShiftid((int) masterOrder.get("shiftid"));
-		order.setAgeperiod((String) masterOrder.get("ageperiod"));
-		order.setMeid((String) masterOrder.get("meid"));
-		torderMapper.insert(order);
-		
-		//更新服务员订单数量
-		User tbUser =  userService.findMaxOrderNum();
-	    userService.updateUserOrderNum(order.getUserid(),tbUser.getOrderNum());
-		
-		return newOrderid;
 	}
  
 }
