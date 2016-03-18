@@ -317,6 +317,17 @@ public class PadInterfaceController {
 		record.setPadpath("bookorderList");
 		jsonRecordService.insertJsonRecord(record);
 		Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
+		//咖啡模式-加菜时没有订单号，后台创建子订单
+		if(order.getOrderid() == null || order.getOrderid().isEmpty()){
+			try {
+				String orderId = orderService.createChildOrderid(order.getCurrenttableid());
+				order.setOrderid(orderId);
+			} catch (Exception e) {
+				logger.error(e, "");
+				return Constant.FAILUREMSG;
+			}
+		}
+		
 		//判断重复下单
 		ToperationLog toperationLog=new ToperationLog();
 		toperationLog.setId(IdentifierUtils.getId().generate().toString());

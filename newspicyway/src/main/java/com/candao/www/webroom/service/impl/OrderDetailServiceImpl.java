@@ -1921,5 +1921,5 @@ public class WeigthThread  implements Runnable{
 	private DishSetProducerService dishSetService;
 
 	@Autowired
-	StatentMentProducerService statentMentProducerService;  
+	StatentMentProducerService statentMentProducerService; 
 }

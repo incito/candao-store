@@ -55,5 +55,6 @@ public interface OrderService {
 
 	public String callEndWork(String userName, String isSucess);
 
-    
+	public String createChildOrderid(String tableNo) throws Exception;
+	
 }
