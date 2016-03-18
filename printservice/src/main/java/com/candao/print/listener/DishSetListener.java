@@ -116,6 +116,11 @@ public class DishSetListener {
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getFd8Font());
 			writer.write("     " + "\r\n");
+			
+			for (PrintDish it : printDishList) {
+				it.setDishName(StringUtils.split2(it.getDishName(), "#"));
+				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
+			}
 
 			for (PrintDish printDish : printDishList) {
 				String dishName2 = StringUtils.bSubstring2(
