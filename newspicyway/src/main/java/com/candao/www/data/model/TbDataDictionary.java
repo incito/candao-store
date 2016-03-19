@@ -26,13 +26,13 @@ public class TbDataDictionary implements Serializable {
 	private String datetype;
 	private String itemValue; //
 
-	/*public String getItemValue() {
+	public String getItemValue() {
 		return itemValue;
 	}
 
 	public void setItemValue(String itemValue) {
 		this.itemValue = itemValue;
-	}*/
+	}
 
 	public String getEndtime() {
 		return endtime;

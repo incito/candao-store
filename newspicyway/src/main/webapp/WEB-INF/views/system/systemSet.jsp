@@ -437,7 +437,7 @@
 		
 		<!-- -------------------------------------PAD端图片设置------------------------------------- -->
 		
-		<div class="setup_div clear">
+		<div class="setup_div clear deflogo">
 			<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
 				<div style="height: 30px;">
 					<div class="system-setup-title">LOGO图片设置</div>
@@ -456,7 +456,7 @@
 		</div>
 		
 		
-		<div class="setup_div clear">
+		<div class="setup_div clear defBackground">
 			<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
 				<div style="height: 30px;">
 					<div class="system-setup-title">PAD启动背景图片设置</div>
@@ -464,11 +464,11 @@
 				<hr style="margin: 5px 0px;" />
 				<div class="modal-body" style="padding-top: 0px;">
 					<img src='../images/def_background.png' id="def_background" style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
-	                <div class="tag">
+	                <div class="bgtag">
 	                    <div class="arrow" >
 	                        <em></em><span></span>
 	                    </div>
-	                    <span class="tagspan">更改PAD背景图请登录总店后台修改</span>
+	                    <span class="tagspan1">更改PAD背景图请登录总店后台修改</span>
 	                </div>
 				</div>
 			</form>

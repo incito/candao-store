@@ -196,7 +196,7 @@ body {
 	line-height:23px;
 	text-indent:10px;
 	margin:0;
-	padding:0;
+	padding: 20px 0px 0px 0px;
 	display:block;
 }
 
@@ -231,4 +231,33 @@ body {
 	width:93px;
 	height:117px
 }
+
+.deflogo{
+    padding: 50px 0px 0px 0px;
+}
+
+.defBackground{
+	margin: -50px;
+    padding: 50px;
+}
+
+.bgtag{
+	width:250px; 
+	height:115px;
+	border-radius:5px; 
+	border:1px solid #ddd; 
+	position:relative; 
+	background-color:#FFF;
+	float:left;
+	margin-left:20px;
+}
+
+.tagspan1 {
+	line-height:23px;
+	text-indent:10px;
+	margin:0;
+	padding: 40px 0px 0px 0px;
+	display:block;
+}
+
 
