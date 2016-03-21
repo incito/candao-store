@@ -324,7 +324,7 @@ public class PadInterfaceController extends BaseJsonController{
 	@RequestMapping("/bookorderList")
 	@ResponseBody
 	public String saveOrderInfoList(@RequestBody String jsonString,HttpServletRequest reqeust){
-
+		Map<String, Object> resultMap = new HashMap<>();
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(jsonString);
 		record.setPadpath("bookorderList");
@@ -335,6 +335,7 @@ public class PadInterfaceController extends BaseJsonController{
 			try {
 				String orderId = orderService.createChildOrderid(order.getCurrenttableid());
 				order.setOrderid(orderId);
+				resultMap.put("orderId", orderId);
 			} catch (Exception e) {
 				logger.error(e, "");
 				return Constant.FAILUREMSG;
@@ -358,6 +359,9 @@ public class PadInterfaceController extends BaseJsonController{
 		if(flag==0){
 			String returnStr = orderDetailService.saveOrderDetailList(order,toperationLog);
 			if(returnStr.equals(Constant.SUCCESSMSG)){
+				resultMap.put("result", "0");
+			}else{
+				resultMap.put("result", "1");
 			}
 			try{
 				String type = "12";
@@ -368,7 +372,8 @@ public class PadInterfaceController extends BaseJsonController{
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
-			return returnStr;
+			JSONObject object = JSONObject.fromObject(resultMap);
+			return object.toString();
 		}else if(flag==1){
 			return Constant.FAILUREMSG;
 		}else{
