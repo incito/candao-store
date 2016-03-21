@@ -50,6 +50,7 @@ import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TtellerCashDao;
+import com.candao.www.data.json.base.BaseJsonController;
 import com.candao.www.data.model.EmployeeUser;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TbMessageInstrument;
@@ -79,6 +80,7 @@ import com.candao.www.webroom.model.SqlData;
 import com.candao.www.webroom.model.Table;
 import com.candao.www.webroom.model.TableStatus;
 import com.candao.www.webroom.model.UrgeDish;
+import com.candao.www.webroom.service.AnimalService;
 import com.candao.www.webroom.service.CallWaiterService;
 import com.candao.www.webroom.service.ComboDishService;
 import com.candao.www.webroom.service.DataDictionaryService;
@@ -118,7 +120,7 @@ import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("/padinterface")
-public class PadInterfaceController {
+public class PadInterfaceController extends BaseJsonController{
 	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
 	
@@ -147,6 +149,17 @@ public class PadInterfaceController {
 		}
 	}
 
+	
+	//查询玩偶列表
+	@RequestMapping("/allanimals")
+	@ResponseBody
+	public String allanimals(){
+		
+			List<Map<String, Object>>  results= animalService.allanimals();
+			return JacksonJsonMapper.objectToJson(results);
+	}
+	
+	
 	/**
 	 * 菜品分类接口，全部页菜品数据获取
 	 * @author zhao
@@ -2299,6 +2312,8 @@ public class PadInterfaceController {
 	private CallWaiterService callService;
 	@Autowired
 	private TtellerCashDao tellerCashService;
+	@Autowired
+	private AnimalService animalService;
 	
 	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
