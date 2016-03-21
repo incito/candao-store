@@ -2185,21 +2185,23 @@ public class PadInterfaceController {
 	 * 获取品项销售明细的打印数据
 	 * @return
 	 */
-	@RequestMapping("/getItemSellDetail")
+	@RequestMapping("/getItemSellDetail.json")
 	@ResponseBody
-	public String getItemSellDetail(String falg){
-		Map<String, Object> timeMap = getTime(falg);
+	public String getItemSellDetail(String flag){
+		Map<String, Object> timeMap = getTime(flag);
 		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
 			resultMap.put("result", 0);
 			resultMap.put("mag","");
 			resultMap.put("data",result);
+			resultMap.put("time", timeMap);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), "");
 			resultMap.put("result", 1);
 			resultMap.put("mag","获取数据失败");
 			resultMap.put("data","");
+			resultMap.put("time", timeMap);
 			e.printStackTrace();
 		}
 		return JacksonJsonMapper.objectToJson(resultMap);
