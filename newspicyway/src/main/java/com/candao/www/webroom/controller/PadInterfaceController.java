@@ -2216,15 +2216,15 @@ public class PadInterfaceController {
 		Map<String, Object> map = new HashMap<>();
 		String startTime = null;
 		String endTime = null;
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		endTime = df.format(new Date());
+		
 		if(falg.equals("1")){  //今日
 			startTime = DateUtils.today() + " 00:00:00";
-			endTime = DateUtils.today() + " 23:59:59";
 		}else if(falg.equals("2")){  //本周
 			startTime = DateUtils.weekOfFirstDay() + " 00:00:00";
-			endTime = DateUtils.weekOfLastDay() + " 23:59:59";
 		}else if(falg.equals("3")){  //本月
 			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
-			endTime = DateUtils.monthOfLastDay() + " 23:59:59";
 		}else if(falg.equals("4")){   //上月
 			startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
 			endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";

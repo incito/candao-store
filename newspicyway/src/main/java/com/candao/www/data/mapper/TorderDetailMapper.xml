@@ -739,7 +739,7 @@
 	</update>
 	
 	<select id="getItemSellDetail" parameterType="map" resultType="java.util.HashMap">
-		select d.title as 'dishName', count(od.dishid) as 'dishCount', SUM(od.debitamount) as 'totlePrice'
+		select CONCAT(d.title,'(',od.dishunit,')') as 'dishName', SUM(od.dishnum) as 'dishCount', SUM(od.debitamount) as 'totlePrice'
 		from t_order_detail od, t_dish d 
 		where 1=1 
 		and od.dishid in (
@@ -752,6 +752,6 @@
 			and orderstatus = '3' 
 		)
 		and d.dishid = od.dishid 
-		GROUP BY od.dishid 
+		GROUP BY od.dishid , od.dishunit 
 	</select>
 </mapper>
