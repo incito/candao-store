@@ -779,8 +779,8 @@ public class OrderServiceImpl implements OrderService{
 			String masterOrderid = lastOrderid;
 			int index = lastOrderid.indexOf("-");
 			if (index > 0) {
-				masterOrderid = lastOrderid.substring(0, index - 1);
-				number = Integer.parseInt(lastOrderid.substring(index));
+				masterOrderid = lastOrderid.substring(0, index);
+				number = Integer.parseInt(lastOrderid.substring(index+1))+1;
 			}
 			String newOrderid = masterOrderid + "-" + number;
 			String currenttableid = (String) resultMap.get(0).get("tableid");
@@ -799,7 +799,7 @@ public class OrderServiceImpl implements OrderService{
 			order.setSpecialrequied((String) masterOrder.get("specialrequied"));
 			order.setUserid((String) masterOrder.get("userid"));
 			order.setWomanNum((Integer) masterOrder.get("womanNum"));
-			order.setBranchid((int) masterOrder.get("branchid"));
+			order.setBranchid(Integer.parseInt(PropertiesUtils.getValue("current_branch_id")));
 			order.setShiftid((int) masterOrder.get("shiftid"));
 			order.setAgeperiod((String) masterOrder.get("ageperiod"));
 			order.setMeid((String) masterOrder.get("meid"));
@@ -809,6 +809,7 @@ public class OrderServiceImpl implements OrderService{
 			TbTable tTable = new TbTable();
 			tTable.setTableid(currenttableid);
 			tTable.setOrderid(newOrderid);
+			tTable.setStatus(1);
 			tableService.updateStatus(tTable);
 
 			// 更新服务员订单数量

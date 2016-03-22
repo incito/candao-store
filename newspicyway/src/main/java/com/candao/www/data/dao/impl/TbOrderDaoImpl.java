@@ -12,6 +12,7 @@ import com.candao.common.dao.DaoSupport;
 import com.candao.common.page.Page;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.TorderDetail;
 import com.candao.www.webroom.model.TableStatus;
 
 /**
@@ -162,6 +163,12 @@ public class TbOrderDaoImpl implements TorderMapper {
 		parameter.put("orderid", orderid);
 		 
 		return dao.get(PREFIX + ".selectIsJZ",parameter);
+	}
+
+
+	@Override
+	public int settemp2New(List<TorderDetail> listall) {
+		return dao.insert(PREFIX + ".settemp2New", listall);
 	}
  
 }

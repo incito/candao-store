@@ -331,12 +331,13 @@ public class PadInterfaceController extends BaseJsonController{
 		jsonRecordService.insertJsonRecord(record);
 		Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
 		//咖啡模式-加菜时没有订单号，后台创建子订单
-		if(order.getOrderid() == null || order.getOrderid().isEmpty()){
+		if("".equals(order.getOrderid()) || order.getOrderid().isEmpty()){
 			try {
 				String orderId = orderService.createChildOrderid(order.getCurrenttableid());
 				order.setOrderid(orderId);
 				resultMap.put("orderId", orderId);
 			} catch (Exception e) {
+				System.out.println(e);
 				logger.error(e, "");
 				return Constant.FAILUREMSG;
 			}
@@ -694,6 +695,7 @@ public class PadInterfaceController extends BaseJsonController{
 		return dishService.getAllDishSet();
 	}
 
+	
 	/**
 	 *  结账
 	 */

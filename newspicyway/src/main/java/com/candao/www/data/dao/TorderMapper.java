@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.candao.common.page.Page;
 import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.TorderDetail;
 import com.candao.www.webroom.model.TableStatus;
 
 public interface TorderMapper {
@@ -71,6 +72,9 @@ public interface TorderMapper {
 	 * @return
 	 */
 	public int selectIsJZ(String orderid);
+
+	public int settemp2New(List<TorderDetail> listall);
+
 
  
 }

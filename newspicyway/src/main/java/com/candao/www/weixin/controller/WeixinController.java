@@ -94,6 +94,11 @@ public class WeixinController extends BaseJsonController {
 	
 	
 	
+	@RequestMapping(value = "/testprint", produces = { "application/json;charset=UTF-8" })
+	public void testprint(String orderid){
+		orderDetailService.printStatement(orderid);
+	}
+	
 	@RequestMapping(value = "/createurl", produces = { "application/json;charset=UTF-8" })
 	public Map<String, Object> createurl(HttpServletRequest request) {
 		
@@ -150,7 +155,7 @@ public class WeixinController extends BaseJsonController {
 	 * @param body
 	 * @param orderid
 	 * @param spbillCreateIp
-	 * @param totalFee
+	 * @param totalFeen
 	 * @return
 	 */
 	@SuppressWarnings("static-access")
@@ -337,7 +342,7 @@ public class WeixinController extends BaseJsonController {
 						+ "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
 			}
 			sendmessage2Android(isSuucess,wpr.getAttach());
-			sendmessage2Android2QT(isSuucess,wpr.getAttach());
+			//sendmessage2Android2QT(isSuucess,wpr.getAttach());
 			sendmessage2Handler(isSuucess, wpr.getAttach());
 			System.out.println("微信支付回调数据结束");
 	

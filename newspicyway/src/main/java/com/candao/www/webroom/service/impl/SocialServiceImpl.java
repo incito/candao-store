@@ -93,8 +93,8 @@ public class SocialServiceImpl implements SocialService {
 			map.put("currenttableid",currenttableid);
 			map.put("order_id", tbl.get("orderid"));
 			map.put("ageperiod",ageList);
-			map.put("womanNum",womanNum.toString());
-			map.put("mannum",mannum.toString());
+			map.put("womanNum",womanNum==null?"":womanNum.toString());
+			map.put("mannum",mannum==null?"":mannum.toString());
 			map.put("gift_num", gift.size());
 			map.put("gift", gift);
 			list.add(map);

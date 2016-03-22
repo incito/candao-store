@@ -199,7 +199,7 @@
 	   <where>
 	   		a.status != 5 and b.status =1 and a.areaid=b.areaid
 	     <if test="tableid != null and tableid != ''">
-	        a.tableid=#{tableid}
+	        and a.tableid=#{tableid}
 	     </if>
 	     <if test="position != null and position != ''">
 	        and a.position=#{position}

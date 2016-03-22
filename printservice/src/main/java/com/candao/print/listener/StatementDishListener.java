@@ -80,7 +80,7 @@ public class StatementDishListener {
 			writer.flush();// 
 			 */			
 			writer.write(StringUtils.bSubstring2("结账单号:" + object.getOrderNo(),
-					27)
+					29)
 					//+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
 					+ "\r\n"+"\r\n");
 

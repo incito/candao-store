@@ -437,6 +437,40 @@
  
   </select>
   
+<insert id="settemp2New" parameterType="java.util.ArrayList">
+     
+		insert into t_order_detail (orderdetailid,orderid, dishid, dishstatus,begintime, endtime, sperequire, dishnum,userName,orderprice,dishunit,orignalprice,pricetype,orderseq,relatedishid,dishtype,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype,ispot)
+		<foreach collection="list" item="item" index="index" separator=" union all ">
+		  select 
+		  			UUID(),
+		  		#{item.orderid,jdbcType=VARCHAR}, 
+		         #{item.dishid,jdbcType=VARCHAR}, 
+		         #{item.dishstatus,jdbcType=VARCHAR}, 
+               current_timestamp(), 
+               #{item.endtime,jdbcType=TIMESTAMP}, 
+               #{item.sperequire,jdbcType=VARCHAR}, 
+               #{item.dishnum,jdbcType=VARCHAR},
+               #{item.userName,jdbcType=VARCHAR},
+               #{item.orderprice,jdbcType=DECIMAL},
+                  #{item.dishunit,jdbcType=VARCHAR},
+               #{item.orignalprice,jdbcType=DECIMAL},
+                  #{item.pricetype,jdbcType=VARCHAR},
+                    #{item.orderseq,jdbcType=INTEGER},
+                 #{item.relatedishid,jdbcType=VARCHAR},
+                 #{item.dishtype,jdbcType=INTEGER},
+                  #{item.ordertype,jdbcType=INTEGER},
+			      #{item.parentkey,jdbcType=VARCHAR},
+			      #{item.superkey,jdbcType=VARCHAR},
+			      #{item.ismaster,jdbcType=INTEGER},
+			      #{item.primarykey,jdbcType=VARCHAR},
+			         #{item.isadddish,jdbcType=INTEGER},
+			          #{item.childdishtype,jdbcType=INTEGER},
+			          #{item.ispot,jdbcType=INTEGER}
+			          
+            from dual
+		</foreach>
+</insert>
+  
   <select   id="setOrderMember" parameterType="java.util.Map" statementType="CALLABLE"    >  
 	  {  
 	      call  p_setordermember(#{orderid,jdbcType=VARCHAR,mode=IN},#{pricetype,jdbcType=INTEGER,mode=IN})

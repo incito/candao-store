@@ -267,10 +267,10 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	  delmap.put("orderid", orderId);
 	  toperationLogService.deleteToperationLog(delmap);
 	 //桌子空閒
-	 TbTable tbTable = new TbTable();
-	 tbTable.setStatus(0);
-	 tbTable.setOrderid(orderId);
-	 tableService.updateSettleStatus(tbTable);
+	// TbTable tbTable = new TbTable();
+	 //tbTable.setStatus(0);
+	 //tbTable.setOrderid(orderId);
+	 //tableService.updateSettleStatus(tbTable);
 	 
 //	 TbTable tbTableOrderid = new TbTable();
 //	 tbTableOrderid.setTableid(String.valueOf(resultMap.get(0).get("tableid")));

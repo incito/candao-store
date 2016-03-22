@@ -79,7 +79,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			return Constant.FAILUREMSG;
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
-	     List<TorderDetail> listall=getallTorderDetail(orders.getRows());
+	     List<TorderDetail> listall=getallTorderDetail(orders.getRows(),orders.getOrderid());
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")))){
 			  return Constant.FAILUREMSG;
@@ -148,9 +148,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		 * 组合    组合里面的鱼和锅 1
 		 * 套餐 2     套餐里面单品4    组合中的鱼和锅3
 		 */
-		public List<TorderDetail> getallTorderDetail(List<TorderDetail> orderDetails){
+		public List<TorderDetail> getallTorderDetail(List<TorderDetail> orderDetails,String oldorderid){
 			 List<TorderDetail> listall=new ArrayList<TorderDetail>();
 			 for(TorderDetail t:orderDetails){
+				 t.setOrderid(oldorderid);
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
 				 String primarykey = t.getPrimarykey();
 				 TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
@@ -264,12 +265,13 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	     * 下单service
 	     */
  @Override 
-// @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
+ @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
  public String saveOrderDetailList(Order orders,ToperationLog toperationLog) {
 	 
-	  DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-	  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
-	  TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
+	  //DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+	 // def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
+	  //TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
+	  String oldorderid=orders.getOrderid();
 	try{
 //		object = status.createSavepoint();
 		String tableNo = orders.getCurrenttableid();
@@ -277,7 +279,11 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		params.put("tableNo", orders.getCurrenttableid());
 		TbTable table = tableService.findByTableNo(tableNo);
 		if(table!=null ){
-			orders.setOrderid(table.getOrderid());
+			/*if(table.getOrderid()==null){
+				orders.setOrderid(oldorderid);
+			}else{*/
+				orders.setOrderid(table.getOrderid());
+			//}
 		}else{
 			return Constant.FAILUREMSG;
 		}
@@ -287,7 +293,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			return Constant.SUCCESSMSG;
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
-	    List<TorderDetail> listall = getallTorderDetail(orders.getRows());
+		String orderid=orders.getOrderid();
+	    List<TorderDetail> listall = getallTorderDetail(orders.getRows(),oldorderid);
+	    orders.setOrderid(orderid);
 		if(listall == null || listall.size() == 0){
 			return Constant.FAILUREMSG;
 		}
@@ -306,16 +314,30 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			
 //			//执行存储过程，将订单详情临时表中的数据插入到t_order_detail
 //		 
-		   String result = "1";
-	       Map<String, Object> mapParam = new HashMap<String, Object>();
-	       mapParam.put("orderid", orders.getOrderid());
-	       mapParam.put("result", result);
-	       torderMapper.setOrderDish(mapParam);
-	       result = String.valueOf(mapParam.get("result"));
-	       
-	       if("1".equals(result)){
+			
+			  String result = "1";
+		       Map<String, Object> mapParam = new HashMap<String, Object>();
+		       mapParam.put("orderid", orders.getOrderid());
+		       mapParam.put("result", result);
+		       torderMapper.setOrderDish(mapParam);
+		       result = String.valueOf(mapParam.get("result"));
+		       
+			/*if(!orderid.contains("-")){
+				   String result = "1";
+			       Map<String, Object> mapParam = new HashMap<String, Object>();
+			       mapParam.put("orderid", orders.getOrderid());
+			       mapParam.put("result", result);
+			       torderMapper.setOrderDish(mapParam);
+			       result = String.valueOf(mapParam.get("result"));
+			}else{
+		       //强制执行
+		       int success1 =torderMapper.settemp2New(listall);
+		       System.out.println(success1);
+			}*/
+	       //
+	      /* if("1".equals(result)){
 	    	   return Constant.FAILUREMSG;
-	       } 
+	       } */
 //	       
 	       int flag = (detailList == null  || detailList.size() == 0 ?0:1);
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
@@ -325,15 +347,15 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	      // printweigth(listall,orders.getOrderid());
 			   	 //操作成功了，插入操作日记
 	        if(toperationLogService.save(toperationLog)){
-	    	  transactionManager.commit(status);
+	    	 // transactionManager.commit(status);
 		   	  return Constant.SUCCESSMSG;
 		   	}else{
-		     	transactionManager.rollback(status);
+		     	//transactionManager.rollback(status);
 		   		return Constant.FAILUREMSG;
 		   	}
 	 }catch(Exception ex){
 				ex.printStackTrace();
-				 transactionManager.rollback(status);
+				// transactionManager.rollback(status);
 			   	 return Constant.FAILUREMSG;
 			} 	
 	
@@ -350,7 +372,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				Map<String, Object> mapParam1 = new HashMap<String, Object>();
 			    mapParam1.put("orderid", orderid);
 				List<TorderDetail> detailList =   torderDetailMapper.find(mapParam1);   
-				List<TorderDetail> listall = getallTorderDetail(detailList);
+				List<TorderDetail> listall = getallTorderDetail(detailList,orderid);
 				TbTable table = tableService.findTableByOrder(orderid);
 				printOrderList( orderid,table.getTableid(), flag);
 				printweigth(listall,orderid);
@@ -1269,7 +1291,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
             				  map0.put("discardNum",urgeDish.getDishNum());
             				  map0.put("primarykey", urgeDish.getPrimarykey());
             				  map0.put("discardReason", discardReason);
-            				  printSingleDish(map0,printObj,1,null);
+            				 // printSingleDish(map0,printObj,1,null);
             				  
             				  
             				  PrintDish pd = new PrintDish();
@@ -1283,7 +1305,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 								  map0.put("printobjid", printObj.getId());
 								  map0.put("primarykey",urgeDish.getPrimarykey());
 								  map0.put("discardReason", discardReason);
-								  printMutilDish(map0,printObj,1,null);
+								//  printMutilDish(map0,printObj,1,null);
 								  
 								  PrintDish pd = new PrintDish();
 	            				  pd.setPrintobjid( printObj.getId());
@@ -1295,7 +1317,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 									  map0.put("printobjid", printObj.getId());
 									  map0.put("primarykey",orderDetail.getParentkey());
 									  map0.put("discardReason", discardReason);
-									  printMutilDish(map0,printObj,1,null);
+									 // printMutilDish(map0,printObj,1,null);
 									  
 									  PrintDish pd = new PrintDish();
 		            				  pd.setPrintobjid( printObj.getId());
@@ -1309,7 +1331,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			            				  map0.put("discardNum",urgeDish.getDishNum());
 			            				  map0.put("primarykey", urgeDish.getPrimarykey());
 			            				  map0.put("discardReason", discardReason);
-			            				  printSingleDish(map0,printObj,1,null);
+			            				 // printSingleDish(map0,printObj,1,null);
 			            				  
 			            				  PrintDish pd = new PrintDish();
 			            				  pd.setPrintobjid( printObj.getId());
@@ -1333,7 +1355,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				            				  map0.put("discardNum",urgeDish.getDishNum());
 				            				  map0.put("primarykey", urgeDish.getPrimarykey());
 				            				  map0.put("discardReason", discardReason);
-				            				  printSingleDish(map0,printObj,1,null);
+				            				//  printSingleDish(map0,printObj,1,null);
 				            				  
 				            				  PrintDish pd = new PrintDish();
 				            				  pd.setPrintobjid( printObj.getId());
@@ -1344,7 +1366,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 											  map0.put("printobjid", printObj.getId());
 											  map0.put("primarykey",orderDetail.getParentkey());
 											  map0.put("discardReason", discardReason);
-											  printMutilDish(map0,printObj,1,null);
+											  //printMutilDish(map0,printObj,1,null);
 											  
 											  PrintDish pd = new PrintDish();
 				            				  pd.setPrintobjid( printObj.getId());
@@ -1366,7 +1388,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	             				  map0.put("childdishtype","0" );
 	             				  map0.put("parentkey",urgeDish.getPrimarykey());
 	             				  map0.put("discardReason", discardReason);
-	             				  printSingleDish(map0,printObj,1,null);
+	             				 // printSingleDish(map0,printObj,1,null);
 	             				  
 	             				  //套餐中的鱼锅
 	            				  map0 = new HashMap<String, Object>();
@@ -1376,7 +1398,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	            				  map0.put("ismaster","1" );
 	            				  map0.put("discardReason", discardReason);
 	            				  map0.put("parentkey",urgeDish.getPrimarykey());
-	            				  printMutilDish(map0,printObj,1,null);
+	            				 // printMutilDish(map0,printObj,1,null);
 	            				  
 	            				  
 	            				  Map<String, Object> paramsDish = new HashMap<String, Object>();
@@ -1413,7 +1435,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("printobjid", printObj.getId());
 				  map0.put("dishtype", "0");
 				  map0.put("discardReason", discardReason);
-				  printSingleDish(map0,printObj,1,null);
+				 // printSingleDish(map0,printObj,1,null);
 				  
 			  //打印火锅
 				  map0   = new HashMap<String, Object>();
@@ -1421,7 +1443,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("dishtype", "1");
 				  map0.put("ismaster","1" );
 				  map0.put("discardReason", discardReason);
-				  printMutilDish(map0,printObj,1,null);
+				 // printMutilDish(map0,printObj,1,null);
 				  
 				//打印套餐   套餐中的单品
 				  map0 = new HashMap<String, Object>();
@@ -1429,7 +1451,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("dishtype", "2");
 				  map0.put("childdishtype","0" );
 				  map0.put("discardReason", discardReason);
-				  printSingleDish(map0,printObj,1,null);
+				//  printSingleDish(map0,printObj,1,null);
 				
 				  //打印套餐   套餐中的火锅
 				  map0 = new HashMap<String, Object>();
@@ -1438,7 +1460,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("childdishtype","1" );
 				  map0.put("ismaster","1" );
 				  map0.put("discardReason", discardReason);
-				  printMutilDish(map0,printObj,1,null);
+				//  printMutilDish(map0,printObj,1,null);
  
 				  torderDetailMapper.insertDiscardDishOnce(orderId);
 				  TorderDetail orderDetail = new TorderDetail();
