@@ -46,7 +46,7 @@
 		FROM t_p_preferential_activity tpa
 	</sql>
 	<sql id="base_condition">
-         (`status` is null or status !='1')
+        ( `status` is null or status !='1')
 		<if test="id != null">
 			AND tpa.id = #{id}
 		</if>
@@ -62,8 +62,11 @@
 		<if test="fullName != null and fullName != ''">
 			and (tpa.name like '%${fullName}%' or tpa.name_first_letter like '%${fullName}%')
 		</if>
-		<if test="type != null">
-			AND tpa.type = #{type} 
+		<if test="type != null and type != '06'.toString()">
+		        AND tpa.type = #{type}
+		</if>
+		<if  test="type == '06'.toString()">
+		     AND tpa.type not in(01,02,03,04,05,06,0601,0602)
 		</if>
 		<if test="subType != null">
 			AND tpa.sub_type = #{subType} 
@@ -173,7 +176,6 @@
 				)
 		)	AS newtpa 
 		<where>
-		(newtpa.`status` is null or newtpa.status !='1')
 			<if test="id != null">
 				AND newtpa.id = #{id}
 			</if>
@@ -189,9 +191,12 @@
 			<if test="fullName != null and fullName != ''">
 				and (newtpa.name like '%${fullName}%' or newtpa.name_first_letter like '%${fullName}%')
 			</if>
-			<if test="type != null">
-				AND newtpa.type = #{type} 
+			<if test="type != null and type != '06'.toString()">
+                AND newtpa.type = #{type} 
 			</if>
+			<if  test="type == '06'.toString()">
+		        AND newtpa.type not in(01,02,03,04,05,06,0601,0602)
+		    </if>
 			<if test="subType != null">
 				AND newtpa.sub_type = #{subType} 
 			</if>
@@ -693,6 +698,90 @@
 				</if>
 				 ORDER BY code 
 			</when>
+			<!-- 其他优惠 -->
+			<when  test="type=='00'.toString()"> 
+				SELECT 
+				det.id,
+				det.preferential,
+				det.dish,
+				det.dish_title,
+				det.price,
+				det.sequence,
+				det.unit,
+				det.unitflag,
+				det.discount,
+				det.amount,
+				det.bill_amount,
+				det.free_reason,
+				det.company_name,
+				det.company_first_letter,
+				det.can_credit, 
+				tpa.code,
+				tpa.name,
+				tpa.name_first_letter,
+				tpa.type,
+				tpa.type_name,
+				tpa.subtable_name,
+				tpa.sub_type,
+				tpa.sub_type_name,
+				tpa.color,
+				tpa.apply_all,
+				tpa.activity_introduction,
+				tpa.use_notice,
+				tpa.starttime,
+				tpa.endtime 
+			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
+			WHERE
+			  det.preferential = tpa.id 
+			  and (tpa.`status` is null or tpa.status !='1')
+			  AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
+		      and tpa.apply_all=1 
+			<if test=" branchid !=null">
+				UNION
+				SELECT 
+						det.id,
+						det.preferential,
+						det.dish,
+						det.dish_title,
+						det.price,
+						det.sequence,
+						det.unit,
+						det.unitflag,
+						det.discount,
+						det.amount,
+						det.bill_amount,
+						det.free_reason,
+						det.company_name,
+						det.company_first_letter,
+						det.can_credit, 
+						tpa.code,
+						tpa.name,
+						tpa.name_first_letter,
+						tpa.type,
+						tpa.type_name,
+						tpa.subtable_name,
+						tpa.sub_type,
+						tpa.sub_type_name,
+						tpa.color,
+						tpa.apply_all,
+						tpa.activity_introduction,
+						tpa.use_notice,
+						tpa.starttime,
+						tpa.endtime 
+				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
+				WHERE det.preferential = tpa.id 
+				and
+				(tpa.`status` is null or tpa.status !='1')
+						<if test=" type !=null">
+							AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
+						</if>
+						and tpa.apply_all=0
+						and exists (
+							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
+						) 
+				ORDER BY  preferential , sequence 
+			</if> 
+			</when>
 			<otherwise>
 				SELECT 
 				det.id,
@@ -725,12 +814,13 @@
 				tpa.starttime,
 				tpa.endtime 
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
-			WHERE 1=1 and
-			(tpa.`status` is null or tpa.status !='1')
+			WHERE 1=1 
 				<if test=" type !=null">
 					AND tpa.type = #{type}
 				</if>
-				
+				<if test=" type == '08'.toString()">
+					and det.free_reason not in('2')
+				</if>
 				and tpa.apply_all=1 
 				
 				<if test="preferential != null">
@@ -772,11 +862,12 @@
 						tpa.endtime 
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE 1=1 
-				and
-				(tpa.`status` is null or tpa.status !='1')
 						AND det.preferential = tpa.id 
 						<if test=" type !=null">
 							AND tpa.type = #{type}
+						</if>
+						<if test=" type == '08'.toString()">
+							and det.free_reason not in('2')
 						</if>
 						<if test="preferential != null">
 							and det.preferential=#{preferential}
@@ -829,4 +920,54 @@
 	        WHERE id = #{id,jdbcType=VARCHAR}
 	    </set> 
 	</update>
+	
+	<update id="updatePreferenStatus" parameterType="java.lang.String">
+	    update t_p_preferential_activity 
+	    <set>
+	            status = 1
+	        WHERE endtime &lt;= #{time,jdbcType=VARCHAR} and status  &lt;&gt; 1
+	    </set> 
+	</update>
+	
+	<!-- 查询优惠详情表 -->
+	<select id="queryPreferentialDetailById" resultType="java.lang.String" parameterType="java.lang.String">
+	    select id from t_p_preferential_detail where preferential = #{id}
+	</select>
+	
+	<!-- 删除优惠特价菜品 -->
+	<delete id="deleteNotPreferentilDetail" parameterType="map">
+	    delete from t_p_preferential_detail where dish = #{dish}
+	</delete>
+	
+	<!-- 修改优惠特价菜品 -->
+	<update id="updatePreferentilDetailByDish" parameterType="com.candao.www.data.model.TbPreferentialActivitySpecialStamp">
+	    update t_p_preferential_detail set dish_title = #{t.dish_title},price = #{t.price},sequence = #{t.sequence},unit = #{t.unit},unitflag = #{t.unitflag}
+	    where dish = #{t.dish} and preferential = #{t.preferential}
+	</update>
+	
+	<!-- 根据优惠券ID，获取该优惠券对应的  特价券菜品列表信息 -->
+	<select id="findPreferentialSpecialStampsDish" parameterType="map" resultType="String">
+		SELECT dish FROM t_p_preferential_detail
+		WHERE preferential=#{preferential_id} order by sequence asc
+	</select>
+	
+	<update id="updatePreferenGroupon" parameterType="com.candao.www.data.model.TbGroupon">
+	    update t_p_preferential_detail set bill_amount=#{t.bill_amount} ,amount=#{t.token_amount}
+	    where id=#{t.id}
+	</update>
+	<!-- 查询所有的挂账单位 -->
+	<select id="findCooperationUnit" parameterType="map" resultType="map">		
+	select tpa.name,tpa.name_first_letter,tpd.preferential  from  t_p_preferential_activity tpa,t_p_preferential_detail tpd where tpa.id =  tpd.preferential 
+	and tpa.apply_all = 1
+	and tpa.type='08'
+	and tpd.can_credit = 1
+	UNION
+	select tpa.name,tpa.name_first_letter,tpd.preferential from  t_p_preferential_activity tpa,t_p_preferential_detail tpd where tpa.id =  tpd.preferential 
+	and tpa.type='08'
+	and tpd.can_credit = 1
+	and tpa.apply_all = 0
+	and exists (
+				  select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
+			  ) 
+	</select>
 </mapper>
