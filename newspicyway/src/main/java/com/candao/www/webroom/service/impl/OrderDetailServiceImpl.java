@@ -279,11 +279,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		params.put("tableNo", orders.getCurrenttableid());
 		TbTable table = tableService.findByTableNo(tableNo);
 		if(table!=null ){
-			/*if(table.getOrderid()==null){
-				orders.setOrderid(oldorderid);
-			}else{*/
 				orders.setOrderid(table.getOrderid());
-			//}
 		}else{
 			return Constant.FAILUREMSG;
 		}
@@ -321,7 +317,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		       mapParam.put("result", result);
 		       torderMapper.setOrderDish(mapParam);
 		       result = String.valueOf(mapParam.get("result"));
-		       
+		        if("1".equals(result)){
+			    	   return Constant.FAILUREMSG;
+			       } 
 			/*if(!orderid.contains("-")){
 				   String result = "1";
 			       Map<String, Object> mapParam = new HashMap<String, Object>();
@@ -335,9 +333,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		       System.out.println(success1);
 			}*/
 	       //
-	      /* if("1".equals(result)){
-	    	   return Constant.FAILUREMSG;
-	       } */
+	     
 //	       
 	       int flag = (detailList == null  || detailList.size() == 0 ?0:1);
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
