@@ -48,7 +48,7 @@
 							case "5":
 								return "信用卡优惠";
 							case "6":
-								return "其他优惠";
+								return "更多优惠";
 						}
 					}
 				},{
@@ -326,7 +326,7 @@
 			});
 			
 			$('#addCouponDialog6').dialog({   
-			    title: '优惠管理-其他优惠(*号部分为必填项)',   
+			    title: '优惠管理-更多优惠(*号部分为必填项)',   
 			    width:750,   
 			    height: 550,   
 			    closed: true,   
@@ -1142,7 +1142,7 @@
 					<td id="3" align="center" class="dishTypeUnSelected" width="15%" onclick="gethiddenId('3')">储值优惠</td>
 					<td id="4" align="center" class="dishTypeUnSelected" width="15%" onclick="gethiddenId('4')">团购优惠</td>
 					<td id="5" align="center" class="dishTypeUnSelected" width="15%" onclick="gethiddenId('5')">信用卡优惠</td>
-					<td id="6" align="center" class="dishTypeUnSelected" width="15%" onclick="gethiddenId('6')">其他优惠</td>
+					<td id="6" align="center" class="dishTypeUnSelected" width="15%" onclick="gethiddenId('6')">更多优惠</td>
 				</tr>
 			</table>
 		</div>		

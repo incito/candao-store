@@ -742,15 +742,19 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/debitamout")
 	@ResponseBody
-	public String debitamout(@RequestBody String orderId){
-		@SuppressWarnings({"unchecked" })
-		Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
-		String result =  orderSettleService.calDebitAmount(map.get("orderNo"));
-		if("0".equals(result)){
-			return Constant.SUCCESSMSG;
-		}else {
-			return Constant.FAILUREMSG;
-		}
+	public String debitamout(@RequestBody final String orderId){
+		new Thread(new Runnable(){
+			public void run(){
+				@SuppressWarnings({"unchecked" })
+				Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
+				try {
+					orderSettleService.calDebitAmount(map.get("orderNo"));
+				} catch (Exception e) {
+					logger.error("计算实收失败，订单号：" + orderId, e, "");
+				}
+			}
+		}).start();
+		return Constant.SUCCESSMSG;
 	}
 	
 
@@ -1164,6 +1168,26 @@ public class PadInterfaceController {
 			List<Map<String,Object>> l= this.preferentialActivityService.findCouponsByType4Pad(typeid);
 			mav.addObject("list", l);
 		}
+		return mav;
+	}
+	
+	/**
+	 * 查询所有的可挂账的合作单位
+	 *
+	 */
+	@RequestMapping(value="/getCooperationUnit",method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getCooperationUnit(@RequestBody String body){
+		/*@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		ModelAndView mav = new ModelAndView();
+		String typeid=(String) params.get("typeid"); //优惠分类
+		if( !StringUtils.isBlank(typeid)){*/
+		    ModelAndView mav = new ModelAndView();
+		    Map<String, Object> params = new HashMap<String, Object>();
+			List<Map<String,Object>> l= this.preferentialActivityService.findCooperationUnit(params);
+			mav.addObject("list", l);
+		//}
 		return mav;
 	}
 

@@ -247,7 +247,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			shopMap.put(s.getBranchid(), s);
 		}
 		
-		//2.先保存优惠券。因为其他优惠菜品与优惠门店需要使用它的主键
+		//2.先保存优惠券。因为更多优惠菜品与优惠门店需要使用它的主键
 		TbPreferentialActivity activity= specialStampVO.getActivity();
 		add(activity, Constant.CouponType.SPECIAL_TICKET);
 		
@@ -496,7 +496,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			shopMap.put(s.getBranchid(), s);
 		}
 		
-		//2.先保存优惠券。因为其他优惠菜品与优惠门店需要使用它的主键
+		//2.先保存优惠券。因为更多优惠菜品与优惠门店需要使用它的主键
 		TbPreferentialActivity activity= groupon.getActivity();
 		if(!add(activity, Constant.CouponType.GROUPON)){
       return false;
@@ -550,7 +550,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			shopMap.put(s.getBranchid(), s);
 		}
 		
-		//2.先保存优惠券。因为其他优惠菜品与优惠门店需要使用它的主键
+		//2.先保存优惠券。因为更多优惠菜品与优惠门店需要使用它的主键
 		TbPreferentialActivity activity= groupon.getActivity();
 //		activity.setCode( oldActivity.getCode() );
 //	    if(activity.getName() != null){ 
@@ -945,7 +945,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		if( null != branchInfoMap ){
 			branchid=(String) branchInfoMap.get("branchid");
 		}
-		//在SQL 中处理 不同券所使用的不同SQL
+		/*//在SQL 中处理 不同券所使用的不同SQL
 		if(Constant.CouponType.HANDFREE.toString().equals( typeid.trim() ) 
 				|| Constant.CouponType.INNERFREE.toString().equals( typeid.trim() ) ){  //手工优免 或者 //内部优惠
 			Map params=new HashMap();
@@ -962,7 +962,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 				
 				list=filterValidCoupon(details);
 			}
-		}else{//其他优惠券 获取的信息由t_p_preferential_activity 和t_p_preferential_detail 表的信息共同组成。其中key:id使用 detail表的内容
+		}else{*///更多优惠券 获取的信息由t_p_preferential_activity 和t_p_preferential_detail 表的信息共同组成。其中key:id使用 detail表的内容
 			Map params=new HashMap();
 			params.put("type", typeid);
 			params.put("branchid", branchid);
@@ -970,16 +970,28 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			
 			list=filterValidCoupon(activitys);
 			
-		}
+		/*}*/
 		
 		return list;
 	}
+	 /**
+	  * 查询所有的可挂账的合作单位
+	  *
+    */
+	@Override
+	public List<Map<String , Object>> findCooperationUnit(Map params){
+		List<Map<String, Object>> CooperationUnitList= this.tbPreferentialActivityDao.findCooperationUnit(params);
+		return CooperationUnitList;
+	}
+	
 
 	@Override
 	public OperPreferentialResult updateOrderDetailWithPreferential(String type,String sub_type,String orderid,
 			String preferentialid , String disrate,String preferentialAmt) {
 		OperPreferentialResult result =new OperPreferentialResult();
 		String branchid=PropertiesUtils.getValue("current_branch_id");
+		try {
+    
 		//默认设置为1，代表成功，每次认为操作失败后，设置为0
 		result.setResult(1);
 		BigDecimal bd = new BigDecimal(preferentialAmt); 
@@ -1043,7 +1055,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					result.setAmount(amount.setScale(2, RoundingMode.HALF_UP));
 					result.setResult(1);
 					
-			}else if(  Constant.CouponType.DISCOUNT_TICKET.toString().equals( type )  ){ //折扣券  对每个符合的菜品，都采用对应折扣计算
+			}else if(  Constant.CouponType.DISCOUNT_TICKET.toString().equals( type ) ||
+			    Constant.CouponType.ONLINEPAY_TICKET.toString().equals( type )){ //折扣券  对每个符合的菜品，都采用对应折扣计算
 				 	TbPreferentialActivity activity = this.tbPreferentialActivityDao.get(preferentialid);
 					BigDecimal amount= new BigDecimal(0); //最终优惠金额
 					
@@ -1121,19 +1134,19 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						}
 					}
 					//System.out.println("map:" + JacksonJsonMapper.objectToJson( discountDishList ));
-//					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
-					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+//					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
 					result.setAmount(amount.setScale(2,RoundingMode.HALF_UP));
 					result.setResult(1);
 			}else{  //type不是特价券和折扣券的时候，判断一下是否是 手工优免或者内部优免
 				//手工优免
-				if( Constant.CouponType.HANDFREE.toString().equals( sub_type )){
+				if( Constant.CouponType.HANDFREE.toString().equals( type )){
 					BigDecimal amount= new BigDecimal(0); //最终优惠金额
 					//1.获取手工优免对象。 当是 手工优惠或者内部优惠的时候，这里的 preferentialid代表是详细表的id
 					Map detail_params=new HashMap();
-					detail_params.put("id", preferentialid);
+					detail_params.put("preferential", preferentialid);
 					detail_params.put("type", sub_type);//获取数据的 mybatis中使用
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					if( null==detailList || detailList.size()<1){  //如果没有手工优免对应的优惠记录，则返回，并提示
@@ -1192,12 +1205,12 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					}
 					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
-//					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
-					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+//					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					result.setAmount(amount.setScale(2, RoundingMode.HALF_UP));
 					result.setResult(1);
 					
-				}else if(Constant.CouponType.INNERFREE.toString().equals( sub_type)){// 内部优免
+				}else if(Constant.CouponType.INNERFREE.toString().equals( type)){// 内部优免
 					BigDecimal amount= new BigDecimal(0); //最终优惠金额
 					BigDecimal discount=null; //内部优免的折扣价格
 					List< Map<String,Object> > discountDishList = new ArrayList(0); //参与优惠的菜品列表。用于更新数据表
@@ -1205,7 +1218,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					//1.获取内部优惠的详细内容
 					//这里的 preferentialid代表是详细表的id
 					Map detail_params=new HashMap();
-					detail_params.put("id", preferentialid);
+					detail_params.put("preferential", preferentialid);
 					detail_params.put("type", sub_type);//获取数据的 mybatis中使用
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					if( null==detailList || detailList.size()<1){  //如果没有手工优免对应的优惠记录，则返回，并提示
@@ -1231,7 +1244,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 							tmpMap=new HashMap(0);
 							//判断价格，如果菜品价格存在null的问题，则返回错误信息
 							if( null != d.getOrderprice()  ){
-								orignalprice = d.getOrderprice().multiply( discount.divide( new BigDecimal(10))); //设置优惠后的金额
+							  BigDecimal pr = discount.divide( new BigDecimal(10));
+								orignalprice = d.getOrderprice().multiply(pr); //设置优惠后的金额
 								
 								//如果此菜品是多份，则计算多份总的优惠价格
 								BigDecimal numOfDish= new BigDecimal("1"); 
@@ -1253,8 +1267,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					}
 					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
-//					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
-					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+//					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					result.setAmount(amount.setScale(2, RoundingMode.HALF_UP));
 					result.setResult(1);
 					 
@@ -1268,7 +1282,10 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			}
 							
 		}
-		
+	  
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 		return result;
 	}
 
@@ -1382,5 +1399,4 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		
 		return tbPreferentialActivityDao.page(params, current, pagesize);
 	}
-  
 }

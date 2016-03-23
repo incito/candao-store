@@ -140,8 +140,8 @@
 		<div class="ky-content preferential-content">
 			<p class="preferential-class">
 				<img src="../images/preferential-type6.png"/>
-				<span class="preferential-name otherCoupon-name">其他优惠 </span>
-				<span class="preferential-desc">提供手工优免，内部优免等其他优惠（例：客诉8折）</span>
+				<span class="preferential-name otherCoupon-name">更多优惠 </span>
+				<span class="preferential-desc">为顾客提供更为灵活的优惠方式（例：赠送菜品、灵活优免等）</span>
 			<p>
 			<ul class="nav-preferential other-preferential " id="nav-preferential-other">
 				<li class="active" id="other-preferentail-type1">
