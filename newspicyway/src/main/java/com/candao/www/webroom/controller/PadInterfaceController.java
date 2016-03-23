@@ -154,9 +154,19 @@ public class PadInterfaceController extends BaseJsonController{
 	@RequestMapping("/allanimals")
 	@ResponseBody
 	public String allanimals(){
-		
+		Map<String, Object>  map=new HashMap<>();	
+			try{
+			map.put("result", 0);
 			List<Map<String, Object>>  results= animalService.allanimals();
-			return JacksonJsonMapper.objectToJson(results);
+			map.put("data", results);
+			return JacksonJsonMapper.objectToJson(map);
+			}catch(Exception e){
+				map.put("result", 1);
+				map.put("msg", "出现异常了");
+				map.put("data", null);
+				return JacksonJsonMapper.objectToJson(map);
+			}
+			
 	}
 	
 	
