@@ -355,7 +355,6 @@ DROP TABLE IF EXISTS t_basicdata;
 CREATE TABLE t_basicdata (
   id VARCHAR(50) NOT NULL COMMENT '主键',
   itemid VARCHAR(50) NOT NULL COMMENT '编号',
-  --itemDesc VARCHAR(50) NOT NULL COMMENT '名称',
   itemDesc VARCHAR(200) NOT NULL COMMENT '名称',
   isShow TINYINT(4) DEFAULT NULL,
   itemSort INT(11) DEFAULT NULL COMMENT '排序',
@@ -676,10 +675,8 @@ CREATE TABLE t_dish (
   dishNo VARCHAR(50) DEFAULT NULL,
   columnId VARCHAR(500) DEFAULT NULL,
   userId VARCHAR(50) DEFAULT NULL,
-  --title VARCHAR(50) DEFAULT NULL,
   title varchar(300) DEFAULT NULL COMMENT '菜品名称',
   label VARCHAR(50) DEFAULT NULL,
-  --introduction VARCHAR(500) DEFAULT NULL,
   introduction varchar(800) DEFAULT NULL COMMENT '菜品简介',
   `source` VARCHAR(50) DEFAULT NULL,
   author VARCHAR(50) DEFAULT NULL,
@@ -698,7 +695,7 @@ CREATE TABLE t_dish (
   price VARCHAR(100) DEFAULT NULL,
   level VARCHAR(50) DEFAULT NULL,
   printer VARCHAR(50) DEFAULT NULL,
-  unit VARCHAR(100) DEFAULT NULL,
+  unit VARCHAR(300) DEFAULT NULL COMMENT '菜品单位',
   abbrdesc VARCHAR(50) DEFAULT NULL,
   dishtype INT(11) DEFAULT NULL,
   orderNum INT(11) DEFAULT NULL,
@@ -821,7 +818,6 @@ DROP TABLE IF EXISTS t_dish_unit;
 CREATE TABLE t_dish_unit (
   id VARCHAR(50) NOT NULL COMMENT '主键',
   dishid VARCHAR(50) DEFAULT NULL,
-  --unit VARCHAR(50) DEFAULT NULL,
   unit varchar(100) DEFAULT NULL COMMENT '菜品单位',
   price DECIMAL(10, 2) DEFAULT NULL,
   vipprice DECIMAL(10, 2) DEFAULT NULL,
@@ -907,7 +903,7 @@ CREATE TABLE t_group_detail (
   insertuserid VARCHAR(50) DEFAULT NULL COMMENT '插入人员',
   ordernum INT(10) DEFAULT NULL COMMENT '排序字段',
   status INT(3) DEFAULT NULL COMMENT '状态 0 必选 1 可选',
-  dishunitid VARCHAR(50) DEFAULT NULL COMMENT '菜品计量单位',
+  dishunitid VARCHAR(100) DEFAULT NULL COMMENT '菜品计量单位',
   dishnum INT(11) DEFAULT NULL COMMENT '数量',
   dishid VARCHAR(50) DEFAULT NULL COMMENT '套餐的id',
   dishtype INT(4) DEFAULT NULL COMMENT '0单品 1火锅 2套餐',
@@ -994,8 +990,8 @@ CREATE TABLE t_json_record (
 )
 ENGINE = INNODB
 AUTO_INCREMENT = 1545
-CHARACTER SET latin1
-COLLATE latin1_swedish_ci;
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
 
 --
 -- Definition for table t_menu
@@ -1274,7 +1270,7 @@ CREATE TABLE t_order_detail (
   fishcode VARCHAR(50) DEFAULT NULL COMMENT '使用鱼券',
   dishtype INT(11) DEFAULT 0 COMMENT '0 单品 1 火锅 2 套餐',
   status INT(11) DEFAULT 0,
-  dishunit VARCHAR(50) DEFAULT NULL,
+  dishunit VARCHAR(100) DEFAULT NULL COMMENT '菜品单位',
   payamount DECIMAL(10, 2) DEFAULT NULL,
   predisamount DECIMAL(10, 2) DEFAULT NULL,
   couponid VARCHAR(50) DEFAULT NULL,
@@ -1326,7 +1322,7 @@ CREATE TABLE t_order_detail_discard (
   fishcode VARCHAR(50) DEFAULT NULL COMMENT '使用鱼券',
   dishtype INT(11) DEFAULT 0 COMMENT '0 单品 1 火锅 2 套餐',
   status INT(11) DEFAULT 0,
-  dishunit VARCHAR(50) DEFAULT NULL,
+  dishunit VARCHAR(100) DEFAULT NULL COMMENT '菜品单位',
   payamount DECIMAL(10, 2) DEFAULT NULL,
   predisamount DECIMAL(10, 2) DEFAULT NULL,
   couponid VARCHAR(50) DEFAULT NULL,
@@ -1376,7 +1372,7 @@ CREATE TABLE t_order_detail_history (
   fishcode varchar(50) DEFAULT NULL COMMENT '使用鱼券',
   dishtype int(11) DEFAULT '0' COMMENT '0 单品 1 火锅 2 套餐',
   status int(11) DEFAULT '0',
-  dishunit varchar(50) DEFAULT NULL,
+  dishunit varchar(100) DEFAULT NULL COMMENT '菜品单位',
   payamount decimal(10,2) DEFAULT NULL,
   predisamount decimal(10,2) DEFAULT NULL,
   couponid varchar(50) DEFAULT NULL,
@@ -1424,7 +1420,7 @@ CREATE TABLE t_order_detail_temp (
   fishcode VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '使用鱼券',
   dishtype INT(11) UNSIGNED ZEROFILL DEFAULT 00000000000 COMMENT '下单类型 0 正常 1 赠送',
   status INT(11) DEFAULT 0,
-  dishunit VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  dishunit VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '菜品单位',
   payamount DECIMAL(10, 2) DEFAULT NULL,
   predisamount DECIMAL(10, 2) DEFAULT NULL,
   couponid VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
@@ -1451,8 +1447,8 @@ CREATE TABLE t_order_detail_temp (
 ENGINE = INNODB
 AUTO_INCREMENT = 2628
 AVG_ROW_LENGTH = 744
-CHARACTER SET latin1
-COLLATE latin1_swedish_ci;
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
 
 
 
@@ -1610,11 +1606,11 @@ CREATE TABLE t_p_no_discount_dish (
   id VARCHAR(32) NOT NULL,
   discount_ticket VARCHAR(32) NOT NULL COMMENT '折扣券id',
   dish VARCHAR(50) NOT NULL COMMENT '菜品id',
-  dish_title VARCHAR(50) DEFAULT NULL COMMENT '菜品名',
-  unit VARCHAR(20) DEFAULT NULL COMMENT '单位（大份/小份）',
+  dish_title VARCHAR(300) DEFAULT NULL COMMENT '菜品名',
+  unit VARCHAR(100) DEFAULT NULL COMMENT '单位（大份/小份）',
   unitflag TINYINT(1) DEFAULT 1 COMMENT '是否多计量单位菜品。0有多计量   1没有多计量',
   itemtype VARCHAR(50) DEFAULT NULL COMMENT '菜品分类',
-  itemdesc VARCHAR(30) DEFAULT NULL COMMENT '菜品分类名',
+  itemdesc VARCHAR(200) DEFAULT NULL COMMENT '菜品分类名',
   item_select TINYINT(1) DEFAULT NULL COMMENT '是否选择全类',
   PRIMARY KEY (id)
 )
@@ -1679,10 +1675,10 @@ CREATE TABLE t_p_preferential_detail (
   id VARCHAR(40) NOT NULL,
   preferential VARCHAR(32) DEFAULT NULL COMMENT '优惠券主键',
   dish VARCHAR(50) DEFAULT NULL COMMENT '特价菜品id',
-  dish_title VARCHAR(50) DEFAULT NULL COMMENT '特价菜品名称',
+  dish_title VARCHAR(300) DEFAULT NULL COMMENT '特价菜品名称',
   price DECIMAL(10, 4) DEFAULT NULL COMMENT '特价菜品价格',
   sequence INT(11) DEFAULT NULL COMMENT '序号',
-  unit VARCHAR(20) DEFAULT NULL COMMENT '特价菜品计量单位',
+  unit VARCHAR(100) DEFAULT NULL COMMENT '特价菜品计量单位',
   unitflag TINYINT(1) DEFAULT 1 COMMENT '是否多计量单位菜品。0有多计量   1没有多计量',
   discount DECIMAL(6, 4) DEFAULT NULL COMMENT '折扣（折扣券和内部优免）',
   amount DECIMAL(10, 4) DEFAULT NULL COMMENT '券面金额（代金券）、抵用金额（团购券）',
@@ -1794,7 +1790,7 @@ DROP TABLE IF EXISTS t_printdish;
 CREATE TABLE t_printdish (
   printdishid VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   printobjid VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  dishname VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  dishname VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '菜品名称',
   dishnum VARCHAR(10) DEFAULT NULL,
   dishprice DECIMAL(10, 2) DEFAULT NULL,
   totalamount DECIMAL(10, 2) DEFAULT NULL,
@@ -1802,7 +1798,7 @@ CREATE TABLE t_printdish (
   sperequire VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   tableNomsg VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   maxDishCount INT(11) DEFAULT NULL,
-  dishUnit VARCHAR(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  dishUnit VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '菜品单位',
   printipaddress VARCHAR(100) DEFAULT NULL,
   printport VARCHAR(10) DEFAULT NULL,
   printnum INT(5) DEFAULT NULL,
@@ -1824,8 +1820,8 @@ CREATE TABLE t_printdish (
   PRIMARY KEY (printdishid)
 )
 ENGINE = INNODB
-CHARACTER SET latin1
-COLLATE latin1_swedish_ci;
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
 
 --
 -- Definition for table t_printer
@@ -1905,8 +1901,8 @@ CREATE TABLE t_printobj (
   PRIMARY KEY (id)
 )
 ENGINE = INNODB
-CHARACTER SET latin1
-COLLATE latin1_swedish_ci;
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
 
 --
 -- Definition for table t_resource
@@ -2359,11 +2355,8 @@ CREATE TABLE t_template_dishunit (
   id VARCHAR(50) NOT NULL,
   dishid VARCHAR(50) DEFAULT NULL COMMENT '菜品id',
   menuid VARCHAR(50) DEFAULT NULL COMMENT '菜谱ID',
-  --dishname VARCHAR(50) DEFAULT NULL COMMENT '菜品名称',
   dishname varchar(300) DEFAULT NULL COMMENT '菜品名称',
-  --dishintroduction VARCHAR(500) DEFAULT NULL COMMENT '菜品介绍',
   dishintroduction varchar(800) DEFAULT NULL COMMENT '菜品介绍',
-  --unit VARCHAR(50) DEFAULT NULL COMMENT '单位汉字',
   unit varchar(100) DEFAULT NULL COMMENT '菜品单位',
   price DECIMAL(10, 2) DEFAULT NULL COMMENT '价格',
   vipprice DECIMAL(10, 2) DEFAULT NULL COMMENT '会员价',
