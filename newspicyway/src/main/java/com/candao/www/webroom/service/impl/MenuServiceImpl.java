@@ -413,7 +413,7 @@ public class MenuServiceImpl implements MenuService {
 			dinnerware.put("id", listdinnerware.get(0).get("id"));
 			dinnerware.put("price", listdinnerware.get(0).get("price"));
 			dinnerware.put("vipprice", listdinnerware.get(0).get("member_price"));
-			dinnerware.put("status", listdinnerware.get(0).get("charges_status"));
+			dinnerware.put("status", listdinnerware.get(0).get("chargesstatus"));
 		}
 		menu.put("dinnerware", dinnerware);
 		menu.put("imgserver", Constant.FILEURL_PREFIX);
