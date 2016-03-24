@@ -67,11 +67,16 @@ public class PreferentialActivityController {
   public ModelAndView page(@RequestParam Map<String, Object> params, int page, int rows) {
    // Page<Map<String, Object>> pageMap = preferentialActivityService.page(params, page, rows);
 	User currentUser=SessionUtils.getCurrentUser();
-	Page<Map<String, Object>> pageMap = preferentialActivityService.pageForBranchs(currentUser, params, page, rows);
-    ModelAndView mav = new ModelAndView();
-    mav.addObject("page", pageMap);
+	ModelAndView mav = new ModelAndView();
+	try {
+		Page<Map<String, Object>> pageMap = preferentialActivityService.pageForBranchs(currentUser, params, page, rows);
+		mav.addObject("page", pageMap);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
     return mav;
   }
+
   
   @RequestMapping("")
   public ModelAndView index(){

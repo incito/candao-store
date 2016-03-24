@@ -252,5 +252,13 @@ public class TbPreferentialActivityDaoImpl implements TbPreferentialActivityDao 
 	public int deleteByPreferenStatus(String id) {
 		return dao.update(PREFIX + ".deleteByPreferenStatus", id);
 	}
+	
+	/**
+	 * 查询挂账单位
+	 */
+	@Override
+    public List<Map<String,Object>> findCooperationUnit(Map params){
+		return dao.find(PREFIX+".findCooperationUnit", params);
+	}
 
 }
