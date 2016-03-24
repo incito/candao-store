@@ -235,6 +235,12 @@ public class Constant {
      * 折扣券 
      */
     public static final String DISCOUNT_TICKET = "02";
+    
+    /**
+     * 在线支付 
+     */
+    public static final String ONLINEPAY_TICKET = "09";
+    
     /**
      * 代金券
      */
@@ -254,11 +260,11 @@ public class Constant {
     /**
      * 手工优免
      */
-    public static final String HANDFREE = "0601";
+    public static final String HANDFREE = "07";
     /**
      * 内部优免
      */
-    public static final String INNERFREE = "0602";
+    public static final String INNERFREE = "08";
 	  
 	}
 	

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.OtherCouponDao">
+    <insert id="addCouponActivity" parameterType="map">
+  		 INSERT INTO t_p_preferential_activity 
+  		       (id,
+  		        code,
+  		        name,
+  		        name_first_letter,
+  		        type,
+  		        type_name,
+  		        subtable_name,
+  		        color,
+  		        starttime,
+  		        endtime,
+  		        apply_all,
+  		        createtime,
+  		        creator,
+  		        activity_introduction,
+  		        use_notice)
+         VALUES(#{id},
+                #{code},
+                #{name},
+                #{name_first_letter},
+                #{type},
+                #{type_name},
+                #{subtable_name},
+                #{color},
+                #{starttime},
+  		        #{endtime},
+                #{apply_all},
+                #{createtime},
+                #{creator},
+                #{activity_introduction},
+                #{use_notice})
+	</insert>
+	 <insert id="addCouponDetail" parameterType="map">
+  		 INSERT INTO t_p_preferential_detail 
+  		       (id,
+  		        preferential,
+  		        unitflag,
+  		        free_reason,
+  		        discount,
+  		        starttime,
+  		        endtime,
+  		        createtime,
+  		        <!-- company_name,
+  		        company_first_letter, -->
+  		        can_credit,
+  		        amount)
+         VALUES(#{id},
+  		        #{preferential},
+  		        #{unitflag},
+  		        #{free_reason},
+  		        #{discount},
+  		        #{starttime},
+  		        #{endtime},
+  		        #{createtime},
+  		        <!-- #{company_name},
+  		        #{company_first_letter}, -->
+  		        #{can_credit},
+  		        #{amount})
+	</insert>
+	<update id="updateActivity" parameterType="map">
+       update t_p_preferential_activity
+    <set>
+        name = #{name},
+        name_first_letter = #{name_first_letter},
+        color = #{color},
+        starttime = #{starttime},
+        endtime = #{endtime},
+        apply_all = #{apply_all},
+        creator = #{creator},
+        activity_introduction = #{activity_introduction},
+        use_notice = #{use_notice}
+    </set>
+    where id = #{id}
+  </update>
+  
+  <update id="updateDetail" parameterType="map">
+       update t_p_preferential_detail
+    <set>
+        free_reason = #{free_reason},
+        discount = #{discount},
+        starttime = #{starttime},
+        endtime = #{endtime},
+        <!-- company_name = #{company_name},
+        company_first_letter = #{company_first_letter}, -->
+        can_credit = #{can_credit},
+        amount = #{amount}
+    </set>
+    where id = #{id}
+  </update>
+  <select id="getActivity" parameterType="java.util.Map" resultType="java.util.Map">
+    select  id, code,name,name_first_letter,type,type_name,subtable_name,color,starttime,endtime,apply_all,createtime,creator 
+    from t_p_preferential_activity where id = #{id}
+  </select>
+  <select id="getDetail" parameterType="java.util.Map" resultType="java.util.Map">
+    select id,preferential,unitflag,free_reason,discount,starttime,endtime,createtime,company_name,company_first_letter,can_credit from t_p_preferential_detail
+    where id = #{id}
+  </select>
+  <!-- 合作单位活动方式 -->
+  <select id="getCooperationNnit" parameterType="java.util.Map" resultType="java.util.Map">
+    select itemid as code,itemDesc as name from t_dictionary where type='cooperationNnit'
+  </select>
+  <!-- 查询优免类型 -->
+  <select id="getTypeDict" parameterType="java.util.Map" resultType="java.util.Map">
+    select code,name from t_p_preferential_type_dict where code not in(01,02,03,04,05,06,0601,0602,99)
+  </select>
+   <!-- 手工优免活动方式 -->
+  <select id="getActivityType" parameterType="java.util.Map" resultType="java.util.Map">
+    select itemid as code,itemDesc as name from t_dictionary where type='ACTIVITY'
+  </select>
+     <!--在线支付优免支付类型-->
+  <select id="getPaywayType" parameterType="java.util.Map" resultType="java.util.Map">
+    select itemid as code,itemDesc as name from t_dictionary where type='PAYWAYTYPE'
+  </select>
+   <select id="getCoupon"   parameterType="java.util.Map" resultType="java.util.Map">
+    select tpa.name as name,tpa.type as type,tpa.type_name as type_name,
+	tpa.color as color,tpa.apply_all as apply_all,tpa.activity_introduction as activity_introduction,
+	tpa.use_notice as use_notice,
+	tpd.discount as discount,tpd.free_reason as free_reason,
+	tpd.company_name as company_name,tpd.can_credit as can_credit,
+	tpd.starttime as starttime,tpd.endtime as endtime,tpd.amount as amount
+	from t_p_preferential_activity tpa,t_p_preferential_detail tpd 
+	where tpa.id = tpd.preferential  and tpa.id=#{id} 
+  </select>
+  <select id="getBranchInfo"   parameterType="java.util.Map" resultType="java.util.Map">
+    select  branch,branch_name  from t_p_preferential_branch where preferential=#{id} 
+  </select>
+  <delete id="deleteActivity" parameterType="map">
+      DELETE FROM t_p_preferential_activity
+	  WHERE
+	  preferential=#{id}
+  </delete>
+  <delete id="deleteDetail" parameterType="map">
+      DELETE FROM t_p_preferential_detail
+	  WHERE
+	  id=#{id}
+  </delete>
+  <delete id="deleteBranch" parameterType="java.util.Map">
+      DELETE FROM  t_p_preferential_branch where preferential = #{preferential} ;
+  </delete>
+</mapper>
