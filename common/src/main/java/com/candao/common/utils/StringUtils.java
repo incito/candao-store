@@ -1,6 +1,10 @@
 package com.candao.common.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
+
 
 
 public class StringUtils {
@@ -229,6 +233,84 @@ public static String bSubstring4(String s,int k) throws Exception{
 		return returnMsg;
 	
 }
+
+public static List<String> subString2(String src ,int num) throws UnsupportedEncodingException {
+	List<String> res = new LinkedList<>();
+	return subString3(src, num, res);
+}
+
+private static List<String> subString3(String src, int num, List<String> res) {
+	if (res == null)
+		return null;
+	String str = "";
+	boolean flag = false;
+	int truelength = 0;
+	if (src != null && !"".equals(src)) {
+		for (int i = 0; i < src.length(); i++) {
+			char c = src.charAt(i);
+			// if((c & 0xff00) != 0){
+			// truelength += 2;
+			// } else {
+			// truelength += 1;
+			// }
+			truelength += 1;
+			if (truelength >= num) {
+				if (truelength == num + 1) {
+					truelength = i == 0 ? 0 : (i - 1);
+					flag = true;
+				} else {
+					truelength = i + 1;
+				}
+				break;
+			}
+		}
+	} else {
+		return res;
+	}
+
+	if (truelength != 0 && truelength < src.length()) {
+		str = src.substring(0, truelength);
+		if (flag)
+			str = str.concat(" "
+					+ " ");
+		res.add(str);
+		res = subString3(src.substring(truelength), num, res);
+	} else {
+		str = src;
+		for (int i = 0; i < num - truelength; i++) {
+			str = str.concat("  ");
+		}
+		res.add(str);
+	}
+
+	return res;
+}
+
+	public static String getStr(int num){
+		String res = "";
+		for (int i = 0; i < num; i++) {
+			res +="  ";
+		}
+		return res;
+	}
+	
+	public static String split2(String src , String s){
+		if(src == null || src.isEmpty())
+			return null;
+		int i = 0;
+		if((i = src.indexOf(s)) != -1){
+			src = src.substring(0, i);
+		}
+		return src;
+	}
+	
+	public static String split3(String src ,String s){
+		if(src == null || src.isEmpty())
+			return null;
+		
+		src = src.replace(s, "");
+		return src;
+	}
 	
 	public static void main(String[] args) throws Exception {
 		int str1 = getStrLength("a啊3");

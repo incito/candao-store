@@ -117,6 +117,11 @@ public class StatementDishListener {
 			List<Map<String, Object>>   list=object.getDishes();
 			BigDecimal  sum=new BigDecimal("0.00");
 			if(list!=null && list.size()>0){
+				
+				for (Map<String, Object> it : list) {
+					it.put("title",StringUtils.split2(it.get("title").toString(), "#"));
+				}
+				
 				for(Map<String, Object> printDish:list){
 					BigDecimal  total=new BigDecimal("0.00");
 					String  dishnum= getValueMap(printDish, "dishnum");
