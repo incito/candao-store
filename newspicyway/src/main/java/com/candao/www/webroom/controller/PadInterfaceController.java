@@ -742,15 +742,19 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/debitamout")
 	@ResponseBody
-	public String debitamout(@RequestBody String orderId){
-		@SuppressWarnings({"unchecked" })
-		Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
-		String result =  orderSettleService.calDebitAmount(map.get("orderNo"));
-		if("0".equals(result)){
-			return Constant.SUCCESSMSG;
-		}else {
-			return Constant.FAILUREMSG;
-		}
+	public String debitamout(@RequestBody final String orderId){
+		new Thread(new Runnable(){
+			public void run(){
+				@SuppressWarnings({"unchecked" })
+				Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
+				try {
+					orderSettleService.calDebitAmount(map.get("orderNo"));
+				} catch (Exception e) {
+					logger.error("计算实收失败，订单号：" + orderId, e, "");
+				}
+			}
+		}).start();
+		return Constant.SUCCESSMSG;
 	}
 	
 
@@ -1164,6 +1168,26 @@ public class PadInterfaceController {
 			List<Map<String,Object>> l= this.preferentialActivityService.findCouponsByType4Pad(typeid);
 			mav.addObject("list", l);
 		}
+		return mav;
+	}
+	
+	/**
+	 * 查询所有的可挂账的合作单位
+	 *
+	 */
+	@RequestMapping(value="/getCooperationUnit",method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getCooperationUnit(@RequestBody String body){
+		/*@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		ModelAndView mav = new ModelAndView();
+		String typeid=(String) params.get("typeid"); //优惠分类
+		if( !StringUtils.isBlank(typeid)){*/
+		    ModelAndView mav = new ModelAndView();
+		    Map<String, Object> params = new HashMap<String, Object>();
+			List<Map<String,Object>> l= this.preferentialActivityService.findCooperationUnit(params);
+			mav.addObject("list", l);
+		//}
 		return mav;
 	}
 
@@ -2179,59 +2203,6 @@ public class PadInterfaceController {
 		return returnMap;
 	}
 	
-	
-	/**
-	 * 获取品项销售明细的打印数据
-	 * @return
-	 */
-	@RequestMapping("/getItemSellDetail.json")
-	@ResponseBody
-	public String getItemSellDetail(String flag){
-		Map<String, Object> timeMap = getTime(flag);
-		Map<String, Object> resultMap = new HashMap<>();
-		try {
-			List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
-			resultMap.put("result", 0);
-			resultMap.put("mag","");
-			resultMap.put("data",result);
-			resultMap.put("time", timeMap);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), "");
-			resultMap.put("result", 1);
-			resultMap.put("mag","获取数据失败");
-			resultMap.put("data","");
-			resultMap.put("time", timeMap);
-			e.printStackTrace();
-		}
-		return JacksonJsonMapper.objectToJson(resultMap);
-	}
-	
-	/**
-	 * 获取开始结束时间
-	 * @param falg
-	 * @return
-	 */
-	private Map<String, Object> getTime(String falg){
-		Map<String, Object> map = new HashMap<>();
-		String startTime = null;
-		String endTime = null;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		endTime = df.format(new Date());
-		
-		if(falg.equals("1")){  //今日
-			startTime = DateUtils.today() + " 00:00:00";
-		}else if(falg.equals("2")){  //本周
-			startTime = DateUtils.weekOfFirstDay() + " 00:00:00";
-		}else if(falg.equals("3")){  //本月
-			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
-		}else if(falg.equals("4")){   //上月
-			startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
-			endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";
-		}
-		map.put("startTime",startTime);
-		map.put("endTime", endTime);
-		return map;
-	}
 	
 	/**
 	 * 消息中心查询信息

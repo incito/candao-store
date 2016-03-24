@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TWaiterSaleDao">
+
+    <!-- 查询服务员销售统计表 -->
+	<select id="waiterSaleListProcedure" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+	    {
+          call p_report_fwyxstjb(
+            #{branchId,jdbcType=INTEGER,mode=IN},
+            #{beginTime,jdbcType=DATE,mode=IN},
+            #{endTime,jdbcType=DATE,mode=IN},
+            #{waiterName,jdbcType=VARCHAR,mode=IN},
+            #{dishName,jdbcType=VARCHAR,mode=IN},
+            #{page,jdbcType=INTEGER,mode=IN},
+            #{rows,jdbcType=INTEGER,mode=IN},
+            #{result,jdbcType=VARCHAR,mode=OUT}
+          )
+        }
+	</select>
+	
+	<!-- 按订单查询服务员销售列表 -->
+	<select id="getWaiterSaleDetail" parameterType="java.util.Map" resultType="java.util.Map">
+	    select date_format(too.begintime,'%Y-%c-%d %H:%i:%s') as begintime,too.orderid,sum(tod.dishnum) as dishnum from t_order too,t_order_detail tod where too.orderid = tod.orderid
+	    <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+	    and too.begintime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+	    </if>
+	    and too.orderstatus = 3 and too.userid = #{userid} and tod.dishid = #{dishid} and too.branchid = #{branchId} and tod.dishunit = #{dishunit}
+	    AND tod.orderprice IS NOT NULL
+	    <if test="dishtype == '1'.toString()">
+	    	AND tod.primarykey != tod.superkey
+	    </if>
+	    <if test="dishtype == '0'.toString() or dishtype == '2'.toString()">
+	    	AND tod.primarykey = tod.superkey
+	    </if>
+	    group by too.orderid,tod.dishunit, tod.dishtype
+	</select>
+
+</mapper>

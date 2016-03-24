@@ -2371,3 +2371,182 @@ function showOrderPage(obj){
 	showReckon($(obj).attr("orderid"));
 }
 /*******************营业报表 END********************************/
+
+
+/*******************服务员销售统计表START**************************/
+
+function getWaiterSaleData(){
+	showLoading();
+	localStorage.setItem("beginTime", $("#beginTime").val());
+	localStorage.setItem("endTime", $("#endTime").val());
+	branchId = localStorage.getItem("currentStore");
+	var waiterName = $(obj).attr("waiterName");
+	var dishName = $(obj).attr("dishName");
+	var num = $(obj).attr("num");
+	localStorage.setItem("waiterName", waiterName);
+	localStorage.setItem("dishName", dishName);
+	localStorage.setItem("num",num);
+	if(compareBeginEndTime()){
+		$.post(global_Path + "/waiterSale/getWaiterSaleList.json", {
+			beginTime : $("#beginTime").val(),
+			endTime : $("#endTime").val(),
+			waiterName : $("#waiterName").val(),
+			dishName : $("#dishName").val(),
+			page:1,
+			rows:100
+		}, function(result) {
+			hideLoading();
+			if(result.flag == 1){
+				initWaiterSaleTb(result.data);
+			}else{
+				alert(result.desc);
+			}
+		},'json');
+	}
+}
+
+//初始化列表
+function initWaiterSaleTb(datalist) {
+	var tHtml = "";
+	if (datalist != null && datalist != "") {
+		$.each(datalist, function(i, obj) {
+			var name = obj.NAME;
+			var title = obj.title;
+			var num = parseFloat(obj.num);
+			var userid = obj.userid;
+			var dishid = obj.dishid;
+			var dishunit = obj.dishunit;
+			var dishtype = obj.dishtype;
+			tHtml += '<tr dishid="'+dishid+'" userid="'+userid+'"num="'+num.toFixed(0)+'"name="'+name+'"title="'+title+'"dishunit="'+dishunit+'"dishtype="'+dishtype+'" ondblclick="showWaiterSaleSubTb(\''
+					+ userid
+					+ '\',\''
+					+ dishid
+					+ '\',\''
+					+ num.toFixed(0)
+					+ '\',\''
+					+ name
+					+ '\',\''
+					+ title
+					+ '\',\''
+					+ dishunit
+					+ '\',\''
+					+ dishtype
+					+ '\')">'
+					+ '<td width="25%">'
+					+ name
+					+ '</td>'
+					+ '<td width="25%">'
+					+ title
+					+ '</td>'
+					+ '<td width="25%">'
+					+ dishunit
+					+ '</td>'
+					+ '<td width="25%">' 
+					+ num.toFixed(0) 
+					+ '</td>'
+					+ '</tr>';
+		});
+	}else{
+		tHtml += '<tr><td colspan="4">没有数据</td></tr>';
+	}
+	$("#waiter-sale-tb tbody").html(tHtml);
+}
+
+/** 显示二级弹出层 */
+function showWaiterSaleSubTb(userid,dishid,num,name,title,dishunit,dishtype){
+	$("#p_userid").val(userid);
+	$("#p_dishid").val(dishid);
+	$("#p_num").val(num);
+	$("#p_name").val(name);
+	$("#p_title").val(title);
+	$("#p_dishunit").val(dishunit);
+	$("#p_dishtype").val(dishtype);
+	$("#waiter-name").text(name);
+	$("#dish-name").text(title);
+	$("#dish-num").text(num);
+	$("#dish-unit").text(dishunit);
+	$("#waiter-sale-dialog").modal("show");
+	getWaiterSaleDetails();
+}
+
+/** 二级弹出层拼数据 */
+function getWaiterSaleDetails(){
+	var dishunit = $("#p_dishunit").val();
+	$.get(global_Path+"/waiterSale/getWaiterSaleDetail.json", {
+		beginTime: $("#beginTime").val(),
+		endTime: $("#endTime").val(),
+		userid: $("#p_userid").val(),
+		dishid: $("#p_dishid").val(),
+		num: $("#p_num").val(),
+		dishunit : encodeURI(encodeURI(dishunit)),
+		dishtype : $("#p_dishtype").val()
+	}, function(result){
+		if(result.flag == 1){
+			var data = result.data;
+			var htm = '';
+			if(data != null && data.length>0){
+				$.each(data, function(i, item){
+					var dishnum = parseFloat(item.dishnum);
+					htm += '<tr ondblclick="showReckon(\''+item.orderid+'\')">'
+					    + '<td>'+item.begintime+'</td>'
+						+ '<td>'+item.orderid+'</td>'
+						+ '<td>'+dishnum.toFixed(0)+'</td></tr>';
+				});
+			}else{
+				htm = '<tr><td colspan="5">无数据</td></tr>';
+			}
+			$("#waitersale-details-tb tbody").html(htm);
+		}else{
+			alert(result.desc);
+		}
+	},'json');
+}
+
+/** 导出 */
+function exportWaiterSale(type){
+	var beginTime = $("#beginTime").val();
+	var endTime = $("#endTime").val();
+	var userid = $("#p_userid").val();
+	var dishid = $("#p_dishid").val();
+	var num = $("#p_num").val();
+	var waiterName = $("#waiterName").val();
+	var dishName = $("#dishName").val();
+	var dishtype = $("#p_dishtype").val();
+	var name = $("#p_name").val();
+	var title = $("#p_title").val();
+	var dishunit = $("#p_dishunit").val();
+	if(waiterName == ""){
+		waiterName = null;
+	}else{
+		waiterName = encodeURI(encodeURI(waiterName));
+	}
+	if(dishName == ""){
+		dishName = null;
+	}else{
+		dishName = encodeURI(encodeURI(dishName));
+	}
+	if(name == ""){
+		name = null;
+	}else{
+		name = encodeURI(encodeURI(name));
+	}
+	if(title == ""){
+		title = null;
+	}else{
+		title = encodeURI(encodeURI(title));
+	}
+	if(dishunit == ""){
+		dishunit = null;
+	}else{
+		dishunit = encodeURI(encodeURI(dishunit));
+	}
+	if(num == ""){
+		num = null;
+	}
+	if(type == 0){
+		location.href = global_Path + "/waiterSale/exportWaiterSaleMainReport/"+beginTime+"/"+endTime+"/"+waiterName+"/"+dishName+"/"+searchType+"/"+dishtype+"/"+dishunit+".json";
+	}else{
+		location.href = global_Path + "/waiterSale/exportWaiterSaleChildReport/"+beginTime+"/"+endTime+"/"+name+"/"+title+"/"+searchType+"/"+userid+"/"+dishid+"/"+num+"/"+dishtype+"/"+dishunit+".json";
+	}
+}
+/*******************服务员销售统计表END****************************/
