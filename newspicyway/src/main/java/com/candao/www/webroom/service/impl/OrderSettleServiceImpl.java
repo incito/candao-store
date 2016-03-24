@@ -35,6 +35,7 @@ import com.candao.www.utils.HttpRequestor;
 import com.candao.www.webroom.model.SettlementDetail;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.DishService;
+import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.OrderDetailSettleService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
@@ -48,6 +49,9 @@ import com.candao.www.weixin.dto.WxPayResult;
 
 @Service
 public class OrderSettleServiceImpl implements OrderSettleService{
+	
+	@Autowired
+	OrderDetailService   orderDetailService;
 	
 	@Autowired
 	TsettlementMapper settlementMapper;
@@ -130,6 +134,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		//3.計算總額  減去所對應的優惠
 
  		 String orderId = settlementInfo.getOrderNo();
+ 		orderDetailService.afterprint(orderId);
  		 
 		Map<String, String> mapRet = new HashMap<String, String>();
 		Map<String, Object> map = new HashMap<String, Object>();

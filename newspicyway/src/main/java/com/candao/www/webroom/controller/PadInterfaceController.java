@@ -770,7 +770,6 @@ public class PadInterfaceController extends BaseJsonController{
 			  orderSettleService.rebackSettleOrder(settlementInfo);
 			  return Constant.FAILUREMSG;
            }*/
-			orderDetailService.afterprint(orderid);
 		    return Constant.SUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;

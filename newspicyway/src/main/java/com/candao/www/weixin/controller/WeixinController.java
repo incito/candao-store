@@ -324,7 +324,6 @@ public class WeixinController extends BaseJsonController {
 					settleOrder(settlementStrInfo);
 					vipinterface(attchresults,settlementStrInfoDto.getUserName());
 					//打印结账单
-					orderDetailService.afterprint(attchresults[0]);
 					orderDetailService.printStatement(attchresults[0]);
 					//保存到orderid和随机订单id到数据表
 					
