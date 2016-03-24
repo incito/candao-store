@@ -24,7 +24,7 @@ public class TbDataDictionary implements Serializable {
 	private String memberprice; //会员价格
 	private String price; //单价
 	private String datetype;
-	private String itemValue; //用在通知类型时，为相应时间
+	private String itemValue; //
 
 	public String getItemValue() {
 		return itemValue;

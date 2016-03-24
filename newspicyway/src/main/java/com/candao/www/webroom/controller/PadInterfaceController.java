@@ -69,7 +69,6 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -100,7 +99,9 @@ import com.candao.www.webroom.service.PreferentialActivityService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.UserInstrumentService;
+import com.candao.www.webroom.service.impl.SystemServiceImpl;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 /**
  * 所有pad 端处理的接口
@@ -742,19 +743,15 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/debitamout")
 	@ResponseBody
-	public String debitamout(@RequestBody final String orderId){
-		new Thread(new Runnable(){
-			public void run(){
-				@SuppressWarnings({"unchecked" })
-				Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
-				try {
-					orderSettleService.calDebitAmount(map.get("orderNo"));
-				} catch (Exception e) {
-					logger.error("计算实收失败，订单号：" + orderId, e, "");
-				}
-			}
-		}).start();
-		return Constant.SUCCESSMSG;
+	public String debitamout(@RequestBody String orderId){
+		@SuppressWarnings({"unchecked" })
+		Map<String,String>  map =  JacksonJsonMapper.jsonToObject(orderId, Map.class);
+		String result =  orderSettleService.calDebitAmount(map.get("orderNo"));
+		if("0".equals(result)){
+			return Constant.SUCCESSMSG;
+		}else {
+			return Constant.FAILUREMSG;
+		}
 	}
 	
 
@@ -778,8 +775,6 @@ public class PadInterfaceController {
 		 
 		if("0".equals(result)){
 			return Constant.SUCCESSMSG;
-		}else if("2".equals(result)){
-			return Constant.WEIXINSUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
 		}
@@ -1079,11 +1074,7 @@ public class PadInterfaceController {
 	 * @return
 	 */
 	private int judgeRepeatData(ToperationLog toperationLog){
-		//因为 (newtoperationLog.getSequence()==toperationLog.getSequence()) 这个条件永远不成立，应该使用equals方法；
-		//如果加上这个判断条件，会导致PAD、POS同时给一个餐台下单时，可能误认为是重复下单，sequence没有同步，所以调用该方法的逻辑以后要去掉，暂时先返回0
-		return 0;
-		
-		/*Map<String,Object> map=new HashMap<String,Object>();
+		Map<String,Object> map=new HashMap<String,Object>();
 		map.put("tableno", toperationLog.getTableno());
 		map.put("operationType", toperationLog.getOperationtype());
 		ToperationLog newtoperationLog=toperationLogService.findByparams(map);
@@ -1099,7 +1090,7 @@ public class PadInterfaceController {
 //		}
 		else{
 			return 0;
-		}*/
+		}
 	}
 
 	/**
@@ -1168,26 +1159,6 @@ public class PadInterfaceController {
 			List<Map<String,Object>> l= this.preferentialActivityService.findCouponsByType4Pad(typeid);
 			mav.addObject("list", l);
 		}
-		return mav;
-	}
-	
-	/**
-	 * 查询所有的可挂账的合作单位
-	 *
-	 */
-	@RequestMapping(value="/getCooperationUnit",method = RequestMethod.POST)
-	@ResponseBody
-	public ModelAndView getCooperationUnit(@RequestBody String body){
-		/*@SuppressWarnings("unchecked")
-		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-		ModelAndView mav = new ModelAndView();
-		String typeid=(String) params.get("typeid"); //优惠分类
-		if( !StringUtils.isBlank(typeid)){*/
-		    ModelAndView mav = new ModelAndView();
-		    Map<String, Object> params = new HashMap<String, Object>();
-			List<Map<String,Object>> l= this.preferentialActivityService.findCooperationUnit(params);
-			mav.addObject("list", l);
-		//}
 		return mav;
 	}
 
@@ -2182,25 +2153,25 @@ public class PadInterfaceController {
 	}
 	
 	/**
-	 * 获取手环通知消息的类型
+	 * Pad端获取Logo图和背景图
 	 * @return
 	 */
-	@RequestMapping("/getNotification")
+	@RequestMapping("/getPadImg.json")
 	@ResponseBody
-	public Map<String,Object> getNotification(){
-		List<Map<String, Object>> maps = new ArrayList<>();
+	public String getPadImg(){
+		Map<String,Object> retMap = new HashMap<>();
 		try{
-			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
+			List<Map<String, Object>> maps = systemServiceImpl.getImgByType("PADIMG");
+			retMap.put("ImgIp", PropertiesUtils.getValue("fastdfs.url"));
+			retMap.put("result", "0");
+			retMap.put("msg", "成功");
+			retMap.put("detail", maps);
 		}catch(Exception e){
-			e.printStackTrace();
-			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
 		}
-		if(maps == null || maps.size() <= 0){
-			return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
-		}
-		Map<String,Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");
-		returnMap.put("data", maps);
-		return returnMap;
+		return JacksonJsonMapper.objectToJson(retMap);
 	}
 	
 	
@@ -2311,6 +2282,8 @@ public class PadInterfaceController {
 	private CallWaiterService callService;
 	@Autowired
 	private TtellerCashDao tellerCashService;
+	@Autowired
+	private SystemServiceImpl systemServiceImpl;
 	
 	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
