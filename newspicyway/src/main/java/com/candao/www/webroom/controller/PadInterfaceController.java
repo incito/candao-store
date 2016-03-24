@@ -69,6 +69,7 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -99,9 +100,7 @@ import com.candao.www.webroom.service.PreferentialActivityService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.UserInstrumentService;
-import com.candao.www.webroom.service.impl.SystemServiceImpl;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 /**
  * 所有pad 端处理的接口
@@ -775,6 +774,8 @@ public class PadInterfaceController {
 		 
 		if("0".equals(result)){
 			return Constant.SUCCESSMSG;
+		}else if("2".equals(result)){
+			return Constant.WEIXINSUCCESSMSG;
 		}else {
 			return Constant.FAILUREMSG;
 		}
@@ -1074,7 +1075,11 @@ public class PadInterfaceController {
 	 * @return
 	 */
 	private int judgeRepeatData(ToperationLog toperationLog){
-		Map<String,Object> map=new HashMap<String,Object>();
+		//因为 (newtoperationLog.getSequence()==toperationLog.getSequence()) 这个条件永远不成立，应该使用equals方法；
+		//如果加上这个判断条件，会导致PAD、POS同时给一个餐台下单时，可能误认为是重复下单，sequence没有同步，所以调用该方法的逻辑以后要去掉，暂时先返回0
+		return 0;
+		
+		/*Map<String,Object> map=new HashMap<String,Object>();
 		map.put("tableno", toperationLog.getTableno());
 		map.put("operationType", toperationLog.getOperationtype());
 		ToperationLog newtoperationLog=toperationLogService.findByparams(map);
@@ -1090,7 +1095,7 @@ public class PadInterfaceController {
 //		}
 		else{
 			return 0;
-		}
+		}*/
 	}
 
 	/**
@@ -2153,27 +2158,80 @@ public class PadInterfaceController {
 	}
 	
 	/**
-	 * Pad端获取Logo图和背景图
+	 * 获取手环通知消息的类型
 	 * @return
 	 */
-	@RequestMapping("/getPadImg.json")
+	@RequestMapping("/getNotification")
 	@ResponseBody
-	public String getPadImg(){
-		Map<String,Object> retMap = new HashMap<>();
+	public Map<String,Object> getNotification(){
+		List<Map<String, Object>> maps = new ArrayList<>();
 		try{
-			List<Map<String, Object>> maps = systemServiceImpl.getImgByType("PADIMG");
-			retMap.put("ImgIp", PropertiesUtils.getValue("fastdfs.url"));
-			retMap.put("result", "0");
-			retMap.put("msg", "成功");
-			retMap.put("detail", maps);
+			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
 		}catch(Exception e){
-			retMap.put("result", "1");
-			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
+			e.printStackTrace();
+			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
 		}
-		return JacksonJsonMapper.objectToJson(retMap);
+		if(maps == null || maps.size() <= 0){
+			return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
+		}
+		Map<String,Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");
+		returnMap.put("data", maps);
+		return returnMap;
 	}
 	
+	
+	/**
+	 * 获取品项销售明细的打印数据
+	 * @return
+	 */
+	@RequestMapping("/getItemSellDetail.json")
+	@ResponseBody
+	public String getItemSellDetail(String flag){
+		Map<String, Object> timeMap = getTime(flag);
+		Map<String, Object> resultMap = new HashMap<>();
+		try {
+			List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
+			resultMap.put("result", 0);
+			resultMap.put("mag","");
+			resultMap.put("data",result);
+			resultMap.put("time", timeMap);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), "");
+			resultMap.put("result", 1);
+			resultMap.put("mag","获取数据失败");
+			resultMap.put("data","");
+			resultMap.put("time", timeMap);
+			e.printStackTrace();
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
+	}
+	
+	/**
+	 * 获取开始结束时间
+	 * @param falg
+	 * @return
+	 */
+	private Map<String, Object> getTime(String falg){
+		Map<String, Object> map = new HashMap<>();
+		String startTime = null;
+		String endTime = null;
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		endTime = df.format(new Date());
+		
+		if(falg.equals("1")){  //今日
+			startTime = DateUtils.today() + " 00:00:00";
+		}else if(falg.equals("2")){  //本周
+			startTime = DateUtils.weekOfFirstDay() + " 00:00:00";
+		}else if(falg.equals("3")){  //本月
+			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
+		}else if(falg.equals("4")){   //上月
+			startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
+			endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";
+		}
+		map.put("startTime",startTime);
+		map.put("endTime", endTime);
+		return map;
+	}
 	
 	/**
 	 * 消息中心查询信息
@@ -2282,8 +2340,6 @@ public class PadInterfaceController {
 	private CallWaiterService callService;
 	@Autowired
 	private TtellerCashDao tellerCashService;
-	@Autowired
-	private SystemServiceImpl systemServiceImpl;
 	
 	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	

@@ -247,5 +247,10 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("orderid", orderid);
 		return dao.get(PREFIX + ".selectorderinfos", params);
 	}
+
+	@Override
+	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) {
+		return dao.find(PREFIX + ".getItemSellDetail", timeMap);
+	}
 }
  

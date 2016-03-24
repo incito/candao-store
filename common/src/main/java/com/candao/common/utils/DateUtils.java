@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,11 +343,13 @@ public class DateUtils {
 		return time; 
 	}
 	public static void main(String[] args) {
-		Calendar calendar = Calendar.getInstance();
+		/*Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2015);
 		calendar.set(Calendar.MONTH, 1);
 		calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));  
-		System.out.println(toString(calendar.getTime()));
+		System.out.println(toString(calendar.getTime()));*/
+		System.out.println(weekOfFirstDay());
+		System.out.println(weekOfLastDay());
 	}
 
 
@@ -450,5 +454,131 @@ public class DateUtils {
 	        }
 	    return false;                               
 	}
+	
+	
+	/**
+	 * 今天
+	 * @return
+	 */
+	public static String today(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH,0);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 明天
+	 * @return
+	 */
+	public static String tomorrow(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH,1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 昨天
+	 * @return
+	 */
+	public static String yesterday(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH,-1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	
+	/**
+	 * 本周第一天
+	 * @return
+	 */
+	public static String weekOfFirstDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); //获取本周一的日期
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 本周最后一天
+	 * @return
+	 */
+	public static String weekOfLastDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		cal.add(Calendar.WEEK_OF_YEAR, 1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 本月第一天
+	 * @return
+	 */
+	public static String monthOfFirstDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH,0);
+		cal.set(Calendar.DAY_OF_MONTH,1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 本月最后一天
+	 * @return
+	 */
+	public static String monthOfLastDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));  
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 上月第一天
+	 * @return
+	 */
+	public static String beforeMonthOfFirstDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH,-1);
+		cal.set(Calendar.DAY_OF_MONTH,1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 上月最后一天
+	 * @return
+	 */
+	public static String beforeMonthOfLastDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH,0);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
 	
 }

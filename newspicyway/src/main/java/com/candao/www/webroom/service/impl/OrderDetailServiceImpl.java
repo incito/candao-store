@@ -1759,6 +1759,15 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
 	
+	
+	/**
+	 * 获取品项销售明细
+	 */
+	@Override
+	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) throws Exception{
+		return torderDetailMapper.getItemSellDetail(timeMap);
+	}
+	
 public class PrintThread  implements Runnable{
 		   
 		   PrintObj printObj ;
