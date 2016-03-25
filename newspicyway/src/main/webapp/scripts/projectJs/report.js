@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
 	$("img.img-close").hover(function(){
 	 	$(this).attr("src", global_Path+"/images/close-active.png");	 
@@ -2539,6 +2540,9 @@ function exportWaiterSale(type){
 		dishunit = null;
 	}else{
 		dishunit = encodeURI(encodeURI(dishunit));
+	}
+	if(dishtype == ""){
+		dishtype = null;
 	}
 	if(num == ""){
 		num = null;
