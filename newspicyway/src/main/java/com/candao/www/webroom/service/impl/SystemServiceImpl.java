@@ -338,7 +338,14 @@ public class SystemServiceImpl {
 		return jsonArray;
 	}
 	
-	
+	/**
+	 * 获取padLogo图和背景图
+	 * @return
+	 */
+	public List<Map<String, Object>> getImgByType(String type){
+		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
+		return infoList;
+	}
 	
 	/**
 	 * 修改字典表数据
