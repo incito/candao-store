@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
 	$("img.img-close").hover(function(){
 	 	$(this).attr("src", global_Path+"/images/close-active.png");	 
@@ -2375,7 +2374,7 @@ function showOrderPage(obj){
 
 
 /*******************服务员销售统计表START**************************/
-
+/**
 function getWaiterSaleData(){
 	showLoading();
 	localStorage.setItem("beginTime", $("#beginTime").val());
@@ -2451,6 +2450,106 @@ function initWaiterSaleTb(datalist) {
 		tHtml += '<tr><td colspan="4">没有数据</td></tr>';
 	}
 	$("#waiter-sale-tb tbody").html(tHtml);
+} */
+
+//查询服务员销售统计总表
+function getWaiterSaleData() {
+	if(compareBeginEndTime()){
+		page = 0;
+		showLoading();
+		doWaiterSalePost(function(result){
+			hideLoading();
+			if(result.flag == 1){
+				initWaiterSaleTb(result,true);
+			}else{
+				alert(result.desc);
+			}
+		});
+	}
+}
+
+//查询服务员销售统计总表
+function doWaiterSalePost(callback){
+	var waiterName = $(obj).attr("waiterName");
+	var dishName = $(obj).attr("dishName");
+	var num = $(obj).attr("num");
+	localStorage.setItem("waiterName", waiterName);
+	localStorage.setItem("dishName", dishName);
+	localStorage.setItem("num",num);
+	$.post(global_Path + "/waiterSale/getWaiterSaleList.json", {
+		beginTime : $("#beginTime").val(),
+		endTime : $("#endTime").val(),
+		waiterName : $("#waiterName").val(),
+		dishName : $("#dishName").val(),
+		page: page,//当前页数
+		rows: 20//每页显示条数
+	}, function(result) {
+		callback(result);
+	});
+}
+
+//初始化服务员销售统计总表数据
+function initWaiterSaleTb(datalist,isFirst){
+	var tHtml = "";
+	var len = datalist.data.length;
+	if (datalist != null && datalist != "") {
+	    page ++;
+		if(isFirst){
+			var more = '<tr><td id="show-more" class="show-more" colspan="8">加载更多</td></tr>';
+			$("#waiter-sale-tb tbody").html(more);
+		}
+		$.each(datalist.data, function(i, obj) {
+			var name = obj.NAME;
+			var title = obj.title;
+			var num = parseFloat(obj.num);
+			var userid = obj.userid;
+			var dishid = obj.dishid;
+			var dishunit = obj.dishunit;
+			var dishtype = obj.dishtype;
+			tHtml += '<tr dishid="'+dishid+'" userid="'+userid+'"num="'+num.toFixed(0)+'"name="'+name+'"title="'+title+'"dishunit="'+dishunit+'"dishtype="'+dishtype+'" ondblclick="showWaiterSaleSubTb(\''
+					+ userid
+					+ '\',\''
+					+ dishid
+					+ '\',\''
+					+ num.toFixed(0)
+					+ '\',\''
+					+ name
+					+ '\',\''
+					+ title
+					+ '\',\''
+					+ dishunit
+					+ '\',\''
+					+ dishtype
+					+ '\')">'
+					+ '<td width="25%">'
+					+ name
+					+ '</td>'
+					+ '<td width="25%">'
+					+ title
+					+ '</td>'
+					+ '<td width="25%">'
+					+ dishunit
+					+ '</td>'
+					+ '<td width="25%">' 
+					+ num.toFixed(0) 
+					+ '</td>'
+					+ '</tr>';
+		});
+		$("#show-more").parent().before(tHtml);
+		if(len < 20){
+			$("#show-more").parent().remove();
+		}
+	}else{
+		if(isFirst){
+			tHtml += '<tr><td colspan="4">没有数据</td></tr>';
+			$("#waiter-sale-tb tbody").html(tHtml);
+	    }else{
+			alert("没有更多数据");
+	    }
+	}
+	$("#show-more").unbind("click").click(function(){
+		doWaiterSalePost(initWaiterSaleTb);
+	});
 }
 
 /** 显示二级弹出层 */
@@ -2473,7 +2572,7 @@ function showWaiterSaleSubTb(userid,dishid,num,name,title,dishunit,dishtype){
 /** 二级弹出层拼数据 */
 function getWaiterSaleDetails(){
 	var dishunit = $("#p_dishunit").val();
-	$.get(global_Path+"/waiterSale/getWaiterSaleDetail.json", {
+	$.post(global_Path+"/waiterSale/getWaiterSaleDetail.json", {
 		beginTime: $("#beginTime").val(),
 		endTime: $("#endTime").val(),
 		userid: $("#p_userid").val(),

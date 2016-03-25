@@ -37,7 +37,7 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 	public List<Map<String,Object>> waiterSaleListProcedure(Map<String,Object> params){
 		int page = Integer.parseInt((params.get("page").toString()));
 		int rows = Integer.parseInt(params.get("rows").toString());
-		params.put("page", (page-1)*rows);
+		params.put("page", page*rows);
 		params.put("rows", rows);
 		return tWaiterSaleDao.waiterSaleListProcedure(params);
 	}

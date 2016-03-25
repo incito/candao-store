@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -42,11 +43,24 @@ public class WaiterSaleController extends BaseController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/getWaiterSaleList")
+	@RequestMapping(value="/getWaiterSaleList",method = RequestMethod.POST)
 	public JSONObject getWaiterSaleList(@RequestParam Map<String, Object> params, HttpServletRequest request){
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		params.put("branchId", branchid);
 	    Map<String,Object> map = new HashMap<String,Object>();
+	    map = validateParameter(params);
+	    if(params.get("page") == null || params.get("page").equals("")){
+	    	map = ReturnMap.getReturnMap(0, "002", "缺少页数");
+	    }
+	    if(params.get("rows") == null || params.get("rows").equals("")){
+	    	map = ReturnMap.getReturnMap(0, "002", "缺少每页显示条数");
+	    }
+	    if(!params.get("waiterName").equals("")){
+	    	params.put("waiterName", params.get("waiterName").toString().trim());
+	    }
+	    if(!params.get("dishName").equals("")){
+	    	params.put("dishName", params.get("dishName").toString().trim());
+	    }
 	    try{
 	    	List<Map<String,Object>> list = waiterSaleService.waiterSaleListProcedure(params);
 	    	JSONArray data = JSONArray.fromObject(list);
@@ -67,19 +81,32 @@ public class WaiterSaleController extends BaseController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/getWaiterSaleDetail")
+	@RequestMapping(value="/getWaiterSaleDetail",method = RequestMethod.POST)
 	public JSONObject getWaiterSaleDetail(@RequestParam Map<String, Object> params, HttpServletRequest request){
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		params.put("branchId", branchid);
 		String dishunit = (String)params.get("dishunit");
-		try{
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(params.get("dishunit") == null || params.get("dishunit").equals("")){
+	    	map = ReturnMap.getReturnMap(0, "002", "缺少人数");
+	    }
+	    if(params.get("dishtype") == null || params.get("dishtype").equals("")){
+	    	map = ReturnMap.getReturnMap(0, "002", "缺少菜品分类");
+	    }
+	    if(params.get("userid") == null || params.get("userid").equals("")){
+	    	map = ReturnMap.getReturnMap(0, "002", "缺少用户id");
+		}
+	    if(params.get("dishid") == null || params.get("dishid").equals("")){
+	    	map = ReturnMap.getReturnMap(0, "002", "缺少菜品id");
+		}
+	    try{
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			params.put("dishunit", dishunit);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	    Map<String,Object> map = new HashMap<String,Object>();
+	    map = validateParameter(params);
 	    try{
 			List<Map<String,Object>> list = waiterSaleService.getWaiterSaleDetail(params);
 			JSONArray data = JSONArray.fromObject(list);
@@ -90,6 +117,24 @@ public class WaiterSaleController extends BaseController {
 	    	e.printStackTrace();
 	    }
 	    return JSONObject.fromObject(map);
+	}
+	
+	/**
+	 * 校验查询参数
+	 * @author weizhifang
+	 * @since 2016-3-25
+	 * @param params
+	 * @return
+	 */
+	private Map<String,Object> validateParameter(Map<String,Object> params){
+		String errMsg = "";
+		if(params.get("begintime") == null || params.get("begintime").equals("")){
+			errMsg = "缺少起始时间";
+		}
+		if(params.get("endtime") == null || params.get("endtime").equals("")){
+			errMsg = "缺少结束时间";
+		}
+		return ReturnMap.getReturnMap(0, "002", errMsg);
 	}
 	
 	/**
@@ -114,7 +159,7 @@ public class WaiterSaleController extends BaseController {
 			@PathVariable(value = "dishtype") String dishtype,
 			@PathVariable(value = "dishunit") String dishunit
 			){
-		Map<String,Object> params = setParameter(beginTime,endTime,waiterName,dishName,searchType,"","","",dishtype,dishunit,"1","9999999");
+		Map<String,Object> params = setParameter(beginTime,endTime,waiterName,dishName,searchType,"","","",dishtype,dishunit,"0","9999999");
 		List<Map<String,Object>> list = waiterSaleService.waiterSaleListProcedure(params);
 		waiterSaleService.createMainExcel(request, response, list, params);
 	}
@@ -180,13 +225,13 @@ public class WaiterSaleController extends BaseController {
 		try{
 			if(!waiterName.equals("null")){
 				waiterName = URLDecoder.decode(waiterName,"UTF-8");
-				params.put("waiterName", waiterName);
+				params.put("waiterName", waiterName.trim());
 			}else{
 				params.put("waiterName", "");
 			}
 			if(!dishName.equals("null")){
 				dishName = URLDecoder.decode(dishName,"UTF-8");
-				params.put("dishName", dishName);
+				params.put("dishName", dishName.trim());
 			}else{
 				params.put("dishName", "");
 			}
