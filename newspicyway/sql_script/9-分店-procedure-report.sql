@@ -8242,7 +8242,7 @@ DELIMITER ;
 
 
 DELIMITER $$
-
+DROP PROCEDURE IF EXISTS p_report_fwyxstjb$$
 CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid int(11),
 IN pi_ksrq datetime, -- 开始日期
 IN pi_jsrq datetime, -- 结束日期

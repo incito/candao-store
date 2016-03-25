@@ -32,6 +32,7 @@
 	    <if test="dishtype == '0'.toString() or dishtype == '2'.toString()">
 	    	AND tod.primarykey = tod.superkey
 	    </if>
+	    AND tod.dishtype = #{dishtype}
 	    group by too.orderid,tod.dishunit, tod.dishtype
 	</select>
 
