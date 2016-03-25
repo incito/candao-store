@@ -262,4 +262,21 @@ body {
 	color: #999999;
 }
 
-
+.checkbox-overflow {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis
+}
+.span-overflow{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width:60%;
+    display:inline-block;
+}
+.git-overflow{
+	overflow:hidden;
+	text-overflow:ellipsis;
+    white-space: nowrap;
+}
+}
