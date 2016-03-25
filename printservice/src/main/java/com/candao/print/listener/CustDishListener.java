@@ -176,7 +176,7 @@ public class CustDishListener {
 		StringBuffer buffer = new StringBuffer();
 		for (PrintDish it : list) {
 			name = StringUtils.subString2(StringUtils.BtoQ(it.getDishName()), num1);
-			price = StringUtils.subString2(StringUtils.BtoQ(it.getDishPrice().toString()), num3);
+			price = StringUtils.subString2(StringUtils.BtoQ(it.getDishPrice() == null?"":it.getDishPrice().toString()), num3);
 			dishnum = StringUtils.bSubstring2(StringUtils.BtoQ(it.getDishNum()), num2);
 
 			rows = name.size() >price.size()?name.size():price.size() ;
