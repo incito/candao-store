@@ -48,13 +48,6 @@ public class WaiterSaleController extends BaseController {
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		params.put("branchId", branchid);
 	    Map<String,Object> map = new HashMap<String,Object>();
-	    map = validateParameter(params);
-	    if(params.get("page") == null || params.get("page").equals("")){
-	    	map = ReturnMap.getReturnMap(0, "002", "缺少页数");
-	    }
-	    if(params.get("rows") == null || params.get("rows").equals("")){
-	    	map = ReturnMap.getReturnMap(0, "002", "缺少每页显示条数");
-	    }
 	    if(!params.get("waiterName").equals("")){
 	    	params.put("waiterName", params.get("waiterName").toString().trim());
 	    }
@@ -87,18 +80,6 @@ public class WaiterSaleController extends BaseController {
 		params.put("branchId", branchid);
 		String dishunit = (String)params.get("dishunit");
 		Map<String,Object> map = new HashMap<String,Object>();
-		if(params.get("dishunit") == null || params.get("dishunit").equals("")){
-	    	map = ReturnMap.getReturnMap(0, "002", "缺少人数");
-	    }
-	    if(params.get("dishtype") == null || params.get("dishtype").equals("")){
-	    	map = ReturnMap.getReturnMap(0, "002", "缺少菜品分类");
-	    }
-	    if(params.get("userid") == null || params.get("userid").equals("")){
-	    	map = ReturnMap.getReturnMap(0, "002", "缺少用户id");
-		}
-	    if(params.get("dishid") == null || params.get("dishid").equals("")){
-	    	map = ReturnMap.getReturnMap(0, "002", "缺少菜品id");
-		}
 	    try{
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
@@ -106,7 +87,6 @@ public class WaiterSaleController extends BaseController {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	    map = validateParameter(params);
 	    try{
 			List<Map<String,Object>> list = waiterSaleService.getWaiterSaleDetail(params);
 			JSONArray data = JSONArray.fromObject(list);
