@@ -24,4 +24,13 @@ public interface TWaiterSaleDao {
 	 * @return
 	 */
 	public List<Map<String,Object>> getWaiterSaleDetail(Map<String,Object> params);
+	
+	/**
+	 * 查询服务员菜品信息
+	 * @author weizhifang
+	 * @sice 2016-3-26
+	 * @param params
+	 * @return
+	 */
+	public Map<String,Object> getWaiterDishInfo(Map<String,Object> params);
 }

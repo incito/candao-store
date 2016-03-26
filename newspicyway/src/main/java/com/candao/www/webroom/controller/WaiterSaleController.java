@@ -152,28 +152,26 @@ public class WaiterSaleController extends BaseController {
 	 * @param response
 	 * @param beginTime
 	 * @param endTime
-	 * @param waiterName
-	 * @param dishName
 	 * @param searchType
 	 * @param userId
 	 * @param dishid
+	 * @param dishtype
+	 * @param dishunit
 	 */
-	@RequestMapping("/exportWaiterSaleChildReport/{beginTime}/{endTime}/{name}/{title}/{searchType}/{userId}/{dishid}/{num}/{dishtype}/{dishunit}")
+	@RequestMapping("/exportWaiterSaleChildReport/{beginTime}/{endTime}/{searchType}/{userId}/{dishid}/{dishtype}/{dishunit}")
 	@ResponseBody
 	public void exportWaiterSaleChildReport(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable(value = "beginTime") String beginTime,
 			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "name") String waiterName,
-			@PathVariable(value = "title") String dishName,
 			@PathVariable(value = "searchType") String searchType,
 			@PathVariable(value = "userId") String userId,
 			@PathVariable(value = "dishid") String dishid,
-			@PathVariable(value = "num") String num,
 			@PathVariable(value = "dishtype") String dishtype,
 			@PathVariable(value = "dishunit") String dishunit){
-		Map<String,Object> params = setParameter(beginTime,endTime,waiterName,dishName,searchType,userId,dishid,num,dishtype,dishunit,"","");
-		List<Map<String,Object>> list = waiterSaleService.getWaiterSaleDetail(params);
-		waiterSaleService.createChildExcel(request, response, list, params);
+		Map<String,Object> params = setParameter(beginTime,endTime,"","",searchType,userId,dishid,"",dishtype,dishunit,"","");
+		Map<String,Object> mainList = waiterSaleService.getWaiterDishInfo(params);
+		List<Map<String,Object>> childList = waiterSaleService.getWaiterSaleDetail(params);
+		waiterSaleService.createChildExcel(request, response, childList, params, mainList);
 	}
 	
 	/**

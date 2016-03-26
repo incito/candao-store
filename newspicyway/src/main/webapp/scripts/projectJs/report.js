@@ -2649,7 +2649,7 @@ function exportWaiterSale(type){
 	if(type == 0){
 		location.href = global_Path + "/waiterSale/exportWaiterSaleMainReport/"+beginTime+"/"+endTime+"/"+waiterName+"/"+dishName+"/"+searchType+"/"+dishtype+"/"+dishunit+".json";
 	}else{
-		location.href = global_Path + "/waiterSale/exportWaiterSaleChildReport/"+beginTime+"/"+endTime+"/"+name+"/"+title+"/"+searchType+"/"+userid+"/"+dishid+"/"+num+"/"+dishtype+"/"+dishunit+".json";
+		location.href = global_Path + "/waiterSale/exportWaiterSaleChildReport/"+beginTime+"/"+endTime+"/"+searchType+"/"+userid+"/"+dishid+"/"+dishtype+"/"+dishunit+".json";
 	}
 }
 /*******************服务员销售统计表END****************************/

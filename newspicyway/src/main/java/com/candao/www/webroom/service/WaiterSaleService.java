@@ -46,5 +46,14 @@ public interface WaiterSaleService {
 	 * @param list
 	 * @param params
 	 */
-	public void createChildExcel(HttpServletRequest request,HttpServletResponse response,List<Map<String,Object>> list,Map<String,Object> params);
+	public void createChildExcel(HttpServletRequest request,HttpServletResponse response,List<Map<String,Object>> childList,Map<String,Object> params,Map<String,Object> mainList);
+	
+	/**
+	 * 查询服务员菜品信息
+	 * @author weizhifang
+	 * @sice 2016-3-26
+	 * @param params
+	 * @return
+	 */
+	public Map<String,Object> getWaiterDishInfo(Map<String,Object> params);
 }

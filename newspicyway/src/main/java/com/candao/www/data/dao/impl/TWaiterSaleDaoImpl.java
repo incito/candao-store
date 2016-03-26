@@ -36,4 +36,15 @@ public class TWaiterSaleDaoImpl implements TWaiterSaleDao{
 	public List<Map<String,Object>> getWaiterSaleDetail(Map<String,Object> params){
 		return daoSupport.find(PREFIX + ".getWaiterSaleDetail",params);
 	}
+	
+	/**
+	 * 查询服务员菜品信息
+	 * @author weizhifang
+	 * @sice 2016-3-26
+	 * @param params
+	 * @return
+	 */
+	public Map<String,Object> getWaiterDishInfo(Map<String,Object> params){
+		return daoSupport.get(PREFIX + ".getWaiterDishInfo",params);
+	}
 }

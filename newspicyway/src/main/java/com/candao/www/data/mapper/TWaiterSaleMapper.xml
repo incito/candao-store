@@ -32,8 +32,26 @@
 	    <if test="dishtype == '0'.toString() or dishtype == '2'.toString()">
 	    	AND tod.primarykey = tod.superkey
 	    </if>
-	    AND tod.dishtype = #{dishtype}
+	    AND tod.dishtype = #{dishtype} AND tod.dishnum > 0
 	    group by too.orderid,tod.dishunit, tod.dishtype
 	</select>
 
+    <!--  查询服务员菜品信息 -->
+    <select id="getWaiterDishInfo" parameterType="java.util.Map" resultType="java.util.Map" >
+        select sum(tod.dishnum) AS num,td.title as dishName,tod.dishunit
+        from t_order_detail tod,t_order too,t_dish td where tod.orderid = too.orderid and tod.dishid = td.dishid
+	    <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
+	    and too.begintime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
+	    </if>
+	    and too.orderstatus = 3 and too.userid = #{userid} and tod.dishid = #{dishid} and too.branchid = #{branchId} and tod.dishunit = #{dishunit}
+	    AND tod.orderprice IS NOT NULL
+	    <if test="dishtype == '1'.toString()">
+	    	AND tod.primarykey != tod.superkey
+	    </if>
+	    <if test="dishtype == '0'.toString() or dishtype == '2'.toString()">
+	    	AND tod.primarykey = tod.superkey
+	    </if>
+	    AND tod.dishtype = #{dishtype}
+	    group by tod.dishunit, tod.dishtype
+    </select>
 </mapper>

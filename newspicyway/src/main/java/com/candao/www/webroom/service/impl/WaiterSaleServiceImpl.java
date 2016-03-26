@@ -17,6 +17,7 @@ import jxl.write.WritableWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.data.dao.TWaiterSaleDao;
 import com.candao.www.utils.ExcelUtils;
 import com.candao.www.webroom.service.WaiterSaleService;
@@ -26,6 +27,9 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 
 	@Autowired
 	private TWaiterSaleDao tWaiterSaleDao;
+	
+	@Autowired
+	private TRethinkSettlementDao tRethinkSettlementDao;
 	
 	/**
 	 * 查询服务员销售列表
@@ -124,7 +128,7 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 	 * @param list
 	 * @param params
 	 */
-	public void createChildExcel(HttpServletRequest request,HttpServletResponse response,List<Map<String,Object>> list,Map<String,Object> params){
+	public void createChildExcel(HttpServletRequest request,HttpServletResponse response,List<Map<String,Object>> childList,Map<String,Object> params,Map<String,Object> mainList){
 		// 文件名称与路径  
         String fileName = "服务员销售统计表.xls";  
         String excelUrl = request.getSession().getServletContext().getRealPath("/");
@@ -153,23 +157,24 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
             	 sheet.setColumnView(i,25);
             	 sheet.addCell(new Label(i,1,main[i],wcfHead));  
              }
-             sheet.addCell(new Label(0, 2, params.get("waiterName").toString(), wcfTable));
-        	 sheet.addCell(new Label(1, 2, params.get("dishName").toString(), wcfTable));
-        	 sheet.addCell(new Label(2, 2, params.get("dishunit").toString(), wcfTable));
-        	 sheet.addCell(new Label(3, 2, params.get("num").toString(), wcfTable));
+             String num = mainList.get("num").toString();
+             sheet.addCell(new Label(0, 2, mainList.get("waiterName").toString(), wcfTable));
+        	 sheet.addCell(new Label(1, 2, mainList.get("dishName").toString(), wcfTable));
+        	 sheet.addCell(new Label(2, 2, mainList.get("dishunit").toString(), wcfTable));
+        	 sheet.addCell(new Label(3, 2, num.substring(0, num.length()-2), wcfTable));
              String text [] = {"时间","订单号","单位","售卖数量"};
              for(int i=0;i<text.length;i++){
             	 sheet.setColumnView(i,25);
             	 sheet.addCell(new Label(i,3,text[i],wcfHead));  
              }
-             if(!list.toString().equals("[null]")){
+             if(!childList.toString().equals("[null]")){
             	 int rowNum = 3;
-	             for(int i=0;i<list.size();i++){
+	             for(int i=0;i<childList.size();i++){
 	            	 rowNum++;
 	            	 sheet.setColumnView(i,25);
-	            	 String begintime = list.get(i).get("begintime") == null ? "" : list.get(i).get("begintime").toString();
-	            	 String orderid = list.get(i).get("orderid") == null ? "" : list.get(i).get("orderid").toString();
-	            	 String dishnum = list.get(i).get("dishnum") == null ? "" : list.get(i).get("dishnum").toString();
+	            	 String begintime = childList.get(i).get("begintime") == null ? "" : childList.get(i).get("begintime").toString();
+	            	 String orderid = childList.get(i).get("orderid") == null ? "" : childList.get(i).get("orderid").toString();
+	            	 String dishnum = childList.get(i).get("dishnum") == null ? "" : childList.get(i).get("dishnum").toString();
 	            	 sheet.addCell(new Label(0, rowNum, begintime, wcfTable));
 	            	 sheet.addCell(new Label(1, rowNum, orderid, wcfTable));
 	            	 sheet.addCell(new Label(2, rowNum, params.get("dishunit").toString(), wcfTable));
@@ -183,5 +188,20 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
         	 e.printStackTrace();
          }
          ExcelUtils.downloadExcel(request,response,fileName,realPath);
+	}
+	
+	/**
+	 * 查询服务员菜品信息
+	 * @author weizhifang
+	 * @sice 2016-3-26
+	 * @param params
+	 * @return
+	 */
+	public Map<String,Object> getWaiterDishInfo(Map<String,Object> params){
+		Map<String,Object> result = tWaiterSaleDao.getWaiterDishInfo(params);
+		String waiterId = (String)params.get("userid");
+		String waiter = tRethinkSettlementDao.queryUserNameByJobNumber(waiterId,params.get("branchId").toString());
+		result.put("waiterName", waiter);
+		return result;
 	}
 }
