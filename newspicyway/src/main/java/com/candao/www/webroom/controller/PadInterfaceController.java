@@ -121,10 +121,6 @@ import net.sf.json.JSONObject;
 @RequestMapping("/padinterface")
 public class PadInterfaceController {
 	
-	private static final String DEFAULTSORTASC="1";
-	
-	private static final String DEFAULTSORTDEC="0";
-	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
 	
 	/**ti
