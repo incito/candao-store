@@ -10,7 +10,9 @@ public class Constant {
 	
 	public final static int SOCKET_CHECK_TIME  = 3000;
 	
-	public final static String UPLOAD_PATH = PropertiesUtils.getValue("upload_path");;
+	public final static String UPLOAD_PATH = PropertiesUtils.getValue("upload_path");
+	
+	public final static String DEFAULT_TABLE_SORT = PropertiesUtils.getValue("DEFAULT_TABLE_SORT");
 	
 	/** 当前用户 */
 	public final static String CURRENT_USER = "currentUser";

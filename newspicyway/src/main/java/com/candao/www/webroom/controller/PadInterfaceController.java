@@ -121,6 +121,10 @@ import net.sf.json.JSONObject;
 @RequestMapping("/padinterface")
 public class PadInterfaceController {
 	
+	private static final String DEFAULTSORTASC="1";
+	
+	private static final String DEFAULTSORTDEC="0";
+	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
 	
 	/**ti
@@ -910,9 +914,15 @@ public class PadInterfaceController {
 	@RequestMapping(value = "/querytables" )
 	@ResponseBody
 	public String queryAllTable(){
+		Map<String, Object>  map=new HashMap<>();
+		String defaultsort="0";//默认
+		if(null!=Constant.DEFAULT_TABLE_SORT){
+			defaultsort=Constant.DEFAULT_TABLE_SORT;
+		}
+		map.put("defaultsort", defaultsort);
 		String jsonString  = "";
 		try {
-			List<Map<String, Object>> list = tableService.find(null);
+			List<Map<String, Object>> list = tableService.find(map);
 			return JacksonJsonMapper.objectToJson(list);
 
 		} catch (Exception e) {

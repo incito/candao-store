@@ -251,8 +251,12 @@
 	        and a.custPrinter=#{custPrinter}
 	     </if>
 	   </where>
-	     order by b.areaname asc, a.tableNo asc
-	   
+		<if test="defaultsort=='1'">
+		     order by b.areaname asc, a.tableNo asc
+		</if>	   
+	   <if test="defaultsort!='1'">
+		      order by  CAST( a.tableNo as SIGNED) asc
+		</if>	  
 	</select>
 	
 	<select id="page" parameterType="map" resultMap="pageResultMap">
