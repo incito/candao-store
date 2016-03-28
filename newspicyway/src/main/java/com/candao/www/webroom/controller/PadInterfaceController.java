@@ -915,7 +915,7 @@ public class PadInterfaceController {
 		if(null!=Constant.DEFAULT_TABLE_SORT){
 			defaultsort=Constant.DEFAULT_TABLE_SORT;
 		}
-		map.put("defaultsort", defaultsort);
+		map.put("defaultsort", Integer.parseInt(defaultsort));
 		String jsonString  = "";
 		try {
 			List<Map<String, Object>> list = tableService.find(map);
