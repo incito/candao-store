@@ -78,8 +78,12 @@ public class NormalDishListener {
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("==========================================\r\n");
 			writer.flush();// 
+			int defulatnum=27;
+			if(object.getOrderNo().contains("-")){
+				defulatnum=28;
+			}
 			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
-					28)
+					defulatnum)
 					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
 					+ "\r\n");
 
