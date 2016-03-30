@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -39,8 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
-import com.candao.common.log.LoggerFactory;
-import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -120,6 +120,7 @@ import net.sf.json.JSONObject;
 @Controller
 @RequestMapping("/padinterface")
 public class PadInterfaceController {
+	
 	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
 	
@@ -1008,6 +1009,7 @@ public class PadInterfaceController {
 			retMap.put("detail", list);
 			return JacksonJsonMapper.objectToJson(retMap);
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			jsonString = "";
 		}
@@ -1257,11 +1259,13 @@ public class PadInterfaceController {
 			response.setHeader("Content-Type", "application/json");
 			response.setContentType("text/json;charset=UTF-8");
 			OutputStream stream = response.getOutputStream();
+			logger.info(wholeJsonStr);
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
 			stream.flush();
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1281,11 +1285,13 @@ public class PadInterfaceController {
 			response.setHeader("Content-Type", "application/json");
 			response.setContentType("text/json;charset=UTF-8");
 			OutputStream stream = response.getOutputStream();
+			logger.info(wholeJsonStr);
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
 			stream.flush();
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1305,11 +1311,13 @@ public class PadInterfaceController {
 			response.setHeader("Content-Type", "application/json");
 			response.setContentType("text/json;charset=UTF-8");
 			OutputStream stream = response.getOutputStream();
+			logger.info(wholeJsonStr);
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
 			stream.flush();
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1329,11 +1337,13 @@ public class PadInterfaceController {
 			response.setHeader("Content-Type", "application/json");
 			response.setContentType("text/json;charset=UTF-8");
 			OutputStream stream = response.getOutputStream();
+			logger.info(wholeJsonStr);
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
 			stream.flush();
 			stream.close();
 
 		}catch(Exception ex){
+			logger.info(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1354,10 +1364,12 @@ public class PadInterfaceController {
 			response.setContentType("text/json;charset=UTF-8");
 			OutputStream stream = response.getOutputStream();
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			logger.info(wholeJsonStr);
 			stream.flush();
 			stream.close();
 			
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1445,10 +1457,12 @@ public class PadInterfaceController {
 			response.setContentType("text/json;charset=UTF-8");
 			OutputStream stream = response.getOutputStream();
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			logger.info(wholeJsonStr);
 			stream.flush();
 			stream.close();
 
 		}catch(Exception ex){
+			logger.info(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1603,19 +1617,23 @@ public class PadInterfaceController {
 
 			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 			if(tbOpenBizLog == null){
+				logger.info("操作失败");
 				jsonString = Constant.FAILUREMSG;
 				return jsonString;
 			}
 
 			String pwd = dataDictionaryService.find("SECRETKEY");
 			if(! pwd.equals(loginInfo.getPassword())){
+				logger.info("密码错误");
 				jsonString = Constant.FAILUREMSG;
 			}else {
+				logger.info("登录成功");
 //				userService.updateLoginTime(loginInfo.getUsername());
 				jsonString = Constant.SUCCESSMSG;
 			}
 //			 
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 			jsonString = Constant.FAILUREMSG;
 		}
 		return jsonString;
@@ -2093,7 +2111,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2106,15 +2124,10 @@ public class PadInterfaceController {
 	@ResponseBody
 	public String getOpenEndTime(){
 		Map<String,Object> retMap = new HashMap<>();
-		try{
-			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
-			timeMap.remove("datetype");
-			retMap.put("result", "0");
-			retMap.put("detail", timeMap);
-		}catch(Exception e){
+		try{}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2139,7 +2152,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2181,7 +2194,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2317,6 +2330,6 @@ public class PadInterfaceController {
 	@Autowired
 	private TtellerCashDao tellerCashService;
 	
-	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
+	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 }

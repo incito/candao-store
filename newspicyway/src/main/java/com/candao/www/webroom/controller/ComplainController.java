@@ -46,7 +46,7 @@ public class ComplainController {
 	@RequestMapping(value = "/getComplainType",method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getDectoyrByType() {
-		logger.debug("start method getDicListByType");
+		logger.info("start method getDicListByType");
 		try {
 			String type ="COMPLAINT";
 			List<Map<String,String>> list = systemService.getDicListByTypeForClient(type);
