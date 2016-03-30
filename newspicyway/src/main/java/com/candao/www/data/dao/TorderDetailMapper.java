@@ -143,4 +143,7 @@ public interface TorderDetailMapper {
 	
 	public List<Map<String, Object>> getDishesInfoByOrderId(String orderid);
 	public Map<String, Object> selectorderinfos(String orderid);
+	
+	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap);
+	
 }

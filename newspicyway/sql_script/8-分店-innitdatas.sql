@@ -583,6 +583,22 @@ INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) V
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
 
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('activity000','0','赠菜','0','1','ACTIVITY','手工优免活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity001','1','折扣','1','1','ACTIVITY','手工优免活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity002','2','减免','2','1','ACTIVITY','手工优免活动方式');
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('payway000','0','微信支付','0','1','PAYWAYTYPE','在线支付优免支付类型');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('payway001','1','支付宝','1','1','PAYWAYTYPE','在线支付优免支付类型');
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('cooperationNnit000','0','折扣','0','1','cooperationNnit','合作单位活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('cooperationNnit001','1','减免','1','1','cooperationNnit','合作单位活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('cooperationNnit002','2','无优免','2','1','cooperationNnit','合作单位活动方式');
+
+INSERT INTO `t_p_preferential_type_dict` VALUES ('07', '手工优惠', null, '0', null);
+INSERT INTO `t_p_preferential_type_dict` VALUES ('08', '合作单位', null, '0', null);
+INSERT INTO `t_p_preferential_type_dict` VALUES ('09', '在线支付优免', null, '0', null);
+
 commit;
 -- 
 -- Enable foreign keys

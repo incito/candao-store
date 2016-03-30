@@ -14,11 +14,11 @@
         <result property="typename" column="typename" />
         <result property="price" column="price" />
         <result property="datetype" column="date_type" />
-        <result property="memberprice" column="memberprice" />
-        <result property="chargesstatus" column="chargesstatus" />
+        <result property="memberprice" column="member_price" />
+        <result property="chargesstatus" column="charges_status" />
         <result property="endtime" column="end_time" />
         <result property="begintime" column="begin_time" />
-        <result property="itemValue" column="item_value"/>
+        <result property="itemValue" column="item_value" />
     </resultMap>
     <resultMap id="pageResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>
     <resultMap id="findResultMap" type="java.util.HashMap" extends="tbDataDictionaryResultMap"></resultMap>
@@ -255,7 +255,7 @@
     
         <!--查询分类下的子项  -->
     <select id="getDicListByType" resultMap="findResultMap" parameterType="map">
-        select dictid,itemid,itemDesc,itemSort,type,typename,item_value,begin_time,end_time,date_type 
+        select dictid,itemid,itemDesc,itemSort,type,typename,item_value,begin_time,end_time,date_type,charges_status  
         from t_dictionary 
         <where>
              status = 1
@@ -280,12 +280,14 @@
 	t.end_time,
 	t.charges_status,
 	t.member_price,
-	t.price ,t.date_type
+	t.price ,
+	t.date_type,
+	t.item_value
 FROM
 	t_dictionary t
 
 
-where type in ('SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY")
+where type in ('SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY","PADIMG")
 order by t.type, 
 t.itemSort ASC
 

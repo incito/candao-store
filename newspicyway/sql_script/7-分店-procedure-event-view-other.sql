@@ -1385,7 +1385,7 @@ BEGIN
 
   DECLARE v_status int(11);
 
-  DECLARE v_dishunit varchar(50) CHARACTER SET utf8;
+  DECLARE v_dishunit varchar(300) CHARACTER SET utf8;
 
   DECLARE v_payamount decimal(10, 2);
 
