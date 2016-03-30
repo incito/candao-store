@@ -212,28 +212,9 @@
      <!-- 导入bossapp 配置信息
 	<import resource="bossapp.xml"/>-->
 	
-	<!-- memberDataSource -->
-	<bean id="memberDataSource" class="org.apache.commons.dbcp.BasicDataSource">
-		<property name="driverClassName" value="${jdbc.driver}" />
-		<property name="url" value="${member.jdbc.url}" />
-		<property name="username" value="${member.jdbc.username}" />
-		<property name="password" value="${member.jdbc.password}" />
-		<property name="maxActive" value="${jdbc.maxActive}" />
-		<property name="initialSize" value="${jdbc.initialSize}" />
-		<property name="maxWait" value="${jdbc.maxWait}" />
-		<property name="maxIdle" value="${jdbc.maxIdle}" />
-		<property name="minIdle" value="${jdbc.minIdle}" />
-		<property name="removeAbandoned" value="${jdbc.removeAbandoned}" />
-		<property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}" />
-		<property name="validationQuery" value="${jdbc.validationQuery}" />
-		<property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}" />
-		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}" />
-		<property name="testOnBorrow" value="${jdbc.testOnBorrow}" />
-	</bean>
-
 	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
 	<bean id="membersqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="memberDataSource" />
+		<property name="dataSource" ref="masterDataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
 		<property name="mapperLocations" value="classpath:com/candao/www/data/mapper/MemberMapper.xml"></property>
 	</bean>
