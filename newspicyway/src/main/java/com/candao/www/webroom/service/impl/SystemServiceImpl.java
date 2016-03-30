@@ -39,7 +39,7 @@ public class SystemServiceImpl {
 	@Autowired
 	private DishService dishService;
 	
-	private static final Logger logger = LoggerFactory.getLogger(SystemController.class);
+	private static final Logger logger = LoggerFactory.getLogger(SystemServiceImpl.class);
 
 
 	/**
@@ -428,12 +428,12 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public List<Map<String,String>> getTimeValueByTypeForClient(String type){
-		logger.debug("start getTimeValueByTypeForClient for type : {} ",type);
+		logger.info("start getTimeValueByTypeForClient for type : {} ",type);
 		List<Map<String,String>> returnList = new ArrayList<Map<String,String>>();
 		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
 		
 	    if(infoList==null||infoList.size()<=0){
-	    	logger.debug("the dic data is null for type : {}",type);
+	    	logger.info("the dic data is null for type : {}",type);
 	    	return returnList;
 	    }
 		for (Map<String, Object> info : infoList) {
@@ -445,7 +445,7 @@ public class SystemServiceImpl {
 			infomap.put("dictid", info.containsKey("id")?info.get("id").toString():"");
 			returnList.add(infomap);
 		}
-		logger.debug("end getTimeValueByTypeForClient for type : {} and get data {} ",type,returnList);
+		logger.info("end getTimeValueByTypeForClient for type : {} and get data {} ",type,returnList);
 		return returnList;
 	}
 }
