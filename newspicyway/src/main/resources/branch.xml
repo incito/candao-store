@@ -100,6 +100,7 @@
 		</property>
 	</bean>
 
+
  <bean id="mybatisInterceptor" class="com.candao.www.interceptor.MybatisInterceptor" />
 	
 	<bean id="paginationInterceptor"
@@ -132,8 +133,21 @@
 			expression="execution(* com.candao.www.*.service.*.*(..))" />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="productServiceMethods" />
 	</aop:config>
-
-
+	
+	
+    <aop:config>  
+        <aop:aspect id="WorkLogAdvice" ref="aoplogbean">  
+            <aop:pointcut id="businessService"  
+                expression="execution(* com.candao.www.*.service.*.*(..))" />  
+            <aop:before pointcut-ref="businessService" method="doBefore"/>  
+            <aop:after pointcut-ref="businessService" method="doAfter"/>  
+            <aop:around pointcut-ref="businessService" method="doAround"/>  
+            <aop:after-throwing pointcut-ref="businessService" method="doThrowing" throwing="ex"/>  
+        </aop:aspect>  
+    </aop:config>  
+    
+<bean id="aoplogbean" class="com.candao.www.interceptor.WorkLogAdvice"/>
+	
 <tx:advice id="txAdvice" transaction-manager="transactionManager">  
 	 <tx:attributes>  
         <tx:method name="save*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
