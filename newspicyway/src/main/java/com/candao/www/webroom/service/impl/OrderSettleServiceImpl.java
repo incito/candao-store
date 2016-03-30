@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ import com.candao.www.weixin.dto.WxPayResult;
 
 @Service
 public class OrderSettleServiceImpl implements OrderSettleService{
+	
+	private static final Logger logger = LoggerFactory.getLogger(OrderSettleServiceImpl.class);
 	
 	@Autowired
 	TsettlementMapper settlementMapper;
@@ -370,6 +374,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 					 transactionManager.commit(status);
 					 return "2";//微信扫码反结算成功
 				} catch (Exception e) {
+					logger.error(e.getMessage());
 					e.printStackTrace();
 					transactionManager.rollback(status);
 					return "1";

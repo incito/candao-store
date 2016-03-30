@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +20,8 @@ import com.candao.www.data.dao.TPreferentialAnalysisChartsDao;
 @Repository
 public class TPreferentialAnalysisChartsDaoImpl implements TPreferentialAnalysisChartsDao {
 
+	private static final Logger logger = LoggerFactory.getLogger(TPreferentialAnalysisChartsDaoImpl.class);
+	
 	@Autowired
 	private DaoSupport daoSupport;
 
@@ -32,6 +36,7 @@ public class TPreferentialAnalysisChartsDaoImpl implements TPreferentialAnalysis
     	try{
     		return daoSupport.find(PREFIX + ".findPreferentialView", params);
     	}catch(Exception ex){
+    		logger.error(ex.getMessage());
     		ex.printStackTrace();
     	}
     	return new ArrayList<T>();

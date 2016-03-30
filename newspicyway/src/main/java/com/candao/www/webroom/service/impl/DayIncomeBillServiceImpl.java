@@ -14,17 +14,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.candao.www.utils.DateTimeUtils;
-
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.page.Page;
-import com.candao.www.constant.SystemConstant;
-import com.candao.www.data.dao.TBusinessDataDetailDao;
-import com.candao.www.data.dao.TbDataDictionaryDao;
 import com.candao.www.data.dao.TbDayIncomeBillDao;
+import com.candao.www.utils.DateTimeUtils;
 import com.candao.www.webroom.model.Base_CouponsRept;
 import com.candao.www.webroom.model.BusinessReport;
 import com.candao.www.webroom.model.Code;
@@ -42,10 +40,10 @@ import com.candao.www.webroom.service.BusinessDataDetailService;
 import com.candao.www.webroom.service.DayIncomeBillService;
 @Service
 public class DayIncomeBillServiceImpl implements DayIncomeBillService{
+	private static final Logger logger = LoggerFactory.getLogger(DayIncomeBillServiceImpl.class);
+	
 	@Autowired
 	private TbDayIncomeBillDao tbDayIncomeBillDao;
-	@Autowired
-	private TbDataDictionaryDao tbDataDictionaryDao;
 	@Autowired
 	private BusinessDataDetailService businessDataDetailService;
 
@@ -167,7 +165,7 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 								dayNum = 1;
 							}
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
+							logger.error(e.getMessage());
 							e.printStackTrace();
 					 }
 					 //餐厅餐桌总台数
@@ -260,7 +258,7 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 						try {
 							date = formatter.parse(dateStr);
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
+							logger.error(e.getMessage());
 							e.printStackTrace();
 						}
 						 String dateResult = formatter.format(date);

@@ -15,13 +15,11 @@ import java.util.Map;
 
 import javax.jms.Destination;
 
-import net.sf.json.JSONObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -53,10 +51,13 @@ import com.candao.www.webroom.service.OpenBizService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
-import com.candao.www.webroom.service.WorkLogService;
+
+import net.sf.json.JSONObject;
 
 @Service
 public class OrderServiceImpl implements OrderService{
+	
+	private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
 	@Autowired
 	TableService  tableService;
@@ -68,9 +69,6 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Autowired
 	private DataDictionaryService datadictionaryService;
-	
-	@Autowired
-	private WorkLogService workLogService;
 	
 	@Autowired
 	TdishDao  dishDao;
@@ -572,7 +570,7 @@ public class OrderServiceImpl implements OrderService{
 					System.out.println("清空pad推送失败");
 				}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.error(e.getMessage());
 					System.out.println("推送异常"+e.toString());
 					e.printStackTrace();
 				}

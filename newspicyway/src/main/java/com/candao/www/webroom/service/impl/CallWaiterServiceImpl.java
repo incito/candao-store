@@ -21,6 +21,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,7 @@ import net.sf.json.JSONObject;
 @Service
 public class CallWaiterServiceImpl implements CallWaiterService{
 	
+	private static final Logger logger = LoggerFactory.getLogger(CallWaiterServiceImpl.class);
 	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
 	
@@ -309,7 +312,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		try{
 			return Integer.parseInt(numstr)<1?1:Integer.parseInt(numstr);
 		}catch(Exception ex){
-			
+			logger.error(ex.getMessage());
 		}
 		return 1;
 	}
@@ -318,7 +321,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		try{
 			return Integer.parseInt(numstr);
 		}catch(Exception ex){
-			
+			logger.error(ex.getMessage());
 		}
 		return 0;
 	}
@@ -328,7 +331,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		try{
 			callWaiterDao.updateCallInfoStatus(orderid);
 		}catch(Exception ex){
-			
+			logger.error(ex.getMessage());
 		}
 	}
 	
@@ -380,6 +383,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
 							 tableNo = java.net.URLEncoder.encode(finaltableno,"utf-8");
 	    				} catch (UnsupportedEncodingException e) {
+	    					logger.error(e.getMessage());
 	    					e.printStackTrace();
 	    				}
 	    				if(!userid.equals("")){
@@ -402,7 +406,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    						System.out.println("推送失败");
 	    					}
 	    					} catch (IOException e) {
-	    						// TODO Auto-generated catch block
+	    						logger.error(e.getMessage());
 	    						e.printStackTrace();
 	    					}
 	    				}

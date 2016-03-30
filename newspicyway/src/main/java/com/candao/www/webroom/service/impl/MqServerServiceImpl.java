@@ -7,12 +7,11 @@ import javax.jms.TextMessage;
 import org.apache.activemq.broker.region.Destination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.connection.SingleConnectionFactory ;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.candao.www.webroom.service.MqServerService;
-
-import org.springframework.jms.connection.SingleConnectionFactory ;
 /**
  *
  *  <pre>
