@@ -1198,26 +1198,6 @@ public class PadInterfaceController {
 	}
 	
 	/**
-	 * 查询所有的可挂账的合作单位
-	 *
-	 */
-	@RequestMapping(value="/getCooperationUnit",method = RequestMethod.POST)
-	@ResponseBody
-	public ModelAndView getCooperationUnit(@RequestBody String body){
-		/*@SuppressWarnings("unchecked")
-		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-		ModelAndView mav = new ModelAndView();
-		String typeid=(String) params.get("typeid"); //优惠分类
-		if( !StringUtils.isBlank(typeid)){*/
-		    ModelAndView mav = new ModelAndView();
-		    Map<String, Object> params = new HashMap<String, Object>();
-			List<Map<String,Object>> l= this.preferentialActivityService.findCooperationUnit(params);
-			mav.addObject("list", l);
-		//}
-		return mav;
-	}
-
-	/**
 	 *  使用特价菜品类和单品折扣类优惠
 	 */
 	@RequestMapping(value="/usePreferentialItem",method = RequestMethod.POST)
