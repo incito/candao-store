@@ -8,6 +8,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.candao.www.utils.ExcelUtils;
+
 import jxl.Workbook;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
@@ -16,10 +22,6 @@ import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-
-import org.springframework.stereotype.Service;
-
-import com.candao.www.utils.ExcelUtils;
 
 /**
  * 反结算明细表导出
@@ -30,6 +32,8 @@ import com.candao.www.utils.ExcelUtils;
 @Service
 public class ExportRethinkSettlementService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ExportRethinkSettlementService.class);
+	
 	/**
 	 * 导出反结算明细表
 	 * @author weizhifang
@@ -124,6 +128,7 @@ public class ExportRethinkSettlementService {
             wwb.write();
             wwb.close();
         }catch(Exception e){
+        	logger.error(e.getMessage());
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);    

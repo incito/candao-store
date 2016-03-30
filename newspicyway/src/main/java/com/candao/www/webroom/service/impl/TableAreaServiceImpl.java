@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.candao.common.page.Page;
 import com.candao.www.data.dao.TbTableAreaDao;
 import com.candao.www.data.model.TbTableArea;
-import com.candao.www.data.model.TbasicData;
 import com.candao.www.webroom.service.TableAreaService;
 @Service
 public class TableAreaServiceImpl implements TableAreaService {

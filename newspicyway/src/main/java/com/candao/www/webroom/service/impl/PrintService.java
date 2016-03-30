@@ -1,12 +1,5 @@
 package com.candao.www.webroom.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.stereotype.Service;
-
 //@Service
 //public  class PrintService {
 //

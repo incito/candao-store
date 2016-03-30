@@ -22,6 +22,8 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.candao.file.fastdfs.service.FileService;
@@ -33,6 +35,7 @@ import com.candao.www.constant.Constant;
  */
 public class Uploader {
 
+	private static final Logger logger = LoggerFactory.getLogger(Uploader.class);
 	// 文件大小常量, 单位kb
 	private static final int MAX_SIZE = 5000 * 1024;
 	// 输出文件地址
@@ -161,6 +164,7 @@ public class Uploader {
 
 			this.state = this.errorInfo.get("SUCCESS");
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			this.state = this.errorInfo.get("IO");
 		}
@@ -262,6 +266,7 @@ public class Uploader {
 			}
 
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 			this.state = this.errorInfo.get("UNKNOWN");
 		}
 
@@ -292,6 +297,7 @@ public class Uploader {
 			try {
 				dir.mkdirs();
 			} catch (Exception e) {
+				logger.error(e.getMessage());
 				this.state = this.errorInfo.get("DIR");
 				return "";
 			}
@@ -330,7 +336,7 @@ public class Uploader {
 			}
 
 		} catch (Exception e) {
-			// do nothing
+			logger.error(e.getMessage());
 		}
 
 		return result;
@@ -342,6 +348,7 @@ public class Uploader {
 		try {
 			return IOUtils.toByteArray(in);
 		} catch (IOException e) {
+			logger.error(e.getMessage());
 			return null;
 		}
 

@@ -1,16 +1,18 @@
 package com.candao.www.webroom.service.impl;
 
-import com.candao.www.utils.ExcelUtils;
-
-import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.candao.www.utils.ExcelUtils;
 
 import jxl.Workbook;
 import jxl.write.Label;
@@ -27,6 +29,8 @@ import jxl.write.WritableWorkbook;
 @Service
 public class ExportReturnDishService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ExportReturnDishService.class);
+	
 	/**
 	 * 退菜excel导出
 	 * @author weizhifang
@@ -97,6 +101,7 @@ public class ExportReturnDishService {
             wwb.write();
             wwb.close();
         }catch(Exception e){
+        	logger.error(e.getMessage());
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);

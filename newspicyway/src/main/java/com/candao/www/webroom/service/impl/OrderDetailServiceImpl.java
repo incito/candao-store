@@ -331,7 +331,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		     	transactionManager.rollback(status);
 		   		return Constant.FAILUREMSG;
 		   	}
-	 }catch(Exception ex){
+	 	}catch(Exception ex){
+		 		log.error(ex.getMessage());
 				ex.printStackTrace();
 				 transactionManager.rollback(status);
 			   	 return Constant.FAILUREMSG;

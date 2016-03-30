@@ -15,9 +15,6 @@ import com.candao.www.data.dao.TparternerCouponDao;
 import com.candao.www.data.model.TCouponRule;
 import com.candao.www.data.model.TCoupons;
 import com.candao.www.data.model.TparternerCoupon;
- 
- 
- 
 import com.candao.www.webroom.model.TCouponGroup;
 import com.candao.www.webroom.service.CouponsService;
 

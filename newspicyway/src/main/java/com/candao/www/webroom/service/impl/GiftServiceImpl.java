@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,8 @@ import net.sf.json.JSONObject;
  */
 @Service
 public class GiftServiceImpl implements GiftLogService{
+	
+	private static final Logger logger = LoggerFactory.getLogger(GiftServiceImpl.class);
 	
 	@Autowired
 	private GiftLogDao giftDao;
@@ -178,6 +182,7 @@ public class GiftServiceImpl implements GiftLogService{
 				return returnnum;
 			}
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 			returnnum = 5;
 			return returnnum;
@@ -211,6 +216,7 @@ public class GiftServiceImpl implements GiftLogService{
 		try{
 			return Integer.parseInt(value);
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			return 0;
 		}
 	}
