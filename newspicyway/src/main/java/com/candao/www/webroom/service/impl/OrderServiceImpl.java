@@ -166,6 +166,7 @@ public class OrderServiceImpl implements OrderService{
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if(tbOpenBizLog == null){
 			mapRet.put("result", "3");
+			logger.error("开台失败，开业记录为空");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		
@@ -177,10 +178,12 @@ public class OrderServiceImpl implements OrderService{
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		
 		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
+			logger.error("开台失败！ 查找不到桌台");
 			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		if(! "0".equals(String.valueOf(resultMap.get(0).get("status")))){
+			logger.error("开台失败，桌台状态不对！0");
 			mapRet.put("result", "1");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}

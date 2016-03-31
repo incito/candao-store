@@ -142,11 +142,13 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		
 		if(resultMap == null || resultMap.size() == 0  ){
+			logger.error("结算失败！查找餐桌失败 ,table:"+resultMap);
 			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		
 		if(! "1".equals(String.valueOf(resultMap.get(0).get("status")))){
+			logger.error("结算失败！ 餐桌状态为：status为 1");
 			mapRet.put("result", "1");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
@@ -165,6 +167,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 
 	 TbOpenBizLog bizLog = tbOpenBizLogDao.findOpenBizDate();
 	 if(bizLog == null)	 {
+		 logger.error("结算失败！未找到开业记录");
 		 return "1";
 	 }
 	 
@@ -294,6 +297,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 //		 dish.setOrderNum(String.valueOf(new BigDecimal(dish.getOrderNum() == null?"0":dish.getOrderNum() ).subtract(new BigDecimal(detail.getDishnum() == null?"0":detail.getDishnum()))));
 //		 tdishDao.updateOrderNum(dish);
 //	  }
+	 logger.info("结算成功！");
 	  return "0";
 	}
 
@@ -369,6 +373,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 					System.out.println("微信扫码反结算");
 					 if(retMap == null || "1".equals(retMap.get("code"))){	
 						    transactionManager.rollback(status);  //强制回滚
+						    logger.error("反结算失败！微信反结算失败, retMap: "+ retMap);
 							return Constant.FAILUREMSG;
 					 }
 					 transactionManager.commit(status);
@@ -382,6 +387,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 }
 	 //
 	 transactionManager.commit(status);
+	 logger.error("反结算成功 ");
      return "0";
 	}
 

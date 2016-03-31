@@ -1291,6 +1291,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
     	logger.error(e.getMessage());
       e.printStackTrace();
     }
+		logger.info("使用优惠券，计算金额，result: " + result);
 		return result;
 	}
 

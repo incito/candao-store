@@ -238,9 +238,10 @@ public class PadInterfaceController {
 				}
 				
 			}catch(Exception ex){
-				
+				logger.error("开台失败！" + ex.getStackTrace());
 			}
 		}
+		logger.info("开台返回结果：" + returnStr);
 		return returnStr;
 	}
 
@@ -700,8 +701,10 @@ public class PadInterfaceController {
 		}).start();
 		
 		if("0".equals(result)){
+			logger.info("结算成功，调用进销存接口");
 			return psicallback(settlementInfo,0);
 		}else {
+			logger.error("结算失败，result :" + result);
 			return Constant.FAILUREMSG;
 		}
 	}
@@ -936,6 +939,7 @@ public class PadInterfaceController {
 
 		} catch (Exception e) {
 			jsonString = "";
+			logger.error("查询所有桌台异常！", e);
 		}
 		return jsonString;
 	}
@@ -1492,6 +1496,7 @@ public class PadInterfaceController {
 		Map<String,Object> params=JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
 		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		logger.info("更新菜品称重结果： "+wholeJsonStr);
 		try{
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
@@ -1502,6 +1507,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("更新菜品重量失败！", ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1607,9 +1613,11 @@ public class PadInterfaceController {
 			}
 
 		} catch (Exception e) {
+			logger.error("查询用户权限失败！" + e.getStackTrace());
 			resultMap.put("result",1);
 			resultMap.put("msg",e.getMessage());
 		}
+		logger.info("获取用户权限结果,resultMap:" + resultMap);
 		return JacksonJsonMapper.objectToJson(resultMap);
 	}
 
@@ -1943,6 +1951,7 @@ public class PadInterfaceController {
 		String key = map.get("synkey");
 		String synKey = PropertiesUtils.getValue("SYNKEY");
 		if (!synKey.equalsIgnoreCase(key)) {
+			logger.error("结业数据上传失败！SYNKEY匹配错误");
 			return Constant.FAILUREMSG;
 		}
 		try {
@@ -1955,6 +1964,7 @@ public class PadInterfaceController {
 		} catch (Exception e) {
 			resultMap.put("result", 1);
 			resultMap.put("msg", e.getMessage());
+			logger.error("结业数据上传失败！", e);
 		}
 		return JacksonJsonMapper.objectToJson(resultMap);
 	}
