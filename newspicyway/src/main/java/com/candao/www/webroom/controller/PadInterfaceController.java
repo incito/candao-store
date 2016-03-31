@@ -827,7 +827,7 @@ public class PadInterfaceController {
 		if(result == 0){
 			return Constant.SUCCESSMSG;
 		}else {
-			logger.error("-->用户不存在,用户名为："+loginInfo.getUsername());
+			logger.error("-->用户不存在");
 			return Constant.FAILUREMSG;
 		}
 	}

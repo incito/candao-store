@@ -126,7 +126,6 @@ public class LoginServiceImpl implements LoginService {
 		param.put("exactFind", true) ;//是否是完全匹配
 		param.put("jobNumber", loginInfo.getUsername());
 		List l=userDao.queryUserList(param);
-		logger.info("-->UserList数量为："+l.size()+", 参数为param：" + param);
 		if( null!=l && l.size()>0){
 			return 0;
 		}else {
