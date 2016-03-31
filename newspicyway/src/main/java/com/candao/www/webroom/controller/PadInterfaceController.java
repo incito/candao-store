@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +125,7 @@ public class PadInterfaceController {
 	
 	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
+	
 	
 	/**ti
 	 * 菜品分类接口，全部页菜品数据获取
@@ -777,10 +780,13 @@ public class PadInterfaceController {
 		String result = orderSettleService.rebackSettleOrder(settlementInfo);
 		 
 		if("0".equals(result)){
+			logger.info("反结算成功，调用进销存反结算接口，是否使用微信支付： "+ result);
 			return psicallback(settlementInfo,0);
 		}else if("2".equals(result)){
+			logger.info("反结算成功，调用进销存反结算接口，是否使用微信支付： "+ result);
 			return psicallback(settlementInfo,1);
 		}else {
+			logger.error("反结算失败！"+result);
 			return Constant.FAILUREMSG;
 		}
 	}
