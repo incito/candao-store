@@ -3,6 +3,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +12,8 @@ import com.candao.common.exception.AuthException;
 import com.candao.common.utils.MD5;
 import com.candao.common.utils.ValidateUtils;
 import com.candao.www.data.dao.TbResourceDao;
-import com.candao.www.data.dao.TbUserDao;
 import com.candao.www.data.dao.UserDao;
 import com.candao.www.data.model.TbResource;
-import com.candao.www.data.model.TbUser;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.security.model.Credentials;
@@ -24,8 +24,7 @@ import com.candao.www.webroom.service.WorkLogService;
 
 @Service
 public class LoginServiceImpl implements LoginService {
-	//@Autowired
-	//private TbUserDao tbUserDao;
+	private static Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 	@Autowired
 	private UserDao userDao;
 	
@@ -127,6 +126,7 @@ public class LoginServiceImpl implements LoginService {
 		param.put("exactFind", true) ;//是否是完全匹配
 		param.put("jobNumber", loginInfo.getUsername());
 		List l=userDao.queryUserList(param);
+		logger.info("-->UserList数量为："+l.size()+", 参数为param：" + param);
 		if( null!=l && l.size()>0){
 			return 0;
 		}else {

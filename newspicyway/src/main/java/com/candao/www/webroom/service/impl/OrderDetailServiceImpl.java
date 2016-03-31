@@ -60,6 +60,8 @@ import com.candao.www.webroom.service.TableAreaService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 
+import net.sf.json.JSONObject;
+
 
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService{
@@ -102,6 +104,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	   map.put("tableNo", tableNo);
 	   List<Map<String, Object>> resultMapList = tableService.find(map);
 	   if(resultMapList == null || resultMapList.size() == 0){
+		   log.error("-->resultMapList为空(查询table为空)，参数tableNo为："+tableNo);
 		   return Constant.FAILUREMSG;
 	   }
 	   Map<String, Object> tableMap = resultMapList.get(0);
@@ -279,20 +282,24 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		if(table!=null ){
 			orders.setOrderid(table.getOrderid());
 		}else{
+			log.error("-->t_table表中该table为空，tableNo为："+tableNo);
 			return Constant.FAILUREMSG;
 		}
 		
 //		判断是否重复下单
 		if(isRepetitionOrder(orders.getRows())){
+			log.info("-->重复下单");
 			return Constant.SUCCESSMSG;
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
 	    List<TorderDetail> listall = getallTorderDetail(orders.getRows());
 		if(listall == null || listall.size() == 0){
+			log.error("-->OrderDetail为空,orders.getRows()值为："+orders.getRows());
 			return Constant.FAILUREMSG;
 		}
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
+			  log.error("-->orderId为："+orders.getOrderid()+", orderstatus为："+mapStatus.get("orderstatus"));
 			  return Constant.FAILUREMSG;
 		  }
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
@@ -301,6 +308,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		  //调用存储过程插入订单详情的临时表
 		  int success = torderDetailMapper.insertTempOnce(listall);
 			if(success < 1){
+				log.error("-->插入订单临时表t_order_detail_temp出错，参数"+JSONObject.fromObject(listall).toString());
 				return Constant.FAILUREMSG;
 			}
 			
@@ -314,6 +322,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	       result = String.valueOf(mapParam.get("result"));
 	       
 	       if("1".equals(result)){
+	    	   log.error("-->result为："+1);
 	    	   return Constant.FAILUREMSG;
 	       } 
 //	       
@@ -328,6 +337,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	    	  transactionManager.commit(status);
 		   	  return Constant.SUCCESSMSG;
 		   	}else{
+		   		log.error("-->插入操作日志出错");
 		     	transactionManager.rollback(status);
 		   		return Constant.FAILUREMSG;
 		   	}
@@ -1192,7 +1202,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	   */
 		public String discardDishList(UrgeDish urgeDish,ToperationLog toperationLog){
 		   if(urgeDish == null){
-			  return Constant.FAILUREMSG;
+			   log.error("-->参数urgeDish为空");
+			   return Constant.FAILUREMSG;
 		   }
 		    Map<String, Object> params=new HashMap<String, Object>();
 			params.put("tableNo", urgeDish.getCurrenttableid());
@@ -1200,6 +1211,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if(tableList!=null&&tableList.size()>0){
 				urgeDish.setOrderNo(String.valueOf(tableList.get(0).get("orderid")));
 			}else{
+				log.error("-->tableList为空，参数tableNo为"+urgeDish.getCurrenttableid());
 				return Constant.FAILUREMSG;
 			}
 			  String orderId = urgeDish.getOrderNo();
@@ -1211,6 +1223,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			  
 			  Map<String, Object> mapStatus = torderMapper.findOne(orderId);
 			  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")))){
+				  log.error("-->订单状态为:" + mapStatus.get("orderstatus")+"-->订单Id为：" + orderId);
 				  return Constant.FAILUREMSG;
 			  }
 			  String actionType = urgeDish.getActionType();
@@ -1235,6 +1248,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					  BigDecimal urgeNum = new BigDecimal("0");//退的数量
 					  TorderDetail orderDetail =  torderDetailMapper.getOrderDetailByPrimaryKey(urgeDish.getPrimarykey());
 					  if(orderDetail==null){
+						  log.error("-->orderDetail为空，参数Primarykey值为：" + urgeDish.getPrimarykey());
 						  return Constant.FAILUREMSG;
 					  }
 					  if(orderDetail != null){
@@ -1444,6 +1458,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			    if(toperationLogService.save(toperationLog)){
 			   		return Constant.SUCCESSMSG;
 			   	}else{
+			   		log.error("-->插入t_operation_log数据出错。参数toperationLog值为："+toperationLog.getId());
 			   		return Constant.FAILUREMSG;
 			   	}
 		}

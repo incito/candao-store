@@ -344,6 +344,7 @@ public class PadInterfaceController {
 				}
 				executor.execute(new PadThread(order.getCurrenttableid(),type));
 			}catch(Exception ex){
+				logger.error(ex.getMessage());
 				ex.printStackTrace();
 			}
 			return returnStr;
@@ -423,12 +424,14 @@ public class PadInterfaceController {
 					}
 				}
 			}catch(Exception ex){
+				logger.error(ex.getMessage());
 				ex.printStackTrace();
 			}
 			
 			
 			
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 		    e.printStackTrace();
 		    map.put("flag","0");
 		    map.put("code","000");
@@ -494,6 +497,7 @@ public class PadInterfaceController {
 			map.put("data",invoiceList);
 			map.put("result", "0");
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 		    e.printStackTrace();
 		    return Constant.FAILUREMSG;
 		}
@@ -517,6 +521,7 @@ public class PadInterfaceController {
 			 
 			return Constant.SUCCESSMSG;
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 		    e.printStackTrace();
 		    return Constant.FAILUREMSG;
 		}
@@ -813,6 +818,7 @@ public class PadInterfaceController {
 		if(result == 0){
 			return Constant.SUCCESSMSG;
 		}else {
+			logger.error("-->用户不存在,用户名为："+loginInfo.getUsername());
 			return Constant.FAILUREMSG;
 		}
 	}
@@ -1669,6 +1675,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -2124,7 +2131,12 @@ public class PadInterfaceController {
 	@ResponseBody
 	public String getOpenEndTime(){
 		Map<String,Object> retMap = new HashMap<>();
-		try{}catch(Exception e){
+		try{
+			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
+			timeMap.remove("datetype");
+			retMap.put("result", "0");
+			retMap.put("detail", timeMap);
+		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
 			logger.error(e.getMessage());
@@ -2210,6 +2222,7 @@ public class PadInterfaceController {
 		try{
 			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
 		}catch(Exception e){
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
 		}
