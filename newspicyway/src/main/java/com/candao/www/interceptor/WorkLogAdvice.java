@@ -1,10 +1,8 @@
 package com.candao.www.interceptor;
 
-import java.lang.reflect.Method;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ public class WorkLogAdvice{
     	    		builder.append(obj.toString()).append(";");
     	    	}
     	    }
-    	    logger.info("参数有"+builder.toString());
+    	    logger.info("参数有:"+builder.toString());
     }  
       
     /** 
@@ -43,24 +41,6 @@ public class WorkLogAdvice{
      */  
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {  
    
-    	/*MethodSignature joinPointObject = (MethodSignature) pjp.getSignature();   
-        //获取所有参数
-   	    Object[] params = pjp.getArgs();
-        //获取对象的参数类型
-     	Class<?>[] parameterTypes = joinPointObject.getMethod().getParameterTypes();   
-        //获取连接点目标对象的方法
-   	    Method method = pjp.getTarget().getClass().getMethod(pjp.getSignature().getName(), parameterTypes); 
-   	     Logger log = LoggerFactory.getLogger(Class.forName(method.getDeclaringClass().getName())); 
-   	     log.info("切入点"+method.getDeclaringClass().getName()+"."+method.getName());
-   	    StringBuilder  builder=new StringBuilder();
-   	    for(Object obj:params){
-   	    	if(obj!=null){
-   	    		builder.append(obj.toString()).append(";");
-   	    	}
-   	    }
-   	    log.info("参数有"+builder.toString());
-   	     Object  retVal = pjp.proceed();
-          return retVal;  */
     	return pjp.proceed();
     }  
  
@@ -90,13 +70,13 @@ public class WorkLogAdvice{
     	String classname=joinPoint.getTarget().getClass().getName();
     	Logger logger = LoggerFactory.getLogger(Class.forName(classname)); 
     	logger.error("异常地点:"+joinPoint.getTarget().getClass().getName()+"."+joinPoint.getSignature().getName());
-    	logger.error(ex.getMessage());
+    	logger.error("-----",ex);
     	 StringBuilder  builder=new StringBuilder();
     	    for(Object obj:joinPoint.getArgs()){
     	    	if(obj!=null){
     	    		builder.append(obj.toString()).append(";");
     	    	}
     	    }
-    	    logger.info("参数有"+builder.toString());
+    	    logger.info("参数有:"+builder.toString());
     }  
 }
