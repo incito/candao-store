@@ -5,7 +5,7 @@
   <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">  
   <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
 	   <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>   
-	   <maxHistory>30</maxHistory>  
+	   <maxHistory>15</maxHistory>  
   </rollingPolicy>   
   <encoder>   
   		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>   
@@ -17,22 +17,8 @@
   	</root>  
  
 	
-	<logger name="org.springframework" level="info" >
-	   <appender-ref ref="candao" />  
-	</logger>
-	<logger name="org.springframework.web" level="debug" >
-	     <appender-ref ref="candao" />  
-	</logger>
-	<logger name="org.apache" level="info" >
-	     <appender-ref ref="candao" />  
-	</logger>
-	<logger name="com.github.miemiedev" level="info" >
-	      <appender-ref ref="candao" /> 
-	</logger>
-	<logger name="org.mybatis.spring" level="info" >
-	       <appender-ref ref="candao" /> 
-	</logger>
     
+    <logger name="dao"  level="DEBUG"></logger>
     
     
 </configuration>

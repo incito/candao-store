@@ -6,6 +6,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.candao.common.utils.JacksonJsonMapper;
+
 
 
 public class WorkLogAdvice{
@@ -24,7 +26,7 @@ public class WorkLogAdvice{
     	 StringBuilder  builder=new StringBuilder();
     	    for(Object obj:jp.getArgs()){
     	    	if(obj!=null){
-    	    		builder.append(obj.toString()).append(";");
+    	    		builder.append(JacksonJsonMapper.objectToJson(obj)).append(";");
     	    	}
     	    }
     	    logger.info("参数有:"+builder.toString());
