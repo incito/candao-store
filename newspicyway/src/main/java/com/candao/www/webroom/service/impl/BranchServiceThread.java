@@ -73,7 +73,7 @@ public class BranchServiceThread  {
 		        fw.close();
 //			   tSynSqlMapper.insert(synSqlObject);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	   }
@@ -84,7 +84,7 @@ public class BranchServiceThread  {
 			   try {
 				service.sendMsg(synSqlObject);
 			} catch (Exception e) {
-				logger.error(e.getMessage());
+				logger.error("-->",e);
 				e.printStackTrace();
 			}
 		   }

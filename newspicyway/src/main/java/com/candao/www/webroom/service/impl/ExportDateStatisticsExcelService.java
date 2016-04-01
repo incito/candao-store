@@ -78,7 +78,7 @@ public class ExportDateStatisticsExcelService {
 			workbook.close();
 
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 
@@ -147,7 +147,7 @@ public class ExportDateStatisticsExcelService {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			return format.parse(excelDate);
 		} catch (ParseException e) {
-			logger.error(e.getMessage());
+			logger.error("-->",e);
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
 		return null;
@@ -168,7 +168,7 @@ public class ExportDateStatisticsExcelService {
 			Date date = sdf.parse(ds.getDateTime());
 			datevalue = DateFormatUtils.format((date), "MM-dd");
 		} catch (ParseException e) {
-			logger.error(e.getMessage());
+			logger.error("-->",e);
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
 		return datevalue;

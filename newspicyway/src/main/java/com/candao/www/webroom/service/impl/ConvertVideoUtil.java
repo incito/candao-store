@@ -192,7 +192,7 @@ public class ConvertVideoUtil  extends Thread {
                     try {
 						p.waitFor();
 					} catch (InterruptedException e) {
-						logger.error(e.getMessage());
+						logger.error("-->",e);
 						e.printStackTrace();
 					} 
                     // 取得命令结果的输出流   
@@ -208,7 +208,7 @@ public class ConvertVideoUtil  extends Thread {
                     }   
                     return true;  
                 } catch (IOException e) {
-                	logger.error(e.getMessage());
+                	logger.error("-->",e);
                     e.printStackTrace();   
                     return false;
                 }   
@@ -260,7 +260,7 @@ public class ConvertVideoUtil  extends Thread {
                 try {
 					p.waitFor();
 				} catch (InterruptedException e) {
-					logger.error(e.getMessage());
+					logger.error("-->",e);
 					e.printStackTrace();
 				} 
                 // 取得命令结果的输出流   
@@ -277,7 +277,7 @@ public class ConvertVideoUtil  extends Thread {
                 System.out.println("who cares");    
                 return tempFile_home; 
             } catch (IOException e) {
-            	logger.error(e.getMessage());
+            	logger.error("-->",e);
                 e.printStackTrace();  
                 return null;  
             }   

@@ -65,7 +65,7 @@ public class SocialServiceImpl implements SocialService {
 				tsocialDao.saveGift(tbGift);
 			}
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	}

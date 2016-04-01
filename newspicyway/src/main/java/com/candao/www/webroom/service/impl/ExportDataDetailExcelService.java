@@ -115,7 +115,7 @@ public class ExportDataDetailExcelService {
              wwb.write();
              wwb.close();
         }catch(Exception e){
-        	logger.error(e.getMessage());
+        	logger.error("-->",e);
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);
