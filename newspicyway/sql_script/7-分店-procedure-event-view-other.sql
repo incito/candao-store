@@ -2354,7 +2354,6 @@ BEGIN
     delete FROM t_open_log;
     DELETE FROM t_branch_biz_log;  
     update t_printer SET printnum = 0;
-    update tableseqno SET val = 2 WHERE name IN ('printobjid', 'printdishid');  
   
     
     UPDATE sequence SET val = 1 WHERE name = 'one';
