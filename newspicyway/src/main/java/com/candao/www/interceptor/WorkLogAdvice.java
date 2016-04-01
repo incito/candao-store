@@ -76,7 +76,7 @@ public class WorkLogAdvice{
     	 StringBuilder  builder=new StringBuilder();
     	    for(Object obj:joinPoint.getArgs()){
     	    	if(obj!=null){
-    	    		builder.append(obj.toString()).append(";");
+    	    		builder.append(JacksonJsonMapper.objectToJson(obj)).append(";");
     	    	}
     	    }
     	    logger.info("参数有:"+builder.toString());
