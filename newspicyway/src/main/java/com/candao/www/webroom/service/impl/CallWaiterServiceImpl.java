@@ -312,7 +312,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		try{
 			return Integer.parseInt(numstr)<1?1:Integer.parseInt(numstr);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 		}
 		return 1;
 	}
@@ -321,7 +321,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		try{
 			return Integer.parseInt(numstr);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 		}
 		return 0;
 	}
@@ -331,7 +331,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 		try{
 			callWaiterDao.updateCallInfoStatus(orderid);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 		}
 	}
 	
@@ -383,7 +383,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
 							 tableNo = java.net.URLEncoder.encode(finaltableno,"utf-8");
 	    				} catch (UnsupportedEncodingException e) {
-	    					logger.error("-->",e);
+	    					logger.error(e.getMessage());
 	    					e.printStackTrace();
 	    				}
 	    				if(!userid.equals("")){
@@ -406,7 +406,7 @@ public class CallWaiterServiceImpl implements CallWaiterService{
 	    						System.out.println("推送失败");
 	    					}
 	    					} catch (IOException e) {
-	    						logger.error("-->",e);
+	    						logger.error(e.getMessage());
 	    						e.printStackTrace();
 	    					}
 	    				}

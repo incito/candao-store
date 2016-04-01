@@ -163,7 +163,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  resultCount = otherCouponDao.addCouponActivity(params);
 			  
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		  return resultCount;
@@ -187,7 +187,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  }*/
 			  resultCount = otherCouponDao.addCouponDetail(params);
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	     return resultCount;
@@ -292,7 +292,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  resultCount =  otherCouponDao.updateActivity(params);
 			  this.updateDetail(params);
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		  return resultCount;
@@ -316,7 +316,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  }*/
 			  resultCount = otherCouponDao.updateDetail(params);
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		  return resultCount;
@@ -366,7 +366,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		  return resultlistMap;
@@ -391,7 +391,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		  return resultlistMap;
@@ -413,7 +413,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 						}
 				 }
 			} catch (Exception e) {
-				logger.error("-->",e);
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		     return resultlistMap;
@@ -435,7 +435,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	     return resultlistMap;
@@ -457,7 +457,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	     return resultlistMap;
@@ -479,7 +479,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 	     return resultlistMap;

@@ -573,7 +573,7 @@ public class OrderServiceImpl implements OrderService{
 					System.out.println("清空pad推送失败");
 				}
 				} catch (IOException e) {
-					logger.error("-->",e);
+					logger.error(e.getMessage());
 					System.out.println("推送异常"+e.toString());
 					e.printStackTrace();
 				}

@@ -182,7 +182,7 @@ public class GiftServiceImpl implements GiftLogService{
 				return returnnum;
 			}
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 			returnnum = 5;
 			return returnnum;
@@ -216,7 +216,7 @@ public class GiftServiceImpl implements GiftLogService{
 		try{
 			return Integer.parseInt(value);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			return 0;
 		}
 	}

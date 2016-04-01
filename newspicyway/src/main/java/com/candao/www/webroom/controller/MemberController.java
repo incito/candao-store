@@ -60,7 +60,7 @@ public class MemberController extends BaseController{
 			resultmap.put("RetInfo", "会员登录成功");
 			
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			resultmap.put("Retcode", "1");
 			resultmap.put("RetInfo", e.getMessage());
 		}
@@ -94,7 +94,7 @@ public class MemberController extends BaseController{
 			resultmap.put("RetInfo", "会员退出成功");
 			
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			resultmap.put("Retcode", "1");
 			resultmap.put("RetInfo", e.getMessage());
 		}
@@ -124,7 +124,7 @@ public class MemberController extends BaseController{
 			resultmap.put("RetInfo", "会员消费分店保存成功");
 			
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			resultmap.put("Retcode", "1");
 			resultmap.put("RetInfo", e.getMessage());
 		}
@@ -189,7 +189,7 @@ public class MemberController extends BaseController{
 			resultmap.put("RetInfo", "会员消费分店保存成功");
 			
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			resultmap.put("Retcode", "0");
 			resultmap.put("RetInfo", e.getMessage());
 			

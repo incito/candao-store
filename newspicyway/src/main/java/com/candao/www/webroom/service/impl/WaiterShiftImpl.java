@@ -248,7 +248,7 @@ public class WaiterShiftImpl implements WaiterShiftService{
 		try{
 			return Integer.parseInt(value);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 		}
 		return 0;
 	}

@@ -164,7 +164,7 @@ public class Uploader {
 
 			this.state = this.errorInfo.get("SUCCESS");
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			this.state = this.errorInfo.get("IO");
 		}
@@ -266,7 +266,7 @@ public class Uploader {
 			}
 
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			this.state = this.errorInfo.get("UNKNOWN");
 		}
 
@@ -297,7 +297,7 @@ public class Uploader {
 			try {
 				dir.mkdirs();
 			} catch (Exception e) {
-				logger.error("-->",e);
+				logger.error(e.getMessage());
 				this.state = this.errorInfo.get("DIR");
 				return "";
 			}
@@ -336,7 +336,7 @@ public class Uploader {
 			}
 
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		}
 
 		return result;
@@ -348,7 +348,7 @@ public class Uploader {
 		try {
 			return IOUtils.toByteArray(in);
 		} catch (IOException e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			return null;
 		}
 

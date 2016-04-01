@@ -36,7 +36,7 @@ public class TPreferentialAnalysisChartsDaoImpl implements TPreferentialAnalysis
     	try{
     		return daoSupport.find(PREFIX + ".findPreferentialView", params);
     	}catch(Exception ex){
-    		logger.error("-->",ex);
+    		logger.error(ex.getMessage());
     		ex.printStackTrace();
     	}
     	return new ArrayList<T>();

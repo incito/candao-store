@@ -365,7 +365,7 @@ public class TableServiceImpl implements TableService {
 					System.out.println("清空pad推送失败");
 				}
 				} catch (IOException e) {
-					logger.error("-->",e);
+					logger.error(e.getMessage());
 					e.printStackTrace();
 				}
 		   }

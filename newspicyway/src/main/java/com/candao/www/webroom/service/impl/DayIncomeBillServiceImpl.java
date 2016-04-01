@@ -165,7 +165,7 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 								dayNum = 1;
 							}
 						} catch (ParseException e) {
-							logger.error("-->",e);
+							logger.error(e.getMessage());
 							e.printStackTrace();
 					 }
 					 //餐厅餐桌总台数
@@ -258,7 +258,7 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 						try {
 							date = formatter.parse(dateStr);
 						} catch (ParseException e) {
-							logger.error("-->",e);
+							logger.error(e.getMessage());
 							e.printStackTrace();
 						}
 						 String dateResult = formatter.format(date);

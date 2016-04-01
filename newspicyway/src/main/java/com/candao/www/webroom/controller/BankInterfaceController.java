@@ -32,7 +32,7 @@ public class BankInterfaceController {
 			List<Map<String, Object>> datasByType = dataDictionaryService.getDatasByType("BANK");
 			return JacksonJsonMapper.objectToJson(datasByType);
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			return Constant.FAILUREMSG;
 		}
 	}

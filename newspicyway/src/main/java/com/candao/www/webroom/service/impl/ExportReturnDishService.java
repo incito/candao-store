@@ -101,7 +101,7 @@ public class ExportReturnDishService {
             wwb.write();
             wwb.close();
         }catch(Exception e){
-        	logger.error("-->",e);
+        	logger.error(e.getMessage());
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);

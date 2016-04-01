@@ -81,7 +81,7 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 				try {
 					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
 				} catch (UnsupportedEncodingException e) {
-					logger.error("-->",e);
+					logger.error(e.getMessage());
 					e.printStackTrace();
 				}
 				message.append(userid+"|"+String.valueOf(params.get("msg_type"))+"|"+areaname+"|"+(String) params.get("tableno")+"|"+tbMessageInstrumentid);

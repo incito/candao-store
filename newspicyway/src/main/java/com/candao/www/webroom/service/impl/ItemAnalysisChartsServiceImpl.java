@@ -254,7 +254,7 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 		try{
 			return Integer.parseInt(value);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			return 0;
 		}
 	}
@@ -263,7 +263,7 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 		try{
 			return Double.parseDouble(value);
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			return 0.0;
 		}
 	}

@@ -348,7 +348,7 @@ public class PadInterfaceController {
 				}
 				executor.execute(new PadThread(order.getCurrenttableid(),type));
 			}catch(Exception ex){
-				logger.error("-->",ex);
+				logger.error(ex.getMessage());
 				ex.printStackTrace();
 			}
 			return returnStr;
@@ -428,14 +428,14 @@ public class PadInterfaceController {
 					}
 				}
 			}catch(Exception ex){
-				logger.error("-->",ex);
+				logger.error(ex.getMessage());
 				ex.printStackTrace();
 			}
 			
 			
 			
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		    e.printStackTrace();
 		    map.put("flag","0");
 		    map.put("code","000");
@@ -501,7 +501,7 @@ public class PadInterfaceController {
 			map.put("data",invoiceList);
 			map.put("result", "0");
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		    e.printStackTrace();
 		    return Constant.FAILUREMSG;
 		}
@@ -525,7 +525,7 @@ public class PadInterfaceController {
 			 
 			return Constant.SUCCESSMSG;
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		    e.printStackTrace();
 		    return Constant.FAILUREMSG;
 		}
@@ -1025,7 +1025,7 @@ public class PadInterfaceController {
 			retMap.put("detail", list);
 			return JacksonJsonMapper.objectToJson(retMap);
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			jsonString = "";
 		}
@@ -1281,7 +1281,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1307,7 +1307,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1333,7 +1333,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1385,7 +1385,7 @@ public class PadInterfaceController {
 			stream.close();
 			
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -1653,7 +1653,7 @@ public class PadInterfaceController {
 			}
 //			 
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			jsonString = Constant.FAILUREMSG;
 		}
 		return jsonString;
@@ -1689,7 +1689,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -2134,7 +2134,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2155,7 +2155,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2180,7 +2180,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2222,7 +2222,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2238,7 +2238,7 @@ public class PadInterfaceController {
 		try{
 			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
 		}
