@@ -933,7 +933,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 //	            }  
 	            resMap.put(field.getName(), field.get(o));  
             }catch(Exception e){
-            	logger.error(e.getMessage());
+            	logger.error("-->",e);
             }
         }  
         return resMap;
@@ -1171,7 +1171,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					try{
 						discount = new BigDecimal(disrate);
 					}catch(Exception e){
-						logger.error(e.getMessage());
+						logger.error("-->",e);
 						result.setAmount( new BigDecimal(0).setScale(2));
 						result.setResult(0);
 						result.setMsg("手工优免数据折扣金额转换失败，请检查折扣的有效性！");
@@ -1288,7 +1288,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		}
 	  
     } catch (Exception e) {
-    	logger.error(e.getMessage());
+    	logger.error("-->",e);
       e.printStackTrace();
     }
 		logger.info("使用优惠券，计算金额，result: " + result);

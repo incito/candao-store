@@ -379,7 +379,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 					 transactionManager.commit(status);
 					 return "2";//微信扫码反结算成功
 				} catch (Exception e) {
-					logger.error(e.getMessage());
+					logger.error("-->",e);
 					e.printStackTrace();
 					transactionManager.rollback(status);
 					return "1";

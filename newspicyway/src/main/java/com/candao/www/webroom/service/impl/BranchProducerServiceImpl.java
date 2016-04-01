@@ -41,7 +41,7 @@ public class BranchProducerServiceImpl implements BranchProducerService{
 	   try{
 		   jmsTemplate.convertAndSend(destination, obj);
 		 }catch(Exception e){
-			 logger.error(e.getMessage());
+			 logger.error("-->",e);
 			 jmsTemplate.convertAndSend(destination, obj);
 		 }
 	}
