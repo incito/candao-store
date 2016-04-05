@@ -240,7 +240,7 @@ public class PadInterfaceController {
 				}
 				
 			}catch(Exception ex){
-				logger.error("--->开台失败！" + ex);
+				logger.error("--->开台失败！",ex);
 			}
 		}
 		logger.info("开台返回结果：" + returnStr);
@@ -944,7 +944,6 @@ public class PadInterfaceController {
 			return JacksonJsonMapper.objectToJson(list);
 
 		} catch (Exception e) {
-			logger.error("--->",e);
 			jsonString = "";
 			logger.error("查询所有桌台异常！", e);
 		}
@@ -1627,7 +1626,7 @@ public class PadInterfaceController {
 			}
 
 		} catch (Exception e) {
-			logger.error("查询用户权限失败！" + e);
+			logger.error("查询用户权限失败！" ,e);
 			resultMap.put("result",1);
 			resultMap.put("msg",e.getMessage());
 		}
