@@ -142,7 +142,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		
 		if(resultMap == null || resultMap.size() == 0  ){
-			logger.error("结算失败！查找餐桌失败 ,table:"+resultMap);
+			logger.error("结算失败！查找餐桌失败 ,订单id:"+orderId);
 			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
@@ -373,7 +373,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 					System.out.println("微信扫码反结算");
 					 if(retMap == null || "1".equals(retMap.get("code"))){	
 						    transactionManager.rollback(status);  //强制回滚
-						    logger.error("反结算失败！微信反结算失败, retMap: "+ retMap);
+						    logger.error("反结算失败！微信反结算失败");
 							return Constant.FAILUREMSG;
 					 }
 					 transactionManager.commit(status);
@@ -387,7 +387,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 }
 	 //
 	 transactionManager.commit(status);
-	 logger.error("反结算成功 ");
+	 logger.info("反结算成功 ");
      return "0";
 	}
 

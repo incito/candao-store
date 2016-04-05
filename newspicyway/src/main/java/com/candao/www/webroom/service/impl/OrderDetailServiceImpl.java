@@ -299,7 +299,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		}
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
-			  log.error("-->orderId为："+orders.getOrderid()+", orderstatus为："+mapStatus.get("orderstatus"));
+			  log.error("-->orderId为："+orders.getOrderid());
 			  return Constant.FAILUREMSG;
 		  }
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
@@ -342,7 +342,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		   		return Constant.FAILUREMSG;
 		   	}
 	 	}catch(Exception ex){
-		 		log.error(ex.getMessage());
+		 		log.error("-->",ex);
 				ex.printStackTrace();
 				 transactionManager.rollback(status);
 			   	 return Constant.FAILUREMSG;
@@ -589,7 +589,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				if (printers != null && printers.size() > 0) {
 					tbPrinter = printers.get(0);
 				} else {
-					log.info("该桌套餐未配备打印机----- 桌号:" + printObj.getTableNo() + " ;菜品:" + pd.getDishName());
+					log.info("该桌套餐未配备打印机----- 桌号id:"+printObj.getTableid());
 				}
 
 				if (!"(退)".equals(printObj.getAbbrbillName())) {
