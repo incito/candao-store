@@ -148,6 +148,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -177,6 +178,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -238,7 +240,7 @@ public class PadInterfaceController {
 				}
 				
 			}catch(Exception ex){
-				logger.error("开台失败！" + ex.getStackTrace());
+				logger.error("--->开台失败！" + ex);
 			}
 		}
 		logger.info("开台返回结果：" + returnStr);
@@ -348,7 +350,7 @@ public class PadInterfaceController {
 				}
 				executor.execute(new PadThread(order.getCurrenttableid(),type));
 			}catch(Exception ex){
-				logger.error("-->",ex);
+				logger.error("--->",ex);
 				ex.printStackTrace();
 			}
 			return returnStr;
@@ -428,14 +430,14 @@ public class PadInterfaceController {
 					}
 				}
 			}catch(Exception ex){
-				logger.error("-->",ex);
+				logger.error("--->",ex);
 				ex.printStackTrace();
 			}
 			
 			
 			
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error("--->",e);
 		    e.printStackTrace();
 		    map.put("flag","0");
 		    map.put("code","000");
@@ -473,6 +475,7 @@ public class PadInterfaceController {
 			map.put("desc","操作成功");
 			map.put("data",dataMapList);
 		} catch (Exception e) {
+			logger.error("--->",e);
 		    e.printStackTrace();
 		    map.put("flag","0");
 		    map.put("code","000");
@@ -501,7 +504,7 @@ public class PadInterfaceController {
 			map.put("data",invoiceList);
 			map.put("result", "0");
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error("--->",e);
 		    e.printStackTrace();
 		    return Constant.FAILUREMSG;
 		}
@@ -525,7 +528,7 @@ public class PadInterfaceController {
 			 
 			return Constant.SUCCESSMSG;
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error("--->",e);
 		    e.printStackTrace();
 		    return Constant.FAILUREMSG;
 		}
@@ -729,6 +732,7 @@ public class PadInterfaceController {
 			try {
 				retPSI = new HttpRequestor().doPost(url, dataMap);
 			} catch (Exception e) {
+				logger.error("--->",e);
 				e.printStackTrace();
 			}
 			 @SuppressWarnings("unchecked")
@@ -863,6 +867,7 @@ public class PadInterfaceController {
 				jsonString = wrapJson(user,list);
 			}
 		} catch (AuthException e) {
+			logger.error("--->",e);
 			jsonString = Constant.FAILUREMSG;
 		}
 		return jsonString;
@@ -914,6 +919,7 @@ public class PadInterfaceController {
 			}
 
 		} catch (AuthException e) {
+			logger.error("--->",e);
 			jsonString = Constant.FAILUREMSG;
 		}
 		return jsonString;
@@ -938,6 +944,7 @@ public class PadInterfaceController {
 			return JacksonJsonMapper.objectToJson(list);
 
 		} catch (Exception e) {
+			logger.error("--->",e);
 			jsonString = "";
 			logger.error("查询所有桌台异常！", e);
 		}
@@ -978,6 +985,7 @@ public class PadInterfaceController {
 			}
 
 		} catch (Exception e) {
+			logger.error("--->",e);
 			jsonString = "";
 		}
 		return jsonString;
@@ -1005,6 +1013,7 @@ public class PadInterfaceController {
 			}
 
 		} catch (Exception e) {
+			logger.error("--->",e);
 			jsonString = "";
 		}
 		return jsonString;
@@ -1025,7 +1034,7 @@ public class PadInterfaceController {
 			retMap.put("detail", list);
 			return JacksonJsonMapper.objectToJson(retMap);
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error("--->",e);
 			e.printStackTrace();
 			jsonString = "";
 		}
@@ -1148,6 +1157,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1171,6 +1181,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1281,7 +1292,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1307,7 +1318,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1333,7 +1344,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1359,7 +1370,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.info(ex.getMessage());
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1385,7 +1396,7 @@ public class PadInterfaceController {
 			stream.close();
 			
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1425,6 +1436,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1451,6 +1463,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1478,7 +1491,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.info(ex.getMessage());
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1559,6 +1572,7 @@ public class PadInterfaceController {
 			}
 
 		} catch (Exception e) {
+			logger.error("--->",e);
 			resultMap.put("result",1);
 			resultMap.put("msg",e.getMessage());
 		}
@@ -1613,7 +1627,7 @@ public class PadInterfaceController {
 			}
 
 		} catch (Exception e) {
-			logger.error("查询用户权限失败！" + e.getStackTrace());
+			logger.error("查询用户权限失败！" + e);
 			resultMap.put("result",1);
 			resultMap.put("msg",e.getMessage());
 		}
@@ -1653,7 +1667,7 @@ public class PadInterfaceController {
 			}
 //			 
 		} catch (Exception e) {
-			logger.error("-->",e);
+			logger.error("--->",e);
 			jsonString = Constant.FAILUREMSG;
 		}
 		return jsonString;
@@ -1689,7 +1703,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
-			logger.error("-->",ex);
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1781,6 +1795,7 @@ public class PadInterfaceController {
 				}
 			}
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1817,6 +1832,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1854,6 +1870,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1882,6 +1899,7 @@ public class PadInterfaceController {
 			stream.close();
 
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -1898,15 +1916,17 @@ public class PadInterfaceController {
 				 map.put("imagePath", fileUrlpath);
 				 map.put("flag", "0");
 			} catch (IllegalStateException e) {
+				logger.error("--->",e);
 				e.printStackTrace();
 				map.put("imagePath", "");
 				map.put("flag", "1");
 			} catch (IOException e) {
+				logger.error("--->",e);
 				e.printStackTrace();
 				map.put("imagePath", "");
 				map.put("flag", "1");
 			}catch (Exception e) {
-				// TODO Auto-generated catch block
+				logger.error("--->",e);
 				e.printStackTrace();
 				map.put("imagePath", "");
 				map.put("flag", "1");
@@ -1922,6 +1942,7 @@ public class PadInterfaceController {
 			stream.flush();
 			stream.close();
 		}catch(Exception ex){
+			logger.error("--->",ex);
 			ex.printStackTrace();
 		}
 	}
@@ -2011,6 +2032,7 @@ public class PadInterfaceController {
 				branchDataSyn.synBranchData();
 				retMap.put("result", "0");
 			} catch (Exception e) {
+				logger.error("--->",e);
 				retMap.put("result", "1");
 				retMap.put("msg", e.getMessage());
 			}
@@ -2086,6 +2108,7 @@ public class PadInterfaceController {
 	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
 							 tableNo = java.net.URLEncoder.encode(finaltableno,"utf-8");
 	    				} catch (UnsupportedEncodingException e) {
+	    					logger.error("--->",e);
 	    					e.printStackTrace();
 	    				}
 	    				if(!userid.equals("")){
@@ -2108,7 +2131,7 @@ public class PadInterfaceController {
 	    						System.out.println("推送失败");
 	    					}
 	    					} catch (IOException e) {
-	    						// TODO Auto-generated catch block
+	    						logger.error("--->",e);
 	    						e.printStackTrace();
 	    					}
 	    				}
@@ -2134,7 +2157,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error("--->",e);
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2155,7 +2178,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error("--->",e);
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2180,7 +2203,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error("--->",e);
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2222,7 +2245,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error("-->",e);
+			logger.error("--->",e);
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
@@ -2238,7 +2261,7 @@ public class PadInterfaceController {
 		try{
 			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
 		}catch(Exception e){
-			logger.error("-->",e);
+			logger.error("--->",e);
 			e.printStackTrace();
 			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
 		}
