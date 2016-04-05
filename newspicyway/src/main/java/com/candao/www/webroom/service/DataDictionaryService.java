@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.candao.common.page.Page;
 import com.candao.www.data.model.TbDataDictionary;
-import com.candao.www.data.model.TbUser;
 
 
 public interface DataDictionaryService {
@@ -55,11 +54,26 @@ public interface DataDictionaryService {
   public List<Map<String,Object>> getDatasByType(String type);
   
   /**
+   * 获取通知消息类型
+   * @param type
+   * @return
+   */
+  public List<Map<String, Object>> getNotificationDate(String type);
+  
+  /**
    * 获取公共密码
    * @author zhao
    * @param string
    */
-  public String find(String string);
-public boolean delDishTasteService(String dishTasteId);
-public List<Map<String, Object>> findByParams(Map<String, Object> map);
-}
+ 	public String find(String string);
+  
+ 	public boolean delDishTasteService(String dishTasteId);
+  
+ 	public List<Map<String, Object>> findByParams(Map<String, Object> map);
+ 	
+ 	/**
+ 	 * 获取开业结业时间
+ 	 * @return
+ 	 */
+ 	public Map<String, Object> getOpenEndTime(String type);
+ }

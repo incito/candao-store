@@ -67,6 +67,28 @@
       )
   </insert>
   
+  <update id="update" parameterType="com.candao.www.data.model.TOrderMember" >
+    update t_order_member 
+      set userid = #{userid,jdbcType=VARCHAR},
+      ordertime = current_timestamp(),        
+      business = #{business,jdbcType=VARCHAR},
+      terminal = #{terminal,jdbcType=VARCHAR}, 
+      serial = #{serial,jdbcType=VARCHAR}, 
+      businessname = #{businessname,jdbcType=VARCHAR},       
+      score = #{score}, 
+      coupons = #{coupons}, 
+      stored = #{stored}, 
+      scorebalance = #{scorebalance},
+      couponsbalance = #{couponsbalance},
+      storedbalance = #{storedbalance},      
+      cardno = #{cardno,jdbcType=VARCHAR},
+      valid = #{valid,jdbcType=INTEGER},      
+      psexpansivity = #{psexpansivity,jdbcType=VARCHAR},
+      netvalue = #{netvalue},
+      Inflated = #{inflated}
+    where 
+      orderid = #{orderid,jdbcType=VARCHAR}
+  </update>
 
   <update id="updateValid" parameterType="map">
 	         update t_order_member 
@@ -81,7 +103,9 @@
 	     from t_order_member
 	   where 
 	    orderid=#{orderid,jdbcType=VARCHAR} 
-	    and valid = 0
+	    <if test="valid != null and valid != ''">
+	    and valid = #{valid,jdbcType=INTEGER}
+	    </if>
    </select>
 
 </mapper>

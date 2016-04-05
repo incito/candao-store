@@ -74,6 +74,9 @@
 	list-style: none;
 	text-align: center;
 	width:14.2%;/*14%*/
+	white-space:nowrap; 
+	overflow:hidden; 
+	text-overflow:ellipsis;
 }
 .nav-dishes-menu li.active{
 	background:#fd7762;
@@ -92,6 +95,9 @@
 	border-top:none;
 	font-size: 14px;
 	position: relative;
+	white-space:nowrap; 
+	overflow:hidden; 
+	text-overflow:ellipsis;
 }
 .seled-dish-icon{
 	position: absolute;
@@ -291,6 +297,13 @@
 }
 .menu-detail .menu-desc p>span{
 	text-align: left;
+	white-space:nowrap; 
+	overflow:hidden; 
+	text-overflow:ellipsis;
+	display:block;
+	height:20px;
+	width:230px
+	
 }
 .menu-detail-oper{	
 	width:20px;
@@ -568,7 +581,7 @@ zt add 4.23
 }*/
 table.menu-left-dishes { 
 	table-layout:fixed; 
-	width: auto;
+	/* width: auto; */
 }
 
 .menu-detail-edit,

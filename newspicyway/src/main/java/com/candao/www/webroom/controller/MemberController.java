@@ -106,7 +106,12 @@ public class MemberController extends BaseController{
 			
 			TOrderMember tOrderMember = JacksonJsonMapper.jsonToObject(jsonString, TOrderMember.class);
 			
-			orderMemberService.saveOrderMember(tOrderMember);
+			TOrderMember member = orderMemberService.get(tOrderMember.getOrderid(), null);
+			if(member != null){
+				orderMemberService.update(tOrderMember);
+			}else{
+				orderMemberService.saveOrderMember(tOrderMember);
+			}
 			
 			resultmap.put("Retcode", "0");
 			resultmap.put("RetInfo", "会员消费分店保存成功");
@@ -128,7 +133,7 @@ public class MemberController extends BaseController{
 		HashMap<String , String> paramsJson = JacksonJsonMapper.jsonToObject(jsonString, HashMap.class);
 		String orderid = paramsJson.get("orderid");
 		
-		TOrderMember tOrderMember = orderMemberService.get(orderid);
+		TOrderMember tOrderMember = orderMemberService.get(orderid, 0);
 		
 		if( tOrderMember != null) {
 			resultmap.put("orderid", tOrderMember.getOrderid());

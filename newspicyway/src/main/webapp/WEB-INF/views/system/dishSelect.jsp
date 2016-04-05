@@ -99,7 +99,7 @@ $(document).ready(function() {
 					+"	<div class='panel-heading clearfix' role='tab' id='headingFour_"+tmpJson.id+"'>      "
 //					+"		<div style='width:18px;float:left;margin:-2px 5px 0 -1px;'><img alt='' src='' panelCheckedStatus='' style='width:15px;height:15px'></div>"
 					+"		<div class='panel-title' style='width:96%;float:left' data-toggle='collapse' data-parent='#accordion' href='#collapseFour_"+tmpJson.id+"' aria-expanded='true' aria-controls='collapseFour'>"
-					+"			<span itemtype='"+tmpJson.id+"'>"+ tmpJson.itemdesc+"</span>      "
+					+"			<span itemtype='"+tmpJson.id+"' class='span-overflow' >"+ tmpJson.itemdesc+"</span>      "
 					+			"<span class='dish-label'></span>"
 					+"			<a  class='pull-right'>      "
 					+"			 <i class='glyphicon glyphicon-chevron-down'></i>      "
@@ -135,7 +135,7 @@ $(document).ready(function() {
 						});
 					}
 					console.log("here");
-					html += "<label class='checkbox-inline col-xs-3'> <input type='checkbox' id='dish_"
+					html += "<label class='checkbox-inline col-xs-3 checkbox-overflow'> <input type='checkbox' id='dish_"
 							+checkboxId+"' value='"+dishObj.dishid+"' data-title='"+dishObj.title
 							+"' unit='"+dishObj.unit+"' dishtype='"+dishObj.dishtype+"' price='"+dishObj.price
 							+"' vipprice='"+dishObj.vipprice+"' unitflag='"+(dishObj.unitflag==1)+"' "+checked+">" +checkboxContent+"</label>";
@@ -265,7 +265,7 @@ function saveGifts(selectedDishs){
 				haveSelected.push(item);
 				var giftname = (i+1)+"、"+item.dish_title+"("+item.unit+")";
 				console.log(giftname);
-				htm += "<div class='one-gift'>"+giftname+"</div>";
+				htm += "<div class='one-gift git-overflow'>"+giftname+"</div>";
 			});
 			$("#gifts-div").html(htm);
 		}else{

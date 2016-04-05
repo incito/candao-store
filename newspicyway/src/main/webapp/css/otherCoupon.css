@@ -1,0 +1,23 @@
+#divClass {
+	float: left;
+	margin-right: 5px;
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+#divStyle {
+	background-color: rgba(230, 230, 230, 1);
+	margin-bottom: 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.select-div {
+	margin-bottom: 10px;
+	margin-top: 10px;
+	float: left;
+}
+
+.lable-class {
+	margin-top: 10px;
+}

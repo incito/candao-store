@@ -1,7 +1,6 @@
 package com.candao.www.data.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 
@@ -25,7 +24,15 @@ public class TbDataDictionary implements Serializable {
 	private String memberprice; //会员价格
 	private String price; //单价
 	private String datetype;
+	private String itemValue; //用在通知类型时，为相应时间
 
+	public String getItemValue() {
+		return itemValue;
+	}
+
+	public void setItemValue(String itemValue) {
+		this.itemValue = itemValue;
+	}
 
 	public String getEndtime() {
 		return endtime;

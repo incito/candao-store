@@ -10,7 +10,9 @@ public class Constant {
 	
 	public final static int SOCKET_CHECK_TIME  = 3000;
 	
-	public final static String UPLOAD_PATH = PropertiesUtils.getValue("upload_path");;
+	public final static String UPLOAD_PATH = PropertiesUtils.getValue("upload_path");
+	
+	public final static String DEFAULT_TABLE_SORT = PropertiesUtils.getValue("DEFAULT_TABLE_SORT");
 	
 	/** 当前用户 */
 	public final static String CURRENT_USER = "currentUser";
@@ -62,6 +64,8 @@ public class Constant {
 	public static final String FAILUROPEMSG = "{\"result\":\"2\"}";
 	
 	public static final String SUCCESSMSG = "{\"result\":\"0\"}";
+	
+	public static final String WEIXINSUCCESSMSG = "{\"result\":\"0\",\"msg\":\"反结算成功，已通过微信退款！\"}";
 	
 	public static final String PRINTERENCODE = "GBK";
 	
@@ -144,6 +148,10 @@ public class Constant {
 		
 		//优免
 		public static final int PAYWAY_FREE = 6;
+		
+		//微信扫码支付
+		
+		public static final String PAYWAY_WEIXIN = "30";
 	}
 	
 	public class SETTLE{
@@ -186,6 +194,8 @@ public class Constant {
 		public static final String CUSTADDDISHNAME = "加菜单";
 		
 		public static final String DISHSETNAME = "套餐";
+		
+		public static final String STATEMENTDISHNAME = "结账单";
  
 		
 	}
@@ -227,6 +237,12 @@ public class Constant {
      * 折扣券 
      */
     public static final String DISCOUNT_TICKET = "02";
+    
+    /**
+     * 在线支付 
+     */
+    public static final String ONLINEPAY_TICKET = "09";
+    
     /**
      * 代金券
      */
@@ -246,11 +262,11 @@ public class Constant {
     /**
      * 手工优免
      */
-    public static final String HANDFREE = "0601";
+    public static final String HANDFREE = "07";
     /**
      * 内部优免
      */
-    public static final String INNERFREE = "0602";
+    public static final String INNERFREE = "08";
 	  
 	}
 	

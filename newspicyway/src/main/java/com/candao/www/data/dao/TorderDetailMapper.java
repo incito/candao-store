@@ -139,5 +139,11 @@ public interface TorderDetailMapper {
 	 */
 //	public TorderDetail getDishDetailByPK(String pk);
 
- 
+	public int updateOrderinfo(Map<String, Object> map);
+	
+	public List<Map<String, Object>> getDishesInfoByOrderId(String orderid);
+	public Map<String, Object> selectorderinfos(String orderid);
+	
+	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap);
+	
 }

@@ -251,6 +251,7 @@ public class SystemServiceImpl {
 		jsonObject.put("CALLTYPE", getJsonArrary(mapList, "CALLTYPE"));
 		jsonObject.put("ROUNDING", getJsonArrary(mapList, "ROUNDING"));
 		jsonObject.put("ACCURACY", getJsonArrary(mapList, "ACCURACY"));
+		jsonObject.put("PADIMG", getJsonArrary(mapList, "PADIMG"));
 		return jsonObject;
 	}
 
@@ -304,6 +305,7 @@ public class SystemServiceImpl {
 		jsonObject.put("member_price", m.get("member_price") == null ? "" : m.get("member_price").toString());
 		jsonObject.put("price", m.get("price") == null ? "" : m.get("price").toString());
 		jsonObject.put("date_type", m.get("datetype") == null ? "" : m.get("datetype").toString());
+		jsonObject.put("item_value", m.get("itemValue") == null ? "" : m.get("itemValue").toString());
 	}
 
 	
@@ -336,7 +338,14 @@ public class SystemServiceImpl {
 		return jsonArray;
 	}
 	
-	
+	/**
+	 * 获取padLogo图和背景图
+	 * @return
+	 */
+	public List<Map<String, Object>> getImgByType(String type){
+		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
+		return infoList;
+	}
 	
 	/**
 	 * 修改字典表数据
@@ -441,11 +450,39 @@ public class SystemServiceImpl {
 			infomap.put("itemid", info.containsKey("itemid")?info.get("itemid").toString():"");
 			infomap.put("itemDesc", info.containsKey("itemDesc")?info.get("itemDesc").toString():"");
 			infomap.put("type", "RESPONSETIME");
-			infomap.put("item_value", info.containsKey("item_value")?info.get("item_value").toString():"");
+			infomap.put("item_value", info.containsKey("itemValue")?info.get("itemValue").toString():"");
 			infomap.put("dictid", info.containsKey("id")?info.get("id").toString():"");
 			returnList.add(infomap);
 		}
 		logger.debug("end getTimeValueByTypeForClient for type : {} and get data {} ",type,returnList);
 		return returnList;
+	}
+	/**
+	 * 获取无视 ，晚市时间范围
+	 * 
+	 * @param type 分类
+	 * @return
+	 */
+	public String getBusinessTime(String targetid){
+		logger.debug("start getBusinessTime for type : {} ",targetid);
+		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType("BIZPERIODDATE");
+		
+	    if(infoList==null||infoList.size()<=0){
+	    	logger.debug("the dic data is null for type : BIZPERIODDATE");
+	    	return "";
+	    }
+	    String time = "";
+		for (Map<String, Object> info : infoList) {
+			String itemid = info.containsKey("itemDesc")?info.get("itemDesc").toString():"";
+			if(!itemid.equals(targetid)){
+				continue;
+			}
+			if(targetid.equals("0")){//午市
+				time = info.containsKey("end_time")?info.get("end_time").toString():"";
+			}else if(targetid.equals("1")){//晚市
+				time = info.containsKey("begin_time")?info.get("begin_time").toString():"";
+			}
+		}
+		return time;
 	}
 }

@@ -789,7 +789,7 @@ BEGIN
   update t_order_detail set payamount=0, discountamount=0,predisamount=0  where ((status<>5 and  (not (orderprice>0))) or (status=5))  and orderid=v_orderid;
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
-  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,8,11,17,18);
+  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,5,8,11,13,17,18);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
   update t_order set dueamount=v_dueamount,wipeamount=v_dueamount-floor(v_dueamount),ssamount=v_ssamount,gzamount=v_gzamount,ymamount=v_ymamount where orderid=v_orderid;
@@ -1385,7 +1385,7 @@ BEGIN
 
   DECLARE v_status int(11);
 
-  DECLARE v_dishunit varchar(50) CHARACTER SET utf8;
+  DECLARE v_dishunit varchar(300) CHARACTER SET utf8;
 
   DECLARE v_payamount decimal(10, 2);
 
@@ -2074,9 +2074,11 @@ $$
 --
 -- Definition for procedure p_syndata
 --
-DROP PROCEDURE IF EXISTS p_syndata$$
-CREATE PROCEDURE p_syndata(IN i_branch_id varchar(50), INOUT i_result varchar(10))
-  SQL SECURITY INVOKER
+
+DROP PROCEDURE IF EXISTS `p_syndata`$$
+DELIMITER ;;
+CREATE PROCEDURE `p_syndata`(IN i_branch_id varchar(50), INOUT i_result varchar(500))
+    SQL SECURITY INVOKER
 BEGIN
   
   DECLARE done int DEFAULT 0;
@@ -2088,9 +2090,9 @@ BEGIN
   DECLARE v_generatetime datetime;
   DECLARE v_insert_str varchar(50);
   DECLARE v_orderSeqno integer;
-
+  DECLARE v_error boolean DEFAULT FALSE;
+  
   DECLARE cur_order CURSOR FOR
-
   SELECT
     id,
     branchid,
@@ -2100,52 +2102,71 @@ BEGIN
     generattime,
     orderSeqno
   FROM t_syn_sql t
-  WHERE t.status = '0' AND (sqltext != NULL OR sqltext != '')
-  ORDER BY orderseqno, generattime
-  ;
+  WHERE t.status = '0' 
+  AND t.sqltext IS NOT NULL AND t.sqltext <> ''
+  ORDER BY orderseqno, generattime;
+
+  DROP TEMPORARY TABLE IF EXISTS t_temp_syn_sqlid;
+  CREATE TEMPORARY TABLE t_temp_syn_sqlid
+    (
+      id VARCHAR(50) NOT NULL
+    ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+	DROP TEMPORARY TABLE IF EXISTS t_temp_syn_delid;
+  CREATE TEMPORARY TABLE t_temp_syn_delid
+    (
+      id VARCHAR(50) NOT NULL
+    ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+  BEGIN
   
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    #sql执行错误继续运行
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET v_error = TRUE;
 
+    OPEN cur_order;
+  
+    REPEAT
+  
+      FETCH cur_order INTO v_id, v_branchid, v_sqltext, v_inserttime, v_status, v_generatetime, v_orderSeqno;
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-  OPEN cur_order;
-
-  REPEAT
-
-    FETCH cur_order INTO v_id, v_branchid, v_sqltext, v_inserttime, v_status, v_generatetime, v_orderSeqno;
-
-    IF done <> 1 THEN
-
-      SET v_insert_str = UPPER(SUBSTRING(TRIM(v_sqltext), 1, 6));
-      IF v_insert_str = 'INSERT' THEN
-        SET v_sqltext = CONCAT('INSERT IGNORE ', SUBSTRING(TRIM(v_sqltext), 7));
+      IF done <> 1 AND v_error = FALSE  THEN
+        SET v_insert_str = UPPER(SUBSTRING(TRIM(v_sqltext), 1, 6));
+        IF v_insert_str = 'INSERT' THEN
+          SET v_sqltext = CONCAT('INSERT IGNORE ', SUBSTRING(TRIM(v_sqltext), 7));
+        END IF;
+        SET @sqlstr = v_sqltext;
+        PREPARE v_sql FROM @sqlstr;
+        EXECUTE v_sql;
+        DEALLOCATE PREPARE v_sql;
       END IF;
-      SET @sqlstr = v_sqltext;
-      PREPARE v_sql FROM @sqlstr;
-      EXECUTE v_sql;
-      DEALLOCATE PREPARE v_sql;
-			
-	  SET @vid = v_id;
-	  SET @delete_temp_data = CONCAT('delete from t_syn_sql_temp where id = ?');
-	  PREPARE del_sql FROM @delete_temp_data;
-	  EXECUTE del_sql USING @vid;
-	  DEALLOCATE PREPARE del_sql;
+	  
+	  INSERT INTO t_temp_syn_delid (id) VALUES (v_id);
+	  
+      IF  v_error = TRUE THEN
+		SET v_error = FALSE;
+	  ELSE
+		INSERT INTO t_temp_syn_sqlid (id) VALUES (v_id);
+      END  IF;
 
-    END IF;
+    UNTIL done = 1
 
+    END REPEAT;
 
-  UNTIL done = 1
-  END REPEAT;
+	CLOSE cur_order;
+  END;
+  
+  #根据条件删除临时表数据，防止刚下发的数据被误删除
+  DELETE FROM t_syn_sql_temp  using  t_temp_syn_delid ,t_syn_sql_temp  WHERE  t_temp_syn_delid.id = t_syn_sql_temp.id;
 
-  CLOSE cur_order;
-
-  UPDATE t_syn_sql
-  SET STATUS = '1'; 
-
+  #只更新成功执行sql的数据状态
+  UPDATE t_syn_sql a,t_temp_syn_sqlid b SET a.STATUS = '1' WHERE a.id = b.id; 
+	
   SET i_result = '1';
 
 END
-$$
+;;
+DELIMITER $$
 
 --
 -- Definition for procedure p_update2vipprice
@@ -2203,6 +2224,144 @@ UPDATE t_order_detail
 CLOSE cur_order;
 
  
+END
+$$
+
+--
+-- Definition for procedure p_orderdatas_cleanup
+--
+DROP PROCEDURE IF EXISTS p_orderdatas_cleanup$$
+CREATE DEFINER=`root`@`%` PROCEDURE `p_orderdatas_cleanup`(IN  pi_branchid INT(11), 
+                                                IN  pi_type     SMALLINT, 
+                                                IN  pi_orderid  VARCHAR(5000), 
+                                                IN  pi_ksrq     DATETIME, 
+                                                IN  pi_jsrq     DATETIME, 
+                                                OUT po_errmsg   VARCHAR(500)
+                                                
+)
+    SQL SECURITY INVOKER
+    COMMENT '按时间或订单编号清理订单数据'
+label_main:
+BEGIN
+  
+  
+  declare v_result VARCHAR(500) DEFAULT '';
+
+
+  
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    GET DIAGNOSTICS CONDITION 1 v_result = MESSAGE_TEXT;
+    set po_errmsg = concat('清理失败！原因：',v_result);
+    ROLLBACK;
+  END;
+
+
+  IF pi_branchid IS NULL THEN
+    SET po_errmsg = '清理失败！原因：分店ID输入不能为空';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_type != 0 AND pi_type != 1 THEN
+    SET po_errmsg = '清理失败！原因：请按照指定值填写清理方式：0：按订单编号清理，1：按时间清理';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_type = 0 AND pi_orderid IS NULL THEN
+    SET po_errmsg = '清理失败！原因：你选择的是按订单编号清理，请输入订单编号';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_type = 1 AND (pi_ksrq IS NULL OR pi_jsrq IS NULL) THEN
+    SET po_errmsg = '清理失败！原因：你选择的是按时间清理，请正确输入开始结束时间';
+    LEAVE label_main;
+  END IF;
+
+  
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+    orderid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  IF pi_type = 0 THEN
+    INSERT INTO t_temp_order
+    SELECT orderid
+    FROM
+      t_order
+    WHERE
+      branchid = pi_branchid
+      AND find_in_set(orderid, pi_orderid);
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid
+    FROM
+      t_order
+    WHERE
+      branchid = pi_branchid
+      AND begintime BETWEEN pi_ksrq AND pi_jsrq;
+  END IF;
+
+  
+
+  
+  START TRANSACTION; 
+  delete from t_order where orderid in (SELECT orderid from t_temp_order);
+  set po_errmsg =concat('t_order：' , ROW_COUNT());
+
+  delete from t_order_detail where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_order_detail：' , ROW_COUNT());
+
+  delete from t_order_detail_discard where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_order_detail_discard：' , ROW_COUNT());
+
+  
+  delete from t_settlement where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement：' , ROW_COUNT());
+
+  delete from t_settlement_history where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement_history：' , ROW_COUNT());
+
+  delete from t_settlement_detail_history where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement_detail_history：' , ROW_COUNT());
+
+  delete from t_order_member where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_order_member：' , ROW_COUNT());
+
+  delete from t_settlement_detail where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement_detail：' , ROW_COUNT());
+
+  
+  delete from t_printdish where printobjid in (SELECT distinct a.id from t_printobj a, t_temp_order b where a.orderno = b.orderid);
+  delete from t_printobj where orderno in (SELECT orderid from t_temp_order);
+
+  
+  delete from t_gift_log where order_id in (SELECT orderid from t_temp_order);
+
+  
+  delete from t_invoice where orderid in (SELECT orderid from t_temp_order);
+
+  update t_table set orderid=null ,status='0' where orderid in(SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_table：' , ROW_COUNT());
+
+  if pi_type = 1 then
+    DELETE FROM t_open_log;
+    DELETE FROM t_operation_log;
+    delete FROM t_open_log;
+    DELETE FROM t_branch_biz_log;  
+    update t_printer SET printnum = 0;
+  
+    
+    UPDATE sequence SET val = 1 WHERE name = 'one';
+  end if;
+
+  commit;
+
+  SET po_errmsg = concat('清理成功！\n', po_errmsg);
 END
 $$
 

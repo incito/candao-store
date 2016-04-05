@@ -531,6 +531,7 @@ INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typen
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('vipaddress', '192.168.104.252:8081', '雅座的VIP地址', 1, 1, 'VIPADDRESS', '雅座的VIP地址', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('110', '17', '微信支付', '17', '1', 'PAYWAY', '支付方式', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('111', '18', '支付宝支付', '18', '1', 'PAYWAY', '支付方式', NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
+insert into t_dictionary(dictid,itemid,itemDesc,itemSort,status,type,typename) VALUES('2fd28343-be4a-4276a439-b32babb2342f','30','微信扫码支付',30,1,'PAYWAY','支付方式');
 -- POS结账银行列表
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('200', '0', '其他银行', 100, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('201', '1', '工商银行', 1, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
@@ -544,6 +545,11 @@ INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typen
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('209', '9', '光大银行', 9, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('210', '10', '平安银行', 10, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('211', '11', '北京银行', 11, '1', 'BANK', '刷卡银行', null, null, null, null, null, null, null);
+-- 通知消息类型（原始数据，需要根据实际情况更改）
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('notification1', '4', '加盐', '4', '1', 'NOTIFICATION', '消息通知类型', NULL, NULL, NULL, NULL, NULL, NULL, '160');
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('notification2', '5', '加水', '5', '1', 'NOTIFICATION', '消息通知类型', NULL, NULL, NULL, NULL, NULL, NULL, '150');
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('notification3', '6', '换碟', '6', '1', 'NOTIFICATION', '消息通知类型', NULL, NULL, NULL, NULL, NULL, NULL, '140');
+
 
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('01', '特价券', 't_p_special_ticket', 0, NULL);
 INSERT INTO t_p_preferential_type_dict(code, name, subtable_name, is_subtype, parent_type) VALUES ('02', '折扣券', 't_p_discount_tickets', 0, NULL);
@@ -576,6 +582,22 @@ INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) V
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('35ddb100-c17e-42c0-a850-efe09cd1c924', 'd6e6fb6045034c8ab49436bcce461b02', '85969423-01b2-460b-937e-a8743694f46d', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
+
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('activity000','0','赠菜','0','1','ACTIVITY','手工优免活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity001','1','折扣','1','1','ACTIVITY','手工优免活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity002','2','减免','2','1','ACTIVITY','手工优免活动方式');
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('payway000','0','微信支付','0','1','PAYWAYTYPE','在线支付优免支付类型');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('payway001','1','支付宝','1','1','PAYWAYTYPE','在线支付优免支付类型');
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('cooperationNnit000','0','折扣','0','1','cooperationNnit','合作单位活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('cooperationNnit001','1','减免','1','1','cooperationNnit','合作单位活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('cooperationNnit002','2','无优免','2','1','cooperationNnit','合作单位活动方式');
+
+INSERT INTO `t_p_preferential_type_dict` VALUES ('07', '手工优惠', null, '0', null);
+INSERT INTO `t_p_preferential_type_dict` VALUES ('08', '合作单位', null, '0', null);
+INSERT INTO `t_p_preferential_type_dict` VALUES ('09', '在线支付优免', null, '0', null);
 
 commit;
 -- 

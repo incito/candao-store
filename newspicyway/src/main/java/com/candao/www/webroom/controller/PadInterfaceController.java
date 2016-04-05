@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.candao.common.exception.AuthException;
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
+import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
@@ -48,6 +49,7 @@ import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.dao.TtellerCashDao;
 import com.candao.www.data.model.EmployeeUser;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TbMessageInstrument;
@@ -59,6 +61,7 @@ import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
+import com.candao.www.data.model.TtellerCash;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
@@ -66,6 +69,8 @@ import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
+import com.candao.www.utils.HttpRequestor;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -96,6 +101,7 @@ import com.candao.www.webroom.service.PreferentialActivityService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.UserInstrumentService;
+import com.candao.www.webroom.service.impl.SystemServiceImpl;
 
 import net.sf.json.JSONObject;
 /**
@@ -686,49 +692,48 @@ public class PadInterfaceController {
 		}).start();
 		
 		if("0".equals(result)){
-			  /*//调用进销存接口 返回数据给 进销存 管理
-			  *//**
-			  {
-
-				    "orderid": "H20151111152314000068",
-				    "orderMap": {
-				        "0d19a1a8-d257-4f1c-95b1-7d48c874c71b": "1",
-				        "0f7a4a91-a7ba-459a-b41a-a9e917207097": "1",
-				        "1a96ae20-1a89-4d86-9d73-de668d20feb7": "2",
-				        "1bf992a5-f7ff-4484-9381-1f456d9f53ac": "1",
-				        "31d4aaf7-b7d3-43df-8b3c-c512f8d91eea": "1",
-				        "6efea012-c10d-4428-b9f4-eacd305664b6": "1",
-				        "72e063c3-afdd-41ec-a3a3-a77d4879d65f": "1",
-				        "DISHES_98": "2",
-				        "a93c4248-b76a-4dbf-a27e-198b17a9b280": "1",
-				        "c24adc46-c37f-466c-86f5-1f6547315d8e": "1",
-				        "f1ae150c-7a2a-43e7-863e-f86534ac6a29": "1"
-				    }
-				}
-				**//*
-		 String retString = orderDetailService.getOrderDetailByOrderId(orderid);
-        //String retPSI = HttpUtils.httpPostBookorderArray(PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER"), retString);
-		String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
-		Map<String, String> dataMap = new HashMap<String, String>();
-		 dataMap.put("data", retString);
-		String retPSI = null;
-		try {
-			retPSI = new HttpRequestor().doPost(url, dataMap);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		 @SuppressWarnings("unchecked")
-		  Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
-		  if(retMap == null || "1".equals(retMap.get("code"))){		
-			  SettlementInfo info = new SettlementInfo();
-			  info.setOrderNo(orderid);
-			  orderSettleService.rebackSettleOrder(settlementInfo);
-			  return Constant.FAILUREMSG;
-           }*/
-		    return Constant.SUCCESSMSG;
+			return psicallback(settlementInfo,0);
 		}else {
 			return Constant.FAILUREMSG;
 		}
+	}
+	
+	
+	//进销存回调
+	/**
+	 * 
+	 * @param settlementInfo
+	 * @param isweixin  0 not   1  yes
+	 * @return
+	 */
+	private String psicallback(SettlementInfo settlementInfo,Integer isweixin){
+		String psishow=PropertiesUtils.getValue("PSI_SHOW");
+		if("Y".equals(psishow)){//显示进销存
+			  //调用进销存接口 返回数据给 进销存 管理
+			 String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
+			String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
+			Map<String, String> dataMap = new HashMap<String, String>();
+			 dataMap.put("data", retString);
+			String retPSI = null;
+			try {
+				retPSI = new HttpRequestor().doPost(url, dataMap);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			 @SuppressWarnings("unchecked")
+			  Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+			  if(retMap == null || "1".equals(retMap.get("code"))){		
+				  SettlementInfo info = new SettlementInfo();
+				  info.setOrderNo(settlementInfo.getOrderNo());
+				  orderSettleService.rebackSettleOrder(settlementInfo);
+				  return Constant.FAILUREMSG;
+	        }
+		}
+		
+		if(1==isweixin){
+			  return Constant.WEIXINSUCCESSMSG;
+		  }
+		     return Constant.SUCCESSMSG;
 	}
 	
 	/**
@@ -770,10 +775,11 @@ public class PadInterfaceController {
 
 		SettlementInfo  settlementInfo =  JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
 		String result = orderSettleService.rebackSettleOrder(settlementInfo);
-		
 		 
 		if("0".equals(result)){
-			return Constant.SUCCESSMSG;
+			return psicallback(settlementInfo,0);
+		}else if("2".equals(result)){
+			return psicallback(settlementInfo,1);
 		}else {
 			return Constant.FAILUREMSG;
 		}
@@ -905,9 +911,15 @@ public class PadInterfaceController {
 	@RequestMapping(value = "/querytables" )
 	@ResponseBody
 	public String queryAllTable(){
+		Map<String, Object>  map=new HashMap<>();
+		String defaultsort="0";//默认
+		if(null!=Constant.DEFAULT_TABLE_SORT){
+			defaultsort=Constant.DEFAULT_TABLE_SORT;
+		}
+		map.put("defaultsort", Integer.parseInt(defaultsort));
 		String jsonString  = "";
 		try {
-			List<Map<String, Object>> list = tableService.find(null);
+			List<Map<String, Object>> list = tableService.find(map);
 			return JacksonJsonMapper.objectToJson(list);
 
 		} catch (Exception e) {
@@ -1073,7 +1085,11 @@ public class PadInterfaceController {
 	 * @return
 	 */
 	private int judgeRepeatData(ToperationLog toperationLog){
-		Map<String,Object> map=new HashMap<String,Object>();
+		//因为 (newtoperationLog.getSequence()==toperationLog.getSequence()) 这个条件永远不成立，应该使用equals方法；
+		//如果加上这个判断条件，会导致PAD、POS同时给一个餐台下单时，可能误认为是重复下单，sequence没有同步，所以调用该方法的逻辑以后要去掉，暂时先返回0
+		return 0;
+		
+		/*Map<String,Object> map=new HashMap<String,Object>();
 		map.put("tableno", toperationLog.getTableno());
 		map.put("operationType", toperationLog.getOperationtype());
 		ToperationLog newtoperationLog=toperationLogService.findByparams(map);
@@ -1089,7 +1105,7 @@ public class PadInterfaceController {
 //		}
 		else{
 			return 0;
-		}
+		}*/
 	}
 
 	/**
@@ -1160,7 +1176,27 @@ public class PadInterfaceController {
 		}
 		return mav;
 	}
-
+	
+	/**
+	 * 查询所有的可挂账的合作单位
+	 *
+	 */
+	@RequestMapping(value="/getCooperationUnit",method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getCooperationUnit(@RequestBody String body){
+		/*@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		ModelAndView mav = new ModelAndView();
+		String typeid=(String) params.get("typeid"); //优惠分类
+		if( !StringUtils.isBlank(typeid)){*/
+		    ModelAndView mav = new ModelAndView();
+		    Map<String, Object> params = new HashMap<String, Object>();
+			List<Map<String,Object>> l= this.preferentialActivityService.findCooperationUnit(params);
+			mav.addObject("list", l);
+		//}
+		return mav;
+	}
+	
 	/**
 	 *  使用特价菜品类和单品折扣类优惠
 	 */
@@ -2042,6 +2078,215 @@ public class PadInterfaceController {
 		   }
 	}
 	
+	/**
+	 * 查询所有未清机的POS列表
+	 * @return
+	 */
+	@RequestMapping("/findUncleanPosList")
+	@ResponseBody
+	public String findUncleanPosList() {
+		
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			List<TtellerCash> list = tellerCashService.findUncleanPosList();
+			retMap.put("result", "0");
+			retMap.put("detail", list);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 获取开业结业时间
+	 * @return
+	 */
+	@RequestMapping("/getOpenEndTime")
+	@ResponseBody
+	public String getOpenEndTime(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
+			timeMap.remove("datetype");
+			retMap.put("result", "0");
+			retMap.put("detail", timeMap);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 查询是否结业
+	 * @return
+	 */
+	@RequestMapping("/isEndWork")
+	@ResponseBody
+	public String isEndWork(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+			if(tbOpenBizLog == null){
+				retMap.put("result", "0");
+				retMap.put("detail", true);
+			}else{
+				retMap.put("result", "0");
+				retMap.put("detail", false);
+			}
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	
+	/**
+	 * 查询昨天是否结业
+	 * @return
+	 */
+	@RequestMapping("/isYesterdayEndWork")
+	@ResponseBody
+	public String isYesterdayEndWork(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+			if(tbOpenBizLog == null){
+				retMap.put("result", "0");
+				retMap.put("detail", true);
+			}else{
+				Date date = tbOpenBizLog.getOpendate();
+				if(DateUtils.isToday(date)){
+//					如果是今天，则已经结业
+					retMap.put("result", "0");
+					retMap.put("detail", true);
+				}else{
+//					如果不是今天
+					Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
+					if("T".equals(timeMap.get("datetype"))){ //"T"代表当日
+						retMap.put("result", "0");
+						retMap.put("detail", false);
+					}else{
+						retMap.put("result", "0");
+						retMap.put("detail", true);
+					}
+				}
+//				retMap.put("result", "0");
+//				retMap.put("detail", false);
+			}
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 获取手环通知消息的类型
+	 * @return
+	 */
+	@RequestMapping("/getNotification")
+	@ResponseBody
+	public Map<String,Object> getNotification(){
+		List<Map<String, Object>> maps = new ArrayList<>();
+		try{
+			maps = dataDictionaryService.getNotificationDate("NOTIFICATION");
+		}catch(Exception e){
+			e.printStackTrace();
+			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
+		}
+		if(maps == null || maps.size() <= 0){
+			return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
+		}
+		Map<String,Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");
+		returnMap.put("data", maps);
+		return returnMap;
+	}
+	
+	
+	/**
+	 * Pad端获取Logo图和背景图
+	 * @return
+	 */
+	@RequestMapping("/getPadImg.json")
+	@ResponseBody
+	public String getPadImg(){
+		Map<String,Object> retMap = new HashMap<>();
+		try{
+			List<Map<String, Object>> maps = systemServiceImpl.getImgByType("PADIMG");
+			retMap.put("ImgIp", PropertiesUtils.getValue("fastdfs.url"));
+			retMap.put("result", "0");
+			retMap.put("msg", "成功");
+			retMap.put("detail", maps);
+		}catch(Exception e){
+			retMap.put("result", "1");
+			retMap.put("msg", e.getMessage());
+			logger.error(e, "");
+		}
+		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	
+	/**
+	 * 获取品项销售明细的打印数据
+	 * @return
+	 */
+	@RequestMapping("/getItemSellDetail.json")
+	@ResponseBody
+	public String getItemSellDetail(String flag){
+		Map<String, Object> timeMap = getTime(flag);
+		Map<String, Object> resultMap = new HashMap<>();
+		try {
+			List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
+			resultMap.put("result", 0);
+			resultMap.put("mag","");
+			resultMap.put("data",result);
+			resultMap.put("time", timeMap);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), "");
+			resultMap.put("result", 1);
+			resultMap.put("mag","获取数据失败");
+			resultMap.put("data","");
+			resultMap.put("time", timeMap);
+			e.printStackTrace();
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
+	}
+	
+	/**
+	 * 获取开始结束时间
+	 * @param falg
+	 * @return
+	 */
+	private Map<String, Object> getTime(String falg){
+		Map<String, Object> map = new HashMap<>();
+		String startTime = null;
+		String endTime = null;
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		endTime = df.format(new Date());
+		
+		if(falg.equals("1")){  //今日
+			startTime = DateUtils.today() + " 00:00:00";
+		}else if(falg.equals("2")){  //本周
+			startTime = DateUtils.weekOfFirstDay() + " 00:00:00";
+		}else if(falg.equals("3")){  //本月
+			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
+		}else if(falg.equals("4")){   //上月
+			startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
+			endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";
+		}
+		map.put("startTime",startTime);
+		map.put("endTime", endTime);
+		return map;
+	}
+	
+	
 	
 	/**
 	 * 消息中心查询信息
@@ -2068,8 +2313,6 @@ public class PadInterfaceController {
  
 	 return Constant.SUCCESSMSG;
 	}
-	
-	static LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 	@Autowired
 	BranchDataSyn  branchDataSyn;
@@ -2150,5 +2393,11 @@ public class PadInterfaceController {
 	TorderMapper  torderMapper;
 	@Autowired
 	private CallWaiterService callService;
+	@Autowired
+	private TtellerCashDao tellerCashService;
+	@Autowired
+	private SystemServiceImpl systemServiceImpl;
+	
+	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 }

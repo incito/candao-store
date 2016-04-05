@@ -1,7 +1,10 @@
 package com.candao.print.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PrintObj implements Serializable,Cloneable {
 
@@ -61,7 +64,10 @@ public class PrintObj implements Serializable,Cloneable {
 	private List<PrintDish> pDish;
 	
 	
+	//xk add
+	private Map<String, Object>  ordermap=new HashMap<>();
 	
+	private List<Map<String, Object>>  dishes=new ArrayList<>();
 
 	public String getDiscardUserId() {
 		return discardUserId;
@@ -239,6 +245,22 @@ public class PrintObj implements Serializable,Cloneable {
 
 	public void setMessageMsg(String messageMsg) {
 		this.messageMsg = messageMsg;
+	}
+
+	public Map<String, Object> getOrdermap() {
+		return ordermap;
+	}
+
+	public void setOrdermap(Map<String, Object> ordermap) {
+		this.ordermap = ordermap;
+	}
+
+	public List<Map<String, Object>> getDishes() {
+		return dishes;
+	}
+
+	public void setDishes(List<Map<String, Object>> dishes) {
+		this.dishes = dishes;
 	}
 
 

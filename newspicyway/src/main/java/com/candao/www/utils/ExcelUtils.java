@@ -225,23 +225,27 @@ public class ExcelUtils {
 	 */
 	public static String setTabTitle(String sheetName,Map<String,Object> params){
 		String branchname = params.containsKey("branchname")?params.get("branchname").toString():"";
-		String shiftid = params.get("shiftid").toString();
 		String beginTime = params.get("beginTime").toString();
 		String endTime = params.get("endTime").toString();
 		String searchType = params.get("searchType").toString();
-		String shiftname = "";
-		if (shiftid.equals("0")) {
-			shiftname = "午市";
-		}else if (shiftid.equals("-1")) {
-			shiftname = "全天";
-		}else if (shiftid.equals("1")) {
-			shiftname = "晚市";
-		}
 		if(!searchType.equals("3")){
         	beginTime = DateUtils.stringDateFormat(beginTime);
         	endTime = DateUtils.stringDateFormat(endTime);
         }
-		return sheetName+"\n门店名称:"+branchname+"   市别："+shiftname+"\n时间:"+beginTime+"——"+endTime;
+		String shiftid = null;
+		if(params.get("shiftid")!=null&&!params.get("shiftid").equals("")){
+			shiftid = params.get("shiftid").toString();
+			String shiftname = "";
+			if (shiftid.equals("0")) {
+				shiftname = "午市";
+			}else if (shiftid.equals("-1")) {
+				shiftname = "全天";
+			}else if (shiftid.equals("1")) {
+				shiftname = "晚市";
+			}
+			return sheetName+"\n门店名称:"+branchname+"   市别："+shiftname+"\n时间:"+beginTime+"——"+endTime;
+		}
+		return sheetName+"\n门店名称:"+branchname+"\n时间:"+beginTime+"——"+endTime;
 	}
 	
 	/**
