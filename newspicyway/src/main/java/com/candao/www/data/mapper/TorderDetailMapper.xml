@@ -719,4 +719,39 @@
 	     select t.dishid,t.dishnum,(SELECT id from t_dish_unit u where u.dishid=t.dishid and u.unit=t.dishunit) as dishunit from t_order_detail t where t.orderid =#{orderid}
 	 </select>
 	
+	<select id="getDishesInfoByOrderId" resultType="java.util.HashMap" parameterType="map">
+		select 
+		t.dishnum,d.title,t.orderprice
+		from t_order_detail t
+		LEFT OUTER JOIN t_dish d on t.dishid=d.dishid
+		where t.orderid=#{orderid}
+		order by t.begintime desc
+	</select>
+	<select id="selectorderinfos" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select o.userid,t.tableNo,a.areaname from t_order o 
+		LEFT OUTER JOIN t_table t on o.tableids=t.tableid
+		LEFT OUTER JOIN t_tablearea a on t.areaid=a.areaid
+		where o.orderid=#{orderid}
+	</select>
+	
+	<update id="updateOrderinfo" parameterType="map">
+		update t_order set dueamount=#{castmoney},ymamount=#{youmian},ssamount=#{paymoney} where orderid=#{orderno}
+	</update>
+	
+	<select id="getItemSellDetail" parameterType="map" resultType="java.util.HashMap">
+		select CONCAT(d.title,'(',od.dishunit,')') as 'dishName', SUM(od.dishnum) as 'dishCount', SUM(od.debitamount) as 'totlePrice'
+		from t_order_detail od, t_dish d 
+		where 1=1 
+		and od.dishid in (
+			select dishid from t_dish where dishtype = 0 
+		) 
+		and od.orderid in (
+			select orderid 
+			from t_order 
+			where begintime BETWEEN #{startTime} and #{endTime} 
+			and orderstatus = '3' 
+		)
+		and d.dishid = od.dishid 
+		GROUP BY od.dishid , od.dishunit 
+	</select>
 </mapper>

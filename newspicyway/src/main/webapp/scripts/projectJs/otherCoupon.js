@@ -1,5 +1,6 @@
 $(document).ready(function(){
-	/*其他优惠*/
+	
+	/*更多优惠*/
 	$("ul.nav-preferential.other-preferential li").click(function(){
 		$("ul.nav-preferential li").removeClass("active");
 		$(this).addClass("active");

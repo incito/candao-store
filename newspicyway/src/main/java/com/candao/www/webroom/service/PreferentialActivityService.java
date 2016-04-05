@@ -237,11 +237,16 @@ public interface PreferentialActivityService {
     * @return
     */
    public List<Map<String , Object>> findCouponsByType4Pad(String typeid);
+   /**
+ 	 * 查询所有的可挂账的合作单位
+ 	 *
+ 	 */
+    public List<Map<String , Object>> findCooperationUnit(Map params);
    
    /**
     * 对账单使用优惠
     * @param type  类型
-    * @param sub_type 子类型（当类型为 其他优惠 06的时候，这里用子类型区分是 哪个优惠）
+    * @param sub_type 子类型（当类型为 更多优惠 06的时候，这里用子类型区分是 哪个优惠）
     * @param orderid  账单id
     * @param preferentialid  如果是特价券，则是优惠活动表的ID，否则，是 优惠活动详细表的ID
     * @param disrate  默认0（手工折扣类会上传一个>0的折扣）

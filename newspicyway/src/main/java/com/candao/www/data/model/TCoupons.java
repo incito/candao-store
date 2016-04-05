@@ -15,7 +15,7 @@ public class TCoupons  extends TCouponRule{
        3.储值优惠 	 
        4.团购优惠 	
        5.信用卡优惠 	
-       6.其他优惠            12.优惠券 13内部员工优惠 14 合作单位优惠 
+       6.更多优惠            12.优惠券 13内部员工优惠 14 合作单位优惠 
 	 */
 	private String couponparent;
 	/**

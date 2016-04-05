@@ -10,8 +10,9 @@
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common/common.css">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/preferential.css">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css">
+	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/preferential.css">
+	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/jquery.mCustomScrollbar.css" />
 
 	<script src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
 	<script src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>
@@ -85,7 +86,7 @@
 				</li>
 				<li data-type="06">
 					<span class="top"></span>
-					<em></em><a>其他优惠</a>
+					<em></em><a>更多优惠</a>
 					<span class="bottom"></span>
 				</li>
 			</ul>	
@@ -138,7 +139,7 @@
 				
 			</div>
 		</div><!-- end delete  -->
-		
+		<!-- 
 		 <div class="modal fade .dishes-detailDel-dialog in " id="successPrompt"  >
 			<div class="modal-dialog" style="width:310px;">
 				<div class="modal-content" style="width:310px;">	
@@ -148,8 +149,20 @@
 					</div>
 				</div>
 			</div>
+		</div> -->
+		<!-- 操作提示 -->
+		<div class="modal fade sendMsgState in " id="successPrompt"  style="z-index:99990" >
+			<div class="modal-dialog" style="width:310px;">
+				<div class="modal-content" >	
+					<div class="modal-body pop-div-content">
+						<p><i class="icon-success"></i></p>
+						<p class="tipP"> 
+							<label id="promptMsg">删除成功</label>
+						</p>
+					</div>
+				</div>
+			</div>
 		</div>
-		
 		<!--点击按钮弹出添加界面 -->
 		<div class="modal fade preferential-dialog in " id="preferential-add" data-backdrop="static">
 			<div class="modal-dialog">
@@ -182,9 +195,10 @@
 						</div>
 						<div class="row">
 							<div class="col-xs-4" data-type="toGiftCoupon">
-								<img src="<%=request.getContextPath()%>/images/preferential-type4.png"/>
+								<!-- 礼品券暂时禁用 放开时，图片用preferential-type4.png -->
+								<img src="<%=request.getContextPath()%>/images/preferential-type4-disable.png"/>
 								<p class="preferential-type">礼品券</p>
-								<p class="preferential-detail">梭边鱼试吃券</p>
+								<p class="preferential-detail">敬请期待</p><!-- 礼品券暂时禁用 放开时，改成梭边鱼试吃券 -->
 
 							</div>
 							<div class="col-xs-4" data-type="toGroupBuying?isModify=true">
@@ -193,9 +207,9 @@
 								<p class="preferential-detail">美团88抵100</p>
 
 							</div>
-							<div class="col-xs-4" data-type="toOtherCoupon">
+							<div class="col-xs-4" data-type="otherCouponMod">
 								<img src="<%=request.getContextPath()%>/images/preferential-type6.png"/>
-								<p class="preferential-type">其他优惠</p>
+								<p class="preferential-type">更多优惠</p>
 								<p class="preferential-detail">人工优免</p>
 
 							</div>
@@ -214,7 +228,16 @@
 				$(".preferential-content .preferential-btn").remove();
 			}
 			$("#preferential-add div.col-xs-4").click(function(){
-				$(parent.document.all("detail")).attr("src","<%=request.getContextPath()%>/preferential/"+$(this).attr("data-type"));
+				//礼品券暂时禁用
+				if($(this).attr("data-type") == "toGiftCoupon"){
+					return false;
+				}
+				if($(this).attr("data-type") == "otherCouponMod"){
+					$(parent.document.all("allSearch")).css("visibility","hidden");
+					$(parent.document.all("detail")).attr("src", global_Path+"/otherCoupon/topage?path=coupons/"+$(this).attr("data-type"));
+				}else{
+					$(parent.document.all("detail")).attr("src","<%=request.getContextPath()%>/preferential/"+$(this).attr("data-type"));
+				}
 			});
 			$(parent.document.all("allSearch")).css("visibility","visible");
 			var type, page;
@@ -291,7 +314,7 @@
 							}
 							
 							
-						})
+						});
 						dataBlock.empty().append(str);
 						$(".pagingWrap").find("ul.paging").remove();
 						if(data.total > 10 && $("ul.paging").length == 0){

@@ -46,5 +46,12 @@ public interface OrderDetailService {
 
 	public String getOrderDetailByOrderId(String orderid);
 	
- 
+	public void printStatement(String orderno);
+	
+	/**
+	 * 获取品项销售明细
+	 * @param timeMap
+	 * @return
+	 */
+	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) throws Exception;
 }

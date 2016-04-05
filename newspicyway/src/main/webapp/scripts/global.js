@@ -263,6 +263,13 @@ function toScheduleReport(){
 	$("#allSearch").css("visibility","hidden");
 }
 /**
+ * 会员储值统计表
+ */
+function toMemberValueReport(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/memberValueReport");
+	$("#allSearch").css("visibility","hidden");
+}
+/**
  * 服务员考核报表
  */
 function toWaiterAssess(){
@@ -292,6 +299,14 @@ function toNormal(){
 	$("#allSearch").css("visibility","visible");
 	$(parent.document).find("#searchText").val("");
 	$("#allSearch .autoComplete").remove();
+}
+
+/**
+ * 跳转到支付管理
+ */
+function toPayment(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=payment/paymentlist");
+	$("#allSearch").css("visibility","hidden");
 }
 /**
  * 跳转到我的账户
@@ -412,4 +427,12 @@ function isNullObj(obj){
 function clearIntervalProcess(intervalProcess){
 	if(intervalProcess != null )
 		clearInterval(intervalProcess);
+}
+
+/**
+ * 服务员销售报表
+ */
+function toWaiterSale(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/waiterSale");
+	$("#allSearch").css("visibility","hidden");
 }

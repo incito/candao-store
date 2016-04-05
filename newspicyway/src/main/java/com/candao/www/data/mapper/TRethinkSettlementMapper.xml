@@ -11,6 +11,7 @@
 			-(SELECT IFNULL(sum(dishnum*orignalprice),0) FROM t_order_detail_history WHERE orderid = too.orderid and dishtype = 2 and superkey = primarykey) as before_shouldamount,
 			IFNULL(sum(tsdh.payamount),0)-IFNULL(tsh.Inflated,0) as before_paidamount,
 			too.userid as waiter,
+			tsh.userid as cashier,
 			tsh.authorizer_name
 		FROM
 			t_settlement_detail_history tsdh,
@@ -19,11 +20,12 @@
 		WHERE
 			tsdh.orderid = too.orderid
 		AND tsdh.orderid = tsh.orderid
-		AND tsdh.payway in (0,1,5,8,13,17,18)
-		AND too.orderstatus = 3
         <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
             AND too.endtime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
         </if>
+        AND tsh.reason not in('??????,??????' ,'会员结算失败,系统自动反结')
+        AND tsdh.payway in (0,1,5,8,13,17,18)
+		AND too.orderstatus = 3
         group by tsdh.orderid
 	</select>
     

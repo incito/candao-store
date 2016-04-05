@@ -97,7 +97,12 @@
 			<value>tableSwitchQueue</value>
 		</constructor-arg>
 	</bean>
-	
+		<!-- 结账单 -->
+	<bean id ="statementQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg>
+			<value>statementQueue</value>
+		</constructor-arg>
+	</bean>
 	    		    <!-- 打印称重单的消息队列 -->  
 	<bean id ="weightQueue" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg>
@@ -191,7 +196,20 @@
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 称重单的 监听 end -->
+    <!-- 结账单监听start -->
+     <bean id="statementMessageListenerAdapterContainer"  
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="statementQueue" />  
+        <property name="messageListener" ref="statementListenerAdapter" />  
+    </bean>  
     
+     <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+        <property name="delegate">  
+            <bean class="com.candao.print.listener.StatementDishListener"/>  
+        </property>  
+        <property name="defaultListenerMethod" value="receiveMessage"/>  
+    </bean>  
     <!-- 套餐小票的监听 -->
 	  <bean id="dishSetmessageListenerAdapterContainer"  
         class="org.springframework.jms.listener.DefaultMessageListenerContainer">  

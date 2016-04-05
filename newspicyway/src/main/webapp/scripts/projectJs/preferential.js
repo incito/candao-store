@@ -121,7 +121,8 @@ $(document).ready(function(){
 
 
 	});
-	/*其他优惠*/
+	
+	/*更多优惠*/
 	$("#nav-preferential-other li").click(function(){
 		$("ul.nav-preferential li").removeClass("active");
 		$(this).addClass("active");
@@ -255,10 +256,12 @@ function doDel(){
 				$("#successPrompt").modal("hide");
 			}, 1000);
 		}else{
+			$("#successPrompt .modal-body i").removeClass("icon-success").addClass("icon-fail");
 			$("#promptMsg").html("删除失败");
 			$("#successPrompt").modal("show");
 			window.setTimeout(function(){
 				$("#successPrompt").modal("hide");
+				$("#successPrompt .modal-body i").removeClass("icon-fail").addClass("icon-success");
 			}, 1000);
 		}
 	},"json");
@@ -291,6 +294,8 @@ function operaPreferntial(id, type, subType, viewType){
 		url = contextPath+"/preferential/toOtherCoupon?id="+id+"&isDetail=false&subType="+subType;
 	} else if(type == "06" && subType == "0602") {
 		url = contextPath+"/preferential/toOtherCoupon?id="+id+"&isModify="+isModify+"&subType="+subType;
+	} else if(type == "07" || type == "08" || type == "09"){
+		url = contextPath+"/otherCoupon/getCoupon?id="+id+"&isModify="+isModify;
 	}
 	window.location.href = url;
 }

@@ -38,6 +38,7 @@ import com.candao.print.service.DishSetProducerService;
 import com.candao.print.service.MutilDishProducerService;
 import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.PrinterService;
+import com.candao.print.service.StatentMentProducerService;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.data.dao.TorderDetailMapper;
@@ -1501,6 +1502,62 @@ public class OrderDetailServiceImpl implements OrderDetailService{
      }
 
 
+     public class StatementThread implements Runnable{
+		   
+		   	PrintObj printObj ;
+		   
+		   	StatementThread(PrintObj printObj){
+			   this.printObj = printObj;
+		   }
+	 
+		   @Override
+		   public void run(){
+			   //根据动作打印不同的小票
+			   statentMentProducerService.sendMessage( printObj );
+			//0.正常下单
+			//1.加菜下单
+		   }
+		   
+	   }
+     /**
+	    * 打印结账单
+	    */
+		@Override
+		public void printStatement(String orderno) {
+			
+			 Map<String,Object> map = new HashMap<String, Object>();
+			 map.put("orderno", orderno);
+			 PrintObj printObj  = tbPrintObjDao.find(map);
+			 printObj.setPrintType(Constant.PRINTTYPE.ADD_DISH);
+	    	 printObj.setBillName(Constant.DISHBILLNAME.STATEMENTDISHNAME);
+	    	 printObj.setAbbrbillName(Constant.DISHBILLNAME.ADDDISHNAME_ABBR);
+	    	 map.put("printobjid",printObj.getId());
+	    	 
+	    	 List<Map<String, Object>>  dishes= torderDetailMapper.getDishesInfoByOrderId(orderno);
+	    	 printObj.setDishes(dishes);
+	    	Map<String, Object>  ordermap= orderService.findOrderById(orderno);
+	    	if(ordermap!=null){
+	    		printObj.setOrdermap(ordermap);
+	    	}
+	    	//得到打印机配置
+	    	  Map<String,Object> printertypeMap = new HashMap<String, Object>();
+			  printertypeMap.put("printertype", 4);
+			  List<Map> ipconfigs = tbPrinterManagerDao.find(printertypeMap);
+			  if(ipconfigs!=null && ipconfigs.size()>0){
+				  for(Map tbPrinter :  ipconfigs){
+					 Object ipaddress=  tbPrinter.get("ipaddress");
+					 Object port= tbPrinter.get("port");
+					 if(ipaddress!=null){
+						  printObj.setCustomerPrinterIp(ipaddress.toString());
+						  printObj.setCustomerPrinterPort(port.toString());
+					 }
+				  }
+			  }
+			new Thread(new StatementThread(printObj)).run();
+			
+		}
+		
+		
 	/**
 	 * 催菜
 	 */
@@ -1702,6 +1759,15 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
 	
+	
+	/**
+	 * 获取品项销售明细
+	 */
+	@Override
+	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) throws Exception{
+		return torderDetailMapper.getItemSellDetail(timeMap);
+	}
+	
 public class PrintThread  implements Runnable{
 		   
 		   PrintObj printObj ;
@@ -1845,5 +1911,6 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	private DishSetProducerService dishSetService;
 
-
+	@Autowired
+	StatentMentProducerService statentMentProducerService;  
 }

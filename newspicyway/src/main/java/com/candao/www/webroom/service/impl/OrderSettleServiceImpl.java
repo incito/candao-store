@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.data.dao.TbOpenBizLogDao;
@@ -26,6 +31,7 @@ import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.Tsettlement;
 import com.candao.www.data.model.TsettlementDetail;
+import com.candao.www.utils.HttpRequestor;
 import com.candao.www.webroom.model.SettlementDetail;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.DishService;
@@ -34,6 +40,10 @@ import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.weixin.dao.WeixinDao;
+import com.candao.www.weixin.dto.PayDetail;
+import com.candao.www.weixin.dto.SettlementStrInfoDto;
+import com.candao.www.weixin.dto.WxPayResult;
 
 
 @Service
@@ -55,6 +65,9 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	private TdishDao tdishDao;
 	
 	@Autowired
+	private WeixinDao   weixinDao;
+	
+	@Autowired
 	OrderService  orderService;
 	
 	@Autowired
@@ -70,7 +83,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	private TRethinkSettlementDao tRethinkSettlementDao;
-	
+	@Autowired
+	 DataSourceTransactionManager transactionManager ;
 
  	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
@@ -289,15 +303,24 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		  return "0";
  	}
  	
-	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
 	public String rebackSettleOrder(SettlementInfo settlementInfo) {
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
+		  TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
 		// TODO Auto-generated method stub
 		//1.根據訂單 查詢金額  
 		//2.減去會員優惠，折扣 等信息
 
 		//3.計算總額  減去所對應的優惠
 		String orderId = settlementInfo.getOrderNo();
+		
+		 //start先查询是不是微信扫码支付
+		 Map<String, String> dataMap = new HashMap<String, String>();
+		 dataMap.put("orderno", orderId);
+		 dataMap.put("payway", Constant.PAYWAY.PAYWAY_WEIXIN);
+		 int isweixin=settlementMapper.selectIsPayWeixin(dataMap);
+		 //end
 		//查询反结算次数
 		String againSettleNums = settlementMapper.queryAgainSettleNums(orderId);
 		if(againSettleNums == null || againSettleNums.equals("0")){
@@ -332,7 +355,28 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 tbTable.setOrderid(orderId);
 	 
 	 tableService.updateSettleStatus(tbTable);
-	 
+	 //AUTO事物处理
+	 //微信扫码支付反结算调用
+	 if(isweixin>0){//是微信扫码结算的
+				 try {
+					 String weixinturnback="http://"+PropertiesUtils.getValue("PSI_URL")+"/newspicyway/weixin/turnback";
+					String retPSI=new HttpRequestor().doPost(weixinturnback, dataMap);
+					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+					System.out.println("微信扫码反结算");
+					 if(retMap == null || "1".equals(retMap.get("code"))){	
+						    transactionManager.rollback(status);  //强制回滚
+							return Constant.FAILUREMSG;
+					 }
+					 transactionManager.commit(status);
+					 return "2";//微信扫码反结算成功
+				} catch (Exception e) {
+					e.printStackTrace();
+					transactionManager.rollback(status);
+					return "1";
+				}
+	 }
+	 //
+	 transactionManager.commit(status);
      return "0";
 	}
 
@@ -342,4 +386,67 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		return 0;
 	}
 
+	@Override
+	@Transactional
+	public SettlementStrInfoDto setInitData(SettlementStrInfoDto settlementStrInfoDto,WxPayResult payResult) {
+		String[]  infos=payResult.getAttach().split(";");
+		payResult.setAttach(payResult.getAttach().replaceAll(";", "|"));
+		settlementStrInfoDto.setOrderNo(infos[0]);
+		String orderno=settlementStrInfoDto.getOrderNo();
+		//根据订单id查询出订单信息
+		Map<String, Object>  orderinfo= orderService.findOrderById(orderno);
+		if(orderinfo!=null){
+			String  userName=orderinfo.get("userid").toString();
+			settlementStrInfoDto.setUserName(userName);
+		}
+		//订单详情
+		List<PayDetail>  payDetails=   new ArrayList<>();
+		
+		for(int i=1;i<infos.length-2;i++){
+				PayDetail  detail=new PayDetail();
+				detail.setBankCardNo("");
+				detail.setCoupondetailid("");
+				detail.setCouponid("");
+				detail.setCouponnum("");
+				detail.setMemerberCardNo("");
+				detail.setPayAmount(infos[i]);
+				if(i==1){
+					detail.setPayWay(Constant.PAYWAY.PAYWAY_WEIXIN);
+				}
+				if(i==2){
+					detail.setPayWay(String.valueOf(Constant.PAYWAY.PAYWAY_FREE));
+				}
+				payDetails.add(detail);
+		}
+		
+		settlementStrInfoDto.setPayDetail(payDetails);
+		//
+		weixinDao.saveTempoldOrderid(payResult.getOutTradeNo(),infos[0]);
+		return settlementStrInfoDto;
+	}
+	
+	
+	@Override
+	public void updatePadData(String attach) {
+		if(attach!=null){
+			String[] args=attach.split(";");
+			if(args.length>2){
+				Map<String, Object> map=new HashMap<>();
+				map.put("orderno", args[0]);
+				map.put("castmoney", args[1]);
+				map.put("paymoney", args[2]);
+				BigDecimal  b1=new BigDecimal(args[1]);
+				BigDecimal  b2=new BigDecimal(args[2]);
+				BigDecimal  b3= b1.subtract(b2);
+				map.put("youmian", b3);
+				torderDetailMapper.updateOrderinfo(map);
+			}
+		}
+	}
+	
+	
+	@Override
+	public Map<String, Object> selectorderinfos(String orderid) {
+		return torderDetailMapper.selectorderinfos(orderid);
+	}
 }

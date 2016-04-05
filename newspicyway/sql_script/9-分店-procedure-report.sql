@@ -8240,3 +8240,137 @@ BEGIN -- 返回字段说明如下
 END$$
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS p_report_fwyxstjb$$
+CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid int(11),
+IN pi_ksrq datetime, -- 开始日期
+IN pi_jsrq datetime, -- 结束日期
+IN pi_fwyxm varchar(30), -- 服务员姓名
+IN pi_smcp varchar(300), -- 菜品名称
+IN pi_dqym int, -- 当前页码 第一次进入时从0开始
+IN pi_myts int, -- 每页显示的条数
+OUT po_errmsg varchar(100))
+SQL SECURITY INVOKER
+COMMENT '服务员销售统计表'
+label_main:
+BEGIN
+  DECLARE v_waiter_name varchar(300);
+  DECLARE v_dish_name varchar(30);
+  DECLARE v_date_start datetime;
+  DECLARE v_date_end datetime;
+  DECLARE v_current_page int;
+  DECLARE v_nums_page int;
+
+  IF pi_branchid IS NULL THEN
+    SELECT
+      NULL;
+    SET po_errmsg = '分店ID输入不能为空';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_myts < 1 THEN
+    SELECT
+      NULL;
+    SET po_errmsg = '每页显示记录条数不能少于1';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_dqym < - 1 THEN
+    SELECT
+      NULL;
+    SET po_errmsg = '当前页面只能输入大于-1的正整数';
+    LEAVE label_main;
+  END IF;
+
+  SET @@max_heap_table_size = 1024 * 1024 * 500;
+  SET @@tmp_table_size = 1024 * 1024 * 500;
+
+  SET v_date_start = pi_ksrq;
+  SET v_date_end = pi_jsrq;
+  SET v_waiter_name = pi_fwyxm;
+  SET v_dish_name = pi_smcp;
+  SET v_current_page = pi_dqym;
+  SET v_nums_page = pi_myts;
+
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order (
+    orderid varchar(50),
+    userid varchar(50)
+  ) ENGINE = MEMORY DEFAULT charset = utf8;
+
+  INSERT INTO t_temp_order
+    SELECT
+      orderid,
+      userid
+    FROM t_order USE INDEX (IX_t_order_begintime)
+    WHERE branchid = pi_branchid
+    AND begintime BETWEEN v_date_start AND v_date_end
+    AND orderstatus = 3;
+
+  CREATE UNIQUE INDEX ix_t_temp_order_orderid ON t_temp_order (orderid);
+
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+  CREATE TEMPORARY TABLE t_temp_order_detail (
+    orderid varchar(50),
+    dishid varchar(50),
+    primarykey varchar(50),
+    superkey varchar(50),
+    dishnum varchar(50),
+    dishtype int,
+    orderprice double(8, 2),
+    dishunit varchar(100)
+  ) ENGINE = MEMORY DEFAULT charset = utf8;
+
+  INSERT INTO t_temp_order_detail
+    SELECT
+      tod.orderid,
+      tod.dishid,
+      tod.primarykey,
+      tod.superkey,
+      tod.dishnum,
+      tod.dishtype,
+      tod.orderprice,
+      tod.dishunit
+    FROM t_order_detail tod,
+         t_temp_order too
+    WHERE tod.orderid = too.orderid;
+
+  #删除套餐中的明细
+  DELETE
+    FROM t_temp_order_detail
+  WHERE dishtype = '2' AND primarykey <> superkey;
+
+  #删除鱼锅名称
+  DELETE
+    FROM t_temp_order_detail
+  WHERE orderprice IS NULL;
+
+  SELECT
+    too.orderid,
+    too.userid,
+    tbu.NAME,
+    td.title,
+    tod.dishunit,
+    td.dishid,
+    SUM(tod.dishnum) AS num,
+    tod.dishtype
+  FROM t_temp_order too,
+       t_temp_order_detail tod,
+       t_dish td,
+       t_b_user tbu,
+       t_b_employee tbe
+  WHERE too.orderid = tod.orderid
+  AND tbe.user_id = tbu.id
+  AND tbe.job_number = too.userid
+  AND tod.dishid = td.dishid
+  AND td.title LIKE CONCAT('%', v_dish_name, '%')
+  AND tbu.name LIKE CONCAT('%', v_waiter_name, '%')
+  GROUP BY tbu.id,
+           tod.dishid,
+           tod.dishunit,
+           tod.dishtype
+  LIMIT v_current_page, v_nums_page;
+END
+$$
+
+DELIMITER ;

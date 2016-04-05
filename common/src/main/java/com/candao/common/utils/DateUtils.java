@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,11 +343,13 @@ public class DateUtils {
 		return time; 
 	}
 	public static void main(String[] args) {
-		Calendar calendar = Calendar.getInstance();
+		/*Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2015);
 		calendar.set(Calendar.MONTH, 1);
 		calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));  
-		System.out.println(toString(calendar.getTime()));
+		System.out.println(toString(calendar.getTime()));*/
+		System.out.println(weekOfFirstDay());
+		System.out.println(weekOfLastDay());
 	}
 
 
@@ -429,4 +433,152 @@ public class DateUtils {
 		return result;
 	}
 
+	/**
+	 * 判断传入的时间是不是今天
+	 * @param date
+	 * @return
+	 */
+	public static boolean isToday(Date date) { 
+	    Calendar c1 = Calendar.getInstance();              
+	    c1.setTime(date);                                 
+	    int year1 = c1.get(Calendar.YEAR);
+	        int month1 = c1.get(Calendar.MONTH)+1;
+	        int day1 = c1.get(Calendar.DAY_OF_MONTH);     
+	        Calendar c2 = Calendar.getInstance();    
+	        c2.setTime(new Date());      
+	        int year2 = c2.get(Calendar.YEAR);
+	        int month2 = c2.get(Calendar.MONTH)+1;
+	        int day2 = c2.get(Calendar.DAY_OF_MONTH);   
+	        if(year1 == year2 && month1 == month2 && day1 == day2){
+	        return true;
+	        }
+	    return false;                               
+	}
+	
+	
+	/**
+	 * 今天
+	 * @return
+	 */
+	public static String today(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH,0);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 明天
+	 * @return
+	 */
+	public static String tomorrow(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH,1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 昨天
+	 * @return
+	 */
+	public static String yesterday(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH,-1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	
+	/**
+	 * 本周第一天
+	 * @return
+	 */
+	public static String weekOfFirstDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); //获取本周一的日期
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 本周最后一天
+	 * @return
+	 */
+	public static String weekOfLastDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		cal.add(Calendar.WEEK_OF_YEAR, 1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 本月第一天
+	 * @return
+	 */
+	public static String monthOfFirstDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH,0);
+		cal.set(Calendar.DAY_OF_MONTH,1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 本月最后一天
+	 * @return
+	 */
+	public static String monthOfLastDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));  
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 上月第一天
+	 * @return
+	 */
+	public static String beforeMonthOfFirstDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH,-1);
+		cal.set(Calendar.DAY_OF_MONTH,1);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	/**
+	 * 上月最后一天
+	 * @return
+	 */
+	public static String beforeMonthOfLastDay(){
+		java.util.Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH,0);
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String time = format.format(date);
+		return time;
+	}
+	
+	
 }

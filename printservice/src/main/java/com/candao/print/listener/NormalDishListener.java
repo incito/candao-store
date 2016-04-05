@@ -142,6 +142,11 @@ public class NormalDishListener {
 			writer.write("     " + "\r\n");
 			writer.flush();// 
 
+			for (PrintDish it : object.getpDish()) {
+				it.setDishName(StringUtils.split2(it.getDishName(), "#"));
+				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
+			}
+			
 			//合并打印
 			for (PrintDish singleDish : object.getpDish()) {
 				socketOut.write(PrinterConstant.getFd8Font());

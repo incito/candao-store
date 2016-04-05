@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.member.MemberMapper">
+    <!-- 查询指定门店，指定类型，指定时间段的所有操作  -->
+    <select id="queryMemberDealInfos" parameterType="java.util.Map"  resultType="java.util.Map">
+        select  dd.deal_time,dd.deal_type,dd.amount,dd.deal_no,dm.present_value,dm.branch_id 
+        from  t_deal_master dm left join t_deal_detail dd on dm.deal_no = dd.deal_no
+                               left join t_member_card mc on dm.card_no = mc.cardno
+                               left join t_member_info mi on mi.id = mc.member_id
+        where dm.branch_id = #{branchId} and dd.deal_time between #{beginTime} and #{endTime} 
+        <if test="cardno != null and cardno != ''">
+               and( mc.cardno like CONCAT('%',#{cardno},'%')
+                or  mi.mobile like CONCAT('%',#{cardno},'%')
+               )
+        </if>
+         order by dd.deal_time
+    </select>
+    
+      <select id="queryMemberDealInfosToTime" parameterType="java.util.Map"  resultType="java.util.Map">
+        SELECT
+		dd.deal_time,mc.cardno,mi.mobile,mi.name,tc.level,dd.deal_type,dd.amount,dm.actual_value,dd.deal_user,dm.value
+		FROM
+			t_deal_master dm
+		LEFT JOIN t_deal_detail dd ON dm.deal_no = dd.deal_no
+		LEFT JOIN t_member_card mc on mc.cardno = dm.card_no
+		LEFT JOIN t_member_info mi on mi.id = mc.member_id
+		LEFT JOIN  t_card_info tc on tc.cardno = dm.card_no
+        where dm.branch_id = #{branchId} and dd.deal_time between #{beginTime} and #{endTime} 
+        <if test="cardno != null and cardno != ''">
+               and ( mc.cardno like  like CONCAT('%',#{cardno},'%')
+                or  mi.mobile like  like CONCAT('%',#{cardno},'%')
+               )
+        </if>
+        order by dd.deal_time
+   </select>
+   
+</mapper>

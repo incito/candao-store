@@ -54,6 +54,12 @@ public interface TbPreferentialActivityDao{
    * @return
    */
   public int deletePreferentialDetail(String preferential);
+  /**
+   * 查询所有的合作单位
+   * @param params
+   * @return
+   */
+  public List<Map<String,Object>> findCooperationUnit(Map params);
 
 	/**
 	 *  根据优惠活动ID 逻辑删除 status=1 删除优惠活动 具体的分类的信息（比如特价信息、折扣信息、抵用、团购信息等）。注意：此操作不删除优惠活动信息。

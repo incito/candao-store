@@ -186,4 +186,9 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 		params.put("orderid", orderid);
 		return dao.update(PREFIX + ".updateTorderMember", params);
 	}
+	
+	@Override
+	public int selectIsPayWeixin(Map<String, String> dataMap) {
+		return dao.get(PREFIX + ".selectIsPayWeixin", dataMap);
+	}
 }
