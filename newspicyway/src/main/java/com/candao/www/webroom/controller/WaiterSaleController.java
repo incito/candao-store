@@ -13,7 +13,6 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -84,10 +83,6 @@ public class WaiterSaleController extends BaseController {
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			params.put("dishunit", dishunit);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	    try{
 			List<Map<String,Object>> list = waiterSaleService.getWaiterSaleDetail(params);
 			JSONArray data = JSONArray.fromObject(list);
 		    map = ReturnMap.getReturnMap(1, "001", "查询服务员销售统计表成功");
@@ -100,46 +95,22 @@ public class WaiterSaleController extends BaseController {
 	}
 	
 	/**
-	 * 校验查询参数
-	 * @author weizhifang
-	 * @since 2016-3-25
-	 * @param params
-	 * @return
-	 */
-	private Map<String,Object> validateParameter(Map<String,Object> params){
-		String errMsg = "";
-		if(params.get("begintime") == null || params.get("begintime").equals("")){
-			errMsg = "缺少起始时间";
-		}
-		if(params.get("endtime") == null || params.get("endtime").equals("")){
-			errMsg = "缺少结束时间";
-		}
-		return ReturnMap.getReturnMap(0, "002", errMsg);
-	}
-	
-	/**
 	 * 导出服务员销售统计表主表
 	 * @author weizhifang
 	 * @since 2016-3-16
+	 * @param params
 	 * @param request
 	 * @param response
-	 * @param beginTime
-	 * @param endTime
-	 * @param waiterName
-	 * @param dishName
 	 */
-	@RequestMapping("/exportWaiterSaleMainReport/{beginTime}/{endTime}/{waiterName}/{dishName}/{searchType}/{dishtype}/{dishunit}")
+	@RequestMapping(value="/exportWaiterSaleMainReport")
 	@ResponseBody
-	public void exportWaiterSaleMainReport(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "beginTime") String beginTime,
-			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "waiterName") String waiterName,
-			@PathVariable(value = "dishName") String dishName,
-			@PathVariable(value = "searchType") String searchType,
-			@PathVariable(value = "dishtype") String dishtype,
-			@PathVariable(value = "dishunit") String dishunit
-			){
-		Map<String,Object> params = setParameter(beginTime,endTime,waiterName,dishName,searchType,"","","",dishtype,dishunit,"0","9999999");
+	public void exportWaiterSaleMainReport(@RequestParam Map<String, Object> params,HttpServletRequest request, HttpServletResponse response){
+		String branchid = PropertiesUtils.getValue("current_branch_id");
+		String branchname = itemDetailService.getBranchName(branchid);
+		params.put("branchname", branchname);
+		params.put("branchId", branchid);
+		params.put("page", 0);
+		params.put("rows", 9999999);
 		List<Map<String,Object>> list = waiterSaleService.waiterSaleListProcedure(params);
 		waiterSaleService.createMainExcel(request, response, list, params);
 	}
@@ -148,110 +119,20 @@ public class WaiterSaleController extends BaseController {
 	 * 导出服务员销售统计表子表
 	 * @author weizhifang
 	 * @since 2016-3-16
+	 * @param params
 	 * @param request
 	 * @param response
-	 * @param beginTime
-	 * @param endTime
-	 * @param searchType
-	 * @param userId
-	 * @param dishid
-	 * @param dishtype
-	 * @param dishunit
 	 */
-	@RequestMapping("/exportWaiterSaleChildReport/{beginTime}/{endTime}/{searchType}/{userId}/{dishid}/{dishtype}/{dishunit}")
+	@RequestMapping(value="/exportWaiterSaleChildReport")
 	@ResponseBody
-	public void exportWaiterSaleChildReport(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "beginTime") String beginTime,
-			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "searchType") String searchType,
-			@PathVariable(value = "userId") String userId,
-			@PathVariable(value = "dishid") String dishid,
-			@PathVariable(value = "dishtype") String dishtype,
-			@PathVariable(value = "dishunit") String dishunit){
-		Map<String,Object> params = setParameter(beginTime,endTime,"","",searchType,userId,dishid,"",dishtype,dishunit,"","");
-		Map<String,Object> mainList = waiterSaleService.getWaiterDishInfo(params);
-		List<Map<String,Object>> childList = waiterSaleService.getWaiterSaleDetail(params);
-		waiterSaleService.createChildExcel(request, response, childList, params, mainList);
-	}
-	
-	/**
-	 * 设置报表查询参数
-	 * @author weizhifang
-	 * @since 2016-3-16
-	 * @param beginTime
-	 * @param endTime
-	 * @param waiterName
-	 * @param dishName
-	 * @param searchType
-	 * @param userId
-	 * @param dishid
-	 * @return
-	 */
-	private Map<String,Object> setParameter(String beginTime,String endTime,String waiterName,String dishName,
-			String searchType,String userid,String dishid,String num,String dishtype,String dishunit,String page,String rows){
-		Map<String,Object> params = new HashMap<String,Object>();
+	public void exportWaiterSaleChildReport(@RequestParam Map<String, Object> params,HttpServletRequest request, HttpServletResponse response){
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		String branchname = itemDetailService.getBranchName(branchid);
 		params.put("branchname", branchname);
 		params.put("branchId", branchid);
-		if(beginTime != null || !"".equals(beginTime)){
-			params.put("beginTime", beginTime);
-		}
-		if(endTime != null || !"".equals(endTime)){
-			params.put("endTime", endTime);
-		}
-		try{
-			if(!waiterName.equals("null")){
-				waiterName = URLDecoder.decode(waiterName,"UTF-8");
-				params.put("waiterName", waiterName.trim());
-			}else{
-				params.put("waiterName", "");
-			}
-			if(!dishName.equals("null")){
-				dishName = URLDecoder.decode(dishName,"UTF-8");
-				params.put("dishName", dishName.trim());
-			}else{
-				params.put("dishName", "");
-			}
-			if(!dishunit.equals("null")){
-				dishunit = URLDecoder.decode(dishunit,"UTF-8");
-				params.put("dishunit", dishunit);
-			}else{
-				params.put("dishunit", "");
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		if(!searchType.equals("null")){
-			params.put("searchType", searchType);
-		}
-		if(!userid.equals("null")){
-			params.put("userid", userid);
-		}
-		if(!dishid.equals("null")){
-			params.put("dishid", dishid);
-		}
-		if(!num.equals("null")){
-			params.put("num", num);
-		}else{
-			params.put("num", "");
-		}
-		if(!num.equals("dishtype")){
-			params.put("dishtype", dishtype);
-		}else{
-			params.put("dishtype", "");
-		}
-		if(!page.equals("page")){
-			params.put("page", page);
-		}else{
-			params.put("page", "");
-		}
-		if(!rows.equals("rows")){
-			params.put("rows", rows);
-		}else{
-			params.put("rows", "");
-		}
-		return params;
+		Map<String,Object> mainList = waiterSaleService.getWaiterDishInfo(params);
+		List<Map<String,Object>> childList = waiterSaleService.getWaiterSaleDetail(params);
+		waiterSaleService.createChildExcel(request, response, childList, params, mainList);
 	}
 	
 }
