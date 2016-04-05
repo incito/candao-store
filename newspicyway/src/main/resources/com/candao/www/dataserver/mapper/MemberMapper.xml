@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.MemberMapper">
+    <resultMap id="baseMap" type="com.candao.www.dataserver.entity.Member">
+        <id column="id" property="id" jdbcType="INTEGER"></id>
+        <result column="member_no" property="memberNo" jdbcType="VARCHAR"/>
+        <result column="track2" property="track2" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="columns">
+        id,
+        member_no,
+        track2
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.candao.www.dataserver.entity.Member">
+      INSERT INTO t_member(member_no,track2) values(#{memberNo},#{track2})
+    </insert>
+
+    <update id="update" parameterType="com.candao.www.dataserver.entity.Member">
+        UPDATE  t_member
+        <set>
+            <if test="memberNo != null">
+                member_no=#{memberNo,jdbcType=VARCHAR}
+            </if>
+            <if test="memberNo != null">
+                track2=#{track2,jdbcType=VARCHAR}
+            </if>
+        </set>
+        <where>
+            id=#{id,jdbcType=INTEGER}
+        </where>
+    </update>
+    <select id="selectOneByNo" parameterType="String" resultMap="baseMap">
+      select
+      <include refid="columns" />
+      from t_member where member_no=#{memberNo,jdbcType=VARCHAR} limit 1
+    </select>
+    <delete id="deleteByNo" parameterType="String">
+        delete from t_member
+        where member_no=#{memberNo,jdbcType=VARCHAR}
+    </delete>
+</mapper>

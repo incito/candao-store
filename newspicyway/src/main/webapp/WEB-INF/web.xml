@@ -69,6 +69,10 @@
 	<filter>
 	<filter-name>userFilter</filter-name>
 	<filter-class>com.candao.www.filter.UserFilter</filter-class>
+		<init-param>
+			<param-name>excluded</param-name>
+			<param-value>/QueryBalance,/VoidSale,/StoreCardDeposit,/MemberSale</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>userFilter</filter-name>

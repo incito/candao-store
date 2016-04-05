@@ -26,6 +26,13 @@
 		  <artifactId>pinyin4j</artifactId>
 		  <version>0.0.1-SNAPSHOT</version>
   	</dependency>
+	<dependency>
+		<groupId>com.candao</groupId>
+		<artifactId>jna</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>${project.basedir}/lib/jna.jar</systemPath>
+	</dependency>
 	 <dependency>
 	 <groupId>com.candao</groupId>
   <artifactId>common</artifactId>
@@ -56,6 +63,13 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
+
+			<!-- json包 -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>1.1.37</version>
+			</dependency>
    	</dependencies>
    
 	
@@ -71,22 +85,10 @@
 					<target>1.7</target>
                    <encoding>UTF-8</encoding>
 					<warSourceExcludes>*/upload/**</warSourceExcludes>
-					<compilerArguments>  
+					<compilerArguments>
 		                  <verbose />  
 		              <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>  
 		         </compilerArguments> 
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.8.v20121106</version>
-				<configuration>
-					<scanIntervalSeconds>0</scanIntervalSeconds>
-					<webAppConfig>
-						<jettyEnvXml>/newspicyway/config/jetty-env.xml</jettyEnvXml>
-						<contextPath>/newspicyway </contextPath>
-					</webAppConfig>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -95,6 +97,15 @@
 				<configuration>
 					<encoding>UTF-8</encoding>
 					<webXml>src\main\webapp\WEB-INF\web.xml</webXml>
+					<webResources>
+						<resource>
+							<directory>${project.basedir}/lib</directory>
+							<targetPath>WEB-INF/lib</targetPath>
+							<includes>
+								<include>**/*.jar</include>
+							</includes>
+						</resource>
+					</webResources>
 				</configuration>
 			</plugin>
       <plugin>  
@@ -104,9 +115,29 @@
                 <configuration>  
                     <encoding>UTF-8</encoding><!-- 指定编码格式，否则在DOS下运行mvn命令时当发生文件资源copy时将使用系统默认使用GBK编码 -->  
                 </configuration>  
-      </plugin>  
-
-		</plugins>
+      </plugin>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.1.8.v20121106</version>
+				<configuration>
+					<webAppConfig>
+						<contextPath>/newspicyway</contextPath>
+					</webAppConfig>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8082</port>
+							<maxIdleTime>60000</maxIdleTime>
+						</connector>
+					</connectors>
+					<systemProperties>
+						<systemProperty>
+							<name>org.eclipse.jetty.util.URI.charset</name>
+							<value>utf-8</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>		</plugins>
 
 		<resources>
 			<resource>

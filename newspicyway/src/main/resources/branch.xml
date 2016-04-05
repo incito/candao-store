@@ -115,7 +115,10 @@
 	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
 		<constructor-arg index="0" ref="sqlSessionFactory" />
 	</bean>
-
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.candao.www.dataserver.mapper"/>
+		<property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>
+	</bean>
 	<bean class="com.candao.common.dao.SqlSessionDaoSupport">
 		<constructor-arg index="0" ref="sqlSessionTemplate" />
 	</bean>
