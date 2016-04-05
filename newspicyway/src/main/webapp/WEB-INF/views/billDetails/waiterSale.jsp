@@ -98,6 +98,17 @@
 				</div>
 			</div>
 		</div>
+		<form id="waiterSaleForm" method="post" style="display:none;">
+			<input id="_beginTime" name="beginTime" type="hidden"/>
+			<input id="_endTime" name="endTime" type="hidden"/>
+			<input id="_waiterName" name="waiterName" type="hidden"/>
+			<input id="_dishName" name="dishName" type="hidden"/>
+			<input id="_searchType" name="searchType" type="hidden"/>
+			<input id="_dishtype" name="dishtype" type="hidden"/>
+			<input id="_dishunit" name="dishunit" type="hidden"/> 
+			<input id="_userid" name="userid" type="hidden"/>
+			<input id="_dishid" name="dishid" type="hidden"/>
+		</form>
 		<div class="report-tb-div bottom-div">
 			<table class="ky-table table table-striped table-bordered table-hover datatable table-list click-table" id="waiter-sale-tb">
 				<thead>
