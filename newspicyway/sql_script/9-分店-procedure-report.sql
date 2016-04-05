@@ -8246,7 +8246,7 @@ CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid int(11),
 IN pi_ksrq datetime, -- 开始日期
 IN pi_jsrq datetime, -- 结束日期
 IN pi_fwyxm varchar(30), -- 服务员姓名
-IN pi_smcp varchar(30), -- 菜品名称
+IN pi_smcp varchar(300), -- 菜品名称
 IN pi_dqym int, -- 当前页码 第一次进入时从0开始
 IN pi_myts int, -- 每页显示的条数
 OUT po_errmsg varchar(100))
@@ -8254,7 +8254,7 @@ SQL SECURITY INVOKER
 COMMENT '服务员销售统计表'
 label_main:
 BEGIN
-  DECLARE v_waiter_name varchar(30);
+  DECLARE v_waiter_name varchar(300);
   DECLARE v_dish_name varchar(30);
   DECLARE v_date_start datetime;
   DECLARE v_date_end datetime;
@@ -8318,7 +8318,7 @@ BEGIN
     dishnum varchar(50),
     dishtype int,
     orderprice double(8, 2),
-    dishunit varchar(10)
+    dishunit varchar(100)
   ) ENGINE = MEMORY DEFAULT charset = utf8;
 
   INSERT INTO t_temp_order_detail

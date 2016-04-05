@@ -2492,7 +2492,7 @@ function doWaiterSalePost(callback){
 function initWaiterSaleTb(datalist,isFirst){
 	var tHtml = "";
 	var len = datalist.data.length;
-	if (datalist != null && datalist != "") {
+	if (datalist.data != null && datalist.data != "") {
 	    page ++;
 		if(isFirst){
 			var more = '<tr><td id="show-more" class="show-more" colspan="8">加载更多</td></tr>';
@@ -2608,48 +2608,26 @@ function exportWaiterSale(type){
 	var endTime = $("#endTime").val();
 	var userid = $("#p_userid").val();
 	var dishid = $("#p_dishid").val();
-	var num = $("#p_num").val();
 	var waiterName = $("#waiterName").val();
 	var dishName = $("#dishName").val();
 	var dishtype = $("#p_dishtype").val();
-	var name = $("#p_name").val();
-	var title = $("#p_title").val();
 	var dishunit = $("#p_dishunit").val();
-	if(waiterName == ""){
-		waiterName = null;
-	}else{
-		waiterName = encodeURI(encodeURI(waiterName));
-	}
-	if(dishName == ""){
-		dishName = null;
-	}else{
-		dishName = encodeURI(encodeURI(dishName));
-	}
-	if(name == ""){
-		name = null;
-	}else{
-		name = encodeURI(encodeURI(name));
-	}
-	if(title == ""){
-		title = null;
-	}else{
-		title = encodeURI(encodeURI(title));
-	}
-	if(dishunit == ""){
-		dishunit = null;
-	}else{
-		dishunit = encodeURI(encodeURI(dishunit));
-	}
-	if(dishtype == ""){
-		dishtype = null;
-	}
-	if(num == ""){
-		num = null;
-	}
+	$("#_beginTime").val(beginTime);
+	$("#_endTime").val(endTime);
+	$("#_dishtype").val(dishtype);
+	$("#_dishunit").val(dishunit);
 	if(type == 0){
-		location.href = global_Path + "/waiterSale/exportWaiterSaleMainReport/"+beginTime+"/"+endTime+"/"+waiterName+"/"+dishName+"/"+searchType+"/"+dishtype+"/"+dishunit+".json";
+		$("#_waiterName").val(waiterName);
+		$("#_dishName").val(dishName);
+		$("#_searchType").val(searchType);
+		$("#waiterSaleForm").attr("action", global_Path + "/waiterSale/exportWaiterSaleMainReport");
+		$("#waiterSaleForm").submit();
 	}else{
-		location.href = global_Path + "/waiterSale/exportWaiterSaleChildReport/"+beginTime+"/"+endTime+"/"+searchType+"/"+userid+"/"+dishid+"/"+dishtype+"/"+dishunit+".json";
+		$("#_userid").val(userid);
+		$("#_dishid").val(dishid);
+		$("#_searchType").val(searchType);
+		$("#waiterSaleForm").attr("action", global_Path + "/waiterSale/exportWaiterSaleChildReport");
+		$("#waiterSaleForm").submit();
 	}
 }
 /*******************服务员销售统计表END****************************/
