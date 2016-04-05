@@ -2409,7 +2409,7 @@ EVENT event1
 BEGIN
   declare branchcount int; 
   declare v_branchid int;
-  declare v_menuid int;
+  declare v_menuid varchar(50);
   select count(1) into branchcount from t_branch_info;
   if branchcount>0 then
     select branchid into v_branchid from t_branch_info;
