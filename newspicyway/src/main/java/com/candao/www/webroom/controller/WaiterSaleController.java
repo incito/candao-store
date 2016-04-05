@@ -83,10 +83,6 @@ public class WaiterSaleController extends BaseController {
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			dishunit = URLDecoder.decode(dishunit,"UTF-8");
 			params.put("dishunit", dishunit);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	    try{
 			List<Map<String,Object>> list = waiterSaleService.getWaiterSaleDetail(params);
 			JSONArray data = JSONArray.fromObject(list);
 		    map = ReturnMap.getReturnMap(1, "001", "查询服务员销售统计表成功");
