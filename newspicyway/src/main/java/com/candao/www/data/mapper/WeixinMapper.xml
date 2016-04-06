@@ -8,7 +8,7 @@
 	<select id="queryinfos" resultType="java.util.HashMap"
 		parameterType="java.util.HashMap">
 		select w.*,b.branchname from t_b_weixin w
-		LEFT OUTER JOIN t_branch
+		LEFT OUTER JOIN t_branch_info
 		b on w.branchid=b.branchid
 		where 1=1
 		<if test="branchid!=null"> and w.branchid=#{branchid}</if>
@@ -17,14 +17,14 @@
 	</select>
 	<select id="queryNameByBranchid" resultType="java.util.HashMap"
 		parameterType="java.util.HashMap">
-		select b.branchname from t_branch b where 1=1
+		select b.branchname from t_branch_info b where 1=1
 		<if test="branchid!=null">
 			and b.branchid=#{branchid}
 		</if>
 	</select>
 	<select id="queryBranchidByName" resultType="java.util.HashMap"
 		parameterType="java.util.HashMap">
-		select b.branchid from t_branch b where 1=1
+		select b.branchid from t_branch_info b where 1=1
 		<if test="branchname!=null">
 			and b.branchname=#{branchname}
 		</if>
