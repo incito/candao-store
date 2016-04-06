@@ -599,7 +599,7 @@ public class WeixinController extends BaseJsonController {
 	@RequestMapping("/page")
 	@ResponseBody
 	public String page(Integer page, Integer rows,String branchid,String branchname,String partner) {
-		if(isNull(branchid)){branchid=null;}
+		if(isNull(branchid)){branchid=PropertiesUtils.getValue("current_branch_id");}
 		if(isNull(branchname)){branchname=null;}
 		if(isNull(partner)){partner=null;}
 		 Map<String, Object> param=new HashMap<>();
