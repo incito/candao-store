@@ -192,20 +192,32 @@
 	   select 
 	      a.tableid ,a.`position` ,a.status ,a.restaurantId ,a.isVip ,a.iscompartment
 		 ,a.isavailable ,a.buildingNo ,a.minprice ,a.fixprice ,a.tableNo ,a.personNum
-		 ,a.tabletype ,a.areaid ,a.tableName ,a.orderid ,a.custPrinter,b.areaname,b.areaid
-		 
-		 
-		    from t_table a,t_tablearea b
+		 ,a.tabletype ,a.areaid ,a.tableName ,a.orderid ,a.custPrinter,b.areaname,b.areaid,
+		   CASE WHEN min(a.status) = 0
+		   THEN  NULL
+	       ELSE
+	         DATE_FORMAT(c.begintime,'%Y-%m-%d %T')
+	       END as begintime,
+	      CASE WHEN min(a.status) = 0 THEN
+	         NULL
+	       ELSE
+	         sum(d.dishnum * d.orderprice)
+	       END as amount
+		    from t_table a
+	   		LEFT JOIN t_tablearea b
+			ON a.areaid = b.areaid
+			AND b.status = 1
+			LEFT JOIN t_order c
+			ON a.orderid = c.orderid
+			LEFT JOIN t_order_detail d
+			ON c.orderid = d.orderid
 	   <where>
-	   		a.status != 5 and b.status =1 and a.areaid=b.areaid
+			  a.status != 5
 	     <if test="tableid != null and tableid != ''">
-	        a.tableid=#{tableid}
+	       and a.tableid=#{tableid}
 	     </if>
 	     <if test="position != null and position != ''">
 	        and a.position=#{position}
-	     </if>
-	     <if test="status != null and status != ''">
-	        and a.status=#{status}
 	     </if>
 	     <if test="restaurantId != null and restaurantId != ''">
 	        and a.restaurantId=#{restaurantId}
@@ -251,8 +263,9 @@
 	        and a.custPrinter=#{custPrinter}
 	     </if>
 	   </where>
+	   GROUP BY
+			  a.tableid
 	     order by b.areaname asc, a.tableNo asc
-	   
 	</select>
 	
 	<select id="page" parameterType="map" resultMap="pageResultMap">
