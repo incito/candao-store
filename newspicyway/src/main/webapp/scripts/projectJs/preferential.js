@@ -121,6 +121,7 @@ $(document).ready(function(){
 
 
 	});
+	
 	/*更多优惠*/
 	$("#nav-preferential-other li").click(function(){
 		$("ul.nav-preferential li").removeClass("active");

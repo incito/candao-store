@@ -2228,6 +2228,144 @@ END
 $$
 
 --
+-- Definition for procedure p_orderdatas_cleanup
+--
+DROP PROCEDURE IF EXISTS p_orderdatas_cleanup$$
+CREATE DEFINER=`root`@`%` PROCEDURE `p_orderdatas_cleanup`(IN  pi_branchid INT(11), 
+                                                IN  pi_type     SMALLINT, 
+                                                IN  pi_orderid  VARCHAR(5000), 
+                                                IN  pi_ksrq     DATETIME, 
+                                                IN  pi_jsrq     DATETIME, 
+                                                OUT po_errmsg   VARCHAR(500)
+                                                
+)
+    SQL SECURITY INVOKER
+    COMMENT '按时间或订单编号清理订单数据'
+label_main:
+BEGIN
+  
+  
+  declare v_result VARCHAR(500) DEFAULT '';
+
+
+  
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    GET DIAGNOSTICS CONDITION 1 v_result = MESSAGE_TEXT;
+    set po_errmsg = concat('清理失败！原因：',v_result);
+    ROLLBACK;
+  END;
+
+
+  IF pi_branchid IS NULL THEN
+    SET po_errmsg = '清理失败！原因：分店ID输入不能为空';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_type != 0 AND pi_type != 1 THEN
+    SET po_errmsg = '清理失败！原因：请按照指定值填写清理方式：0：按订单编号清理，1：按时间清理';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_type = 0 AND pi_orderid IS NULL THEN
+    SET po_errmsg = '清理失败！原因：你选择的是按订单编号清理，请输入订单编号';
+    LEAVE label_main;
+  END IF;
+
+  IF pi_type = 1 AND (pi_ksrq IS NULL OR pi_jsrq IS NULL) THEN
+    SET po_errmsg = '清理失败！原因：你选择的是按时间清理，请正确输入开始结束时间';
+    LEAVE label_main;
+  END IF;
+
+  
+  SET @@max_heap_table_size = 1024 * 1024 * 300;
+  SET @@tmp_table_size = 1024 * 1024 * 300;
+
+  
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+  CREATE TEMPORARY TABLE t_temp_order
+  (
+    orderid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+
+  IF pi_type = 0 THEN
+    INSERT INTO t_temp_order
+    SELECT orderid
+    FROM
+      t_order
+    WHERE
+      branchid = pi_branchid
+      AND find_in_set(orderid, pi_orderid);
+  ELSE
+    INSERT INTO t_temp_order
+    SELECT orderid
+    FROM
+      t_order
+    WHERE
+      branchid = pi_branchid
+      AND begintime BETWEEN pi_ksrq AND pi_jsrq;
+  END IF;
+
+  
+
+  
+  START TRANSACTION; 
+  delete from t_order where orderid in (SELECT orderid from t_temp_order);
+  set po_errmsg =concat('t_order：' , ROW_COUNT());
+
+  delete from t_order_detail where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_order_detail：' , ROW_COUNT());
+
+  delete from t_order_detail_discard where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_order_detail_discard：' , ROW_COUNT());
+
+  
+  delete from t_settlement where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement：' , ROW_COUNT());
+
+  delete from t_settlement_history where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement_history：' , ROW_COUNT());
+
+  delete from t_settlement_detail_history where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement_detail_history：' , ROW_COUNT());
+
+  delete from t_order_member where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_order_member：' , ROW_COUNT());
+
+  delete from t_settlement_detail where orderid in (SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_settlement_detail：' , ROW_COUNT());
+
+  
+  delete from t_printdish where printobjid in (SELECT distinct a.id from t_printobj a, t_temp_order b where a.orderno = b.orderid);
+  delete from t_printobj where orderno in (SELECT orderid from t_temp_order);
+
+  
+  delete from t_gift_log where order_id in (SELECT orderid from t_temp_order);
+
+  
+  delete from t_invoice where orderid in (SELECT orderid from t_temp_order);
+
+  update t_table set orderid=null ,status='0' where orderid in(SELECT orderid from t_temp_order);
+  SET po_errmsg = concat(po_errmsg , ' t_table：' , ROW_COUNT());
+
+  if pi_type = 1 then
+    DELETE FROM t_open_log;
+    DELETE FROM t_operation_log;
+    delete FROM t_open_log;
+    DELETE FROM t_branch_biz_log;  
+    update t_printer SET printnum = 0;
+  
+    
+    UPDATE sequence SET val = 1 WHERE name = 'one';
+  end if;
+
+  commit;
+
+  SET po_errmsg = concat('清理成功！\n', po_errmsg);
+END
+$$
+
+--
 -- Definition for function fristPinyin
 --
 DROP FUNCTION IF EXISTS fristPinyin$$
@@ -2430,7 +2568,7 @@ EVENT event1
 BEGIN
   declare branchcount int; 
   declare v_branchid int;
-  declare v_menuid int;
+  declare v_menuid varchar(50);
   select count(1) into branchcount from t_branch_info;
   if branchcount>0 then
     select branchid into v_branchid from t_branch_info;

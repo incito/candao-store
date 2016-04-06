@@ -66,7 +66,10 @@ public class LoginController {
 		   //判断是否是分店员工，如果是分店的，那么提示错误。
 	    String isbranch=PropertiesUtils.getValue("isbranch");
 	    if("Y".equalsIgnoreCase(isbranch)){
-	    	return new ModelAndView("main_branch");
+	    	//是否显示进销存模块
+	    	ModelAndView mav= new ModelAndView("main_branch");
+	    	mav.addObject("psishow", PropertiesUtils.getValue("PSI_SHOW"));
+	    	return mav;
 	    }else{
 	    	return new ModelAndView("main_new");
 	    }
@@ -86,6 +89,8 @@ public class LoginController {
     String isbranch = PropertiesUtils.getValue("isbranch");
     if("Y".equalsIgnoreCase(isbranch)){
     	mav = new ModelAndView("main_branch");
+    	//是否显示进销存模块
+    	mav.addObject("psishow", PropertiesUtils.getValue("PSI_SHOW"));
     }else{
 //    	return new ModelAndView("main_new");
     	mav = new ModelAndView("main_new");

@@ -8240,7 +8240,6 @@ BEGIN -- 返回字段说明如下
 END$$
 DELIMITER ;
 
-
 DELIMITER $$
 DROP PROCEDURE IF EXISTS p_report_fwyxstjb$$
 CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid int(11),
