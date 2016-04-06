@@ -47,6 +47,7 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TbBranchDao;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TtellerCashDao;
@@ -2314,6 +2315,22 @@ public class PadInterfaceController {
 	 return Constant.SUCCESSMSG;
 	}
 	
+	@RequestMapping("/getbranchinfo")
+	@ResponseBody
+	public String getBranchInfo(){
+		Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
+		HashMap<String, Object> res = new HashMap<>();
+		if(branchInfo != null && !branchInfo.isEmpty()){
+			res.put("result", 1);
+			res.put("msg", "success");
+			res.put("data", branchInfo);
+			return JacksonJsonMapper.objectToJson(res);
+		}
+		res.put("result", 0);
+		res.put("msg", "查询门店信息失败");
+		return JacksonJsonMapper.objectToJson(res);
+	}
+	
 	@Autowired
 	BranchDataSyn  branchDataSyn;
 	
@@ -2395,6 +2412,8 @@ public class PadInterfaceController {
 	private CallWaiterService callService;
 	@Autowired
 	private TtellerCashDao tellerCashService;
+	@Autowired
+	private TbBranchDao tbBranchDao;
 	@Autowired
 	private SystemServiceImpl systemServiceImpl;
 	
