@@ -2291,7 +2291,7 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			retMap.put("result", "1");
 			retMap.put("msg", e.getMessage());
-			logger.error(e, "");
+			logger.error("-->",e);
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
 	}
