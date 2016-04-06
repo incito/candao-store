@@ -18,7 +18,6 @@ import com.candao.www.data.dao.TbDataDictionaryDao;
 import com.candao.www.data.model.TbDataDictionary;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TdishUnit;
-import com.candao.www.webroom.controller.SystemController;
 import com.candao.www.webroom.service.DishService;
 
 import net.sf.json.JSONArray;
@@ -39,7 +38,7 @@ public class SystemServiceImpl {
 	@Autowired
 	private DishService dishService;
 	
-	private static final Logger logger = LoggerFactory.getLogger(SystemController.class);
+	private static final Logger logger = LoggerFactory.getLogger(SystemServiceImpl.class);
 
 
 	/**
@@ -316,12 +315,12 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public JSONArray getDicListByType(String type){
-		logger.debug("start getDicListByType for type : {} ",type);
+		logger.info("start getDicListByType for type : {} ",type);
 		JSONArray jsonArray = new JSONArray();
 		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
 		
 	    if(infoList==null||infoList.size()<=0){
-	    	logger.debug("the dic data is null for type : {}",type);
+	    	logger.info("the dic data is null for type : {}",type);
 	    	return jsonArray;
 	    }
 		for (Map<String, Object> info : infoList) {
@@ -334,7 +333,7 @@ public class SystemServiceImpl {
 			jsonObject.put("typename", info.containsKey("typename")?info.get("typename"):"");
 			jsonArray.add(jsonObject);
 		}
-		logger.debug("end getDicListByType for type : {} and get data {} ",type,jsonArray);
+		logger.info("end getDicListByType for type : {} and get data {} ",type,jsonArray);
 		return jsonArray;
 	}
 	
@@ -355,14 +354,14 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public int updataDicData(List<Map<String,Object>> updataList){
-		logger.debug("update dic data for updataList : {} ",updataList);
+		logger.info("update dic data for updataList : {} ",updataList);
 		int num = 0;
 		if(updataList==null||updataList.size()<=0){
 			logger.error("to change the dic data ,but the target is null");
 		}
-		logger.debug("iterator the datalist to change the data for datasource");
+		logger.info("iterator the datalist to change the data for datasource");
 		for(Map<String,Object> infoMap : updataList){
-			logger.debug("change dic data for param : {} ",infoMap);
+			logger.info("change dic data for param : {} ",infoMap);
 			if(!infoMap.containsKey("dictid")||!infoMap.containsKey("itemDesc")){
 				logger.error("the data is worng : {} to change dic data ",infoMap);
 				continue;
@@ -384,14 +383,14 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public int updataTimeset(List<Map<String,Object>> updataList){
-		logger.debug("update dic data for updataList : {} ",updataList);
+		logger.info("update dic data for updataList : {} ",updataList);
 		int num = 0;
 		if(updataList==null||updataList.size()<=0){
 			logger.error("to change the dic data ,but the target is null");
 		}
-		logger.debug("iterator the datalist to change the data for datasource");
+		logger.info("iterator the datalist to change the data for datasource");
 		for(Map<String,Object> infoMap : updataList){
-			logger.debug("change dic data for param : {} ",infoMap);
+			logger.info("change dic data for param : {} ",infoMap);
 			if(!infoMap.containsKey("dictid")||!infoMap.containsKey("itemDesc")){
 				logger.error("the data is worng : {} to change dic data ",infoMap);
 				continue;
@@ -412,12 +411,12 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public List<Map<String,String>> getDicListByTypeForClient(String type){
-		logger.debug("start getDicListByTypeForClient for type : {} ",type);
+		logger.info("start getDicListByTypeForClient for type : {} ",type);
 		List<Map<String,String>> returnList = new ArrayList<Map<String,String>>();
 		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
 		
 	    if(infoList==null||infoList.size()<=0){
-	    	logger.debug("the dic data is null for type : {}",type);
+	    	logger.info("the dic data is null for type : {}",type);
 	    	return returnList;
 	    }
 		for (Map<String, Object> info : infoList) {
@@ -426,7 +425,7 @@ public class SystemServiceImpl {
 			infomap.put("complaintType", info.containsKey("itemSort")?info.get("itemSort").toString():"");
 			returnList.add(infomap);
 		}
-		logger.debug("end getDicListByTypeForClient for type : {} and get data {} ",type,returnList);
+		logger.info("end getDicListByTypeForClient for type : {} and get data {} ",type,returnList);
 		return returnList;
 	}
 	
@@ -437,12 +436,12 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public List<Map<String,String>> getTimeValueByTypeForClient(String type){
-		logger.debug("start getTimeValueByTypeForClient for type : {} ",type);
+		logger.info("start getTimeValueByTypeForClient for type : {} ",type);
 		List<Map<String,String>> returnList = new ArrayList<Map<String,String>>();
 		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
 		
 	    if(infoList==null||infoList.size()<=0){
-	    	logger.debug("the dic data is null for type : {}",type);
+	    	logger.info("the dic data is null for type : {}",type);
 	    	return returnList;
 	    }
 		for (Map<String, Object> info : infoList) {
@@ -454,7 +453,7 @@ public class SystemServiceImpl {
 			infomap.put("dictid", info.containsKey("id")?info.get("id").toString():"");
 			returnList.add(infomap);
 		}
-		logger.debug("end getTimeValueByTypeForClient for type : {} and get data {} ",type,returnList);
+		logger.info("end getTimeValueByTypeForClient for type : {} and get data {} ",type,returnList);
 		return returnList;
 	}
 	/**

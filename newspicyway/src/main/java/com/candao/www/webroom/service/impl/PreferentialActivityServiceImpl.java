@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,8 +35,8 @@ import com.candao.www.data.dao.TbVoucherDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.model.TbDiscountTickets;
-import com.candao.www.data.model.TbHandFree;
 import com.candao.www.data.model.TbGroupon;
+import com.candao.www.data.model.TbHandFree;
 import com.candao.www.data.model.TbInnerFree;
 import com.candao.www.data.model.TbNoDiscountDish;
 import com.candao.www.data.model.TbPreferentialActivity;
@@ -46,12 +48,11 @@ import com.candao.www.data.model.Tbbranch;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
-import com.candao.www.permit.common.Constants;
 import com.candao.www.utils.SessionUtils;
+import com.candao.www.webroom.model.DiscountTicketsVo;
 import com.candao.www.webroom.model.GrouponTicketsVO;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.model.PreferentialActivitySpecialStampVO;
-import com.candao.www.webroom.model.DiscountTicketsVo;
 import com.candao.www.webroom.model.VoucherVo;
 import com.candao.www.webroom.service.PreferentialActivityService;
 
@@ -62,6 +63,8 @@ import com.candao.www.webroom.service.PreferentialActivityService;
 @Service
 public class PreferentialActivityServiceImpl implements PreferentialActivityService {
   
+	private static final Logger logger = LoggerFactory.getLogger(PreferentialActivityServiceImpl.class);
+	
   @Autowired
   private TbPreferentialActivityDao tbPreferentialActivityDao;
   @Autowired
@@ -930,7 +933,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 //	            }  
 	            resMap.put(field.getName(), field.get(o));  
             }catch(Exception e){
-            	
+            	logger.error("-->",e);
             }
         }  
         return resMap;
@@ -1168,6 +1171,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					try{
 						discount = new BigDecimal(disrate);
 					}catch(Exception e){
+						logger.error("-->",e);
 						result.setAmount( new BigDecimal(0).setScale(2));
 						result.setResult(0);
 						result.setMsg("手工优免数据折扣金额转换失败，请检查折扣的有效性！");
@@ -1284,8 +1288,10 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		}
 	  
     } catch (Exception e) {
+    	logger.error("-->",e);
       e.printStackTrace();
     }
+		logger.info("使用优惠券，计算金额，result: " + result);
 		return result;
 	}
 

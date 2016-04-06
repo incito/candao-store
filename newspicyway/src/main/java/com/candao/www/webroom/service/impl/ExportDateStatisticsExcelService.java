@@ -1,26 +1,32 @@
 package com.candao.www.webroom.service.impl;
 
-import com.candao.www.utils.DateTimeUtils;
-import com.candao.www.utils.ExcelUtils;
-import com.candao.www.webroom.model.Code;
-import com.candao.www.webroom.model.DataStatistics;
-import com.candao.www.webroom.model.TableArea;
-import com.candao.www.webroom.model.TjObj;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.springframework.stereotype.Service;
-
-//import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.candao.www.utils.DateTimeUtils;
+import com.candao.www.utils.ExcelUtils;
+import com.candao.www.webroom.model.DataStatistics;
+import com.candao.www.webroom.model.TableArea;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +37,8 @@ import java.util.*;
 
 @Service
 public class ExportDateStatisticsExcelService {
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(ExportDateStatisticsExcelService.class);
 
 	/**
 	 * 备选方法
@@ -71,6 +78,7 @@ public class ExportDateStatisticsExcelService {
 			workbook.close();
 
 		} catch (IOException e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 
@@ -139,6 +147,7 @@ public class ExportDateStatisticsExcelService {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			return format.parse(excelDate);
 		} catch (ParseException e) {
+			logger.error("-->",e);
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
 		return null;
@@ -159,6 +168,7 @@ public class ExportDateStatisticsExcelService {
 			Date date = sdf.parse(ds.getDateTime());
 			datevalue = DateFormatUtils.format((date), "MM-dd");
 		} catch (ParseException e) {
+			logger.error("-->",e);
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
 		return datevalue;

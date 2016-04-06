@@ -8,12 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.candao.www.data.dao.InvoiceDao;
-import com.candao.www.data.dao.TJsonRecordDao;
-import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.Torder;
 import com.candao.www.webroom.service.InvoiceService;
-import com.candao.www.webroom.service.JsonRecordService;
 
 @Service
 public class InvoiceServiceImpl implements  InvoiceService{

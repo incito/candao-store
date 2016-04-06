@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,9 @@ import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.UserInstrumentService;
 @Service
 public class UserInstrumentServiceImpl implements UserInstrumentService{
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserInstrumentServiceImpl.class);
+	
 	@Autowired
     private TbUserInstrumentDao tbUserInstrumentDao;
 	@Autowired
@@ -76,7 +81,7 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 				try {
 					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
 				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
+					logger.error("-->",e);
 					e.printStackTrace();
 				}
 				message.append(userid+"|"+String.valueOf(params.get("msg_type"))+"|"+areaname+"|"+(String) params.get("tableno")+"|"+tbMessageInstrumentid);

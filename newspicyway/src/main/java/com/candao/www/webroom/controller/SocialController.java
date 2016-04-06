@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +29,8 @@ public class SocialController {
 	@Autowired
 	private SocialService socialService;
 
+	private Logger logger = LoggerFactory.getLogger(SocialController.class);
+	
 	/**
 	 * 保存礼物
 	 * 
@@ -86,9 +90,11 @@ public class SocialController {
 		try {
 			List<TbGift> giftList = socialService.getGiftList();
 			JSONArray data = JSONArray.fromObject(giftList);
+			logger.info("查询礼物列表成功");
 			map = ReturnMap.getReturnMap(1, "001", "查询礼物列表成功");
 			map.put("data", data);
 		} catch (Exception e) {
+			logger.error("查询礼物列表失败");
 			map = ReturnMap.getReturnMap(0, "002", "查询礼物列表失败");
 			e.printStackTrace();
 		}
