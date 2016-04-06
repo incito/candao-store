@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.DeviceMapper">
+    <resultMap id="BaseResultMap" type="com.candao.www.dataserver.entity.Device">
+        <result column="id" property="id"/>
+        <result column="device_group" property="deviceGroup"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="user_id" property="userId"/>
+        <result column="table_no" property="tableNo"/>
+        <result column="ss_id" property="ssId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="valid_flag" property="validFlag"/>
+    </resultMap>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.candao.www.dataserver.entity.Device">
+        INSERT INTO t_device(device_group, device_id, device_type, user_id,
+        table_no,ss_id,create_time,update_time,valid_flag)
+        VALUES (#{deviceGroup},#{deviceId},#{deviceType},#{userId},#{tableNo},#{ssId},now(),now(), 1)
+    </insert>
+    <update id="update">
+        update t_device update_time=now()
+        <if test="deviceType!=null">
+            ,device_type=#{deviceType}
+        </if>
+        <if test="userId!=null">
+            ,user_id=#{userId}
+        </if>
+        <if test="tableNo!=null">
+            ,table_no=#{tableNo}
+        </if>
+        <if test="ssId!=null">
+            ,ss_id=#{ssId}
+        </if>
+        <if test="validFlag!=null">
+            ,valid_flag=#{validFlag}
+        </if>
+        WHERE device_group=#{device_group} and device_id=#{deviceId}
+    </update>
+    <select id="countByGroupAndId" resultType="java.lang.Integer">
+        select count(1) from t_device where device_group=#{group} and device_id=#{id}
+    </select>
+    <select id="getAllDevice" resultMap="BaseResultMap">
+      SELECT * FROM t_device
+    </select>
+    <select id="getDeviceByUserId" resultMap="BaseResultMap">
+        SELECT * FROM t_device WHERE user_id=#{userId}
+    </select>
+</mapper>

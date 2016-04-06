@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+       default-init-method="init" default-destroy-method="cleanUp">
+    <util:properties id="msgConfig" location="classpath:msg-config.properties"/>
+    <bean id="deviceService" class="com.candao.www.dataserver.service.device.impl.DeviceServiceImpl"/>
+    <bean id="watchService" class="com.candao.www.dataserver.service.device.impl.WatchServiceImpl"/>
+    <bean id="watchChInRService" class="com.candao.www.dataserver.service.device.impl.WatchChInRServiceImpl"/>
+    <bean id="padService" class="com.candao.www.dataserver.service.device.impl.PadServiceImpl"/>
+    <bean id="padChInRService" class="com.candao.www.dataserver.service.device.impl.PadChInRServiceImpl"/>
+    <bean id="offlineMsgService" class="com.candao.www.dataserver.service.msghandler.impl.OfflineMsgServiceImpl"/>
+    <bean id="reConnectService" class="com.candao.www.dataserver.service.device.impl.ReConnectServiceImpl"/>
+    <bean id="msgProcessService" class="com.candao.www.dataserver.service.msghandler.impl.MsgProcessServiceImpl">
+        <property name="msgHandlerMap">
+            <map>
+                <entry key="#{msgConfig['MSG_ID.WATCH_CHECK_IN']}">
+                    <list>
+                        <ref bean="watchService"/>
+                    </list>
+                </entry>
+                <entry key="#{msgConfig['MSG_ID.WATCH_CHECK_IN.RESP']}">
+                    <list>
+                        <ref bean="watchChInRService"/>
+                    </list>
+                </entry>
+                <entry key="#{msgConfig['MSG_ID.PAD_CHECK_IN']}">
+                    <list>
+                        <ref bean="padService"/>
+                    </list>
+                </entry>
+                <entry key="#{msgConfig['MSG_ID.PAD_CHECK_IN.RESP']}">
+                    <list>
+                        <ref bean="padChInRService"/>
+                    </list>
+                </entry>
+                <entry key="#{msgConfig['MSG_ID.OFFLINE.RESP']}">
+                    <list>
+                        <ref bean="offlineMsgService"/>
+                    </list>
+                </entry>
+                <entry key="#{msgConfig['MSG_ID.RECONNECT']}">
+                    <list>
+                        <ref bean="reConnectService"/>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

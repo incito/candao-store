@@ -27,12 +27,13 @@
        <list>
           <value>classpath:/jdbc.properties</value>
           <value>classpath:/config.properties</value>
+          <value>classpath:/dataserver-config.properties</value>
         </list>
     </property>
  </bean>
 
 	<util:properties id="appconfig" location="classpath:/config.properties" />
-	
+
 <!-- 	<util:properties id="templateconfig" location="classpath:velocity.properties" /> -->
 
 	<!-- enable autowire -->
@@ -52,9 +53,9 @@
 	  <context:component-scan base-package="com.candao.print"/>
 	 <context:component-scan base-package="com.candao.www"/>
 	 <context:component-scan base-package="com.candao.file"/>
-	 
+
 	 <bean id="propertiesUtils" class="com.candao.common.utils.PropertiesUtils"></bean>
-	 
+
 	<mvc:annotation-driven />
 
 	<!-- 写 DataSource -->
@@ -75,15 +76,15 @@
 		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}" />
 		<property name="testOnBorrow" value="${jdbc.testOnBorrow}" />
 	</bean>
-	
- 
+
+
 	<bean id="dataSource" class="com.candao.common.interceptor.DynamicDataSource">
         <property name="targetDataSources">
             <map></map>
         </property>
         <property name="defaultTargetDataSource" ref="masterDataSource" />
     </bean>
-	
+
 
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
@@ -101,7 +102,7 @@
 	</bean>
 
  <bean id="mybatisInterceptor" class="com.candao.www.interceptor.MybatisInterceptor" />
-	
+
 	<bean id="paginationInterceptor"
 		class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
 		<property name="properties">
@@ -137,31 +138,31 @@
 	</aop:config>
 
 
-<tx:advice id="txAdvice" transaction-manager="transactionManager">  
-	 <tx:attributes>  
-        <tx:method name="save*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-         
-        <tx:method name="add*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="create*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="insert*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="merge*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="del*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="remove*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-          
-        <tx:method name="put*" read-only="true"/>  
-        <tx:method name="query*" read-only="true"/>  
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	 <tx:attributes>
+        <tx:method name="save*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+
+        <tx:method name="add*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        <tx:method name="create*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        <tx:method name="insert*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        <tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        <tx:method name="merge*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        <tx:method name="del*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        <tx:method name="remove*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+
+        <tx:method name="put*" read-only="true"/>
+        <tx:method name="query*" read-only="true"/>
         <tx:method name="page*"  read-only="true" />
-        <tx:method name="use*" read-only="true"/>  
-        <tx:method name="get*" read-only="true"/>  
-        <tx:method name="count*" read-only="true" />  
-        <tx:method name="find*" read-only="true" />  
-        <tx:method name="list*" read-only="true" />  
-          
-    </tx:attributes>  
+        <tx:method name="use*" read-only="true"/>
+        <tx:method name="get*" read-only="true"/>
+        <tx:method name="count*" read-only="true" />
+        <tx:method name="find*" read-only="true" />
+        <tx:method name="list*" read-only="true" />
+
+    </tx:attributes>
 </tx:advice>
- 
-	<!-- MultipartResolver for parsing file uploads, implementation for Commons 
+
+	<!-- MultipartResolver for parsing file uploads, implementation for Commons
 		FileUpload -->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -173,43 +174,43 @@
 
 	<bean class="com.candao.www.spring.SpringContext" />
 
-      <bean id="branchDataJob"  
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
-		<property name="targetObject">  
-		    <bean class="com.candao.www.timedtask.BranchDataSyn" />  
-		</property>  
-		<property name="targetMethod" value="reSynData" />  
+      <bean id="branchDataJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+		    <bean class="com.candao.www.timedtask.BranchDataSyn" />
+		</property>
+		<property name="targetMethod" value="reSynData" />
 		<property name="concurrent" value="false" />
-	 </bean> 
-	 
-     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
-	    <property name="jobDetail" ref="branchDataJob" />  
+	 </bean>
+
+     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="branchDataJob" />
 	    <!-- 晚上 1点到 9点 每半小时执行一次  -->
-	    <property name="cronExpression" value="* 30 1-9 * * ?" />  
-    </bean>  
-    
-   <bean id="dataSynJob"  
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
-		<property name="targetObject">  
-		    <bean class="com.candao.www.timedtask.SqlDataSyn" />  
-		</property>  
-		<property name="targetMethod" value="sqlDataSyn" />  
+	    <property name="cronExpression" value="* 30 1-9 * * ?" />
+    </bean>
+
+   <bean id="dataSynJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+		    <bean class="com.candao.www.timedtask.SqlDataSyn" />
+		</property>
+		<property name="targetMethod" value="sqlDataSyn" />
 		<property name="concurrent" value="false" />
-	 </bean> 
-	 
-     <bean id="sqlCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
-	    <property name="jobDetail" ref="dataSynJob" />  
+	 </bean>
+
+     <bean id="sqlCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="dataSynJob" />
 	    <!-- sql每半小时执行一次  Seconds Minutes Hours DayofMonth Month DayofWeek Year或  -->
-	    <property name="cronExpression" value="50 * * * * ?" />  
-    </bean>  
-    
-     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
-	    <property name="triggers">  
-	      <list>  
-	      <ref bean="cronTrigger" />  
-	      <ref bean="sqlCronTrigger" />  
-	      </list>  
-	    </property>  
-    </bean>  
- 
+	    <property name="cronExpression" value="50 * * * * ?" />
+    </bean>
+
+     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	    <property name="triggers">
+	      <list>
+	      <ref bean="cronTrigger" />
+	      <ref bean="sqlCronTrigger" />
+	      </list>
+	    </property>
+    </bean>
+
 </beans>

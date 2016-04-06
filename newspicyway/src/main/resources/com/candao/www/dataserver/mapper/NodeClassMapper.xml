@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.NodeClassMapper">
+    <select id="getMaxClassNo" resultType="java.lang.String">
+      select max(classno) from t_nodeclass
+    </select>
+    <select id="getNodeClassByNo" resultType="java.util.HashMap">
+       SELECT * FROM t_nodeclass WHERE  classno=#{jsOrder}
+    </select>
+    <select id="getJsListJsonByNo" resultType="java.util.HashMap">
+        SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,
+        SUM(payamount) AS payamount,itemDesc FROM t_nodeclass_detail a
+        LEFT JOIN (SELECT itemid,itemDesc FROM t_dictionary WHERE TYPE='PAYWAY')b
+        ON(a.payway=b.itemid) WHERE payway&lt;&gt;7 AND a.payamount&lt;&gt;0 AND a.classno=#{jsOrder}
+        GROUP BY orderid,couponNum,incometype,payway,itemDesc,membercardno,bankcardno
+    </select>
+</mapper>
