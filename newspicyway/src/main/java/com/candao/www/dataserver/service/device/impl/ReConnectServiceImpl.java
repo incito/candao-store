@@ -5,6 +5,7 @@ import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.ReConnectData;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
+import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import java.util.Map;
 public class ReConnectServiceImpl extends DeviceServiceImpl {
     @Autowired
     private MsgProcessService msgProcessService;
+    @Autowired
+    private OfflineMsgService offlineMsgService;
 
     @Override
     public void handler(String msg) {
@@ -30,9 +33,9 @@ public class ReConnectServiceImpl extends DeviceServiceImpl {
             target.put(reConnectData.getGroup(), new ArrayList<String>() {{
                 add(reConnectData.getId());
             }});
-            for (OfflineMsg offlineMsg : msgProcessService.getByGroupAndId(reConnectData.getGroup(), reConnectData.getId())) {
+            for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(reConnectData.getGroup(), reConnectData.getId())) {
                 String msgData = JSON.toJSONString(new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent()));
-                msgProcessService.forwardMsgSync(target, JSON.toJSONString(MsgForwardTran.getOffLineSend(msgData)));
+                msgProcessService.forwardMsg(target, JSON.toJSONString(MsgForwardTran.getOffLineSend(msgData)));
             }
         } catch (Exception e) {
             LOGGER_ERROR.error("#### reconnect msg={},error={} ###", msg, e);

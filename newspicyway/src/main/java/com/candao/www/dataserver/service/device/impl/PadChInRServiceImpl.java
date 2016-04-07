@@ -6,6 +6,7 @@ import com.candao.www.dataserver.entity.Pad;
 import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.PadCheckInRespData;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
+import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,9 @@ public class PadChInRServiceImpl extends DeviceServiceImpl {
     @Autowired
     private MsgProcessService msgProcessService;
 
+    @Autowired
+    private OfflineMsgService offlineMsgService;
+
     @Override
     public void handler(String msg) {
         try {
@@ -31,8 +35,8 @@ public class PadChInRServiceImpl extends DeviceServiceImpl {
                 add(checkInRespData.getId());
             }});
             saveOrUpdateDevice(new Pad(checkInRespData.getGroup(), checkInRespData.getId(), checkInRespData.getSsId(), checkInRespData.getUserId(), checkInRespData.getTableNo()));
-            for (OfflineMsg offlineMsg : msgProcessService.getByGroupAndId(checkInRespData.getGroup(), checkInRespData.getId())) {
-                msgProcessService.forwardMsgSync(target, JSON.toJSONString(new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent())));
+            for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(checkInRespData.getGroup(), checkInRespData.getId())) {
+                msgProcessService.forwardMsg(target, JSON.toJSONString(new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent())));
             }
         } catch (Exception e) {
             LOGGER_ERROR.error("### pad checkIn resp msg={},error={} ###", msg, e);

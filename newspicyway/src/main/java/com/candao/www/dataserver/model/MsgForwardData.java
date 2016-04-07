@@ -1,11 +1,13 @@
 package com.candao.www.dataserver.model;
 
+import com.candao.www.dataserver.util.IDUtil;
+
 /**
  * Created by ytq on 2016/3/18.
  */
 public class MsgForwardData {
     private String msgId;
-    private String messageNumber;
+    private String serialNumber;
     private String msgData;
 
     public MsgForwardData() {
@@ -13,17 +15,17 @@ public class MsgForwardData {
     }
 
     public MsgForwardData(String msgId, String msgData) {
-        this.messageNumber = System.currentTimeMillis() + "";
+        this.serialNumber = IDUtil.getID();
         this.msgId = msgId;
         this.msgData = msgData;
     }
 
-    public String getMessageNumber() {
-        return messageNumber;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
-    public void setMessageNumber(String messageNumber) {
-        this.messageNumber = messageNumber;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public String getMsgId() {

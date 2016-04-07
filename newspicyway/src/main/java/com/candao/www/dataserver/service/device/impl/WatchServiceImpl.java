@@ -35,7 +35,7 @@ public class WatchServiceImpl extends DeviceServiceImpl {
             target.put(watchLoginData.getGroup(), new ArrayList<String>() {{
                 add(watchLoginData.getId());
             }});
-            msgProcessService.forwardMsgSync(target, JSON.toJSONString(MsgForwardTran.getWatchCheckInConfirm(respData)));
+            msgProcessService.forwardMsg(target, JSON.toJSONString(MsgForwardTran.getWatchCheckInConfirm(respData)));
         } catch (Exception e) {
             LOGGER_ERROR.error("### watch checkIn msg={}  error={} ###", msg, e);
         }

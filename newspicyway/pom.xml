@@ -66,7 +66,9 @@
 			<dependency>
 				<groupId>com.candao</groupId>
 				<artifactId>candao-communication-client4java</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0</version>
+				<scope>system</scope>
+				<systemPath>${project.basedir}/lib/candao-communication-client4java.jar</systemPath>
 			</dependency>
    	</dependencies>
 
