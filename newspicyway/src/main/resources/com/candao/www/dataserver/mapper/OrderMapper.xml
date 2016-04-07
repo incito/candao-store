@@ -14,9 +14,24 @@
         where a.orderprice>0 and a.orderid=#{orderId}
         limit 1
     </select>
-    <select id="selectVipPrice" parameterType="String" resultType="Map">
+    <select id="selectVipPrice" parameterType="Map" resultType="String">
         select vipprice
         from t_template_dishunit
         where (menuid =(select menuid from v_currmenu)or(dishid='DISHES_98')) and dishid=#{dishId} and (unit=#{dishUnit} or (dishid='DISHES_98')) LIMIT 1
+    </select>
+    <select id="selectMemberNoByOrderId" parameterType="String" resultType="String">
+        select memberno from t_order where orderid=#{orderId}
+    </select>
+    <select id="selectPrice" parameterType="String" resultType="Map">
+        select a.*,b.price,b.unit as dishunit2
+        from t_order_detail a inner join t_dish b on(a.dishid=b.dishid)
+        where a.orderprice>0 and a.orderid=#{orderId} limit 1
+    </select>
+    <select id="selectNormalPrice" parameterType="Map" resultType="String">
+       select price
+       from  t_template_dishunit
+       where (menuid =(select menuid from v_currmenu)or(dishid='DISHES_98'))
+        and  dishid=#{dishId} and (unit= #{dishUnit} or (dishid='DISHES_98'))
+       LIMIT 1
     </select>
 </mapper>
