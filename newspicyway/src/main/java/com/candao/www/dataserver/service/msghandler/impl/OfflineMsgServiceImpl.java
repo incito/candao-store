@@ -3,7 +3,6 @@ package com.candao.www.dataserver.service.msghandler.impl;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.mapper.OfflineMsgMapper;
 import com.candao.www.dataserver.model.OfflineMsgData;
-import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,13 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
     org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(OfflineMsgServiceImpl.class);
     @Autowired
     private OfflineMsgMapper offlineMsgMapper;
-    @Autowired
-    private MsgProcessService msgProcessService;
 
     @Override
     public void handler(String msg) {
         try {
             LOGGER.info("### offlinemsg delete msg={} ###", msg);
             OfflineMsgData offLineMsgData = MsgAnalyzeTool.analyzeOffLineResp(msg);
-            msgProcessService.deleteById(offLineMsgData.getId());
+            offlineMsgMapper.deleteById(offLineMsgData.getId());
         } catch (Exception e) {
             LOGGER_ERROR.error("### offlinemsg delete msg={},error={} ###", msg, e);
         }

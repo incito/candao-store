@@ -2,7 +2,6 @@ package com.candao.www.dataserver.service.msghandler.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.communication.factory.LockFactory;
-import com.candao.utils.PropertiesUtil;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.mapper.MsgProcessMapper;
 import com.candao.www.dataserver.model.MsgData;
@@ -15,6 +14,7 @@ import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgHandler;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
+import com.candao.www.utils.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

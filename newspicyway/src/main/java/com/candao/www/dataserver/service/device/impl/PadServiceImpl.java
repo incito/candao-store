@@ -1,12 +1,12 @@
 package com.candao.www.dataserver.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.candao.utils.HttpUtil;
-import com.candao.utils.PropertiesUtil;
 import com.candao.www.dataserver.model.PadLoginData;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
+import com.candao.www.utils.HttpUtil;
+import com.candao.www.utils.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
