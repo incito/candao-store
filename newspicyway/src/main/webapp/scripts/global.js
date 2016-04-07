@@ -430,9 +430,9 @@ function clearIntervalProcess(intervalProcess){
 }
 
 /**
- * 服务员销售报表
+ * 挂账明细统计表
  */
-function toWaiterSale(){
-	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/waiterSale");
+function toCreditReport(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/creditReport");
 	$("#allSearch").css("visibility","hidden");
 }
