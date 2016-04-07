@@ -2564,6 +2564,22 @@ CREATE TABLE `t_b_weixin_temp` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+DROP TABLE IF EXISTS `t_billing_detail`;
+
+CREATE TABLE `t_billing_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `orderid` varchar(50) NOT NULL COMMENT '订单编号',
+  `branchid` varchar(50) NOT NULL COMMENT '分店ID',
+  `creaditname` varchar(100) NOT NULL COMMENT '挂账单位名称',
+  `payamount` decimal(8,2) DEFAULT NULL COMMENT '已结金额',
+  `disamount` decimal(8,2) DEFAULT NULL COMMENT '优免金额',
+  `operator` varchar(255) NOT NULL COMMENT '操作员',
+  `inserttime` datetime NOT NULL COMMENT '操作时间',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='挂账信息结算历史表';
 -- 
 -- Enable foreign keys
 -- 
