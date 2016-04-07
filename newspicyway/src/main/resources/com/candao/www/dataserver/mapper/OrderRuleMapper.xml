@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.OrderRuleMapper">
+    <insert id="insert" parameterType="com.candao.www.dataserver.entity.OrderRule" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO t_order_rule(orderid,yhname,partnername,couponrate,freeamount,debitamount,memo,couponsno,num,ftype,banktype,ruleid,couponid,amount)
+        VALUES (#{orderId},#{yhname},#{partnerName},#{couponRate},#{freeAmount},#{debitAmount},#{memo},#{couponsno},#{num},#{ftype},#{bankType},#{ruleId},#{couponId},#{amount})
+    </insert>
+    <delete id="deleteByOrderId" parameterType="String">
+       delete from t_order_rule where  OrderID=#{orderId}
+    </delete>
+</mapper>
