@@ -7,7 +7,7 @@
 	    <artifactId>baseline-parent</artifactId>
 	    <version>0.0.1-SNAPSHOT</version>
 	  </parent>
-  
+
 <!-- 	<groupId>com.candao</groupId> -->
 	<artifactId>newspicyway</artifactId>
 	<packaging>war</packaging>
@@ -19,7 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-	
+
 		<dependencies>
 	 <dependency>
 	      <groupId>com.candao</groupId>
@@ -63,9 +63,14 @@
 				<artifactId>fastjson</artifactId>
 				<version>1.1.37</version>
 			</dependency>
+			<dependency>
+				<groupId>com.candao</groupId>
+				<artifactId>candao-communication-client4java</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
    	</dependencies>
-   
-	
+
+
 	<build>
 		<finalName>newspicyway</finalName>
 		<plugins>
@@ -79,18 +84,18 @@
                    <encoding>UTF-8</encoding>
 					<warSourceExcludes>*/upload/**</warSourceExcludes>
 					<compilerArguments>
-		                  <verbose />  
-		              <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>  
-		         </compilerArguments> 
+		                  <verbose />
+		              <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+		         </compilerArguments>
 				</configuration>
 			</plugin>
       <plugin>
-                <groupId>org.apache.maven.plugins</groupId>  
-                <artifactId>maven-resources-plugin</artifactId>  
-                <version>2.6</version>  
-                <configuration>  
-                    <encoding>UTF-8</encoding><!-- 指定编码格式，否则在DOS下运行mvn命令时当发生文件资源copy时将使用系统默认使用GBK编码 -->  
-                </configuration>  
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding><!-- 指定编码格式，否则在DOS下运行mvn命令时当发生文件资源copy时将使用系统默认使用GBK编码 -->
+                </configuration>
       </plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>

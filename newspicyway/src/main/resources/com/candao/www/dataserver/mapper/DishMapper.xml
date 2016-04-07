@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.DishMapper">
+    <select id="getFoodStatus" resultType="java.lang.Integer">
+      SELECT STATUS FROM t_template_dishunit WHERE
+      menuid=(SELECT menuid FROM v_currmenu) AND dishid=#{dishId} AND unit=#{dishUnit}
+    </select>
+    <update id="updateDishPY">
+        update t_dish set py=REPLACE(REPLACE(REPLACE(convert(getPY(title) using utf8)
+    </update>
+    <select id="getAllWmFood" resultType="java.util.HashMap">
+        SELECT a.dishid,a.dishno,a.columnid,a.userid,REPLACE(b.dishname,'\\','.') AS title,
+        REPLACE(introduction,'\\','.') AS introduction, h.columnid AS source,a.image,imagetitle,content,
+        b.vipprice,b.price,b.unit,a.dishtype,a.ordernum,a.py,b.menuid,IFNULL(a.weigh,0) AS weigh,a.level
+        FROM t_dish a INNER JOIN t_template_dishunit b ON(a.dishid=b.dishid )
+        INNER JOIN t_template_detail g ON(g.menuid=b.menuid AND g.redishid=b.dishid) INNER JOIN t_template h
+        ON(h.menuid=b.menuid AND h.templateid=g.templateid)
+        WHERE b.menuid=(SELECT menuid FROM v_currmenu)  ORDER BY dishno
+    </select>
+    <select id="getCJFood" resultType="java.util.HashMap">
+      SELECT dishid,dishno,'' AS columnid,'' AS userid,title AS dishname,
+      introduction,source,'' AS image,'' AS imagetitle,'' AS content,
+      vipprice,price,unit,dishtype,ordernum,py FROM t_dish WHERE dishid='DISHES_98'
+    </select>
+    <select id="getGroupDetail" resultType="java.util.HashMap">
+        SELECT a1.ispot,a.dishid,a.dishno,a.columnid,a.userid,REPLACE(b.dishname,'\\','.') AS title,
+        REPLACE(introduction,'\\','.') AS introduction, e.columnid AS source,image,imagetitle,content,
+        b.vipprice,b.price,b.unit,a.dishtype,a.ordernum,a.py,IFNULL(a.weigh,0) AS weigh FROM t_group_detail a1
+        INNER JOIN t_dish a
+       ON(a1.contactdishid=a.dishid) INNER JOIN t_template_dishunit b ON(a.dishid=b.dishid )
+       INNER JOIN (SELECT MIN(columnid) AS columnid,
+       dishid FROM t_dish_dishtype GROUP BY dishid)  e ON(a1.dishid=e.dishid) WHERE
+       b.menuid=(SELECT menuid FROM v_currmenu) AND a1.dishid=#{dishId}  order by a1.ispot desc
+    </select>
+    <select id="getDjDishNum" resultType="java.lang.Double">
+        SELECT SUM(dishnum) FROM t_order_detail WHERE orderid=#{orderId} and
+        dishid IN('73700d76-7806-43a7-9a57-cb4270931a1b','48e61b4b-8021-4d23-97de-20cf1655d6f3')
+    </select>
+    <select id="getScDishNum" resultType="java.lang.Double">
+        SELECT SUM(dishnum) FROM t_order_detail WHERE orderid=#{orderId}
+        AND dishid IN(SELECT dishid FROM t_dish WHERE source='d1737c72-2457-4dab-b3df-55e63111ff64') AND orderprice &lt;20
+    </select>
+    <select id="getYGListJson" resultType="java.util.HashMap">
+        SELECT  '饮品第二扎半价' AS couponname,orderprice,SUM(dishnum)-1 AS decdishnum,orderprice/2 AS decorderprice,
+       (SUM(dishnum)-1)*(orderprice/2) AS decamount FROM t_order_detail  a INNER JOIN t_dish b ON(a.dishid=b.dishid)
+       INNER JOIN t_dish_dishtype d ON(a.dishid=d.dishid) INNER JOIN t_basicdata c ON(d.columnid=c.id)
+       WHERE a.ORDERID=#{orderId} AND c.itemid='00006' AND a.orderprice>0 AND a.dishunit='扎'
+    </select>
+    <select id="getYGDoubleJson" resultType="java.util.HashMap">
+        SELECT '双拼立减20' AS couponname,20.00 AS orderprice,COUNT(*) AS decdishnum,20.00 AS decorderprice,(COUNT(*)*20) AS decamount
+       FROM (
+      SELECT parentkey,COUNT(*) AS doubleordercount FROM t_order_detail a INNER JOIN t_dish b ON(a.dishid=b.dishid) WHERE orderid=#{orderId}
+      AND a.parentkey IN(SELECT a.primarykey FROM t_order_detail a INNER JOIN t_dish b ON(a.dishid=b.dishid) WHERE orderid=#{orderId}
+      AND b.level=1) AND dishnum>0 GROUP BY parentkey
+      ) a
+      WHERE doubleordercount>=5
+    </select>
+</mapper>
