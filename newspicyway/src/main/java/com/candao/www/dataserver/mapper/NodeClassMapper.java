@@ -9,6 +9,8 @@ import java.util.Map;
 public interface NodeClassMapper {
     String getMaxClassNo();
 
+    String getMaxClassNoToday(String preStr);
+
     List<Map> getNodeClassByNo(String jsOrder);
 
     List<Map> getJsListJsonByNo(String jsOrder);

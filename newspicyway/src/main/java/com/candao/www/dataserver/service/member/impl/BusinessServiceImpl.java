@@ -8,7 +8,7 @@ import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.mapper.OpenLogMapper;
 import com.candao.www.dataserver.mapper.OrderDetailMapper;
 import com.candao.www.dataserver.mapper.OrderRuleMapper;
-import com.candao.www.dataserver.service.member.BusinessService;
+import com.candao.www.dataserver.service.member.BusinessService1;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.Map;
  * Created by lenovo on 2016/4/5.
  */
 @Service
-public class BusinessServiceImpl implements BusinessService {
+public class BusinessServiceImpl implements BusinessService1 {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
     @Autowired

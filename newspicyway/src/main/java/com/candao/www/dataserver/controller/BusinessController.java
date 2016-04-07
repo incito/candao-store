@@ -1,7 +1,6 @@
 package com.candao.www.dataserver.controller;
 
-import com.candao.www.dataserver.service.member.BusinessService;
-import com.candao.www.dataserver.service.member.MemberService;
+import com.candao.www.dataserver.service.member.BusinessService1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class BusinessController {
     private static final Logger logger = LoggerFactory.getLogger(BusinessController.class);
     @Autowired
-    private BusinessService businessService;
+    private BusinessService1 businessService;
 
 
     /**

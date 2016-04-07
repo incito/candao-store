@@ -5,6 +5,9 @@
     <select id="getMaxClassNo" resultType="java.lang.String">
       select max(classno) from t_nodeclass
     </select>
+    <select id="getMaxClassNoToday" resultType="java.lang.String" parameterType="String">
+        select max(classno) from t_nodeclass where classno like '${preStr}%'
+    </select>
     <select id="getNodeClassByNo" resultType="java.util.HashMap">
        SELECT * FROM t_nodeclass WHERE  classno=#{jsOrder}
     </select>
