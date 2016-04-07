@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
+import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.mapper.OpenLogMapper;
 import com.candao.www.dataserver.mapper.OrderDetailMapper;
 import com.candao.www.dataserver.mapper.OrderRuleMapper;
@@ -30,6 +31,8 @@ public class BusinessServiceImpl implements BusinessService {
     private OpenLogMapper openLogMapper;
     @Autowired
     private OrderRuleMapper orderRuleMapper;
+    @Autowired
+    private NodeClassMapper nodeClassMapper;
 
     @Override
     public String getServerTableList(String userId, String orderId) {
@@ -128,6 +131,32 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public String clearMachine(String userId, String userName, String ip, String posId, String authorizer) {
+        String classNo = getJbNo();
+
         return null;
+    }
+
+    /**
+     * 获取班机号
+     *
+     * @return
+     */
+    private String getJbNo() {
+        Date workDateDate = WorkDateUtil.getWorkDate1();
+        String preStr = "JS000401" + DateUtils.toString(workDateDate, "yyMMdd");
+        String maxClassNoToday = nodeClassMapper.getMaxClassNoToday(preStr);
+        if (StringUtil.isEmpty(maxClassNoToday)) {
+            maxClassNoToday = preStr + "0001";
+        } else {
+            String serial = maxClassNoToday.substring(maxClassNoToday.length() - 4);
+            int serialInt = StringUtil.str2Int(serial, 0);
+            maxClassNoToday = String.format("%04d", serialInt + 1);
+        }
+        return maxClassNoToday;
+    }
+
+    public static void main(String[] args) {
+        String str = "111";
+        System.out.println(String.format("%04d", str));
     }
 }
