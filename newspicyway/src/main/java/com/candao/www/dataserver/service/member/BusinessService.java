@@ -3,7 +3,7 @@ package com.candao.www.dataserver.service.member;
 /**
  * Created by lenovo on 2016/4/5.
  */
-public interface BusinessService1 {
+public interface BusinessService {
     /**
      * 获取帐单列表
      *
