@@ -34,4 +34,8 @@
     <select id="getAllOrderCustnum" parameterType="java.util.Map"  resultType="java.util.Map">
        select sum(od.custnum) as custnum,DATE_FORMAT(od.begintime,"%Y-%m-%d") as time  from t_order od  where od.orderstatus in (3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime}  and od.branchid = #{branchId} group by time 
     </select>
+    
+    <select id="getAllOrderCustnumOfMonth" parameterType="java.util.Map"  resultType="java.util.Map">
+       select sum(od.custnum) as custnum,DATE_FORMAT(od.begintime,"%Y-%m") as time  from t_order od  where od.orderstatus in (3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime}  and od.branchid = #{branchId} group by time 
+    </select>
 </mapper>
