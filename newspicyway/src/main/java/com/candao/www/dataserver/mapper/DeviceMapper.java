@@ -18,4 +18,6 @@ public interface DeviceMapper {
     List<Device> getAllDevice();
 
     List<Device> getDeviceByUserId(String userId);
+
+    Device getDeviceById(Integer id);
 }

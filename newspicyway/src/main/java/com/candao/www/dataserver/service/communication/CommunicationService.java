@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public interface CommunicationService {
     //开启通讯连接
-    String on();
+    String on(String ip, Integer port);
 
     String off();
 

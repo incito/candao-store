@@ -1,143 +1,177 @@
 ﻿<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	  <parent>
-	    <groupId>com.candao</groupId>
-	    <artifactId>baseline-parent</artifactId>
-	    <version>0.0.1-SNAPSHOT</version>
-	  </parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.candao</groupId>
+        <artifactId>baseline-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
 
-<!-- 	<groupId>com.candao</groupId> -->
-	<artifactId>newspicyway</artifactId>
-	<packaging>war</packaging>
-	<name>newspicyway</name>
-	<url>http://maven.apache.org</url>
-	<properties>
-		<spring-version>3.2.2.RELEASE</spring-version>
-		<log4jdbc4.version>1.2.1</log4jdbc4.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
+    <!-- 	<groupId>com.candao</groupId> -->
+    <artifactId>newspicyway</artifactId>
+    <packaging>war</packaging>
+    <name>newspicyway</name>
+    <url>http://maven.apache.org</url>
+    <properties>
+        <spring-version>3.2.2.RELEASE</spring-version>
+        <log4jdbc4.version>1.2.1</log4jdbc4.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
 
-		<dependencies>
-	 <dependency>
-	      <groupId>com.candao</groupId>
-		  <artifactId>pinyin4j</artifactId>
-		  <version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-	 <dependency>
-	 <groupId>com.candao</groupId>
-  <artifactId>common</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-	 <dependency>
-	<groupId>com.candao</groupId>
-  <artifactId>fileservice</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  </dependency>
-   <dependency>
-  <groupId>com.candao</groupId>
-  <artifactId>printservice</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-   </dependency>
-   <dependency>
-  		<groupId>com.candao</groupId>
-  		<artifactId>userservcie</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-   	</dependency>
-<!--    	<dependency> -->
-<!--   		<groupId>com.candao</groupId> -->
-<!--   		<artifactId>psi</artifactId> -->
-<!--   		<version>0.0.1-SNAPSHOT</version> -->
-<!--    	</dependency> -->
-   <dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>fileservice</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>printservice</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>userservcie</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <!--    	<dependency> -->
+        <!--   		<groupId>com.candao</groupId> -->
+        <!--   		<artifactId>psi</artifactId> -->
+        <!--   		<version>0.0.1-SNAPSHOT</version> -->
+        <!--    	</dependency> -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
 
-			<!-- json包 -->
-			<dependency>
-				<groupId>com.alibaba</groupId>
-				<artifactId>fastjson</artifactId>
-				<version>1.1.37</version>
-			</dependency>
-			<dependency>
-				<groupId>com.candao</groupId>
-				<artifactId>candao-communication-client4java</artifactId>
-				<version>1.0</version>
-				<scope>system</scope>
-				<systemPath>${project.basedir}/lib/candao-communication-client4java.jar</systemPath>
-			</dependency>
-   	</dependencies>
+        <!-- json包 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.1.37</version>
+        </dependency>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>candao-communication-client4java</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/candao-communication-client4java.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.0.CR3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+    </dependencies>
 
 
-	<build>
-		<finalName>newspicyway</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+    <build>
+        <finalName>newspicyway</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
 
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-                   <encoding>UTF-8</encoding>
-					<warSourceExcludes>*/upload/**</warSourceExcludes>
-					<compilerArguments>
-		                  <verbose />
-		              <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
-		         </compilerArguments>
-				</configuration>
-			</plugin>
-      <plugin>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>UTF-8</encoding>
+                    <warSourceExcludes>*/upload/**</warSourceExcludes>
+                    <compilerArguments>
+                        <verbose/>
+                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <encoding>UTF-8</encoding><!-- 指定编码格式，否则在DOS下运行mvn命令时当发生文件资源copy时将使用系统默认使用GBK编码 -->
+                    <encoding>UTF-8</encoding>
+                    <!-- 指定编码格式，否则在DOS下运行mvn命令时当发生文件资源copy时将使用系统默认使用GBK编码 -->
                 </configuration>
-      </plugin>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.8.v20121106</version>
-				<configuration>
-					<webAppConfig>
-						<contextPath>/newspicyway</contextPath>
-					</webAppConfig>
-					<connectors>
-						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>8082</port>
-							<maxIdleTime>60000</maxIdleTime>
-						</connector>
-					</connectors>
-					<systemProperties>
-						<systemProperty>
-							<name>org.eclipse.jetty.util.URI.charset</name>
-							<value>utf-8</value>
-						</systemProperty>
-					</systemProperties>
-				</configuration>
-			</plugin>		</plugins>
 
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.xml</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*.xml</include>
-					<include>**/*.properties</include>
-					<include>**/*.template</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>newspicyway</warName>
+                    <webResources>
+                        <resource>
+                            <directory>${project.basedir}/lib</directory>
+                            <targetPath>WEB-INF/lib</targetPath>
+                            <includes>
+                                <include>**/*.jar</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.8.v20121106</version>
+                <configuration>
+                    <webAppConfig>
+                        <contextPath>/</contextPath>
+                    </webAppConfig>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>8082</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>org.eclipse.jetty.util.URI.charset</name>
+                            <value>utf-8</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.template</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
 </project>

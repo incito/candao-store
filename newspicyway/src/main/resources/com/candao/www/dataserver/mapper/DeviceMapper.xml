@@ -47,4 +47,7 @@
     <select id="getDeviceByUserId" resultMap="BaseResultMap">
         SELECT * FROM t_device WHERE user_id=#{userId}
     </select>
+    <select id="getDeviceById" resultMap="BaseResultMap">
+        SELECT * FROM t_device WHERE id=#{id}
+    </select>
 </mapper>

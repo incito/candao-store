@@ -21,4 +21,7 @@ public interface DeviceService extends MsgHandler {
 
     //保存或更新设备信息
     void saveOrUpdateDevice(Device device);
+
+    //根据id查询设备信息
+    Device getDeviceById(Integer id);
 }

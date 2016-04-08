@@ -2,7 +2,8 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.candao.www.dataserver.mapper.MsgProcessMapper">
-    <insert id="saveTSyncMsg" useGeneratedKeys="true" keyProperty="id">
-       INSERT INTO t_syncmsg(msgtype, msg, msgtime, sendnum, receive, needretry) VALUES (#{msgType},#{msg}, now(), 1, 0, 1)
+    <insert id="saveTSyncMsg" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.candao.www.dataserver.entity.SyncMsg">
+       INSERT INTO t_syncmsg(msgtype, msg, msgtime, sendnum, receive, needretry) VALUES (#{msgtype},#{msg}, now(), 1, 0, 1)
     </insert>
 </mapper>

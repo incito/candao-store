@@ -28,6 +28,17 @@ public interface MsgForwardService {
     void broadCastMsg(List<DeviceObject> objects, String msg, String msgType, boolean isSingle);
 
     /**
+     * 给指定设备发送消息
+     *
+     * @param id       设备id
+     * @param msg      消息内容
+     * @param msgType  消息类型
+     * @param isSingle 是否是互斥消息
+     * @return
+     */
+    String broadCastMsg(Integer id, String msg, String msgType, String msgId, boolean isSingle);
+
+    /**
      * 指定服务员的所有设备发送消息
      *
      * @param userId

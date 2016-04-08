@@ -2,13 +2,16 @@ package com.candao.www.dataserver.service.msghandler.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.communication.factory.LockFactory;
+import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
+import com.candao.www.dataserver.entity.SyncMsg;
 import com.candao.www.dataserver.mapper.MsgProcessMapper;
 import com.candao.www.dataserver.model.MsgData;
 import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.service.communication.CommunicationService;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
+import com.candao.www.dataserver.service.device.DeviceService;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgHandler;
@@ -40,14 +43,17 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     private OfflineMsgService offlineMsgService;
     @Autowired
     private DeviceObjectService deviceObjectService;
+    @Autowired
+    private DeviceService deviceService;
 
     @Override
     public String broadCastMsg(String userId, String msgType, String msg) {
         LOGGER.info("#### broadCastMsg userId={},msgType={},msg={}###", userId, msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-            Integer msgId = msgProcessMapper.saveTSyncMsg(msgType, msg);
-            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
+            SyncMsg syncMsg = new SyncMsg(msgType, msg);
+            msgProcessMapper.saveTSyncMsg(syncMsg);
+            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
             broadCastMsg(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), null, false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,6 +96,21 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
 //        }
     }
 
+    @Override
+    public String broadCastMsg(Integer id, String msg, String msgType, String msgId, boolean isSingle) {
+        final Device device = deviceService.getDeviceById(id);
+        Map<String, List<String>> target = new HashMap<>();
+        target.put(device.getDeviceGroup(), new ArrayList<String>() {{
+            add(device.getDeviceId());
+        }});
+        int single = 0;
+        if (isSingle) {
+            single = 1;
+        }
+        offlineMsgService.save(new OfflineMsg(device.getDeviceGroup(), msg, msgType, device.getDeviceId(), single));
+        return sendMsgSync(target, new MsgForwardData(msgId, msg));
+    }
+
     /**
      * 发送同步消息
      */
@@ -104,7 +125,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         if (awaitTimeStr != null) {
             awaitTime = Integer.valueOf(awaitTimeStr);
         }
-        String resp = null;
+        ResponseData resp = new ResponseData();
         try {
             lock.lock();
             communicationService.forwardMsg(targetMap, JSON.toJSONString(msgForwardData));
@@ -112,17 +133,19 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
                 condition.await(awaitTime, TimeUnit.SECONDS);
             }
         } catch (Exception e) {
+            resp.setData("0");
+            resp.setInfo(e.getMessage());
             e.printStackTrace();
         } finally {
             lock.unlock();
             if (mapResults.containsKey(serialNumber)) {
-                resp = mapResults.get(serialNumber);
+                resp.setInfo(mapResults.get(serialNumber));
             }
             mapLocks.remove(serialNumber);
             mapConditions.remove(serialNumber);
             mapResults.remove(serialNumber);
         }
-        return resp;
+        return JSON.toJSONString(resp);
     }
 
     @Override

@@ -3,11 +3,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.candao.www.dataserver.mapper.OpenLogMapper">
     <resultMap id="baseMap" type="com.candao.www.dataserver.entity.OpenLog">
-        <id column="id" property="id" javaType="VARCHAR"></id>
-        <result column="username" property="userName" jdbcType="VARCHAR"/>
-        <result column="inserttime" property="insertTime" jdbcType="TIMESTAMP"/>
-        <result column="opendate" property="openDate" jdbcType="TIMESTAMP"/>
-        <result column="ipaddress" property="ipaddress" jdbcType="VARCHAR"/>
+        <id column="id" property="id"></id>
+        <result column="username" property="userName"/>
+        <result column="inserttime" property="insertTime"/>
+        <result column="opendate" property="openDate"/>
+        <result column="ipaddress" property="ipaddress"/>
     </resultMap>
     <select id="selectAll" resultMap="baseMap">
       select * from t_open_log limit 1

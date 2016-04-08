@@ -17,9 +17,9 @@ public class CommunicationServiceImpl implements CommunicationService {
     @Autowired
     private MsgCallback msgCallback;
 
-    public String on() {
+    public String on(String ip, Integer port) {
         try {
-            return NettyService.on(msgCallback);
+            return NettyService.on(msgCallback, ip, port);
         } catch (Exception e) {
             return "";
         }

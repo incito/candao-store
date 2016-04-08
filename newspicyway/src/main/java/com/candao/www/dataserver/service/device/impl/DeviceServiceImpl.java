@@ -34,6 +34,12 @@ public class DeviceServiceImpl implements DeviceService {
             deviceMapper.save(device);
         }
     }
+
+    @Override
+    public Device getDeviceById(Integer id) {
+        return deviceMapper.getDeviceById(id);
+    }
+
     @Override
     public void handler(String msg) {
     }

@@ -32,6 +32,7 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
     @Override
     @Transactional
     public Integer save(OfflineMsg offlineMsg) {
+        //如果isSinggle为1，一个机具同种类型的消息只保存一条
         if (1 == offlineMsg.getIsSingle()) {
             offlineMsgMapper.deleteMsg(offlineMsg.getDeviceGroup(), offlineMsg.getDeviceId(), offlineMsg.getMsgType());
         }
