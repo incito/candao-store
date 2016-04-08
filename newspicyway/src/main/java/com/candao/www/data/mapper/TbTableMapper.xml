@@ -263,6 +263,8 @@
 	        and a.custPrinter=#{custPrinter}
 	     </if>
 	   </where>
+	    GROUP BY
+			  a.tableid
 		<choose>
 		   	<when test="defaultsort!=null and defaultsort==1">
 		   		order by b.areaname asc, a.tableNo asc
