@@ -4,27 +4,24 @@ import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
-import com.candao.www.dataserver.mapper.NodeClassMapper;
-import com.candao.www.dataserver.mapper.OpenLogMapper;
-import com.candao.www.dataserver.mapper.OrderDetailMapper;
-import com.candao.www.dataserver.mapper.OrderRuleMapper;
+import com.candao.www.dataserver.mapper.*;
 import com.candao.www.dataserver.service.member.BusinessService;
+import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lenovo on 2016/4/5.
  */
 @Service
 public class BusinessServiceImpl implements BusinessService {
+
+
     @Autowired
     private OrderDetailMapper orderDetailMapper;
     @Autowired
@@ -33,6 +30,24 @@ public class BusinessServiceImpl implements BusinessService {
     private OrderRuleMapper orderRuleMapper;
     @Autowired
     private NodeClassMapper nodeClassMapper;
+    @Autowired
+    private TellerCashMapper tellerCashMapper;
+    @Autowired
+    private ClearMachineMapper clearMachineMapper;
+    @Autowired
+    private NodeClassDetailMapper nodeClassDetailMapper;
+    @Autowired
+    private SettlementMapper settlementMapper;
+    @Autowired
+    private SettlementDetailMapper settlementDetailMapper;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private TableMapper tableMapper;
+    @Autowired
+    private OperationLogMapper operationLogMapper;
+    @Autowired
+    private CaleTableAmountMapper caleTableAmountMapper;
 
     @Override
     public String getServerTableList(String userId, String orderId) {
@@ -41,7 +56,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(orderId)) {
             return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":缺少参数\"\"}";
         }
-        // TODO: 2016/4/5  call caleTableAmount();
+        caleTableAmountMapper.pCaleTableAmount(orderId);
         List<Map<String, Object>> orderStat = orderDetailMapper.selectStatByOrderId(orderId);
         if (null == orderStat || orderStat.isEmpty()) {
             return "{\"Data\":\"0\"}";
@@ -61,6 +76,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (openDate.equals(today)) {
             return "{\"Data\":\"1\",\"workdate\":\"" + openDate + "\",\"Info\":\"已经开业\"}";
         }
+        openLogMapper.truncate();
         return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"未开业\"}";
     }
 
@@ -80,7 +96,7 @@ public class BusinessServiceImpl implements BusinessService {
         Date today = WorkDateUtil.getWorkDate1();
         OpenLog log = new OpenLog();
         log.setIpaddress(ip);
-        log.setInsertTime(today);
+        log.setInsertTime(new Date());
         log.setOpenDate(today);
         log.setUserName(userId);
         openLogMapper.insert(log);
@@ -131,9 +147,229 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public String clearMachine(String userId, String userName, String ip, String posId, String authorizer) {
-        String classNo = getJbNo();
+        String classNo = getJbNo();// 结帐单号
+        Date today = WorkDateUtil.getWorkDate1();
+        String openDate = DateUtils.toString(today, "yyyy-MM-dd");
+        Date insertDate = tellerCashMapper.selectInsertDate(openDate, userId, ip);
+        if (null == insertDate) {
+            insertDate = new Date();
+        }
+        Date now = new Date();//清机时间
+        //前班未结台数
+        String beginTime = DateUtils.toString(insertDate, "yyyy-MM-dd hh:mm:ss");
+        int lastNonTable = tellerCashMapper.selectLastNonTable(beginTime);
+        // 前班未结押金
+        int lastNonDeposit = 0;
+        //备用金
+        String prettyCash = tellerCashMapper.selectCashAmount(openDate, userId, ip);
+        //本班开台人数
+        String tBeginPeople = tellerCashMapper.selectBeginPeople(beginTime);
+        //本班开台总数
+        int tBeginTableTotal = tellerCashMapper.selectBeginTableTotal(beginTime);
+        //本班未结台数
+        int tNonClosingTable = tellerCashMapper.selectNonClosingTable(beginTime);
+        //本班未结金额
+        String tNonClosingMoney = tellerCashMapper.selectNotClosingMoney(beginTime);
+        //本班已结台数
+        int tClosingTable = tellerCashMapper.selectClosingTable(beginTime);
+        //本班已结人数
+        String tClosingPeople = tellerCashMapper.selectClosingPeople(beginTime);
+        //本班退菜金额
+        String tRFoodMoney = tellerCashMapper.selectFoodMoney(beginTime);
+        // 本班未退押金
+        int tNonClosingDeposit = 0;
+        // 本班赠单金额
+        int tPresentedMoney = 0;
+        // 服务费
+        int serviceMoney = 0;
+        // 包房费
+        int roomMoney = 0;
+        // 最低消费补齐
+        int lowConsComp = 0;
+        // 定额优惠金额
+        int ratedPreferenceMoney = 0;
+        //品项消费
+        String itemMoney = tellerCashMapper.selectItemMoney(beginTime);
+        float itemMoneyFloat = StringUtil.str2Float(itemMoney, 0);
+        //优惠金额
+        String preferenceMoney = tellerCashMapper.selectPreferenceMoney(beginTime);
+        float preferenceMoneyFloat = StringUtil.str2Float(preferenceMoney, 0);
+        //应收小计=品项总额-优惠金额。
+        float accountsReceivableSubtotal = itemMoneyFloat - preferenceMoneyFloat;
+        //抹零金额
+        String removeMoney = tellerCashMapper.selectRemoveMoney(beginTime);
+        float removeMoneyFloat = StringUtil.str2Float(removeMoney, 0);
+        // 应收合计
+        float accountsReceivableTotal = accountsReceivableSubtotal - removeMoneyFloat;
+        //合计
+        String TotalMoney = tellerCashMapper.selectTotalMoney(openDate, userId);
+        float TotalMoneyFloat = StringUtil.str2Float(TotalMoney, 0);
+        //计入收入合计
+        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(openDate, userId);
+        float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
+        // 不计收入合计
+        float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;
+        clearMachineMapper.insert(today, userId);
+        settlementDetailMapper.setClear(today, userId);
+        tellerCashMapper.updateStatus(today, ip);
 
-        return null;
+        // 餐具
+        int tableware = 0;
+        // 酒水
+        int drinks = 0;
+        // 酒水烟汤面
+        int drinksSmokeNoodle = 0;
+        // 本日营业总额
+        int todayTurnover = 0;
+
+        // 生成清机报表
+        // t_nodeclass
+        Map<String, Object> param = new HashMap<>();
+        param.put("classNo", classNo);
+        param.put("posID", posId);
+        param.put("operatorID", userId);
+        param.put("operatorName", userName);
+        param.put("vIn", insertDate);
+        param.put("vOut", now);
+        param.put("prettyCash", prettyCash);
+        param.put("lastNonTable", lastNonTable);
+        param.put("lastNonDeposit", lastNonDeposit);
+        param.put("tBeginPeople", tBeginPeople);
+        param.put("tBeginTableTotal", tBeginTableTotal);
+        param.put("tNonClosingTable", tNonClosingTable);
+        param.put("tNonClosingMoney", tNonClosingMoney);
+        param.put("tNonClosingDeposit", tNonClosingDeposit);
+        param.put("tClosingTable", tClosingTable);
+        param.put("tClosingPeople", tClosingPeople);
+        param.put("tPresentedMoney", tPresentedMoney);
+        param.put("tRFoodMoney", tRFoodMoney);
+        param.put("itemMoney", itemMoney);
+        param.put("serviceMoney", serviceMoney);
+        param.put("roomMoney", roomMoney);
+        param.put("lowConsComp", lowConsComp);
+        param.put("preferenceMoney", preferenceMoney);
+        param.put("itemMaccountsReceivableSubtotaloney", accountsReceivableSubtotal);
+        param.put("removeMoney", removeMoney);
+        param.put("ratedPreferenceMoney", ratedPreferenceMoney);
+        param.put("accountsReceivableTotal", accountsReceivableTotal);
+        param.put("includedMoneyTotal", includedMoneyTotal);
+        param.put("noIncludedMoneyTotal", noIncludedMoneyTotal);
+        param.put("TotalMoney", TotalMoney);
+        param.put("tableware", tableware);
+        param.put("drinks", drinks);
+        param.put("drinksSmokeNoodle", drinksSmokeNoodle);
+        param.put("todayTurnover", todayTurnover);
+        param.put("priterTime", now);
+        param.put("ipaddress", ip);
+        param.put("workdate", today);
+        param.put("shiftid", getShiftID());
+        param.put("authorizer", authorizer);
+        nodeClassMapper.insert(param);
+
+        // 结算方式明细    把
+        // t_nodeclass_detail
+        param = new HashMap<>();
+        param.put("userId", userId);
+        param.put("classNo", classNo);
+        param.put("workDate", today);
+        param.put("openDate", openDate);
+        nodeClassDetailMapper.insert(param);
+
+        settlementMapper.setClear(openDate, userId);
+        return "{\"Data\":\"1\",\"workdate\":\"" + openDate + "\",\"Info\":\"清机成功\"}";
+    }
+
+    @Override
+    public String endWork(String userId, String ip) {
+        Date workDate = WorkDateUtil.getWorkDate1();
+        // 检查是否已经有清机，如果该员工已经清机提示
+        // 还有未清机
+        int notClear = tellerCashMapper.selectNotClear(workDate);
+        String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
+        if (notClear > 0) {
+            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未清机，不能结业！\"}";
+        }
+        // 还有未结帐  当天还有未结帐的不能结业
+        int tableCount = tellerCashMapper.selectNotEndTable();
+        if (tableCount > 0) {
+            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐，不能结业！\"}";
+        }
+        //如果当天还有外卖帐单没有结帐就不能结业
+        int notPayOrder = orderMapper.selectNotPay();
+        if (notPayOrder > 0) {
+            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐帐单，不能结业！\"}";
+        }
+        HashMap<String, Object> param = new HashMap<>();
+        openLogMapper.procEndWork(param);
+        long endfinish = (long) param.get("endfinish");
+        if (endfinish != 1) {
+            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"存储过程执行失败!\"}";
+        }
+        return "{\"Data\":\"1\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"结业成功\"}";
+    }
+
+    @Override
+    public String checkTellerCash(String ip) {
+        Date workDate = WorkDateUtil.getWorkDate1();
+        String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip);
+        if (null == todayInfo || todayInfo.isEmpty()) {
+            return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"\"}";
+        }
+        return "{\"Data\":\"1\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"已输入\"}";
+    }
+
+    @Override
+    public String inputTellerCash(String userId, String ip, float cashAmount) {
+        Date workDate = WorkDateUtil.getWorkDate1();
+        String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip);
+        if (null == todayInfo || todayInfo.isEmpty()) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("username", userId);
+            param.put("opendate", workDate);
+            param.put("ipaddress", ip);
+            param.put("cashamount", cashAmount);
+            param.put("shiftid", getShiftID());
+            tellerCashMapper.insert(param);
+            param = new HashMap<>();
+            param.put("sdetailid", IDUtil.getID());
+            param.put("orderid", DateUtils.toString(workDate, "yyyyMMdd") + userId);
+            param.put("normalprice", cashAmount);
+            param.put("payamount", cashAmount);
+            param.put("opendate", workDate);
+            param.put("username", userId);
+            settlementDetailMapper.insertAfterInputCash(param);
+        }
+        return "{\"Data\":\"1\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"已输入\"}";
+    }
+
+    @Override
+    public String putOrder(String tableNo, String orderId, String gzCode, String gzName, String telephone, String relaperson) {
+        tableMapper.updaStatus0(tableNo);
+        orderMapper.updatePutOrder(orderId, gzCode, gzName, telephone, relaperson);
+        operationLogMapper.deleteByTableNo(tableNo);
+        return "{\"Data\":\"1\"}";
+    }
+
+    @Override
+    public String getOrderSequence(String tableNo) {
+        String sequence = operationLogMapper.selectMaxSequence(tableNo);
+        return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"" + sequence + "\"}";
+    }
+
+    /**
+     * 获取班次号
+     *
+     * @return
+     */
+    private int getShiftID() {
+        Calendar calendar = Calendar.getInstance();
+        int houre = calendar.get(Calendar.HOUR_OF_DAY);
+        if (houre >= 3 && houre < 16) {
+            return 0;
+        }
+        return 1;
     }
 
     /**
@@ -156,7 +392,5 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     public static void main(String[] args) {
-        String str = "111";
-        System.out.println(String.format("%04d", str));
     }
 }

@@ -1,5 +1,7 @@
 package com.candao.www.dataserver.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,9 +11,11 @@ import java.util.Map;
 public interface NodeClassMapper {
     String getMaxClassNo();
 
-    String getMaxClassNoToday(String preStr);
+    String getMaxClassNoToday(@Param("preStr") String preStr);
 
     List<Map> getNodeClassByNo(String jsOrder);
 
     List<Map> getJsListJsonByNo(String jsOrder);
+
+    int insert(Map<String, Object> param);
 }

@@ -3,8 +3,6 @@ package com.candao.www.dataserver.service.member.impl;
 import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.mapper.OrderDetailMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
-import com.candao.www.dataserver.mapper.OrderMemberMapper;
-import com.candao.www.dataserver.mapper.SettlementDMapper;
 import com.candao.www.dataserver.service.member.MemberService;
 import com.candao.www.dataserver.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -18,4 +18,9 @@
         ON(a.payway=b.itemid) WHERE payway&lt;&gt;7 AND a.payamount&lt;&gt;0 AND a.classno=#{jsOrder}
         GROUP BY orderid,couponNum,incometype,payway,itemDesc,membercardno,bankcardno
     </select>
+    <insert id="insert" parameterType="map">
+         INSERT INTO t_nodeclass (classNo, posID, operatorID, operatorName, vIn, vOut, prettyCash, lastNonTable, lastNonDeposit, tBeginPeople, tBeginTableTotal, tNonClosingTable, tNonClosingMoney, tNonClosingDeposit, tClosingTable, tClosingPeople, tPresentedMoney, tRFoodMoney, itemMoney, serviceMoney, roomMoney, lowConsComp, preferenceMoney, accountsReceivableSubtotal, removeMoney, ratedPreferenceMoney, accountsReceivableTotal, includedMoneyTotal, noIncludedMoneyTotal, TotalMoney, tableware, drinks, drinksSmokeNoodle, todayTurnover, priterTime,ipaddress,workdate,shiftid,authorizer)
+        VALUES (#{classNo}, #{posID}, #{operatorID}, #{operatorName}, #{vIn}, #{vOut}, #{prettyCash}, #{lastNonTable}, #{lastNonDeposit}, #{tBeginPeople}, #{tBeginTableTotal}, #{tNonClosingTable}, #{tNonClosingMoney}, #{tNonClosingDeposit}, #{tClosingTable}, #{tClosingPeople}, #{tPresentedMoney}, #{tRFoodMoney}, #{itemMoney}, #{serviceMoney}, #{roomMoney}, #{lowConsComp}, #{preferenceMoney}, #{accountsReceivableSubtotal}, #{removeMoney}, #{ratedPreferenceMoney}, #{accountsReceivableTotal}, #{includedMoneyTotal}, #{noIncludedMoneyTotal}, #{TotalMoney}, #{tableware}, #{drinks}, #{drinksSmokeNoodle}, #{todayTurnover}, #{priterTime},#{ipaddress},#{workdate},#{shiftid},#{authorizer})
+
+    </insert>
 </mapper>
