@@ -47,7 +47,7 @@ public class OrderInterfaceController {
         return orderService.getOrderCouponList(aUserId, orderId);
     }
 
-    @RequestMapping(value = "/getAllOrderInfo2//{aUserId}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/getAllOrderInfo2/{aUserId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getAllOrderInfo2(@PathVariable("aUserId") String aUserId) {
         return orderService.getAllOrderInfo2(aUserId);

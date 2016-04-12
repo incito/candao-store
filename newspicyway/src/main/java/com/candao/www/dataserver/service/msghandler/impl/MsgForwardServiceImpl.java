@@ -67,29 +67,35 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     @Override
     @Transactional
     public String broadCastOk(String client, String msgId) {
+        LOGGER.info("###broadCastOk client={},msgId={}###", client, msgId);
         ResponseData responseData = new ResponseData();
-        msgProcessMapper.saveSyncClient(client, msgId);
-        //清除历史记录
-        String msgId_500 = (Integer.valueOf(msgId) - 500) + "";
-        msgProcessMapper.deleteSyncClient(msgId_500);
-        Integer msgType = msgProcessMapper.selectMsgTypeByMsgId(msgId);
-        if (null != msgType) {
-            if (((msgType == 1002) || (msgType == 1005)) || ((msgType > 2000) && (msgType < 3000))) {
-                msgProcessMapper.updateSyncMsgRec(msgId);
-                msgProcessMapper.updateSyncMsgByMsgType1002();
-            }
-            String msg = String.format("%s;%s", msgId, "ok");
-            Map<String, List<String>> target = new HashMap<>();
-            for (final DeviceObject deviceObject : deviceObjectService.getAllDevice()) {
-                if (target.containsKey(deviceObject.getDeviceGroup())) {
-                    target.get(deviceObject.getDeviceGroup()).add(deviceObject.getDeviceId());
-                } else {
-                    target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
-                        add(deviceObject.getDeviceId());
-                    }});
+        try {
+            msgProcessMapper.saveSyncClient(client, msgId);
+            //清除历史记录
+            String msgId_500 = (Integer.valueOf(msgId) - 500) + "";
+            msgProcessMapper.deleteSyncClient(msgId_500);
+            Integer msgType = msgProcessMapper.selectMsgTypeByMsgId(msgId);
+            if (null != msgType) {
+                if (((msgType == 1002) || (msgType == 1005)) || ((msgType > 2000) && (msgType < 3000))) {
+                    msgProcessMapper.updateSyncMsgRec(msgId);
+                    msgProcessMapper.updateSyncMsgByMsgType1002();
                 }
+                String msg = String.format("%s;%s", msgId, "ok");
+                Map<String, List<String>> target = new HashMap<>();
+                for (final DeviceObject deviceObject : deviceObjectService.getAllDevice()) {
+                    if (target.containsKey(deviceObject.getDeviceGroup())) {
+                        target.get(deviceObject.getDeviceGroup()).add(deviceObject.getDeviceId());
+                    } else {
+                        target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
+                            add(deviceObject.getDeviceId());
+                        }});
+                    }
+                }
+                communicationService.forwardMsg(target, msg);
+
             }
-            communicationService.forwardMsg(target, msg);
+        } catch (Exception e) {
+            LOGGER.error("###broadCastOk client={},msgId={},error={}###", client, msgId, e);
         }
         return JSON.toJSONString(responseData);
     }

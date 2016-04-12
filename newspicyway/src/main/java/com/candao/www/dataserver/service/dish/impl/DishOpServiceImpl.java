@@ -96,9 +96,9 @@ public class DishOpServiceImpl implements DishService {
         try {
             LOGGER.info("###getFavorable userId={},orderId={}###", userId, orderId);
             Double djDishNum = dishMapper.getDjDishNum(orderId);
-            if (djDishNum > 0) {
+            if (null != djDishNum && djDishNum > 0) {
                 Double scDishNum = dishMapper.getScDishNum(orderId);
-                if (scDishNum > 0) {
+                if (null != scDishNum && scDishNum > 0) {
                     if (djDishNum >= (scDishNum * 2)) {
                         ymNum = Math.round(djDishNum * 2);
                     } else {

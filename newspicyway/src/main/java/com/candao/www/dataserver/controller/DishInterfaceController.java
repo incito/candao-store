@@ -40,7 +40,7 @@ public class DishInterfaceController {
         return dishService.getGroupDetail(dishId);
     }
 
-    @RequestMapping(value = "/getFavorale/{userId}/orderId/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/getFavorale/{userId}/{orderId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getFavorable(@PathVariable("userId") String userId, @PathVariable("orderId") String orderId) {
         return dishService.getFavorable(userId, orderId);
