@@ -24,6 +24,7 @@ public class DishOpServiceImpl implements DishService {
     @Override
     public String getFoodStatus(String dishId, String dishUnit) {
         ResponseData responseData = new ResponseData();
+        LOGGER.info("###getFoodStatus dishId={},dishUnit={}###", dishId, dishUnit);
         try {
             Integer status = dishMapper.getFoodStatus(dishId, dishUnit);
             if (status == null) {
@@ -42,6 +43,7 @@ public class DishOpServiceImpl implements DishService {
     @Override
     public String getAllWmFood(String userId) {
         ResponseJsonData responseJsonData = new ResponseJsonData();
+        LOGGER.info("###getAllWmFood userId={}###", userId);
         try {
             dishMapper.updateDishPY();
             List<Map> mapList = dishMapper.getAllWmFood();
@@ -57,6 +59,7 @@ public class DishOpServiceImpl implements DishService {
     @Override
     public String getCJFood(String userId) {
         ResponseJsonData responseJsonData = new ResponseJsonData();
+        LOGGER.info("###getCJFood userId={}###", userId);
         try {
             List<Map> mapList = dishMapper.getCJFood();
             responseJsonData.setOrderJson(mapList);
@@ -71,6 +74,7 @@ public class DishOpServiceImpl implements DishService {
     @Override
     public String getGroupDetail(String dishId) {
         ResponseJsonData responseJsonData = new ResponseJsonData();
+        LOGGER.info("###getGroupDetail dishId={},error={}###", dishId);
         try {
             List<Map> mapList = dishMapper.getGroupDetail(dishId);
             responseJsonData.setOrderJson(mapList);

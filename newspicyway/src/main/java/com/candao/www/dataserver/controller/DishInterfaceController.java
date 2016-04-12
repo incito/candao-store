@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Created by ytq on 2016/3/18.
  */
 @Controller
+@RequestMapping("/datasnap/rest/TServerMethods1")
 public class DishInterfaceController {
     @Autowired
     private DishService dishService;

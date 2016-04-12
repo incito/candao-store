@@ -3,6 +3,7 @@ package com.candao.www.dataserver.service.device.impl;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.mapper.DeviceMapper;
 import com.candao.www.dataserver.service.device.DeviceService;
+import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,6 +42,12 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public void handler(String msg) {
+    public Device getByGroupAndId(String group, String id) {
+        return deviceMapper.getByGroupAndId(group, id);
+    }
+
+    @Override
+    public void handler(DeviceObject deviceObject, String serialNumber, String msg) {
+
     }
 }

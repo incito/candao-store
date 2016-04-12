@@ -1,6 +1,11 @@
 package com.candao.www.dataserver.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.service.communication.CommunicationService;
+import com.candao.www.dataserver.service.device.DeviceObjectService;
+import com.candao.www.dataserver.service.device.DeviceService;
+import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +24,22 @@ import java.util.Map;
 public class CommunicationController {
     @Autowired
     CommunicationService communicationService;
+    @Autowired
+    private DeviceObjectService deviceObjectService;
+    @Autowired
+    private OfflineMsgService offlineMsgService;
+
+    @RequestMapping(value = "/getAllDevice", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String getAllDevice() {
+        return JSON.toJSONString(deviceObjectService.getAllDevice());
+    }
+
+    @RequestMapping(value = "/offlineMsgService", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String offlineMsgService(String group, String id) {
+        return JSON.toJSONString(offlineMsgService.getAllOffLineMsg(group, id));
+    }
 
     @RequestMapping("/communication")
     public ModelAndView index() {
@@ -28,26 +49,26 @@ public class CommunicationController {
 
     @RequestMapping(value = "/on", produces = {"application/text;charset=UTF-8"})
     @ResponseBody
-    public String on() {
-        return communicationService.on();
+    public String on(String ip, Integer port) {
+        return JSON.toJSONString(communicationService.on(ip, port));
     }
 
     @RequestMapping(value = "/off", produces = {"application/text;charset=UTF-8"})
     @ResponseBody
     public String off() {
-        return communicationService.off();
+        return JSON.toJSONString(communicationService.off());
     }
 
     @RequestMapping(value = "/isOnline", produces = {"application/text;charset=UTF-8"})
     @ResponseBody
     public String isOnline(String targetType, String targetId) {
-        return communicationService.isOnline(targetType, targetId);
+        return JSON.toJSONString(communicationService.isOnline(targetType, targetId));
     }
 
     @RequestMapping(value = "/queryTerminals", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String queryTerminals(String msg) {
-        return communicationService.queryTerminals(msg);
+        return JSON.toJSONString(communicationService.queryTerminals(msg));
     }
 
     @RequestMapping(value = "/forward", produces = {"application/text;charset=UTF-8"})
@@ -87,6 +108,6 @@ public class CommunicationController {
                 }
             }
         }
-        return communicationService.forwardMsgSync(target, msg);
+        return JSON.toJSONString(communicationService.forwardMsgSync(target, msg));
     }
 }

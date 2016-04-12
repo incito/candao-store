@@ -57,6 +57,7 @@ public class OrderOpServiceImpl implements OrderOpService {
 
     @Override
     public String pCaleTableAmount(String aUserId, String orderId) {
+        LOGGER.info("###pCaleTableAmount aUserId={}, orderId={}###", aUserId, orderId);
         ResponseData responseData = new ResponseData();
         try {
             caleTableAmountMapper.pCaleTableAmount(orderId);
@@ -70,6 +71,7 @@ public class OrderOpServiceImpl implements OrderOpService {
 
     @Override
     public String wmOrder(String orderId) {
+        LOGGER.info("###wmOrder orderId={}###", orderId);
         ResponseData responseData = new ResponseData();
         try {
             orderMapper.updateOrderTypeById(orderId, "1");

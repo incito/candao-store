@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 订单接口控制器
  */
 @Controller
+@RequestMapping("/datasnap/rest/TServerMethods1")
 public class OrderInterfaceController {
     @Autowired
     private OrderOpService orderService;

@@ -16,4 +16,6 @@ public interface OfflineMsgMapper {
     void deleteMsg(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId, @Param("msgType") String msgType);
 
     List<OfflineMsg> getByGroupAndId(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId);
+
+    List<OfflineMsg> getAllOffLineMsg(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId);
 }

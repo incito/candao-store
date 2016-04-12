@@ -16,6 +16,7 @@
     <bean id="padChInRService" class="com.candao.www.dataserver.service.device.impl.PadChInRServiceImpl"/>
     <bean id="offlineMsgService" class="com.candao.www.dataserver.service.msghandler.impl.OfflineMsgServiceImpl"/>
     <bean id="reConnectService" class="com.candao.www.dataserver.service.device.impl.ReConnectServiceImpl"/>
+    <bean id="msgForwardService" class="com.candao.www.dataserver.service.msghandler.impl.MsgForwardServiceImpl"/>
     <bean id="msgProcessService" class="com.candao.www.dataserver.service.msghandler.impl.MsgProcessServiceImpl">
         <property name="msgHandlerMap">
             <map>

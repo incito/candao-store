@@ -1,6 +1,8 @@
 package com.candao.www.dataserver.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.candao.communication.vo.Response;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.mapper.DeviceMapper;
 import com.candao.www.dataserver.model.DeviceData;
@@ -8,6 +10,7 @@ import com.candao.www.dataserver.model.MsgResponseData;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
+import com.candao.www.dataserver.util.BeanUtilEx;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +44,17 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
         LOGGER.info("### 查询group={}所有在线设备 ###", group);
         DeviceData deviceData = new DeviceData();
         deviceData.setGroup(group);
-        String resp = msgProcessService.queryTerminals(JSON.toJSONString(deviceData));
-        MsgResponseData msgResponseData = MsgAnalyzeTool.analyzeQueryTerminals(resp);
         List<DeviceObject> deviceObjectList = new ArrayList<>();
-        for (DeviceData data : msgResponseData.getData()) {
-            DeviceObject deviceObject = new DeviceObject();
-            deviceObject.setDeviceGroup(data.getGroup());
-            deviceObject.setDeviceId(data.getId());
-            deviceObjectList.add(deviceObject);
+        Response resp = msgProcessService.queryTerminals(JSON.toJSONString(deviceData));
+        if ("0".equals(resp.getCode())) {
+            List<DeviceData> deviceDataList = JSON.parseObject(resp.getData() + "", new TypeReference<ArrayList<DeviceData>>() {
+            });
+            for (DeviceData data : deviceDataList) {
+                DeviceObject deviceObject = new DeviceObject();
+                deviceObject.setDeviceGroup(data.getGroup());
+                deviceObject.setDeviceId(data.getId());
+                deviceObjectList.add(deviceObject);
+            }
         }
         return deviceObjectList;
     }
@@ -57,7 +63,7 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
         for (Device device : devices) {
             DeviceObject deviceObject = new DeviceObject();
             try {
-                BeanUtils.copyProperties(deviceObject, device);
+                BeanUtilEx.copyProperties(deviceObject, device);
             } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.error("### copyDeviceToDeviceObject error={} ###", e);
@@ -69,16 +75,34 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
     @Override
     public List<DeviceObject> getOnLineDevice() {
         LOGGER.info("### 查询所有在线设备 ###");
-        String resp = msgProcessService.queryTerminals("");
-        MsgResponseData msgResponseData = MsgAnalyzeTool.analyzeQueryTerminals(resp);
+        Response resp = msgProcessService.queryTerminals("");
         List<DeviceObject> deviceObjectList = new ArrayList<>();
-        for (DeviceData data : msgResponseData.getData()) {
-            DeviceObject deviceObject = new DeviceObject();
-            deviceObject.setDeviceGroup(data.getGroup());
-            deviceObject.setDeviceId(data.getId());
-            deviceObjectList.add(deviceObject);
+        if ("0".equals(resp.getCode())) {
+            List<DeviceData> deviceDataList = JSON.parseObject(resp.getData() + "", new TypeReference<ArrayList<DeviceData>>() {
+            });
+            for (DeviceData data : deviceDataList) {
+                DeviceObject deviceObject = new DeviceObject();
+                deviceObject.setDeviceGroup(data.getGroup());
+                deviceObject.setDeviceId(data.getId());
+                deviceObjectList.add(deviceObject);
+            }
         }
         return deviceObjectList;
+    }
+
+    @Override
+    public DeviceObject getByGroupAndId(String group, String id) {
+        Device device = deviceMapper.getByGroupAndId(group, id);
+        DeviceObject deviceObject = new DeviceObject();
+        if (device != null) {
+            try {
+                BeanUtilEx.copyProperties(deviceObject, device);
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e);
+            }
+        }
+        return deviceObject;
     }
 
     @Override

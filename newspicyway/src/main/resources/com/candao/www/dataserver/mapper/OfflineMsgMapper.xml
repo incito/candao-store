@@ -14,7 +14,17 @@
     <select id="getByGroupAndId" resultMap="BaseResultMap">
       select * from t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId}
     </select>
-    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.candao.www.dataserver.entity.OfflineMsg">
+    <select id="getAllOffLineMsg" resultMap="BaseResultMap">
+        select * from t_offline_msg WHERE 1=1
+        <if test="deviceGroup!=null and deviceGroup!=''">
+            AND device_group=#{deviceGroup}
+        </if>
+        <if test="deviceId!=null and deviceId!=''">
+            AND device_id=#{deviceId}
+        </if>
+    </select>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.candao.www.dataserver.entity.OfflineMsg">
        INSERT INTO t_offline_msg(msg_type, content,device_group, device_id,is_single,create_time) VALUES (#{msgType},#{content},#{deviceGroup},#{deviceId},#{isSingle}, now())
     </insert>
     <delete id="deleteById">

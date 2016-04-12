@@ -20,7 +20,7 @@
         VALUES (#{deviceGroup},#{deviceId},#{deviceType},#{userId},#{tableNo},#{ssId},now(),now(), 1)
     </insert>
     <update id="update">
-        update t_device update_time=now()
+        update t_device set update_time=now()
         <if test="deviceType!=null">
             ,device_type=#{deviceType}
         </if>
@@ -36,10 +36,13 @@
         <if test="validFlag!=null">
             ,valid_flag=#{validFlag}
         </if>
-        WHERE device_group=#{device_group} and device_id=#{deviceId}
+        WHERE device_group=#{deviceGroup} and device_id=#{deviceId}
     </update>
     <select id="countByGroupAndId" resultType="java.lang.Integer">
         select count(1) from t_device where device_group=#{group} and device_id=#{id}
+    </select>
+    <select id="getByGroupAndId" resultMap="BaseResultMap">
+        select * from t_device where device_group=#{group} and device_id=#{id}
     </select>
     <select id="getAllDevice" resultMap="BaseResultMap">
       SELECT * FROM t_device

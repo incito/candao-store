@@ -2,6 +2,7 @@ package com.candao.www.dataserver.service.communication.impl;
 
 import com.candao.communication.callback.MsgCallback;
 import com.candao.communication.client.NettyService;
+import com.candao.communication.vo.Response;
 import com.candao.www.dataserver.service.communication.CommunicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,29 +18,29 @@ public class CommunicationServiceImpl implements CommunicationService {
     @Autowired
     private MsgCallback msgCallback;
 
-    public String on(String ip, Integer port) {
+    public Response on(String ip, Integer port) {
         try {
             return NettyService.on(msgCallback, ip, port);
         } catch (Exception e) {
-            return "";
+            return null;
         }
     }
 
-    public String off() {
+    public Response off() {
         return NettyService.off();
     }
 
-    public String isOnline(String targetType, String targetId) {
+    public Response isOnline(String targetType, String targetId) {
         try {
             return NettyService.isOnline(targetType, targetId);
         } catch (Exception e) {
             e.printStackTrace();
-            return "";
+            return null;
         }
     }
 
-    public String queryTerminals(String msg) {
-        String respMsg = null;
+    public Response queryTerminals(String msg) {
+        Response respMsg = null;
         try {
             respMsg = NettyService.queryTerminals(msg);
         } catch (Exception e) {
@@ -49,8 +50,8 @@ public class CommunicationServiceImpl implements CommunicationService {
     }
 
     @Override
-    public String queryTerminalsByIp(String ip) {
-        String respMsg = null;
+    public Response queryTerminalsByIp(String ip) {
+        Response respMsg = null;
         try {
             respMsg = NettyService.queryTerminalsByIp(ip);
         } catch (Exception e) {
@@ -67,8 +68,8 @@ public class CommunicationServiceImpl implements CommunicationService {
         }
     }
 
-    public String forwardMsgSync(Map<String, List<String>> targetMap, String msg) {
-        String respMsg = null;
+    public Response forwardMsgSync(Map<String, List<String>> targetMap, String msg) {
+        Response respMsg = null;
         try {
             respMsg = NettyService.forwardMsgSync(targetMap, msg);
         } catch (Exception e) {

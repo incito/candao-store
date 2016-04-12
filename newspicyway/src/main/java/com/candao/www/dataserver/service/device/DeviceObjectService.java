@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.device;
 
 
+import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface DeviceObjectService {
 
     //根据用户id查询用户对应的机具信息
     List<Map> getDeviceByUserId(String userId);
+
+    DeviceObject getByGroupAndId(String group, String id);
 }

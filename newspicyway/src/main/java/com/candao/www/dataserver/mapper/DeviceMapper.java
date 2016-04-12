@@ -13,6 +13,8 @@ public interface DeviceMapper {
 
     int countByGroupAndId(@Param("group") String group, @Param("id") String id);
 
+    Device getByGroupAndId(@Param("group") String group, @Param("id") String id);
+
     void update(Device device);
 
     List<Device> getAllDevice();

@@ -3,6 +3,7 @@ package com.candao.www.dataserver.service.msghandler.impl;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.mapper.OfflineMsgMapper;
 import com.candao.www.dataserver.model.OfflineMsgData;
+import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,11 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
     private OfflineMsgMapper offlineMsgMapper;
 
     @Override
-    public void handler(String msg) {
+    public void handler(DeviceObject deviceObject, String serialNumber, String msg) {
         try {
             LOGGER.info("### offlinemsg delete msg={} ###", msg);
             OfflineMsgData offLineMsgData = MsgAnalyzeTool.analyzeOffLineResp(msg);
-            offlineMsgMapper.deleteById(offLineMsgData.getId());
+            offlineMsgMapper.deleteById(offLineMsgData.getOffLineMsgId());
         } catch (Exception e) {
             LOGGER_ERROR.error("### offlinemsg delete msg={},error={} ###", msg, e);
         }
@@ -42,6 +43,11 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
     @Override
     public List<OfflineMsg> getByGroupAndId(String group, String id) {
         return offlineMsgMapper.getByGroupAndId(group, id);
+    }
+
+    @Override
+    public List<OfflineMsg> getAllOffLineMsg(String group, String id) {
+        return offlineMsgMapper.getAllOffLineMsg(group, id);
     }
 
     @Override
