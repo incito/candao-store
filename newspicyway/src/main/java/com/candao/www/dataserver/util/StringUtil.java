@@ -75,6 +75,21 @@ public class StringUtil {
         }
     }
 
+    /**
+     * 字符串转浮点数，转换失败返回默认值
+     *
+     * @param str
+     * @param defaultValue
+     * @return
+     */
+    public static float str2Float(String str, float defaultValue) {
+        try {
+            return Float.parseFloat(str);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public static void main(String[] args) {
         String a = "{\"Data\":\"1\",\"Info\":\"现金金额\"}";
         System.out.println(new String(a.getBytes(), GBK));

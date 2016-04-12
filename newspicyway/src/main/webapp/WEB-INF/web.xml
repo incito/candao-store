@@ -72,7 +72,7 @@
         <filter-class>com.candao.www.filter.UserFilter</filter-class>
         <init-param>
             <param-name>excluded</param-name>
-            <param-value>/QueryBalance,/VoidSale,/StoreCardDeposit,/MemberSale</param-value>
+            <param-value>/datasnap/rest/TServerMethods1</param-value>
         </init-param>
     </filter>
     <filter-mapping>

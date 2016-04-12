@@ -3,20 +3,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.candao.www.dataserver.mapper.OpenLogMapper">
     <resultMap id="baseMap" type="com.candao.www.dataserver.entity.OpenLog">
-        <id column="id" property="id"></id>
-        <result column="username" property="userName"/>
-        <result column="inserttime" property="insertTime"/>
-        <result column="opendate" property="openDate"/>
-        <result column="ipaddress" property="ipaddress"/>
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="username" property="userName" jdbcType="VARCHAR"/>
+        <result column="inserttime" property="insertTime" jdbcType="TIMESTAMP"/>
+        <result column="opendate" property="openDate" jdbcType="TIMESTAMP"/>
+        <result column="ipaddress" property="ipaddress" jdbcType="VARCHAR"/>
     </resultMap>
     <select id="selectAll" resultMap="baseMap">
       select * from t_open_log limit 1
     </select>
     <insert id="insert" parameterType="com.candao.www.dataserver.entity.OpenLog">
         insert into t_open_log(id,username,inserttime,opendate,ipaddress)
-        values(1,#{userName,jdbcType=VARCHAR},#{insertTime,jdbcType=TIMESTAMP},,#{openDate,jdbcType=TIMESTAMP},#{ipaddress,jdbcType=VARCHAR})
+        values(1,#{userName,jdbcType=VARCHAR},#{insertTime,jdbcType=TIMESTAMP},#{openDate,jdbcType=TIMESTAMP},#{ipaddress,jdbcType=VARCHAR})
     </insert>
     <delete id="truncate">
         truncate table t_open_log
     </delete>
+    <select id="procEndWork" statementType="CALLABLE" parameterType="java.util.HashMap">
+        {call p_endwork(#{endfinish,mode=OUT,jdbcType=INTEGER})}
+    </select>
 </mapper>

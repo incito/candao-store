@@ -42,12 +42,61 @@ public interface BusinessService {
 
     /**
      * 清机
-     * @param userId 员工号
-     * @param userName 员工姓名
-     * @param ip IP地址
-     * @param posId POS编号
+     *
+     * @param userId     员工号
+     * @param userName   员工姓名
+     * @param ip         IP地址
+     * @param posId      POS编号
      * @param authorizer 清机授权人
      * @return
      */
-    String clearMachine(String userId,String userName,String ip,String posId,String authorizer);
+    String clearMachine(String userId, String userName, String ip, String posId, String authorizer);
+
+    /**
+     * 结业
+     *
+     * @param userId 员工号
+     * @param ip     IP地址
+     * @return
+     */
+    String endWork(String userId, String ip);
+
+    /**
+     * 检查是否输入找零金
+     *
+     * @param ip
+     * @return
+     */
+    String checkTellerCash(String ip);
+
+    /**
+     * 输入找零金
+     *
+     * @param userId     员工号
+     * @param ip         IP地址
+     * @param cashAmount 备用金金额
+     * @return
+     */
+    String inputTellerCash(String userId, String ip, float cashAmount);
+
+    /**
+     * 挂单
+     *
+     * @param tableNo    桌号
+     * @param orderId    帐单号
+     * @param gzCode     挂帐单位编号
+     * @param gzName     挂帐单位
+     * @param telephone  单位电话
+     * @param relaperson 联系人
+     * @return
+     */
+    String putOrder(String tableNo, String orderId, String gzCode, String gzName, String telephone, String relaperson);
+
+    /**
+     * 获取下单序号
+     *
+     * @param tableNo 桌号
+     * @return
+     */
+    String getOrderSequence(String tableNo);
 }
