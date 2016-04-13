@@ -5,7 +5,10 @@ import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
 import com.candao.www.dataserver.mapper.*;
+import com.candao.www.dataserver.model.ResponseData;
+import com.candao.www.dataserver.service.dish.DishService;
 import com.candao.www.dataserver.service.member.BusinessService;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
@@ -48,6 +51,10 @@ public class BusinessServiceImpl implements BusinessService {
     private OperationLogMapper operationLogMapper;
     @Autowired
     private CaleTableAmountMapper caleTableAmountMapper;
+    @Autowired
+    private DishService dishService;
+    @Autowired
+    private OrderOpService orderOpService;
 
     @Override
     public String getServerTableList(String userId, String orderId) {
@@ -356,6 +363,20 @@ public class BusinessServiceImpl implements BusinessService {
     public String getOrderSequence(String tableNo) {
         String sequence = operationLogMapper.selectMaxSequence(tableNo);
         return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"" + sequence + "\"}";
+    }
+
+    @Override
+    public String getServerTableInfo(String tableNo, String userId) {
+        ResponseData responseData = new ResponseData();
+        String orderId = tableMapper.getOrderIdByTableNo(tableNo);
+        dishService.updateCj(orderId, userId);
+        if (null == orderId || "".equals(orderId)) {
+            responseData.setData("0");
+            return JSON.toJSONString(responseData);
+        } else {
+            orderOpService.pCaleTableAmount(userId, orderId);
+            return JSON.toJSONString(orderOpService.getInfoByOrderId(orderId));
+        }
     }
 
     /**

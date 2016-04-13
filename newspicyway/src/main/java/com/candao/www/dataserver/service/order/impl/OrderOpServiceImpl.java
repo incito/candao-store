@@ -194,4 +194,9 @@ public class OrderOpServiceImpl implements OrderOpService {
         }
         return JSON.toJSONString(responseJsonData);
     }
+
+    @Override
+    public Map getInfoByOrderId(String orderId) {
+        return orderMapper.getInfoByOrderId(orderId);
+    }
 }

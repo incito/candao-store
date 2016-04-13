@@ -99,4 +99,13 @@ public interface BusinessService {
      * @return
      */
     String getOrderSequence(String tableNo);
+
+    /**
+     * 获取帐单信息结口
+     *
+     * @param tableNo
+     * @param userId
+     * @return
+     */
+    String getServerTableInfo(String tableNo, String userId);
 }

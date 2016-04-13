@@ -6,4 +6,7 @@
         update t_table set status=0
         where tableno=#{tableNo}
     </update>
+    <select id="getOrderIdByTableNo" resultType="java.lang.String">
+       SELECT orderid FROM t_table b WHERE b.tableno =#{tableNo} LIMIT 0,1
+    </select>
 </mapper>

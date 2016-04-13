@@ -28,6 +28,7 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
 
     @Override
     public void processMsg(String msg) {
+        LOGGER.info("###processMsg msg={}###", msg);
         MsgForwardData msgForwardData = MsgAnalyzeTool.analyzeMsgForward(msg);
         String msgId = msgForwardData.getMsgId();
         String serialNumber = msgForwardData.getSerialNumber();
@@ -43,6 +44,7 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
             }
             removeMsgNum4Map(serialNumber);
         } catch (Exception e) {
+            LOGGER.info("###processMsg msg={},error={}###", msg, e);
             e.printStackTrace();
         }
         DeviceObject deviceObject = null;
@@ -50,6 +52,7 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
             BaseData baseData = JSON.parseObject(msgForwardData.getMsgData(), BaseData.class);
             deviceObject = deviceObjectService.getByGroupAndId(baseData.getGroup(), baseData.getId());
         } catch (Exception e) {
+            LOGGER.info("###processMsg msg={},error={}###", msg, e);
             e.printStackTrace();
         }
         if (this.msgHandlerMap.containsKey(msgId)) {

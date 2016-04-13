@@ -2,11 +2,15 @@ package com.candao.www.dataserver.service.dish.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.mapper.DishMapper;
+import com.candao.www.dataserver.mapper.OperationLogMapper;
+import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.dish.DishService;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,12 @@ public class DishOpServiceImpl implements DishService {
     private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DishOpServiceImpl.class);
     @Autowired
     private DishMapper dishMapper;
+    @Autowired
+    private OperationLogMapper operationLogMapper;
+    @Autowired
+    private OrderOpMapper orderOpMapper;
+    @Autowired
+    private OrderOpService orderOpService;
 
     @Override
     public String getFoodStatus(String dishId, String dishUnit) {
@@ -122,5 +132,60 @@ public class DishOpServiceImpl implements DishService {
             LOGGER.error("###getFavorable  userId={},orderId={},error={}###", userId, orderId, e);
         }
         return JSON.toJSONString(responseJsonData);
+    }
+
+    @Override
+    @Transactional
+    public String getBackDishInfo(String orderId, String dishId, String dishUnit, String tableNo) {
+        LOGGER.info("###getBackDishInfo orderId={} dishId={} dishUnit={} tableNo={}###", orderId, dishId, dishUnit, tableNo);
+        ResponseData responseData = new ResponseData();
+        try {
+            operationLogMapper.deletePosOperation(tableNo);
+            dishUnit = dishUnit.replace("&quot", "#");
+            List<Map> mapList = dishMapper.getBackDishInfo(orderId, dishId, dishUnit);
+            if (mapList.isEmpty()) {
+                responseData.setData("0");
+            } else {
+                return JSON.toJSONString(mapList);
+            }
+        } catch (Exception e) {
+            responseData.setData("0");
+            responseData.setInfo("获取退菜dish列表,如果选择的是套餐明细，不能退，如果选择的是鱼锅，退整个锅，如果选择的是锅内明细，退鱼，不能只退锅,异常");
+            LOGGER.error("###getBackDishInfo orderId={} dishId={} dishUnit={} tableNo={} error={}###", orderId, dishId, dishUnit, tableNo, e);
+        }
+        return JSON.toJSONString(responseData);
+    }
+
+    @Override
+    @Transactional
+    public String updateCj(String orderId, String userId) {
+        ResponseData responseData = new ResponseData();
+        String dishId = "826ffa67-4a32-4ad0-b4ab-85694cab1db4";
+        String orderPrice = dishMapper.getPriceByDishId(dishId);
+        String dishUnit = dishMapper.getUnitByDishId(dishId);
+        if (null == dishUnit || "".equals(dishUnit)) {
+            return JSON.toJSONString(responseData);
+        }
+        String custnum = orderOpMapper.getCustnumByOrderId(orderId);
+        String tmpDishId = orderOpMapper.getDishIdByOrDiId(orderId, dishId);
+        float dishNum = orderOpMapper.getDishNumByOrDiId(orderId, dishId);
+        int detailCount = orderOpMapper.countByOrderId(orderId);
+        if (detailCount < 0) {
+            return JSON.toJSONString(responseData);
+        }
+        String orderStatus = orderOpMapper.getStatusByOrderId(orderId);
+        if (!"0".equals(orderStatus)) {
+            return JSON.toJSONString(responseData);
+        }
+        if (null == tmpDishId || "".equals(tmpDishId.trim())) {
+            if (custnum == (Math.round(dishNum) + "")) {
+                return JSON.toJSONString(responseData);
+            }
+        }
+        if (null == tmpDishId || "".equals(tmpDishId.trim())) {
+            orderOpMapper.saveOrderDetail(orderId, custnum, userId, orderPrice, dishUnit);
+        }
+        orderOpService.pCaleTableAmount(userId, orderId);
+        return JSON.toJSONString(responseData);
     }
 }

@@ -59,7 +59,7 @@ public class OrderInterfaceController {
         return orderService.getAllGZDW(aUserId);
     }
 
-    @RequestMapping(value = "/SaveSettlementDetailBatch/{sDetailId}/{aUserId}/{orderId}/payJsonArray/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/SaveSettlementDetailBatch/{sDetailId}/{aUserId}/{orderId}/{payJsonArray}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String saveSettlementDetailBatch(@PathVariable("sDetailId") String sDetailId, @PathVariable("aUserId") String aUserId,
                                             @PathVariable("orderId") String orderId, @PathVariable("payJsonArray") String payJsonArray) {

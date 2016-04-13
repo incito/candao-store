@@ -27,4 +27,10 @@ public interface DishMapper {
     Map getYGListJson(String orderId);
 
     Map getYGDoubleJson(String orderId);
+
+    List<Map> getBackDishInfo(@Param("orderId") String orderId, @Param("dishId") String dishId, @Param("dishUnit") String dishUnit);
+
+    String getPriceByDishId(String dishId);
+
+    String getUnitByDishId(String dishId);
 }
