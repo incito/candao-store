@@ -386,7 +386,7 @@ public class BusinessServiceImpl implements BusinessService {
         String tableJson = getServerTableInfo2(tableNo, userId);
         //获取单体信息
         String orderId = tableMapper.selectOrderId(tableNo);
-        String tableListJson = getServerTableList2(tableNo, userId);
+        String tableListJson = getServerTableList2(orderId, userId);
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
     }
 
@@ -395,7 +395,7 @@ public class BusinessServiceImpl implements BusinessService {
         String orderId = tableMapper.selectOrderId(tableNo);
         //还原会员价
         memberService.revertMemberPrice(userId, orderId);
-        // TODO: 2016/4/13  call UpdateCJ()
+        dishService.updateCj(orderId, userId);
         if (StringUtil.isEmpty(orderId)) {
             return "{\"Data\":\"0\"}";
         }

@@ -30,13 +30,8 @@ public class WorkDateUtil {
     }
 
     public static Date getWorkDate1() {
-        Date workDate = new Date();
-        if (workDate.getHours() < 6) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 1);
-            workDate = calendar.getTime();
-        }
-        return workDate;
+        String workDate = getWorkDate();
+        return DateUtils.parse(workDate, "yyyy-MM-dd");
     }
 
     public static void main(String[] args) {
