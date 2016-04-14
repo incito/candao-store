@@ -219,7 +219,7 @@ public class BusinessServiceImpl implements BusinessService {
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;
         clearMachineMapper.insert(today, userId);
         settlementDetailMapper.setClear(today, userId);
-        tellerCashMapper.updateStatus(today, ip);
+        tellerCashMapper.updateStatus(today, ip,userId);
 
         // 餐具
         int tableware = 0;
@@ -317,10 +317,10 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public String checkTellerCash(String ip) {
+    public String checkTellerCash(String ip,String userId) {
         Date workDate = WorkDateUtil.getWorkDate1();
         String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
-        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip);
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip,userId);
         if (null == todayInfo || todayInfo.isEmpty()) {
             return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"\"}";
         }
@@ -331,7 +331,7 @@ public class BusinessServiceImpl implements BusinessService {
     public String inputTellerCash(String userId, String ip, float cashAmount) {
         Date workDate = WorkDateUtil.getWorkDate1();
         String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
-        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip);
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip,userId);
         if (null == todayInfo || todayInfo.isEmpty()) {
             Map<String, Object> param = new HashMap<>();
             param.put("username", userId);

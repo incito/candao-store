@@ -101,6 +101,15 @@ public interface BusinessService {
     String getOrderSequence(String tableNo);
 
     /**
+     * 获取帐单信息结口
+     *
+     * @param tableNo
+     * @param userId
+     * @return
+     */
+    String getServerTableInfo(String tableNo, String userId);
+
+    /**
      * //合并 GetServerTableInfo GetServerTableList setMemberPrice3 为一个接口，加快速度
      *
      * @param tableNo

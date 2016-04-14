@@ -127,7 +127,7 @@ public class BusinessController {
         logger.info("###REQUEST### BusinessController InputTellerCash userId={} ip={} cachAmount={} callType={}", userId, ip, cachAmount, callType);
         String result;
         if (callType == null || callType == 0) {
-            result = businessService.checkTellerCash(ip);
+            result = businessService.checkTellerCash(ip, userId);
         } else {
             result = businessService.inputTellerCash(userId, ip, cachAmount);
         }
@@ -191,8 +191,8 @@ public class BusinessController {
     }
 
     public static void main(String[] args) {
-        String str= "/werwer/werwer/ /werwer";
-        String[] a=StringUtils.tokenizeToStringArray(str,"/",false,true);
+        String str = "/werwer/werwer/ /werwer";
+        String[] a = StringUtils.tokenizeToStringArray(str, "/", false, true);
         System.out.println();
     }
 }
