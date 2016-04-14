@@ -12,10 +12,10 @@ import java.util.Date;
  * Created by ytq on 2016/3/21.
  */
 public class WorkDateUtil {
-    private BusinessService businessService = SpringContextUtils.getBean("businessService");
+    private static BusinessService businessService = SpringContextUtils.getBean("businessServiceImpl");
 
     public static String getWorkDate() {
-        Date openDate = null;
+        Date openDate = businessService.getOpenDate();
         if (null != openDate) {
             return DateUtils.toString(openDate, "yyyy-MM-dd");
         } else {

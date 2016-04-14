@@ -74,7 +74,7 @@ ORDER BY
     <select id="getPriceByDishId" resultType="java.lang.String">
         select price from t_dish where  dishid=#{dishId}
     </select>
-    <select id="geUnitByDishId" resultType="java.lang.String">
+    <select id="getUnitByDishId" resultType="java.lang.String">
         select unit from t_dish where  dishid=#{dishId}
     </select>
 </mapper>
