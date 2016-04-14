@@ -2,6 +2,8 @@ package com.candao.www.dataserver.service.order;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * Created by ytq on 2016/3/15.
  */
@@ -36,4 +38,6 @@ public interface OrderOpService {
 
     //删除结算信息
     String deleteDetailBatch(String sDetailId);
+
+    Map getInfoByOrderId(String orderId);
 }

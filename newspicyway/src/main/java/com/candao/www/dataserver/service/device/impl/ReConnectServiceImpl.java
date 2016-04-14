@@ -2,8 +2,11 @@ package com.candao.www.dataserver.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.entity.OfflineMsg;
+import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.ReConnectData;
+import com.candao.www.dataserver.service.device.obj.DeviceObject;
+import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
@@ -20,12 +23,12 @@ import java.util.Map;
  */
 public class ReConnectServiceImpl extends DeviceServiceImpl {
     @Autowired
-    private MsgProcessService msgProcessService;
+    private MsgForwardService msgForwardService;
     @Autowired
     private OfflineMsgService offlineMsgService;
 
     @Override
-    public void handler(String msg) {
+    public void handler(DeviceObject deviceObject, String serialNumber, String msg) {
         try {
             LOGGER.info("### reconnect msg={} ###", msg);
             final ReConnectData reConnectData = MsgAnalyzeTool.analyzeToReConData(msg);
@@ -34,8 +37,9 @@ public class ReConnectServiceImpl extends DeviceServiceImpl {
                 add(reConnectData.getId());
             }});
             for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(reConnectData.getGroup(), reConnectData.getId())) {
-                String msgData = JSON.toJSONString(new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent()));
-                msgProcessService.forwardMsg(target, JSON.toJSONString(MsgForwardTran.getOffLineSend(msgData)));
+                OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
+                MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+                msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
             }
         } catch (Exception e) {
             LOGGER_ERROR.error("#### reconnect msg={},error={} ###", msg, e);

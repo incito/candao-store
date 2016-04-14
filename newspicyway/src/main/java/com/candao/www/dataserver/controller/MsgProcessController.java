@@ -12,13 +12,32 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 消息处理控制器
  */
 @Controller
+@RequestMapping("/datasnap/rest/TServerMethods1")
 public class MsgProcessController {
     @Autowired
     private MsgForwardService msgForwardService;
 
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msgId") String msg) {
+    public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg) {
         return msgForwardService.broadCastMsg(userId, msgId, msg);
+    }
+
+    @RequestMapping(value = "/broadcastok/{client}/{msgId}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
+        return msgForwardService.broadCastOk(client, msgId);
+    }
+
+    @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/{isSingle}", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public void broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle) {
+        msgForwardService.broadCastMsg(userId, msgId, msg, isSingle);
+    }
+
+    @RequestMapping(value = "/broadcastmsg/{group}/{userId}/{msgId}/{msg}/{isSingle}", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public void broadCastMsg(@PathVariable("group") String group, @PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle) {
+        msgForwardService.broadCastMsg(group, userId, msgId, msg, isSingle);
     }
 }

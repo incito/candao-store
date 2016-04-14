@@ -9,4 +9,6 @@ public interface OperationLogMapper {
     int deleteByTableNo(@Param("tableNo") String tableNo);
 
     String selectMaxSequence(@Param("tableNo") String tableNo);
+
+    int deletePosOperation(String tableNo);
 }

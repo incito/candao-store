@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Created by ytq on 2016/3/18.
  */
 @Controller
+@RequestMapping("/datasnap/rest/TServerMethods1")
 public class DishInterfaceController {
     @Autowired
     private DishService dishService;
@@ -39,9 +40,16 @@ public class DishInterfaceController {
         return dishService.getGroupDetail(dishId);
     }
 
-    @RequestMapping(value = "/getFavorale/{userId}/orderId/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/getFavorale/{userId}/{orderId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getFavorable(@PathVariable("userId") String userId, @PathVariable("orderId") String orderId) {
         return dishService.getFavorable(userId, orderId);
+    }
+
+    @RequestMapping(value = "/getBackDishInfo/{orderId}/{dishId}/{dishUnit}/{tableNo}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String getBackDishInfo(@PathVariable("orderId") String orderId, @PathVariable("dishId") String dishId,
+                                  @PathVariable("dishUnit") String dishUnit, @PathVariable("tableNo") String tableNo) {
+        return dishService.getBackDishInfo(orderId, dishId, dishUnit, tableNo);
     }
 }

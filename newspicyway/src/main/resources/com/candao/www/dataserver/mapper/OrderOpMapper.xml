@@ -87,4 +87,69 @@
     <delete id="deleteDetailBatch">
         DELETE FROM t_settlement_detail_batch WHERE sdetailid=#{sDetailId}
     </delete>
+    <select id="getCustnumByOrderId" resultType="java.lang.String">
+        select custnum from t_order where orderid=#{orderId}
+    </select>
+    <select id="getDishIdByOrDiId" resultType="java.lang.String">
+        SELECT
+        dishid
+        FROM
+        t_order_detail
+        WHERE
+        orderid = #{orderId}
+        AND dishid = #{dishId}
+    </select>
+    <select id="getDishNumByOrDiId" resultType="float">
+        select dishnum from t_order_detail where orderid=#{orderId} AND dishid = #{dishId}
+    </select>
+    <select id="countByOrderId" resultType="int">
+     SELECT count(*) FROM t_order_detail WHERE orderid =#{orderId}
+    </select>
+    <select id="getStatusByOrderId" resultType="java.lang.String">
+        select orderstatus from t_order where orderid=#{orderId}
+    </select>
+    <insert id="saveOrderDetail">
+    INSERT INTO t_order_detail (
+	orderid,
+	dishid,
+	dishstatus,
+	begintime,
+	endtime,
+	sperequire,
+	dishnum,
+	userName,
+	orderprice,
+	discountrate,
+	discountamount,
+	dishtype,
+	dishunit
+     )
+    VALUES
+	   ( #{orderId},
+		'826ffa67-4a32-4ad0-b4ab-85694cab1db4',
+		'1',
+		now(),
+		now(),
+		'',
+		#{custnum},
+		#{userId},
+		#{orderPrice},
+		0.00,
+		0.00,
+		0,
+		#{dishUnit}
+	   )
+    </insert>
+    <select id="getInfoByOrderId" resultType="java.util.HashMap">
+SELECT
+	a.*, b.*
+FROM
+	t_order a
+INNER JOIN t_table b ON (a.currenttableid = b.tableid)
+WHERE
+	a.orderid = #{orderId}
+ORDER BY
+	a.orderid DESC
+LIMIT 0,1
+    </select>
 </mapper>

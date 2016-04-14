@@ -39,4 +39,20 @@ public interface OrderOpMapper {
     List<Map> getSettlementDetailBatch(String orderId);
 
     void deleteDetailBatch(String sDetailId);
+
+    String getCustnumByOrderId(String orderId);
+
+    String getDishIdByOrDiId(@Param("orderId") String orderId, @Param("dishId") String dishId);
+
+    float getDishNumByOrDiId(@Param("orderId") String orderId, @Param("dishId") String dishId);
+
+    int countByOrderId(String orderId);
+
+    String getStatusByOrderId(String orderId);
+
+    int saveOrderDetail(@Param("orderId") String orderId, @Param("custnum") String custnum,
+                        @Param("userId") String userId, @Param("orderPrice") String orderPrice,
+                        @Param("dishUnit") String dishUnit);
+
+    Map getInfoByOrderId(String orderId);
 }

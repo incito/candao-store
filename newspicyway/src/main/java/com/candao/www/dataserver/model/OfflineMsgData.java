@@ -1,23 +1,29 @@
 package com.candao.www.dataserver.model;
 
+import com.candao.www.dataserver.util.MsgAnalyzeTool;
+
 /**
  * Created by ytq on 2016/3/24.
  */
 public class OfflineMsgData {
-    private Integer id;
+    private Integer offLineMsgId;
     private String content;
 
-    public OfflineMsgData(Integer id, String content) {
-        this.id = id;
+    public OfflineMsgData() {
+
+    }
+
+    public OfflineMsgData(Integer offLineMsgId, String content) {
+        this.offLineMsgId = offLineMsgId;
         this.content = content;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getOffLineMsgId() {
+        return offLineMsgId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setOffLineMsgId(Integer offLineMsgId) {
+        this.offLineMsgId = offLineMsgId;
     }
 
     public String getContent() {

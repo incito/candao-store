@@ -3,6 +3,7 @@ package com.candao.www.dataserver.service.device;
 
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.service.msghandler.MsgHandler;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Created by ytq on 2016/3/17.
@@ -21,4 +22,9 @@ public interface DeviceService extends MsgHandler {
 
     //保存或更新设备信息
     void saveOrUpdateDevice(Device device);
+
+    //根据id查询设备信息
+    Device getDeviceById(Integer id);
+
+    Device getByGroupAndId(String group, String id);
 }

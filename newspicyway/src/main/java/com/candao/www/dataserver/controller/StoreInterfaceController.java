@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Created by ytq on 2016/3/14.
  */
 @Controller
+@RequestMapping("/datasnap/rest/TServerMethods1")
 public class StoreInterfaceController {
     @Autowired
     private OpenCashService openCashService;
@@ -21,7 +22,7 @@ public class StoreInterfaceController {
         return openCashService.openCash(ipAddress);
     }
 
-    @RequestMapping(value = "/getClearMachineData/{aUserid}/{jsorder}/{posid}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = {"/getClearMachineData/{aUserid}/{jsorder}/{posid}/", "/getClearMachineData/{aUserid}/{posid}/"}, produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getClearMachineData(@PathVariable("aUserid") String aUserId, @PathVariable("jsorder") String jsOrder, @PathVariable("posid") String posId) {
         return openCashService.getClearMachineData(aUserId, jsOrder, posId);

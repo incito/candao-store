@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.msghandler;
 
 
+import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.log.BaseLogService;
 
 import java.util.HashMap;
@@ -17,5 +18,5 @@ public interface MsgHandler extends BaseLogService {
     Map<String, String> mapResults = new HashMap<>();
 
     //消息处理
-    void handler(String msg);
+    void handler(DeviceObject deviceObject, String serialNumber, String msg);
 }

@@ -1,7 +1,10 @@
 package com.candao.www.dataserver.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.model.PadLoginData;
+import com.candao.www.dataserver.service.device.obj.DeviceObject;
+import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
@@ -20,21 +23,23 @@ import java.util.Map;
  */
 public class PadServiceImpl extends DeviceServiceImpl {
     @Autowired
-    private MsgProcessService msgProcessService;
+    private MsgForwardService msgForwardService;
 
     @Override
-    public void handler(String msg) {
-        checkIn(msg);
+    public void handler(DeviceObject deviceObject, String serialNumber, String msg) {
+        checkIn(deviceObject, serialNumber, msg);
     }
 
-    private void checkIn(String msg) {
+    private void checkIn(DeviceObject deviceObject, String serialNumber, String msg) {
         final PadLoginData padLoginData = MsgAnalyzeTool.analyzeToPadDevice(msg);
         String respData = padLoginIn(padLoginData);
         Map<String, List<String>> target = new HashMap<>();
         target.put(padLoginData.getGroup(), new ArrayList<String>() {{
             add(padLoginData.getId());
         }});
-        msgProcessService.forwardMsg(target, JSON.toJSONString(MsgForwardTran.getPadCheckInConfirm(respData)));
+        MsgForwardData msgForwardData = MsgForwardTran.getPadCheckInConfirm(respData);
+        msgForwardData.setSerialNumber(serialNumber);
+        msgForwardService.forwardMsg(target, JSON.toJSONString(msgForwardData));
     }
 
     @Transactional

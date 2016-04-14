@@ -7,7 +7,7 @@
       menuid=(SELECT menuid FROM v_currmenu) AND dishid=#{dishId} AND unit=#{dishUnit}
     </select>
     <update id="updateDishPY">
-        update t_dish set py=REPLACE(REPLACE(REPLACE(convert(getPY(title) using utf8)
+        UPDATE t_dish SET py=REPLACE(REPLACE(REPLACE(CONVERT(getPY(title) USING utf8), '.',''),'\\',''),'/','') WHERE py IS null
     </update>
     <select id="getAllWmFood" resultType="java.util.HashMap">
         SELECT a.dishid,a.dishno,a.columnid,a.userid,REPLACE(b.dishname,'\\','.') AS title,
@@ -55,5 +55,26 @@
       AND b.level=1) AND dishnum>0 GROUP BY parentkey
       ) a
       WHERE doubleordercount>=5
+    </select>
+    <select id="getBackDishInfo" resultType="java.util.HashMap">
+ SELECT
+	a.*
+FROM
+	t_order_detail a
+INNER JOIN t_order b ON (a.orderid = b.orderid)
+WHERE
+	a.orderid = #{orderId}
+AND a.dishid = #{dishId}
+AND dishunit = #{dishUnit}
+AND dishnum > 0
+AND b.orderstatus = 0
+ORDER BY
+	dishnum DESC
+    </select>
+    <select id="getPriceByDishId" resultType="java.lang.String">
+        select price from t_dish where  dishid=#{dishId}
+    </select>
+    <select id="geUnitByDishId" resultType="java.lang.String">
+        select unit from t_dish where  dishid=#{dishId}
     </select>
 </mapper>

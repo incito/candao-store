@@ -65,4 +65,30 @@ public class MsgAnalyzeTool {
         }
         return list;
     }
+
+    public static void main(String[] args) {
+        WatchLoginData watchLoginData = new WatchLoginData();
+        watchLoginData.setGroup("group_watch");
+        watchLoginData.setId("0FA657D4BBFF25F0553EF08A1E1EC0E7");
+        MsgForwardData msgForwardData = new MsgForwardData("100001", JSON.toJSONString(watchLoginData));
+        String a = "{\"code\":\"0\",\"data\":\"[{\\\"group\\\":\\\"group_watch\\\",\\\"id\\\":\\\"1\\\"},{\\\"group\\\":\\\"group_watch\\\",\\\"id\\\":\\\"2\\\"}]\"}";
+        MsgResponseData msgResponseData = new MsgResponseData();
+        msgResponseData.setCode("0");
+        List<DeviceData> data = new ArrayList<>();
+        DeviceData deviceData = new DeviceData();
+        deviceData.setGroup("1");
+        deviceData.setId("1");
+        DeviceData deviceData1 = new DeviceData();
+        deviceData1.setId("2");
+        deviceData1.setGroup("2");
+        data.add(deviceData);
+        data.add(deviceData1);
+        msgResponseData.setData(data);
+        String b = JSON.toJSONString(msgResponseData);
+//        String b ="{\"code\":\"0\",\"data\":[{\"group\":\"1\",\"id\":\"1\"},{\"group\":\"2\",\"id\":\"2\"}]}";
+//        {"code":"0","data":[{"group":"1","id":"1"},{"group":"2","id":"2"}]}
+//        {"code":"0","data":"[{\"group\":\"group_watch\",\"id\":\"1\"},{\"group\":\"group_watch\",\"id\":\"2\"}]"}
+//        MsgAnalyzeTool.analyzeQueryTerminals(a.replace("\\"","\\"));
+        System.out.println();
+    }
 }

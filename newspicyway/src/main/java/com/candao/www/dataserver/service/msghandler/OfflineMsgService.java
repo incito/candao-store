@@ -13,5 +13,7 @@ public interface OfflineMsgService extends MsgHandler {
 
     List<OfflineMsg> getByGroupAndId(String group, String id);
 
+    List<OfflineMsg> getAllOffLineMsg(String group, String id);
+
     void deleteById(Integer id);
 }

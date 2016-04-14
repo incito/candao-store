@@ -22,4 +22,10 @@ public interface DishService {
 
     //优惠自动使用接口(惠新，蓝港，辣倒兔临时方案)
     String getFavorable(String userId, String orderId);
+
+    //获取退菜dish列表,如果选择的是套餐明细，不能退，如果选择的是鱼锅，退整个锅，如果选择的是锅内明细，退鱼，不能只退锅
+    String getBackDishInfo(String orderId, String dishId, String dishUnit, String tableNo);
+
+    //更新餐具信息
+    String updateCj(String orderId, String userId);
 }

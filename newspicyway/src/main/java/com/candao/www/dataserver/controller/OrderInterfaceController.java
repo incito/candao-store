@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 订单接口控制器
  */
 @Controller
+@RequestMapping("/datasnap/rest/TServerMethods1")
 public class OrderInterfaceController {
     @Autowired
     private OrderOpService orderService;
@@ -46,7 +47,7 @@ public class OrderInterfaceController {
         return orderService.getOrderCouponList(aUserId, orderId);
     }
 
-    @RequestMapping(value = "/getAllOrderInfo2//{aUserId}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/getAllOrderInfo2/{aUserId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getAllOrderInfo2(@PathVariable("aUserId") String aUserId) {
         return orderService.getAllOrderInfo2(aUserId);
@@ -58,7 +59,7 @@ public class OrderInterfaceController {
         return orderService.getAllGZDW(aUserId);
     }
 
-    @RequestMapping(value = "/SaveSettlementDetailBatch/{sDetailId}/{aUserId}/{orderId}/payJsonArray/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/SaveSettlementDetailBatch/{sDetailId}/{aUserId}/{orderId}/{payJsonArray}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String saveSettlementDetailBatch(@PathVariable("sDetailId") String sDetailId, @PathVariable("aUserId") String aUserId,
                                             @PathVariable("orderId") String orderId, @PathVariable("payJsonArray") String payJsonArray) {
