@@ -57,5 +57,17 @@ public class TItemAnalysisChartsDaoImpl implements TItemAnalysisChartsDao {
 		return null;
 	}
 
+	/**
+	 * 获取整月的来客数
+	 * 
+	 */
+	public List<Map<String, Object>> getAllOrderCustnumOfMonth(Map<String,Object> params){
+		try{
+			return daoSupport.find(PREFIX + ".getAllOrderCustnumOfMonth", params);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 }

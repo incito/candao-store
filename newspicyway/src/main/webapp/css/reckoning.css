@@ -7,7 +7,7 @@ hr.dotted-line {
 }
 .reckon-tb tbody>tr>td {
 	font-size: 12px;
-	line-height: 0.8;
+	/* line-height: 0.8; */
 	text-align: left;
 }
 .reckon-tb {

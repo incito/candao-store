@@ -169,7 +169,13 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 		//第一步：获取所有的订单详情信息以及订单人数信息
 		List<Map<String,Object>> orderList = titemAnalysisChartsDao.getAllOrderInfo(params);
 		
-		List<Map<String, Object>> custnumMapList = titemAnalysisChartsDao.getAllOrderCustnum(params);
+		//根据月、日查询客人数
+		List<Map<String, Object>> custnumMapList = new ArrayList<Map<String, Object>>();
+		if(String.valueOf(params.get("dateType")).equals("0")){//天
+			custnumMapList = titemAnalysisChartsDao.getAllOrderCustnum(params);
+		}else if(String.valueOf(params.get("dateType")).equals("1")){//月
+			custnumMapList = titemAnalysisChartsDao.getAllOrderCustnumOfMonth(params);
+		}
 		
 		if(orderList==null||orderList.size()<=0){
 			return returnList;

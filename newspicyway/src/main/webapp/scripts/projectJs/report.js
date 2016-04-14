@@ -1760,9 +1760,19 @@ function exportReportsItem(f) {
 		itemids = "null";
 	}
 	
-	location.href = global_Path + "/itemDetail/exportxlsA/"
-			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
+//	location.href = global_Path + "/itemDetail/exportxlsA/"
+//			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
 	}
+	
+	$("#_beginTime").val(beginTime);
+	$("#_endTime").val(endTime);
+	$("#_shiftid").val(shiftid);
+	$("#_id").val(id);
+	$("#_dishType").val(_dishType);
+	$("#_itemids").val(itemids);
+	$("#_searchType").val(searchType);
+	$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportxlsA.json");
+	$("#itemDetailForm").submit();
 }
 /***********************品项销售明细表 END***************************************/
 /***********************服务员考核 START**************************/

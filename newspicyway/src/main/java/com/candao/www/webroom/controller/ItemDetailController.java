@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -146,31 +145,19 @@ public class ItemDetailController {
 		return mad;
 	}
     
-    
     /**
-	 * 品项销售明细表导出
+     * 品项销售明细表导出
 	 * @author weizhifang
 	 * @since 2015-5-30
-	 * @param request
-	 * @param response
-	 * @param dishtype
-	 * @param beginTime
-	 * @param endTime
-	 * @param shiftid
-	 * @param itemIdFlag
-	 */
-	@RequestMapping("/exportxlsA/{beginTime}/{endTime}/{shiftid}/{id}/{dishType}/{itemids}/{searchType}")
+     * @param request
+     * @param response
+     * @param params
+     * @throws Exception
+     */
+	@RequestMapping(value="exportxlsA")
 	@ResponseBody
-	public void exportxlsA(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "beginTime") String beginTime,
-			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "shiftid") String shiftid,
-			@PathVariable(value = "id") String id,
-			@PathVariable(value = "dishType") String dishType,
-			@PathVariable(value = "itemids") String itemids,
-			@PathVariable(value = "searchType") String searchType) throws Exception{
+	public void exportxlsA(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) throws Exception{
 		//设置参数
-		Map<String,Object> params = setItemQueryParams(beginTime,endTime,shiftid,id,dishType,searchType);
 		Map<String,Object> map = setParameter(params);
 		//查询门店名称
 		String branchid = PropertiesUtils.getValue("current_branch_id");
