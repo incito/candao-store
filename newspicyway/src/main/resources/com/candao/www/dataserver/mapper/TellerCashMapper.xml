@@ -77,7 +77,7 @@
         and a.opendate=#{openDate,jdbcType=VARCHAR} and a.userid=#{userId} and a.isclear=0
     </select>
     <update id="updateStatus" parameterType="map">
-        update  t_teller_cash set status=1 where opendate=#{openDate,jdbcType=VARCHAR} and ipaddress=#{ip} and status=0
+        update  t_teller_cash set status=1 where opendate=#{openDate,jdbcType=VARCHAR} and ipaddress=#{ip} and username=#{userId} and status=0
     </update>
     <select id="selectNotClear" parameterType="java.util.Date" resultType="int">
         select count(*) from t_teller_cash where opendate=#{openDate} and status=0
@@ -87,7 +87,7 @@
     </select>
     <select id="selectTodayInfo" resultType="map" parameterType="map">
         select * from t_teller_cash
-         where ipaddress=#{ip} and opendate=#{openDate,jdbcType=VARCHAR} and status=0
+         where ipaddress=#{ip} and opendate=#{openDate,jdbcType=VARCHAR} and username=#{userId} and status=0
     </select>
     <insert id="insert" parameterType="map">
         insert into t_teller_cash(username,opendate,insertdate,ipaddress,cashamount,status,shiftid)

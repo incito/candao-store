@@ -67,7 +67,7 @@ public interface BusinessService {
      * @param ip
      * @return
      */
-    String checkTellerCash(String ip);
+    String checkTellerCash(String ip, String userId);
 
     /**
      * 输入找零金
@@ -99,4 +99,17 @@ public interface BusinessService {
      * @return
      */
     String getOrderSequence(String tableNo);
+
+    /**
+     * //合并 GetServerTableInfo GetServerTableList setMemberPrice3 为一个接口，加快速度
+     *
+     * @param tableNo
+     * @param userId
+     * @return
+     */
+    String getOrder(String tableNo, String userId);
+
+    String getServerTableInfo2(String tableNo, String userId);
+
+    String getServerTableList2(String orderId, String userId);
 }

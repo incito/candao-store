@@ -104,6 +104,18 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public String revertMemberPrice(String userId, String orderId) {
+        return revertMemberPrice(userId, orderId, false);
+    }
+
+    /**
+     * 取消会员价
+     *
+     * @param userId
+     * @param orderId
+     * @param anyway  是否强制取消
+     * @return
+     */
+    private String revertMemberPrice(String userId, String orderId, boolean anyway) {
         userId = StringUtil.clean(userId);
         orderId = StringUtil.clean(orderId);
         if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(orderId)) {
@@ -115,10 +127,12 @@ public class MemberServiceImpl implements MemberService {
         if (!StringUtil.isEmpty(memberNo)) {
             return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
         }
-        // 如果帐单已经结算就不还原了
-        Integer orderStatus = orderMapper.selectOrderStatus(orderId);
-        if (Constant.ORDERSTATUS.ORDER_STATUS != orderStatus) {
-            return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
+        if (!anyway) {
+            // 如果帐单已经结算就不还原了
+            Integer orderStatus = orderMapper.selectOrderStatus(orderId);
+            if (Constant.ORDERSTATUS.ORDER_STATUS != orderStatus) {
+                return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
+            }
         }
         List<Map<String, Object>> orderDetails = orderMapper.selectPrice(orderId);
         if (null == orderDetails) {
@@ -165,6 +179,11 @@ public class MemberServiceImpl implements MemberService {
         }
         orderMapper.updateMemberNo("", orderId);
         return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
+    }
+
+    @Override
+    public String revertMemberPrice2(String userId, String orderId, String ip) {
+        return revertMemberPrice(userId, orderId, true);
     }
 
     private String getString(Object obj) {

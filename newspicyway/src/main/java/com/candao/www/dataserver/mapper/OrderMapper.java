@@ -25,5 +25,8 @@ public interface OrderMapper {
     String selectMemberNoByOrderId(@Param("orderId") String orderId);
 
     int selectNotPay();
-    int updatePutOrder(@Param("orderId")String orderId,@Param("gzCode")String gzCode,@Param("gzName")String gzName, @Param("gzTele")String gzTele, @Param("gzUser")String gzUser);
+
+    int updatePutOrder(@Param("orderId") String orderId, @Param("gzCode") String gzCode, @Param("gzName") String gzName, @Param("gzTele") String gzTele, @Param("gzUser") String gzUser);
+
+    Map<String, Object> selectTableOrder(@Param("orderId") String orderId);
 }

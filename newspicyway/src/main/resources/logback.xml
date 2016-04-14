@@ -1,20 +1,26 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_HOME" value="/home/cloud-user/candao" />
-	
-  <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">  
-  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-	   <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>   
-	   <maxHistory>30</maxHistory>  
-  </rollingPolicy>   
-  <encoder>   
-  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>   
-  </encoder>   
- </appender> 
- 
-    <root level="info">  
-    	<appender-ref ref="candao" />  
-  	</root>  
+	<property name="LOG_HOME" value="/logs" />
+
+  <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	   <fileNamePattern>${LOG_HOME}/candao_yazuo.%d{yyyy-MM-dd}.log</fileNamePattern>
+	   <maxHistory>30</maxHistory>
+  </rollingPolicy>
+  <encoder>
+  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+  </encoder>
+ </appender>
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	<!-- encoder的默认实现类是ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+	<encoder>
+		<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+	</encoder>
+</appender>
+    <root level="DEBUG">
+    	<appender-ref ref="candao" />
+		<appender-ref ref="STDOUT" />
+	</root>
  
 	
 	<logger name="org.springframework" level="info" >

@@ -6,4 +6,10 @@
         update t_table set status=0
         where tableno=#{tableNo}
     </update>
+    <select id="selectOrderIdOfStatusN5" parameterType="String" resultType="String">
+        select orderid from  t_table b   where b.tableno=#{tableNo} and b.status &lt;&gt; 5 LIMIT 0 , 1
+    </select>
+    <select id="selectOrderId" parameterType="String" resultType="String">
+        select orderid from  t_table b   where b.tableno=#{tableNo} LIMIT 0 , 1
+    </select>
 </mapper>
