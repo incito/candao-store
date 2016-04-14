@@ -37,6 +37,11 @@
     <select id="selectNotPay" resultType="int">
         select count(*) from t_order where begintime>=CURRENT_DATE() and orderstatus=0
     </select>
+    <select id="selectTableOrder" resultType="map">
+        select a.*,b.*
+        from t_order a  inner join t_table b on(a.currenttableid=b.tableid)
+        where a.orderid=#{orderId} order by a.orderid desc LIMIT 0 , 1
+    </select>
     <update id="updatePutOrder" parameterType="map">
         update t_order set payway=3,ordertype=2,gzcode=#{gzCode},gzname=#{gzName},gztele=#{gzTele},gzuser=#{gzUser}
         where orderid=#{orderId}

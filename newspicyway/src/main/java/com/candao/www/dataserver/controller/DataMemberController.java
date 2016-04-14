@@ -54,4 +54,22 @@ public class DataMemberController {
         logger.info("###RESPONSE### MemberController setMemberPrice3 response={}", result);
         return result;
     }
+
+    /**
+     * 取消会员价2
+     *
+     * @param userId
+     * @param orderId
+     * @param ip
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/setMemberPrice2/{userId}/{orderId}/{ip}", produces = {"application/text;charset=UTF-8"})
+    public String setMemberPrice2(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
+        logger.info("###REQUEST### MemberController setMemberPrice2 userId={}  orderId={} ip={}", userId, orderId, ip);
+        String result = memberService.revertMemberPrice2(userId, orderId, ip);
+        logger.info("###RESPONSE### MemberController setMemberPrice2 response={}", result);
+        return result;
+    }
+
 }

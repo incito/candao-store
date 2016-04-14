@@ -41,13 +41,13 @@ public interface TellerCashMapper {
 
     String selectIncludedTotalMoney(@Param("openDate") String openDate, @Param("userId") String userId);
 
-    int updateStatus(@Param("openDate") Date openDate, @Param("ip") String ip);
+    int updateStatus(@Param("openDate") Date openDate, @Param("ip") String ip, @Param("userId") String userId);
 
     int selectNotClear(@Param("openDate") Date openDate);
 
     int selectNotEndTable();
 
-    Map<String, Object> selectTodayInfo(@Param("openDate") String openDate, @Param("ip") String ip);
+    Map<String, Object> selectTodayInfo(@Param("openDate") String openDate, @Param("ip") String ip, @Param("userId") String userId);
 
     int insert(Map<String, Object> param);
 }

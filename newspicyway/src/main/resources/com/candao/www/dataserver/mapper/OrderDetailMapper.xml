@@ -13,4 +13,11 @@
          left join (select max(dishname) as dishname,dishid from t_template_dishunit where  menuid=(select tm.menuid from t_branch_info tbf,t_menu_branch mb,t_menu tm where tbf.branchid = mb.branchid and mb.menuid = tm.menuid and tm.status ='1' order by tm.effecttime desc limit 1) group by dishid) f on(a.dishid=f.dishid)
         where   (not a.dishtype in(3,4)) and a.dishnum&lt;&gt;0 and  a.status&lt;&gt;5 and orderid=#{orderId}  group by a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.dishstatus order by c.itemid,a.orderdetailid
     </select>
+    <select id="selectStatByOrderId1" parameterType="map" resultType="map">
+        select sum((a.orderprice*a.dishnum)-IFNULL(a.discountamount,0)) as amount,sum(a.dishnum) as dishnum,a.dishid as dishidleft,a.begintime as begintime,a.username,max(a.orderprice) as orderprice,max(a.discountrate) as discountrate,sum(a.discountamount) as discountamount
+        ,b.dishtype,a.dishunit,sum(a.payamount) as payamount,sum(a.predisamount) as predisamount,case when a.pricetype=2 then concat('(礼)',IFNULL(f.dishname,max(b.title))) else IFNULL(f.dishname,max(b.title)) end  as title,b.image,b.dishid,c.itemid,c.itemdesc,a.dishstatus,a.primarykey
+        from t_order_detail a inner join t_dish b on(a.dishid=b.dishid) left join t_basicdata c on(b.source=c.ID)
+        left join (select max(dishname) as dishname,dishid from t_template_dishunit where  menuid=(select tm.menuid from t_branch_info tbf,t_menu_branch mb,t_menu tm where tbf.branchid = mb.branchid and mb.menuid = tm.menuid and tm.status ='1' order by tm.effecttime desc limit 1) group by dishid) f on(a.dishid=f.dishid)
+        where   (not a.dishtype in(3,4)) and a.dishnum&lt;&gt;0 and  a.status&lt;&gt;5 and orderid=#{orderId}  group by a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.dishstatus order by c.itemid,a.orderdetailid
+    </select>
 </mapper>

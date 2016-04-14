@@ -14,4 +14,6 @@ public interface OrderDetailMapper {
     int updateOrderPrice(@Param("price") String price, @Param("orderId") String orderId, @Param("orderDetailId") String orderDetailId);
 
     List<Map<String, Object>> selectStatByOrderId(@Param("orderId") String orderId);
+
+    Map<String, Object> selectStatByOrderId1(@Param("orderId") String orderId);
 }

@@ -23,4 +23,13 @@ public interface MemberService {
      * @return
      */
     String revertMemberPrice(String userId, String orderId);
+
+    /**
+     * 设置会员价
+     * @param userId
+     * @param orderId
+     * @param ip
+     * @return
+     */
+    String revertMemberPrice2(String userId, String orderId, String ip);
 }

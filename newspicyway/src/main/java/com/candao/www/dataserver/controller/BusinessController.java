@@ -1,7 +1,6 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.member.BusinessService;
-import com.candao.www.dataserver.service.member.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,6 @@ public class BusinessController {
     private static final Logger logger = LoggerFactory.getLogger(BusinessController.class);
     @Autowired
     private BusinessService businessService;
-    @Autowired
-    private MemberService memberService;
-
 
     /**
      * 3、获取帐单列表
@@ -131,7 +127,7 @@ public class BusinessController {
         logger.info("###REQUEST### BusinessController InputTellerCash userId={} ip={} cachAmount={} callType={}", userId, ip, cachAmount, callType);
         String result;
         if (callType == null || callType == 0) {
-            result = businessService.checkTellerCash(ip);
+            result = businessService.checkTellerCash(ip, userId);
         } else {
             result = businessService.inputTellerCash(userId, ip, cachAmount);
         }
@@ -173,6 +169,15 @@ public class BusinessController {
         logger.info("###REQUEST### BusinessController getOrderSequence tableNo={}", tableNo);
         String result = businessService.getOrderSequence(tableNo);
         logger.info("###RESPONSE### BusinessController getOrderSequence response={}", result);
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/GetOrder/{tableNo}/{userId}", produces = {"application/text;charset=UTF-8"})
+    public String getOrder(@PathVariable String tableNo, @PathVariable String userId) {
+        logger.info("###REQUEST### BusinessController GetOrder tableNo={} userId={}", tableNo, userId);
+        String result = businessService.getOrder(tableNo, userId);
+        logger.info("###RESPONSE### BusinessController GetOrder response={}", result);
         return result;
     }
 
