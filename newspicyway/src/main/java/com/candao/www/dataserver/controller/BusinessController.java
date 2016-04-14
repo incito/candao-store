@@ -1,6 +1,8 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.member.BusinessService;
+import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,10 @@ public class BusinessController {
      */
     @ResponseBody
     @RequestMapping(value = "/GetServerTableList/{orderId}/{userId}", produces = {"application/text;charset=UTF-8"})
-    public String setMemberPrice(@PathVariable String userId, @PathVariable String orderId) {
+    public String getServerTableList(@PathVariable String userId, @PathVariable String orderId) {
         logger.info("###REQUEST### BusinessController GetServerTableList userId={}  orderId={}", userId, orderId);
         String s = businessService.getServerTableList(userId, orderId);
+        s = "{\"result\":[\"" + StringEscapeUtils.escapeJava(s) + "\"]}";
         logger.info("###RESPONSE### BusinessController GetServerTableList response={}", s);
         return s;
     }
@@ -55,7 +58,9 @@ public class BusinessController {
         } else {
             result = businessService.open(userId, userPwd, ip);
         }
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController OpenUp response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -73,7 +78,9 @@ public class BusinessController {
     public String saveOrderPreferential(@PathVariable String userId, @PathVariable String ip, @PathVariable String orderId, @PathVariable String preferential) {
         logger.info("###REQUEST### BusinessController saveOrderPreferential userId={} ip={} orderId={} preferential={}", userId, ip, orderId, preferential);
         String result = businessService.saveOrderPreferential(userId, orderId, preferential);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController saveOrderPreferential response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -92,7 +99,9 @@ public class BusinessController {
     public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={} authorizer={}", userId, userName, ip, posId, authorizer);
         String result = businessService.clearMachine(userId, userName, ip, posId, authorizer);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController clearMachine response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -108,7 +117,9 @@ public class BusinessController {
     public String endWork(@PathVariable String userId, @PathVariable String ip) {
         logger.info("###REQUEST### BusinessController endWork userId={} userName={} ip={} posId={} authorizer={}", userId, ip);
         String result = businessService.endWork(userId, ip);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController endWork response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -131,7 +142,9 @@ public class BusinessController {
         } else {
             result = businessService.inputTellerCash(userId, ip, cachAmount);
         }
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController InputTellerCash response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -151,7 +164,9 @@ public class BusinessController {
     public String putOrder(@PathVariable String tableNo, @PathVariable String orderId, @PathVariable String gzCode, @PathVariable String gzName, @PathVariable String gzTele, @PathVariable String gzUser) {
         logger.info("###REQUEST### BusinessController putOrder tableNo={} orderId={} gzCode={} gzName={} gzTele={} gzUser={}", tableNo, orderId, gzCode, gzName, gzTele, gzUser);
         String result = businessService.putOrder(tableNo, orderId, gzCode, gzName, gzTele, gzUser);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController putOrder response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -168,7 +183,9 @@ public class BusinessController {
     public String getOrderSequence(@PathVariable String tableNo) {
         logger.info("###REQUEST### BusinessController getOrderSequence tableNo={}", tableNo);
         String result = businessService.getOrderSequence(tableNo);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController getOrderSequence response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -177,7 +194,9 @@ public class BusinessController {
     public String getOrder(@PathVariable String tableNo, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController GetOrder tableNo={} userId={}", tableNo, userId);
         String result = businessService.getOrder(tableNo, userId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController GetOrder response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -186,7 +205,9 @@ public class BusinessController {
     public String getServerTableInfo(@PathVariable String tableNo, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController getServerTableInfo tableNo={} userId={}", tableNo, userId);
         String result = businessService.getServerTableInfo(tableNo, userId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController getServerTableInfo response={}", result);
+        result = StringUtil.string2Unicode(result);
         return result;
     }
 
