@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.member.MemberService;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,10 @@ public class DataMemberController {
     @RequestMapping(value = "/setMemberPrice/{userId}/{orderId}/{ip}/{memberNo}", produces = {"application/text;charset=UTF-8"})
     public String setMemberPrice(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip, @PathVariable String memberNo) {
         logger.info("###REQUEST### MemberController setMemberPrice userId={}  orderId={} ip={} memberNo={}", userId, orderId, ip, memberNo);
-        String s = memberService.setMemberPrice(userId, orderId, memberNo);
-        logger.info("###RESPONSE### MemberController setMemberPrice response={}", s);
-        return s;
+        String result = memberService.setMemberPrice(userId, orderId, memberNo);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        logger.info("###RESPONSE### MemberController setMemberPrice response={}", result);
+        return result;
     }
 
     /**
@@ -51,6 +53,7 @@ public class DataMemberController {
     public String setMemberPrice3(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### MemberController setMemberPrice3 userId={}  orderId={} ip={}", userId, orderId, ip);
         String result = memberService.revertMemberPrice(userId, orderId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### MemberController setMemberPrice3 response={}", result);
         return result;
     }
@@ -68,6 +71,7 @@ public class DataMemberController {
     public String setMemberPrice2(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### MemberController setMemberPrice2 userId={}  orderId={} ip={}", userId, orderId, ip);
         String result = memberService.revertMemberPrice2(userId, orderId, ip);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### MemberController setMemberPrice2 response={}", result);
         return result;
     }
