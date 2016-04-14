@@ -159,33 +159,38 @@ public class DishOpServiceImpl implements DishService {
     @Override
     @Transactional
     public String updateCj(String orderId, String userId) {
+        LOGGER.info("###updateCj orderId={} userId={}###", orderId, userId);
         ResponseData responseData = new ResponseData();
-        String dishId = "826ffa67-4a32-4ad0-b4ab-85694cab1db4";
-        String orderPrice = dishMapper.getPriceByDishId(dishId);
-        String dishUnit = dishMapper.getUnitByDishId(dishId);
-        if (null == dishUnit || "".equals(dishUnit)) {
-            return JSON.toJSONString(responseData);
-        }
-        String custnum = orderOpMapper.getCustnumByOrderId(orderId);
-        String tmpDishId = orderOpMapper.getDishIdByOrDiId(orderId, dishId);
-        float dishNum = orderOpMapper.getDishNumByOrDiId(orderId, dishId);
-        int detailCount = orderOpMapper.countByOrderId(orderId);
-        if (detailCount < 0) {
-            return JSON.toJSONString(responseData);
-        }
-        String orderStatus = orderOpMapper.getStatusByOrderId(orderId);
-        if (!"0".equals(orderStatus)) {
-            return JSON.toJSONString(responseData);
-        }
-        if (null == tmpDishId || "".equals(tmpDishId.trim())) {
-            if (custnum == (Math.round(dishNum) + "")) {
+        try {
+            String dishId = "826ffa67-4a32-4ad0-b4ab-85694cab1db4";
+            String orderPrice = dishMapper.getPriceByDishId(dishId);
+            String dishUnit = dishMapper.getUnitByDishId(dishId);
+            if (null == dishUnit || "".equals(dishUnit)) {
                 return JSON.toJSONString(responseData);
             }
+            String custnum = orderOpMapper.getCustnumByOrderId(orderId);
+            String tmpDishId = orderOpMapper.getDishIdByOrDiId(orderId, dishId);
+            float dishNum = orderOpMapper.getDishNumByOrDiId(orderId, dishId);
+            int detailCount = orderOpMapper.countByOrderId(orderId);
+            if (detailCount < 0) {
+                return JSON.toJSONString(responseData);
+            }
+            String orderStatus = orderOpMapper.getStatusByOrderId(orderId);
+            if (!"0".equals(orderStatus)) {
+                return JSON.toJSONString(responseData);
+            }
+            if (null == tmpDishId || "".equals(tmpDishId.trim())) {
+                if (custnum == (Math.round(dishNum) + "")) {
+                    return JSON.toJSONString(responseData);
+                }
+            }
+            if (null == tmpDishId || "".equals(tmpDishId.trim())) {
+                orderOpMapper.saveOrderDetail(orderId, custnum, userId, orderPrice, dishUnit);
+            }
+            orderOpService.pCaleTableAmount(userId, orderId);
+        } catch (Exception e) {
+            LOGGER.error("###updateCj orderId={} userId={} error={}###", orderId, userId, e);
         }
-        if (null == tmpDishId || "".equals(tmpDishId.trim())) {
-            orderOpMapper.saveOrderDetail(orderId, custnum, userId, orderPrice, dishUnit);
-        }
-        orderOpService.pCaleTableAmount(userId, orderId);
         return JSON.toJSONString(responseData);
     }
 }
