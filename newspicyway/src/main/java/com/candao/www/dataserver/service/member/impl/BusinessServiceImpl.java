@@ -5,6 +5,8 @@ import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
 import com.candao.www.dataserver.mapper.*;
+import com.candao.www.dataserver.model.ResponseData;
+import com.candao.www.dataserver.service.dish.DishService;
 import com.candao.www.dataserver.service.member.BusinessService;
 import com.candao.www.dataserver.service.member.MemberService;
 import com.candao.www.dataserver.service.order.OrderOpService;
@@ -48,11 +50,12 @@ public class BusinessServiceImpl implements BusinessService {
     private TableMapper tableMapper;
     @Autowired
     private OperationLogMapper operationLogMapper;
-
     @Autowired
     private MemberService memberService;
     @Autowired
     private OrderOpService orderOpService;
+    @Autowired
+    private DishService dishService;
 
     @Override
     public String getServerTableList(String userId, String orderId) {
@@ -216,7 +219,7 @@ public class BusinessServiceImpl implements BusinessService {
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;
         clearMachineMapper.insert(today, userId);
         settlementDetailMapper.setClear(today, userId);
-        tellerCashMapper.updateStatus(today, ip, userId);
+        tellerCashMapper.updateStatus(today, ip);
 
         // 餐具
         int tableware = 0;
@@ -314,10 +317,10 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public String checkTellerCash(String ip, String userId) {
+    public String checkTellerCash(String ip) {
         Date workDate = WorkDateUtil.getWorkDate1();
         String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
-        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip, userId);
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip);
         if (null == todayInfo || todayInfo.isEmpty()) {
             return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"\"}";
         }
@@ -328,7 +331,7 @@ public class BusinessServiceImpl implements BusinessService {
     public String inputTellerCash(String userId, String ip, float cashAmount) {
         Date workDate = WorkDateUtil.getWorkDate1();
         String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
-        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip, userId);
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip);
         if (null == todayInfo || todayInfo.isEmpty()) {
             Map<String, Object> param = new HashMap<>();
             param.put("username", userId);
@@ -361,6 +364,20 @@ public class BusinessServiceImpl implements BusinessService {
     public String getOrderSequence(String tableNo) {
         String sequence = operationLogMapper.selectMaxSequence(tableNo);
         return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"" + sequence + "\"}";
+    }
+
+    @Override
+    public String getServerTableInfo(String tableNo, String userId) {
+        ResponseData responseData = new ResponseData();
+        String orderId = tableMapper.getOrderIdByTableNo(tableNo);
+        dishService.updateCj(orderId, userId);
+        if (null == orderId || "".equals(orderId)) {
+            responseData.setData("0");
+            return JSON.toJSONString(responseData);
+        } else {
+            orderOpService.pCaleTableAmount(userId, orderId);
+            return JSON.toJSONString(orderOpService.getInfoByOrderId(orderId));
+        }
     }
 
     @Override

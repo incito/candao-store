@@ -127,7 +127,7 @@ public class BusinessController {
         logger.info("###REQUEST### BusinessController InputTellerCash userId={} ip={} cachAmount={} callType={}", userId, ip, cachAmount, callType);
         String result;
         if (callType == null || callType == 0) {
-            result = businessService.checkTellerCash(ip, userId);
+            result = businessService.checkTellerCash(ip);
         } else {
             result = businessService.inputTellerCash(userId, ip, cachAmount);
         }
@@ -181,9 +181,18 @@ public class BusinessController {
         return result;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/GetServerTableInfo/{tableNo}/{userId}/", produces = {"application/text;charset=UTF-8"})
+    public String getServerTableInfo(@PathVariable String tableNo, @PathVariable String userId) {
+        logger.info("###REQUEST### BusinessController getServerTableInfo tableNo={} userId={}", tableNo, userId);
+        String result = businessService.getServerTableInfo(tableNo, userId);
+        logger.info("###RESPONSE### BusinessController getServerTableInfo response={}", result);
+        return result;
+    }
+
     public static void main(String[] args) {
-        String str = "/werwer/werwer/ /werwer";
-        String[] a = StringUtils.tokenizeToStringArray(str, "/", false, true);
+        String str= "/werwer/werwer/ /werwer";
+        String[] a=StringUtils.tokenizeToStringArray(str,"/",false,true);
         System.out.println();
     }
 }
