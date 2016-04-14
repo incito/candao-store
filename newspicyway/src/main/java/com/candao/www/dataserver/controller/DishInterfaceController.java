@@ -1,6 +1,8 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.dish.DishService;
+import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,37 +21,49 @@ public class DishInterfaceController {
     @RequestMapping(value = "/getFoodStatus/{dishId}/{dishUnit}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getFoodStatus(@PathVariable("dishId") String dishId, @PathVariable("dishUnit") String dishUnit) {
-        return dishService.getFoodStatus(dishId, dishUnit);
+        String result = dishService.getFoodStatus(dishId, dishUnit);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/getAllWmFood/{userId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getAllWmFood(@PathVariable("userId") String userId) {
-        return dishService.getAllWmFood(userId);
+        String result = dishService.getAllWmFood(userId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/getCJFood/{userId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getCJFood(@PathVariable("userId") String userId) {
-        return dishService.getCJFood(userId);
+        String result = dishService.getCJFood(userId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/getGroupDetail/{dishId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getGroupDetail(@PathVariable("dishId") String dishId) {
-        return dishService.getGroupDetail(dishId);
+        String result = dishService.getGroupDetail(dishId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/getFavorale/{userId}/{orderId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getFavorable(@PathVariable("userId") String userId, @PathVariable("orderId") String orderId) {
-        return dishService.getFavorable(userId, orderId);
+        String result = dishService.getFavorable(userId, orderId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/getBackDishInfo/{orderId}/{dishId}/{dishUnit}/{tableNo}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getBackDishInfo(@PathVariable("orderId") String orderId, @PathVariable("dishId") String dishId,
                                   @PathVariable("dishUnit") String dishUnit, @PathVariable("tableNo") String tableNo) {
-        return dishService.getBackDishInfo(orderId, dishId, dishUnit, tableNo);
+        String result = dishService.getBackDishInfo(orderId, dishId, dishUnit, tableNo);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 }

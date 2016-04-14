@@ -8,6 +8,7 @@ import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.dish.DishService;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.DataServerJsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,7 @@ public class DishOpServiceImpl implements DishService {
         try {
             dishMapper.updateDishPY();
             List<Map> mapList = dishMapper.getAllWmFood();
-            responseJsonData.setOrderJson(mapList);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取全部菜品异常");
@@ -72,7 +73,7 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getCJFood userId={}###", userId);
         try {
             List<Map> mapList = dishMapper.getCJFood();
-            responseJsonData.setOrderJson(mapList);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取全部菜品异常");
@@ -87,7 +88,7 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getGroupDetail dishId={},error={}###", dishId);
         try {
             List<Map> mapList = dishMapper.getGroupDetail(dishId);
-            responseJsonData.setOrderJson(mapList);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取套餐明细异常");
@@ -101,8 +102,8 @@ public class DishOpServiceImpl implements DishService {
         ResponseJsonData responseJsonData = new ResponseJsonData();
         Long ymNum;
         Map<Object, Object> orderJson = new HashMap<>();
-        Map listJson;
-        Map doubleJson;
+        Map listJson = new HashMap<>();
+        Map doubleJson = new HashMap<>();
         try {
             LOGGER.info("###getFavorable userId={},orderId={}###", userId, orderId);
             Double djDishNum = dishMapper.getDjDishNum(orderId);
@@ -123,9 +124,9 @@ public class DishOpServiceImpl implements DishService {
             }
             listJson = dishMapper.getYGListJson(orderId);
             doubleJson = dishMapper.getYGDoubleJson(orderId);
-            responseJsonData.setOrderJson(orderJson);
-            responseJsonData.setListJson(listJson);
-            responseJsonData.setDoubleJson(doubleJson);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
+            responseJsonData.setListJson(DataServerJsonFormat.jsonFormat(listJson, "|"));
+            responseJsonData.setDoubleJson(DataServerJsonFormat.jsonFormat(doubleJson, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("优惠自动使用接口(惠新，蓝港，辣倒兔临时方案)异常");
@@ -146,7 +147,7 @@ public class DishOpServiceImpl implements DishService {
             if (mapList.isEmpty()) {
                 responseData.setData("0");
             } else {
-                return JSON.toJSONString(mapList);
+                return JSON.toJSONString(DataServerJsonFormat.jsonFormat(mapList));
             }
         } catch (Exception e) {
             responseData.setData("0");

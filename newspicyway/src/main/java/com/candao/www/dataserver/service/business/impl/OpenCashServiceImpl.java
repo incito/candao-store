@@ -52,6 +52,7 @@ public class OpenCashServiceImpl implements OpenCashService {
                 e.printStackTrace();
             }
         }
+//        return JSON.toJSONString(responseData);
         return "1";
     }
 
@@ -66,7 +67,9 @@ public class OpenCashServiceImpl implements OpenCashService {
             }
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
-            responseJsonData.setOrderJson(orderJsonList);
+            if (!orderJsonList.isEmpty()) {
+                responseJsonData.setOrderJson(orderJsonList);
+            }
             responseJsonData.setJsJson(jsJsonList);
         } catch (Exception e) {
             responseJsonData.setData("0");

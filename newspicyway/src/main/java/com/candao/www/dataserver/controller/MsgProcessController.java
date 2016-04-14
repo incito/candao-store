@@ -1,6 +1,8 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
+import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +22,9 @@ public class MsgProcessController {
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg) {
-        return msgForwardService.broadCastMsg(userId, msgId, msg);
+        String result = msgForwardService.broadCastMsg(userId, msgId, msg);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/broadcastok/{client}/{msgId}/", produces = {"application/json;charset=UTF-8"})

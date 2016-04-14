@@ -13,11 +13,11 @@ public class ResponseJsonData implements Serializable {
     @JSONField(name = "Info")
     private String info = "";
     @JSONField(name = "OrderJson")
-    private Object orderJson = "{|Data|:[]}";
+    private Object orderJson;
     @JSONField(name = "ListJson")
-    private Object listJson = "{|Data|:[]}";
+    private Object listJson;
     @JSONField(name = "DoubleJson")
-    private Object doubleJson = "{|Data|:[]}";
+    private Object doubleJson;
     @JSONField(name = "JSJson")
     private Object jsJson;
     @JSONField(name = "workdate")

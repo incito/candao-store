@@ -7,6 +7,7 @@ import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,12 +42,12 @@ public class OrderOpServiceImpl implements OrderOpService {
                     break;
             }
             int zdAmount = orderMapper.getZdAmountByOrderId(orderId);
-            Object orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
-            Object listJson = orderMapper.getListJson(orderId);
-            Object jsJson = orderMapper.getJsJson(orderId);
-            responseJsonData.setOrderJson(orderJson);
-            responseJsonData.setListJson(listJson);
-            responseJsonData.setJsJson(jsJson);
+            List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
+            List<Map> listJson = orderMapper.getListJson(orderId);
+            List<Map> jsJson = orderMapper.getJsJson(orderId);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
+            responseJsonData.setListJson(DataServerJsonFormat.jsonFormat(listJson, "|"));
+            responseJsonData.setJsJson(DataServerJsonFormat.jsonFormat(jsJson, "&quot"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询异常");
@@ -66,7 +67,8 @@ public class OrderOpServiceImpl implements OrderOpService {
             responseData.setInfo("结算前计算帐单金额异常");
             LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e);
         }
-        return JSON.toJSONString(responseData);
+//        return JSON.toJSONString(responseData);
+        return "1";
     }
 
     @Override
@@ -89,7 +91,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         try {
             LOGGER.info("###getMemberSaleInfo userId={}, orderId={}###", aUserId, orderId);
             List<Map> resultMapList = orderMapper.getMemberSaleInfo(orderId);
-            responseJsonData.setOrderJson(resultMapList);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(resultMapList, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("更新外卖账单异常");
@@ -109,7 +111,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                 responseData.setData("0");
                 return JSON.toJSONString(responseData);
             } else {
-                return JSON.toJSONString(resultMapList);
+                return JSON.toJSONString(DataServerJsonFormat.jsonFormat(resultMapList));
             }
         } catch (Exception e) {
             responseData.setData("0");
@@ -125,7 +127,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             LOGGER.info("###getAllOrderInfo2 userId={}###", aUserId);
             String workDate = WorkDateUtil.getWorkDate();
             List<Map> orderJson = orderMapper.getAllOrderInfo2(workDate);
-            responseJsonData.setOrderJson(orderJson);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于帐单查询）异常");
@@ -141,7 +143,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             LOGGER.info("###getAllGZDW userId={}###", aUserId);
             orderMapper.updateParternerPY();
             List<Map> orderJson = orderMapper.getAllGZDW();
-            responseJsonData.setOrderJson(orderJson);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于挂帐单查询）异常");
@@ -172,7 +174,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         try {
             LOGGER.info("###getSettlementDetailBatch orderId={}###", orderId);
             List<Map> orderJson = orderMapper.getSettlementDetailBatch(orderId);
-            responseJsonData.setOrderJson(orderJson);
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询结算信息异常");

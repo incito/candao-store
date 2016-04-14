@@ -1,6 +1,8 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.business.OpenCashService;
+import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +21,16 @@ public class StoreInterfaceController {
     @RequestMapping(value = "/OpenCash/{ip}", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String openCash(@PathVariable("ip") String ipAddress) {
-        return openCashService.openCash(ipAddress);
+        String result = openCashService.openCash(ipAddress);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = {"/getClearMachineData/{aUserid}/{jsorder}/{posid}/", "/getClearMachineData/{aUserid}/{posid}/"}, produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getClearMachineData(@PathVariable("aUserid") String aUserId, @PathVariable("jsorder") String jsOrder, @PathVariable("posid") String posId) {
-        return openCashService.getClearMachineData(aUserId, jsOrder, posId);
+        String result = openCashService.getClearMachineData(aUserId, jsOrder, posId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 }
