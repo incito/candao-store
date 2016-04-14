@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import com.candao.www.webroom.service.ItemAnalysisChartsService;
  */
 @Service
 public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ItemAnalysisChartsServiceImpl.class);
 
 	@Autowired
 	private TItemAnalysisChartsDao titemAnalysisChartsDao;
@@ -169,7 +173,13 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 		//第一步：获取所有的订单详情信息以及订单人数信息
 		List<Map<String,Object>> orderList = titemAnalysisChartsDao.getAllOrderInfo(params);
 		
-		List<Map<String, Object>> custnumMapList = titemAnalysisChartsDao.getAllOrderCustnum(params);
+		//根据月、日查询客人数
+		List<Map<String, Object>> custnumMapList = new ArrayList<Map<String, Object>>();
+		if(String.valueOf(params.get("dateType")).equals("0")){//天
+			custnumMapList = titemAnalysisChartsDao.getAllOrderCustnum(params);
+		}else if(String.valueOf(params.get("dateType")).equals("1")){//月
+			custnumMapList = titemAnalysisChartsDao.getAllOrderCustnumOfMonth(params);
+		}
 		
 		if(orderList==null||orderList.size()<=0){
 			return returnList;
@@ -250,6 +260,7 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 		try{
 			return Integer.parseInt(value);
 		}catch(Exception ex){
+			logger.error("-->",ex);
 			return 0;
 		}
 	}
@@ -258,6 +269,7 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 		try{
 			return Double.parseDouble(value);
 		}catch(Exception ex){
+			logger.error("-->",ex);
 			return 0.0;
 		}
 	}
