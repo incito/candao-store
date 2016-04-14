@@ -239,6 +239,13 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 	return subString3(src, num, res);
 }
 
+/**
+ * 按需求宽度递归，每一行放入rse中
+ * @param src
+ * @param num
+ * @param res
+ * @return
+ */
 private static List<String> subString3(String src, int num, List<String> res) {
 	if (res == null)
 		return null;
