@@ -219,7 +219,7 @@ public class BusinessServiceImpl implements BusinessService {
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;
         clearMachineMapper.insert(today, userId);
         settlementDetailMapper.setClear(today, userId);
-        tellerCashMapper.updateStatus(today, ip,userId);
+        tellerCashMapper.updateStatus(today, ip, userId);
 
         // 餐具
         int tableware = 0;
@@ -317,10 +317,10 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public String checkTellerCash(String ip,String userId) {
+    public String checkTellerCash(String ip, String userId) {
         Date workDate = WorkDateUtil.getWorkDate1();
         String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
-        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip,userId);
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip, userId);
         if (null == todayInfo || todayInfo.isEmpty()) {
             return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"\"}";
         }
@@ -331,7 +331,7 @@ public class BusinessServiceImpl implements BusinessService {
     public String inputTellerCash(String userId, String ip, float cashAmount) {
         Date workDate = WorkDateUtil.getWorkDate1();
         String workDateStr = DateUtils.toString(workDate, "yyyy-MM-dd");
-        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip,userId);
+        Map<String, Object> todayInfo = tellerCashMapper.selectTodayInfo(workDateStr, ip, userId);
         if (null == todayInfo || todayInfo.isEmpty()) {
             Map<String, Object> param = new HashMap<>();
             param.put("username", userId);
@@ -386,7 +386,7 @@ public class BusinessServiceImpl implements BusinessService {
         String tableJson = getServerTableInfo2(tableNo, userId);
         //获取单体信息
         String orderId = tableMapper.selectOrderId(tableNo);
-        String tableListJson = getServerTableList2(tableNo, userId);
+        String tableListJson = getServerTableList2(orderId, userId);
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
     }
 
@@ -395,7 +395,7 @@ public class BusinessServiceImpl implements BusinessService {
         String orderId = tableMapper.selectOrderId(tableNo);
         //还原会员价
         memberService.revertMemberPrice(userId, orderId);
-        // TODO: 2016/4/13  call UpdateCJ()
+        dishService.updateCj(orderId, userId);
         if (StringUtil.isEmpty(orderId)) {
             return "{\"Data\":\"0\"}";
         }
