@@ -2,6 +2,7 @@ package com.candao.www.dataserver.mapper;
 
 import com.candao.www.dataserver.entity.OpenLog;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -13,4 +14,5 @@ public interface OpenLogMapper {
     int insert(OpenLog log);
     int truncate();
     void procEndWork(Map<String,Object> param);
+    Date getOpenDate();
 }
