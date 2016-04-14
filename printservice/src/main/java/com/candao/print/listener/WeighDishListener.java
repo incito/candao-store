@@ -114,6 +114,11 @@ public class WeighDishListener {
 			
 			
 			writer.write("     " + "\r\n");
+			
+			for (PrintDish it : printDishList) {
+				it.setDishName(StringUtils.split2(it.getDishName(), "#"));
+				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
+			}
 
 			for (PrintDish printDish : printDishList) {
 				

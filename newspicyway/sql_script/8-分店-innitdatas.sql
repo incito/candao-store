@@ -583,6 +583,48 @@ INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) V
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
 
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('activity000','0','赠菜','0','1','ACTIVITY','手工优免活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity001','1','折扣','1','1','ACTIVITY','手工优免活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity002','2','减免','2','1','ACTIVITY','手工优免活动方式');
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('payway000','0','微信支付','0','1','PAYWAYTYPE','在线支付优免支付类型');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('payway001','1','支付宝','1','1','PAYWAYTYPE','在线支付优免支付类型');
+
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('cooperationNnit000','0','折扣','0','1','cooperationNnit','合作单位活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('cooperationNnit001','1','减免','1','1','cooperationNnit','合作单位活动方式');
+INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('cooperationNnit002','2','无优免','2','1','cooperationNnit','合作单位活动方式');
+
+INSERT INTO `t_p_preferential_type_dict` VALUES ('07', '手工优惠', null, '0', null);
+INSERT INTO `t_p_preferential_type_dict` VALUES ('08', '合作单位', null, '0', null);
+INSERT INTO `t_p_preferential_type_dict` VALUES ('09', '在线支付优免', null, '0', null);
+
+INSERT INTO `t_b_function` VALUES ('2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', '进销存', '0315', '1', 2, '575dcbd4-28ce-4f53-b01a-e7e96be38ed8', 0, NULL, NULL, NULL, '2016-1-4 17:32:36', NULL, '03', '所有门店', 38);
+INSERT INTO `t_b_function` VALUES ('9dfab887-b2c2-11e5-8ac5-00ff59e0a7b2', '基本信息管理', '031501', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 17:33:30', NULL, '03', '所有门店', 37);
+INSERT INTO `t_b_function` VALUES ('ea4a1d29-b2c5-11e5-8ac5-00ff59e0a7b2', '入库管理', '031502', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 17:34:40', NULL, '03', '所有门店', 63);
+INSERT INTO `t_b_function` VALUES ('10781aad-b2c6-11e5-8ac5-00ff59e0a7b2', '出库管理', '031503', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 17:35:43', NULL, '03', '所有门店', 64);
+INSERT INTO `t_b_function` VALUES ('2c59880e-b2c6-11e5-8ac5-00ff59e0a7b2', '库存一览', '031504', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 17:36:36', NULL, '03', '所有门店', 65);
+INSERT INTO `t_b_function` VALUES ('47d8258a-b2c6-11e5-8ac5-00ff59e0a7b2', '库存盘点', '031505', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 17:37:15', NULL, '03', '所有门店', 66);
+INSERT INTO `t_b_function` VALUES ('5f5f8848-b2c6-11e5-8ac5-00ff59e0a7b2', '销售管理', '031506', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 17:39:04', NULL, '03', '所有门店', 67);
+INSERT INTO `t_b_function` VALUES ('2944211e-b2da-11e5-8ac5-00ff59e0a7b2', '原料出入库明细表', '031507', '1', 3, '2d4f4a66-b2c2-11e5-8ac5-00ff59e0a7b2', 1, NULL, NULL, NULL, '2016-1-4 19:59:46', NULL, '03', '所有门店', 68);
+
+INSERT INTO `t_b_url` VALUES ('869b858a-b2db-11e5-8ac5-00ff59e0a7b2', '报表查看_原料出入库明细表', 'psi/chart/main', NULL, NULL, '2016-1-4 20:09:07', NULL);
+INSERT INTO `t_b_url` VALUES ('c00e92df-b2da-11e5-8ac5-00ff59e0a7b2', '进销存_入库管理', 'psi/basic/inStorage', NULL, NULL, '2016-1-4 20:04:45', NULL);
+INSERT INTO `t_b_url` VALUES ('24cc66a9-b2db-11e5-8ac5-00ff59e0a7b2', '进销存_出库管理', 'psi/basic/outStorage', NULL, NULL, '2016-1-4 20:06:23', NULL);
+INSERT INTO `t_b_url` VALUES ('fd01115f-b2da-11e5-8ac5-00ff59e0a7b2', '进销存_基本信息管理', 'psi/basic/container', NULL, NULL, '2016-1-4 20:05:49', NULL);
+INSERT INTO `t_b_url` VALUES ('6f4890da-b2db-11e5-8ac5-00ff59e0a7b2', '进销存_库存一览', 'psi/basic/inventory', NULL, NULL, '2016-1-4 20:06:48', NULL);
+INSERT INTO `t_b_url` VALUES ('669c400c-b2db-11e5-8ac5-00ff59e0a7b2', '进销存_库存盘点', 'psi/basic/inventoryBill', NULL, NULL, '2016-1-4 20:07:19', NULL);
+INSERT INTO `t_b_url` VALUES ('5fd495e0-b2db-11e5-8ac5-00ff59e0a7b2', '进销存_销售管理', 'psi/basic/order', NULL, NULL, '2016-1-4 20:08:05', NULL);
+
+
+INSERT INTO `t_b_function_url` VALUES ('54aa4c0d-b2dc-11e5-8ac5-00ff59e0a7b2', 'ea4a1d29-b2c5-11e5-8ac5-00ff59e0a7b2', 'c00e92df-b2da-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_function_url` VALUES ('55f91646-b358-11e5-b2d9-002522370b01', '9dfab887-b2c2-11e5-8ac5-00ff59e0a7b2', 'fd01115f-b2da-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_function_url` VALUES ('601f9a5c-b2dc-11e5-8ac5-00ff59e0a7b2', '10781aad-b2c6-11e5-8ac5-00ff59e0a7b2', '24cc66a9-b2db-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_function_url` VALUES ('663ae26b-b2dc-11e5-8ac5-00ff59e0a7b2', '2c59880e-b2c6-11e5-8ac5-00ff59e0a7b2', '6f4890da-b2db-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_function_url` VALUES ('6e8012b2-b2dc-11e5-8ac5-00ff59e0a7b2', '5f5f8848-b2c6-11e5-8ac5-00ff59e0a7b2', '5fd495e0-b2db-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_function_url` VALUES ('74673403-b2dc-11e5-8ac5-00ff59e0a7b2', '2944211e-b2da-11e5-8ac5-00ff59e0a7b2', '869b858a-b2db-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_function_url` VALUES ('7a723946-b2dc-11e5-8ac5-00ff59e0a7b2', '47d8258a-b2c6-11e5-8ac5-00ff59e0a7b2', '669c400c-b2db-11e5-8ac5-00ff59e0a7b2');
+
 commit;
 -- 
 -- Enable foreign keys

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.BranchBusinessDao">
+
+    <resultMap id="branch_business_result_map" type="com.candao.www.data.model.TBranchBusinessInfo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="branchName" property="branchName" jdbcType="VARCHAR" />
+		<result column="jdeNo" property="jdeNo" jdbcType="VARCHAR" />
+		<result column="branchId" property="branchId" jdbcType="VARCHAR" />
+		<result column="date" property="date" jdbcType="VARCHAR" />
+		<result column="shouldamount" property="shouldamount" jdbcType="FLOAT" />
+		<result column="paidinamount" property="paidinamount" jdbcType="FLOAT" />
+		<result column="discountamount" property="discountamount" jdbcType="FLOAT" />
+		<result column="cash" property="cash" jdbcType="FLOAT" />
+		<result column="credit" property="credit" jdbcType="FLOAT" />
+		<result column="card" property="card" jdbcType="FLOAT" />
+		<result column="othercard" property="othercard" jdbcType="FLOAT" />
+		<result column="weixin" property="weixin" jdbcType="FLOAT" />
+		<result column="zhifubao" property="zhifubao" jdbcType="FLOAT" />
+		<result column="merbervaluenet" property="merbervaluenet" jdbcType="FLOAT" />
+		<result column="mebervalueadd" property="mebervalueadd" jdbcType="FLOAT" />
+		<result column="integralconsum" property="integralconsum" jdbcType="FLOAT" />
+		<result column="meberTicket" property="meberTicket" jdbcType="FLOAT" />
+	</resultMap>
+	
+	<!-- 查询指定门店的所有数据信息-->
+	<select id="getBuinessInfos" parameterType="java.util.Map"  resultMap="branch_business_result_map">
+	    select date,type,jdeNo,branchId,branchName,sum(shouldamount) as shouldamount,sum(paidinamount) as paidinamount,sum(discountamount) as discountamount,sum(card) as card,sum(othercard) as othercard,sum(weixin) as weixin,sum(zhifubao) as zhifubao,sum(cash) as cash,sum(credit) as credit,sum(merbervaluenet) as merbervaluenet,sum(mebervalueadd) as mebervalueadd,sum(meberTicket) as meberTicket,sum(integralconsum) as integralconsum,sum(meberTicket) as meberTicket from t_branch_business_info where date  &gt;= #{beginTime} and date  &lt;= #{endTime} and branchId in
+	    <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+	      #{item}
+	    </foreach>
+	    <if test="type==-1">
+	      and  type in (0,1)
+	    </if>
+	    <if test="type!=-1">
+	      and  type =#{type}
+	    </if>
+	    group by branchId order by branchId
+	</select>
+	
+	<!-- 查询指定门店的所有数据信息-->
+	<select id="getBuinessInfosByDay" parameterType="java.util.Map"  resultMap="branch_business_result_map">
+	    select id,date,type,jdeNo,branchId,branchName,sum(shouldamount) as shouldamount,sum(paidinamount) as paidinamount,sum(discountamount) as discountamount,sum(card) as card,sum(othercard) as othercard,sum(weixin) as weixin,sum(zhifubao) as zhifubao,sum(cash) as cash,sum(credit) as credit,sum(merbervaluenet) as merbervaluenet,sum(mebervalueadd) as mebervalueadd,sum(meberTicket) as meberTicket,sum(integralconsum) as integralconsum,sum(meberTicket) as meberTicket from t_branch_business_info where  date  &gt;= #{beginTime} and date  &lt;= #{endTime} and branchId in
+	    <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+	      #{item}
+	    </foreach>
+	     <if test="type==-1">
+	      and  type in (0,1)
+	    </if>
+	    <if test="type!=-1">
+	      and  type =#{type}
+	    </if>
+	    group by date,branchId order by date desc
+	</select>
+	
+	
+		
+	<!-- 查询指定门店的所有数据信息-->
+	<select id="getBranchDayOrders" parameterType="java.util.Map"  resultType="java.util.Map">
+	     select too.orderid as orderId,too.begintime as beginTime,too.endtime as endTime,SUM(tod.dishnum*tod.orignalprice) as shouldamount ,
+	    (select SUM(tsd.payamount)from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('0','1','5','8','17','18','13')) 
+        -(select IFNULL( SUM(tom.inflated),0) from t_order_member tom where tom.orderid = too.orderid) as paidinamount,
+    
+		 SUM(tod.dishnum*tod.orignalprice)-(
+                                         (select SUM(tsd.payamount)from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('0','1','5','8','17','18','13')) 
+										 -(select IFNULL( SUM(tom.inflated),0) from t_order_member tom where tom.orderid = too.orderid)
+         ) as discountamount,
+		(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('0')) as cash,
+		(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('1') and tsd.membercardno in('1')) as card,
+    	(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('1') and tsd.membercardno in('0')) as othercard,
+    	(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('17')) as weixin,
+    	(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('18')) as zhifubao,
+		(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('5','13')) as credit,
+		(select IFNULL(SUM(tom.netvalue),0.00) from t_order_member tom where too.orderid = tom.orderid) as merbervaluenet,
+		(select IFNULL(SUM(tom.Inflated),0.00) from t_order_member tom where too.orderid = tom.orderid) as mebervalueadd,
+		(select SUM(tsd.payamount) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('11')) as integralconsum,
+		(select IFNULL(SUM(tsd.payamount),0.00) from t_settlement_detail tsd where too.orderid=tsd.orderid and tsd.payway in('12')) as meberTicket
+		from t_order too,t_order_detail tod,t_dish dd
+		where
+		tod.begintime &gt;= #{beginTime} and tod.begintime  &lt;= #{endTime}
+		and too.branchid=#{branchId}
+		and too.orderstatus='3'
+		and too.orderid = tod.orderid
+		and tod.dishid = dd.dishid
+		and dd.dishtype not in(2)
+		 <if test="type==-1">
+	      and  too.shiftid in (0,1)
+	    </if>
+	    <if test="type!=-1">
+	      and  too.shiftid=#{type}
+	    </if>
+        GROUP BY tod.orderid order by tod.orderid desc
+	</select>
+</mapper>

@@ -3,6 +3,7 @@ package com.candao.print.listener;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.jms.Destination;
@@ -106,20 +107,32 @@ public class CustDishListener {
 			socketOut.write(PrinterConstant.getFd8Font());
 			writer.write("     " + "\r\n");
 
-			for (PrintDish printDish : printDishList) {
-				String dishName2 = StringUtils.bSubstring2(
-						StringUtils.BtoQ(printDish.getDishName()), 12);
-				
-				String dishNum2 = StringUtils.bSubstring2(StringUtils.BtoQ(
-						printDish.getDishNum()), 4);
-				String dishPrice2 = StringUtils.bSubstring2(printDish
-						.getDishPrice() == null ? "" : StringUtils.BtoQ(printDish.getDishPrice()
-						.toString()), 5);
-				writer.write(dishName2);
-				writer.write( dishNum2 );
-				writer.write( dishPrice2 + "\r\n");
+//			for (PrintDish printDish : printDishList) {
+//				String dishName2 = StringUtils.bSubstring2(
+//						StringUtils.BtoQ(printDish.getDishName()), 12);
+//				
+//				String dishNum2 = StringUtils.bSubstring2(StringUtils.BtoQ(
+//						printDish.getDishNum()), 4);
+//				String dishPrice2 = StringUtils.bSubstring2(printDish
+//						.getDishPrice() == null ? "" : StringUtils.BtoQ(printDish.getDishPrice()
+//						.toString()), 5);
+//				writer.write(dishName2);
+//				writer.write( dishNum2 );
+//				writer.write( dishPrice2 + "\r\n");
+//				writer.write("     " + "\r\n");
+//			 }
+			
+			for (PrintDish it : printDishList) {
+				it.setDishName(StringUtils.split3(it.getDishName(), "#"));
+				it.setDishUnit(StringUtils.split3(it.getDishUnit(), "#"));
+			}
+			
+			String[] text = getPrintText(printDishList, 11, 3, 5);
+			
+			for (int i = 0; i < text.length; i++) {
+				writer.write(text[i]+"\r\n");
 				writer.write("     " + "\r\n");
-			 }
+			}
 		
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
@@ -151,6 +164,33 @@ public class CustDishListener {
 		return null;
 		// }
 
+	}
+	
+	private String[] getPrintText(List<PrintDish> list, int num1, int num2, int num3) throws Exception {
+		List<String> res = new LinkedList<String>();
+		List<String> name = null;
+		List<String> price = null;
+		String dishnum = null;
+
+		int rows = 0;
+		StringBuffer buffer = new StringBuffer();
+		for (PrintDish it : list) {
+			name = StringUtils.subString2(StringUtils.BtoQ(it.getDishName()), num1);
+			price = StringUtils.subString2(StringUtils.BtoQ(it.getDishPrice() == null?"":it.getDishPrice().toString()), num3);
+			dishnum = StringUtils.bSubstring2(StringUtils.BtoQ(it.getDishNum()), num2);
+
+			rows = name.size() >price.size()?name.size():price.size() ;
+			for (int i = 0; i < rows; i++) {
+				String name2 = i + 1 > name.size() ? StringUtils.getStr(num1) : name.get(i);
+				String price2 = i + 1 > price.size() ? StringUtils.getStr(num3) : price.get(i);
+				String dishnum2 = i == 0 ? dishnum : StringUtils.getStr(num2);
+				buffer.setLength(0);
+				buffer.append(name2).append("  ").append(dishnum2).append("  ").append(price2);
+				res.add(buffer.toString());
+			}
+		}
+
+		return res.toArray(new String[res.size()]);
 	}
 
 	@Autowired

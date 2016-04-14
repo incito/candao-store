@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 雅座会员业务类
  * Created by lenovo on 2016/3/21.
  */
-@Service
+@Service("memberService")
 public class MemberServiceImpl implements MemberService {
     private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MemberServiceImpl.class);
     private Lock lock = new ReentrantLock();

@@ -108,6 +108,9 @@ margin:0px 15px;
 	text-align: center;
 	width:10%;
 	position: relative;
+	white-space:nowrap; 
+	overflow:hidden; 
+	text-overflow:ellipsis;
 	
 	
 } 
@@ -515,7 +518,7 @@ margin:0px 15px;
 }
 
 #dishes-combo-dialog .img-close{
-	top:-4%;
+	top:-2%;
 }
 
 #dishes-combo-dialog .modal-content{
@@ -1067,4 +1070,54 @@ text-align: center;
 }
 .panel-group .panel {
 	overflow: visible;
+}
+
+.test_triangle_border{
+    width:230px; 
+   position:relative; 
+   top:8px;
+   z-index:9999;
+}
+.test_triangle_border .popup{
+    width:230px;
+    background:#fff; 
+    padding:14px; 
+    color:#333;  
+    border-radius:4px;
+    position:absolute; 
+    top:8px; 
+    /*left:30px;*/
+    border:1px solid #c2c2c2;
+      box-shadow: rgba(0,0,0,.16) 0px 0px 10px;
+}
+.test_triangle_border .popup span{
+    display:block; 
+    width:0; 
+    height:0; 
+    border-width:0 10px 10px; 
+    border-style:solid; 
+    border-color:transparent transparent #c2c2c2; 
+    position:absolute; 
+    top:-10px; 
+    left:50%;/* 三角形居中显示 */
+    margin-left:-10px;/* 三角形居中显示 */
+}
+.test_triangle_border .popup em{
+    display:block; 
+    width:0; 
+    height:0; 
+    border-width:0 10px 10px; 
+    border-style:solid; 
+    border-color:transparent transparent #fff;
+    position:absolute; 
+    top:1px; 
+    left:-10px;
+}
+.test_triangle_border .tootilp-title {
+	font-size:14px;font-weight:bold;
+	ine-height:24px;
+}
+.test_triangle_border .tootilp-body {
+	font-size:12px;
+	line-height:24px;
 }
