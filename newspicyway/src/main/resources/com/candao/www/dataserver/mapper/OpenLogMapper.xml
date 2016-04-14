@@ -22,4 +22,7 @@
     <select id="procEndWork" statementType="CALLABLE" parameterType="java.util.HashMap">
         {call p_endwork(#{endfinish,mode=OUT,jdbcType=INTEGER})}
     </select>
+    <select id="getOpenDate" resultType="java.util.Date">
+        SELECT opendate FROM t_open_log LIMIT 0,1
+    </select>
 </mapper>

@@ -413,6 +413,11 @@ public class BusinessServiceImpl implements BusinessService {
         return JSON.toJSONString(orderStat);
     }
 
+    @Override
+    public Date getOpenDate() {
+        return openLogMapper.getOpenDate();
+    }
+
     /**
      * 获取班次号
      *

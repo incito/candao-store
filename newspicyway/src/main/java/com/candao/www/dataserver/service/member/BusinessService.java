@@ -1,5 +1,7 @@
 package com.candao.www.dataserver.service.member;
 
+import java.util.Date;
+
 /**
  * Created by lenovo on 2016/4/5.
  */
@@ -121,4 +123,6 @@ public interface BusinessService {
     String getServerTableInfo2(String tableNo, String userId);
 
     String getServerTableList2(String orderId, String userId);
+
+    Date getOpenDate();
 }
