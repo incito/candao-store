@@ -104,7 +104,7 @@ public class CustDishListener {
 					+ StringUtils.bSubstring2("数量", 4)
 					+ StringUtils.bSubstring2("单价", 5) + "\r\n");
 			writer.flush();//  
-			socketOut.write(PrinterConstant.getFd8Font());
+			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("     " + "\r\n");
 
 //			for (PrintDish printDish : printDishList) {
@@ -131,7 +131,6 @@ public class CustDishListener {
 			
 			for (int i = 0; i < text.length; i++) {
 				writer.write(text[i]+"\r\n");
-				writer.write("     " + "\r\n");
 			}
 		
 			writer.flush();//  
