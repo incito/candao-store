@@ -1,6 +1,10 @@
 package com.candao.www.dataserver.util;
 
+import org.springframework.util.StringUtils;
+
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 /**
@@ -90,8 +94,31 @@ public class StringUtil {
         }
     }
 
+
     public static void main(String[] args) {
-        String a = "{\"Data\":\"1\",\"Info\":\"现金金额\"}";
-        System.out.println(new String(a.getBytes(), GBK));
+        String requestURI = "//11/2/1/////";
+        String[] uris = requestURI.split("/", -1);
+        System.out.println(Arrays.toString(uris));
+//        int i = 0;
+//        int len = uris.length;
+//        if (uris[0].isEmpty()) {
+//            i++;
+//        }
+//        if(uris[uris.length-1].isEmpty()){
+//            len--;
+//        }
+//        StringBuilder newUri = new StringBuilder();
+//        for (; i < len; i++) {
+//            String uri = uris[i];
+//            if (uri.isEmpty()) {
+//                newUri.append("/ ");
+//            } else {
+//                newUri.append("/").append(uri);
+//            }
+//        }
+//        if(len<uris.length){
+//            newUri.append("/");
+//        }
+//        System.out.println(newUri.toString());
     }
 }

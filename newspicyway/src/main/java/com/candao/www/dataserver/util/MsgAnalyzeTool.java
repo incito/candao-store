@@ -49,6 +49,10 @@ public class MsgAnalyzeTool {
         return JSON.parseObject(msg, ReConnectData.class);
     }
 
+    public static LogCollectData analyzeToLogCoData(String msg) {
+        return JSON.parseObject(msg, LogCollectData.class);
+    }
+
     public static List<String> analyzeMsgForwardResp(String msg) {
         List<String> list = new ArrayList<>();
         JSONObject jsonObject = JSON.parseObject(msg).getJSONObject("data");

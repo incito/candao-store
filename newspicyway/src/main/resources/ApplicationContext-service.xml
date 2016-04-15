@@ -17,6 +17,7 @@
     <bean id="offlineMsgService" class="com.candao.www.dataserver.service.msghandler.impl.OfflineMsgServiceImpl"/>
     <bean id="reConnectService" class="com.candao.www.dataserver.service.device.impl.ReConnectServiceImpl"/>
     <bean id="msgForwardService" class="com.candao.www.dataserver.service.msghandler.impl.MsgForwardServiceImpl"/>
+    <bean id="logCollectService" class="com.candao.www.dataserver.service.log.LogCollectService"/>
     <bean id="msgProcessService" class="com.candao.www.dataserver.service.msghandler.impl.MsgProcessServiceImpl">
         <property name="msgHandlerMap">
             <map>
@@ -48,6 +49,11 @@
                 <entry key="#{msgConfig['MSG_ID.RECONNECT']}">
                     <list>
                         <ref bean="reConnectService"/>
+                    </list>
+                </entry>
+                <entry key="#{msgConfig['MSF_ID.LOG.COLLECT']}">
+                    <list>
+                        <ref bean="logCollectService"/>
                     </list>
                 </entry>
             </map>

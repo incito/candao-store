@@ -5,6 +5,7 @@ import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.ReConnectData;
+import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
@@ -36,6 +37,10 @@ public class ReConnectServiceImpl extends DeviceServiceImpl {
             target.put(reConnectData.getGroup(), new ArrayList<String>() {{
                 add(reConnectData.getId());
             }});
+            //登录需要ack
+            MsgForwardData msgForwardData = MsgForwardTran.getReconnectResp(JSON.toJSONString(new ResponseData()));
+            msgForwardData.setSerialNumber(serialNumber);
+            msgForwardService.forwardMsg(target, JSON.toJSONString(msgForwardData));
             for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(reConnectData.getGroup(), reConnectData.getId())) {
                 OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
                 MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));

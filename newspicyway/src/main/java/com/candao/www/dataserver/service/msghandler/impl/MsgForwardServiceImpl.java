@@ -18,7 +18,7 @@ import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgHandler;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
-import com.candao.www.utils.PropertiesUtil;
+import com.candao.www.dataserver.util.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,7 +142,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
 //            msgProcessMapper.saveTSyncMsg(syncMsg);
 //            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
 //            broadCastMsg(deviceObjectService.getOnLineDevice(), JSON.toJSONString(msgData), msgType, false);
-            broadCastMsg(deviceObjectService.getOnLineDevice(), msg, msgType, false);
+            broadCastMsg(deviceObjectService.getOnLineDevice(), msg, msgType, isSingle);
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");
@@ -170,21 +170,14 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     }
 
     @Override
-    public String broadCastMsg(Integer id, MsgForwardData msgForwardData, String msgType, boolean isSingle) {
+    public String broadCastMsg(Integer id, String msg) {
         final Device device = deviceService.getDeviceById(id);
         Map<String, List<String>> target = new HashMap<>();
         target.put(device.getDeviceGroup(), new ArrayList<String>() {{
             add(device.getDeviceId());
         }});
-        int single = 0;
-        if (isSingle) {
-            single = 1;
-        }
-        OfflineMsg offlineMsg = new OfflineMsg(JSON.toJSONString(msgForwardData), msgType, device.getDeviceGroup(), device.getDeviceId(), single);
-        offlineMsgService.save(offlineMsg);
-        OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-        MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
-        return sendMsgSync(target, offMsgData);
+        MsgForwardData msgForwardData = MsgForwardTran.getSendMsgSync(msg);
+        return sendMsgSync(target, msgForwardData);
     }
 
     @Override
@@ -201,8 +194,8 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         String serialNumber = msgForwardData.getSerialNumber();
         mapLocks.put(serialNumber, lock);
         mapConditions.put(serialNumber, condition);
-        int awaitTime = 30000;
-        String awaitTimeStr = PropertiesUtil.getValue("await_time_millis");
+        int awaitTime = 10000;
+        String awaitTimeStr = PropertyUtil.getProInfo("dataserver-config", "await_time_millis");
         if (awaitTimeStr != null) {
             awaitTime = Integer.valueOf(awaitTimeStr);
         }
@@ -221,6 +214,9 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             lock.unlock();
             if (mapResults.containsKey(serialNumber)) {
                 resp.setInfo(mapResults.get(serialNumber));
+            } else {
+                resp.setData("0");
+                resp.setInfo("超时");
             }
             mapLocks.remove(serialNumber);
             mapConditions.remove(serialNumber);
