@@ -5648,7 +5648,7 @@ BEGIN
   
 
   DECLARE v_total_count DOUBLE(13, 2) DEFAULT 0;
-  DECLARE v_title       VARCHAR(50); 
+  DECLARE v_title       VARCHAR(300); 
   DECLARE v_dishNo      VARCHAR(50); 
   DECLARE v_price       DOUBLE(13, 2); 
   DECLARE v_unit        VARCHAR(50); 
@@ -5882,7 +5882,7 @@ BEGIN
   (
     columnid VARCHAR(50), 
     dishtype INT, 
-    title VARCHAR(50), 
+    title VARCHAR(300), 
     dishNo VARCHAR(50), 
     price DOUBLE(13, 2), 
     unit VARCHAR(50), 
