@@ -26,8 +26,8 @@ public class DeviceObject extends Device {
         super(deviceGroup, deviceId, tableNo, userId);
     }
 
-    private String sendMsgSync(MsgForwardData msgForwardData, String msgType, boolean isSingle) {
-        return this.msgForwardService.broadCastMsg(getId(), msgForwardData, msgType, isSingle);
+    private String sendMsgSync(Integer id, String msg) {
+        return this.msgForwardService.broadCastMsg(getId(), msg);
     }
 
     private void sendMsg(MsgForwardData msgForwardData) {
