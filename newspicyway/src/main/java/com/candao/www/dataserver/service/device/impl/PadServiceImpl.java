@@ -10,6 +10,7 @@ import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import com.candao.www.utils.HttpUtil;
 import com.candao.www.utils.PropertiesUtil;
+import com.candao.www.utils.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,7 @@ public class PadServiceImpl extends DeviceServiceImpl {
         LOGGER.info("### padLoginIn group={},id={},userId={} ###", loginData.getGroup(), loginData.getId(), loginData.getUserId());
         String resp = null;
         try {
-            resp = HttpUtil.doRestfulByHttpConnection(PropertiesUtil.getValue("pad_login_url"), JSON.toJSONString(loginData));
+            resp = HttpUtil.doRestfulByHttpConnection(PropertyUtil.getProInfo("dataserver-config", "pad_login_url"), JSON.toJSONString(loginData));
         } catch (Exception e) {
             LOGGER.error("### padLoginIn group={},id={},userId={},error={} ###", loginData.getGroup(), loginData.getId(), loginData.getUserId(), e);
         }

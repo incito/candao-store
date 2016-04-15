@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
+import com.candao.www.dataserver.task.DemoTimerTask;
 import com.candao.www.dataserver.util.StringUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MsgProcessController {
     @Autowired
     private MsgForwardService msgForwardService;
+    @Autowired
+    private DemoTimerTask demoTimerTask;
 
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
@@ -30,16 +33,18 @@ public class MsgProcessController {
     @RequestMapping(value = "/broadcastok/{client}/{msgId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
-        return msgForwardService.broadCastOk(client, msgId);
+        String result = msgForwardService.broadCastOk(client, msgId);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
     }
 
-    @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/{isSingle}", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/{isSingle}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public void broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle) {
         msgForwardService.broadCastMsg(userId, msgId, msg, isSingle);
     }
 
-    @RequestMapping(value = "/broadcastmsg/{group}/{userId}/{msgId}/{msg}/{isSingle}", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastmsg/{group}/{userId}/{msgId}/{msg}/{isSingle}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public void broadCastMsg(@PathVariable("group") String group, @PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle) {
         msgForwardService.broadCastMsg(group, userId, msgId, msg, isSingle);
@@ -50,4 +55,24 @@ public class MsgProcessController {
     public String broadCastMsg(@PathVariable("id") Integer id, @PathVariable("msg") String msg) {
         return msgForwardService.broadCastMsg(id, msg);
     }
+
+    ////////////////////////////////////////////////////////////
+    @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{seconds}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public void broadCastMsg1(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("seconds") Integer seconds) {
+        demoTimerTask.run(null, userId, msgId, msg, null, seconds);
+    }
+
+    @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{isSingle}/{seconds}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public void broadCastMsg1(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle, @PathVariable("seconds") Integer seconds) {
+        demoTimerTask.run(null, userId, msgId, msg, isSingle, seconds);
+    }
+
+    @RequestMapping(value = "/broadcastmsg1/{group}/{userId}/{msgId}/{msg}/{isSingle}/{seconds}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public void broadCastMsg1(@PathVariable("group") String group, @PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle, @PathVariable("seconds") Integer seconds) {
+        demoTimerTask.run(group, userId, msgId, msg, isSingle, seconds);
+    }
+
 }

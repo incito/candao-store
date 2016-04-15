@@ -5,11 +5,10 @@ import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.model.WatchLoginData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import com.candao.www.utils.HttpUtil;
-import com.candao.www.utils.PropertiesUtil;
+import com.candao.www.utils.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class WatchServiceImpl extends DeviceServiceImpl {
                     put("userid", loginData.getUserId());
                 }
             };
-            resp = HttpUtil.doRestfulByHttpConnection(PropertiesUtil.getValue("bracelet_login_url"), JSON.toJSONString(mapParam));
+            resp = HttpUtil.doRestfulByHttpConnection(PropertyUtil.getProInfo("dataserver-config", "bracelet_login_url"), JSON.toJSONString(mapParam));
         } catch (Exception e) {
             LOGGER.error("### group={},id={},userId={},error={} ###", loginData.getGroup(), loginData.getId(), loginData.getUserId(), e);
         }
