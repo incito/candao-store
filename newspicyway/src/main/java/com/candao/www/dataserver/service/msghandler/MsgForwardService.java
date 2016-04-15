@@ -50,13 +50,10 @@ public interface MsgForwardService {
     /**
      * 给指定设备发送消息
      *
-     * @param id             设备id
-     * @param msgForwardData 消息内容
-     * @param msgType        消息类型
-     * @param isSingle       是否是互斥消息
+     * @param id 设备id
      * @return
      */
-    String broadCastMsg(Integer id, MsgForwardData msgForwardData, String msgType, boolean isSingle);
+    String broadCastMsg(Integer id, String msg);
 
     //向目标转发消息
     void forwardMsg(Map<String, List<String>> targetMap, String msg);

@@ -1,10 +1,8 @@
 package com.candao.www.dataserver.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.service.communication.CommunicationService;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
-import com.candao.www.dataserver.service.device.DeviceService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +19,7 @@ import java.util.Map;
  * Created by ytq on 2016/3/9.
  */
 @Controller
+@RequestMapping("/communicate")
 public class CommunicationController {
     @Autowired
     CommunicationService communicationService;
@@ -68,7 +67,7 @@ public class CommunicationController {
     @RequestMapping(value = "/queryTerminals", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String queryTerminals(String msg) {
-        return JSON.toJSONString(communicationService.queryTerminals(msg));
+        return communicationService.queryTerminals(msg).getData() + "";
     }
 
     @RequestMapping(value = "/forward", produces = {"application/text;charset=UTF-8"})

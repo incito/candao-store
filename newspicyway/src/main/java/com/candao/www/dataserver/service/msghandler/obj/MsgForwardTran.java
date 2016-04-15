@@ -35,4 +35,24 @@ public class MsgForwardTran {
         String msgId = msgConfig.getProperty("MSG_ID.OFFLINE.SEND");
         return new MsgForwardData(msgId, msg);
     }
+
+    public static MsgForwardData getReconnectResp(String msg) {
+        String msgId = msgConfig.getProperty("MSG_ID.RECONNECT.RESP");
+        return new MsgForwardData(msgId, msg);
+    }
+
+    public static MsgForwardData getSendMsgSync(String msg) {
+        String msgId = msgConfig.getProperty("MSG_ID.SEND_MSG.SYNC");
+        return new MsgForwardData(msgId, msg);
+    }
+
+    public static MsgForwardData getSendMsgSyncResp(String msg) {
+        String msgId = msgConfig.getProperty("MSG_ID.SEND_MSG.SYNC.RESP");
+        return new MsgForwardData(msgId, msg);
+    }
+
+    public static MsgForwardData getLogCollectResp(String msg) {
+        String msgId = msgConfig.getProperty("MSF_ID.LOG.COLLECT.RESP");
+        return new MsgForwardData(msgId, msg);
+    }
 }
