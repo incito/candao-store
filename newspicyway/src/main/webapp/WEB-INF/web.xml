@@ -71,7 +71,7 @@
         <filter-class>com.candao.www.filter.UserFilter</filter-class>
         <init-param>
             <param-name>excluded</param-name>
-            <param-value>/newspicyway/datasnap/rest/TServerMethods1</param-value>
+            <param-value>/newspicyway/communicate,/newspicyway/datasnap/rest/TServerMethods1</param-value>
         </init-param>
     </filter>
     <filter-mapping>

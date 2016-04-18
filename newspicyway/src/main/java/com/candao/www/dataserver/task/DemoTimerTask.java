@@ -21,6 +21,7 @@ public class DemoTimerTask {
     private String msgType;
     private String msg;
     private Boolean isSingle;
+    private Integer count = 0;
 
     public synchronized void run(String group, String userId, String msgType, String msg, Boolean isSingle, int seconds) {
         if (timer != null) {
@@ -37,19 +38,24 @@ public class DemoTimerTask {
 
     class RemindTask extends TimerTask {
         public void run() {
+            count += 1;
+            String countMsg = "计数：" + count + " msg:" + msg;
+            System.out.println("timertask run ");
             if (null == group && null == isSingle) {
-                msgForwardService.broadCastMsg(userId, msgType, msg);
+                msgForwardService.broadCastMsg(userId, msgType, countMsg);
             } else {
                 if (null == group) {
-                    msgForwardService.broadCastMsg(userId, msgType, msg, isSingle);
+                    msgForwardService.broadCastMsg(userId, msgType, countMsg, isSingle);
                 } else {
-                    msgForwardService.broadCastMsg(group, userId, msgType, msg, isSingle);
+                    msgForwardService.broadCastMsg(group, userId, msgType, countMsg, isSingle);
                 }
             }
         }
     }
 
     public synchronized void cancel() {
+        System.out.println("timertask cancel ");
         timer.cancel();
+        count = 0;
     }
 }

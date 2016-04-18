@@ -160,7 +160,7 @@
                 <version>8.1.8.v20121106</version>
                 <configuration>
                     <webAppConfig>
-                        <contextPath>/</contextPath>
+                        <contextPath>/newspicyway</contextPath>
                     </webAppConfig>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">

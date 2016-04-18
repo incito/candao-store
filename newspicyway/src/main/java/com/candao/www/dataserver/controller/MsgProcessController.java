@@ -75,4 +75,9 @@ public class MsgProcessController {
         demoTimerTask.run(group, userId, msgId, msg, isSingle, seconds);
     }
 
+    @RequestMapping(value = "/broadcastmsg1/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public void broadCastMsg1() {
+        demoTimerTask.cancel();
+    }
 }
