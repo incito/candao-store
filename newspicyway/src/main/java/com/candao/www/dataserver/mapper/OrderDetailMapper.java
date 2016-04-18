@@ -15,5 +15,5 @@ public interface OrderDetailMapper {
 
     List<Map<String, Object>> selectStatByOrderId(@Param("orderId") String orderId);
 
-    Map<String, Object> selectStatByOrderId1(@Param("orderId") String orderId);
+    List<Map<String, Object>> selectStatByOrderId1(@Param("orderId") String orderId);
 }

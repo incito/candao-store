@@ -53,7 +53,7 @@ public class DataMemberController {
     public String setMemberPrice3(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### MemberController setMemberPrice3 userId={}  orderId={} ip={}", userId, orderId, ip);
         String result = memberService.revertMemberPrice(userId, orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### MemberController setMemberPrice3 response={}", result);
         return result;
     }
@@ -71,7 +71,7 @@ public class DataMemberController {
     public String setMemberPrice2(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### MemberController setMemberPrice2 userId={}  orderId={} ip={}", userId, orderId, ip);
         String result = memberService.revertMemberPrice2(userId, orderId, ip);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### MemberController setMemberPrice2 response={}", result);
         return result;
     }

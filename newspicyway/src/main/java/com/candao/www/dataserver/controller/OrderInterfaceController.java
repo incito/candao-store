@@ -23,7 +23,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getOrderInfo(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId, @PathVariable("printType") String printType) {
         String result = orderService.getOrderInfo(aUserId, orderId, printType);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -31,7 +31,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String pCaleTableAmount(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId) {
         String result = orderService.pCaleTableAmount(aUserId, orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -39,7 +39,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String wmOrder(@PathVariable("orderId") String orderId) {
         String result = orderService.wmOrder(orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -47,7 +47,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getMemberSaleInfo(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId) {
         String result = orderService.getMemberSaleInfo(aUserId, orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -55,7 +55,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getOrderCouponList(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId) {
         String result = orderService.getOrderCouponList(aUserId, orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -63,7 +63,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getAllOrderInfo2(@PathVariable("aUserId") String aUserId) {
         String result = orderService.getAllOrderInfo2(aUserId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -71,7 +71,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getAllGZDW(@PathVariable("aUserId") String aUserId) {
         String result = orderService.getAllGZDW(aUserId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -80,7 +80,7 @@ public class OrderInterfaceController {
     public String saveSettlementDetailBatch(@PathVariable("sDetailId") String sDetailId, @PathVariable("aUserId") String aUserId,
                                             @PathVariable("orderId") String orderId, @PathVariable("payJsonArray") String payJsonArray) {
         String result = orderService.saveSettlement(sDetailId, orderId, payJsonArray, aUserId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -88,7 +88,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getSettlementDetailBatch(@PathVariable("orderId") String orderId) {
         String result = orderService.getSettlementDetailBatch(orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -96,7 +96,7 @@ public class OrderInterfaceController {
     @ResponseBody
     public String deleteDetailBatch(@PathVariable("sDetailId") String sDetailId) {
         String result = orderService.deleteDetailBatch(sDetailId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 

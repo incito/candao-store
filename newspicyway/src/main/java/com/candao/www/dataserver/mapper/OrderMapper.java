@@ -28,5 +28,5 @@ public interface OrderMapper {
 
     int updatePutOrder(@Param("orderId") String orderId, @Param("gzCode") String gzCode, @Param("gzName") String gzName, @Param("gzTele") String gzTele, @Param("gzUser") String gzUser);
 
-    Map<String, Object> selectTableOrder(@Param("orderId") String orderId);
+    List<Map<String, Object>> selectTableOrder(@Param("orderId") String orderId);
 }

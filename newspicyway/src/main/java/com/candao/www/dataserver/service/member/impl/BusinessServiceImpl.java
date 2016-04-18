@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.member.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
@@ -69,7 +70,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (null == orderStat || orderStat.isEmpty()) {
             return "{\"Data\":\"0\"}";
         }
-        return JSON.toJSONString(orderStat);
+        return "{\"Data\":" + JSON.toJSONString(orderStat) + "}";
     }
 
     @Override
@@ -400,17 +401,18 @@ public class BusinessServiceImpl implements BusinessService {
             return "{\"Data\":\"0\"}";
         }
         orderOpService.pCaleTableAmount(userId, orderId);
-        Map<String, Object> tableOrder = orderMapper.selectTableOrder(orderId);
-        return JSON.toJSONString(tableOrder);
+        List<Map<String, Object>> tableOrder = orderMapper.selectTableOrder(orderId);
+
+        return "{\"Data\":" + JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
     }
 
     @Override
     public String getServerTableList2(String orderId, String userId) {
-        Map<String, Object> orderStat = orderDetailMapper.selectStatByOrderId1(orderId);
+        List<Map<String, Object>> orderStat = orderDetailMapper.selectStatByOrderId1(orderId);
         if (null == orderStat || orderStat.isEmpty()) {
             return "{\"Data\":\"0\"}";
         }
-        return JSON.toJSONString(orderStat);
+        return "{\"Data\":" + JSON.toJSONString(orderStat, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
     }
 
     @Override

@@ -64,7 +64,9 @@ public class DishOpServiceImpl implements DishService {
             responseJsonData.setInfo("获取全部菜品异常");
             LOGGER.error("###getAllWmFood userId={},error={}###", userId, e);
         }
-        return JSON.toJSONString(responseJsonData);
+        String s = JSON.toJSONString(responseJsonData);
+        LOGGER.info("###getAllWmFood ###RESPONSE### result={}",s);
+        return s;
     }
 
     @Override

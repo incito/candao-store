@@ -22,7 +22,7 @@ public class DishInterfaceController {
     @ResponseBody
     public String getFoodStatus(@PathVariable("dishId") String dishId, @PathVariable("dishUnit") String dishUnit) {
         String result = dishService.getFoodStatus(dishId, dishUnit);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -30,7 +30,7 @@ public class DishInterfaceController {
     @ResponseBody
     public String getAllWmFood(@PathVariable("userId") String userId) {
         String result = dishService.getAllWmFood(userId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -38,7 +38,7 @@ public class DishInterfaceController {
     @ResponseBody
     public String getCJFood(@PathVariable("userId") String userId) {
         String result = dishService.getCJFood(userId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -46,7 +46,7 @@ public class DishInterfaceController {
     @ResponseBody
     public String getGroupDetail(@PathVariable("dishId") String dishId) {
         String result = dishService.getGroupDetail(dishId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -54,7 +54,7 @@ public class DishInterfaceController {
     @ResponseBody
     public String getFavorable(@PathVariable("userId") String userId, @PathVariable("orderId") String orderId) {
         String result = dishService.getFavorable(userId, orderId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -63,7 +63,7 @@ public class DishInterfaceController {
     public String getBackDishInfo(@PathVariable("orderId") String orderId, @PathVariable("dishId") String dishId,
                                   @PathVariable("dishUnit") String dishUnit, @PathVariable("tableNo") String tableNo) {
         String result = dishService.getBackDishInfo(orderId, dishId, dishUnit, tableNo);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -71,7 +71,7 @@ public class DishInterfaceController {
     @ResponseBody
     public String deletePosOperation(@PathVariable("tableNo") String tableNo) {
         String result = dishService.deletePosOperation(tableNo);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 }

@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,12 +13,12 @@ import java.util.Map;
  */
 public class DataServerJsonFormat {
     public static String jsonFormat(Object object, String repStr) {
-        String jsonStr = "{\"Data\":" + JSON.toJSONString(object) + "}";
+        String jsonStr = "{\"Data\":" + JSON.toJSONString(object, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
         return jsonStr.replace("\"", repStr);
     }
 
     public static String jsonFormat(Object object) {
-        return "{\"Data\":" + JSON.toJSONString(object) + "}";
+        return "{\"Data\":" + JSON.toJSONString(object, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
     }
 
     public static void main(String[] args) {

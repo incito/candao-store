@@ -22,7 +22,7 @@ public class StoreInterfaceController {
     @ResponseBody
     public String openCash(@PathVariable("ip") String ipAddress) {
         String result = openCashService.openCash(ipAddress);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 
@@ -30,7 +30,7 @@ public class StoreInterfaceController {
     @ResponseBody
     public String getClearMachineData(@PathVariable("aUserid") String aUserId, @PathVariable("jsorder") String jsOrder, @PathVariable("posid") String posId) {
         String result = openCashService.getClearMachineData(aUserId, jsOrder, posId);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
 }
