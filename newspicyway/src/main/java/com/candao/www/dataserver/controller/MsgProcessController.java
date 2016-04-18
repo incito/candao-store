@@ -22,7 +22,7 @@ public class MsgProcessController {
     @Autowired
     private DemoTimerTask demoTimerTask;
 
-    @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg) {
         String result = msgForwardService.broadCastMsg(userId, msgId, msg);
@@ -30,7 +30,7 @@ public class MsgProcessController {
         return StringUtil.string2Unicode(result);
     }
 
-    @RequestMapping(value = "/broadcastok/{client}/{msgId}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastok/{client}/{msgId}", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
         String result = msgForwardService.broadCastOk(client, msgId);

@@ -66,4 +66,12 @@ public class DishInterfaceController {
         result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         return StringUtil.string2Unicode(result);
     }
+
+    @RequestMapping(value = "/deletePosOperation/{tableNo}", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String deletePosOperation(@PathVariable("tableNo") String tableNo) {
+        String result = dishService.deletePosOperation(tableNo);
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        return StringUtil.string2Unicode(result);
+    }
 }

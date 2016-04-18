@@ -28,4 +28,7 @@ public interface DishService {
 
     //更新餐具信息
     String updateCj(String orderId, String userId);
+
+    //删除pos的操作
+    String deletePosOperation(String tableNo);
 }

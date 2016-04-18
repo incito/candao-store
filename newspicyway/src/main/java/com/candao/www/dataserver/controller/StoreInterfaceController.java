@@ -18,7 +18,7 @@ public class StoreInterfaceController {
     @Autowired
     private OpenCashService openCashService;
 
-    @RequestMapping(value = "/OpenCash/{ip}", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/OpenCash/{ip}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String openCash(@PathVariable("ip") String ipAddress) {
         String result = openCashService.openCash(ipAddress);

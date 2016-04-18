@@ -194,4 +194,11 @@ public class DishOpServiceImpl implements DishService {
         }
         return JSON.toJSONString(responseData);
     }
+
+    @Override
+    public String deletePosOperation(String tableNo) {
+        LOGGER.info("###deletePosOperation tableNo={}###", tableNo);
+        operationLogMapper.deletePosOperation(tableNo);
+        return "{\"Data\":\"1\"}";
+    }
 }
