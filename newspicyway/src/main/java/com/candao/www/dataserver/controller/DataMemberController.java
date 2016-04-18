@@ -31,7 +31,7 @@ public class DataMemberController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/setMemberPrice/{userId}/{orderId}/{ip}/{memberNo}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/setMemberPrice/{userId}/{orderId}/{ip}/{memberNo}/", produces = {"application/text;charset=UTF-8"})
     public String setMemberPrice(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip, @PathVariable String memberNo) {
         logger.info("###REQUEST### MemberController setMemberPrice userId={}  orderId={} ip={} memberNo={}", userId, orderId, ip, memberNo);
         String result = memberService.setMemberPrice(userId, orderId, memberNo);
@@ -49,7 +49,7 @@ public class DataMemberController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/setMemberPrice3/{userId}/{orderId}/{ip}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/setMemberPrice3/{userId}/{orderId}/{ip}/", produces = {"application/text;charset=UTF-8"})
     public String setMemberPrice3(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### MemberController setMemberPrice3 userId={}  orderId={} ip={}", userId, orderId, ip);
         String result = memberService.revertMemberPrice(userId, orderId);
@@ -67,7 +67,7 @@ public class DataMemberController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/setMemberPrice2/{userId}/{orderId}/{ip}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/setMemberPrice2/{userId}/{orderId}/{ip}/", produces = {"application/text;charset=UTF-8"})
     public String setMemberPrice2(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### MemberController setMemberPrice2 userId={}  orderId={} ip={}", userId, orderId, ip);
         String result = memberService.revertMemberPrice2(userId, orderId, ip);
