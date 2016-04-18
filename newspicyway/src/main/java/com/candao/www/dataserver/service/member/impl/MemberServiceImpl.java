@@ -6,14 +6,11 @@ import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.service.member.MemberService;
 import com.candao.www.dataserver.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 雅座会员业务类
@@ -22,17 +19,10 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
     private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MemberServiceImpl.class);
-    private Lock lock = new ReentrantLock();
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
     private OrderDetailMapper orderDetailMapper;
-    @Value("${store.business_name}")
-    private String businessName;
-    @Value("${store.business}")
-    private String business;
-    @Value("${store.terminal}")
-    private String terminal;
 
     @Override
     public String setMemberPrice(String userId, String orderId, String memberNo) {

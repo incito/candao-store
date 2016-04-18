@@ -84,7 +84,7 @@
     </filter>
     <filter-mapping>
         <filter-name>uriAdapterFilter</filter-name>
-        <url-pattern>/newspicyway/datasnap/rest/TServerMethods1/*</url-pattern>
+        <url-pattern>/datasnap/rest/TServerMethods1/*</url-pattern>
     </filter-mapping>
 
 
