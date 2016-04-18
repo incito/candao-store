@@ -81,6 +81,10 @@
     <filter>
         <filter-name>uriAdapterFilter</filter-name>
         <filter-class>com.candao.www.dataserver.filter.UrlAdapterFilter</filter-class>
+        <init-param>
+            <param-name>prex</param-name>
+            <param-value>newspicyway</param-value>
+        </init-param>
     </filter>
     <filter-mapping>
         <filter-name>uriAdapterFilter</filter-name>

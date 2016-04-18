@@ -8,8 +8,14 @@ import java.io.IOException;
  * Created by lenovo on 2016/4/15.
  */
 public class UrlAdapterFilter implements Filter {
+    private String prex;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        prex = filterConfig.getInitParameter("prex");
+        if (null == prex) {
+            prex = "";
+        }
     }
 
     @Override
@@ -23,7 +29,10 @@ public class UrlAdapterFilter implements Filter {
             if (uris[0].isEmpty()) {
                 i++;
             }
-            if(uris[uris.length-1].isEmpty()){
+            if (uris[1].equals(prex)) {
+                i++;
+            }
+            if (uris[uris.length - 1].isEmpty()) {
                 len--;
             }
             StringBuilder newUri = new StringBuilder();
@@ -35,7 +44,7 @@ public class UrlAdapterFilter implements Filter {
                     newUri.append("/").append(uri);
                 }
             }
-            if(len<uris.length){
+            if (len < uris.length) {
                 newUri.append("/");
             }
             request.getRequestDispatcher(newUri.toString()).forward(request, response);
