@@ -303,12 +303,12 @@ public class BusinessServiceImpl implements BusinessService {
         // 还有未结帐  当天还有未结帐的不能结业
         int tableCount = tellerCashMapper.selectNotEndTable();
         if (tableCount > 0) {
-            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐，不能结业！\"}";
+            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐帐单，不能结业！\"}";
         }
         //如果当天还有外卖帐单没有结帐就不能结业
         int notPayOrder = orderMapper.selectNotPay();
         if (notPayOrder > 0) {
-            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐帐单，不能结业！\"}";
+            return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐外卖帐单，不能结业！\"}";
         }
         HashMap<String, Object> param = new HashMap<>();
         openLogMapper.procEndWork(param);

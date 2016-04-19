@@ -120,7 +120,7 @@ public class MemberServiceImpl implements MemberService {
         if (!anyway) {
             // 如果帐单已经结算就不还原了
             Integer orderStatus = orderMapper.selectOrderStatus(orderId);
-            if (Constant.ORDERSTATUS.ORDER_STATUS != orderStatus) {
+            if (null == orderStatus || Constant.ORDERSTATUS.ORDER_STATUS != orderStatus) {
                 return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
             }
         }
