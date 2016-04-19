@@ -94,7 +94,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/clearMachine/{userId}/{temp1}/{userName}/{temp2}/{ip}/{temp3}/{posId}/{temp4}/{authorizer}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/clearMachine/{userId}/{temp1}/{userName}/{temp2}/{ip}/{temp3}/{posId}/{temp4}/{authorizer}", produces = {"application/text;charset=UTF-8"})
     public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={} authorizer={}", userId, userName, ip, posId, authorizer);
         String result = businessService.clearMachine(userId, userName, ip, posId, authorizer);
