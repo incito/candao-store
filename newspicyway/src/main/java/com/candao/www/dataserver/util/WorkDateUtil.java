@@ -3,7 +3,6 @@ package com.candao.www.dataserver.util;
 import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.service.SpringContextUtils;
 import com.candao.www.dataserver.service.member.BusinessService;
-import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +33,13 @@ public class WorkDateUtil {
         return DateUtils.parse(workDate, "yyyy-MM-dd");
     }
 
+    public static Date getTomorrowDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + 1);
+        return calendar.getTime();
+    }
+
     public static void main(String[] args) {
-        System.out.println(WorkDateUtil.getWorkDate());
+        System.out.println(WorkDateUtil.getTomorrowDay());
     }
 }

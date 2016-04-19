@@ -41,4 +41,6 @@ public interface OrderOpService {
     String deleteDetailBatch(String sDetailId);
 
     List<Map> getInfoByOrderId(String orderId);
+
+    String reBackOrder(String userId, String orderId);
 }

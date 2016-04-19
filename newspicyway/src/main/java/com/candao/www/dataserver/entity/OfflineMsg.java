@@ -1,5 +1,9 @@
 package com.candao.www.dataserver.entity;
 
+import com.candao.common.utils.DateUtils;
+import com.candao.www.dataserver.util.WorkDateUtil;
+import com.candao.www.utils.DateTimeUtils;
+
 import java.util.Date;
 
 /**
@@ -25,6 +29,7 @@ public class OfflineMsg {
         this.deviceGroup = deviceGroup;
         this.deviceId = deviceId;
         this.isSingle = isSingle;
+        this.expireTime = WorkDateUtil.getTomorrowDay();
     }
 
     public Integer getId() {

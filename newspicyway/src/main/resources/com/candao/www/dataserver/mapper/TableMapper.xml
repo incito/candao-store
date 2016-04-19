@@ -15,4 +15,7 @@
     <select id="selectOrderId" parameterType="String" resultType="String">
         select orderid from  t_table b   where b.tableno=#{tableNo} LIMIT 0 , 1
     </select>
+    <update id="updateTableByTableId">
+        UPDATE t_table SET orderid = #{orderId} WHERE	tableid = #{tableId}
+    </update>
 </mapper>

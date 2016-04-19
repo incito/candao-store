@@ -100,4 +100,11 @@ public class OrderInterfaceController {
         return StringUtil.string2Unicode(result);
     }
 
+    @RequestMapping(value = "/rebackorder/{userId}/{orderId}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String reBackOrder(@PathVariable("userId") String userId, @PathVariable("orderId") String orderId) {
+        String result = orderService.reBackOrder(userId, orderId);
+        result = "{\"result\":[\"" + result + "\"]}";
+        return StringUtil.string2Unicode(result);
+    }
 }

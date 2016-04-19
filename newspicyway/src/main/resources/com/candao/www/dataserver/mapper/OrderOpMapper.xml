@@ -152,4 +152,37 @@ ORDER BY
 	a.orderid DESC
 LIMIT 0,1
     </select>
+    <select id="getReBackOrderByOrderId" resultType="java.util.HashMap">
+        SELECT
+	(
+		SELECT
+			orderstatus
+		FROM
+			t_order
+		WHERE
+			orderid = #{orderId}
+	) AS orderstatus,
+	(
+		SELECT
+			isclear
+		FROM
+			t_settlement
+		WHERE
+			orderid = #{orderId}
+	) AS isclear,
+	(
+		SELECT
+			currenttableid
+		FROM
+			t_order
+		WHERE
+			orderid =  #{orderId}
+	) AS tableid
+FROM
+	DUAL
+    </select>
+    <select id="getReBackOrderByTableId" resultType="java.util.HashMap">
+     SELECT tableno,`status` FROM t_table WHERE tableid=#{tableId}
+    </select>
+
 </mapper>

@@ -55,4 +55,9 @@ public interface OrderOpMapper {
                         @Param("dishUnit") String dishUnit);
 
     List<Map> getInfoByOrderId(String orderId);
+
+    Map getReBackOrderByOrderId(String orderId);
+
+    Map getReBackOrderByTableId(String tableId);
+
 }

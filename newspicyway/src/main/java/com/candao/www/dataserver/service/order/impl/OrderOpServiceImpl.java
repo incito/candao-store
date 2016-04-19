@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.constants.PrintType;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
+import com.candao.www.dataserver.mapper.TableMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.order.OrderOpService;
@@ -26,6 +27,8 @@ public class OrderOpServiceImpl implements OrderOpService {
     private OrderOpMapper orderMapper;
     @Autowired
     private CaleTableAmountMapper caleTableAmountMapper;
+    @Autowired
+    private TableMapper tableMapper;
 
     @Override
     @Transactional
@@ -200,5 +203,32 @@ public class OrderOpServiceImpl implements OrderOpService {
     @Override
     public List<Map> getInfoByOrderId(String orderId) {
         return orderMapper.getInfoByOrderId(orderId);
+    }
+
+    @Override
+    @Transactional
+    public String reBackOrder(String userId, String orderId) {
+        LOGGER.info("###reBackOrder userId={} orderId={}###", userId, orderId);
+        try {
+            String workDate = WorkDateUtil.getWorkDate();
+            Map mapOrder = orderMapper.getReBackOrderByOrderId(orderId);
+            String orderStatus = mapOrder.get("orderstatus") + "";
+            String isClear = mapOrder.get("isclear") + "";
+            String tableId = mapOrder.get("tableid") + "";
+            Map mapTable = orderMapper.getReBackOrderByTableId(tableId);
+            String tableNo = mapTable.get("tableno") + "";
+            String tableStatus = mapTable.get("status") + "";
+            if ("0".equals(tableStatus)) {
+                return "{\"Data\":\"0\",\"Info\":\"帐单当前桌号还未结帐!\"}";
+            }
+            if ("1".equals(isClear)) {
+                return "{\"Data\":\"0\",\"Info\":\"帐单已经生成了清机单!\"}";
+            }
+            tableMapper.updateTableByTableId(tableId);
+            return "{\"Data\":\"1\",\"Info\":\"" + tableNo + "\"}";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"Data\":\"0\",\"Info\":\"反结算异常\"}";
+        }
     }
 }

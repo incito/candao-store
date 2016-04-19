@@ -37,21 +37,25 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
         if (1 == offlineMsg.getIsSingle()) {
             offlineMsgMapper.deleteMsg(offlineMsg.getDeviceGroup(), offlineMsg.getDeviceId(), offlineMsg.getMsgType());
         }
+        offlineMsgMapper.deleteMsgByExpireTime();
         return offlineMsgMapper.save(offlineMsg);
     }
 
     @Override
     public List<OfflineMsg> getByGroupAndId(String group, String id) {
+        offlineMsgMapper.deleteMsgByExpireTime();
         return offlineMsgMapper.getByGroupAndId(group, id);
     }
 
     @Override
     public List<OfflineMsg> getAllOffLineMsg(String group, String id) {
+        offlineMsgMapper.deleteMsgByExpireTime();
         return offlineMsgMapper.getAllOffLineMsg(group, id);
     }
 
     @Override
     public void deleteById(Integer id) {
+        offlineMsgMapper.deleteMsgByExpireTime();
         offlineMsgMapper.deleteById(id);
     }
 }

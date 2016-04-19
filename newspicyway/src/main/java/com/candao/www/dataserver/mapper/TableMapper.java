@@ -11,4 +11,5 @@ public interface TableMapper {
     String getOrderIdByTableNo(String tableNo);
     String selectOrderIdOfStatusN5(@Param("tableNo") String tableNo);
     String selectOrderId(@Param("tableNo") String tableNo);
+    void updateTableByTableId(String tableId);
 }
