@@ -8317,7 +8317,7 @@ BEGIN
     superkey varchar(50),
     dishnum varchar(50),
     dishtype int,
-    orderprice double(8, 2),
+    orderprice DECIMAL(10, 2),
     dishunit varchar(100)
   ) ENGINE = MEMORY DEFAULT charset = utf8;
 
