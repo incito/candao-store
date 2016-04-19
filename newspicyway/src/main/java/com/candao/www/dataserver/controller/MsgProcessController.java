@@ -26,16 +26,18 @@ public class MsgProcessController {
     @ResponseBody
     public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg) {
         String result = msgForwardService.broadCastMsg(userId, msgId, msg);
-        result = "{\"result\":[\"" + result + "\"]}";
-        return StringUtil.string2Unicode(result);
+//        result = "{\"result\":[\"" + result + "\"]}";
+        return result;
+//        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/broadcastok/{client}/{msgId}", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
         String result = msgForwardService.broadCastOk(client, msgId);
-        result = "{\"result\":[\"" + result + "\"]}";
-        return StringUtil.string2Unicode(result);
+//        result = "{\"result\":[\"" + result + "\"]}";
+        return result;
+//        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/{isSingle}/", produces = {"application/json;charset=UTF-8"})
