@@ -155,7 +155,7 @@ public class SystemServiceImpl {
        
 		String type = jsonObject.getString("type");
  
-        	if (StringUtils.equals(type, SystemConstant.PASSWORD.type()) || StringUtils.equals(type, SystemConstant.DISHES.type())) {//单个插入
+        	if (StringUtils.equals(type, SystemConstant.PASSWORD.type()) || StringUtils.equals(type, SystemConstant.DISHES.type())||StringUtils.equals(type, SystemConstant.ONEPAGETYPE.type())) {//单个插入
     			JSONObject jsonObjectTdictionary = JSONObject.fromObject(jsonObject.get("data"));
     			if (StringUtils.isNotBlank(jsonObjectTdictionary.getString("dictid"))) {
     				updateTdictionarySingle(jsonObjectTdictionary, type, SystemConstant.valueOf(type).typename());
@@ -252,6 +252,7 @@ public class SystemServiceImpl {
 		jsonObject.put("ROUNDING", getJsonArrary(mapList, "ROUNDING"));
 		jsonObject.put("ACCURACY", getJsonArrary(mapList, "ACCURACY"));
 		jsonObject.put("PADIMG", getJsonArrary(mapList, "PADIMG"));
+		jsonObject.put("ONEPAGETYPE", getJsonArrary(mapList, "ONEPAGETYPE"));
 		return jsonObject;
 	}
 

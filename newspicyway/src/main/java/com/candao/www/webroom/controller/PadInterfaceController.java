@@ -47,6 +47,7 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
+import com.candao.www.constant.SystemConstant;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TtellerCashDao;
@@ -103,6 +104,7 @@ import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.UserInstrumentService;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
 
+import ch.qos.logback.core.net.SyslogConstants;
 import net.sf.json.JSONObject;
 /**
  * 所有pad 端处理的接口
@@ -2230,6 +2232,29 @@ public class PadInterfaceController {
 			logger.error(e, "");
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 查询一页菜谱配置信息
+	 * @return
+	 */
+	@RequestMapping("/onepageinfo.json")
+	@ResponseBody
+	public String onepageinfo(){
+		Map<String, Object> resultMap = new HashMap<>();
+		Map  map=new HashMap<>();
+		map.put("type", SystemConstant.ONEPAGETYPE.type());
+		List<Map<String, Object>>  list= dataDictionaryService.findByParams(map);
+		if(list==null || list.size()==0){//没有数据
+			resultMap.put("result", 1);
+			resultMap.put("msg","后台没有配置信息");
+			resultMap.put("data","");
+		}else{
+			resultMap.put("result", 0);
+			resultMap.put("data",list.get(0).get("status").toString());
+		}
+		
+		return  JacksonJsonMapper.objectToJson(resultMap);
 	}
 	
 	
