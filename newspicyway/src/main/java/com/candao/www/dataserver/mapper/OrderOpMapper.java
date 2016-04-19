@@ -54,5 +54,5 @@ public interface OrderOpMapper {
                         @Param("userId") String userId, @Param("orderPrice") String orderPrice,
                         @Param("dishUnit") String dishUnit);
 
-    Map getInfoByOrderId(String orderId);
+    List<Map> getInfoByOrderId(String orderId);
 }

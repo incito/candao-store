@@ -11,6 +11,7 @@ import com.candao.www.dataserver.service.dish.DishService;
 import com.candao.www.dataserver.service.member.BusinessService;
 import com.candao.www.dataserver.service.member.MemberService;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
@@ -377,7 +378,7 @@ public class BusinessServiceImpl implements BusinessService {
             return JSON.toJSONString(responseData);
         } else {
             orderOpService.pCaleTableAmount(userId, orderId);
-            return JSON.toJSONString(orderOpService.getInfoByOrderId(orderId));
+            return DataServerJsonFormat.jsonFormat(orderOpService.getInfoByOrderId(orderId));
         }
     }
 

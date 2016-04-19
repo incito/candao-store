@@ -220,7 +220,7 @@ public class BusinessController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/GetServerTableInfo/{tableNo}/{userId}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetServerTableInfo/{tableNo}/{userId}", produces = {"application/text;charset=UTF-8"})
     public String getServerTableInfo(@PathVariable String tableNo, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController getServerTableInfo tableNo={} userId={}", tableNo, userId);
         String result = businessService.getServerTableInfo(tableNo, userId);
