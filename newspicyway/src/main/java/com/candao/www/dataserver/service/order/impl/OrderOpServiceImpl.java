@@ -198,7 +198,7 @@ public class OrderOpServiceImpl implements OrderOpService {
     }
 
     @Override
-    public Map getInfoByOrderId(String orderId) {
+    public List<Map> getInfoByOrderId(String orderId) {
         return orderMapper.getInfoByOrderId(orderId);
     }
 }
