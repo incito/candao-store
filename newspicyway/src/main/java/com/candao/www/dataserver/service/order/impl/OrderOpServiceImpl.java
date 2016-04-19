@@ -224,7 +224,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             if ("1".equals(isClear)) {
                 return "{\"Data\":\"0\",\"Info\":\"帐单已经生成了清机单!\"}";
             }
-            tableMapper.updateTableByTableId(tableId);
+            tableMapper.updateTableByTableId(orderId, tableId);
             return "{\"Data\":\"1\",\"Info\":\"" + tableNo + "\"}";
         } catch (Exception e) {
             e.printStackTrace();

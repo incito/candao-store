@@ -26,8 +26,7 @@ public class MsgProcessController {
     @ResponseBody
     public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg) {
         String result = msgForwardService.broadCastMsg(userId, msgId, msg);
-//        result = "{\"result\":[\"" + result + "\"]}";
-        return result;
+        return "{\"result\":[\"{\\\"Data\\\":\\\"1\\\",\\\"workdate\\\":\\\"\\\",\\\"Info\\\":\\\"\\\"}\"]}";
 //        return StringUtil.string2Unicode(result);
     }
 
@@ -35,7 +34,7 @@ public class MsgProcessController {
     @ResponseBody
     public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
         String result = msgForwardService.broadCastOk(client, msgId);
-//        result = "{\"result\":[\"" + result + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         return result;
 //        return StringUtil.string2Unicode(result);
     }

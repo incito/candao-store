@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
-import com.candao.www.dataserver.model.ResultData;
 import com.candao.www.dataserver.service.business.OpenCashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
