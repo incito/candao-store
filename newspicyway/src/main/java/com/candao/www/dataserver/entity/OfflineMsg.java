@@ -13,6 +13,7 @@ public class OfflineMsg {
     private String deviceId;
     private Integer isSingle;
     private Date createTime;
+    private Date expireTime;
 
     public OfflineMsg() {
 
@@ -80,5 +81,13 @@ public class OfflineMsg {
 
     public void setDeviceGroup(String deviceGroup) {
         this.deviceGroup = deviceGroup;
+    }
+
+    public Date getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Date expireTime) {
+        this.expireTime = expireTime;
     }
 }

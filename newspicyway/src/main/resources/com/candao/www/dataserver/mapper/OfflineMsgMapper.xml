@@ -10,6 +10,7 @@
         <result column="device_id" property="deviceId"/>
         <result column="is_single" property="isSingle"/>
         <result column="create_time" property="createTime"/>
+        <result column="expire_time" property="expireTime"/>
     </resultMap>
     <select id="getByGroupAndId" resultMap="BaseResultMap">
       select * from t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId}
@@ -25,12 +26,15 @@
     </select>
     <insert id="save" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.candao.www.dataserver.entity.OfflineMsg">
-       INSERT INTO t_offline_msg(msg_type, content,device_group, device_id,is_single,create_time) VALUES (#{msgType},#{content},#{deviceGroup},#{deviceId},#{isSingle}, now())
+       INSERT INTO t_offline_msg(msg_type, content,device_group, device_id,is_single,create_time,expire_time) VALUES (#{msgType},#{content},#{deviceGroup},#{deviceId},#{isSingle}, now(),#{expireTime})
     </insert>
     <delete id="deleteById">
         DELETE FROM t_offline_msg WHERE id=#{id}
     </delete>
     <delete id="deleteMsg">
         DELETE FROM t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId} and msg_type=#{msgType}
+    </delete>
+    <delete id="deleteMsgByExpireTime">
+        DELETE FROM t_offline_msg WHERE expire_time &lt;=now();
     </delete>
 </mapper>
