@@ -839,7 +839,7 @@ CREATE TABLE t_gift (
   gift_no VARCHAR(50) DEFAULT NULL,
   gift_type_id VARCHAR(50) DEFAULT NULL,
   gift_name VARCHAR(300) DEFAULT NULL,
-  gift_unit VARCHAR(10) DEFAULT NULL,
+  gift_unit VARCHAR(100) DEFAULT NULL,
   gift_price DECIMAL(10, 2) DEFAULT NULL,
   member_price DECIMAL(10, 2) DEFAULT NULL,
   image_url VARCHAR(200) DEFAULT NULL,
