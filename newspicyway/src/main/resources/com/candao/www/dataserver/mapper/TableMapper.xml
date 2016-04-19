@@ -6,6 +6,10 @@
         update t_table set status=0
         where tableno=#{tableNo}
     </update>
+    <update id="updaStatus1" parameterType="map">
+        update t_table set status=1,orderid=#{orderId}
+        where tableid=#{tableId}
+    </update>
     <select id="getOrderIdByTableNo" resultType="java.lang.String">
        SELECT orderid FROM t_table b WHERE b.tableno =#{tableNo} LIMIT 0,1
     </select>
@@ -14,5 +18,11 @@
     </select>
     <select id="selectOrderId" parameterType="String" resultType="String">
         select orderid from  t_table b   where b.tableno=#{tableNo} LIMIT 0 , 1
+    </select>
+    <select id="selectTableNo" parameterType="String" resultType="String">
+        select tableno from t_table where tableid=#{tableId} LIMIT 0 , 1
+    </select>
+    <select id="selectStatus" parameterType="String" resultType="Integer">
+        select status from t_table where tableid=#{tableId} LIMIT 0 , 1
     </select>
 </mapper>

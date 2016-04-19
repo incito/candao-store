@@ -3,6 +3,7 @@ package com.candao.www.dataserver.service.member.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.candao.common.utils.DateUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
 import com.candao.www.dataserver.mapper.*;
@@ -435,6 +436,23 @@ public class BusinessServiceImpl implements BusinessService {
         return 1;
     }
 
+    @Override
+    public String accountsOrder(String userId, String orderId) {
+//        Integer orderStatus = orderMapper.selectOrderStatus(orderId);
+        String isClear = settlementMapper.selectClearByOrderId(orderId);
+        String currentTableId = orderMapper.selectCurrentTableId(orderId);
+        String tableNo = tableMapper.selectTableNo(currentTableId);
+        Integer tableStatus = tableMapper.selectStatus(currentTableId);
+        if (null != tableStatus && tableStatus != Constant.TABLESTATUS.FREE_STATUS) {
+            return "{\"Data\":\"0\",\"Info\":\"帐单当前桌号还未结帐!\"}";
+        }
+        if ("1".equals(isClear)) {
+            return "{\"Data\":\"0\",\"Info\":\"帐单已经生成了清机单!\"}";
+        }
+        tableMapper.updaStatus1(orderId, currentTableId);
+        return "{\"Data\":\"1\",\"Info\":\"" + tableNo + "\"}";
+    }
+
     /**
      * 获取班机号
      *
@@ -449,7 +467,7 @@ public class BusinessServiceImpl implements BusinessService {
         } else {
             String serial = maxClassNoToday.substring(maxClassNoToday.length() - 4);
             int serialInt = StringUtil.str2Int(serial, 0);
-            maxClassNoToday = String.format("%04d", serialInt + 1);
+            maxClassNoToday = preStr + String.format("%04d", serialInt + 1);
         }
         return maxClassNoToday;
     }

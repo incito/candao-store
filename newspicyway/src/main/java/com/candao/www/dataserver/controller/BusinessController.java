@@ -2,6 +2,7 @@ package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.member.BusinessService;
 import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,9 +99,8 @@ public class BusinessController {
     public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={} authorizer={}", userId, userName, ip, posId, authorizer);
         String result = businessService.clearMachine(userId, userName, ip, posId, authorizer);
-        result = "{\"result\":[\"" + result + "\"]}";
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController clearMachine response={}", result);
-        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -118,9 +118,8 @@ public class BusinessController {
     public String clearMachine1(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={}", userId, userName, ip, posId);
         String result = businessService.clearMachine(userId, userName, ip, posId, "");
-        result = "{\"result\":[\"" + result + "\"]}";
+        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
         logger.info("###RESPONSE### BusinessController clearMachine response={}", result);
-        result = StringUtil.string2Unicode(result);
         return result;
     }
 
@@ -227,6 +226,16 @@ public class BusinessController {
         result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### BusinessController getServerTableInfo response={}", result);
         result = StringUtil.string2Unicode(result);
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/accountsorder/{userId}/{orderId}/", produces = {"application/text;charset=UTF-8"})
+    public String accountsOrder(@PathVariable String userId, @PathVariable String orderId) {
+        logger.info("###REQUEST### BusinessController accountsorder userId={} orderId={}", userId, orderId);
+        String result = businessService.accountsOrder(userId, orderId);
+        result = "{\"result\":[\"" + result + "\"]}";
+        logger.info("###RESPONSE### BusinessController accountsorder response={}", result);
         return result;
     }
 
