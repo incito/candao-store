@@ -2246,11 +2246,11 @@ public class PadInterfaceController {
 		map.put("type", SystemConstant.ONEPAGETYPE.type());
 		List<Map<String, Object>>  list= dataDictionaryService.findByParams(map);
 		if(list==null || list.size()==0){//没有数据
-			resultMap.put("result", 1);
+			resultMap.put("code", 1);
 			resultMap.put("msg","后台没有配置信息");
 			resultMap.put("data","");
 		}else{
-			resultMap.put("result", 0);
+			resultMap.put("code", 0);
 			resultMap.put("data",list.get(0).get("status").toString());
 		}
 		
