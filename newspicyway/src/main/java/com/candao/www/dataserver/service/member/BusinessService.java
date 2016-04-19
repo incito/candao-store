@@ -124,5 +124,7 @@ public interface BusinessService {
 
     String getServerTableList2(String orderId, String userId);
 
+    String accountsOrder(String userId, String orderId);
+
     Date getOpenDate();
 }

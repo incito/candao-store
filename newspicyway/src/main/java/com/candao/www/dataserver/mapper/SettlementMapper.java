@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SettlementMapper {
     int setClear(@Param("openDate") String openDate, @Param("userId") String userId);
+
+    String selectClearByOrderId(@Param("orderId") String orderId);
 }

@@ -6,4 +6,7 @@
         update  t_settlement a set isclear=1
         where a.opendate=#{openDate} and userid=#{userId} and a.isclear=0
     </update>
+    <select id="selectClearByOrderId" parameterType="map" resultType="String">
+        select isclear from t_settlement where orderid=#{orderId} limit 1
+    </select>
 </mapper>
