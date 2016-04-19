@@ -4,7 +4,7 @@
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.candao.www.data.dao.WaiterShiftDao">
     <select id="getWaiterShiftInfo" parameterType="java.util.Map"  resultType="java.util.Map">
-        SELECT ord.orderid,ord.userid,ord.custnum,us.`name`,sum(ordt.dishnum*ordt.orignalprice) as shouldamount,tab.tableNo as tableids from t_order ord LEFT JOIN t_order_detail ordt ON ord.orderid = ordt.orderid left join t_b_employee em on ord.userid = em.job_number left join t_b_user us on us.id = em.user_id LEFT JOIN t_table tab ON tab.tableid = ord.tableids 
+        SELECT ord.orderid,ord.userid,ord.custnum,us.`name`,sum(ordt.dishnum*ordt.orignalprice) as shouldamount,tab.tableNo as tableids from t_order ord LEFT JOIN t_order_detail ordt ON ord.orderid = ordt.orderid left join t_b_employee em on ord.userid = em.job_number left join t_b_user us on us.id = em.user_id LEFT JOIN t_table tab ON tab.tableid = ord.currenttableid 
         where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime}  and (ordt.primarykey &lt;&gt; ordt.superkey or ordt.ordertype &lt;&gt; 2) and em.branch_id = #{branchId} and ord.branchid = #{branchId}
         <if test="shiftid==-1">
 	      and  ord.shiftid in (0,1)
