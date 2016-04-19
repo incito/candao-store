@@ -218,7 +218,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             Map mapTable = orderMapper.getReBackOrderByTableId(tableId);
             String tableNo = mapTable.get("tableno") + "";
             String tableStatus = mapTable.get("status") + "";
-            if ("0".equals(tableStatus)) {
+            if (!"0".equals(tableStatus)) {
                 return "{\"Data\":\"0\",\"Info\":\"帐单当前桌号还未结帐!\"}";
             }
             if ("1".equals(isClear)) {
