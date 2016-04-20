@@ -6,10 +6,7 @@ import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.entity.SyncMsg;
 import com.candao.www.dataserver.mapper.MsgProcessMapper;
-import com.candao.www.dataserver.model.MsgData;
-import com.candao.www.dataserver.model.MsgForwardData;
-import com.candao.www.dataserver.model.OfflineMsgData;
-import com.candao.www.dataserver.model.ResponseData;
+import com.candao.www.dataserver.model.*;
 import com.candao.www.dataserver.service.communication.CommunicationService;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
 import com.candao.www.dataserver.service.device.DeviceService;
@@ -61,7 +58,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             responseData.setData("发送广播消息异常");
             LOGGER.error("#### broadCastMsg userId={},msgType={},msg={},error={}###", userId, msgType, msg, e);
         }
-        return JSON.toJSONString(responseData);
+        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
 
     @Override
@@ -97,7 +94,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         } catch (Exception e) {
             LOGGER.error("###broadCastOk client={},msgId={},error={}###", client, msgId, e);
         }
-        return JSON.toJSONString(responseData);
+        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
 
     @Override

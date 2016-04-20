@@ -3,20 +3,28 @@ package com.candao.www.dataserver.service.communication.impl;
 import com.candao.communication.callback.MsgCallback;
 import com.candao.communication.client.NettyService;
 import com.candao.communication.vo.Response;
+import com.candao.www.dataserver.service.SpringContextUtils;
 import com.candao.www.dataserver.service.communication.CommunicationService;
+import com.candao.www.utils.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by ytq on 2016/3/9.
  */
-@Service
 public class CommunicationServiceImpl implements CommunicationService {
     @Autowired
     private MsgCallback msgCallback;
+
+    private void initOn() {
+        String ip = PropertyUtil.getProInfo("netty-client", "netty_server_ip");
+        Integer port = Integer.valueOf(PropertyUtil.getProInfo("netty-client", "netty_server_port"));
+        on(ip, port);
+    }
 
     public Response on(String ip, Integer port) {
         try {
