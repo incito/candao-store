@@ -1560,11 +1560,22 @@ function exportReportsCou(f) {
 			ptype= "null";
 			pname = "null";
 		}
-		
-		
-		location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
-			+ settlementWay + "/" + beginTime + "/" + endTime + "/"
-			+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
+		alert(333);
+//		location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
+//			+ settlementWay + "/" + beginTime + "/" + endTime + "/"
+//			+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
+		$("#_beginTime").val(beginTime);
+		$("#_endTime").val(endTime);
+		$("#_settlementWay").val(settlementWay);
+		$("#_shiftid").val(shiftid);
+		$("#_bankcardno").val(bankcardno);
+		$("#_type").val(type);
+		$("#_payway").val(payway);
+		$("#_ptype").val(ptype);
+		$("#_pname").val(pname);
+		$("#_searchType").val(searchType);
+		$("#couponForm").attr("action", global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json");
+		$("#couponForm").submit();
 	}
 }
 /***********************优惠活动明细表 END****************************************/
@@ -1763,12 +1774,11 @@ function exportReportsItem(f) {
 //	location.href = global_Path + "/itemDetail/exportxlsA/"
 //			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
 	}
-	
 	$("#_beginTime").val(beginTime);
 	$("#_endTime").val(endTime);
 	$("#_shiftid").val(shiftid);
 	$("#_id").val(id);
-	$("#_dishType").val(_dishType);
+	$("#dish_type").val(_dishType);
 	$("#_itemids").val(itemids);
 	$("#_searchType").val(searchType);
 	$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportxlsA.json");
