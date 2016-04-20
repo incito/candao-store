@@ -1,6 +1,11 @@
 package com.candao.common.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 
 
 public class StringUtils {
@@ -229,6 +234,66 @@ public static String bSubstring4(String s,int k) throws Exception{
 		return returnMsg;
 	
 }
+
+	/**
+	 * 将src按delimiter和指定
+	 * size递归分割
+	 * @param src
+	 * @param delimiter
+	 * @param num
+	 * @return
+	 */
+	public static List<String> split(String src, String delimiter, int size) {
+		if (src == null || src.isEmpty()) {
+			return null;
+		}
+		List<String> res = new LinkedList<>();
+		List<Integer> indexes = split(src, delimiter, size, null, 0);
+		if (indexes == null) {
+			res.add(src);
+			return res;
+		}
+		int fromIndex = 0;
+		for (Integer integer : indexes) {
+			res.add(src.substring(fromIndex, integer));
+			fromIndex = integer;
+		}
+		return res;
+	}
+	
+	/**
+	 * 返回src中delimiter的position
+	 * @param src
+	 * @param delimiter分隔符
+	 * @param size分页数
+	 * @param res
+	 * @param fromIndex偏移量
+	 * @return
+	 */
+	public static List<Integer> split(String src, String delimiter, int size, List<Integer> res, int fromIndex) {
+		if (src == null || src.isEmpty())
+			return null;
+		if (delimiter == null || delimiter.isEmpty() || size == 0) {
+			return null;
+		}
+		if (res == null)
+			res = new ArrayList<Integer>();
+		int i = fromIndex, position = 0;
+		for (int j = 0; j < size; j++) {
+			position = src.indexOf(delimiter, i + 1);
+			if (position == -1) {
+				i = src.length() - 1;
+				break;
+			}
+			i = position;
+		}
+		fromIndex = i + 1;
+		res.add(fromIndex);
+		if ((i + 1) < src.length()) {
+			split(src, delimiter, size, res, fromIndex);
+		}
+		return res;
+	}
 	
 	public static void main(String[] args) throws Exception {
 		int str1 = getStrLength("a啊3");

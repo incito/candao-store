@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.candao.common.dao.SynDataTools;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.common.utils.StringUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.BranchDataSynDao;
 import com.candao.www.data.dao.TbBranchDao;
 import com.candao.www.support.FunctionTag;
@@ -108,14 +111,20 @@ public class BranchDataSyn   {
 					for(String table : tables){
 						String listsql = branchDataSynDao.getSynSql(table, SynDataTools.getConditionSql(table,openDate,endDate));
 						if(listsql != null && !"".equals(listsql)){
-							SynSqlObject synSqlObject = new SynSqlObject();
-							synSqlObject.setId(UUID.randomUUID().toString());
-							synSqlObject.setBranchid(branchId);
-							synSqlObject.setTenantid((String)branchinfo.get("tenantid"));
-							synSqlObject.setSql(listsql);
-							synSqlObject.setFlag("1");
-							synSqlObject.setSequenceNo(""+ sequenceNo ++ );
-							service.sendMessage(synSqlObject);
+							List<String> pageSql = StringUtils.split(listsql, ";",Integer.valueOf(PropertiesUtils.getValue("MSGSIZE") ));
+							
+							if(pageSql != null && !pageSql.isEmpty()){
+								for (String it : pageSql) {
+									SynSqlObject synSqlObject = new SynSqlObject();
+									synSqlObject.setId(UUID.randomUUID().toString());
+									synSqlObject.setBranchid(branchId);
+									synSqlObject.setTenantid((String)branchinfo.get("tenantid"));
+									synSqlObject.setSql(it);
+									synSqlObject.setFlag("1");
+									synSqlObject.setSequenceNo(""+ sequenceNo ++ );
+									service.sendMessage(synSqlObject);																	
+								}
+							}
 						}
 				 
 					}  
@@ -126,14 +135,20 @@ public class BranchDataSyn   {
 					 String listsql = branchDataSynDao.getSynSql(synTable, SynDataTools.getConditionSql(synTable,openDate,endDate));
 						
 						if(listsql != null && !"".equals(listsql)){
-							SynSqlObject synSqlObject = new SynSqlObject();
-							synSqlObject.setId(UUID.randomUUID().toString());
-							synSqlObject.setBranchid(branchId);
-							synSqlObject.setTenantid((String)branchinfo.get("tenantid"));
-							synSqlObject.setSql(listsql);
-							synSqlObject.setFlag("1");
-							synSqlObject.setSequenceNo(""+ sequenceNo ++ );
-							service.sendMessage(synSqlObject);
+							List<String> pageSql = StringUtils.split(listsql, ";", Integer.valueOf(PropertiesUtils.getValue("MSGSIZE") ));
+							
+							if(pageSql != null && !pageSql.isEmpty()){
+								for (String it : pageSql) {
+									SynSqlObject synSqlObject = new SynSqlObject();
+									synSqlObject.setId(UUID.randomUUID().toString());
+									synSqlObject.setBranchid(branchId);
+									synSqlObject.setTenantid((String)branchinfo.get("tenantid"));
+									synSqlObject.setSql(it);
+									synSqlObject.setFlag("1");
+									synSqlObject.setSequenceNo(""+ sequenceNo ++ );
+									service.sendMessage(synSqlObject);									
+								}
+							}
 						}
 					
 				//      branchDataSynDao.transferToHistory();
