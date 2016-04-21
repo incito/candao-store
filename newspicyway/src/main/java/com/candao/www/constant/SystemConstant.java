@@ -22,6 +22,7 @@ public enum SystemConstant{
     UNIT("UNIT","计量单位"),
 	CALLTYPE("CALLTYPE","呼叫服务员类型"),
 	ROUNDING("ROUNDING","零头处理方式"),
+	ONEPAGETYPE("ONEPAGETYPE","一页菜谱"),
 	ACCURACY("ACCURACY","零头精确度");
 	private String type;
 

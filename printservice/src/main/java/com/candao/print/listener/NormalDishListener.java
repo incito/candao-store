@@ -10,12 +10,15 @@ import java.util.List;
 
 import javax.jms.Destination;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.Constant;
+import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
@@ -25,6 +28,8 @@ import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
 public class NormalDishListener {
+	
+	private   Log  log=LogFactory.getLog(NormalDishListener.class);
 	/**
 	 * 
 	 * @param message
@@ -44,6 +49,8 @@ public class NormalDishListener {
 	}
 
 	public String receiveMessage(PrintObj object) {
+		log.error("111111111");
+		log.debug(JacksonJsonMapper.objectToJson(object.getpDish()));
 		System.out.println("NormalDishListener receive message");
 		OutputStream socketOut = null;
 		OutputStreamWriter writer = null;

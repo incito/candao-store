@@ -62,6 +62,14 @@ $("#test").click(function(){
 		$("#retrieveDish").find("div.edit_info").removeClass("hide");
 		$("#retrieveDish").find("div.show_info").addClass("hide");
 	});
+	//一页菜品设置编辑
+	$("#onepagebut").click(function() {
+		$(this).addClass("hide");
+		$("#onepagesub").removeClass("hide");
+		$("#onepagediv").find("div.edit_info").removeClass("hide");
+		$("#onepagediv").find("div.show_info").addClass("hide");
+	});
+	
 	// 点击服务员响应时间 编辑
 	$("#editTimes").click(function() {
 		$(this).addClass("hide");
@@ -450,6 +458,36 @@ $("#test").click(function(){
 			}
 		}
 	});
+	
+	
+	/********一页菜谱保存***********/
+	
+	$("#onepage_form").validate({
+		submitHandler : function(form) {
+			var vcheck = true;
+			if (vcheck) {
+				var onepageisFree= $("input[name='onepageisFree']:checked").val();
+				saveonepageForm(onepageisFree);
+			}
+		}
+	});
+	
+	function saveonepageForm(status){
+		var obj = {
+				status : status,
+				dictid:$("#dictidonepage").val()
+			};
+		var type = $("#onepagetype").val();
+		doPost(type, obj, function(data){
+			$("#onepagesub").addClass("hide");
+			$("#onepagebut").removeClass("hide");
+			$("#onepagediv").find("div.edit_info").addClass("hide");
+			$("#onepagediv").find("div.show_info").removeClass("hide");
+			initData(data, null);
+		});
+	}
+	
+	
 	/**
 	 * 礼物设置
 	 */
@@ -923,7 +961,22 @@ function initData(data, type){
 				$("#def_background").attr("src",img_Path + bgImg.item_value);
 			}
 		});
+		
+		//一页菜谱显示
+		var   onepaytypes=data.ONEPAGETYPE;
+		$.each(onepaytypes, function(i, item){
+			var status = item.status;
+			if(status == 0){
+				$(".isFree_onepage").find("p").text("不开启");
+			}else{
+				$(".isFree_onepage").find("p").text("开启");
+			}
+			$("#dictidonepage").val(item.dictid);
+			$("input[name='onepageisFree'][value="+status+"]").prop("checked",true);
+		});
+		//
 	}
+	
 }
 /**
  * 查询数据
