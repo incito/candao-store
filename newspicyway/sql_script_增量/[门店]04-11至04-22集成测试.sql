@@ -17,7 +17,7 @@ CREATE TABLE `t_b_tip` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 描述：重复下单 ;
+-- 描述：重复下单 ，修正重复下单需要  执行   call p_get_primarykeys();
 -- 作者： 肖凯; 
 -- 时间：2016-04-21
 ALTER TABLE t_order_detail ADD INDEX idx_orderprice (orderprice); 
