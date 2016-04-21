@@ -271,4 +271,10 @@ public interface PreferentialActivityService {
     */
    public boolean deleteByStatus(String id);
    
+   /**
+    * 根据条件更新优惠活动
+    * @param params
+    * @return
+    */
+   public int updateBySelective(Map params);
 }

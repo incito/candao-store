@@ -1399,4 +1399,15 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		
 		return tbPreferentialActivityDao.page(params, current, pagesize);
 	}
+	
+	@Override
+	public int updateBySelective(Map params) {
+		if("0".equals(params.get("operationtype"))){
+			params.put("status", 0);
+		}else {
+			params.put("status", 2);
+		}
+		params.put("id", params.get("preferential"));
+		return tbPreferentialActivityDao.updateBySelective(params);
+	}
 }
