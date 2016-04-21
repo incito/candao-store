@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.sf.json.JSONObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -45,8 +45,12 @@ import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.WorkLogService;
+
+import net.sf.json.JSONObject;
 @Service
 public class TableServiceImpl implements TableService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(TableServiceImpl.class);
 	
 	@Autowired
 	@Qualifier("t_userService")
@@ -361,7 +365,7 @@ public class TableServiceImpl implements TableService {
 					System.out.println("清空pad推送失败");
 				}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.error("-->",e);
 					e.printStackTrace();
 				}
 		   }

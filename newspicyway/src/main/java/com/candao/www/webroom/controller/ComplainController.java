@@ -46,7 +46,7 @@ public class ComplainController {
 	@RequestMapping(value = "/getComplainType",method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getDectoyrByType() {
-		logger.debug("start method getDicListByType");
+		logger.info("start method getDicListByType");
 		try {
 			String type ="COMPLAINT";
 			List<Map<String,String>> list = systemService.getDicListByTypeForClient(type);
@@ -72,11 +72,12 @@ public class ComplainController {
 	@RequestMapping(value = "/getTimeSet",method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getTimeSet() {
-		logger.debug("start method getTimeSet");
+		logger.info("start method getTimeSet");
 		try {
 			String type ="RESPONSETIME";
 			List<Map<String,String>> list = systemService.getTimeValueByTypeForClient(type);
 			if(list==null||list.size()<=0){
+				logger.info("没有查询到相应的数据");
 				return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
 			}
 			Map<String,Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");

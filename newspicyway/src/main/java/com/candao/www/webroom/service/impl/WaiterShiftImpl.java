@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,8 @@ import com.candao.www.webroom.service.WaiterShiftService;
 public class WaiterShiftImpl implements WaiterShiftService{
 	
 	private static DecimalFormat dataformat = new DecimalFormat("0.00");
+	
+	private static final Logger logger = LoggerFactory.getLogger(WaiterShiftImpl.class);
 	
 	@Autowired
 	private WaiterShiftDao shiftDao;
@@ -244,7 +248,7 @@ public class WaiterShiftImpl implements WaiterShiftService{
 		try{
 			return Integer.parseInt(value);
 		}catch(Exception ex){
-			
+			logger.error("-->",ex);
 		}
 		return 0;
 	}

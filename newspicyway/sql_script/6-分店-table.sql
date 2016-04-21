@@ -838,8 +838,8 @@ CREATE TABLE t_gift (
   id VARCHAR(50) NOT NULL,
   gift_no VARCHAR(50) DEFAULT NULL,
   gift_type_id VARCHAR(50) DEFAULT NULL,
-  gift_name VARCHAR(30) DEFAULT NULL,
-  gift_unit VARCHAR(10) DEFAULT NULL,
+  gift_name VARCHAR(300) DEFAULT NULL,
+  gift_unit VARCHAR(100) DEFAULT NULL,
   gift_price DECIMAL(10, 2) DEFAULT NULL,
   member_price DECIMAL(10, 2) DEFAULT NULL,
   image_url VARCHAR(200) DEFAULT NULL,
@@ -864,7 +864,7 @@ CREATE TABLE t_gift_log (
   gift_status CHAR(1) DEFAULT NULL,
   order_id VARCHAR(50) DEFAULT NULL,
   insert_time DATETIME DEFAULT NULL,
-  gift_name VARCHAR(30) DEFAULT NULL,
+  gift_name VARCHAR(300) DEFAULT NULL,
   gift_num INT(4) DEFAULT NULL,
   gift_unit VARCHAR(10) DEFAULT NULL,
   gift_price DECIMAL(10, 2) DEFAULT NULL,
@@ -2564,6 +2564,22 @@ CREATE TABLE `t_b_weixin_temp` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+DROP TABLE IF EXISTS `t_billing_detail`;
+
+CREATE TABLE `t_billing_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `orderid` varchar(50) NOT NULL COMMENT '订单编号',
+  `branchid` varchar(50) NOT NULL COMMENT '分店ID',
+  `creaditname` varchar(100) NOT NULL COMMENT '挂账单位名称',
+  `payamount` decimal(8,2) DEFAULT NULL COMMENT '已结金额',
+  `disamount` decimal(8,2) DEFAULT NULL COMMENT '优免金额',
+  `operator` varchar(255) NOT NULL COMMENT '操作员',
+  `inserttime` datetime NOT NULL COMMENT '操作时间',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='挂账信息结算历史表';
 -- 
 -- Enable foreign keys
 -- 

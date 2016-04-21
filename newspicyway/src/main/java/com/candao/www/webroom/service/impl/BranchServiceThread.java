@@ -6,6 +6,9 @@ import java.util.Date;
 
 import javax.jms.Destination;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.spring.SpringContext;
@@ -14,7 +17,9 @@ import com.candao.www.webroom.zookeeper.ZkDqQueuer;
 
 
 public class BranchServiceThread  {
-	   
+	
+	private static final Logger logger = LoggerFactory.getLogger(BranchServiceThread.class);
+	
 	   String  sql ;
 //	   BranchProducerService  service;
 	   
@@ -68,6 +73,7 @@ public class BranchServiceThread  {
 		        fw.close();
 //			   tSynSqlMapper.insert(synSqlObject);
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	   }
@@ -78,7 +84,7 @@ public class BranchServiceThread  {
 			   try {
 				service.sendMsg(synSqlObject);
 			} catch (Exception e) {
-				 
+				logger.error("-->",e);
 				e.printStackTrace();
 			}
 		   }

@@ -15,13 +15,11 @@ import java.util.Map;
 
 import javax.jms.Destination;
 
-import net.sf.json.JSONObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -53,10 +51,13 @@ import com.candao.www.webroom.service.OpenBizService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
-import com.candao.www.webroom.service.WorkLogService;
+
+import net.sf.json.JSONObject;
 
 @Service
 public class OrderServiceImpl implements OrderService{
+	
+	private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 	
 	@Autowired
 	TableService  tableService;
@@ -68,9 +69,6 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Autowired
 	private DataDictionaryService datadictionaryService;
-	
-	@Autowired
-	private WorkLogService workLogService;
 	
 	@Autowired
 	TdishDao  dishDao;
@@ -168,6 +166,7 @@ public class OrderServiceImpl implements OrderService{
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if(tbOpenBizLog == null){
 			mapRet.put("result", "3");
+			logger.error("开台失败，开业记录为空");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		
@@ -179,10 +178,12 @@ public class OrderServiceImpl implements OrderService{
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		
 		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
+			logger.error("开台失败！ 查找不到桌台");
 			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		if(! "0".equals(String.valueOf(resultMap.get(0).get("status")))){
+			logger.error("开台失败，桌台状态不对！0");
 			mapRet.put("result", "1");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
@@ -572,7 +573,7 @@ public class OrderServiceImpl implements OrderService{
 					System.out.println("清空pad推送失败");
 				}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					logger.error("-->",e);
 					System.out.println("推送异常"+e.toString());
 					e.printStackTrace();
 				}

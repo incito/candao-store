@@ -8,8 +8,10 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
        default-init-method="init" default-destroy-method="cleanUp">
-    <!--<aop:aspectj-autoproxy></aop:aspectj-autoproxy>-->
-    <!--<bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.candao.www.dataserver.mapper"/>
+        <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>
+    </bean>
     <util:properties id="msgConfig" location="classpath:msg-config.properties"/>
     <bean id="communicationService" init-method="initOn" lazy-init="true"
           class="com.candao.www.dataserver.service.communication.impl.CommunicationServiceImpl">
@@ -19,7 +21,8 @@
     <bean id="watchChInRService" class="com.candao.www.dataserver.service.device.impl.WatchChInRServiceImpl"/>
     <bean id="padService" class="com.candao.www.dataserver.service.device.impl.PadServiceImpl"/>
     <bean id="padChInRService" class="com.candao.www.dataserver.service.device.impl.PadChInRServiceImpl"/>
-    <bean id="offlineMsgService" class="com.candao.www.dataserver.service.msghandler.impl.offline.OfflineMsgServiceImpl"/>
+    <bean id="offlineMsgService"
+          class="com.candao.www.dataserver.service.msghandler.impl.offline.OfflineMsgServiceImpl"/>
     <bean id="reConnectService" class="com.candao.www.dataserver.service.device.impl.ReConnectServiceImpl"/>
     <bean id="msgForwardService" class="com.candao.www.dataserver.service.msghandler.impl.MsgForwardServiceImpl"/>
     <bean id="logCollectService" class="com.candao.www.dataserver.service.log.LogCollectService"/>

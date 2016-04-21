@@ -3,6 +3,8 @@ package com.candao.www.webroom.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import com.candao.www.webroom.service.DataDictionaryService;
 @Controller
 @RequestMapping("/bankinterface")
 public class BankInterfaceController {
+	private Logger logger = LoggerFactory.getLogger(BankInterfaceController.class);
 	@Autowired
 	DataDictionaryService dataDictionaryService;
 
@@ -29,6 +32,7 @@ public class BankInterfaceController {
 			List<Map<String, Object>> datasByType = dataDictionaryService.getDatasByType("BANK");
 			return JacksonJsonMapper.objectToJson(datasByType);
 		}catch(Exception e){
+			logger.error("-->",e);
 			return Constant.FAILUREMSG;
 		}
 	}

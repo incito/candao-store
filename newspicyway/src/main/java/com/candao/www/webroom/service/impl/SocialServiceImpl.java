@@ -5,10 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,13 @@ import com.candao.www.data.dao.TSocialDao;
 import com.candao.www.data.model.TbGift;
 import com.candao.www.webroom.service.SocialService;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 @Service("socialService")
 public class SocialServiceImpl implements SocialService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SocialServiceImpl.class);
 
 	@Autowired
 	private TSocialDao tsocialDao;
@@ -61,6 +65,7 @@ public class SocialServiceImpl implements SocialService {
 				tsocialDao.saveGift(tbGift);
 			}
 		}catch(Exception e){
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	}
