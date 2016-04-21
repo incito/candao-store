@@ -1,4 +1,9 @@
-﻿--
+﻿-- 文件描述：本文件为本次集成测试所需增量sql脚本 
+
+-- 描述：小费 ;
+-- 作者： 李宗仁; 
+-- 时间：2016-04-21
+
 DROP TABLE IF EXISTS `t_b_tip`;
 
 CREATE TABLE `t_b_tip` (
