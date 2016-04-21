@@ -642,12 +642,15 @@
 					tpa.activity_introduction,
 					tpa.use_notice,
 					tpa.createtime,
-					tpa.creator
+					tpa.creator,
+					tpa.status
 				FROM t_p_preferential_activity tpa 
 				<where>
 					<include refid="base_condition"></include>
 					and tpa.apply_all=1 
-					AND (tpa.`status` is null or tpa.`status` != '2')
+					<if test="status == 2">
+						AND (tpa.`status` is null or tpa.`status` != #{status})
+					</if>
 				</where>
 				<if test=" branchid !=null">
 					UNION
@@ -669,12 +672,16 @@
 						tpa.activity_introduction,
 						tpa.use_notice,
 						tpa.createtime,
-						tpa.creator
+						tpa.creator,
+						tpa.status
 					FROM t_p_preferential_activity tpa 
 					<where>
 						<include refid="base_condition"></include>
 						and tpa.apply_all=0
-						AND (tpa.`status` is null or tpa.`status` != '2')
+						<!-- 判断 -->
+					<if test="status == 2">
+						AND (tpa.`status` is null or tpa.`status` != #{status})
+					</if>
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
 						) 
@@ -713,11 +720,15 @@
 				tpa.activity_introduction,
 				tpa.use_notice,
 				tpa.starttime,
-				tpa.endtime 
+				tpa.endtime ,
+				tpa.status
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 			WHERE
 			  det.preferential = tpa.id 
-			  and (tpa.`status` is null or (tpa.status !='1' and tpa.status != '2'))
+			  and (tpa.`status` is null or tpa.status !='1')
+			  	<if test="status == 2">
+					AND tpa.`status` != #{status}
+				</if>
 			  AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
 		      and tpa.apply_all=1 
 			<if test=" branchid !=null">
@@ -751,11 +762,15 @@
 						tpa.activity_introduction,
 						tpa.use_notice,
 						tpa.starttime,
-						tpa.endtime 
+						tpa.endtime,
+						tpa.status
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE det.preferential = tpa.id 
 				and
-				(tpa.`status` is null or (tpa.status !='1' and tpa.status != '2'))
+				(tpa.`status` is null or tpa.status !='1' )
+					<if test="status == 2">
+						AND tpa.`status` != #{status}
+					</if>
 						<if test=" type !=null">
 							AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
 						</if>
@@ -796,7 +811,8 @@
 				tpa.activity_introduction,
 				tpa.use_notice,
 				tpa.starttime,
-				tpa.endtime 
+				tpa.endtime ,
+				tpa.status
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 			WHERE
 			  det.preferential = tpa.id 
@@ -833,7 +849,8 @@
 						tpa.activity_introduction,
 						tpa.use_notice,
 						tpa.starttime,
-						tpa.endtime 
+						tpa.endtime ,
+						tpa.status
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE det.preferential = tpa.id 
 				and
@@ -875,7 +892,8 @@
 				tpa.activity_introduction,
 				tpa.use_notice,
 				tpa.starttime,
-				tpa.endtime 
+				tpa.endtime ,
+				tpa.status
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 			WHERE 1=1 
 				<if test=" type !=null">
@@ -890,7 +908,9 @@
 					and det.preferential=#{preferential}
 				</if>
 				AND det.preferential = tpa.id 
-				AND (tpa.`status` is null or tpa.`status` != '2')
+				<if test="status != null and status == 2">
+					AND (tpa.`status` is null or tpa.`status` != #{status})
+				</if>
 				
 			<if test=" branchid !=null">
 				UNION
@@ -923,7 +943,8 @@
 						tpa.activity_introduction,
 						tpa.use_notice,
 						tpa.starttime,
-						tpa.endtime 
+						tpa.endtime ,
+						tpa.status
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE 1=1 
 						AND det.preferential = tpa.id 
@@ -936,8 +957,10 @@
 						<if test="preferential != null">
 							and det.preferential=#{preferential}
 						</if>
-						and tpa.apply_all=0
-						AND (tpa.`status` is null or tpa.`status` != '2')
+						and tpa.apply_all=0		
+						<if test=" status == 2">
+							AND (tpa.`status` is null or tpa.`status` != #{status})
+						</if>
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
 						) 
