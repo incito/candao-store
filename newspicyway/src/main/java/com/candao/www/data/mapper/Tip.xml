@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.webroom.service.impl.TipService">
+    <!-- 小费设置 -->
+    
+    <select id="tipSet" parameterType="java.util.Map"  >	
+         insert into newspicyway.t_b_tip 
+         (waiter_number, receivables, orderid,branchid,insertime)
+          values 
+          (#{waiterNo,jdbcType=VARCHAR,mode=IN},
+           #{receivables,jdbcType=INTEGER,mode=IN},
+           #{orderid,jdbcType=VARCHAR,mode=IN},
+           #{branchid,jdbcType=INTEGER,mode=IN},
+           now())
+    </select>
+    <!-- 修改小费 -->
+    <update id="tipUpdate" parameterType="java.util.Map" >
+           UPDATE newspicyway.t_b_tip t 
+  			set 
+  			t.receivables=#{receivables}
+  			where 
+  			t.orderid = #{orderid}
+  			and
+  			t.branchid = #{branchid}
+    </update>
+    <!-- 拉取小费数据 -->
+    <select id="tipLoadData" parameterType="java.util.Map" resultType="java.util.Map">
+         
+  			select c.name waiterName,t.waiter_number waiter_number, t.receivables receivables 
+  				from 
+  			newspicyway.t_b_tip t, newspicyway.t_b_employee b, newspicyway.t_b_user c
+  				where
+  			t.waiter_number = b.job_number 
+  				and t.branchid = b.branch_id
+  				and b.user_id = c.id
+  				and orderid = #{orderid}
+  				GROUP BY
+   			 c.name;
+    </select>
+	<!-- 没有查询到小费记录的时候返回服务员姓名 -->
+	<select id="tipFindNamebyorderid" parameterType="java.util.Map"
+		resultType="java.util.Map">
+
+		SELECT tbu.name waiterName, '' waiter_number,'' receivables
+		FROM t_b_employee tbe,t_b_user tbu,t_order too
+		WHERE tbe.user_id = tbu.id
+		AND tbe.job_number = too.userid
+		AND too.orderid = #{orderid}
+
+
+	</select>
+    <delete id="tipDelete" parameterType="java.util.Map" >
+         	DELETE from t_b_tip 
+         	where 
+  			orderid = #{orderid}
+    </delete>
+    <!-- 结算小费 -->
+    <select id="tipBilling" parameterType="java.util.Map" >
+ 	UPDATE newspicyway.t_b_tip t 
+ 		 set 
+ 	 t.paid=#{paid}
+  		where
+ 	 t.orderid = #{orderid}
+  			
+    </select>
+    
+    <!-- 查询门店服务员小费list -->
+     <select id="tipList" parameterType="java.util.Map" resultType="java.util.Map">
+		select c.name waiterName,count(1) serviceCount, sum(paid) tipMoney 
+  			from 
+  		newspicyway.t_b_tip t, newspicyway.t_b_employee b, newspicyway.t_b_user c
+  			where
+  		t.waiter_number = b.job_number  and t.paid >0
+  			and t.branchid = b.branch_id
+  			and b.user_id = c.id
+  			and t.insertime BETWEEN #{startTime} and #{endTime} 
+  		GROUP BY
+    	c.name
+         
+          
+	</select> 
+    
+</mapper>
