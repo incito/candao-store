@@ -191,6 +191,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
                     <include>**/*.template</include>
+                    <include>**/nettyserver/*</include>
                 </includes>
             </resource>
         </resources>
