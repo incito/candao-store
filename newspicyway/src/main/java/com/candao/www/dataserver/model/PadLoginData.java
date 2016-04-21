@@ -78,4 +78,5 @@ public class PadLoginData extends BaseData {
     public void setTableNo(String tableNo) {
         this.tableNo = tableNo;
     }
+
 }

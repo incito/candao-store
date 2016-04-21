@@ -1,7 +1,9 @@
 package com.candao.www.dataserver.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
+import com.candao.www.dataserver.entity.Watch;
 import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.ReConnectData;
@@ -37,6 +39,7 @@ public class ReConnectServiceImpl extends DeviceServiceImpl {
             target.put(reConnectData.getGroup(), new ArrayList<String>() {{
                 add(reConnectData.getId());
             }});
+            saveOrUpdateDevice(new Device(reConnectData.getGroup(), reConnectData.getId(), reConnectData.getSsId()));
             //登录需要ack
             MsgForwardData msgForwardData = MsgForwardTran.getReconnectResp(JSON.toJSONString(new ResponseData()));
             msgForwardData.setSerialNumber(serialNumber);

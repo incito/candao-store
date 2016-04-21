@@ -29,6 +29,12 @@ public class Device {
         this.userId = userId;
     }
 
+    public Device(String deviceGroup, String deviceId, String ssId) {
+        this.deviceGroup = deviceGroup;
+        this.deviceId = deviceId;
+        this.ssId = ssId;
+    }
+
     public String getTableNo() {
         return tableNo;
     }

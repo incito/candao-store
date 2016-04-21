@@ -6,7 +6,7 @@ import com.candao.www.dataserver.service.SpringContextUtils;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.impl.MsgProcessServiceImpl;
-import com.candao.www.dataserver.service.msghandler.impl.OfflineMsgServiceImpl;
+import com.candao.www.dataserver.service.msghandler.impl.offline.OfflineMsgServiceImpl;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import mockit.Injectable;
 import mockit.Mocked;

@@ -1,4 +1,4 @@
-package com.candao.www.dataserver.service.msghandler.impl;
+package com.candao.www.dataserver.service.msghandler.impl.offline;
 
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.mapper.OfflineMsgMapper;
@@ -37,25 +37,36 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
         if (1 == offlineMsg.getIsSingle()) {
             offlineMsgMapper.deleteMsg(offlineMsg.getDeviceGroup(), offlineMsg.getDeviceId(), offlineMsg.getMsgType());
         }
-        offlineMsgMapper.deleteMsgByExpireTime();
         return offlineMsgMapper.save(offlineMsg);
     }
 
     @Override
+    @Transactional
+    public Integer save(List<OfflineMsg> offlineMsgList) {
+        Integer count = 0;
+        for (OfflineMsg offlineMsg : offlineMsgList) {
+            //如果isSingle为1，一个机具同种类型的消息只保存一条
+            if (1 == offlineMsg.getIsSingle()) {
+                offlineMsgMapper.deleteMsg(offlineMsg.getDeviceGroup(), offlineMsg.getDeviceId(), offlineMsg.getMsgType());
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
     public List<OfflineMsg> getByGroupAndId(String group, String id) {
-        offlineMsgMapper.deleteMsgByExpireTime();
         return offlineMsgMapper.getByGroupAndId(group, id);
     }
 
     @Override
     public List<OfflineMsg> getAllOffLineMsg(String group, String id) {
-        offlineMsgMapper.deleteMsgByExpireTime();
         return offlineMsgMapper.getAllOffLineMsg(group, id);
     }
 
     @Override
     public void deleteById(Integer id) {
-        offlineMsgMapper.deleteMsgByExpireTime();
         offlineMsgMapper.deleteById(id);
     }
+
 }

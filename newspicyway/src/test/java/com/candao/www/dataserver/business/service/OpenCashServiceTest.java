@@ -6,6 +6,7 @@ import com.candao.www.dataserver.service.business.OpenCashService;
 import com.candao.www.dataserver.service.business.impl.OpenCashServiceImpl;
 import mockit.Tested;
 import org.junit.Assert;
+import org.junit.Before;
 import org.testng.annotations.Test;
 
 /**

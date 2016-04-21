@@ -11,6 +11,8 @@ import java.util.List;
 public interface OfflineMsgService extends MsgHandler {
     Integer save(OfflineMsg offlineMsg);
 
+    Integer save(List<OfflineMsg> offlineMsgList);
+
     List<OfflineMsg> getByGroupAndId(String group, String id);
 
     List<OfflineMsg> getAllOffLineMsg(String group, String id);
