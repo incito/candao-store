@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
@@ -25,6 +27,7 @@ import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
 public class NormalDishListener {
+	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
 	/**
 	 * 
 	 * @param message
@@ -44,6 +47,8 @@ public class NormalDishListener {
 	}
 
 	public String receiveMessage(PrintObj object) {
+		logger.error("-----------------------------", "");
+		logger.error("开始打印，订单号：" + object.getOrderNo(), "");
 		System.out.println("NormalDishListener receive message");
 		OutputStream socketOut = null;
 		OutputStreamWriter writer = null;
@@ -141,9 +146,12 @@ public class NormalDishListener {
 			
 			writer.write("     " + "\r\n");
 			writer.flush();// 
-
+			logger.error("------------------------","");
+			logger.error("打印菜品，订单号："+object.getOrderNo()+"*菜品数量：" + (object.getpDish() == null ? 0 : object.getpDish().size()), "");
 			//合并打印
 			for (PrintDish singleDish : object.getpDish()) {
+				logger.error("------------------------","");
+				logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + singleDish.getDishName(),"");
 				socketOut.write(PrinterConstant.getFd8Font());
 				String dishNum2 = StringUtils.bSubstring3(
 						singleDish.getDishNum(), 4);
@@ -250,8 +258,13 @@ public class NormalDishListener {
 			writer.close();
 			socketOut.close();
 			socket.close();
+			logger.error("-----------------------------", "");
+			logger.error("打印完成，订单号：" + object.getOrderNo(), "");
 
 		} catch (Exception e) {
+			logger.error("------------------------","");
+			logger.error("打印异常，订单号："+object.getOrderNo()+e.getMessage(), e, "");
+			
 //			e.printStackTrace();
 			 jmsTemplate.convertAndSend(destination, object);
 		} finally {
