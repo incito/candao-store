@@ -47,6 +47,8 @@ public class NormalDishListener {
 	}
 
 	public String receiveMessage(PrintObj object) {
+		logger.error("-----------------------------", "");
+		logger.error("开始打印，订单号：" + object.getOrderNo(), "");
 		System.out.println("NormalDishListener receive message");
 		OutputStream socketOut = null;
 		OutputStreamWriter writer = null;
@@ -256,6 +258,8 @@ public class NormalDishListener {
 			writer.close();
 			socketOut.close();
 			socket.close();
+			logger.error("-----------------------------", "");
+			logger.error("打印完成，订单号：" + object.getOrderNo(), "");
 
 		} catch (Exception e) {
 			logger.error("------------------------","");

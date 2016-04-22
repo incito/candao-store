@@ -39,6 +39,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
@@ -299,6 +301,7 @@ public class PadInterfaceController {
 //		TDS.REMOVEALL(DELS);		
 //		RETURN ORDERDETAILSERVICE.SAVEORDERDETAILS(ORDER);
 //	}
+	LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	/**add by sgy 2015.1.14
 	 * 修改下单接口
 	 * 	PAD下单接口(台号，标志，菜品ID，份数，口味）返回成功失败
@@ -306,12 +309,13 @@ public class PadInterfaceController {
 	@RequestMapping("/bookorderList")
 	@ResponseBody
 	public String saveOrderInfoList(@RequestBody String jsonString,HttpServletRequest reqeust){
-
+		long start = System.currentTimeMillis();
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(jsonString);
 		record.setPadpath("bookorderList");
 		jsonRecordService.insertJsonRecord(record);
 		Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
+		logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
 		//判断重复下单
 		ToperationLog toperationLog=new ToperationLog();
 		toperationLog.setId(IdentifierUtils.getId().generate().toString());
@@ -339,6 +343,8 @@ public class PadInterfaceController {
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
+			logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
+			logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
 			return returnStr;
 		}else if(flag==1){
 			return Constant.FAILUREMSG;
