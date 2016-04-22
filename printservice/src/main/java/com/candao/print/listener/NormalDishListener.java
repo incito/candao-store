@@ -30,6 +30,7 @@ import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
 public class NormalDishListener {
+	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
 	/**
 	 * 
 	 * @param message

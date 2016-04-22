@@ -1940,6 +1940,10 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
+	
+	@Autowired
+	ToperationLogDao  toperationLogDao;
+	
 	@Autowired
 	private DishSetProducerService dishSetService;
 
