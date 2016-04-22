@@ -11,10 +11,10 @@ import java.util.Date;
  * Created by ytq on 2016/3/21.
  */
 public class WorkDateUtil {
-    private static BusinessService businessService = SpringContextUtils.getBean("businessServiceImpl");
+//    private static BusinessService businessService = SpringContextUtils.getBean("businessServiceImpl");
 
     public static String getWorkDate() {
-        Date openDate = businessService.getOpenDate();
+        Date openDate = null;
         if (null != openDate) {
             return DateUtils.toString(openDate, "yyyy-MM-dd");
         } else {
@@ -39,7 +39,13 @@ public class WorkDateUtil {
         return calendar.getTime();
     }
 
+    public static Date getAfter8Hour() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 8);
+        return calendar.getTime();
+    }
+
     public static void main(String[] args) {
-        System.out.println(WorkDateUtil.getTomorrowDay());
+        System.out.println(WorkDateUtil.getAfter8Hour());
     }
 }
