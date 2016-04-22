@@ -4,7 +4,7 @@
 -- 作者： 翟光涛; 
 -- 时间：2016-04-21
 ALTER TABLE t_gift MODIFY COLUMN gift_unit VARCHAR(100);
-ALTER TABLE t_gift_type MODIFY COLUMN gift_type_name VARCHAR(100);
+ALTER TABLE t_gift_type MODIFY COLUMN gift_type_name VARCHAR(300);
 
 -- 描述：修改orderprice DECIMAL(10, 2),
 -- 作者： 蔡蔡; 
