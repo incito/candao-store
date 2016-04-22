@@ -76,6 +76,12 @@
     <h2>给设备定时发送消息：</h2>
     <label>消息内容：</label>
     <textarea id="msgTimeContent" style="width: 300px;height: 300px"></textarea>
+    <br/>
+    <label>是否添加内容凑32K消息：</label>
+    <label>是</label>
+    <input type="radio" name="isPlus" checked="checked" value="1"/>
+    <label>否</label>
+    <input type="radio" name="isPlus" value="0"/>
     <label>是否是互斥消息：</label>
     <label>是</label>
     <input type="radio" name="isTimeSingle" checked="checked" value="1"/>
@@ -174,29 +180,33 @@
     });
     $("#sendTimeMsgWatch").click(function () {
         var isS = $('input[name="isTimeSingle"]:checked ').val();
+        var isPlus = $('input[name="isPlus"]:checked ').val();
         var seconds = $("#seconds").val();
-        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/group_watch/1/1/" + $("#msgTimeContent").val() + "/" + isS + "/" + seconds + "/", function (data) {
+        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/group_watch/1/1/" + $("#msgTimeContent").val() + "/" + isS + "/" + seconds + "/" + isPlus + "/", function (data) {
                 }
         );
     });
     $("#sendTimeMsgPad").click(function () {
         var isS = $('input[name="isTimeSingle"]:checked ').val();
+        var isPlus = $('input[name="isPlus"]:checked ').val();
         var seconds = $("#seconds").val();
-        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/group_pad/1/1/" + $("#msgTimeContent").val() + "/" + isS + "/" + seconds + "/", function (data) {
+        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/group_pad/1/1/" + $("#msgTimeContent").val() + "/" + isS + "/" + seconds + "/" + isPlus + "/", function (data) {
                 }
         );
     });
     $("#sendTimeMsgAll").click(function () {
         var isS = $('input[name="isTimeSingle"]:checked ').val();
+        var isPlus = $('input[name="isPlus"]:checked ').val();
         var seconds = $("#seconds").val();
-        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/1/1/" + $("#msgTimeContent").val() + "/" + seconds + "/", function (data) {
+        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/1/1/" + $("#msgTimeContent").val() + "/" + seconds + "/" + isPlus + "/", function (data) {
                 }
         );
     });
     $("#sendTimeMsg").click(function () {
         var isS = $('input[name="isTimeSingle"]:checked ').val();
+        var isPlus = $('input[name="isPlus"]:checked ').val();
         var seconds = $("#seconds").val();
-        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/1/1/" + $("#msgTimeContent").val() + "/" + isS + "/" + seconds + "/", function (data) {
+        $.get(global_ctxPath + "/datasnap/rest/TServerMethods1/broadcastmsg1/1/1/" + $("#msgTimeContent").val() + "/" + isS + "/" + seconds + "/" + isPlus + "/", function (data) {
                 }
         );
     });

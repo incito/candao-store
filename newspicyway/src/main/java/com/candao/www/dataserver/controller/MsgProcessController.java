@@ -57,22 +57,24 @@ public class MsgProcessController {
     }
 
     ////////////////////////////////////////////////////////////
-    @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{seconds}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{seconds}/{isPlus}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public void broadCastMsg1(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("seconds") Integer seconds) {
-        demoTimerTask.run(null, userId, msgId, msg, null, seconds);
+    public void broadCastMsg1(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("seconds") Integer seconds, @PathVariable("isPlus") boolean isPlus) {
+        demoTimerTask.run(null, userId, msgId, msg, null, seconds, isPlus);
     }
 
-    @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{isSingle}/{seconds}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{isSingle}/{seconds}/{isPlus}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public void broadCastMsg1(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle, @PathVariable("seconds") Integer seconds) {
-        demoTimerTask.run(null, userId, msgId, msg, isSingle, seconds);
+    public void broadCastMsg1(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle,
+                              @PathVariable("seconds") Integer seconds, @PathVariable("isPlus") boolean isPlus) {
+        demoTimerTask.run(null, userId, msgId, msg, isSingle, seconds, isPlus);
     }
 
-    @RequestMapping(value = "/broadcastmsg1/{group}/{userId}/{msgId}/{msg}/{isSingle}/{seconds}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastmsg1/{group}/{userId}/{msgId}/{msg}/{isSingle}/{seconds}/{isPlus}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public void broadCastMsg1(@PathVariable("group") String group, @PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle, @PathVariable("seconds") Integer seconds) {
-        demoTimerTask.run(group, userId, msgId, msg, isSingle, seconds);
+    public void broadCastMsg1(@PathVariable("group") String group, @PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg,
+                              @PathVariable("isSingle") boolean isSingle, @PathVariable("seconds") Integer seconds, @PathVariable("isPlus") boolean isPlus) {
+        demoTimerTask.run(group, userId, msgId, msg, isSingle, seconds, isPlus);
     }
 
     @RequestMapping(value = "/broadcastmsg1/", produces = {"application/json;charset=UTF-8"})
