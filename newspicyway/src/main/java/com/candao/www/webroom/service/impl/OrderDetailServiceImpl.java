@@ -26,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.print.dao.TbPrinterManagerDao;
@@ -693,12 +695,14 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			  tbPrintObjDao.updateDishCall(map0);
 		}
 		
+    LoggerHelper logger = LoggerFactory.getLogger(OrderDetailServiceImpl.class);
 	private void printSingleDish(Map<String, Object> map0, PrintObj printObj, int refundDish, Map<String, Object> paramsMap) {
 		List<PrintDish> listPrint = tbPrintObjDao.findDish(map0);
 
 		Collections.sort(listPrint);
 		printObj.setList(listPrint);
-
+		logger.error("------------------------","");
+		logger.error("封装数据开始，订单号："+printObj.getOrderNo()+"*菜品数量："+listPrint.size(),"");
 		// 得到区域
 		// 1. 厨打单
 		// 2. 客用单
@@ -713,6 +717,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		List<PrintDish> printedList = new ArrayList<>();
 		for (PrintDish pd : printObj.getList()) {
 			if(printedList.contains(pd)){//已经合并打印了则跳过
+				logger.error("------------------------","");
+				logger.error("组合打印后忽略单品，订单号：" + printObj.getOrderNo()+"*菜品名称："+pd.getDishName(),"");
 				continue;
 			}
 			List<String> IPList = new ArrayList<String>();
@@ -813,6 +819,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 						String groupSequence = getDishGroupSequence(pd, tbPrinter);
 						if (groupSequence != null) {
 							List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
+							logger.error("------------------------","");
+							logger.error("进入组合打印的逻辑，订单号：" + printObj.getOrderNo()+"*组合数量："+findPrintDetail.size(),"");
 							// 有两个及以上的菜才需要合并 
 							//modified by caicai
 							if (findPrintDetail.size() > 1) {
@@ -855,6 +863,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					printObj.setCustomerPrinterIp(tbPrinter.getIpaddress());
 					printObj.setCustomerPrinterPort(tbPrinter.getPort());
 					printObj.setpDish(pdList);
+					logger.error("------------------------,菜品数量"+pdList.size(),"");
+					for (PrintDish printDish : pdList) {
+						logger.error("封装数据结束，订单号："+printObj.getOrderNo()+"*菜品名称："+printDish.getDishName(),"");
+					}
 					new Thread(new PrintThread(printObj)).run();
 					// executor.execute(new PrintThread(printObj));
 				}
@@ -1928,10 +1940,6 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
-	
-	@Autowired
-	ToperationLogDao  toperationLogDao;
-	
 	@Autowired
 	private DishSetProducerService dishSetService;
 
