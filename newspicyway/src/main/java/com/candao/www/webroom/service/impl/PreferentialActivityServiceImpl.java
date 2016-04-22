@@ -969,6 +969,13 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			//added by caicai 2 隐藏，表示不提供隐藏的优惠券
 			params.put("status", 2);
 			List<Map<String, Object>> activitys= this.tbPreferentialActivityDao.findPreferentialDetail(params);
+			//特价券单独处理
+			if("-1".equals(typeid)){
+				params.put("type", "01");
+				List<Map<String, Object>> specialActivitys = tbPreferentialActivityDao.selectSpecialActivity(params);
+				if(specialActivitys != null)
+					activitys.addAll(specialActivitys);				
+			}
 			
 			list=filterValidCoupon(activitys);
 			

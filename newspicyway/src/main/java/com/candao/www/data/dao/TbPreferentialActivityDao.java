@@ -223,4 +223,6 @@ public interface TbPreferentialActivityDao{
    * @return
    */
   public int updateBySelective(Map param);
+  
+  public List<Map<String, Object>> selectSpecialActivity(Map param);
 }

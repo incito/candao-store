@@ -268,5 +268,10 @@ public class TbPreferentialActivityDaoImpl implements TbPreferentialActivityDao 
 	public int updateBySelective(Map param) {
 		return dao.update(PREFIX+".updateBySelective",param);
 	}
+	
+	@Override
+	public List<Map<String, Object>> selectSpecialActivity(Map param) {
+		return dao.find(PREFIX+".selectSpecialActivity",param);
+	}
 
 }
