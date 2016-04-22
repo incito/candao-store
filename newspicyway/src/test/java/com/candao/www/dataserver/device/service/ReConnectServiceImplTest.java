@@ -58,7 +58,7 @@ public class ReConnectServiceImplTest {
             {
                 offlineMsgService.getByGroupAndId(anyString, anyString);
                 result = new ArrayList<OfflineMsg>() {{
-                    add(new OfflineMsg());
+                    add(new OfflineMsg(null, null, null, null, null));
                 }};
             }
         };
