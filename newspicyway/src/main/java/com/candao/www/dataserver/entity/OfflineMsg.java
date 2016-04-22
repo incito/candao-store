@@ -1,5 +1,6 @@
 package com.candao.www.dataserver.entity;
 
+import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 
 import java.util.Date;
@@ -8,7 +9,7 @@ import java.util.Date;
  * Created by ytq on 2016/3/17.
  */
 public class OfflineMsg {
-    private Integer id;
+    private String id;
     private String msgType;
     private String content;
     private String deviceGroup;
@@ -17,10 +18,6 @@ public class OfflineMsg {
     private Date createTime;
     private Date expireTime;
 
-    public OfflineMsg() {
-
-    }
-
     public OfflineMsg(String msgType, String content, String deviceGroup, String deviceId, Integer isSingle) {
         this.msgType = msgType;
         this.content = content;
@@ -28,13 +25,14 @@ public class OfflineMsg {
         this.deviceId = deviceId;
         this.isSingle = isSingle;
         this.expireTime = WorkDateUtil.getAfter8Hour();
+        this.id = IDUtil.getID();
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

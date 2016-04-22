@@ -37,10 +37,10 @@ public class OffLineMsgServiceImplTest {
     public void test() {
         new NonStrictExpectations(MsgProcessServiceImpl.class) {
             {
-                offlineMsgService.deleteById(anyInt);
+                offlineMsgService.deleteById(anyString);
             }
         };
-        OfflineMsgData offlineMsgData = new OfflineMsgData(1, "test");
+        OfflineMsgData offlineMsgData = new OfflineMsgData("1", "test");
         offLineMsgService.handler(null, null, JSON.toJSONString(offlineMsgData));
     }
 }

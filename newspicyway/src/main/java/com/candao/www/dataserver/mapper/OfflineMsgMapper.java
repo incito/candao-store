@@ -11,9 +11,13 @@ import java.util.List;
 public interface OfflineMsgMapper {
     Integer save(OfflineMsg offlineMsg);
 
-    void deleteById(Integer id);
+    void deleteById(String id);
 
     void deleteMsg(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId, @Param("msgType") String msgType);
+
+    void deleteMsgByList(List<OfflineMsg> offlineMsgList);
+
+    Integer saveList(List<OfflineMsg> offlineMsgList);
 
     List<OfflineMsg> getByGroupAndId(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId);
 

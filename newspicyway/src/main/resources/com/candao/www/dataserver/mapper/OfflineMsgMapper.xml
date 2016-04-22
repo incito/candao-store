@@ -24,9 +24,9 @@
             AND device_id=#{deviceId}
         </if>
     </select>
-    <insert id="save" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.candao.www.dataserver.entity.OfflineMsg">
-       INSERT INTO t_offline_msg(msg_type, content,device_group, device_id,is_single,create_time,expire_time) VALUES (#{msgType},#{content},#{deviceGroup},#{deviceId},#{isSingle}, now(),#{expireTime})
+    <insert id="save" parameterType="com.candao.www.dataserver.entity.OfflineMsg">
+       INSERT INTO t_offline_msg(id,msg_type, content,device_group, device_id,is_single,create_time,expire_time) VALUES
+        (#{id},#{msgType},#{content},#{deviceGroup},#{deviceId},#{isSingle}, now(),#{expireTime})
     </insert>
     <delete id="deleteById">
         DELETE FROM t_offline_msg WHERE id=#{id}
@@ -34,6 +34,19 @@
     <delete id="deleteMsg">
         DELETE FROM t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId} and msg_type=#{msgType}
     </delete>
+    <delete id="deleteMsgByList" parameterType="java.util.List">
+        DELETE FROM t_offline_msg WHERE msg_type=#{msgType} and device_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+    </delete>
+    <insert id="saveList" parameterType="java.util.List">
+        INSERT INTO t_offline_msg(id,msg_type, content,device_group, device_id,is_single,create_time,expire_time) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.msgType},#{item.content},#{item.deviceGroup},#{item.deviceId},#{item.isSingle},
+            now(),#{item.expireTime})
+        </foreach>
+    </insert>
     <delete id="deleteMsgByExpireTime">
         DELETE FROM t_offline_msg WHERE expire_time &lt;=now();
     </delete>

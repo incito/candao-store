@@ -11,11 +11,11 @@ import java.util.List;
 public interface OfflineMsgService extends MsgHandler {
     Integer save(OfflineMsg offlineMsg);
 
-    Integer save(List<OfflineMsg> offlineMsgList);
+    Integer save(List<OfflineMsg> offlineMsgList, Boolean isSingle);
 
     List<OfflineMsg> getByGroupAndId(String group, String id);
 
     List<OfflineMsg> getAllOffLineMsg(String group, String id);
 
-    void deleteById(Integer id);
+    void deleteById(String id);
 }

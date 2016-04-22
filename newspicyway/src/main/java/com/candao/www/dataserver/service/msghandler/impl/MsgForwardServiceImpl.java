@@ -112,18 +112,39 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         communicationService.forwardMsgSync(target, msg);
     }
 
+    //    private void broadCastMsg(List<DeviceObject> objects, String msg, String msgType, boolean isSingle) {
+//        for (final DeviceObject deviceObject : objects) {
+//            Map<String, List<String>> target = new HashMap<>();
+//            target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
+//                add(deviceObject.getDeviceId());
+//            }});
+//            int single = 0;
+//            if (isSingle) {
+//                single = 1;
+//            }
+//            OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
+//            offlineMsgService.save(offlineMsg);
+//            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
+//            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+//            communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
+//        }
+//    }
     private void broadCastMsg(List<DeviceObject> objects, String msg, String msgType, boolean isSingle) {
+        List<OfflineMsg> offlineMsgList = new ArrayList<>();
         for (final DeviceObject deviceObject : objects) {
-            Map<String, List<String>> target = new HashMap<>();
-            target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
-                add(deviceObject.getDeviceId());
-            }});
             int single = 0;
             if (isSingle) {
                 single = 1;
             }
             OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
-            offlineMsgService.save(offlineMsg);
+            offlineMsgList.add(offlineMsg);
+        }
+        offlineMsgService.save(offlineMsgList, isSingle);
+        for (final OfflineMsg offlineMsg : offlineMsgList) {
+            Map<String, List<String>> target = new HashMap<>();
+            target.put(offlineMsg.getDeviceGroup(), new ArrayList<String>() {{
+                add(offlineMsg.getDeviceId());
+            }});
             OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
             MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
             communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
