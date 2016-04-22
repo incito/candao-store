@@ -26,7 +26,7 @@ public class StoreInterfaceController {
         return StringUtil.string2Unicode(result);
     }
 
-    @RequestMapping(value = {"/getClearMachineData/{aUserid}/{jsorder}/{posid}/", "/getClearMachineData/{aUserid}/{posid}/"}, produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/getClearMachineData/{aUserid}/{jsorder}/{posid}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getClearMachineData(@PathVariable("aUserid") String aUserId, @PathVariable("jsorder") String jsOrder, @PathVariable("posid") String posId) {
         String result = openCashService.getClearMachineData(aUserId, jsOrder, posId);
