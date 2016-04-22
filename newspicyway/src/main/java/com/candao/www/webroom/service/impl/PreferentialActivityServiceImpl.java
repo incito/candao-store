@@ -966,6 +966,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			Map params=new HashMap();
 			params.put("type", typeid);
 			params.put("branchid", branchid);
+			//added by caicai 2 隐藏，表示不提供隐藏的优惠券
+			params.put("status", 2);
 			List<Map<String, Object>> activitys= this.tbPreferentialActivityDao.findPreferentialDetail(params);
 			
 			list=filterValidCoupon(activitys);
@@ -984,6 +986,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			branchid=(String) branchInfoMap.get("branchid");
 		}
 		params.put("branchid", branchid);
+		//added by caicai 2 隐藏，表示不提供隐藏的优惠券
 		params.put("status", 2);
 		List<Map<String, Object>> activitys= this.tbPreferentialActivityDao.findPreferentialDetail(params);
 			
