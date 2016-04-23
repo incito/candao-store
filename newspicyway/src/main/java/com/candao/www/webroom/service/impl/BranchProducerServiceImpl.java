@@ -3,11 +3,15 @@ package com.candao.www.webroom.service.impl;
 
 import javax.jms.Destination;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.JacksonObjectMapper;
 import com.candao.www.webroom.model.SynSqlObject;
 import com.candao.www.webroom.service.BranchProducerService;
 
@@ -21,6 +25,8 @@ public class BranchProducerServiceImpl implements BranchProducerService{
 	@Autowired
 	@Qualifier("centerQueue")
 	private Destination destination;
+	
+	private Log log = LogFactory.getLog(BranchProducerServiceImpl.class.getName());
 	
 	
 //	@Autowired
@@ -37,7 +43,8 @@ public class BranchProducerServiceImpl implements BranchProducerService{
 	   try{
 		   jmsTemplate.convertAndSend(destination, obj);
 		 }catch(Exception e){
-			 jmsTemplate.convertAndSend(destination, obj);
+			 e.printStackTrace();
+			 log.error("---------上传数据失败！--------"+JacksonJsonMapper.objectToJson(obj), e);
 		 }
 	}
 
