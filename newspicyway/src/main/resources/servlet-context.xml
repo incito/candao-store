@@ -101,7 +101,4 @@
 		<property name="defaultErrorView" value="exception" />
 		<property name="defaultStatusCode" value="500" />
 	</bean>
-	<!--重写HandlerMapping，处理dataserver中URL路劲参数为空格和类似'////'的问题-->
-	<bean class="com.candao.www.dataserver.util.MyHandlerMapping">
-	</bean>
 </beans>

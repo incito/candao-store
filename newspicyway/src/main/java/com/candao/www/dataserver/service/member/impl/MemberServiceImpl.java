@@ -102,10 +102,10 @@ public class MemberServiceImpl implements MemberService {
      *
      * @param userId
      * @param orderId
-     * @param anyway  是否强制取消
+     * @param isRevert2 true:setMemberPrice2 false:setMemberPrice3
      * @return
      */
-    private String revertMemberPrice(String userId, String orderId, boolean anyway) {
+    private String revertMemberPrice(String userId, String orderId, boolean isRevert2) {
         userId = StringUtil.clean(userId);
         orderId = StringUtil.clean(orderId);
         if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(orderId)) {
@@ -113,11 +113,12 @@ public class MemberServiceImpl implements MemberService {
         }
 
         String memberNo = orderMapper.selectMemberNoByOrderId(orderId);
-        // 如果是PAD登录过的就不取消会员价
-        if (!StringUtil.isEmpty(memberNo)) {
-            return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
-        }
-        if (!anyway) {
+        //setMemberPrice3逻辑
+        if (!isRevert2) {
+            // 如果是PAD登录过的就不取消会员价
+            if (!StringUtil.isEmpty(memberNo)) {
+                return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
+            }
             // 如果帐单已经结算就不还原了
             Integer orderStatus = orderMapper.selectOrderStatus(orderId);
             if (null == orderStatus || Constant.ORDERSTATUS.ORDER_STATUS != orderStatus) {
