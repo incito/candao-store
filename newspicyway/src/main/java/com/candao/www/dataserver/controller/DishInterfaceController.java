@@ -63,8 +63,11 @@ public class DishInterfaceController {
     public String getBackDishInfo(@PathVariable("orderId") String orderId, @PathVariable("dishId") String dishId,
                                   @PathVariable("dishUnit") String dishUnit, @PathVariable("tableNo") String tableNo) {
         String result = dishService.getBackDishInfo(orderId, dishId, dishUnit, tableNo);
-        result = "{\"result\":[\"" + result + "\"]}";
-        return StringUtil.string2Unicode(result);
+//        result = "{\"result\":[" + result + "]}".replace("份", "\\u4EFD\\");
+        result = "{\"result\":[" + result + "]}";
+        //todo 转unicode会自动加\\
+        return result;
+//        return StringUtil.string2Unicode(result);
     }
 
     @RequestMapping(value = "/deletePosOperation/{tableNo}", produces = {"application/json;charset=UTF-8"})

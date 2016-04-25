@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.dish.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.common.utils.StringUtils;
 import com.candao.www.dataserver.mapper.DishMapper;
 import com.candao.www.dataserver.mapper.OperationLogMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -65,7 +66,7 @@ public class DishOpServiceImpl implements DishService {
             LOGGER.error("###getAllWmFood userId={},error={}###", userId, e);
         }
         String s = JSON.toJSONString(responseJsonData);
-        LOGGER.info("###getAllWmFood ###RESPONSE### result={}",s);
+        LOGGER.info("###getAllWmFood ###RESPONSE### result={}", s);
         return s;
     }
 
@@ -87,7 +88,7 @@ public class DishOpServiceImpl implements DishService {
     @Override
     public String getGroupDetail(String dishId) {
         ResponseJsonData responseJsonData = new ResponseJsonData();
-        LOGGER.info("###getGroupDetail dishId={},error={}###", dishId);
+        LOGGER.info("###getGroupDetail dishId={}###", dishId);
         try {
             List<Map> mapList = dishMapper.getGroupDetail(dishId);
             responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
@@ -145,10 +146,29 @@ public class DishOpServiceImpl implements DishService {
         try {
             operationLogMapper.deletePosOperation(tableNo);
             dishUnit = dishUnit.replace("&quot", "#");
-            List<Map> mapList = dishMapper.getBackDishInfo(orderId, dishId, dishUnit);
+            List<Map<String, Object>> mapList = dishMapper.getBackDishInfo(orderId, dishId, dishUnit);
             if (mapList.isEmpty()) {
                 responseData.setData("0");
             } else {
+                for (Map<String, Object> map : mapList) {
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        String key = entry.getKey();
+                        if (entry.getValue() != null) {
+                            String value = entry.getValue() + "";
+                            map.put(key, value.replace(".00", "."));
+                        }
+                    }
+                    if (map.get("begintime") != null) {
+                        String beginTime = map.get("begintime") + "";
+                        map.put("begintime", beginTime.replace(".0", "").replace("-", ""));
+//                        map.put("begintime", WorkDateUtil.parse(beginTime.replace(".0", "").replace("-", ""), "yyyyMMdd HH:mm:ss"));
+                    }
+                    if (map.get("endtime") != null) {
+                        String endTime = map.get("endtime") + "";
+                        map.put("endtime", endTime.replace(".0", "").replace("-", ""));
+//                        map.put("endtime", WorkDdateUtil.parse(endTime.replace(".0", "").replace("-", ""), "yyyyMMdd HH:mm:ss"));
+                    }
+                }
                 return JSON.toJSONString(DataServerJsonFormat.jsonFormat(mapList));
             }
         } catch (Exception e) {
