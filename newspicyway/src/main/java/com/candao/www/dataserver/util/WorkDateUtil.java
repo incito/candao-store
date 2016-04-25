@@ -39,13 +39,13 @@ public class WorkDateUtil {
         return calendar.getTime();
     }
 
-    public static Date getAfter8Hour() {
+    public static Date getAfterHour(int hour) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 8);
+        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + hour);
         return calendar.getTime();
     }
 
     public static void main(String[] args) {
-        System.out.println(WorkDateUtil.getAfter8Hour());
+        System.out.println(WorkDateUtil.getAfterHour(1));
     }
 }

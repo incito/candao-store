@@ -18,13 +18,16 @@ public class OfflineMsg {
     private Date createTime;
     private Date expireTime;
 
+    public OfflineMsg() {
+    }
+
     public OfflineMsg(String msgType, String content, String deviceGroup, String deviceId, Integer isSingle) {
         this.msgType = msgType;
         this.content = content;
         this.deviceGroup = deviceGroup;
         this.deviceId = deviceId;
         this.isSingle = isSingle;
-        this.expireTime = WorkDateUtil.getAfter8Hour();
+        this.expireTime = WorkDateUtil.getAfterHour(1);
         this.id = IDUtil.getID();
     }
 
@@ -91,4 +94,5 @@ public class OfflineMsg {
     public void setExpireTime(Date expireTime) {
         this.expireTime = expireTime;
     }
+
 }

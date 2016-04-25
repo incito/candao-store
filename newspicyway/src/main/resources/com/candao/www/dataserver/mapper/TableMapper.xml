@@ -28,4 +28,7 @@
     <update id="updateTableByTableId">
         UPDATE t_table SET orderid = #{orderId} WHERE	tableid = #{tableId}
     </update>
+    <select id="getTableNoByOrderId" resultType="java.lang.String">
+        SELECT tableno FROM t_table WHERE tableid=(SELECT currenttableid FROM t_order WHERE orderid=#{orderId})
+    </select>
 </mapper>

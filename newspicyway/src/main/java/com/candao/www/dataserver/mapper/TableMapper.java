@@ -21,4 +21,6 @@ public interface TableMapper {
     Integer selectStatus(@Param("tableId") String tableId);
 
     void updateTableByTableId(@Param("orderId") String orderId, @Param("tableId") String tableId);
+
+    String getTableNoByOrderId(String orderId);
 }

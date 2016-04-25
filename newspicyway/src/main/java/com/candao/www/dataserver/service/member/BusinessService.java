@@ -127,4 +127,12 @@ public interface BusinessService {
     String accountsOrder(String userId, String orderId);
 
     Date getOpenDate();
+
+    /**
+     * 根据订单id查询桌号
+     *
+     * @param orderId
+     * @return
+     */
+    String getTableNoByOrderId(String orderId);
 }

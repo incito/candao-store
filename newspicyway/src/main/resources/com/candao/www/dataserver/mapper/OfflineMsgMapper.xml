@@ -8,9 +8,9 @@
         <result column="content" property="content"/>
         <result column="device_group" property="deviceGroup"/>
         <result column="device_id" property="deviceId"/>
-        <result column="is_single" property="isSingle"/>
         <result column="create_time" property="createTime"/>
         <result column="expire_time" property="expireTime"/>
+        <result column="is_single" property="isSingle"/>
     </resultMap>
     <select id="getByGroupAndId" resultMap="BaseResultMap">
       select * from t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId}
