@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.constants;
 
 public enum MsgType {
+    MSG_1002("1002", "结账消息"),
     CLEANING("01", "沽清消息"), NORMAL("02", "普通消息");
     private String value;
     private String text;

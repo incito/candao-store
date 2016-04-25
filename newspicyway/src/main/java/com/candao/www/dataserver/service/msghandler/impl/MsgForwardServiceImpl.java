@@ -2,6 +2,7 @@ package com.candao.www.dataserver.service.msghandler.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.communication.factory.LockFactory;
+import com.candao.www.dataserver.constants.MsgType;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.entity.SyncMsg;
@@ -11,11 +12,14 @@ import com.candao.www.dataserver.service.communication.CommunicationService;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
 import com.candao.www.dataserver.service.device.DeviceService;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
+import com.candao.www.dataserver.service.dish.DishService;
+import com.candao.www.dataserver.service.member.BusinessService;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgHandler;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.PropertyUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,10 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     private DeviceObjectService deviceObjectService;
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private DishService dishService;
+    @Autowired
+    private BusinessService businessService;
 
     @Override
     public String broadCastMsg(String userId, String msgType, String msg) {
@@ -52,6 +60,12 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             msgProcessMapper.saveTSyncMsg(syncMsg);
             MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
             broadCastMsg(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
+            if (MsgType.MSG_1002.getValue().equals(msgType)) {
+                String tableNo = businessService.getTableNoByOrderId(msg);
+                if (StringUtils.isNotBlank(tableNo)) {
+                    dishService.deletePosOperation(tableNo);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");

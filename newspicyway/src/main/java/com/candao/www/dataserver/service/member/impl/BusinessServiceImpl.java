@@ -472,6 +472,11 @@ public class BusinessServiceImpl implements BusinessService {
         return maxClassNoToday;
     }
 
+    @Override
+    public String getTableNoByOrderId(String orderId) {
+        return tableMapper.getTableNoByOrderId(orderId);
+    }
+
     public static void main(String[] args) {
     }
 }
