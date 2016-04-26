@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
@@ -25,6 +27,7 @@ import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
 public class NormalDishListener {
+	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
 	/**
 	 * 
 	 * @param message
@@ -44,6 +47,8 @@ public class NormalDishListener {
 	}
 
 	public String receiveMessage(PrintObj object) {
+		logger.error("-----------------------------", "");
+		logger.error("开始打印，订单号：" + object.getOrderNo(), "");
 		System.out.println("NormalDishListener receive message");
 		OutputStream socketOut = null;
 		OutputStreamWriter writer = null;
@@ -141,7 +146,8 @@ public class NormalDishListener {
 			
 			writer.write("     " + "\r\n");
 			writer.flush();// 
-
+			logger.error("------------------------","");
+			logger.error("打印菜品，订单号："+object.getOrderNo()+"*菜品数量：" + (object.getpDish() == null ? 0 : object.getpDish().size()), "");
 			for (PrintDish it : object.getpDish()) {
 				it.setDishName(StringUtils.split2(it.getDishName(), "#"));
 				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
@@ -149,20 +155,30 @@ public class NormalDishListener {
 			
 			//合并打印
 			for (PrintDish singleDish : object.getpDish()) {
+				logger.error("------------------------","");
+				logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + singleDish.getDishName(),"");
 				socketOut.write(PrinterConstant.getFd8Font());
 				String dishNum2 = StringUtils.bSubstring3(
 						singleDish.getDishNum(), 4);
 				String dishunit2 = StringUtils.bSubstring2(singleDish.getDishUnit(),
 						2);
 				
-				int spaceNum = 12;
+				/*int spaceNum = 11;
 				if (2 == printDish.getDishtype()){
-					spaceNum = 9;
+					spaceNum = 8;
 					writer.write("（套）");
-				}
-				String dishName2 = StringUtils.bSubstring2(StringUtils.BtoQ(
+				}*/
+				/*String dishName2 = StringUtils.bSubstring2(StringUtils.BtoQ(
 						singleDish.getDishName()), spaceNum );
 				writer.write(dishName2);
+				*/
+				String[] text = getPrintText( object.getpDish(), 11, 3, 5,printDish.getDishtype());
+				
+				for (int i = 0; i < text.length; i++) {
+					writer.write(text[i]+"\r\n");
+				}
+				
+				//end
 				writer.flush();//  
 				socketOut.write(PrinterConstant.getFdDoubleFont());
 				writer.write( " "+dishNum2 + dishunit2				+ "                    \r\n");
@@ -255,8 +271,13 @@ public class NormalDishListener {
 			writer.close();
 			socketOut.close();
 			socket.close();
+			logger.error("-----------------------------", "");
+			logger.error("打印完成，订单号：" + object.getOrderNo(), "");
 
 		} catch (Exception e) {
+			logger.error("------------------------","");
+			logger.error("打印异常，订单号："+object.getOrderNo()+e.getMessage(), e, "");
+			
 //			e.printStackTrace();
 			 jmsTemplate.convertAndSend(destination, object);
 		} finally {
@@ -266,7 +287,35 @@ public class NormalDishListener {
 		// }
 
 	}
+	private String[] getPrintText(List<PrintDish> list, int num1, int num2, int num3,int dishtype) throws Exception {
+		List<String> res = new LinkedList<String>();
+		List<String> name = null;
+		List<String> dishunit = null;
+		String dishnum = null;
 
+		int rows = 0;
+		StringBuffer buffer = new StringBuffer();
+		for (PrintDish it : list) {
+			if(2==dishtype){
+				it.setDishName("（套）"+it.getDishName());
+			}
+			name = StringUtils.subString2(StringUtils.BtoQ(it.getDishName()), num1);
+			dishunit = StringUtils.subString2(StringUtils.BtoQ(it.getDishUnit()== null?"":it.getDishUnit().toString()), num3);
+			dishnum = StringUtils.bSubstring2(StringUtils.BtoQ(it.getDishNum()), num2);
+
+			rows = name.size() >dishunit.size()?name.size():dishunit.size() ;
+			for (int i = 0; i < rows; i++) {
+				String name2 = i + 1 > name.size() ? StringUtils.getStr(num1) : name.get(i);
+				String dishunit2 = i + 1 > dishunit.size() ? StringUtils.getStr(num3) : dishunit.get(i);
+				String dishnum2 = i == 0 ? dishnum : StringUtils.getStr(num2);
+				buffer.setLength(0);
+				buffer.append(name2).append("  ").append(dishnum2).append("  ").append(dishunit2);
+				res.add(buffer.toString());
+			}
+		}
+
+		return res.toArray(new String[res.size()]);
+	}
 	@Autowired
 	private JmsTemplate jmsTemplate;
 	@Autowired
