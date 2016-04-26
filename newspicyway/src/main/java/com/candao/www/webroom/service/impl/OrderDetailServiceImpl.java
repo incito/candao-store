@@ -26,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.print.dao.TbPrinterManagerDao;
@@ -41,6 +43,7 @@ import com.candao.print.service.PrinterService;
 import com.candao.print.service.StatentMentProducerService;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbPrintObjDao;
+import com.candao.www.data.dao.ToperationLogDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.TbTable;
@@ -305,10 +308,13 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
 		  mapParam1.put("orderid", orders.getOrderid());
 		  List<TorderDetail> detailList =   torderDetailMapper.find(mapParam1);
+		  //先删除临时表,防止事物异常造成临时表里面存在数据
+		  torderDetailMapper.deleteTemp(orders.getOrderid());
 		  //调用存储过程插入订单详情的临时表
 		  int success = torderDetailMapper.insertTempOnce(listall);
 			if(success < 1){
 				log.error("-->插入订单临时表t_order_detail_temp出错，参数"+JSONObject.fromObject(listall).toString());
+				 transactionManager.rollback(status);
 				return Constant.FAILUREMSG;
 			}
 			
@@ -323,6 +329,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	       
 	       if("1".equals(result)){
 	    	   log.error("-->result为："+1);
+	    	   transactionManager.rollback(status);
 	    	   return Constant.FAILUREMSG;
 	       } 
 //	       
@@ -330,17 +337,18 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
 ////	    	   flag=4;
 ////	       }
-	       printOrderList( orders.getOrderid(),table.getTableid(), flag);
-	       printweigth(listall,orders.getOrderid());
-			   	 //操作成功了，插入操作日记
-	        if(toperationLogService.save(toperationLog)){
-	    	  transactionManager.commit(status);
-		   	  return Constant.SUCCESSMSG;
-		   	}else{
-		   		log.error("-->插入操作日志出错");
-		     	transactionManager.rollback(status);
-		   		return Constant.FAILUREMSG;
-		   	}
+		  //操作成功了，插入操作日记
+	     //修改为用dao层的日志引用，防止手动事物嵌套引起异常
+	        int saveresult= toperationLogDao.save(toperationLog);
+	        if(saveresult>0){
+	            printOrderList( orders.getOrderid(),table.getTableid(), flag);
+	  	        printweigth(listall,orders.getOrderid());
+	        	transactionManager.commit(status);
+			   	return Constant.SUCCESSMSG;
+	        }
+	    	log.error("-->插入操作日志出错");
+	          transactionManager.rollback(status);
+		   	 return Constant.FAILUREMSG;
 	 	}catch(Exception ex){
 		 		log.error("-->",ex);
 				ex.printStackTrace();
@@ -688,12 +696,14 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			  tbPrintObjDao.updateDishCall(map0);
 		}
 		
+    LoggerHelper logger = LoggerFactory.getLogger(OrderDetailServiceImpl.class);
 	private void printSingleDish(Map<String, Object> map0, PrintObj printObj, int refundDish, Map<String, Object> paramsMap) {
 		List<PrintDish> listPrint = tbPrintObjDao.findDish(map0);
 
 		Collections.sort(listPrint);
 		printObj.setList(listPrint);
-
+		logger.error("------------------------","");
+		logger.error("封装数据开始，订单号："+printObj.getOrderNo()+"*菜品数量："+listPrint.size(),"");
 		// 得到区域
 		// 1. 厨打单
 		// 2. 客用单
@@ -708,6 +718,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		List<PrintDish> printedList = new ArrayList<>();
 		for (PrintDish pd : printObj.getList()) {
 			if(printedList.contains(pd)){//已经合并打印了则跳过
+				logger.error("------------------------","");
+				logger.error("组合打印后忽略单品，订单号：" + printObj.getOrderNo()+"*菜品名称："+pd.getDishName(),"");
 				continue;
 			}
 			List<String> IPList = new ArrayList<String>();
@@ -808,6 +820,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 						String groupSequence = getDishGroupSequence(pd, tbPrinter);
 						if (groupSequence != null) {
 							List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
+							logger.error("------------------------","");
+							logger.error("进入组合打印的逻辑，订单号：" + printObj.getOrderNo()+"*组合数量："+findPrintDetail.size(),"");
 							// 有两个及以上的菜才需要合并 
 							//modified by caicai
 							if (findPrintDetail.size() > 1) {
@@ -850,6 +864,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					printObj.setCustomerPrinterIp(tbPrinter.getIpaddress());
 					printObj.setCustomerPrinterPort(tbPrinter.getPort());
 					printObj.setpDish(pdList);
+					logger.error("------------------------,菜品数量"+pdList.size(),"");
+					for (PrintDish printDish : pdList) {
+						logger.error("封装数据结束，订单号："+printObj.getOrderNo()+"*菜品名称："+printDish.getDishName(),"");
+					}
 					new Thread(new PrintThread(printObj)).run();
 					// executor.execute(new PrintThread(printObj));
 				}
@@ -1923,7 +1941,8 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
-	
+	@Autowired
+	ToperationLogDao  toperationLogDao;
 	@Autowired
 	private DishSetProducerService dishSetService;
 

@@ -321,12 +321,13 @@ public class PadInterfaceController {
 	@RequestMapping("/bookorderList")
 	@ResponseBody
 	public String saveOrderInfoList(@RequestBody String jsonString,HttpServletRequest reqeust){
-
+		long start = System.currentTimeMillis();
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(jsonString);
 		record.setPadpath("bookorderList");
 		jsonRecordService.insertJsonRecord(record);
 		Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
+		logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
 		//判断重复下单
 		ToperationLog toperationLog=new ToperationLog();
 		toperationLog.setId(IdentifierUtils.getId().generate().toString());
@@ -355,6 +356,8 @@ public class PadInterfaceController {
 				logger.error("--->",ex);
 				ex.printStackTrace();
 			}
+			logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
+			logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
 			return returnStr;
 		}else if(flag==1){
 			return Constant.FAILUREMSG;
