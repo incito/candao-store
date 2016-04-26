@@ -32,6 +32,5 @@ public class DataServerJsonFormat {
         mapList.add(map1);
         System.out.println(DataServerJsonFormat.jsonFormat(mapList, "|"));
         System.out.println(DataServerJsonFormat.jsonFormat(new ResponseData(), "|"));
-        System.out.println(DataServerJsonFormat.jsonFormat(mapList));
     }
 }

@@ -23,8 +23,8 @@ import java.util.Date;
 /**
  * Created by ytq on 2016/3/15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:branch.xml", "classpath:branchmq.xml", "classpath:ApplicationContext-service.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {"classpath:branch.xml", "classpath:branchmq.xml", "classpath:ApplicationContext-service.xml"})
 public class MsgProcessServiceSpringTest {
 
     @Autowired
@@ -40,22 +40,22 @@ public class MsgProcessServiceSpringTest {
 
     @Test
     public void testOpenDate() {
-        Date openDate = openLogMapper.getOpenDate();
+//        Date openDate = openLogMapper.getOpenDate();
         System.out.println();
     }
 
     @Test
     public void testWatchLogin() {
-        openCashService.openCash("192.168.10.10");
-        deviceMapper.save(new Pad("1", "2", "3", "4", "5"));
-        deviceMapper.save(new Watch("1", "3", "3", "4"));
+//        openCashService.openCash("192.168.10.10");
+//        deviceMapper.save(new Pad("1", "2", "3", "4", "5"));
+//        deviceMapper.save(new Watch("1", "3", "3", "4"));
         WatchLoginData watchLoginData = new WatchLoginData();
         watchLoginData.setGroup("watch");
         watchLoginData.setId("123456");
         watchLoginData.setUserId("user_test");
         watchLoginData.setMeId("meId");
-        MsgForwardData msgForwardData = new MsgForwardData("100001", JSON.toJSONString(watchLoginData));
-        msgProcessService.processMsg(JSON.toJSONString(msgForwardData));
+//        MsgForwardData msgForwardData = new MsgForwardData("100001", JSON.toJSONString(watchLoginData));
+//        msgProcessService.processMsg(JSON.toJSONString(msgForwardData));
     }
 
     @Test
@@ -67,8 +67,8 @@ public class MsgProcessServiceSpringTest {
         loginData.setUsername("test");
         loginData.setPassword("test");
         loginData.setTableNo("1");
-        MsgForwardData msgForwardData = new MsgForwardData("200001", JSON.toJSONString(loginData));
-        msgProcessService.processMsg(JSON.toJSONString(msgForwardData));
+//        MsgForwardData msgForwardData = new MsgForwardData("200001", JSON.toJSONString(loginData));
+//        msgProcessService.processMsg(JSON.toJSONString(msgForwardData));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class MsgProcessServiceSpringTest {
         data.setId("123456");
         data.setUserId("user_test");
         data.setMeId("meId");
-        MsgForwardData msgForwardData = new MsgForwardData("100003", JSON.toJSONString(data));
-        msgProcessService.processMsg(JSON.toJSONString(msgForwardData));
+//        MsgForwardData msgForwardData = new MsgForwardData("100003", JSON.toJSONString(data));
+//        msgProcessService.processMsg(JSON.toJSONString(msgForwardData));
     }
 }

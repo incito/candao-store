@@ -2,7 +2,6 @@ package com.candao.www.dataserver.controller;
 
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.StringUtil;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,8 +54,10 @@ public class OrderInterfaceController {
     @ResponseBody
     public String getOrderCouponList(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId) {
         String result = orderService.getOrderCouponList(aUserId, orderId);
-        result = "{\"result\":[\"" + result + "\"]}";
-        return StringUtil.string2Unicode(result);
+        result = "{\"result\":[" + result + "]}";
+        //todo 转unicode会对"进行转移成\"
+        //return StringUtil.string2Unicode(result);
+        return result;
     }
 
     @RequestMapping(value = "/getAllOrderInfo2/{aUserId}/", produces = {"application/json;charset=UTF-8"})
