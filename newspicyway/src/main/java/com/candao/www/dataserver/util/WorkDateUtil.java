@@ -63,6 +63,12 @@ public class WorkDateUtil {
         return calendar.getTime();
     }
 
+    public static Date getAfterSeconds(int seconds) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + seconds);
+        return calendar.getTime();
+    }
+
     public static void main(String[] args) {
         System.out.println(WorkDateUtil.parse("20160425 17:52:31", "yyyyMMdd HH:mm:ss"));
     }

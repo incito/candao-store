@@ -59,9 +59,9 @@ public class DemoTimerTask {
                 msgForwardService.broadCastMsg(userId, msgType, countMsg);
             } else {
                 if (null == group) {
-                    msgForwardService.broadCastMsg(userId, msgType, countMsg, isSingle);
+                    msgForwardService.broadCastMsgOnLine(msgType, countMsg, isSingle);
                 } else {
-                    msgForwardService.broadCastMsg(group, userId, msgType, countMsg, isSingle);
+                    msgForwardService.broadCastMsgGroup(group, msgType, countMsg, isSingle);
                 }
             }
         }

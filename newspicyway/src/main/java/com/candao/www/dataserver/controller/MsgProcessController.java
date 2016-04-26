@@ -41,19 +41,19 @@ public class MsgProcessController {
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/{isSingle}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public void broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle) {
-        msgForwardService.broadCastMsg(userId, msgId, msg, isSingle);
+        msgForwardService.broadCastMsgOnLine(msgId, msg, isSingle);
     }
 
     @RequestMapping(value = "/broadcastmsg/{group}/{userId}/{msgId}/{msg}/{isSingle}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public void broadCastMsg(@PathVariable("group") String group, @PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg, @PathVariable("isSingle") boolean isSingle) {
-        msgForwardService.broadCastMsg(group, userId, msgId, msg, isSingle);
+        msgForwardService.broadCastMsgGroup(group, msgId, msg, isSingle);
     }
 
     @RequestMapping(value = "/broadcastmsg/{id}/{msg}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastMsg(@PathVariable("id") Integer id, @PathVariable("msg") String msg) {
-        return msgForwardService.broadCastMsg(id, msg);
+        return msgForwardService.broadCastMsgSync(id, msg);
     }
 
     ////////////////////////////////////////////////////////////

@@ -19,6 +19,7 @@ import com.candao.www.dataserver.service.msghandler.MsgHandler;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.PropertyUtil;
+import com.candao.www.dataserver.util.WorkDateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +60,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             SyncMsg syncMsg = new SyncMsg(msgType, msg);
             msgProcessMapper.saveTSyncMsg(syncMsg);
             MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
-            broadCastMsg(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
             if (MsgType.MSG_1002.getValue().equals(msgType)) {
                 String tableNo = businessService.getTableNoByOrderId(msg);
                 if (StringUtils.isNotBlank(tableNo)) {
@@ -111,39 +112,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
 
-    @Override
-    public void broadCastMsg(List<DeviceObject> objects, String msg, String msgType) {
-        Map<String, List<String>> target = new HashMap<>();
-        for (final DeviceObject deviceObject : objects) {
-            if (target.containsKey(deviceObject.getDeviceGroup())) {
-                target.get(deviceObject.getDeviceGroup()).add(deviceObject.getDeviceId());
-            } else {
-                target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
-                    add(deviceObject.getDeviceId());
-                }});
-            }
-        }
-        communicationService.forwardMsgSync(target, msg);
-    }
-
-    //    private void broadCastMsg(List<DeviceObject> objects, String msg, String msgType, boolean isSingle) {
-//        for (final DeviceObject deviceObject : objects) {
-//            Map<String, List<String>> target = new HashMap<>();
-//            target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
-//                add(deviceObject.getDeviceId());
-//            }});
-//            int single = 0;
-//            if (isSingle) {
-//                single = 1;
-//            }
-//            OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
-//            offlineMsgService.save(offlineMsg);
-//            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-//            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
-//            communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
-//        }
-//    }
-    private void broadCastMsg(List<DeviceObject> objects, String msg, String msgType, boolean isSingle) {
+    public void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType, boolean isSingle) {
         List<OfflineMsg> offlineMsgList = new ArrayList<>();
         for (final DeviceObject deviceObject : objects) {
             int single = 0;
@@ -166,43 +135,61 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     }
 
     @Override
-    public void broadCastMsg(String userId, String msgType, String msg, boolean isSingle) {
-        LOGGER.info("#### broadCastMsg userId={},msgType={},msg={}###", userId, msgType, msg);
+    public void broadCastMsgOnLine(String msgType, String msg, boolean isSingle) {
+        LOGGER.info("#### broadCastMsgOnLine msgType={},msg={}###", msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-//            SyncMsg syncMsg = new SyncMsg(msgType, msg);
-//            msgProcessMapper.saveTSyncMsg(syncMsg);
-//            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
-//            broadCastMsg(deviceObjectService.getOnLineDevice(), JSON.toJSONString(msgData), msgType, false);
-            broadCastMsg(deviceObjectService.getOnLineDevice(), msg, msgType, isSingle);
+            broadCastMsgDevices(deviceObjectService.getOnLineDevice(), msg, msgType, isSingle);
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsg userId={},msgType={},msg={},error={}###", userId, msgType, msg, e);
+            LOGGER.error("#### broadCastMsgOnLine msgType={},msg={},error={}###", msgType, msg, e);
         }
     }
 
     @Override
-    public void broadCastMsg(String group, String userId, String msgType, String msg, boolean isSingle) {
-        LOGGER.info("#### broadCastMsg userId={},msgType={},msg={}###", userId, msgType, msg);
+    public void broadCastMsgOnLine(String msgType, String msg, boolean isSingle, int expireSeconds) {
+        LOGGER.info("#### broadCastMsgOnLine msgType={},msg={},isSingle={},expireSeconds={}###", msgType, msg, isSingle, expireSeconds);
+        List<DeviceObject> deviceObjectList = deviceObjectService.getAllDevice();
+        List<OfflineMsg> offlineMsgList = new ArrayList<>();
+        for (final DeviceObject deviceObject : deviceObjectList) {
+            int single = 0;
+            if (isSingle) {
+                single = 1;
+            }
+            OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
+            offlineMsg.setExpireTime(WorkDateUtil.getAfterSeconds(expireSeconds));
+            offlineMsgList.add(offlineMsg);
+        }
+        offlineMsgService.save(offlineMsgList, isSingle);
+        for (final OfflineMsg offlineMsg : offlineMsgList) {
+            Map<String, List<String>> target = new HashMap<>();
+            target.put(offlineMsg.getDeviceGroup(), new ArrayList<String>() {{
+                add(offlineMsg.getDeviceId());
+            }});
+            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
+            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+            communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
+        }
+    }
+
+    @Override
+    public void broadCastMsgGroup(String group, String msgType, String msg, boolean isSingle) {
+        LOGGER.info("#### broadCastMsgGroup msgType={},msg={}###", msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-//            SyncMsg syncMsg = new SyncMsg(msgType, msg);
-//            msgProcessMapper.saveTSyncMsg(syncMsg);
-//            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
-//            broadCastMsg(deviceObjectService.getOnLineDevice(), JSON.toJSONString(msgData), msgType, false);
-            broadCastMsg(deviceObjectService.getOnLineDevice(group), msg, msgType, false);
+            broadCastMsgDevices(deviceObjectService.getOnLineDevice(group), msg, msgType, false);
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsg userId={},msgType={},msg={},error={}###", userId, msgType, msg, e);
+            LOGGER.error("#### broadCastMsgGroup msgType={},msg={},error={}###", msgType, msg, e);
         }
     }
 
     @Override
-    public String broadCastMsg(Integer id, String msg) {
+    public String broadCastMsgSync(Integer id, String msg) {
         final Device device = deviceService.getDeviceById(id);
         Map<String, List<String>> target = new HashMap<>();
         target.put(device.getDeviceGroup(), new ArrayList<String>() {{
@@ -210,6 +197,17 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         }});
         MsgForwardData msgForwardData = MsgForwardTran.getSendMsgSync(msg);
         return sendMsgSync(target, msgForwardData);
+    }
+
+    @Override
+    public void broadCastMsg(Integer id, String msg) {
+        final Device device = deviceService.getDeviceById(id);
+        Map<String, List<String>> target = new HashMap<>();
+        target.put(device.getDeviceGroup(), new ArrayList<String>() {{
+            add(device.getDeviceId());
+        }});
+        MsgForwardData msgForwardData = MsgForwardTran.getSendMsgSync(msg);
+        communicationService.forwardMsg(target, JSON.toJSONString(msgForwardData));
     }
 
     @Override

@@ -20,6 +20,11 @@ public interface MsgForwardService {
      */
     String broadCastMsg(String userId, String msgType, String msg);
 
+    /**
+     * @param client
+     * @param msgId
+     * @return
+     */
     String broadCastOk(String client, String msgId);
 
     /**
@@ -29,7 +34,7 @@ public interface MsgForwardService {
      * @param msg
      * @return
      */
-    void broadCastMsg(List<DeviceObject> objects, String msg, String msgType);
+    void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType, boolean isSingle);
 
     /**
      * 批量给在线设备发送消息
@@ -37,7 +42,14 @@ public interface MsgForwardService {
      * @param msg
      * @return
      */
-    void broadCastMsg(String userId, String msgType, String msg, boolean isSingle);
+    void broadCastMsgOnLine(String msgType, String msg, boolean isSingle);
+
+    /**
+     * 批量给在线设备发送消息,指定的过期时间后删除
+     *
+     * @param msg
+     */
+    void broadCastMsgOnLine(String msgType, String msg, boolean isSingle, int expireSeconds);
 
     /**
      * 批量给指定设备组发送消息
@@ -45,16 +57,30 @@ public interface MsgForwardService {
      * @param msg
      * @return
      */
-    void broadCastMsg(String group, String userId, String msgType, String msg, boolean isSingle);
+    void broadCastMsgGroup(String group, String msgType, String msg, boolean isSingle);
 
     /**
-     * 给指定设备发送消息
+     * 给指定设备发送同步消息
      *
      * @param id 设备id
      * @return
      */
-    String broadCastMsg(Integer id, String msg);
+    String broadCastMsgSync(Integer id, String msg);
 
-    //向目标转发消息
+    /**
+     * 给指定设备发送异步消息
+     *
+     * @param id 设备id
+     * @return
+     */
+    void broadCastMsg(Integer id, String msg);
+
+    /**
+     * 向目标转发消息
+     *
+     * @param targetMap
+     * @param msg
+     */
+
     void forwardMsg(Map<String, List<String>> targetMap, String msg);
 }
