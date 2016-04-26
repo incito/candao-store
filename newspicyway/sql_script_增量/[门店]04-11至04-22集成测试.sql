@@ -1,4 +1,4 @@
-﻿-- 文件描述：本文件为本次集成测试所需增量sql脚本 
+-- 文件描述：本文件为本次集成测试所需增量sql脚本 
 
 -- 描述：小费 ;
 -- 作者： 李宗仁; 
@@ -7,39 +7,34 @@
 DROP TABLE IF EXISTS `t_b_tip`;
 
 CREATE TABLE `t_b_tip` (
-  `waiter_number` varchar(50) NOT NULL COMMENT '服务员编号',
-  `receivables` int(11) NOT NULL COMMENT '应收金额',
-  `paid` int(11) DEFAULT NULL COMMENT '实收金额',
-  `orderid` varchar(50) NOT NULL COMMENT '订单编号',
-  `insertime` datetime NOT NULL COMMENT '创建时间',
-  `branchid` int(11) NOT NULL COMMENT '门店编号',
+  `waiter_number` VARCHAR(50) NOT NULL COMMENT '服务员编号',
+  `receivables` INT(11) NOT NULL COMMENT '应收金额',
+  `paid` INT(11) DEFAULT NULL COMMENT '实收金额',
+  `orderid` VARCHAR(50) NOT NULL COMMENT '订单编号',
+  `insertime` DATETIME NOT NULL COMMENT '创建时间',
+  `branchid` INT(11) NOT NULL COMMENT '门店编号',
   PRIMARY KEY (`orderid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
--- 描述：重复下单 ，修正重复下单需要  执行   call p_get_primarykeys();
--- 作者： 肖凯; 
--- 时间：2016-04-21
-ALTER TABLE t_order_detail ADD INDEX idx_orderprice (orderprice); 
-ALTER TABLE t_order_detail ADD INDEX idx_dishid (dishid); 
-alter table t_order_detail add UNIQUE key(primarykey);
+
 
 SET NAMES 'utf8';
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS p_update_primarykey$$
-CREATE PROCEDURE p_update_primarykey(in primarykey varchar(100))
+CREATE PROCEDURE p_update_primarykey(IN primarykey VARCHAR(100))
 COMMENT '更新重复的primarykey'
 
 BEGIN
 
-DECLARE done int DEFAULT 0;
+DECLARE done INT DEFAULT 0;
 
-DECLARE v_detail_id varchar(100);
+DECLARE v_detail_id VARCHAR(100);
 
-DECLARE  temp_uuid varchar(100);
+DECLARE  temp_uuid VARCHAR(100);
 
-DECLARE cur_detailids CURSOR FOR SELECT orderdetailid from t_order_detail d where  d.primarykey=primarykey;
+DECLARE cur_detailids CURSOR FOR SELECT orderdetailid FROM t_order_detail d WHERE  d.primarykey=primarykey;
 
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
@@ -51,8 +46,8 @@ DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
     FETCH cur_detailids INTO v_detail_id;
 			
 				IF done <> 1 THEN
-								SELECT  UUID() into temp_uuid;
-								UPDATE t_order_detail set primarykey=temp_uuid where orderdetailid=v_detail_id;
+								SELECT  UUID() INTO temp_uuid;
+								UPDATE t_order_detail SET primarykey=temp_uuid WHERE orderdetailid=v_detail_id;
 				 END IF;
 									
 
@@ -68,18 +63,18 @@ CREATE PROCEDURE p_get_primarykeys()
 COMMENT '获取重复的primarykey'
 
 BEGIN
-DECLARE done int DEFAULT 0;
-DECLARE  v_total varchar(100);
-DECLARE  v_primarykey varchar(100);
+DECLARE done INT DEFAULT 0;
+DECLARE  v_total VARCHAR(100);
+DECLARE  v_primarykey VARCHAR(100);
 
 ###定义一个游标表示所有重复的primarykey
-DECLARE cur_repat_keys CURSOR FOR SELECT count(1) total,t.primarykey
-			                          from t_order_detail t
+DECLARE cur_repat_keys CURSOR FOR SELECT COUNT(1) total,t.primarykey
+			                          FROM t_order_detail t
 	                                          GROUP BY t.primarykey
 					          HAVING total>1
-			                          ORDER BY total desc;
+			                          ORDER BY total DESC;
 ##先更新以前没有用到primarykey字段的数据
-update t_order_detail set primarykey=UUID() where primarykey='';
+UPDATE t_order_detail SET primarykey=UUID() WHERE primarykey='';
 OPEN cur_repat_keys;
 
   REPEAT
@@ -87,7 +82,7 @@ OPEN cur_repat_keys;
     FETCH cur_repat_keys INTO v_total,v_primarykey;
 				IF done <> 1 THEN
 
-				call p_update_primarykey(v_primarykey);
+				CALL p_update_primarykey(v_primarykey);
 				END IF;
 
   UNTIL done = 1
@@ -101,24 +96,24 @@ $$
 -- 时间：2016-04-21
 DELIMITER $$
 DROP PROCEDURE IF EXISTS p_report_fwyxstjb$$
-CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid int(11),
-IN pi_ksrq datetime, -- 开始日期
-IN pi_jsrq datetime, -- 结束日期
-IN pi_fwyxm varchar(30), -- 服务员姓名
-IN pi_smcp varchar(300), -- 菜品名称
-IN pi_dqym int, -- 当前页码 第一次进入时从0开始
-IN pi_myts int, -- 每页显示的条数
-OUT po_errmsg varchar(100))
+CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid INT(11),
+IN pi_ksrq DATETIME, -- 开始日期
+IN pi_jsrq DATETIME, -- 结束日期
+IN pi_fwyxm VARCHAR(30), -- 服务员姓名
+IN pi_smcp VARCHAR(300), -- 菜品名称
+IN pi_dqym INT, -- 当前页码 第一次进入时从0开始
+IN pi_myts INT, -- 每页显示的条数
+OUT po_errmsg VARCHAR(100))
 SQL SECURITY INVOKER
 COMMENT '服务员销售统计表'
 label_main:
 BEGIN
-  DECLARE v_waiter_name varchar(300);
-  DECLARE v_dish_name varchar(30);
-  DECLARE v_date_start datetime;
-  DECLARE v_date_end datetime;
-  DECLARE v_current_page int;
-  DECLARE v_nums_page int;
+  DECLARE v_waiter_name VARCHAR(300);
+  DECLARE v_dish_name VARCHAR(30);
+  DECLARE v_date_start DATETIME;
+  DECLARE v_date_end DATETIME;
+  DECLARE v_current_page INT;
+  DECLARE v_nums_page INT;
 
   IF pi_branchid IS NULL THEN
     SELECT
@@ -153,9 +148,9 @@ BEGIN
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order (
-    orderid varchar(50),
-    userid varchar(50)
-  ) ENGINE = MEMORY DEFAULT charset = utf8;
+    orderid VARCHAR(50),
+    userid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_order
     SELECT
@@ -170,15 +165,15 @@ BEGIN
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail (
-    orderid varchar(50),
-    dishid varchar(50),
-    primarykey varchar(50),
-    superkey varchar(50),
-    dishnum varchar(50),
-    dishtype int,
+    orderid VARCHAR(50),
+    dishid VARCHAR(50),
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishnum VARCHAR(50),
+    dishtype INT,
     orderprice DECIMAL(10, 2),
-    dishunit varchar(100)
-  ) ENGINE = MEMORY DEFAULT charset = utf8;
+    dishunit VARCHAR(100)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_order_detail
     SELECT
@@ -278,9 +273,9 @@ BEGIN
                                           , a.dishunit
                                           , a.dishtype
                                           , b.columnid
-                                          , ifnull(sum(a.dishnum), 0)
-                                          , ifnull(max(a.orignalprice), 0)
-																					, ifnull(sum(a.orignalprice*a.dishnum), 0)
+                                          , IFNULL(SUM(a.dishnum), 0)
+                                          , IFNULL(MAX(a.orignalprice), 0)
+																					, IFNULL(SUM(a.orignalprice*a.dishnum), 0)
                                      FROM
                                        t_temp_order_detail a, t_dish_dishtype b
                                      WHERE
@@ -399,12 +394,12 @@ BEGIN
     primarykey VARCHAR(50),
     orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
-  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+  INSERT INTO t_temp_taocan SELECT superkey,SUM(dishnum*orignalprice) FROM t_temp_order_detail  WHERE dishtype = 2 AND superkey <> primarykey GROUP BY superkey;
+  UPDATE t_temp_order_detail d,t_temp_taocan c SET d.orignalprice = c.orignalprice  WHERE c.primarykey = d.primarykey;
    --  计算套餐金额结束 
 
   # 删除套餐明细
-   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+   DELETE FROM t_temp_order_detail WHERE dishtype =2 AND superkey <> primarykey;
 
   CREATE INDEX ix_t_tmp_order_detail_dishid ON t_temp_order_detail (dishid);
 
@@ -450,7 +445,7 @@ BEGIN
     AND a.dishtype IS NULL;
 
   
-  SELECT ifnull(sum(dishnum), 0)
+  SELECT IFNULL(SUM(dishnum), 0)
   INTO
     v_total_count
   FROM
@@ -462,7 +457,7 @@ BEGIN
     LEAVE label_main;
   END IF;
 
-  SELECT ifnull(sum(custnum), 0)
+  SELECT IFNULL(SUM(custnum), 0)
   INTO
     v_total_custnum_count
   FROM
@@ -474,7 +469,7 @@ BEGIN
     LEAVE label_main;
   END IF;
 
-  SELECT ifnull(sum(dishnum*orignalprice), 0)
+  SELECT IFNULL(SUM(dishnum*orignalprice), 0)
   INTO
     v_total_shouldmount_count
   FROM
@@ -500,7 +495,7 @@ BEGIN
     thousandstimes DOUBLE(13, 2),
     orignalprice DOUBLE(13, 2),
     turnover DOUBLE(13, 2),
-    share DOUBLE(13, 2) 
+    SHARE DOUBLE(13, 2) 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
 
@@ -527,7 +522,7 @@ read_loop:
     LIMIT
       1;
 
-    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number,round(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_sum_price/v_total_shouldmount_count*100, round(v_number / v_total_count * 100, 2));
+    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number,ROUND(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_sum_price/v_total_shouldmount_count*100, ROUND(v_number / v_total_count * 100, 2));
   END LOOP;
   COMMIT;
   
@@ -535,8 +530,8 @@ read_loop:
 
   
   IF pi_pl = -1 OR pi_pl = 'DISHES_98' THEN
-    SELECT sum(dishnum)
-         , ifnull(max(orignalprice), 0),ifnull(sum(dishnum*orignalprice), 0)
+    SELECT SUM(dishnum)
+         , IFNULL(MAX(orignalprice), 0),IFNULL(SUM(dishnum*orignalprice), 0)
     INTO
       @cnt, @price,@sumprice
     FROM
@@ -544,8 +539,8 @@ read_loop:
     WHERE
       dishid = 'DISHES_98';
 
-    SELECT ifnull(title, '餐具')
-         , ifnull(dishno, '')
+    SELECT IFNULL(title, '餐具')
+         , IFNULL(dishno, '')
     INTO
       @title, @dishno
     FROM
@@ -556,7 +551,7 @@ read_loop:
       1;
 
     IF @cnt > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt,round(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@sumprice/v_total_shouldmount_count*100, round(@cnt / v_total_count * 100, 2));
+      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt,ROUND(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@sumprice/v_total_shouldmount_count*100, ROUND(@cnt / v_total_count * 100, 2));
     END IF;
   END IF;
 
@@ -568,7 +563,7 @@ read_loop:
          , price
          , unit
          , number
-         , share
+         , SHARE
          , thousandstimes
          , orignalprice
          , turnover
@@ -584,7 +579,7 @@ read_loop:
          , price
          , unit
          , number
-         , share
+         , SHARE
          , thousandstimes
          , orignalprice
          , turnover
@@ -599,7 +594,7 @@ read_loop:
          , price
          , unit
          , number
-         , share
+         , SHARE
          , thousandstimes
          , orignalprice
          , turnover
@@ -614,7 +609,7 @@ read_loop:
          , price
          , unit
          , number
-         , share
+         , SHARE
          , thousandstimes
          , orignalprice
          , turnover
@@ -626,3 +621,9 @@ read_loop:
 END$$
 DELIMITER ;
 
+-- 描述：重复下单 ，修正重复下单需要  执行   call p_get_primarykeys();
+-- 作者： 肖凯; 
+-- 时间：2016-04-21
+ALTER TABLE t_order_detail ADD INDEX idx_orderprice (orderprice); 
+ALTER TABLE t_order_detail ADD INDEX idx_dishid (dishid); 
+ALTER TABLE t_order_detail ADD UNIQUE KEY(primarykey);
