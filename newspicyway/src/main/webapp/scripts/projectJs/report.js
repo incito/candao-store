@@ -1550,20 +1550,14 @@ function exportReportsCou(f) {
 		var payway = "";
 		var ptype = "";
 		var pname = "";
+		var action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json";// 总表
+		
 		if(f == 1){
-			//pname = transcoding($("#p-coupon-id").val());
-			pname = encodeURI(encodeURI($("#p-coupon-id").val()));
+			pname = $("#p-coupon-id").val();
 			payway = $("#p-coupon-payway").val();
 			ptype = $("#p-type-id").val();
-		}else{
-			payway = "null";
-			ptype= "null";
-			pname = "null";
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetailSub.json";// 子表
 		}
-		alert(333);
-//		location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
-//			+ settlementWay + "/" + beginTime + "/" + endTime + "/"
-//			+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
 		$("#_beginTime").val(beginTime);
 		$("#_endTime").val(endTime);
 		$("#_settlementWay").val(settlementWay);
@@ -1574,7 +1568,7 @@ function exportReportsCou(f) {
 		$("#_ptype").val(ptype);
 		$("#_pname").val(pname);
 		$("#_searchType").val(searchType);
-		$("#couponForm").attr("action", global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json");
+		$("#couponForm").attr("action", action_Path);
 		$("#couponForm").submit();
 	}
 }

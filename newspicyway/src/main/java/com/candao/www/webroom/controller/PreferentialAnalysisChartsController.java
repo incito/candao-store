@@ -25,7 +25,7 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.utils.DateTimeUtils;
 import com.candao.www.webroom.model.CouponsReptDtail;
 import com.candao.www.webroom.service.ItemDetailService;
-import com.candao.www.webroom.service.PreferentialAnalysisChartsService;
+import com.candao.www.webroom.service.impl.PreferentialAnalysisChartsServiceImpl;
 
 /**
  * 优惠分析图表
@@ -36,7 +36,7 @@ import com.candao.www.webroom.service.PreferentialAnalysisChartsService;
 @RequestMapping(value="/preferentialAnalysisCharts")
 public class PreferentialAnalysisChartsController {
 	@Autowired
-	private PreferentialAnalysisChartsService preferentialAnalysisChartsService;
+	private PreferentialAnalysisChartsServiceImpl preferentialAnalysisChartsService;
 	@Autowired
 	private ItemDetailService itemDetailService;
 	/**
@@ -208,66 +208,75 @@ public class PreferentialAnalysisChartsController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value="/exportReportCouDetail/{settlementWay}/{beginTime}/{endTime}/{shiftid}/{bankcardno}/{type}/{payway}/{ptype}/{pname}/{searchType}",method={RequestMethod.GET})
+	@RequestMapping(value="/exportReportCouDetail")
 	@ResponseBody
-	public ModelAndView exportReportCouDetail(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "settlementWay") String settlementWay,
-			@PathVariable(value = "beginTime") String beginTime,
-			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "shiftid") String shiftid,
-			@PathVariable(value = "bankcardno") String bankcardno,
-			@PathVariable(value = "type") String type,
-			@PathVariable(value = "payway") String payway,
-			@PathVariable(value = "ptype") String ptype,
-			@PathVariable(value = "pname") String pname,
-			@PathVariable(value = "searchType") String searchType) {
-		Map<String, Object> map = new HashMap<String, Object>();
+	public ModelAndView exportReportCouDetail(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) {
 		ModelAndView mav = new ModelAndView();
+		
 		try {
-			if(!bankcardno.equals("-1")){
-				bankcardno = URLDecoder.decode(bankcardno,"UTF-8");
-			}
-			if(pname.equals("null")){
-				pname = "";
-			}else{
-				pname = URLDecoder.decode(pname,"UTF-8");
-			}
-			if(payway.equals("null")){
-				payway ="";
-			}
-			if(ptype.equals("null")){
-				ptype ="";
-			}
-			
-			map.put("settlementWay", settlementWay);
-			map.put("beginTime", beginTime);
-			map.put("shiftid", shiftid);
-			map.put("endTime", endTime);
-			map.put("bankcardno", bankcardno);
-			map.put("pname", pname);
-			map.put("payway", payway);
-			map.put("ptype", ptype);
-			map.put("type", type);
-			map.put("searchType", searchType);
 			String branchid = PropertiesUtils.getValue("current_branch_id");
 			String branchname = itemDetailService.getBranchName(branchid);
-			map.put("names","优惠活动明细表");
-			map.put("branchname", branchname);
+			params.put("names","优惠活动明细表");
+			params.put("branchname", branchname);
 			mav.addObject("message", "导出成功！");
 			
-			String dateShowbegin = DateUtils.stringDateFormat(beginTime);
-			String dateShowend = DateUtils.stringDateFormat(endTime);
+			String dateShowbegin = DateUtils.stringDateFormat(params.get("beginTime").toString());
+			String dateShowend = DateUtils.stringDateFormat(params.get("endTime").toString());
 			if (dateShowbegin.equals(dateShowend)) {
-				map.put("dateShow", dateShowbegin);
+				params.put("dateShow", dateShowbegin);
 			} else {
-				map.put("dateShow", dateShowbegin + "-" + dateShowend);
+				params.put("dateShow", dateShowbegin + "-" + dateShowend);
 			}
-			preferentialAnalysisChartsService.exportxlsB(map, request, response);
+			preferentialAnalysisChartsService.exportxlsB(params, request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			mav.addObject("message", "导出失败！");
 		}
 		return mav;
+	}
+	
+	/**
+	 * 优惠分析报表导出[子表]
+	 *
+	 * @param settlementWay
+	 * @param beginTime
+	 * @param endTime
+	 * @param shiftid
+	 * @param bankcardno
+	 * @param type
+	 * @param payway
+	 * @param ptype
+	 * @param pname
+	 * @param searchType
+	 * @param req
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/exportReportCouDetailSub")
+	@ResponseBody
+	public ModelAndView exportReportCouDetailSub(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) {
+	  ModelAndView mav = new ModelAndView();
+	  
+	  try {
+	    String branchid = PropertiesUtils.getValue("current_branch_id");
+	    String branchname = itemDetailService.getBranchName(branchid);
+	    params.put("names","优惠活动明细表");
+	    params.put("branchname", branchname);
+	    mav.addObject("message", "导出成功！");
+	    
+	    String dateShowbegin = DateUtils.stringDateFormat(params.get("beginTime").toString());
+	    String dateShowend = DateUtils.stringDateFormat(params.get("endTime").toString());
+	    if (dateShowbegin.equals(dateShowend)) {
+	      params.put("dateShow", dateShowbegin);
+	    } else {
+	      params.put("dateShow", dateShowbegin + "-" + dateShowend);
+	    }
+	    preferentialAnalysisChartsService.exportxlsSuB(params, request, response);
+	  } catch (Exception e) {
+	    e.printStackTrace();
+	    mav.addObject("message", "导出失败！");
+	  }
+	  return mav;
 	}
 	
 	/**

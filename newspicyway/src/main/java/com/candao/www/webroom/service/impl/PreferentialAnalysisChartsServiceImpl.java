@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.TPreferentialAnalysisChartsDao;
 import com.candao.www.webroom.model.Base_CouponsRept;
-import com.candao.www.webroom.service.PreferentialAnalysisChartsService;
 
 /**
  * 优惠分析图表
@@ -22,7 +21,7 @@ import com.candao.www.webroom.service.PreferentialAnalysisChartsService;
  *
  */
 @Service
-public class PreferentialAnalysisChartsServiceImpl implements PreferentialAnalysisChartsService {
+public class PreferentialAnalysisChartsServiceImpl   {
 	@Autowired
 	private TPreferentialAnalysisChartsDao tpreferentialAnalysisChartsDao;
 	/**
@@ -73,7 +72,6 @@ public class PreferentialAnalysisChartsServiceImpl implements PreferentialAnalys
 	}
 	
 	@SuppressWarnings("static-access")
-	@Override
 	public void exportxlsB(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String branchId = "";
     	if(params.get("branchId") != null && !"".equals(params.get("branchId"))){
@@ -210,6 +208,85 @@ public class PreferentialAnalysisChartsServiceImpl implements PreferentialAnalys
 		String vasd ="优惠活动明细表";
 		PoiExcleTest poi = new PoiExcleTest();
 		poi.exportExcleB(baseList,params, vasd, req,resp);
+	}
+	
+	@SuppressWarnings("static-access")
+	public void exportxlsSuB(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	  String branchId = "";
+	  if(params.get("branchId") != null && !"".equals(params.get("branchId"))){
+	    branchId = params.get("branchId").toString();
+	  }else{
+	    branchId = PropertiesUtils.getValue("current_branch_id");
+	  }
+	  params.put("pi_branchid", branchId);
+	  params.put("pi_sb",params.get("shiftid"));
+	  params.put("pi_ksrq",params.get("beginTime"));
+	  params.put("pi_jsrq", params.get("endTime"));
+	  params.put("pi_hdmc",params.get("bankcardno"));
+	  params.put("pi_jsfs",params.get("settlementWay"));
+	  params.put("pi_hdlx",params.get("type"));
+	  List<Base_CouponsRept> baseList =new ArrayList<Base_CouponsRept>();
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("pi_branchid", branchId);
+    map.put("pi_sb",params.get("shiftid"));
+    map.put("pi_ksrq",params.get("beginTime"));
+    map.put("pi_jsrq",params.get("endTime"));
+    map.put("pi_hdmc",params.get("pname"));
+    map.put("pi_jsfs",params.get("payway"));
+    map.put("pi_hdlx",params.get("ptype"));
+    map.put("pi_dqy","-1");
+    map.put("pi_myts","20");
+    List<Map<String, Object>> listDetail = tpreferentialAnalysisChartsDao.findPreferentialDetail(map);
+    if(listDetail.size()>0){
+      Base_CouponsRept baseB= new Base_CouponsRept();
+      baseB.setCouponsname("发生时间");
+      baseB.setTypeName("订单号");
+      baseB.setPaytype("结算金额");
+      baseB.setNum("发生笔数");
+      baseB.setTotal("发生金额");
+      baseB.setYinshou("拉动应收");
+      baseB.setShishou("拉动实收");
+      baseB.setSingular("title");
+      baseB.setPerCapita("title");
+      baseList.add(baseB);
+      for (int t = 0;t<listDetail.size();t++) {
+        Base_CouponsRept base = new Base_CouponsRept();
+        //发生时间==活动名称
+        if(listDetail.get(t).get("begintime")!=null&&listDetail.get(t).get("begintime")!=""){
+          base.setCouponsname(listDetail.get(t).get("begintime").toString());
+        }
+        //订单号==活动类型
+        if(listDetail.get(t).get("orderid")!=null&&listDetail.get(t).get("orderid")!=""){
+          base.setTypeName(listDetail.get(t).get("orderid").toString());
+        }
+        //结算方式==结算金额
+        if(listDetail.get(t).get("price")!=null&&listDetail.get(t).get("price")!=""){
+          base.setPaytype(listDetail.get(t).get("price").toString());
+        }
+        //发生笔数==发生笔数
+        if(listDetail.get(t).get("couponNum")!=null&&listDetail.get(t).get("couponNum")!=""){
+          base.setNum(listDetail.get(t).get("couponNum").toString());
+        }
+        //发生金额==发生金额
+        if(listDetail.get(t).get("payamount")!=null&&listDetail.get(t).get("payamount")!=""){
+          base.setTotal(listDetail.get(t).get("payamount").toString());
+        }
+        //拉动应收==拉动应收
+        if(listDetail.get(t).get("shouldamount")!=null&&listDetail.get(t).get("shouldamount")!=""){
+          base.setYinshou(listDetail.get(t).get("shouldamount").toString());
+        }
+        //拉动实收==拉动实收
+        if(listDetail.get(t).get("paidinamount")!=null&&listDetail.get(t).get("paidinamount")!=""){
+          base.setShishou(listDetail.get(t).get("paidinamount").toString());
+        }
+        base.setSingular("");
+        base.setPerCapita("");
+        baseList.add(base);	
+      }
+    }
+	  String vasd ="优惠活动明细表";
+	  PoiExcleTest poi = new PoiExcleTest();
+	  poi.exportExcleB(baseList,params, vasd, req,resp);
 	}
 	
 	/**
