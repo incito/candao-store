@@ -754,7 +754,7 @@
 		and d.dishid = od.dishid 
 		GROUP BY od.dishid , od.dishunit 
 	</select>
-		<update id="updateOrderDetailWithPreferentialNew" parameterType="map">
+	<update id="updateOrderDetailWithPreferentialNew" parameterType="map">
 		UPDATE t_order_detail set couponid=#{preferentialid} where orderid=#{orderid} and orderprice>0  and dishid in (${dishids})
 	</update>
 	<delete id="deleteTemp" parameterType="map">
