@@ -180,9 +180,6 @@ public class NormalDishListener {
 				
 				//end
 				writer.flush();//  
-				socketOut.write(PrinterConstant.getFdDoubleFont());
-				writer.write( " "+dishNum2 + dishunit2				+ "                    \r\n");
-				writer.flush();//  
 			}
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("------------------------------------------\r\n");
@@ -291,7 +288,7 @@ public class NormalDishListener {
 		List<String> res = new LinkedList<String>();
 		List<String> name = null;
 		List<String> dishunit = null;
-		String dishnum = null;
+		List<String> dishnum = null;
 
 		int rows = 0;
 		StringBuffer buffer = new StringBuffer();
@@ -301,13 +298,15 @@ public class NormalDishListener {
 			}
 			name = StringUtils.subString2(StringUtils.BtoQ(it.getDishName()), num1);
 			dishunit = StringUtils.subString2(StringUtils.BtoQ(it.getDishUnit()== null?"":it.getDishUnit().toString()), num3);
-			dishnum = StringUtils.bSubstring2(StringUtils.BtoQ(it.getDishNum()), num2);
+			dishnum = StringUtils.subString2(StringUtils.BtoQ(it.getDishNum()), num2);
+			
 
 			rows = name.size() >dishunit.size()?name.size():dishunit.size() ;
+			rows = rows > dishnum.size() ? rows : dishnum.size();
 			for (int i = 0; i < rows; i++) {
 				String name2 = i + 1 > name.size() ? StringUtils.getStr(num1) : name.get(i);
 				String dishunit2 = i + 1 > dishunit.size() ? StringUtils.getStr(num3) : dishunit.get(i);
-				String dishnum2 = i == 0 ? dishnum : StringUtils.getStr(num2);
+				String dishnum2 = i + 1 > dishnum.size() ? StringUtils.getStr(num2) : dishnum.get(i);
 				buffer.setLength(0);
 				buffer.append(name2).append("  ").append(dishnum2).append("  ").append(dishunit2);
 				res.add(buffer.toString());
