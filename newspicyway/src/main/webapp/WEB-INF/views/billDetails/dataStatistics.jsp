@@ -149,6 +149,8 @@
 		var shiftid;
 		var areasel;
 		var dataType;
+		var beginTime;
+		var endTime;
 		$(document).ready(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");

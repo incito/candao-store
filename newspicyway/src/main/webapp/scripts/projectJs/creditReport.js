@@ -57,19 +57,16 @@
     //查询挂账信息表总表
     function getCreditData(){
 		showLoading();
-		localStorage.setItem("beginTime", $("#beginTime").val());
-		localStorage.setItem("endTime", $("#endTime").val());
-		var billName = $(obj).attr("billName");
-		var clearStatus = $(obj).attr("clearStatus");
-		localStorage.setItem("billName", billName);
-		localStorage.setItem("clearStatus", clearStatus);
-		branchId = localStorage.getItem("currentStore");
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
+		billName = $("#billName").val();
+		clearStatus = $("#clearStatus").val();
 		if(compareBeginEndTime()){
 			$.post(global_Path + "/gisterBill/getBillCount.json", {
-				beginTime : $("#beginTime").val(),
-				endTime : $("#endTime").val(),
-				billName : $("#billName").val(),
-				clearStatus : $("#clearStatus").val()
+				beginTime : beginTime,
+				endTime : endTime,
+				billName : billName,
+				clearStatus : clearStatus
 			}, function(result) {
 				hideLoading();
 				if(result.code == 1){
@@ -93,8 +90,6 @@
 				var zcgzsj = obj.zcgzsj;
 				var gzdw = obj.gzdw;
 				tHtml += '<tr beginTime="'+beginTime+'"endTime="'+endTime+'" +gzdw="'+gzdw+'" gzds="'+gzds+'" gzze= "'+gzze.toFixed(2)+'" ondblclick="showCreditSubTb(\''
-				        + beginTime +'\',\''
-				        + endTime + '\',\''
 				        + gzdw + '\',\''
 				        + gzds + '\',\''
 				        + gzze +'\')">'
@@ -113,10 +108,8 @@
 	}
 	
 	//查询第二个弹出表
-	function showCreditSubTb(beginTime,endTime,gzdw,gzds,gzze){
+	function showCreditSubTb(gzdw,gzds,gzze){
 		$("#p_gzdw").val(gzdw);
-		$("#p_begintime").text($("#beginTime").val());
-		$("#p_endtime").text($("#endTime").val());
 		$("#gzdw").text(gzdw);
 		$("#gzds").text(gzds);
 		$("#gzze").text(gzze);
@@ -128,8 +121,8 @@
 	//第二个弹出表拼数据
 	function getCreditDetails(gzdw,gzze){
 		$.post(global_Path+"/gisterBill/getBillDetail.json", {
-			beginTime: $("#beginTime").val(),
-			endTime: $("#endTime").val(),
+			beginTime: beginTime,
+			endTime: endTime,
 			billName: $("#p_gzdw").val(),
 			clearStatus: $("#clearStatus").val()
 		}, function(result){
@@ -309,10 +302,10 @@
 	
 	//导出
 	function exportCreditReport(){
-		$("#_beginTime").val($("#beginTime").val());
-		$("#_endTime").val($("#endTime").val());
-		$("#_billName").val($("#billName").val());
-		$("#_clearStatus").val($("#clearStatus").val());
+		$("#_beginTime").val(beginTime);
+		$("#_endTime").val(endTime);
+		$("#_billName").val(billName);
+		$("#_clearStatus").val(clearStatus);
 		$("#_searchType").val(searchType);
 		$("#creditForm").attr("action", global_Path + "/gisterBill/exportRegisterBill.json");
 		$("#creditForm").submit();

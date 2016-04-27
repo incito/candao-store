@@ -119,6 +119,8 @@
 	<jsp:include page="reckoning.jsp" />
 	<script type="text/javascript">
 		var searchType;
+		var beginTime;
+		var endTime;
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");

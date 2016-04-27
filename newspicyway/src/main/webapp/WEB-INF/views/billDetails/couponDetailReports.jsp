@@ -203,6 +203,8 @@
 		var bankcardno;
 		var type;
 		var searchType;
+		var beginTime;
+		var endTime;
 		$(document).ready(function() {
 			$("img.img-close").hover(function(){
 			 	$(this).attr("src", "<%=request.getContextPath()%>/images/close-active.png");	 
