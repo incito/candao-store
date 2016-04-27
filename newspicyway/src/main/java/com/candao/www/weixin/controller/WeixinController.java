@@ -318,8 +318,14 @@ public class WeixinController extends BaseJsonController {
 					vipinterface(attchresults,settlementStrInfoDto.getUserName());
 					//打印结账单
 					orderDetailService.printStatement(attchresults[0]);
-					//调用实收接口
-					orderSettleService.calDebitAmount(attchresults[0]);
+					//异步线程调用实收接口
+					final String orderidtemp=attchresults[0];
+					new Thread(new Runnable(){
+						@Override
+						public void run() {
+							orderSettleService.calDebitAmount(orderidtemp);
+						}
+					}).start();
 					//保存到orderid和随机订单id到数据表
 					
 				}catch(Exception e){
