@@ -815,6 +815,7 @@
 				tpa.endtime 
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 			WHERE 1=1 
+			  and (tpa.`status` is null or tpa.status !='1')
 				<if test=" type !=null">
 					AND tpa.type = #{type}
 				</if>
@@ -863,6 +864,7 @@
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE 1=1 
 						AND det.preferential = tpa.id 
+			  and (tpa.`status` is null or tpa.status !='1')
 						<if test=" type !=null">
 							AND tpa.type = #{type}
 						</if>
