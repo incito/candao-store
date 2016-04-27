@@ -980,6 +980,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
     */
 	@Override
 	public List<Map<String , Object>> findCooperationUnit(Map params){
+		params.put("branchid", PropertiesUtils.getValue("current_branch_id"));
 		List<Map<String, Object>> CooperationUnitList= this.tbPreferentialActivityDao.findCooperationUnit(params);
 		return CooperationUnitList;
 	}
