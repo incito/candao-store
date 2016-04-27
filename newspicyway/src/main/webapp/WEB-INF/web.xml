@@ -20,6 +20,9 @@
     </context-param>
 
     <listener>
+        <listener-class>com.candao.www.listener.WebInitListener</listener-class>
+    </listener>
+    <listener>
         <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
     </listener>
 

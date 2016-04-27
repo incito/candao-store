@@ -23,8 +23,8 @@ public class UrlAdapterFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String requestURI = req.getRequestURI();
-        requestURI = URLDecoder.decode(requestURI, "UTF-8");
         if (null != requestURI) {
+            requestURI = URLDecoder.decode(requestURI, "UTF-8");
             String[] uris = requestURI.split("/", -1);
             int i = 0;
             int len = uris.length;

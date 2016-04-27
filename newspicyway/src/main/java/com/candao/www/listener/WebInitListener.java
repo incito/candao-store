@@ -17,6 +17,15 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        try {
+            logger.info("kill 'start.exe'....");
+            Process proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
+            proc.waitFor();
+        } catch (IOException e) {
+            logger.error("kill netty server error!", e);
+        } catch (InterruptedException e) {
+            logger.error("kill netty server error!", e);
+        }
         File zipFile = null;
         try {
             zipFile = ResourceUtils.getFile("classpath:nettyserver/CommunicationServer-bin.zip");

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_HOME" value="/home/cloud-user/candao" />
+	<property name="LOG_HOME" value="logs" />
 	
   <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">  
   <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
@@ -8,7 +8,8 @@
 	   <maxHistory>15</maxHistory>  
   </rollingPolicy>   
   <encoder>   
-  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>   
+  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+         <charset>UTF-8</charset>
   </encoder>   
  </appender> 
  
@@ -18,7 +19,7 @@
  
 	
     
-    <logger name="dao"  level="DEBUG"></logger>
+    <logger name="dao"  level="info"></logger>
     
     
 </configuration>
