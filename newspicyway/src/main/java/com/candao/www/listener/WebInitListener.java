@@ -39,7 +39,13 @@ public class WebInitListener implements ServletContextListener {
 //        String cmd = "cmd /c start startup.bat";
         String cmd = baseDir + File.separator + "start.exe";
         try {
-            Process process = Runtime.getRuntime().exec(cmd, null, new File(baseDir));
+            final Process process = Runtime.getRuntime().exec(cmd, null, new File(baseDir));
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    process.destroy();
+                }
+            }));
         } catch (Exception e) {
             logger.error("netty server start failed!", e);
             return;
