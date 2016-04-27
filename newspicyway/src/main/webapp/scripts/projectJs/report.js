@@ -1556,7 +1556,6 @@ function exportReportsCou(f) {
 			pname = $("#p-coupon-id").val();
 			payway = $("#p-coupon-payway").val();
 			ptype = $("#p-type-id").val();
-			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetailSub.json";// 子表
 		}
 		$("#_beginTime").val(beginTime);
 		$("#_endTime").val(endTime);

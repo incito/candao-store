@@ -236,50 +236,6 @@ public class PreferentialAnalysisChartsController {
 	}
 	
 	/**
-	 * 优惠分析报表导出[子表]
-	 *
-	 * @param settlementWay
-	 * @param beginTime
-	 * @param endTime
-	 * @param shiftid
-	 * @param bankcardno
-	 * @param type
-	 * @param payway
-	 * @param ptype
-	 * @param pname
-	 * @param searchType
-	 * @param req
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value="/exportReportCouDetailSub")
-	@ResponseBody
-	public ModelAndView exportReportCouDetailSub(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) {
-	  ModelAndView mav = new ModelAndView();
-	  
-	  try {
-	    String branchid = PropertiesUtils.getValue("current_branch_id");
-	    String branchname = itemDetailService.getBranchName(branchid);
-	    params.put("names","优惠活动明细表");
-	    params.put("branchname", branchname);
-	    mav.addObject("message", "导出成功！");
-	    
-	    String dateShowbegin = DateUtils.stringDateFormat(params.get("beginTime").toString());
-	    String dateShowend = DateUtils.stringDateFormat(params.get("endTime").toString());
-	    if (dateShowbegin.equals(dateShowend)) {
-	      params.put("dateShow", dateShowbegin);
-	    } else {
-	      params.put("dateShow", dateShowbegin + "-" + dateShowend);
-	    }
-	    preferentialAnalysisChartsService.exportxlsSuB(params, request, response);
-	  } catch (Exception e) {
-	    e.printStackTrace();
-	    mav.addObject("message", "导出失败！");
-	  }
-	  return mav;
-	}
-	
-	/**
 	 * 2015-01-06 14:24:58 变成2015年01月06日
 	 *
 	 * @param date
