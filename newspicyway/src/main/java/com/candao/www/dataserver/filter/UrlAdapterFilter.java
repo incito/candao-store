@@ -3,6 +3,7 @@ package com.candao.www.dataserver.filter;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
  * Created by lenovo on 2016/4/15.
@@ -22,6 +23,7 @@ public class UrlAdapterFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String requestURI = req.getRequestURI();
+        requestURI = URLDecoder.decode(requestURI, "UTF-8");
         if (null != requestURI) {
             String[] uris = requestURI.split("/", -1);
             int i = 0;

@@ -36,6 +36,7 @@ public class DishOpServiceImpl implements DishService {
     @Override
     public String getFoodStatus(String dishId, String dishUnit) {
         ResponseData responseData = new ResponseData();
+        System.out.println("###################" + dishId + "---" + dishUnit);
         LOGGER.info("###getFoodStatus dishId={},dishUnit={}###", dishId, dishUnit);
         try {
             Integer status = dishMapper.getFoodStatus(dishId, dishUnit);

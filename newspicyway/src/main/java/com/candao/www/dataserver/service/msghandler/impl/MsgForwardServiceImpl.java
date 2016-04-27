@@ -57,9 +57,11 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         LOGGER.info("#### broadCastMsg userId={},msgType={},msg={}###", userId, msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-            SyncMsg syncMsg = new SyncMsg(msgType, msg);
+         /*   SyncMsg syncMsg = new SyncMsg(msgType, msg);
             msgProcessMapper.saveTSyncMsg(syncMsg);
-            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);
+            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);*/
+            int msgId = (int) System.currentTimeMillis();
+            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
             broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
             if (MsgType.MSG_1002.getValue().equals(msgType)) {
                 String tableNo = businessService.getTableNoByOrderId(msg);
@@ -82,7 +84,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         LOGGER.info("###broadCastOk client={},msgId={}###", client, msgId);
         ResponseData responseData = new ResponseData();
         try {
-            msgProcessMapper.saveSyncClient(client, msgId);
+        /*    msgProcessMapper.saveSyncClient(client, msgId);
             //清除历史记录
             String msgId_500 = (Integer.valueOf(msgId) - 500) + "";
             msgProcessMapper.deleteSyncClient(msgId_500);
@@ -105,7 +107,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
                 }
                 communicationService.forwardMsg(target, msg);
 
-            }
+            }*/
         } catch (Exception e) {
             LOGGER.error("###broadCastOk client={},msgId={},error={}###", client, msgId, e);
         }

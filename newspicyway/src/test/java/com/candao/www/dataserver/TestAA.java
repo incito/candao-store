@@ -7,6 +7,8 @@ public class TestAA {
     static Object object = new Object();
 
     public static void main(String[] args) {
+        System.out.println(System.currentTimeMillis());
+        System.out.println((int) System.currentTimeMillis());
         Integer a = Math.round(2.5f);
         System.out.println();
         new Thread(new Runnable() {

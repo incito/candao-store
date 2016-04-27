@@ -5,6 +5,7 @@ import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.business.OpenCashService;
+import com.candao.www.dataserver.util.DataServerJsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,9 +68,9 @@ public class OpenCashServiceImpl implements OpenCashService {
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
             if (!orderJsonList.isEmpty()) {
-                responseJsonData.setOrderJson(orderJsonList);
+                responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJsonList,"|"));
             }
-            responseJsonData.setJsJson(jsJsonList);
+            responseJsonData.setJsJson(DataServerJsonFormat.jsonFormat(jsJsonList, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取清机单内容异常");
