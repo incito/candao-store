@@ -1545,12 +1545,15 @@ function exportReportsCou(f) {
 		var payway = "";
 		var ptype = "";
 		var pname = "";
-		var action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json";// 总表
+		var action_Path = "";
 		
 		if(f == 1){
 			pname = $("#p-coupon-id").val();
 			payway = $("#p-coupon-payway").val();
 			ptype = $("#p-type-id").val();
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetailSub.json";// 子表
+		}else{
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json";// 总表
 		}
 		$("#_beginTime").val(beginTime);
 		$("#_endTime").val(endTime);
