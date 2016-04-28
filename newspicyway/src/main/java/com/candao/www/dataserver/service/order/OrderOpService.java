@@ -43,4 +43,6 @@ public interface OrderOpService {
     List<Map> getInfoByOrderId(String orderId);
 
     String reBackOrder(String userId, String orderId);
+
+    String cancelOrder(String userId, String orderId, String tableNo);
 }

@@ -108,4 +108,12 @@ public class OrderInterfaceController {
         result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
     }
+
+    @RequestMapping(value = "/cancelOrder/{userId}/{orderId}/{tableNo}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String cancelOrder(@PathVariable("userId") String userId, @PathVariable("orderId") String orderId, @PathVariable("tableNo") String tableNo) {
+        String result = orderService.cancelOrder(userId, orderId, tableNo);
+        result = "{\"result\":[\"" + result + "\"]}";
+        return StringUtil.string2Unicode(result);
+    }
 }

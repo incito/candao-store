@@ -60,4 +60,6 @@ public interface OrderOpMapper {
 
     Map getReBackOrderByTableId(String tableId);
 
+    void deleteByOrderId(String orderId);
+
 }

@@ -231,4 +231,19 @@ public class OrderOpServiceImpl implements OrderOpService {
             return "{\"Data\":\"0\",\"Info\":\"反结算异常\"}";
         }
     }
+
+    @Override
+    @Transactional
+    public String cancelOrder(String userId, String orderId, String tableNo) {
+        LOGGER.info("###cancelOrder userId={} orderId={} tableNo={}###", userId, orderId, tableNo);
+        try {
+            orderMapper.deleteByOrderId(orderId);
+            tableMapper.updaStatus0(tableNo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e);
+            return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"\"}";
+        }
+        return "\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
+    }
 }

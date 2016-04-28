@@ -184,5 +184,7 @@ FROM
     <select id="getReBackOrderByTableId" resultType="java.util.HashMap">
      SELECT tableno,`status` FROM t_table WHERE tableid=#{tableId}
     </select>
-
+    <delete id="deleteByOrderId">
+    delete from t_order where orderid=#{orderId}
+    </delete>
 </mapper>
