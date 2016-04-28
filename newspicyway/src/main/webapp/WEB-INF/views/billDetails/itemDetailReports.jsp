@@ -182,13 +182,11 @@
 <form id="itemDetailForm" method="post" style="display:none;">
 	<input id="_beginTime" name="beginTime" type="hidden"/>
 	<input id="_endTime" name="endTime" type="hidden"/>
-	<input id="_waiterName" name="waiterName" type="hidden"/>
-	<input id="_dishName" name="dishName" type="hidden"/>
+	<input id="_shiftid" name="shiftid" type="hidden"/>
+	<input id="_id" name="id" type="hidden"/>
+	<input id="dish_type" name="dishtype" type="hidden"/>
+	<input id="_itemids" name="itemids" type="hidden"/>
 	<input id="_searchType" name="searchType" type="hidden"/>
-	<input id="_dishtype" name="dishtype" type="hidden"/>
-	<input id="_dishunit" name="dishunit" type="hidden"/> 
-	<input id="_userid" name="userid" type="hidden"/>
-	<input id="_dishid" name="dishid" type="hidden"/>
 </form>
 	<script type="text/javascript">
 		var shiftid;
