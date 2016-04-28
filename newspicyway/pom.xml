@@ -159,6 +159,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.8.v20121106</version>
                 <configuration>
+                    <contextXml>${project.basedir}/src/main/resources/jetty-context.xml</contextXml>
                     <webAppConfig>
                         <contextPath>/newspicyway</contextPath>
                     </webAppConfig>
