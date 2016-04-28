@@ -1,10 +1,7 @@
 package com.candao.www.dataserver.util;
 
-import org.springframework.util.StringUtils;
-
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 /**
@@ -79,6 +76,18 @@ public class StringUtil {
         }
     }
 
+    public static int str2Int(Object obj, int defaultValue) {
+        try {
+            return Integer.parseInt(toString(obj));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    public static String toString(Object obj) {
+        return null == obj ? "" : obj.toString();
+    }
+
     /**
      * 字符串转浮点数，转换失败返回默认值
      *
@@ -89,6 +98,14 @@ public class StringUtil {
     public static float str2Float(String str, float defaultValue) {
         try {
             return Float.parseFloat(str);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    public static float str2Float(Object obj, float defaultValue) {
+        try {
+            return Float.parseFloat(toString(obj));
         } catch (Exception e) {
             return defaultValue;
         }
