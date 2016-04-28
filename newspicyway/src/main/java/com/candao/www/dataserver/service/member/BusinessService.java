@@ -135,4 +135,6 @@ public interface BusinessService {
      * @return
      */
     String getTableNoByOrderId(String orderId);
+
+    String posrebacksettleorder(String orderId, String userId, String addr);
 }

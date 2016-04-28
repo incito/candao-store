@@ -20,4 +20,7 @@
     <update id="updateValid" parameterType="com.candao.www.dataserver.entity.OrderMember">
         update t_order_member set valid=1 where orderid=#{orderid}
     </update>
+    <select id="selectValid" parameterType="Map" resultType="String">
+        select valid from  t_order_member where orderid=#{orderId} and valid=0  LIMIT 1
+    </select>
 </mapper>

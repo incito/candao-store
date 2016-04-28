@@ -239,6 +239,16 @@ public class BusinessController {
         return result;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/posrebacksettleorder/{orderId}/{userId}/{addr}/", produces = {"application/text;charset=UTF-8"})
+    public String posrebackSettleOrder(@PathVariable String userId, @PathVariable String orderId, @PathVariable String addr) {
+        logger.info("###REQUEST### BusinessController posrebacksettleorder userId={} orderId={} addr={}", userId, orderId, addr);
+        String result = businessService.posrebacksettleorder(orderId, userId, addr);
+        result = "{\"result\":[\"" + result + "\"]}";
+        logger.info("###RESPONSE### BusinessController posrebacksettleorder response={}", result);
+        return result;
+    }
+
     public static void main(String[] args) {
         String str = "/werwer/werwer/ /werwer";
         String[] a = StringUtils.tokenizeToStringArray(str, "/", false, true);
