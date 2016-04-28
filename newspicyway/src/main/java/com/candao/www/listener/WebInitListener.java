@@ -1,6 +1,8 @@
 package com.candao.www.listener;
 
 
+import com.candao.common.utils.StreamGobbler;
+import com.candao.www.dataserver.util.NettyStreamGobbler;
 import com.candao.www.timedtask.ZipUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,21 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                Process proc = null;
+                try {
+                    proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
+                    proc.waitFor();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
         try {
             logger.info("kill 'start.exe'....");
             Process proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
@@ -49,12 +66,11 @@ public class WebInitListener implements ServletContextListener {
         String cmd = baseDir + File.separator + "start.exe";
         try {
             final Process process = Runtime.getRuntime().exec(cmd, null, new File(baseDir));
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    process.destroy();
-                }
-            }));
+            NettyStreamGobbler stream1 = new NettyStreamGobbler(process.getInputStream(), "Info");
+            stream1.start();
+            NettyStreamGobbler stream2 = new NettyStreamGobbler(process.getErrorStream(), "Error");
+            stream2.start();
+
         } catch (Exception e) {
             logger.error("netty server start failed!", e);
             return;
@@ -64,7 +80,15 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        // TODO Auto-generated method stub
+        System.out.println("退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出");
+        try {
+            Process proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
+            proc.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

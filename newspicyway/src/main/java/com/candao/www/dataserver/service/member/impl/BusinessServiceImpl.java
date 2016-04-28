@@ -124,7 +124,8 @@ public class BusinessServiceImpl implements BusinessService {
             return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":缺少参数\"\"}";
         }
 
-        preferential = preferential.substring(6, preferential.length() - 4);//原始数据什么样？
+        //截取出preferential参数中的有效数据
+        preferential = preferential.substring(4, preferential.length() - 2);//原始数据什么样？
         if (preferential.length() < 10) {
             orderRuleMapper.deleteByOrderId(orderId);
             return "{\"Data\":\"1\"}";
@@ -137,19 +138,19 @@ public class BusinessServiceImpl implements BusinessService {
         for (Map<String, Object> map : preList) {
             OrderRule orderRule = new OrderRule();
             orderRule.setOrderId(orderId);
-            orderRule.setYhname(map.get("yhname").toString());
-            orderRule.setPartnerName(map.get("partnername").toString());
-            orderRule.setCouponRate(Double.parseDouble(map.get("couponrate").toString()));
-            orderRule.setFreeAmount(Double.parseDouble(map.get("freeamount").toString()));
-            orderRule.setDebitAmount(Double.parseDouble(map.get("debitamount").toString()));
-            orderRule.setMemo(map.get("memo").toString());
-            orderRule.setCouponsNo(map.get("couponsno").toString());
-            orderRule.setNum(Integer.parseInt(map.get("num").toString()));
-            orderRule.setFtype(Integer.parseInt(map.get("ftype").toString()));
-            orderRule.setBankType(map.get("banktype").toString());
-            orderRule.setRuleId(map.get("ruleid").toString());
-            orderRule.setCouponId(map.get("couponid").toString());
-            orderRule.setAmount(Double.parseDouble(map.get("amount").toString()));
+            orderRule.setYhname(StringUtil.toString(map.get("yhname")));
+            orderRule.setPartnerName(StringUtil.toString(map.get("partnername")));
+            orderRule.setCouponRate(StringUtil.str2Float(map.get("couponrate"), 0));
+            orderRule.setFreeAmount(StringUtil.str2Float(map.get("freeamount"), 0));
+            orderRule.setDebitAmount(StringUtil.str2Float(map.get("debitamount"), 0));
+            orderRule.setMemo(StringUtil.toString(map.get("memo")));
+            orderRule.setCouponsNo(StringUtil.toString(map.get("couponsno")));
+            orderRule.setNum(StringUtil.str2Int(map.get("num"), 0));
+            orderRule.setFtype(StringUtil.str2Int(map.get("ftype"), 0));
+            orderRule.setBankType(StringUtil.toString(map.get("banktype")));
+            orderRule.setRuleId(StringUtil.toString(map.get("ruleid")));
+            orderRule.setCouponId(StringUtil.toString(map.get("couponid")));
+            orderRule.setAmount(StringUtil.str2Float(map.get("amount"), 0));
             orderRuleMapper.insert(orderRule);
 
         }

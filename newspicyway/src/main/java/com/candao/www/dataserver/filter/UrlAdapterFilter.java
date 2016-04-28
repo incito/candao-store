@@ -31,6 +31,7 @@ public class UrlAdapterFilter implements Filter {
             if (uris[0].isEmpty()) {
                 i++;
             }
+            //最终新组成的URL排除掉项目前缀（工程名）
             if (uris[1].equals(prex)) {
                 i++;
             }
@@ -43,7 +44,8 @@ public class UrlAdapterFilter implements Filter {
                 if (uri.isEmpty()) {
                     newUri.append("/ ");
                 } else {
-                    newUri.append("/").append(uri);
+                    //某些接口（saveOrderPreferential）接口参数带有换行字符，导致url mapping映射不上
+                    newUri.append("/").append(uri.replaceAll("\r\n", ""));
                 }
             }
             if (len < uris.length) {
