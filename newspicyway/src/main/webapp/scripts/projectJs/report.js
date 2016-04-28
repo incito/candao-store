@@ -1768,7 +1768,7 @@ function exportReportsItem(f) {
 	$("#_endTime").val(endTime);
 	$("#_shiftid").val(shiftid);
 	$("#_id").val(id);
-	$("#_dishType").val(_dishType);
+	$("#dish_type").val(_dishType);
 	$("#_itemids").val(itemids);
 	$("#_searchType").val(searchType);
 	$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportxlsA.json");
