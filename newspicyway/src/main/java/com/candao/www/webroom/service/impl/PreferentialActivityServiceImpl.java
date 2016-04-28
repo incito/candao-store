@@ -1173,7 +1173,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					//1.获取手工优免对象。 当是 手工优惠或者内部优惠的时候，这里的 preferentialid代表是详细表的id
 					Map detail_params=new HashMap();
 					detail_params.put("preferential", preferentialid);
-					detail_params.put("type", sub_type);//获取数据的 mybatis中使用
+					detail_params.put("type", type);//获取数据的 mybatis中使用
+					detail_params.put("branchid",PropertiesUtils.getValue("current_branch_id"));
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					if( null==detailList || detailList.size()<1){  //如果没有手工优免对应的优惠记录，则返回，并提示
 						result.setAmount( new BigDecimal(0).setScale(2));
@@ -1245,7 +1246,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					//这里的 preferentialid代表是详细表的id
 					Map detail_params=new HashMap();
 					detail_params.put("preferential", preferentialid);
-					detail_params.put("type", sub_type);//获取数据的 mybatis中使用
+					detail_params.put("type", type);//获取数据的 mybatis中使用
+					detail_params.put("branchid",PropertiesUtils.getValue("current_branch_id"));
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					if( null==detailList || detailList.size()<1){  //如果没有手工优免对应的优惠记录，则返回，并提示
 						result.setAmount( new BigDecimal(0).setScale(2));
