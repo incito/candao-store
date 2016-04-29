@@ -1551,20 +1551,25 @@ function exportReportsCou(f) {
 		var ptype = "";
 		var pname = "";
 		if(f == 1){
-			//pname = transcoding($("#p-coupon-id").val());
-			pname = encodeURI(encodeURI($("#p-coupon-id").val()));
+			pname = $("#p-coupon-id").val();
 			payway = $("#p-coupon-payway").val();
 			ptype = $("#p-type-id").val();
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetailSub.json";// 子表
 		}else{
-			payway = "null";
-			ptype= "null";
-			pname = "null";
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json";// 总表
 		}
-		
-		
-		location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
-			+ settlementWay + "/" + beginTime + "/" + endTime + "/"
-			+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
+		$("#_beginTime").val(beginTime);
+		$("#_endTime").val(endTime);
+		$("#_settlementWay").val(settlementWay);
+		$("#_shiftid").val(shiftid);
+		$("#_bankcardno").val(bankcardno);
+		$("#_type").val(type);
+		$("#_payway").val(payway);
+		$("#_ptype").val(ptype);
+		$("#_pname").val(pname);
+		$("#_searchType").val(searchType);
+		$("#couponForm").attr("action", action_Path);
+		$("#couponForm").submit();
 	}
 }
 /***********************优惠活动明细表 END****************************************/
