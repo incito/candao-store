@@ -1,25 +1,36 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_HOME" value="logs" />
-	
-  <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">  
-  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-	   <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>   
-	   <maxHistory>15</maxHistory>  
-  </rollingPolicy>   
-  <encoder>   
-  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
-         <charset>UTF-8</charset>
-  </encoder>   
- </appender> 
- 
-    <root level="info">  
-    	<appender-ref ref="candao" />  
-  	</root>  
- 
-	
-    
-    <logger name="dao"  level="info"></logger>
-    
-    
+    <property name="LOG_HOME" value="logs"/>
+
+    <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="candao"/>
+    </root>
+
+
+    <logger name="dao" level="info"></logger>
+
+    <appender name="device" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/device.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <logger name="com.candao.www.dataserver.service.log" level="info">
+        <appender-ref ref="device"/>
+    </logger>
 </configuration>
