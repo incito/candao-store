@@ -10,6 +10,8 @@ import java.io.Serializable;
 public class ResponseJsonData implements Serializable {
     @JSONField(name = "Data")
     private String data = "1";
+    @JSONField(name = "workdate")
+    private String workDate = "";
     @JSONField(name = "Info")
     private String info = "";
     @JSONField(name = "OrderJson")
@@ -20,8 +22,6 @@ public class ResponseJsonData implements Serializable {
     private Object doubleJson;
     @JSONField(name = "JSJson")
     private Object jsJson;
-    @JSONField(name = "workdate")
-    private String workDate = "";
 
     public String getData() {
         return data;

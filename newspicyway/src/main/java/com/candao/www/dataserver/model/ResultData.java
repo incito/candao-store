@@ -29,6 +29,6 @@ public class ResultData {
         //{"result":["{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}"]}
         //{"result":["{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}"]}
         ResponseJsonData responseJsonData = new ResponseJsonData();
-        System.out.println(JSON.toJSON(new ResultData(JSON.toJSONString(responseJsonData))));
+        System.out.println(JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData))));
     }
 }

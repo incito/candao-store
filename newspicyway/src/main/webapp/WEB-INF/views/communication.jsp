@@ -265,8 +265,9 @@
                     for (var o in cc) {
                         var group = cc[o].group;
                         var id = cc[o].id;
+                        var ip = cc[o].addr;
                         d += "<input type='checkbox'" + "value='" + group + ":" + id + "'/>"
-                        d += "<label>" + group + ":" + id + "</label>";
+                        d += "<label>" + group + ":" + id + "----" + ip + "</label>";
                         d += "<br/>";
                     }
                     d += "<label>总共：" + cc.length + "个机具在线</label>";

@@ -7,6 +7,7 @@ import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.dataserver.mapper.TableMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
+import com.candao.www.dataserver.model.ResultData;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.WorkDateUtil;
@@ -236,14 +237,16 @@ public class OrderOpServiceImpl implements OrderOpService {
     @Transactional
     public String cancelOrder(String userId, String orderId, String tableNo) {
         LOGGER.info("###cancelOrder userId={} orderId={} tableNo={}###", userId, orderId, tableNo);
+        ResponseJsonData responseJsonData = new ResponseJsonData();
         try {
             orderMapper.deleteByOrderId(orderId);
             tableMapper.updaStatus0(tableNo);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e);
-            return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":\"\"}";
+            responseJsonData.setData("0");
+            return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
         }
-        return "\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
+        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
     }
 }
