@@ -781,6 +781,7 @@
 				ORDER BY  preferential , sequence 
 			</if> 
 			</when>
+			<!-- 查询隐藏的优惠券，status为2 -->
 			<when test="type=='-1'.toString()">
 				SELECT 
 				det.id,
