@@ -36,7 +36,6 @@ public class LocalDownController {
 	@RequestMapping("**")
 	public String cache(HttpServletResponse response,HttpServletRequest request) {
 		try{
-//		 String path="/image01/M00/00/01/wKhlClYu6ReAKnWVAAvWLh-lGcM847.jpg";
 		 String path = request.getServletPath().replaceAll("^/cache/", "");
 		 String could_url = "";
 		 //判断url的合理性
@@ -44,7 +43,9 @@ public class LocalDownController {
 		   return "/cache/后面无有效资源名称";
 		 }else if(path.startsWith("image01")){// 图片服务器
 		   could_url = Constant.FILEURL_PREFIX + path;
-		 }
+		 }// 非图片服务器的资源
+		  // 除此之外的资源 都不提供服务，作为无效资源
+		 
 		  // 拼接本地 缓存 文件地址
 		  String local_path = Constant.PROJECT_UPLOAD_PATH + path;
 		  File file = new File(local_path);
@@ -53,7 +54,6 @@ public class LocalDownController {
 		    // 返回文件流
 		    download(response,local_path);
 		  }else{
-//		    request.getRequestDispatcher(could_url).forward(request, response);
 		    // 异步缓存资源到本地
 		    uploadPool.execute(new FileDownLoadThread(could_url, local_path));
 		    return "redirect:"+could_url;
@@ -61,7 +61,7 @@ public class LocalDownController {
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-		return null;
+		return null;// 此处需要返回null 否则提示output流already ...的异常
 	}
 	
 	/**
@@ -69,29 +69,27 @@ public class LocalDownController {
    *
    * @return
    */
-  protected void download(HttpServletResponse response,String local_path) {
+  private void download(HttpServletResponse response, String local_path) {
     FileInputStream fis = null;
-    //根据文件类型 设置输出的格式
+    // 根据文件类型 设置输出的格式
     response.setContentType("octet-stream");
-//    response.setContentType("image/gif");
     try {
-        OutputStream out = response.getOutputStream();
-//        File file = new File("D:"+File.separator+"timg.jpg");
-        fis = new FileInputStream(local_path);
-        byte[] b = new byte[fis.available()];
-        fis.read(b);
-        out.write(b);
-        out.flush();
+      OutputStream out = response.getOutputStream();
+      fis = new FileInputStream(local_path);
+      byte[] b = new byte[fis.available()];
+      fis.read(b);
+      out.write(b);
+      out.flush();
     } catch (Exception e) {
-         e.printStackTrace();
+      e.printStackTrace();
     } finally {
-        if (fis != null) {
-            try {
-               fis.close();
-            } catch (IOException e) {
-            e.printStackTrace();
-        }   
-          }
+      if (fis != null) {
+        try {
+          fis.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
   
