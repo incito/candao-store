@@ -83,9 +83,6 @@
 		<if test="endtime != null">
 			AND <![CDATA[ tpa.endtime <= #{endtime} ]]>
 		</if>
-		<if test="status != null">
-			AND tpa.status = #{status}
-		</if>
 	</sql>
 	
 	<sql id="preferential_detail_column_list">
@@ -678,7 +675,7 @@
 					<where>
 						<include refid="base_condition"></include>
 						and tpa.apply_all=0
-						<!-- 判断 -->
+						<!-- 2隐藏优惠，判断是否查询要隐藏的优惠 -->
 					<if test="status == 2">
 						AND (tpa.`status` is null or tpa.`status` != #{status})
 					</if>
@@ -727,7 +724,7 @@
 			  det.preferential = tpa.id 
 			  and (tpa.`status` is null or tpa.status !='1')
 			  	<if test="status == 2">
-					AND tpa.`status` != #{status}
+					AND (tpa.`status` is null or tpa.`status` != #{status}
 				</if>
 			  AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
 		      and tpa.apply_all=1 
@@ -769,7 +766,7 @@
 				and
 				(tpa.`status` is null or tpa.status !='1' )
 					<if test="status == 2">
-						AND tpa.`status` != #{status}
+						AND (tpa.`status` is null or tpa.`status` != #{status}
 					</if>
 						<if test=" type !=null">
 							AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
