@@ -1,7 +1,6 @@
 package com.candao.www.listener;
 
 
-import com.candao.common.utils.StreamGobbler;
 import com.candao.www.dataserver.util.NettyStreamGobbler;
 import com.candao.www.timedtask.ZipUtil;
 import org.slf4j.Logger;
@@ -19,7 +18,7 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        Runtime.getRuntime().addShutdownHook(new Thread(){
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 Process proc = null;
@@ -80,15 +79,6 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出退出");
-        try {
-            Process proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
-            proc.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
     }
 

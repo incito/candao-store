@@ -16,6 +16,7 @@ import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
+import com.candao.www.utils.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +60,8 @@ public class BusinessServiceImpl implements BusinessService {
     private OrderOpService orderOpService;
     @Autowired
     private DishService dishService;
+    @Autowired
+    private OrderMemberMapper orderMemberMapper;
 
     @Override
     public String getServerTableList(String userId, String orderId) {
@@ -476,6 +479,27 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public String getTableNoByOrderId(String orderId) {
         return tableMapper.getTableNoByOrderId(orderId);
+    }
+
+    @Override
+    public String posrebacksettleorder(String orderId, String userId, String addr) {
+        String valid = orderMemberMapper.selectValid(orderId);
+        if (!StringUtil.isEmpty(valid)) {
+            return "{\"Data\":\"0\"}";
+        }
+        rebackSettleOrder(orderId, userId, addr);
+        return "{\"Data\":\"1\"}";
+    }
+
+    private String rebackSettleOrder(String orderId, String userId, String addr) {
+        String content = "{\"orderNo\" : \"" + orderId + "\",\"userName\" : \"" + userId + "\",\"reason\" : \"会员结算失败,系统自动反结\"}";
+        String result = "";
+        try {
+            result = HttpUtil.doRestfulByHttpConnection("http://" + addr + "/newspicyway/padinterface/rebacksettleorder.json", content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public static void main(String[] args) {

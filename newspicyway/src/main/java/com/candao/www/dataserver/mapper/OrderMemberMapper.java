@@ -10,6 +10,10 @@ public interface OrderMemberMapper {
     int deleteByOrderId(@Param("orderId") String orderId);
 
     int insert(OrderMember orderMember);
+
     OrderMember selectByOrderId(@Param("orderId") String orderId);
+
     int updateValid(OrderMember orderMember);
+
+    String selectValid(@Param("orderId") String orderId);
 }
