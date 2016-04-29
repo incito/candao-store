@@ -1,8 +1,9 @@
 package com.candao.www.constant;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.candao.common.utils.PropertiesUtils;
-
-
 
 public class Constant {
 	
@@ -10,6 +11,21 @@ public class Constant {
 	
 	public final static int SOCKET_CHECK_TIME  = 3000;
 	
+  /**
+   * 项目类的根路径 D:/Program%20Files/tomcat/webapps/项目名/WEB-INF/classes/ 
+   * */
+  public static final String PROJECT_CLASS_PATH = Constant.class.getClassLoader().getResource("/").getFile().replaceAll("%20", " "); 
+ 
+  /**
+   * webapps的路径 D:/Program%20Files/tomcat/webapps/
+   *  */
+  public static final String PROJECT_WEBAPPS_PATH = PROJECT_CLASS_PATH.replaceAll("webapps/.*", "webapps/");
+  
+  /**
+   * 文件上传目录的路径 D:/Program%20Files/tomcat/upload/
+   *  */
+  public static final String PROJECT_UPLOAD_PATH = PROJECT_WEBAPPS_PATH+"upload/";
+  
 	public final static String UPLOAD_PATH = PropertiesUtils.getValue("upload_path");
 	
 	public final static String DEFAULT_TABLE_SORT = PropertiesUtils.getValue("DEFAULT_TABLE_SORT");
