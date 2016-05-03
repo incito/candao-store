@@ -78,6 +78,7 @@ import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.model.Order;
+import com.candao.www.webroom.model.PadConfig;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.model.SqlData;
 import com.candao.www.webroom.model.Table;
@@ -99,6 +100,7 @@ import com.candao.www.webroom.service.OpenBizService;
 import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
+import com.candao.www.webroom.service.PadConfigService;
 import com.candao.www.webroom.service.PicturesService;
 import com.candao.www.webroom.service.PreferentialActivityService;
 import com.candao.www.webroom.service.TableService;
@@ -127,6 +129,21 @@ public class PadInterfaceController {
 	
 	
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
+	
+	
+	/**
+	 * 获取pad端的所有可配置项
+	 * @param padConfig
+	 * @return
+	 */
+	@RequestMapping("/configInfos")
+	@ResponseBody
+	public String configInfos(@RequestBody PadConfig padConfig){
+		//padConfigService.configInfos(padConfig);
+		return null;
+	}
+	
+	
 	
 	
 	/**ti
@@ -2483,6 +2500,8 @@ public class PadInterfaceController {
 	private TbBranchDao tbBranchDao;
 	@Autowired
 	private SystemServiceImpl systemServiceImpl;
+	@Autowired
+	private PadConfigService padConfigService;
 	
 	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
