@@ -19,9 +19,10 @@ import com.candao.www.constant.Constant;
  * 本地缓存代理
  * 解决： 从云端拉取文件 改成从本地拉取 
  * 在需要拦截的链接中插入/cache/即可
- * 
+ * 需要修改：\src\main\resources\config.properties
+ * fastdfs.url=http://门店IP:8000/newspicyway/cache/
  * 例如：http://image.candaochina.com/image01/M00/00/1C/wKhlC1aqy6WAKhl8AAMkLo8yqFU253.jpg
- * 本地缓存地址是：http://10.66.21.49/cache/image01/M00/00/39/CkIVMVchy62AL6yFAAC15OFYwCc520.png
+ * 本地缓存地址是：http://门店IP/newspicyway/cache/image01/M00/00/39/CkIVMVchy62AL6yFAAC15OFYwCc520.png
  * @author zhaigt
  *
  */
@@ -37,12 +38,12 @@ public class LocalDownController {
 	public String cache(HttpServletResponse response,HttpServletRequest request) {
 		try{
 		 String path = request.getServletPath().replaceAll("^/cache/", "");
-		 String could_url = "";
+		 String could_url = "";// 原始目标地址
 		 //判断url的合理性
 		 if(null == path || "".equals(path)){
 		   return "/cache/后面无有效资源名称";
 		 }else if(path.startsWith("image01")){// 图片服务器
-		   could_url = Constant.FILEURL_PREFIX + path;
+		   could_url = "http://image.candaochina.com/" + path;
 		 }// 非图片服务器的资源
 		  // 除此之外的资源 都不提供服务，作为无效资源
 		 
@@ -56,6 +57,7 @@ public class LocalDownController {
 		  }else{
 		    // 异步缓存资源到本地
 		    uploadPool.execute(new FileDownLoadThread(could_url, local_path));
+		    // 第一次本地没有缓存的情况下 跳转到原始目标地址
 		    return "redirect:"+could_url;
 		  }
 		}catch(Exception ex){
