@@ -303,23 +303,23 @@ public class PreferentialAnalysisChartsServiceImpl   {
 	            	 rowNum++;
 	            	 sheet.setColumnView(i,25);
 	            	 String pname = CouponsReptList.get(i).get("pname") == null ? "" : CouponsReptList.get(i).get("pname").toString();
-	            	 String ptype = CouponsReptList.get(i).get("ptype") == null ? "" : CouponsReptList.get(i).get("ptype").toString();
-	            	 String ptypename = CouponsReptList.get(i).get("ptypename") == null ? "" : CouponsReptList.get(i).get("ptypename").toString();
-	            	 String payway = CouponsReptList.get(i).get("payway") == null ? "" : CouponsReptList.get(i).get("payway").toString();
-	            	 String paywaydesc = CouponsReptList.get(i).get("paywaydesc") == null ? "" : CouponsReptList.get(i).get("paywaydesc").toString();
-	            	 String couponNum = CouponsReptList.get(i).get("couponNum") == null ? "" : CouponsReptList.get(i).get("couponNum").toString();
-	            	 String payamount = CouponsReptList.get(i).get("payamount") == null ? "" : CouponsReptList.get(i).get("payway").toString();
-	            	 String shouldamount = CouponsReptList.get(i).get("shouldamount") == null ? "" : CouponsReptList.get(i).get("shouldamount").toString();
-	            	 String paidinamount = CouponsReptList.get(i).get("paidinamount") == null ? "" : CouponsReptList.get(i).get("paidinamount").toString();
-	            	 sheet.addCell(new Label(0, rowNum, pname, wcfTable));
-	            	 sheet.addCell(new Label(1, rowNum, ptype, wcfTable));
-	            	 sheet.addCell(new Label(2, rowNum, ptypename, wcfTable));
-	            	 sheet.addCell(new Label(3, rowNum, payway, wcfTable));
-	            	 sheet.addCell(new Label(4, rowNum, paywaydesc, wcfTable));
-	            	 sheet.addCell(new Label(5, rowNum, couponNum, wcfTable));
-	            	 sheet.addCell(new Label(6, rowNum, payamount, wcfTable));
-	            	 sheet.addCell(new Label(7, rowNum, shouldamount, wcfTable));
-	            	 sheet.addCell(new Label(8, rowNum, paidinamount, wcfTable));
+                 String singular = CouponsReptList.get(i).get("singular") == null ? "" : CouponsReptList.get(i).get("singular").toString();
+                 String ptypename = CouponsReptList.get(i).get("ptypename") == null ? "" : CouponsReptList.get(i).get("ptypename").toString();
+                 String perCapita = CouponsReptList.get(i).get("perCapita") == null ? "" : CouponsReptList.get(i).get("perCapita").toString();
+                 String paywaydesc = CouponsReptList.get(i).get("paywaydesc") == null ? "" : CouponsReptList.get(i).get("paywaydesc").toString();
+                 String couponNum = CouponsReptList.get(i).get("couponNum") == null ? "" : CouponsReptList.get(i).get("couponNum").toString();
+                 String payamount = CouponsReptList.get(i).get("payamount") == null ? "" : CouponsReptList.get(i).get("payamount").toString();
+                 String shouldamount = CouponsReptList.get(i).get("shouldamount") == null ? "" : CouponsReptList.get(i).get("shouldamount").toString();
+                 String paidinamount = CouponsReptList.get(i).get("paidinamount") == null ? "" : CouponsReptList.get(i).get("paidinamount").toString();
+                 sheet.addCell(new Label(0, rowNum, pname, wcfTable));
+                 sheet.addCell(new Label(1, rowNum, ptypename, wcfTable));
+                 sheet.addCell(new Label(2, rowNum, paywaydesc, wcfTable));
+                 sheet.addCell(new Label(3, rowNum, singular, wcfTable));
+                 sheet.addCell(new Label(4, rowNum, couponNum, wcfTable));
+                 sheet.addCell(new Label(5, rowNum, payamount, wcfTable));
+                 sheet.addCell(new Label(6, rowNum, shouldamount, wcfTable));
+                 sheet.addCell(new Label(7, rowNum, paidinamount, wcfTable));
+                 sheet.addCell(new Label(8, rowNum, perCapita, wcfTable));
 	             }
              }
              // 写入数据     
