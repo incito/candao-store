@@ -132,18 +132,41 @@ public class PadInterfaceController {
 	
 	
 	/**
-	 * 获取pad端的所有可配置项
+	 * 保存修改配置信息
 	 * @param padConfig
 	 * @return
 	 */
 	@RequestMapping("/saveorupdate")
 	@ResponseBody
 	public String saveorupdate(PadConfig padConfig){
-		//System.out.println(padConfig);
-		padConfigService.saveorupdate(padConfig);
-		return null;
+		int result=padConfigService.saveorupdate(padConfig);
+		Map<String, Object> map=new HashMap<>();
+		if(result>0){
+			map.put("code", 1);
+			map.put("msg", "操作失败");
+		}else{
+			map.put("code", 0);
+		}
+		return JacksonJsonMapper.objectToJson(map);
 	}
-	
+		
+	/**
+	 * 获取pad端的所有可配置项
+	 */
+	@RequestMapping("/getconfiginfos")
+	@ResponseBody
+	public String getconfiginfos(){
+		PadConfig padConfig= padConfigService.getconfiginfos();
+		Map<String, Object> map=new HashMap<>();
+		if(padConfig==null){
+			map.put("code", 1);
+			map.put("msg", "门店没有配置相关信息");
+		}else{
+			map.put("code", 0);
+			map.put("data", padConfig);
+		}
+		return JacksonJsonMapper.objectToJson(map);
+	}
 	
 	
 	

@@ -11,4 +11,6 @@ public interface PadConfigDao {
 
 	int insert(PadConfig padConfig);
 
+	PadConfig getconfiginfos();
+
 }

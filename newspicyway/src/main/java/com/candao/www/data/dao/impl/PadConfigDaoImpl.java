@@ -30,4 +30,9 @@ public class PadConfigDaoImpl implements PadConfigDao{
 		return dao.insert(PREFIX+".insert", padConfig);
 	}
 
+	@Override
+	public PadConfig getconfiginfos() {
+		return dao.findOne(PREFIX+".getconfiginfos");
+	}
+
 }

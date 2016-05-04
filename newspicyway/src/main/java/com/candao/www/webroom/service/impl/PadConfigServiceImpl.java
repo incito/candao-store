@@ -22,5 +22,11 @@ public class PadConfigServiceImpl  implements PadConfigService{
 			return padConfigDao.insert(padConfig);
 		}
 	}
+
+	@Override
+	public PadConfig getconfiginfos() {
+		
+		return padConfigDao.getconfiginfos();
+	}
 	
 }
