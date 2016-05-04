@@ -110,6 +110,11 @@
 		</constructor-arg>
 	</bean>
 	
+    <!-- 异常消息队列 -->  
+    <bean id="exceptionQueue" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="exceptionQueue" />  
+    </bean>  
+	
 		<bean id="commMessageConverter" class="com.candao.print.utils.CommMessageConverter"/>
 	
 	<!-- 多个菜品的监听 -->
@@ -223,8 +228,22 @@
             <bean class="com.candao.print.listener.DishSetListener"/>  
         </property>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>     
+    </bean>   
+      
+    <!-- 异常队列的监听 -->
+	  <bean id="exceptionMessageListenerAdapterContainer"  
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="exceptionQueue" />  
+        <property name="messageListener" ref="exceptionMessageListenerAdapter" />  
+    </bean>  
     
+     <bean id="exceptionMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+        <property name="delegate">
+            <bean class="com.candao.print.listener.PrintExceptionListener"/>  
+        </property>  
+        <property name="defaultListenerMethod" value="receiveMessage"/>  
+    </bean>     
        
     <!--  发送给分店数据的 监听  end -->
     
