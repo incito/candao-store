@@ -141,7 +141,7 @@ public class PadInterfaceController {
 	public String saveorupdate(PadConfig padConfig){
 		int result=padConfigService.saveorupdate(padConfig);
 		Map<String, Object> map=new HashMap<>();
-		if(result>0){
+		if(result==0){
 			map.put("code", 1);
 			map.put("msg", "操作失败");
 		}else{
