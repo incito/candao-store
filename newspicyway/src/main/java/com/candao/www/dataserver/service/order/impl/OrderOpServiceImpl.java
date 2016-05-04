@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.order.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.constants.PrintType;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -10,11 +11,14 @@ import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.model.ResultData;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.DataServerJsonFormat;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -131,6 +135,16 @@ public class OrderOpServiceImpl implements OrderOpService {
             LOGGER.info("###getAllOrderInfo2 userId={}###", aUserId);
             String workDate = WorkDateUtil.getWorkDate();
             List<Map> orderJson = orderMapper.getAllOrderInfo2(workDate);
+            if (null != orderJson && !orderJson.isEmpty()) {
+                for (Map map : orderJson) {
+                    Object begintime = map.get("begintime");
+                    if (!StringUtil.isEmpty(begintime)) {
+                        //begintime需要格式化
+                        long beginTimeL = ((Timestamp) begintime).getTime();
+                        map.put("begintime", DateUtils.toString(new Date(beginTimeL), "yyyyMMdd HH:mm:ss"));
+                    }
+                }
+            }
             responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
         } catch (Exception e) {
             responseJsonData.setData("0");
@@ -248,5 +262,9 @@ public class OrderOpServiceImpl implements OrderOpService {
             return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
         }
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DateUtils.dateToString(new Date(1461924010000l)));
     }
 }
