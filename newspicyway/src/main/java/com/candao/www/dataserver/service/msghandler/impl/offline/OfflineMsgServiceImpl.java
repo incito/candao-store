@@ -51,6 +51,7 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
 
     @Override
     public List<OfflineMsg> getByGroupAndId(String group, String id) {
+        deleteMsgByExpireTime();
         return offlineMsgMapper.getByGroupAndId(group, id);
     }
 
@@ -64,4 +65,16 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
         offlineMsgMapper.deleteById(id);
     }
 
+    @Override
+    public void deleteMsgByExpireTime() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                offlineMsgMapper.deleteMsgByExpireTime();
+
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
 }
