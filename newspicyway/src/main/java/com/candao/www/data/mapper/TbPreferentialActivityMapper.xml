@@ -789,7 +789,7 @@
 			  det.preferential = tpa.id 
 			  and (tpa.`status` is null or tpa.status !='1')
 			  	<if test="status == 2">
-					AND (tpa.`status` is null or tpa.`status` != #{status}
+					AND (tpa.`status` is null or tpa.`status` != #{status})
 				</if>
 			  AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
 		      and tpa.apply_all=1 
@@ -831,7 +831,7 @@
 				and
 				(tpa.`status` is null or tpa.status !='1' )
 					<if test="status == 2">
-						AND (tpa.`status` is null or tpa.`status` != #{status}
+						AND (tpa.`status` is null or tpa.`status` != #{status})
 					</if>
 						<if test=" type !=null">
 							AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
