@@ -20,7 +20,6 @@ public class PadConfig implements Serializable{
 	private Boolean social;//社交功能
 	private String[] seatImagename;//座位图名称
 	private File[]  seatImagefiles;//座位图文件
-	private String[] seatImageurl;//座位图地址
 	private Boolean vipstatus;//是否启用会员
 	private String viptype;//会员类型1餐道会员；2其他会员
 	private String vipcandaourl;//会员地址(直接在数据库修改)
@@ -40,12 +39,9 @@ public class PadConfig implements Serializable{
 	private String bigdatainterface;//大数据接口地址
 	private String seatimageurls;//数据库保存的全部图片地址
 	//不写入数据库字段
+	private String[] seatImageurl;//座位图地址
 	private String logourl;//
 	private String backgroudurl;//
-	private Boolean tablewareisfree;//餐具是否免费(保留以前逻辑)
-	private String tablewareprice;//餐具收费价格(保留以前逻辑)
-	private String tablewarevipprice;//餐具收费vip价格(保留以前逻辑)
-	
 	public Integer getId() {
 		return id;
 	}
@@ -57,24 +53,6 @@ public class PadConfig implements Serializable{
 	}
 	public void setPadloginpass(String padloginpass) {
 		this.padloginpass = padloginpass;
-	}
-	public Boolean getTablewareisfree() {
-		return tablewareisfree;
-	}
-	public void setTablewareisfree(Boolean tablewareisfree) {
-		this.tablewareisfree = tablewareisfree;
-	}
-	public String getTablewareprice() {
-		return tablewareprice;
-	}
-	public void setTablewareprice(String tablewareprice) {
-		this.tablewareprice = tablewareprice;
-	}
-	public String getTablewarevipprice() {
-		return tablewarevipprice;
-	}
-	public void setTablewarevipprice(String tablewarevipprice) {
-		this.tablewarevipprice = tablewarevipprice;
 	}
 	public Boolean getSocial() {
 		return social;
@@ -93,12 +71,6 @@ public class PadConfig implements Serializable{
 	}
 	public void setSeatImagefiles(File[] seatImagefiles) {
 		this.seatImagefiles = seatImagefiles;
-	}
-	public String[] getSeatImageurl() {
-		return seatImageurl;
-	}
-	public void setSeatImageurl(String[] seatImageurl) {
-		this.seatImageurl = seatImageurl;
 	}
 	public Boolean getVipstatus() {
 		return vipstatus;
@@ -202,6 +174,18 @@ public class PadConfig implements Serializable{
 	public void setBigdatainterface(String bigdatainterface) {
 		this.bigdatainterface = bigdatainterface;
 	}
+	public String getSeatimageurls() {
+		return seatimageurls;
+	}
+	public void setSeatimageurls(String seatimageurls) {
+		this.seatimageurls = seatimageurls;
+	}
+	public String[] getSeatImageurl() {
+		return seatImageurl;
+	}
+	public void setSeatImageurl(String[] seatImageurl) {
+		this.seatImageurl = seatImageurl;
+	}
 	public String getLogourl() {
 		return logourl;
 	}
@@ -213,12 +197,6 @@ public class PadConfig implements Serializable{
 	}
 	public void setBackgroudurl(String backgroudurl) {
 		this.backgroudurl = backgroudurl;
-	}
-	public String getSeatimageurls() {
-		return seatimageurls;
-	}
-	public void setSeatimageurls(String seatimageurls) {
-		this.seatimageurls = seatimageurls;
 	}
 	
 	
