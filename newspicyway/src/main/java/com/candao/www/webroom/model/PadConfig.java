@@ -1,5 +1,6 @@
 package com.candao.www.webroom.model;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -16,28 +17,32 @@ public class PadConfig implements Serializable{
 	
 	private Integer id;//主键
 	private String padloginpass;//pad登录密码
-	private String tablewareisfree;//餐具是否免费
-	private String tablewareprice;//餐具收费价格
-	private String tablewarevipprice;//餐具收费vip价格
-	private String social;//社交功能
-	private String seatImage;//座位图
-	private String vip;//是否启用会员
-	private String viptype;//会员类型1餐道会员；2雅座会员
-	private String clickimagedish;//点图点菜
-	private String onepage;//一页菜谱
-	private String newplayer;//新手引导
-	private String chinaEnglish;//中英文国际化
-	private String indexad;//首页广告
-	private String invoice;//开发票
-	private String hidecarttotal;//隐藏购物车总价
+	private Boolean tablewareisfree;//餐具是否免费(保留以前逻辑)
+	private String tablewareprice;//餐具收费价格(保留以前逻辑)
+	private String tablewarevipprice;//餐具收费vip价格(保留以前逻辑)
+	private Boolean social;//社交功能
+	private String[] seatImagename;//座位图名称
+	private File[]  seatImagefiles;//座位图文件
+	private String[] seatImageurl;//座位图地址
+	private Boolean vipstatus;//是否启用会员
+	private String viptype;//会员类型1餐道会员；2其他会员
+	private String vipcandaourl;//会员地址(直接在数据库修改)
+	private String vipotherurl;//其他会员地址(直接在数据库修改)
+	private Boolean clickimagedish;//点图点菜
+	private Boolean onepage;//一页菜谱
+	private Boolean newplayer;//新手引导
+	private Boolean chinaEnglish;//中英文国际化
+	private Boolean indexad;//首页广告
+	private Boolean invoice;//开发票
+	private Boolean hidecarttotal;//隐藏购物车总价
 	private String adtimes;//异业营销时间
-	private String waiterreward;//服务员打赏
+	private Boolean waiterreward;//服务员打赏
 	private String rewardmoney;//打赏金额
 	private String youmengappkey;//友盟应用钥匙
 	private String youmengchinnal;//友盟渠道号
-	private String youmenginterface;//大数据接口地址
-	private String logoimageurl;//logo图片地址
-	private String padbackgroudurl;//pad启动背景图片
+	private String bigdatainterface;//大数据接口地址
+	private String logourl;//
+	private String backgroudurl;//
 	public Integer getId() {
 		return id;
 	}
@@ -50,10 +55,10 @@ public class PadConfig implements Serializable{
 	public void setPadloginpass(String padloginpass) {
 		this.padloginpass = padloginpass;
 	}
-	public String getTablewareisfree() {
+	public Boolean getTablewareisfree() {
 		return tablewareisfree;
 	}
-	public void setTablewareisfree(String tablewareisfree) {
+	public void setTablewareisfree(Boolean tablewareisfree) {
 		this.tablewareisfree = tablewareisfree;
 	}
 	public String getTablewareprice() {
@@ -68,17 +73,35 @@ public class PadConfig implements Serializable{
 	public void setTablewarevipprice(String tablewarevipprice) {
 		this.tablewarevipprice = tablewarevipprice;
 	}
-	public String getSocial() {
+	public Boolean getSocial() {
 		return social;
 	}
-	public void setSocial(String social) {
+	public void setSocial(Boolean social) {
 		this.social = social;
 	}
-	public String getVip() {
-		return vip;
+	public String[] getSeatImagename() {
+		return seatImagename;
 	}
-	public void setVip(String vip) {
-		this.vip = vip;
+	public void setSeatImagename(String[] seatImagename) {
+		this.seatImagename = seatImagename;
+	}
+	public File[] getSeatImagefiles() {
+		return seatImagefiles;
+	}
+	public void setSeatImagefiles(File[] seatImagefiles) {
+		this.seatImagefiles = seatImagefiles;
+	}
+	public String[] getSeatImageurl() {
+		return seatImageurl;
+	}
+	public void setSeatImageurl(String[] seatImageurl) {
+		this.seatImageurl = seatImageurl;
+	}
+	public Boolean getVipstatus() {
+		return vipstatus;
+	}
+	public void setVipstatus(Boolean vipstatus) {
+		this.vipstatus = vipstatus;
 	}
 	public String getViptype() {
 		return viptype;
@@ -86,46 +109,58 @@ public class PadConfig implements Serializable{
 	public void setViptype(String viptype) {
 		this.viptype = viptype;
 	}
-	public String getClickimagedish() {
+	public String getVipcandaourl() {
+		return vipcandaourl;
+	}
+	public void setVipcandaourl(String vipcandaourl) {
+		this.vipcandaourl = vipcandaourl;
+	}
+	public String getVipotherurl() {
+		return vipotherurl;
+	}
+	public void setVipotherurl(String vipotherurl) {
+		this.vipotherurl = vipotherurl;
+	}
+	public Boolean getClickimagedish() {
 		return clickimagedish;
 	}
-	public void setClickimagedish(String clickimagedish) {
+	public void setClickimagedish(Boolean clickimagedish) {
 		this.clickimagedish = clickimagedish;
 	}
-	public String getOnepage() {
+	public Boolean getOnepage() {
 		return onepage;
 	}
-	public void setOnepage(String onepage) {
+	public void setOnepage(Boolean onepage) {
 		this.onepage = onepage;
 	}
-	public String getNewplayer() {
+	public Boolean getNewplayer() {
 		return newplayer;
 	}
-	public void setNewplayer(String newplayer) {
+	public void setNewplayer(Boolean newplayer) {
 		this.newplayer = newplayer;
 	}
-	public String getChinaEnglish() {
+	public Boolean getChinaEnglish() {
 		return chinaEnglish;
 	}
-	public void setChinaEnglish(String chinaEnglish) {
+	public void setChinaEnglish(Boolean chinaEnglish) {
 		this.chinaEnglish = chinaEnglish;
 	}
-	public String getIndexad() {
+	public Boolean getIndexad() {
 		return indexad;
 	}
-	public void setIndexad(String indexad) {
+	public void setIndexad(Boolean indexad) {
 		this.indexad = indexad;
 	}
-	public String getInvoice() {
+	public Boolean getInvoice() {
 		return invoice;
 	}
-	public void setInvoice(String invoice) {
+	public void setInvoice(Boolean invoice) {
 		this.invoice = invoice;
 	}
-	public String getHidecarttotal() {
+	public Boolean getHidecarttotal() {
 		return hidecarttotal;
 	}
-	public void setHidecarttotal(String hidecarttotal) {
+	public void setHidecarttotal(Boolean hidecarttotal) {
 		this.hidecarttotal = hidecarttotal;
 	}
 	public String getAdtimes() {
@@ -134,10 +169,10 @@ public class PadConfig implements Serializable{
 	public void setAdtimes(String adtimes) {
 		this.adtimes = adtimes;
 	}
-	public String getWaiterreward() {
+	public Boolean getWaiterreward() {
 		return waiterreward;
 	}
-	public void setWaiterreward(String waiterreward) {
+	public void setWaiterreward(Boolean waiterreward) {
 		this.waiterreward = waiterreward;
 	}
 	public String getRewardmoney() {
@@ -158,29 +193,24 @@ public class PadConfig implements Serializable{
 	public void setYoumengchinnal(String youmengchinnal) {
 		this.youmengchinnal = youmengchinnal;
 	}
-	public String getYoumenginterface() {
-		return youmenginterface;
+	public String getBigdatainterface() {
+		return bigdatainterface;
 	}
-	public void setYoumenginterface(String youmenginterface) {
-		this.youmenginterface = youmenginterface;
+	public void setBigdatainterface(String bigdatainterface) {
+		this.bigdatainterface = bigdatainterface;
 	}
-	public String getLogoimageurl() {
-		return logoimageurl;
+	public String getLogourl() {
+		return logourl;
 	}
-	public void setLogoimageurl(String logoimageurl) {
-		this.logoimageurl = logoimageurl;
+	public void setLogourl(String logourl) {
+		this.logourl = logourl;
 	}
-	public String getPadbackgroudurl() {
-		return padbackgroudurl;
+	public String getBackgroudurl() {
+		return backgroudurl;
 	}
-	public void setPadbackgroudurl(String padbackgroudurl) {
-		this.padbackgroudurl = padbackgroudurl;
+	public void setBackgroudurl(String backgroudurl) {
+		this.backgroudurl = backgroudurl;
 	}
-	public String getSeatImage() {
-		return seatImage;
+	
+	
 	}
-	public void setSeatImage(String seatImage) {
-		this.seatImage = seatImage;
-	}
-
-}
