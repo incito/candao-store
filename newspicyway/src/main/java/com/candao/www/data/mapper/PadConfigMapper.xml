@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.PadConfigDao">
+	<select id="selectisExsit" resultType="int">
+		select count(1) from t_b_padconfig
+	</select>
+	<insert id="insert" parameterType="com.candao.www.webroom.model.PadConfig">
+		insert into t_b_padconfig(padloginpass,tablewareisfree,tablewareprice,tablewarevipprice,social,seatimageurls,vipstatus,viptype,vipcandaourl,vipotherurl,clickimagedish,onepage,newplayer,chinaEnglish,indexad,invoice,hidecarttotal,adtimes,waiterreward,rewardmoney,youmengappkey,youmengchinnal,bigdatainterface)
+		values(#{padloginpass},#{tablewareisfree},#{tablewareprice},#{tablewarevipprice},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface})
+	</insert>
+	<update id="update"  parameterType="com.candao.www.webroom.model.PadConfig">
+		update t_b_padconfig set id=1
+		<if test="padloginpass!=null">
+			,padloginpass=#{padloginpass}
+		</if>
+		<if test="tablewareisfree!=null">
+			,tablewareisfree=#{tablewareisfree}
+		</if>
+		<if test="tablewareprice!=null">
+			,tablewareprice=#{tablewareprice}
+		</if>
+		<if test="tablewarevipprice!=null">
+			,tablewarevipprice=#{tablewarevipprice}
+		</if>
+		<if test="social!=null">
+			,social=#{social}
+		</if>
+		<if test="seatimageurls!=null">
+			,seatimageurls=#{seatimageurls}
+		</if>
+		<if test="vipstatus!=null">
+			,vipstatus=#{vipstatus}
+		</if>
+		<if test="viptype!=null">
+			,viptype=#{viptype}
+		</if>
+		<if test="vipcandaourl!=null">
+			,vipcandaourl=#{vipcandaourl}
+		</if>
+		<if test="vipotherurl!=null">
+			,vipotherurl=#{vipotherurl}
+		</if>
+		<if test="clickimagedish!=null">
+			,clickimagedish=#{clickimagedish}
+		</if>
+		<if test="onepage!=null">
+			,onepage=#{onepage}
+		</if>
+		<if test="newplayer!=null">
+			,newplayer=#{newplayer}
+		</if>
+		<if test="chinaEnglish!=null">
+			,chinaEnglish=#{chinaEnglish}
+		</if>
+		<if test="indexad!=null">
+			,indexad=#{indexad}
+		</if>
+		<if test="invoice!=null">
+			,invoice=#{invoice}
+		</if>
+		<if test="hidecarttotal!=null">
+			,hidecarttotal=#{hidecarttotal}
+		</if>
+		<if test="adtimes!=null">
+			,adtimes=#{adtimes}
+		</if>
+		<if test="waiterreward!=null">
+			,waiterreward=#{waiterreward}
+		</if>
+		<if test="rewardmoney!=null">
+			,rewardmoney=#{rewardmoney}
+		</if>
+		<if test="youmengappkey!=null">
+			,youmengappkey=#{youmengappkey}
+		</if>
+		<if test="youmengchinnal!=null">
+			,youmengchinnal=#{youmengchinnal}
+		</if>
+		<if test="bigdatainterface!=null">
+			,bigdatainterface=#{bigdatainterface}
+		</if>
+	</update>
+	
+	<select id="getconfiginfos" resultType="com.candao.www.webroom.model.PadConfig">
+		select * from t_b_padconfig
+	</select>
+</mapper>

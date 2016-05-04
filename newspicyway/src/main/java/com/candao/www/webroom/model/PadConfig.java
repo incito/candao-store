@@ -17,9 +17,6 @@ public class PadConfig implements Serializable{
 	
 	private Integer id;//主键
 	private String padloginpass;//pad登录密码
-	private Boolean tablewareisfree;//餐具是否免费(保留以前逻辑)
-	private String tablewareprice;//餐具收费价格(保留以前逻辑)
-	private String tablewarevipprice;//餐具收费vip价格(保留以前逻辑)
 	private Boolean social;//社交功能
 	private String[] seatImagename;//座位图名称
 	private File[]  seatImagefiles;//座位图文件
@@ -45,7 +42,9 @@ public class PadConfig implements Serializable{
 	//不写入数据库字段
 	private String logourl;//
 	private String backgroudurl;//
-	
+	private Boolean tablewareisfree;//餐具是否免费(保留以前逻辑)
+	private String tablewareprice;//餐具收费价格(保留以前逻辑)
+	private String tablewarevipprice;//餐具收费vip价格(保留以前逻辑)
 	
 	public Integer getId() {
 		return id;

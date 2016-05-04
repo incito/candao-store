@@ -1185,7 +1185,6 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/getPictures")
 	@ResponseBody
-
 	public void   getPictures(HttpServletRequest request,HttpServletResponse response,@RequestParam Map<String, Object> params){
 
 		List<Map<String, Object>> list = picturesService.find(params);
