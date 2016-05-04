@@ -13,6 +13,7 @@ import java.util.Map;
  *  @serialData 2016-1-21
  */
 public interface OtherCouponDao {
+	
   public final static String PREFIX = OtherCouponDao.class.getName();
   
   /**

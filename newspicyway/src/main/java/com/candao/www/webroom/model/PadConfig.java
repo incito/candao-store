@@ -41,8 +41,12 @@ public class PadConfig implements Serializable{
 	private String youmengappkey;//友盟应用钥匙
 	private String youmengchinnal;//友盟渠道号
 	private String bigdatainterface;//大数据接口地址
+	private String seatimageurls;//数据库保存的全部图片地址
+	//不写入数据库字段
 	private String logourl;//
 	private String backgroudurl;//
+	
+	
 	public Integer getId() {
 		return id;
 	}
@@ -210,6 +214,12 @@ public class PadConfig implements Serializable{
 	}
 	public void setBackgroudurl(String backgroudurl) {
 		this.backgroudurl = backgroudurl;
+	}
+	public String getSeatimageurls() {
+		return seatimageurls;
+	}
+	public void setSeatimageurls(String seatimageurls) {
+		this.seatimageurls = seatimageurls;
 	}
 	
 	

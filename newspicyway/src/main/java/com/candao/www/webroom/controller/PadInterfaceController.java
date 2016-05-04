@@ -136,10 +136,11 @@ public class PadInterfaceController {
 	 * @param padConfig
 	 * @return
 	 */
-	@RequestMapping("/configInfos")
+	@RequestMapping("/saveorupdate")
 	@ResponseBody
-	public String configInfos(@RequestBody PadConfig padConfig){
-		//padConfigService.configInfos(padConfig);
+	public String saveorupdate(PadConfig padConfig){
+		//System.out.println(padConfig);
+		padConfigService.saveorupdate(padConfig);
 		return null;
 	}
 	
