@@ -21,7 +21,7 @@ public class PadConfig implements Serializable{
 	private String padloginpass;//pad登录密码
 	private Boolean social;//社交功能
 	private String[] seatImagename;//座位图名称
-	private File[]  seatImagefiles;//座位图文件
+	private String[]  seatImagefileurls;//座位图文件地址web端使用地段
 	private Boolean vipstatus;//是否启用会员
 	private String viptype;//会员类型1餐道会员；2其他会员
 	private String vipcandaourl;//会员地址(直接在数据库修改)
@@ -74,11 +74,14 @@ public class PadConfig implements Serializable{
 	public void setSeatImagename(String[] seatImagename) {
 		this.seatImagename = seatImagename;
 	}
-	public File[] getSeatImagefiles() {
-		return seatImagefiles;
+	
+	
+	
+	public String[] getSeatImagefileurls() {
+		return seatImagefileurls;
 	}
-	public void setSeatImagefiles(File[] seatImagefiles) {
-		this.seatImagefiles = seatImagefiles;
+	public void setSeatImagefileurls(String[] seatImagefileurls) {
+		this.seatImagefileurls = seatImagefileurls;
 	}
 	public Boolean getVipstatus() {
 		return vipstatus;
