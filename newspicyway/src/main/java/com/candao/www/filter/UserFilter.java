@@ -49,7 +49,7 @@ public class UserFilter implements Filter {
 		if (!"/".equals(StringUtils.left(targetURL, 6))) {
 			if (!"/login".equals(StringUtils.left(targetURL, 6)) && ! targetURL.startsWith("/padinterface")&& ! targetURL.startsWith("/bankinterface")&& ! targetURL.startsWith("/member")&& ! targetURL.startsWith("/weixin")&& ! targetURL.startsWith("/psi")
 					&&!targetURL.startsWith("/t_user/retrievePwd")&&!targetURL.startsWith("/t_user/retrievePwdEmailValicode") &&!targetURL.startsWith("/tenant/") &&!targetURL.startsWith("/client")
-					&&!targetURL.startsWith("/social")&&!targetURL.startsWith("/tip")) {
+					&&!targetURL.startsWith("/social")&&!targetURL.startsWith("/tip")&&!targetURL.startsWith("/managerWatch")) {
 				if (session == null || session.getAttribute(Constant.CURRENT_USER) == null) {
 					response.reset();
 					response.setContentType("text/html; charset=utf-8"); // 设置编码格式要在创建PrintWriter对象之前.不然不能生效

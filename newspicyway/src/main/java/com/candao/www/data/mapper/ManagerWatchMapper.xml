@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.dao.ManagerWatchDao">
+
+    <!-- 删除经理区域关系 -->
+	<delete id="deleteAreaManager" parameterType="java.util.Map" >
+	   delete from t_tablearea_manager where job_number = #{jobNumber}
+	</delete>
+	
+	<!-- 保存经理手环区域关系 -->
+	<insert id="batchInsertAreaManager" parameterType="com.candao.www.data.model.AreaManager">
+	    INSERT INTO t_tablearea_manager (id, tablearea_id, job_number)
+	    VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.id}, #{item.tableareaId} , #{item.jobNumber})
+		</foreach>
+	</insert>
+
+    <!-- 根据订单号和服务员工号查询区域信息和经理编号 -->
+    <select id="queryAreaAndManagerJobNumber" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+			are.areaid,
+			are.areaname,
+		 	m.job_number
+		FROM
+			t_table tbl,
+			t_tablearea are,
+		    t_tablearea_manager m
+		WHERE
+			tbl.areaid = are.areaid
+			AND m.tablearea_id = are.areaid
+		<if test="tableno != null and tableno != ''">
+			AND tbl.tableNo = #{tableno}
+		</if>
+    </select>
+    
+    <!-- 查询其他区域的值班经理 -->
+    <select id="queryOthersAreaManager" parameterType="java.util.Map" resultType="java.util.Map" >
+        SELECT 
+			are.areaid,
+			are.areaname,
+		 	m.job_number
+		FROM
+			t_tablearea are,
+		    t_tablearea_manager m
+		WHERE m.tablearea_id = are.areaid
+		AND m.job_number not in 
+		<foreach item="userid" index="index" collection="userid"  open="(" separator="," close=")">  
+			#{userid}
+		</foreach>
+		group by m.job_number
+    </select>
+    
+    <!-- 查询所有区域值班经理 -->
+    <select id="queryAllAreaManager" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+			are.areaid,
+			are.areaname,
+			m.job_number
+		FROM
+			t_table tbl,
+			t_tablearea are,
+			t_tablearea_manager m
+		WHERE
+			tbl.areaid = are.areaid
+		AND m.tablearea_id = are.areaid
+		GROUP BY
+			job_number
+    </select>
+    
+    <select id="getTableName" parameterType="java.util.Map" resultType="String">
+        SELECT
+			are.areaname
+		FROM
+			t_table tbl,
+			t_tablearea are
+		WHERE
+			tbl.areaid = are.areaid
+		and tbl.tableno = #{tableno}
+
+    </select>
+</mapper>
