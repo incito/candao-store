@@ -146,16 +146,62 @@ body {
   	float: left;
 }
 #gifts-div{
-	padding-top: 0px;
+	padding: 0px 0 0 0;
 	text-align: left;
 	font-size: 14px;
-	width: 90%;
+	line-height:220%;
 }
-
-
-
-
-
+.store-gifts-add {
+	margin-bottom:20px;
+}
+.setup_div_box input.disabled {
+	border:none;
+	background: #fff!important;
+    box-shadow: none;
+    padding:2px 0;
+    width:auto;
+    display:inline-block;
+    cursor:default;
+}
+.seat-item {
+	width:132px;
+	position:relative;
+	margin-top:12px;
+}
+.seat-item-op {
+	padding:5px 0;
+	overflow:hidden;
+}
+.seat-item-op a {
+	color:#282828;
+}
+.seat-item img.upload-default {
+	width:130px;
+	height:130px;
+	border: 1px solid #e6e6e6;
+}
+.seat-item-tip{
+	color:red;
+	margin-top:2px;
+}
+.yy-time {
+	position:relative;
+}
+.yy-time .tip {
+	position:absolute;
+	bottom:-20px;
+	right:15px;
+}
+.yy-time label {
+	padding:0;
+	text-align:left!important;
+	position:relative;
+}
+.yy-time .unit {
+	position:absolute;
+	top:6px;
+	right:6px;
+}
 .tag{ 
 	width:250px; 
 	height:77px;
@@ -234,7 +280,7 @@ body {
 }
 
 .deflogo{
-    padding: 50px 0px 0px 0px;
+ 
 }
 
 .defBackground{

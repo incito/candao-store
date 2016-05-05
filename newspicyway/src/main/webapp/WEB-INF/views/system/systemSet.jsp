@@ -423,17 +423,17 @@
 			</div>
 			</form>
 		</div>
-		<div class="setup_div">
+		<div class="setup_div setup_div_box setup_div_social">
 			<form action="" method="post" class="form-horizontal" name="" id="">
-				<div style="height: 30px;">
+				<div class="setup-mt" style="height: 30px;">
 					<div class="system-setup-title">互动礼品设置</div>
-					<button type="button" id="editGifts" class="btn btn-default">编辑</button>
+					<button type="button"  class="btn btn-default btn-edit J-btn-op">编辑</button>
 				</div>
 				<hr style="margin: 15px 0px;" />
-				<div class="form-group">
+				<div class="form-group setup-mc">
 					<label class="col-xs-2 control-label">社交功能：</label>
 						<div class="col-xs-3">
-							<select class="form-control"  name="social">	  
+							<select class="form-control" disabled  name="social">	  
 								<option value="0" class="form-control" selected="selected">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
@@ -448,14 +448,14 @@
 									<img src="../images/upload-img.png" class="upload-default">
 									<input type="file" onchange="showImg()" style="position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;" size="1" id="seatimg" name="seatimg" accept="image/*">
 								</div>
-								<div class="seat-item-op">
+								<div class="seat-item-op f-dn">
 									<a href="javascript:void(0);" class="f-fl">重新上传</a>
 									<a href="javascript:void(0);" class="f-fr">删除</a>
 								</div>
 								<div class="seat-item-name">
-									<input type="text" value="" class="form-control" required="required" />
+									<input type="text" value="楼上座位图" disabled class="form-control disabled" required="required" />
 								</div>
-								<div class="seat-item-tip">请输入作为名称</div>
+								<div class="seat-item-tip f-dn">请输入作为名称</div>
 							</div>
 						</div>
 				</div>
@@ -463,7 +463,7 @@
 				<div class="form-group">
 					<label class="col-xs-2 control-label">添加互动礼品：</label>
 					<div class="col-xs-10">
-						<button type="button" class="btn btn-default store-select-add" style="float:left;" name="addGifts">
+						<button type="button" id="editGifts" class="btn btn-default store-gifts-add" style="float:left;display:none;" name="addGifts">
 							<i class="icon-plus"></i>添加
 						</button>
 						<div class="f-cb"></div>
@@ -475,17 +475,17 @@
 		</div>
 		
 		
-		<div class="setup_div">
+		<div class="setup_div setup_div_box setup_div_member">
 			<form action="" method="post" class="form-horizontal" name="" id="">
-				<div style="height: 30px;">
+				<div class="setup-mt" style="height: 30px;">
 					<div class="system-setup-title">会员设置：</div>
-					<button type="button" id="editGifts" class="btn btn-default">编辑</button>
+					<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
 				</div>
 				<hr style="margin: 15px 0px;" />
 				<div class="form-group">
 					<label class="col-xs-2 control-label">启用会员：</label>
 						<div class="col-xs-3">
-							<select class="form-control"  name="social">	  
+							<select class="form-control" disabled  name="vipstatus">	  
 								<option value="0" class="form-control" selected="selected">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
@@ -495,9 +495,9 @@
 				<div class="form-group">
 					<label class="col-xs-2 control-label">会员类型：</label>
 						<div class="col-xs-3">
-							<select class="form-control"  name="social">	  
-								<option value="0" class="form-control" selected="selected">套餐会员</option>
-								<option value="1" class="form-control">雅座会员</option>
+							<select class="form-control" disabled  name="viptype">	  
+								<option value="1" class="form-control" selected="selected">餐道会员</option>
+								<option value="2" class="form-control">雅座会员</option>
 							</select>
 						</div>
 				</div>
@@ -505,19 +505,19 @@
 		</div>
 		
 		
-		<div class="setup_div">
+		<div class="setup_div setup_div_box setup_div_other">
 			<form action="" method="post" class="form-horizontal" name="" id="">
-				<div style="height: 30px;">
+				<div class="setup-mt" style="height: 30px;">
 					<div class="system-setup-title">其他设置：</div>
-					<button type="button" id="editGifts" class="btn btn-default">编辑</button>
+					<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
 				</div>
 				<hr style="margin: 15px 0px;" />
 				<div class="form-group">
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">点图点菜：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
-								<option value="0" class="form-control" selected="selected">启用</option>
+							<select class="form-control" disabled name="clickimagedish">	  
+								<option value="0" class="form-control">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
 						</div>
@@ -525,8 +525,8 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">一页菜谱：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
-								<option value="0" class="form-control" selected="selected">启用</option>
+							<select class="form-control" disabled name="onepage">	  
+								<option value="0" class="form-control">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
 						</div>
@@ -536,8 +536,8 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">新手引导：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
-								<option value="0" class="form-control" selected="selected">启用</option>
+							<select class="form-control" disabled name="newplayer">	  
+								<option value="0" class="form-control">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
 						</div>
@@ -545,8 +545,8 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">中英文国际化：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
-								<option value="0" class="form-control" selected="selected">启用</option>
+							<select class="form-control" disabled name="chinaEnglish">	  
+								<option value="0" class="form-control">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
 						</div>
@@ -556,8 +556,8 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">首页广告：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
-								<option value="0" class="form-control" selected="selected">启用</option>
+							<select class="form-control" disabled name="indexad">	  
+								<option value="0" class="form-control">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
 						</div>
@@ -565,8 +565,8 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">开发票：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
-								<option value="0" class="form-control" selected="selected">启用</option>
+							<select class="form-control" disabled name="invoice">	  
+								<option value="0" class="form-control">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
 						</div>
@@ -576,7 +576,7 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">隐藏购物车总价：</label>
 						<div class="col-xs-8">
-							<select class="form-control">	  
+							<select class="form-control" disabled name="hidecarttotal">	  
 								<option value="0" class="form-control" selected="selected">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
@@ -587,7 +587,7 @@
 						<div class="col-xs-8 yy-time">
 							<label class="control-label col-xs-5">进入异业营销时间：</label>
 							<div class=" col-xs-7">
-								<input type="text" value="" class="form-control" required="required" /><span class="unit">s</span>
+								<input type="text" value="" class="form-control disabled" disabled name="adtimes" required="required" /><span class="unit">s</span>
 							</div>
 							<div class="c-red f-fr tip">时间不能为0</div>
 							
@@ -598,7 +598,7 @@
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">服务员打赏：</label>
 						<div class="col-xs-8 f-pr">
-							<select class="form-control">	  
+							<select class="form-control" name="waiterreward" disabled>	  
 								<option value="0" class="form-control" selected="selected">启用</option>
 								<option value="1" class="form-control">关闭</option>
 							</select>
@@ -626,12 +626,11 @@
 		</div>
 		
 		
-		<div class="setup_div">
+		<div class="setup_div setup_div_box setup_div_total">
 			<form action="" method="post" class="form-horizontal " name="" id="">
-			<div style="height: 30px;">
+			<div class="setup-mt" style="height: 30px;">
 				<div class="system-setup-title">统计设置</div>
-				<button type="button" class="btn btn-default hide">编辑</button>
-				<button type="button" class="btn btn-default">保存</button>
+				<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
 			</div>
 			<hr style="margin: 5px 0px;">
 			<div class="modal-body" style="padding-top: 0px;">
@@ -639,33 +638,24 @@
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><span class="c-red">*</span>友盟应用秘钥(APPKEY)：</label>
 						<div class="col-xs-3">
-							<div class="show_info complaints-time hide">
-								<p class="left">30秒</p>
-							</div>
 							<div class="edit_info">
-								<input type="text" value="" class="form-control" placeholder="最多100个字符">
+								<input type="text" value="" name="youmengappkey" class="form-control disabled" disabled placeholder="">
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><span class="c-red">*</span>友盟渠道号(HANNEL)：</label>
 						<div class="col-xs-3">
-							<div class="show_info pay-time hide">
-								<p class="left">100秒</p>
-							</div>
 							<div class="edit_info">
-							<input type="text" value="" class="form-control" placeholder="最多100个字符">
+							<input type="text" value="" name="youmengchinnal" class="form-control disabled" disabled placeholder="">
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><span class="c-red">*</span>大数据接口地址：</label>
 						<div class="col-xs-3">
-							<div class="show_info call-time hide">
-								<p class="left">60秒</p>
-							</div>
 							<div class="edit_info">
-								<input type="text" value="" class="form-control" placeholder="http：//">
+								<input type="text" value="" name="bigdatainterface" class="form-control disabled" disabled placeholder="">
 							</div>
 						</div>
 					</div>

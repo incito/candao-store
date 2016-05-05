@@ -8,7 +8,7 @@ $("#test").click(function(){
 //		contentType : "application/json; charset=utf-8",
 		success : function(data) {
 		}});
-});
+	});
 	$.widget("ui.timespinner", $.ui.spinner, {
 		options : {
 			// seconds
@@ -457,7 +457,144 @@ $("#test").click(function(){
 		$("#dish-select-dialog").load("loadDishSelect");
 		$("#dish-select-dialog").modal("show");
 	});
+
+
+	//编辑 保存按钮切换
+	false && $('.setup_div_box .setup-mt>.btn').click(function(){
+		
+		if(me.hasClass('btn-edit')) {
+			me.addClass('btn-submit').removeClass('btn-edit');
+			me.text('保存');
+			$selects.removeAttr("disabled");
+			$inputs.removeAttr("disabled").removeClass('disabled');
+			
+			//社交功能单独处理
+			if($parent.hasClass('setup_div_social')) {
+				$('.seat-item-op').hide();
+			}
+		} else {
+			me.addClass('btn-edit').removeClass('btn-submit');
+			me.text('编辑');
+			$selects.attr({"disabled":"disabled"});
+			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+			$btns.hide();
+			$btns.show();
+			if($parent.hasClass('setup_div_social')) {
+				$('.seat-item-op').show();
+			}
+		}
+	});
+	
+	//互动礼品设置
+	$(".setup_div_social .J-btn-op").click(function(){
+		var me = $(this);
+		var $parent = me.parents('.setup_div_box');
+		var $selects = $parent.find('.form-group select');
+		var $inputs = $parent.find('.form-group input');
+		var $btns = $parent.find('.form-group .btn');
+		if(me.hasClass('btn-submit')) {
+			$.ajax({
+				type: "POST",
+				dataType : "json",
+				url : global_Path + "/padinterface/saveorupdate",
+				contentType: "application/json;charset=UTF-8",
+			    data: $.parseJSON({
+			    	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
+			    	"viptype" : $('select[name=viptype]').val()
+			    }),
+				success : function(result) {
+					if (result.code == "0") {
+						me.addClass('btn-edit').removeClass('btn-submit');
+						me.text('编辑');
+						$selects.attr({"disabled":"disabled"});
+						
+					}
+				}
+			});
+		} else {
+			me.addClass('btn-submit').removeClass('btn-edit');
+			me.text('保存');
+			$selects.removeAttr("disabled");
+		}
+		
+	})
+	
+	
+	//会员设置
+	$(".setup_div_member .J-btn-op").click(function(){
+		var me = $(this);
+		var $parent = me.parents('.setup_div_box');
+		var $selects = $parent.find('.form-group select');
+		var $inputs = $parent.find('.form-group input');
+		var $btns = $parent.find('.form-group .btn');
+		if(me.hasClass('btn-submit')) {
+			$.ajax({
+				type: "POST",
+				dataType : "json",
+				url : global_Path + "/padinterface/saveorupdate",
+				contentType: "application/json;charset=UTF-8",
+			    data: JSON.stringify({
+			    	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
+			    	"viptype" : $('select[name=viptype]').val()
+			    }),
+				success : function(result) {
+					if (result.code == "0") {
+						me.addClass('btn-edit').removeClass('btn-submit');
+						me.text('编辑');
+						$selects.attr({"disabled":"disabled"});
+						
+					}
+				}
+			});
+		} else {
+			me.addClass('btn-submit').removeClass('btn-edit');
+			me.text('保存');
+			$selects.removeAttr("disabled");
+		}
+		
+	})
+	
+	//统计操作
+	$(".setup_div_total .J-btn-op").click(function(){
+		var me = $(this);
+		var $parent = me.parents('.setup_div_box');
+		var $selects = $parent.find('.form-group select');
+		var $inputs = $parent.find('.form-group input');
+		var $btns = $parent.find('.form-group .btn');
+		if(me.hasClass('btn-submit')) {
+			$.ajax({
+				type: "POST",
+				dataType : "json",
+				url : global_Path + "/padinterface/saveorupdate",
+				contentType: "application/json;charset=UTF-8",
+			    data: JSON.stringify({
+			    	"youmengappkey" : $('input[name=youmengappkey]').val(),
+			    	"youmengchinnal" : $('input[name=youmengchinnal]').val(),
+			    	"bigdatainterface" : $('input[name=bigdatainterface]').val(),
+			    }),
+				success : function(result) {
+					if (result.code == "0") {
+						me.addClass('btn-edit').removeClass('btn-submit');
+						me.text('编辑');
+						$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+						
+					}
+				}
+			});
+		} else {
+			me.addClass('btn-submit').removeClass('btn-edit');
+			me.text('保存');
+			$inputs.removeAttr("disabled").removeClass('disabled');
+		}
+		
+	})
+
 });
+/**
+ * 编辑保存按钮切换
+ */
+
+
 /**
  * 获取投诉原因
  */
@@ -933,6 +1070,38 @@ function doGet(type){
 		if(result.code == "SUCCESS"){
 			var data = result.data;
 			initData(data, null);
+		}
+	},'json');
+	
+	doGetPadData();
+}
+/**
+ * 查询pad设数据,并初始化
+ */
+function doGetPadData(){
+	$.get(global_Path + "/padinterface/getconfiginfos", function(result) {
+		if(result.code == "0"){
+			var data = result.data;
+			
+			//会员设置
+			$('select[name=social]').val(data.social ? "0" :"1");
+			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
+			$('select[name=viptype]').val(data.viptype);
+			
+			//其他设置
+			$('select[name=clickimagedish]').val(data.clickimagedish ? "0" :"1");
+			$('select[name=onepage]').val(data.onepage ? "0" :"1");
+			$('select[name=newplayer]').val(data.newplayer ? "0" :"1");
+			$('select[name=chinaEnglish]').val(data.chinaEnglish ? "0" :"1");
+			$('select[name=indexad]').val(data.indexad ? "0" :"1");
+			$('select[name=invoice]').val(data.invoice ? "0" :"1");
+			$('select[name=hidecarttotal]').val(data.hidecarttotal ? "0" :"1");
+			$('input[name=adtimes]').val(data.adtimes);
+			
+			//统计设置
+			$('input[name=youmengappkey]').val(data.youmengappkey);
+			$('input[name=youmengchinnal]').val(data.youmengchinnal);
+			$('input[name=bigdatainterface]').val(data.bigdatainterface);
 		}
 	},'json');
 }

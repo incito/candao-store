@@ -239,7 +239,7 @@ $(document).ready(function() {
 			$("#dish-select-dialog").modal("hide");
 		});//end 提交
 		
-		generalDishTitle();
+		//generalDishTitle();
 		$("#dish-select-dialog").modal("show");
 	});
 	
@@ -249,7 +249,7 @@ $(document).ready(function() {
  */
 function saveSelectedGifts(selectedDishs){
 	if(selectedDishs!=null && selectedDishs.length>0){
-		saveGifts(selectedDishs);
+		saveGiftsToPage(selectedDishs);
 	}
 }
 /**
@@ -259,19 +259,23 @@ function saveGifts(selectedDishs){
 	$.post(global_Path+"/social/saveGift", {data: JSON.stringify(selectedDishs)}, function(result){
 		console.log(result);
 		if(result.flag == 1){
-			haveSelected = new Array();
-			var htm = "";
-			$.each(selectedDishs, function(i, item){
-				haveSelected.push(item);
-				var giftname = (i+1)+"、"+item.dish_title+"("+item.unit+")";
-				console.log(giftname);
-				htm += "<div class='one-gift git-overflow'>"+giftname+"</div>";
-			});
-			$("#gifts-div").html(htm);
+			//saveGiftsToPage(selectedDishs);
 		}else{
 			
 		}
 	},'json');
+}
+
+function saveGiftsToPage(selectedDishs){
+	haveSelected = new Array();
+	var htm = "";
+	$.each(selectedDishs, function(i, item){
+		haveSelected.push(item);
+		var giftname = (i+1)+"、"+item.dish_title+"("+item.unit+")";
+		console.log(giftname);
+		htm += "<div class='one-gift git-overflow'>"+giftname+"</div>";
+	});
+	$("#gifts-div").html(htm);
 }
 /**
  * 生成菜品选择分类的显示内容
