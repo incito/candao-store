@@ -151,7 +151,7 @@ public class PadInterfaceController {
 	}
 		
 	/**
-	 * 获取pad端的所有可配置项
+	 * web获取所有可配置项
 	 */
 	@RequestMapping("/getconfiginfos")
 	@ResponseBody
@@ -168,6 +168,22 @@ public class PadInterfaceController {
 		return JacksonJsonMapper.objectToJson(map);
 	}
 	
+	/**
+	 * pad获取配置信息
+	 * @return
+	 */
+	@RequestMapping("/padconfiginfos")
+	@ResponseBody
+	public String padconfiginfos(){
+		PadConfig padConfig= padConfigService.getconfiginfos();
+		if(padConfig==null){
+			padConfig.setCode(1);
+			padConfig.setMsg("门店没有配置相关信息");
+		}else{
+			padConfig.setCode(0);
+		}
+		return JacksonJsonMapper.objectToJson(padConfig);
+	}
 	
 	
 	/**ti

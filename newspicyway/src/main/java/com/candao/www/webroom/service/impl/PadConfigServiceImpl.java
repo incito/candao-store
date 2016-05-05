@@ -45,7 +45,7 @@ public class PadConfigServiceImpl  implements PadConfigService{
 						String itemid=getValue(map, "itemid");
 						if("1".equals(itemid)){//logo图片
 							padConfig.setLogourl(urlprexx+getValue(map, "itemValue"));
-						}else if ("2".equals(itemid)) {//北京图片
+						}else if ("2".equals(itemid)) {//背景图片
 							padConfig.setBackgroudurl(urlprexx+getValue(map, "itemValue"));
 						}
 			}
