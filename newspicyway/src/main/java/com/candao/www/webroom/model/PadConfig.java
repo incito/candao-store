@@ -41,6 +41,11 @@ public class PadConfig implements Serializable{
 	private String bigdatainterface;//大数据接口地址
 	private String seatimageurls;//数据库保存的全部图片地址
 	private String seatimagenames;//数据库保存的全部图片名称
+	
+	//手环信息
+	private String braceletgappkey;//手环应用钥匙
+	private String braceletchinnal;//手环渠道号
+	
 	//不写入数据库字段
 	private List<String> seatImageurl=new ArrayList<>();//座位图地址
 	private String logourl;//
@@ -207,6 +212,18 @@ public class PadConfig implements Serializable{
 	}
 	public void setSeatimagenames(String seatimagenames) {
 		this.seatimagenames = seatimagenames;
+	}
+	public String getBraceletgappkey() {
+		return braceletgappkey;
+	}
+	public void setBraceletgappkey(String braceletgappkey) {
+		this.braceletgappkey = braceletgappkey;
+	}
+	public String getBraceletchinnal() {
+		return braceletchinnal;
+	}
+	public void setBraceletchinnal(String braceletchinnal) {
+		this.braceletchinnal = braceletchinnal;
 	}
 	
 	
