@@ -25,18 +25,12 @@ public class NormalDishListener extends AbstractPrintListener {
 	
 	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
 
+	@Autowired
+	@Qualifier("normalDishQueue")
+	private Destination destination;
+	
 	public NormalDishListener() {
 		super("normalDishListener");
-	}
-
-	/**
-	 * 
-	 * @param message
-	 * @return
-	 */
-	public String receiveMessage(String message) {
-
-		return null;
 	}
 
 	public Destination getDestination() {
@@ -60,9 +54,8 @@ public class NormalDishListener extends AbstractPrintListener {
 	 {
 
 		String billName = object.getBillName();
-		
 		PrintDish printDish = object.getpDish().get(0);//TODO 临时处理
-		writer.flush();//
+
 		socketOut.write(PrinterConstant.getFdDoubleFont());
 		
 		// 单号
@@ -243,9 +236,5 @@ public class NormalDishListener extends AbstractPrintListener {
 		writer.write(special + "\r\n");
 
 	}
-
-	@Autowired
-	@Qualifier("normalDishQueue")
-	private Destination destination;
 
 }

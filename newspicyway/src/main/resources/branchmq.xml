@@ -132,9 +132,7 @@
     </bean>  
     
      <bean id="multiMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.MultiDishListener"/>  
-        </property>  
+        <property name="delegate" ref="multiDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean> 
     
@@ -154,9 +152,7 @@
     </bean>  
     
      <bean id="custMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.CustDishListener"/>  
-        </property>  
+        <property name="delegate" ref="custDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean> 
     
@@ -175,9 +171,7 @@
     </bean>  
     
      <bean id="messageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.NormalDishListener"/>  
-        </property>  
+        <property name="delegate" ref="normalDishListener" />  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 正常下单的 监听 end -->
@@ -195,9 +189,7 @@
     </bean>  
     
      <bean id="weightListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.WeighDishListener"/>  
-        </property>  
+        <property name="delegate" ref="weightDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 称重单的 监听 end -->
@@ -210,9 +202,7 @@
     </bean>  
     
      <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.StatementDishListener"/>  
-        </property>  
+        <property name="delegate" ref="statementDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 套餐小票的监听 -->
@@ -224,9 +214,7 @@
     </bean>  
     
      <bean id="dishSetMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">
-            <bean class="com.candao.print.listener.DishSetListener"/>  
-        </property>  
+        <property name="delegate" ref="dishSetListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>   
       
@@ -242,9 +230,7 @@
     </bean>  
     
      <bean id="exceptionMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">
-            <bean class="com.candao.print.listener.PrintExceptionListener"/>  
-        </property>  
+        <property name="delegate" ref="printExceptionListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>     
        
@@ -263,9 +249,7 @@
     </bean>  
     
      <bean id="tableChangeListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.TableChangeListener"/>  
-        </property>  
+        <property name="delegate" ref="tableChangeListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 换台和并台的 监听 end -->
@@ -287,7 +271,16 @@
     </bean>  
       <bean id="tableChangeListener" class="com.candao.print.listener.TableChangeListener">  
         <property name="destination" ref="tableSwitchQueue"/>  
-    </bean>  
+    </bean> 
+    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener">  
+        <property name="destination" ref="statementQueue"/>  
+    </bean> 
+    <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">  
+        <property name="destination" ref="dishSetQueue"/>  
+    </bean>
+    <bean id="printExceptionListener" class="com.candao.print.listener.PrintExceptionListener">  
+        <property name="destination" ref="exceptionQueue"/>  
+    </bean>
     
     <!--  - 配置总店mq 信息  -->
     

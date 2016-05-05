@@ -98,7 +98,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 	 * @throws IOException
 	 */
 	private boolean checkPrinter(OutputStream socketOut, final Socket socket) throws IOException {
-		/*String hostAddress = socket.getInetAddress().getHostAddress();
+		String hostAddress = socket.getInetAddress().getHostAddress();
 		InputStream inputStream;
 		socketOut.write(new byte[] { 29, 97, 1 });
 		byte[] rs = new byte[4];
@@ -117,7 +117,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 		} catch (IOException e) {
 			logger.error("查询打印机状态失败，IP：" + hostAddress, e, "");
 			return false;
-		}*/
+		}
 		return true;
 	}
 
@@ -148,8 +148,6 @@ public abstract class AbstractPrintListener implements PrintListener {
 			socket = new Socket(ipAddress, print_port);
 			socketOut = socket.getOutputStream();
 			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
-			socketOut.write(27);
-			socketOut.write(27);
 
 			//打印之前检查打印机状态
 			boolean checkPrinter = checkPrinter(socketOut, socket);
@@ -161,8 +159,11 @@ public abstract class AbstractPrintListener implements PrintListener {
 				socket.close();
 				return;
 			}
-
 			
+			socketOut.write(27);
+			socketOut.write(27);
+			writer.flush();//
+
 			//调用各监听器的实现类打印具体的内容
 			printBusinessData(object, socketOut, writer);
 
