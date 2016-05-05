@@ -1,6 +1,9 @@
 package com.candao.www.webroom.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.exception.AuthException;
@@ -152,6 +156,77 @@ public class PadInterfaceController {
 	}
 		
 	/**
+	 * 座位图上传
+	 * @param seatImagefiles
+	 * @param padConfig
+	 * @return
+	 */
+	@RequestMapping("/importfile")
+	@ResponseBody
+	public String importfile(@RequestParam("seatImagefiles") CommonsMultipartFile[] seatImagefiles,HttpServletRequest request,String[] seatImagename){
+		String realpath=request.getSession().getServletContext().getRealPath("");
+		realpath=realpath+File.separator+"uploads"+File.separator;
+		String seatimagenames="";
+		String seatimageurls="";
+		int temp=0;
+		Map<String, Object> map=new HashMap<>();
+		for(CommonsMultipartFile commonsMultipartFile:seatImagefiles){  
+	            if(!commonsMultipartFile.isEmpty()){  
+	            	String newfilename=commonsMultipartFile.getOriginalFilename();
+	            	if(newfilename.indexOf(".")!=-1){
+	            		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
+	            				+	newfilename.substring(newfilename.indexOf("."));
+	            	}
+	            	realpath=realpath+ newfilename;
+	            	  File file = new File(realpath);  
+	        		  if(!file.getParentFile().exists()){
+	        			  file.getParentFile().mkdirs();
+	        		  }
+	        		  seatimagenames=seatimagenames+seatImagename[temp++]+";";
+	        		  seatimageurls=seatimageurls+"uploads"+File.separator+newfilename+";";
+	        		System.out.println(realpath);
+	                try {  
+	                    //拿到输出流，同时重命名上传的文件  
+	                    FileOutputStream os = new FileOutputStream(realpath);  
+	                    //拿到上传文件的输入流  
+	                    FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();  
+	                      
+	                    //以写字节的方式写文件  
+	                    int b = 0;  
+	                    while((b=in.read()) != -1){  
+	                        os.write(b);  
+	                    }  
+	                    os.flush();  
+	                    os.close();  
+	                    in.close();  
+	                    //保存成功
+	                } catch (Exception e) {  
+	                    e.printStackTrace();  
+	                    System.out.println("上传出错");  
+	                    map.put("code", 1);
+	        			map.put("msg", "上传出错");
+	        			return JacksonJsonMapper.objectToJson(map);
+	                }  
+	            }
+	            
+	            PadConfig config=new PadConfig();
+	            if(seatimagenames.length()>1&&seatimageurls.length()>1 ){
+	            	config.setSeatimagenames(seatimagenames.substring(0, seatimagenames.length()-1));
+	            	config.setSeatimageurls(seatimageurls.substring(0, seatimageurls.length()-1)); 
+	            	int result=padConfigService.saveorupdate(config);
+	        	
+	        		if(result==0){
+	        			map.put("code", 1);
+	        			map.put("msg", "操作失败");
+	        		}else{
+	        			map.put("code", 0);
+	        		}
+	            }
+		 }
+		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	/**
 	 * web获取所有可配置项
 	 */
 	@RequestMapping("/getconfiginfos")
@@ -183,6 +258,7 @@ public class PadInterfaceController {
 			basePadResponse.setMsg("门店没有配置相关信息");
 		}else{
 			basePadResponse.setCode(0);
+			basePadResponse.setMsg("");
 			basePadResponse.setData(padConfig);
 		}
 		return JacksonJsonMapper.objectToJson(basePadResponse);
