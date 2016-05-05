@@ -10,6 +10,11 @@ import org.springframework.context.ApplicationContextAware;
 
 import com.candao.print.entity.PrintObjException;
 
+/**
+ * 异常队列消息监听器
+ * @author zhangjijun
+ *
+ */
 public class PrintExceptionListener implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;

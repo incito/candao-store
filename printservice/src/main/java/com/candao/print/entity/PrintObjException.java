@@ -2,6 +2,11 @@ package com.candao.print.entity;
 
 import java.io.Serializable;
 
+/**
+ * 异常队列消息体的封装类
+ * @author zhangjijun
+ *
+ */
 public class PrintObjException implements Serializable {
 
 	/**

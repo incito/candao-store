@@ -1,13 +1,7 @@
 package com.candao.print.listener;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -17,23 +11,24 @@ import javax.jms.Destination;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
-import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
-import com.candao.print.entity.PrintObjException;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
-public class NormalDishListener implements PrintListener {
-
+public class NormalDishListener extends AbstractPrintListener {
+	
 	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
+
+	public NormalDishListener() {
+		super("normalDishListener");
+	}
+
 	/**
 	 * 
 	 * @param message
@@ -55,53 +50,21 @@ public class NormalDishListener implements PrintListener {
 	public String receiveMessage(PrintObj object) {
 		System.out.println("NormalDishListener receive message");
 		
-		//主打印机打印
-		String ipAddress = getMainPrinter(object.getCustomerPrinterIp());
-		try {
-			print(object, ipAddress);
-		} catch(SocketException se) {
-			//备用机打印
-			ipAddress = getBackupPrinter(object.getCustomerPrinterIp());
-			try {
-				print(object, ipAddress);
-			} catch (SocketException ise) {
-				jmsTemplate.convertAndSend(exceptionDestination, new PrintObjException(object, "normalDishListener"));
-			} catch (Exception e) {
-				logger.error("------------------------","");
-				logger.error("打印异常，订单号："+object.getOrderNo()+e.getMessage(), e, "");
-			}
-		} catch (Exception e) {
-			logger.error("------------------------","");
-			logger.error("打印异常，订单号："+object.getOrderNo()+e.getMessage(), e, "");
-		} finally {
-
-		}
+		printForm(object);
+		
 		return null;
 
 	}
 
-	private void print(PrintObj object, String ipAddress)
-			throws UnknownHostException, IOException, UnsupportedEncodingException, Exception {
-		OutputStream socketOut;
-		OutputStreamWriter writer;
-		Socket socket;
-		int print_port;
-		String billName;
-		billName = object.getBillName();
-		print_port = Integer.parseInt(object.getCustomerPrinterPort());// Integer.parseInt(address[1]);
+	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer) throws Exception
+	 {
 
-		socket = new Socket(ipAddress, print_port);
-//			socket = new Socket("192.168.40.215", 9100);
-		socketOut = socket.getOutputStream();
-		writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
-		socketOut.write(27);
-		socketOut.write(27);
-		
-		checkPrinter(socketOut, socket, object);
+		String billName = object.getBillName();
 		
 		PrintDish printDish = object.getpDish().get(0);//TODO 临时处理
 		writer.flush();//
 		socketOut.write(PrinterConstant.getFdDoubleFont());
+		
 		// 单号
 		writer.write("　　　　" + StringUtils.bSubstring2(billName, 6)
 				+ " \r\n");
@@ -279,78 +242,10 @@ public class NormalDishListener implements PrintListener {
 		socketOut.write(PrinterConstant.getFdDoubleFont());
 		writer.write(special + "\r\n");
 
-		// 下面指令为打印完成后自动走纸
-		writer.write(27);
-		writer.write(100);
-		writer.write(4);
-		writer.write(10);
-		writer.flush();// 
-		socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
-		
-		checkPrinter(socketOut, socket, object);
-		
-		writer.close();
-		socketOut.close();
-		socket.close();
-		logger.error("-----------------------------", "");
-		logger.error("打印完成，订单号：" + object.getOrderNo(), "");
 	}
 
-	private String getMainPrinter(String ip) {
-		if(ip.contains(",")){
-			String[] ips = ip.split(",");
-			return ips[0];
-		}
-		return ip;
-	}
-	
-	private String getBackupPrinter(String ip) {
-		if(ip.contains(",")){
-			String[] ips = ip.split(",");
-			if(ips.length > 1){
-				return ips[1];
-			}
-			return ips[0];
-		}
-		return ip;
-	}
-	
-	private void checkPrinter(OutputStream socketOut, final Socket socket, PrintObj object) throws IOException {
-		byte[] rs;
-		InputStream inputStream;
-		socketOut.write(new byte[] { 29, 97, 1 });
-		rs = new byte[4];
-		try {
-			inputStream = socket.getInputStream();
-			inputStream.read(rs);
-			
-			String rs_str = "";
-			for (byte b : rs) {
-				rs_str  += Integer.toBinaryString(b) + "^";
-			}
-			if(!rs_str.equals("10100^0^0^1111^")){
-				System.out.println(rs_str);
-			}
-		} catch (IOException e) {
-			String dishNames = "";
-			for (PrintDish dish : object.getpDish()) {
-				dishNames += dish.getDishName() + "^";
-			}
-			logger.error("查询打印机状态失败，订单号："+object.getOrderNo()+",菜品："+dishNames, e, "");
-		}
-	}
-
-	@Autowired
-	private JmsTemplate jmsTemplate;
 	@Autowired
 	@Qualifier("normalDishQueue")
 	private Destination destination;
-	
-	@Autowired
-	@Qualifier("exceptionQueue")
-	private Destination exceptionDestination;
-
-	@Autowired
-	NormalDishPrintService normalDishPrintService;
 
 }
