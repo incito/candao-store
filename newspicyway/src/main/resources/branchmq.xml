@@ -236,6 +236,9 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="exceptionQueue" />  
         <property name="messageListener" ref="exceptionMessageListenerAdapter" />  
+        <property name="concurrentConsumers" value="5" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="exceptionMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  

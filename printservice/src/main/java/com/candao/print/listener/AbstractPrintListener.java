@@ -16,7 +16,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.Constant;
-import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrintObjException;
 
@@ -27,6 +26,11 @@ import com.candao.print.entity.PrintObjException;
  *
  */
 public abstract class AbstractPrintListener implements PrintListener {
+
+	/**
+	 * 打印机返回正常的状态
+	 */
+	private static final String NORMAL = "10100^0^0^1111^";
 
 	LoggerHelper logger = LoggerFactory.getLogger(AbstractPrintListener.class);
 
@@ -93,11 +97,11 @@ public abstract class AbstractPrintListener implements PrintListener {
 	 * @param object
 	 * @throws IOException
 	 */
-	private boolean checkPrinter(OutputStream socketOut, final Socket socket, PrintObj object) throws IOException {
-		byte[] rs;
+	private boolean checkPrinter(OutputStream socketOut, final Socket socket) throws IOException {
+		/*String hostAddress = socket.getInetAddress().getHostAddress();
 		InputStream inputStream;
 		socketOut.write(new byte[] { 29, 97, 1 });
-		rs = new byte[4];
+		byte[] rs = new byte[4];
 		try {
 			inputStream = socket.getInputStream();
 			inputStream.read(rs);
@@ -106,17 +110,14 @@ public abstract class AbstractPrintListener implements PrintListener {
 			for (byte b : rs) {
 				rs_str += Integer.toBinaryString(b) + "^";
 			}
-			if (!rs_str.equals("10100^0^0^1111^")) {
-				logger.error("订单号：" + object.getOrderNo() + ",打印状态：" + rs_str, "");
+			if (!rs_str.equals(NORMAL)) {
+				logger.error("打印机状态异常，IP：" + hostAddress + "，状态码：" + rs_str, "");
 				return false;
 			}
 		} catch (IOException e) {
-			String dishNames = "";
-			for (PrintDish dish : object.getpDish()) {
-				dishNames += dish.getDishName() + "^";
-			}
-			logger.error("查询打印机状态失败，订单号：" + object.getOrderNo() + ",IP：" + ",:", e, "");
-		}
+			logger.error("查询打印机状态失败，IP：" + hostAddress, e, "");
+			return false;
+		}*/
 		return true;
 	}
 
@@ -150,13 +151,17 @@ public abstract class AbstractPrintListener implements PrintListener {
 			socketOut.write(27);
 			socketOut.write(27);
 
-			boolean checkPrinter = checkPrinter(socketOut, socket, object);
-			if (isMainPrint && !checkPrinter && hasBackupPrinter(ipstr)) {
-				// 启用备用打印机
-				ipAddress = getBackupPrinter(ipstr);
-				printForm(object, ipstr, ipAddress, false);
+			//打印之前检查打印机状态
+			boolean checkPrinter = checkPrinter(socketOut, socket);
+			if(!checkPrinter){
+				resolve(object, ipstr, ipAddress, isMainPrint);
+				//关闭连接
+				writer.close();
+				socketOut.close();
+				socket.close();
 				return;
 			}
+
 			
 			//调用各监听器的实现类打印具体的内容
 			printBusinessData(object, socketOut, writer);
@@ -169,19 +174,16 @@ public abstract class AbstractPrintListener implements PrintListener {
 			writer.flush();//
 			socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
 
-			checkPrinter = checkPrinter(socketOut, socket, object);
-			if (isMainPrint && !checkPrinter && hasBackupPrinter(ipstr)) {
-				// 启用备用打印机
-				ipAddress = getBackupPrinter(ipstr);
-				printForm(object, ipstr, ipAddress, false);
-				return;
+			//打印完成后检查打印机状态
+			checkPrinter = checkPrinter(socketOut, socket);
+			if(!checkPrinter){
+				resolve(object, ipstr, ipAddress, isMainPrint);
 			}
 
+			//关闭连接
 			writer.close();
 			socketOut.close();
 			socket.close();
-			logger.error("-----------------------------", "");
-			logger.error("打印完成，订单号：" + object.getOrderNo(), "");
 
 		} catch (SocketException se) {
 			if (isMainPrint && hasBackupPrinter(ipstr)) {
@@ -190,13 +192,37 @@ public abstract class AbstractPrintListener implements PrintListener {
 				printForm(object, ipstr, ipAddress, false);
 				return;
 			}
-			// 备用打印机出现异常，加入异常队列
+			// 连接不上打印机（主打印机连接不上同时又没配置备用打印机|备用打印机连接不上），加入异常队列
 			joinExceptionQueue(object, listenerID);
 		} catch (Exception e) {
 			logger.error("------------------------", "");
 			logger.error("打印异常，订单号：" + object.getOrderNo() + e.getMessage(), e, "");
 		} finally {
 
+		}
+	}
+
+	/**
+	 * 打印出现异常的后续处理
+	 * @param object
+	 * @param ipstr
+	 * @param ipAddress
+	 * @param isMainPrint
+	 */
+	private void resolve(PrintObj object, String ipstr, String ipAddress, boolean isMainPrint) {
+		if (isMainPrint) {
+			if(hasBackupPrinter(ipstr)){
+				// 启用备用打印机
+				ipAddress = getBackupPrinter(ipstr);
+				printForm(object, ipstr, ipAddress, false);
+			}else{
+				//没有配置备用打印机，但主打印机状态异常
+				logger.error("------------------------", "");
+				logger.error("打印机状态异常，IP:" + ipAddress + ",订单号：" + object.getOrderNo(), "");
+			}
+		} else {
+			//备用打印机状态异常，则加入异常队列
+			joinExceptionQueue(object, listenerID);
 		}
 	}
 
