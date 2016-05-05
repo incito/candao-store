@@ -75,6 +75,7 @@ import com.candao.www.timedtask.BranchDataSyn;
 import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
+import com.candao.www.webroom.model.BasePadResponse;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.model.Order;
@@ -175,14 +176,16 @@ public class PadInterfaceController {
 	@RequestMapping("/padconfiginfos")
 	@ResponseBody
 	public String padconfiginfos(){
+		BasePadResponse<PadConfig> basePadResponse=new BasePadResponse();
 		PadConfig padConfig= padConfigService.getconfiginfos();
 		if(padConfig==null){
-			padConfig.setCode(1);
-			padConfig.setMsg("门店没有配置相关信息");
+			basePadResponse.setCode(1);
+			basePadResponse.setMsg("门店没有配置相关信息");
 		}else{
-			padConfig.setCode(0);
+			basePadResponse.setCode(0);
+			basePadResponse.setData(padConfig);
 		}
-		return JacksonJsonMapper.objectToJson(padConfig);
+		return JacksonJsonMapper.objectToJson(basePadResponse);
 	}
 	
 	

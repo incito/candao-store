@@ -42,8 +42,6 @@ public class PadConfig implements Serializable{
 	private String[] seatImageurl;//座位图地址
 	private String logourl;//
 	private String backgroudurl;//
-	private int code;//pad成功失败标识
-	private String msg;//pad失败msg
 	public Integer getId() {
 		return id;
 	}
@@ -201,18 +199,6 @@ public class PadConfig implements Serializable{
 		this.backgroudurl = backgroudurl;
 	}
 	
-	public String getMsg() {
-		return msg;
-	}
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
-	public int getCode() {
-		return code;
-	}
-	public void setCode(int code) {
-		this.code = code;
-	}
 	
 	
 	}

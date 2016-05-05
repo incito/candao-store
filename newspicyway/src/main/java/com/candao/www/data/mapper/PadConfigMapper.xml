@@ -5,22 +5,13 @@
 		select count(1) from t_b_padconfig
 	</select>
 	<insert id="insert" parameterType="com.candao.www.webroom.model.PadConfig">
-		insert into t_b_padconfig(padloginpass,tablewareisfree,tablewareprice,tablewarevipprice,social,seatimageurls,vipstatus,viptype,vipcandaourl,vipotherurl,clickimagedish,onepage,newplayer,chinaEnglish,indexad,invoice,hidecarttotal,adtimes,waiterreward,rewardmoney,youmengappkey,youmengchinnal,bigdatainterface)
-		values(#{padloginpass},#{tablewareisfree},#{tablewareprice},#{tablewarevipprice},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface})
+		insert into t_b_padconfig(padloginpass,social,seatimageurls,vipstatus,viptype,vipcandaourl,vipotherurl,clickimagedish,onepage,newplayer,chinaEnglish,indexad,invoice,hidecarttotal,adtimes,waiterreward,rewardmoney,youmengappkey,youmengchinnal,bigdatainterface)
+		values(#{padloginpass},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface})
 	</insert>
 	<update id="update"  parameterType="com.candao.www.webroom.model.PadConfig">
 		update t_b_padconfig set id=1
 		<if test="padloginpass!=null">
 			,padloginpass=#{padloginpass}
-		</if>
-		<if test="tablewareisfree!=null">
-			,tablewareisfree=#{tablewareisfree}
-		</if>
-		<if test="tablewareprice!=null">
-			,tablewareprice=#{tablewareprice}
-		</if>
-		<if test="tablewarevipprice!=null">
-			,tablewarevipprice=#{tablewarevipprice}
 		</if>
 		<if test="social!=null">
 			,social=#{social}
