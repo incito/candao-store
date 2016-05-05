@@ -440,27 +440,54 @@
 						</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group form-group-seat">
 					<label class="col-xs-2 control-label">上传座位图：</label>
-						<div class="col-xs-10">
-							<div class="seat-item">
-								<div class="seat-item-pic">
-									<img src="../images/upload-img.png" class="upload-default">
-									<input type="file" onchange="showImg()" style="position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;" size="1" id="seatimg" name="seatimg" accept="image/*">
+					<div class="col-xs-10">
+							<div class="seat-item f-dn">
+								<div class="seat-item-pic ">
+									<input type="hidden" id="setimgurl1" name="setimgurl1" value="">
+									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
 								</div>
 								<div class="seat-item-op f-dn">
 									<a href="javascript:void(0);" class="f-fl">重新上传</a>
-									<a href="javascript:void(0);" class="f-fr">删除</a>
+									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt" name="seatImgIpt" accept="image/*">
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt2" name="seatImgIpt" accept="image/*">
 								</div>
 								<div class="seat-item-name">
-									<input type="text" value="楼上座位图" disabled class="form-control disabled" required="required" />
+									<input type="text" value="" name="seatname1" disabled class="form-control disabled" required="required" />
 								</div>
 								<div class="seat-item-tip f-dn">请输入作为名称</div>
 							</div>
+							<div class="seat-item f-dn">
+								<div class="seat-item-pic">
+									<input type="hidden" id="setimgurl2" name="setimgurl2" value="">
+									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
+
+								</div>
+								<div class="seat-item-op f-dn">
+									<a href="javascript:void(0);" class="f-fl">重新上传</a>
+									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt" name="seatImgIpt" accept="image/*">
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt2" name="seatImgIpt" accept="image/*">
+								</div>
+								<div class="seat-item-name">
+									<input type="text" value="" name="seatname2" disabled class="form-control disabled" required="required" />
+								</div>
+								<div class="seat-item-tip f-dn">请输入作为名称</div>
+							</div>
+							<div class="f-cb"></div>
+							<div class="seatimg-rule">
+					1.上传图片支持jpg 和 png格式<br/>
+					2.上传图片最佳尺寸1536*2048px<br/>
+					3. 上传图片大小不能超过2M
+				</div>
 						</div>
 				</div>
+				
+				
 
-				<div class="form-group">
+				<div class="form-group form-group-gifts">
 					<label class="col-xs-2 control-label">添加互动礼品：</label>
 					<div class="col-xs-10">
 						<button type="button" id="editGifts" class="btn btn-default store-gifts-add" style="float:left;display:none;" name="addGifts">
@@ -478,7 +505,7 @@
 		<div class="setup_div setup_div_box setup_div_member">
 			<form action="" method="post" class="form-horizontal" name="" id="">
 				<div class="setup-mt" style="height: 30px;">
-					<div class="system-setup-title">会员设置：</div>
+					<div class="system-setup-title">会员设置</div>
 					<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
 				</div>
 				<hr style="margin: 15px 0px;" />
@@ -492,7 +519,7 @@
 						</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group viptype-box">
 					<label class="col-xs-2 control-label">会员类型：</label>
 						<div class="col-xs-3">
 							<select class="form-control" disabled  name="viptype">	  
@@ -506,9 +533,9 @@
 		
 		
 		<div class="setup_div setup_div_box setup_div_other">
-			<form action="" method="post" class="form-horizontal" name="" id="">
+			<form action="" method="post" class="form-horizontal" name="" id="form-other">
 				<div class="setup-mt" style="height: 30px;">
-					<div class="system-setup-title">其他设置：</div>
+					<div class="system-setup-title">其他设置</div>
 					<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
 				</div>
 				<hr style="margin: 15px 0px;" />
@@ -587,9 +614,9 @@
 						<div class="col-xs-8 yy-time">
 							<label class="control-label col-xs-5">进入异业营销时间：</label>
 							<div class=" col-xs-7">
-								<input type="text" value="" class="form-control disabled" disabled name="adtimes" required="required" /><span class="unit">s</span>
+								<input type="text" value="" maxlength="11" oninput="if(value.length>11)value=value.slice(0,11)" class="form-control disabled" disabled name="adtimes" required="required" /><span class="unit">s</span>
 							</div>
-							<div class="c-red f-fr tip">时间不能为0</div>
+							<div class="c-red f-fr yy-time-tip f-dn"></div>
 							
 						</div>
 					</div>
@@ -609,7 +636,7 @@
 					</div>
 				</div>
 				
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<div class="col-xs-6">
 						<label class="col-xs-4 control-label">打赏金额：</label>
 						<div class="col-xs-8">
@@ -618,7 +645,7 @@
 					</div>
 					<div class="col-xs-6">
 					</div>
-				</div>
+				</div> -->
 				
 
 				
@@ -626,7 +653,7 @@
 		</div>
 		
 		
-		<div class="setup_div setup_div_box setup_div_total">
+		<div class="setup_div setup_div_box setup_div_total" id="form-total">
 			<form action="" method="post" class="form-horizontal " name="" id="">
 			<div class="setup-mt" style="height: 30px;">
 				<div class="system-setup-title">统计设置</div>
@@ -638,24 +665,27 @@
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><span class="c-red">*</span>友盟应用秘钥(APPKEY)：</label>
 						<div class="col-xs-3">
-							<div class="edit_info">
-								<input type="text" value="" name="youmengappkey" class="form-control disabled" disabled placeholder="">
+							<div class="edit_info f-pr">
+								<input type="text" value="" name="youmengappkey" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+								<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><span class="c-red">*</span>友盟渠道号(HANNEL)：</label>
 						<div class="col-xs-3">
-							<div class="edit_info">
-							<input type="text" value="" name="youmengchinnal" class="form-control disabled" disabled placeholder="">
+							<div class="edit_info f-pr">
+							<input type="text" value="" name="youmengchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+							<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-2 control-label"><span class="c-red">*</span>大数据接口地址：</label>
 						<div class="col-xs-3">
-							<div class="edit_info">
-								<input type="text" value="" name="bigdatainterface" class="form-control disabled" disabled placeholder="">
+							<div class="edit_info f-pr">
+								<input type="text" value="" name="bigdatainterface" class="form-control disabled" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" disabled placeholder="">
+								<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
 							</div>
 						</div>
 					</div>
