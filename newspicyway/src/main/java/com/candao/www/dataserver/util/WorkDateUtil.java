@@ -13,7 +13,7 @@ import java.util.Date;
  * Created by ytq on 2016/3/21.
  */
 public class WorkDateUtil {
-//    private static BusinessService businessService = SpringContextUtils.getBean("businessServiceImpl");
+    private static BusinessService businessService = SpringContextUtils.getBean("businessServiceImpl");
 
     public static Long parse(String dateString, String dateFormat) {
 
@@ -32,7 +32,7 @@ public class WorkDateUtil {
     }
 
     public static String getWorkDate() {
-        Date openDate = /*businessService.getOpenDate()*/null;
+        Date openDate = businessService.getOpenDate();
         if (null != openDate) {
             return DateUtils.toString(openDate, "yyyy-MM-dd");
         } else {

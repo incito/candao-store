@@ -164,7 +164,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             offlineMsg.setExpireTime(WorkDateUtil.getAfterSeconds(expireSeconds));
             offlineMsgList.add(offlineMsg);
         }
-        offlineMsgService.save(offlineMsgList, isSingle);
+        offlineMsgService.save(offlineMsgList, isSingle);//todo 改为内存，删除消息异步
         for (final OfflineMsg offlineMsg : offlineMsgList) {
             Map<String, List<String>> target = new HashMap<>();
             target.put(offlineMsg.getDeviceGroup(), new ArrayList<String>() {{

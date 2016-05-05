@@ -46,6 +46,7 @@ public interface MsgForwardService {
 
     /**
      * 批量给在线设备发送消息,指定的过期时间后删除
+     * expireSeconds消息持久化周期
      *
      * @param msg
      */

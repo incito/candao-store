@@ -1,5 +1,8 @@
 package com.candao.www.dataserver.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.candao.www.dataserver.model.ResponseData;
+import com.candao.www.dataserver.model.ResultData;
 import com.candao.www.dataserver.service.business.OpenCashService;
 import com.candao.www.dataserver.util.StringUtil;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -24,6 +27,12 @@ public class StoreInterfaceController {
         String result = openCashService.openCash(ipAddress);
         result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);
+    }
+
+    @RequestMapping(value = "/getUserRights/{aUserID}/", produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String getUserRights(@PathVariable("aUserID") String aUserID) {
+        return JSON.toJSONString(JSON.toJSONString(new ResultData(JSON.toJSONString(new ResponseData()))));
     }
 
     @RequestMapping(value = "/getClearMachineData/{aUserid}/{jsorder}/{posid}/", produces = {"application/json;charset=UTF-8"})

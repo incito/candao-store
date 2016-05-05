@@ -18,4 +18,6 @@ public interface OfflineMsgService extends MsgHandler {
     List<OfflineMsg> getAllOffLineMsg(String group, String id);
 
     void deleteById(String id);
+
+    void deleteMsgByExpireTime();
 }

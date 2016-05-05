@@ -27,7 +27,7 @@ public class OfflineMsg {
         this.deviceGroup = deviceGroup;
         this.deviceId = deviceId;
         this.isSingle = isSingle;
-        this.expireTime = WorkDateUtil.getAfterHour(1);
+        this.expireTime = WorkDateUtil.getAfterHour(4);
         this.id = IDUtil.getID();
     }
 
