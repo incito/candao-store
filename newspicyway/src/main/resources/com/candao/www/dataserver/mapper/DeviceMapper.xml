@@ -15,7 +15,7 @@
     </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.candao.www.dataserver.entity.Device">
         INSERT INTO t_device(device_group, device_id, device_type,ss_id,meid,create_time,update_time,valid_flag)
-        VALUES (#{deviceGroup},#{deviceId},#{deviceType},#{ssId,#{meid},now(),now(), 1)
+        VALUES (#{deviceGroup},#{deviceId},#{deviceType},#{ssId},#{meid},now(),now(), 1)
     </insert>
     <update id="update">
         update t_device set update_time=now()
