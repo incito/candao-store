@@ -186,20 +186,14 @@ body {
 	color:gray;
 	margin-top:10px;
 }
-.seatImgIpt,.seatImgIpt2 {
-	position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;
-}
-.seatImgIpt {
-	width:130px;
-	height:130px;
+.seatImgBtn {
 	top:0;
 	left:0;
-}
-.seatImgIpt2 {
-    width: 50px;
-    height: 20px;
-    left: 0;
-    top: 132px;
+	position: absolute; 
+	filter: alpha(opacity = 0);
+	opacity: 0; 
+	width:130px;
+	height:130px;
 }
 .seat-item-op {
 	padding:5px 0;

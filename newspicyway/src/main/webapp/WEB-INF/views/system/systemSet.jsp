@@ -450,8 +450,7 @@
 								<div class="seat-item-op f-dn">
 									<a href="javascript:void(0);" class="f-fl">重新上传</a>
 									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
-									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt" id="seatImgIpt" name="seatImgIpt" accept="image/*">
-									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt2" name="seatImgIpt2" accept="image/*">
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt1" name="seatImgIpt1" accept="image/*">
 								</div>
 								<div class="seat-item-name">
 									<input type="text" value="" name="seatname1" disabled class="form-control disabled" required="required" />
@@ -466,8 +465,7 @@
 								<div class="seat-item-op f-dn">
 									<a href="javascript:void(0);" class="f-fl">重新上传</a>
 									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
-									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt3" name="seatImgIpt3" accept="image/*">
-									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgIpt4" name="seatImgIpt4" accept="image/*">
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" name="seatImgIpt2" accept="image/*">
 								</div>
 								<div class="seat-item-name">
 									<input type="text" value="" name="seatname2" disabled class="form-control disabled" required="required" />
