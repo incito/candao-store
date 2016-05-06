@@ -443,7 +443,7 @@
 				<div class="form-group form-group-seat">
 					<label class="col-xs-2 control-label">上传座位图：</label>
 					<div class="col-xs-10">
-							<div class="seat-item f-dn">
+							<div class="seat-item f-dn seat-item-default">
 								<div class="seat-item-pic ">
 									<input type="hidden" id="setimgurl1" name="setimgurl1" value="">
 									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
@@ -459,11 +459,10 @@
 								</div>
 								<div class="seat-item-tip f-dn">请输入作为名称</div>
 							</div>
-							<div class="seat-item f-dn">
+							<div class="seat-item  seat-item-default f-dn">
 								<div class="seat-item-pic">
 									<input type="hidden" id="setimgurl2" name="setimgurl2" value="">
-									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
-
+									<img src="../images/upload-img.png" class="seat-img">
 								</div>
 								<div class="seat-item-op f-dn">
 									<a href="javascript:void(0);" class="f-fl">重新上传</a>

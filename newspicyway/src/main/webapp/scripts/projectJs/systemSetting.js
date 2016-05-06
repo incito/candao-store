@@ -495,7 +495,52 @@ $("#test").click(function(){
 		var $editGifts = $('#editGifts');
 		var $seatOp = $('.seat-item-op');
 		if(me.hasClass('btn-submit')) {
-			$.ajax({
+			
+			$.ajaxFileUpload({
+		 		fileElementId: [setimgurl1],  
+			    url: global_Path+"/padinterface/importfile",  
+			    dataType: 'json',
+			    contentType:'application/json;charset=UTF-8',
+			    success: function (data, textStatus) {
+			    },  
+			    complete: function (XMLHttpRequest, textStatus) {
+			    	console.dir(XMLHttpRequest);
+			    	console.dir(textStatus);
+			    }
+		 	});
+			
+			
+			$.ajaxFileUpload({
+		 		fileElementId: [setimgurl1],  
+			    url: global_Path+"/system/catImg",  
+			    dataType: 'json',
+			    contentType:'application/json;charset=UTF-8',
+			    data : {
+			    	x : option.x,
+			    	y : option.y,
+			    	h : option.h,
+			    	w : option.w,
+			    },
+			    success: function (data, textStatus) {
+			    },  
+			    complete: function (XMLHttpRequest, textStatus) {
+			    	var result = $.parseJSON(XMLHttpRequest.responseText);
+			    	var type = result.type;
+			    	/*var msg = result.msg;
+			    	if(msg != null || msg != ""){
+			    		alert(msg);
+			    	}*/
+			    	if(type == "logo"){
+			    		$("#defaultlogo").attr("src",img_Path+result.image);
+				    	$("#logoUrl").attr("value",result.image);
+			    	}else if(type == "bg"){
+			    		$("#def_background").attr("src",img_Path+result.image);
+				    	$("#backgroundUrl").attr("value",result.image);
+			    	}
+			    	$("#menuImg-adjust-dialog").modal("hide");
+			    }
+		 	});
+			false && $.ajax({
 				type: "POST",
 				dataType : "json",
 				url : global_Path + "/padinterface/saveorupdate",
@@ -539,6 +584,7 @@ $("#test").click(function(){
 		var me = $(this);
 		var $parent = me.parents('.setup_div_box');
 		var $selects = $parent.find('.form-group select');
+		var $imgDefault = $parent.find('.img-default');
 		if(me.hasClass('btn-submit')) {
 			$.ajax({
 				type: "GET",
@@ -553,6 +599,7 @@ $("#test").click(function(){
 						me.addClass('btn-edit').removeClass('btn-submit');
 						me.text('编辑');
 						$selects.attr({"disabled":"disabled"});
+						$imgDefault.hide();
 						
 					}
 				}
@@ -561,6 +608,7 @@ $("#test").click(function(){
 			me.addClass('btn-submit').removeClass('btn-edit');
 			me.text('保存');
 			$selects.removeAttr("disabled");
+			$imgDefault.show();
 		}
 	});
 	
@@ -1186,25 +1234,29 @@ function doGetPadData(){
 			};
 			
 			//data.seatImagename = [];
-			//
 			
-			data.seatImagename = ['111111111'];
-			data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif']
+			//data.seatImagename = ['111111111'];
+			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif']
 			
 			//data.seatImagename = ['111111111','222222222222222'];
 			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif','http://www.iteye.com/images/user-logo-thumb.gif?1448702469']
 			
+			//设置上传图片按钮显示
 			if(data.seatImagename.length == 0) {
 				$seatItem.eq(0).show();
 			} else if(data.seatImagename.length == 1){
 				$seatItem.show();
-				$seatItem.eq(0).find('input[name=seatname1]').val(data.seatImagename[0]);
-				$seatItem.eq(0).find('.seat-img').attr('src',data.seatImagefiles[0]);
-			} else {
-				$seatItem.show();
-				$seatItem.eq(0).find('input[name=seatname1]').val(data.seatImagename[0]);
-				$seatItem.eq(1).find('.seat-img').attr('src',data.seatImagename[1]);
 			}
+			
+			
+			//设置座位图
+			$seatItem.each(function(i){
+				var me = $(this);
+				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
+				me.find('.seat-img').attr('src',data.seatImagefileurls[i]);
+				me.removeClass('.seat-item-default').show();
+			})
+			
 			
 			//会员设置
 			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
