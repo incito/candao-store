@@ -494,6 +494,10 @@ $("#test").click(function(){
 		var $btns = $parent.find('.form-group .btn');
 		var $editGifts = $('#editGifts');
 		var $seatOp = $('.seat-item-op');
+		var seatnameArr = [];
+		var seatImgFilesArr = [];
+		var flag = true;
+		//var flag = ture;
 		if(me.hasClass('btn-submit')) {
 			
 			// $.ajaxFileUpload({
@@ -511,13 +515,29 @@ $("#test").click(function(){
 			//     }
 		 // 	});
 			
-			$.ajaxFileUpload({
+			$('.seat-item').each(function(i){
+				var me = $(this);
+				var $seatImgBtn = me.find('.seatImgBtn');
+				var $seatname = me.find('.seatname').val();
+				
+				if(!me.hasClass('seat-item-default') && $seatImgBtn.val()) {
+					if(!$.trim($seatname).length) {
+						flag = false;
+						alert('不能为空');
+					} else {
+						seatnameArr.push($seatname);
+						seatImgFilesArr.push('seatImgIpt' + (i+1))
+					}
+				}
+			})
+			
+			flag && $.ajaxFileUpload({
 				url : global_Path + "/padinterface/importfile",
                     secureuri: false, //是否需要安全协议，一般设置为false
-                    fileElementId: ['seatImgIpt0'], //文件上传域的ID
+                    fileElementId: seatImgFilesArr, //文件上传域的ID
                     //dataType: 'content', //返回值类型 一般设置为json
                     data : {
-                    	seatImagename : ['111']
+                    	seatImagename : seatnameArr
                     },
                     success: function (data, status)  //服务器成功响应处理函数
                     {
@@ -1253,7 +1273,7 @@ function doGetPadData(){
 			$.each(data.seatImagename,function(i){
 				var me = $seatItem.eq(i);
 				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
-				me.find('.seat-img').attr('src',data.seatImagefileurls[i]);
+				me.find('.seat-img').attr('src','/newspicyway/' + data.seatImagefileurls[i]);
 				me.removeClass('seat-item-default').show();
 			})
 			
