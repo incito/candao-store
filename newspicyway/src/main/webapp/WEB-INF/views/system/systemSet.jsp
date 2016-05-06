@@ -13,7 +13,6 @@
 	src="<%=request.getContextPath()%>/scripts/json2.js"></script>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/tools/calendar_diy/WdatePicker.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
 <script src="<%=request.getContextPath()%>/scripts/jquery.mousewheel.js"></script>
 <script src="<%=request.getContextPath()%>/scripts/globalize.js"></script>
 <script
@@ -445,7 +444,7 @@
 					<div class="col-xs-10">
 							<div class="seat-item f-dn seat-item-default">
 								<div class="seat-item-pic ">
-									<input type="hidden" id="setimgurl1" name="setimgurl1" value="">
+									<input type="hidden" id="seatImagefiles" name="seatImagefiles" value="">
 									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
 								</div>
 								<div class="seat-item-op f-dn">
