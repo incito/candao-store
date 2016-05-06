@@ -180,7 +180,7 @@ public class PadInterfaceController {
 		
 		
 		String realpath=request.getSession().getServletContext().getRealPath("");
-		realpath=realpath+File.separator+"uploads"+File.separator;
+		realpath=realpath+File.separator+"upload"+File.separator;
 		String seatimagenames="";
 		String seatimageurls="";
 		int temp=0;
@@ -198,7 +198,7 @@ public class PadInterfaceController {
 	        			  file.getParentFile().mkdirs();
 	        		  }
 	        		  seatimagenames=seatimagenames+seatImagename[temp++]+";";
-	        		  seatimageurls=seatimageurls+"uploads"+File.separator+newfilename+";";
+	        		  seatimageurls=seatimageurls+"upload"+File.separator+newfilename+";";
 	        		System.out.println(realpath);
 	                try {  
 	                    //拿到输出流，同时重命名上传的文件  
