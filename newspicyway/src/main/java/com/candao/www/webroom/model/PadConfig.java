@@ -46,7 +46,7 @@ public class PadConfig implements Serializable{
 	private String braceletgappkey;//手环应用钥匙
 	private String braceletchinnal;//手环渠道号
 	//微信信息
-	private String weixintype;//1为个人微信，2公众号微信
+	private Integer weixintype;//1为个人微信，2公众号微信
 	private String personweixinurl;//微信个人二维码地址
 	//不写入数据库字段
 	private List<String> seatImageurl=new ArrayList<>();//座位图地址PAD应用字段
@@ -230,18 +230,21 @@ public class PadConfig implements Serializable{
 	public void setBraceletchinnal(String braceletchinnal) {
 		this.braceletchinnal = braceletchinnal;
 	}
-	public String getWeixintype() {
-		return weixintype;
-	}
-	public void setWeixintype(String weixintype) {
-		this.weixintype = weixintype;
-	}
+	
 	public String getPersonweixinurl() {
 		return personweixinurl;
 	}
 	public void setPersonweixinurl(String personweixinurl) {
 		this.personweixinurl = personweixinurl;
 	}
+	public Integer getWeixintype() {
+		return weixintype;
+	}
+	public void setWeixintype(Integer weixintype) {
+		this.weixintype = weixintype;
+	}
+
+	
 	
 	
 	

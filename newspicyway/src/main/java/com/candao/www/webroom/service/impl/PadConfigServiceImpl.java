@@ -60,7 +60,10 @@ public class PadConfigServiceImpl  implements PadConfigService{
 		
 		Map<String, Object>  map=weixinDao.queryWeixinInfoBybranchid(PropertiesUtils.getValue("current_branch_id"));
 		if(map!=null){
-			padConfig.setWeixintype(map.get("weixintype").toString());
+			Object weixintype=map.get("weixintype");
+			if(weixintype!=null){
+				padConfig.setWeixintype(Integer.parseInt(weixintype.toString()));
+			}
 			padConfig.setPersonweixinurl(map.get("personweixinurl").toString());
 		}
 		
