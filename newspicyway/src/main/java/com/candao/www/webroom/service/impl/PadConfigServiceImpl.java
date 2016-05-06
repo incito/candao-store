@@ -11,6 +11,7 @@ import com.candao.www.data.dao.PadConfigDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
 import com.candao.www.webroom.model.PadConfig;
 import com.candao.www.webroom.service.PadConfigService;
+import com.candao.www.weixin.dao.WeixinDao;
 
 @Service
 public class PadConfigServiceImpl  implements PadConfigService{
@@ -20,6 +21,8 @@ public class PadConfigServiceImpl  implements PadConfigService{
 	private PadConfigDao     padConfigDao;
 	@Autowired
 	private TbDataDictionaryDao tbDataDictionaryDao;
+    @Autowired
+	private WeixinDao weixinDao;
 
 	private final String PADIMG="PADIMG";
 	
@@ -53,6 +56,12 @@ public class PadConfigServiceImpl  implements PadConfigService{
 		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null){
 			padConfig.setSeatImagename(padConfig.getSeatimagenames().split(";"));
 			padConfig.setSeatImagefileurls(padConfig.getSeatimageurls().split(";"));
+		}
+		
+		Map<String, Object>  map=weixinDao.queryWeixinInfoBybranchid(PropertiesUtils.getValue("current_branch_id"));
+		if(map!=null){
+			padConfig.setWeixintype(map.get("weixintype").toString());
+			padConfig.setPersonweixinurl(map.get("personweixinurl").toString());
 		}
 		
 		return padConfig;
