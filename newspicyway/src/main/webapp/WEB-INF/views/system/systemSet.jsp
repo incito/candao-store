@@ -448,7 +448,7 @@
 									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
 								</div>
 								<div class="seat-item-op f-dn">
-									<a href="javascript:void(0);" class="f-fl">重新上传</a>
+									<a href="javascript:void(0);" class="f-fl J-rUpload">重新上传</a>
 									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
 									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt0" name="seatImgIpt0" accept="image/*">
 								</div>
@@ -463,7 +463,7 @@
 									<img src="../images/upload-img.png" class="seat-img">
 								</div>
 								<div class="seat-item-op f-dn">
-									<a href="javascript:void(0);" class="f-fl">重新上传</a>
+									<a href="javascript:void(0);" class="f-fl J-rUpload">重新上传</a>
 									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
 									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt1" name="seatImgIpt1" accept="image/*">
 								</div>

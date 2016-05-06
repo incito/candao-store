@@ -182,6 +182,12 @@ body {
 	float:left;
 	margin-right:20px;
 }
+
+.seat-item-default .seatImgBtn {
+	width:130px;
+	height:130px;
+	top:-100px;
+}
 .seatimg-rule {
 	color:gray;
 	margin-top:10px;
@@ -192,20 +198,40 @@ body {
 	position: absolute; 
 	filter: alpha(opacity = 0);
 	opacity: 0; 
-	width:130px;
-	height:130px;
+	width: 60px;
+    height: 28px;
+    cursor:pointer;
 }
 .seat-item-op {
 	padding:5px 0;
-	overflow:hidden;
+	background:rgba(0,0,0,0.6);
+	position:absolute;
+	top:102px;
+	padding:5px 2px;
+	left:0;
+	width:130px;
 }
 .seat-item-op a {
-	color:#282828;
+	color:#fff;
 }
 .seat-item img{
 	width:130px;
 	height:130px;
 	border: 1px solid #e6e6e6;
+}
+.seat-item-default .J-btn-del,.seat-item-default .J-rUpload{
+	display:none;
+}
+.seat-item.active .seat-item-op {
+	display:block;
+}
+.seat-item-default .seat-item-op {
+	position: absolute; 
+	filter: alpha(opacity = 0);
+	opacity: 0; 
+}
+.seat-item-name {
+	margin-top:10px;
 }
 .seat-item-tip{
 	color:red;

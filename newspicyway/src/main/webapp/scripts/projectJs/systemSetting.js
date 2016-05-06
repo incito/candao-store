@@ -514,8 +514,11 @@ $("#test").click(function(){
 			$.ajaxFileUpload({
 				url : global_Path + "/padinterface/importfile",
                     secureuri: false, //是否需要安全协议，一般设置为false
-                    fileElementId: ['seatImgIpt0','seatImgIpt1'], //文件上传域的ID
+                    fileElementId: ['seatImgIpt0'], //文件上传域的ID
                     //dataType: 'content', //返回值类型 一般设置为json
+                    data : {
+                    	seatImagename : ['111']
+                    },
                     success: function (data, status)  //服务器成功响应处理函数
                     {
                         $("#img1").attr("src", data.imgurl);
@@ -566,7 +569,9 @@ $("#test").click(function(){
 	
 	//座位图上传
 	$(".setup_div_social .J-btn-del").click(function(){
-		$(this).parents('.seat-item').remove();
+		//$(this).parents('.seat-item').remove();
+		;
+		$(this).parents('.seat-item').addClass('seat-item-default').find('.seat-img').attr({'src':'../images/upload-img.png'});
 	})
 	
 	
@@ -725,6 +730,7 @@ function showImg(obj,thumb){
 	var $seatImg = $parent.find('.seat-img');
 	var idx = $parent.index()+1;
 	var seatImgUrl = getObjectURL(me[0].files[0]);
+	$parent.removeClass('seat-item-default');
 	$parent.find("#seatImagefiles").val(seatImgUrl);
 	$seatImg.attr("src",seatImgUrl);
 }
@@ -1243,11 +1249,12 @@ function doGetPadData(){
 			
 			
 			//设置座位图
-			$seatItem.each(function(i){
-				var me = $(this);
+			
+			$.each(data.seatImagename,function(i){
+				var me = $seatItem.eq(i);
 				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
 				me.find('.seat-img').attr('src',data.seatImagefileurls[i]);
-				me.removeClass('.seat-item-default').show();
+				me.removeClass('seat-item-default').show();
 			})
 			
 			
