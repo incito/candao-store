@@ -50,6 +50,11 @@ public class PadConfigServiceImpl  implements PadConfigService{
 						}
 			}
 		}
+		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null){
+			padConfig.setSeatImagename(padConfig.getSeatimagenames().split(";"));
+			padConfig.setSeatImagefileurls(padConfig.getSeatimageurls().split(";"));
+		}
+		
 		return padConfig;
 	}   
 	

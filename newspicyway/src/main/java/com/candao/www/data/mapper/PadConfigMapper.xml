@@ -5,8 +5,8 @@
 		select count(1) from t_b_padconfig
 	</select>
 	<insert id="insert" parameterType="com.candao.www.webroom.model.PadConfig">
-		insert into t_b_padconfig(padloginpass,social,seatimageurls,vipstatus,viptype,vipcandaourl,vipotherurl,clickimagedish,onepage,newplayer,chinaEnglish,indexad,invoice,hidecarttotal,adtimes,waiterreward,rewardmoney,youmengappkey,youmengchinnal,bigdatainterface)
-		values(#{padloginpass},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface})
+		insert into t_b_padconfig(padloginpass,social,seatimageurls,vipstatus,viptype,vipcandaourl,vipotherurl,clickimagedish,onepage,newplayer,chinaEnglish,indexad,invoice,hidecarttotal,adtimes,waiterreward,rewardmoney,youmengappkey,youmengchinnal,bigdatainterface,seatimagenames,braceletgappkey,braceletchinnal)
+		values(#{padloginpass},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface},#{seatimagenames},#{braceletgappkey},#{braceletchinnal})
 	</insert>
 	<update id="update"  parameterType="com.candao.www.webroom.model.PadConfig">
 		update t_b_padconfig set id=1
@@ -70,6 +70,16 @@
 		<if test="bigdatainterface!=null">
 			,bigdatainterface=#{bigdatainterface}
 		</if>
+		<if test="seatimagenames!=null">
+			,seatimagenames=#{seatimagenames}
+		</if>
+		<if test="braceletgappkey!=null">
+			,braceletgappkey=#{braceletgappkey}
+		</if>
+		<if test="braceletchinnal!=null">
+			,braceletchinnal=#{braceletchinnal}
+		</if>
+		
 	</update>
 	
 	<select id="getconfiginfos" resultType="com.candao.www.webroom.model.PadConfig">

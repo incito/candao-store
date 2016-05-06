@@ -2,6 +2,8 @@ package com.candao.www.webroom.model;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * pad可配置服务
@@ -19,7 +21,7 @@ public class PadConfig implements Serializable{
 	private String padloginpass;//pad登录密码
 	private Boolean social;//社交功能
 	private String[] seatImagename;//座位图名称
-	private File[]  seatImagefiles;//座位图文件
+	private String[]  seatImagefileurls;//座位图文件地址web端使用地段
 	private Boolean vipstatus;//是否启用会员
 	private String viptype;//会员类型1餐道会员；2其他会员
 	private String vipcandaourl;//会员地址(直接在数据库修改)
@@ -38,8 +40,14 @@ public class PadConfig implements Serializable{
 	private String youmengchinnal;//友盟渠道号
 	private String bigdatainterface;//大数据接口地址
 	private String seatimageurls;//数据库保存的全部图片地址
+	private String seatimagenames;//数据库保存的全部图片名称
+	
+	//手环信息
+	private String braceletgappkey;//手环应用钥匙
+	private String braceletchinnal;//手环渠道号
+	
 	//不写入数据库字段
-	private String[] seatImageurl;//座位图地址
+	private List<String> seatImageurl=new ArrayList<>();//座位图地址
 	private String logourl;//
 	private String backgroudurl;//
 	public Integer getId() {
@@ -66,11 +74,14 @@ public class PadConfig implements Serializable{
 	public void setSeatImagename(String[] seatImagename) {
 		this.seatImagename = seatImagename;
 	}
-	public File[] getSeatImagefiles() {
-		return seatImagefiles;
+	
+	
+	
+	public String[] getSeatImagefileurls() {
+		return seatImagefileurls;
 	}
-	public void setSeatImagefiles(File[] seatImagefiles) {
-		this.seatImagefiles = seatImagefiles;
+	public void setSeatImagefileurls(String[] seatImagefileurls) {
+		this.seatImagefileurls = seatImagefileurls;
 	}
 	public Boolean getVipstatus() {
 		return vipstatus;
@@ -180,10 +191,11 @@ public class PadConfig implements Serializable{
 	public void setSeatimageurls(String seatimageurls) {
 		this.seatimageurls = seatimageurls;
 	}
-	public String[] getSeatImageurl() {
+	
+	public List<String> getSeatImageurl() {
 		return seatImageurl;
 	}
-	public void setSeatImageurl(String[] seatImageurl) {
+	public void setSeatImageurl(List<String> seatImageurl) {
 		this.seatImageurl = seatImageurl;
 	}
 	public String getLogourl() {
@@ -197,6 +209,24 @@ public class PadConfig implements Serializable{
 	}
 	public void setBackgroudurl(String backgroudurl) {
 		this.backgroudurl = backgroudurl;
+	}
+	public String getSeatimagenames() {
+		return seatimagenames;
+	}
+	public void setSeatimagenames(String seatimagenames) {
+		this.seatimagenames = seatimagenames;
+	}
+	public String getBraceletgappkey() {
+		return braceletgappkey;
+	}
+	public void setBraceletgappkey(String braceletgappkey) {
+		this.braceletgappkey = braceletgappkey;
+	}
+	public String getBraceletchinnal() {
+		return braceletchinnal;
+	}
+	public void setBraceletchinnal(String braceletchinnal) {
+		this.braceletchinnal = braceletchinnal;
 	}
 	
 	
