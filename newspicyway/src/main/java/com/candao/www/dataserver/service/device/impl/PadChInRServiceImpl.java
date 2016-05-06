@@ -9,7 +9,6 @@ import com.candao.www.dataserver.model.PadCheckInRespData;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
@@ -39,7 +38,7 @@ public class PadChInRServiceImpl extends DeviceServiceImpl {
             target.put(checkInRespData.getGroup(), new ArrayList<String>() {{
                 add(checkInRespData.getId());
             }});
-            saveOrUpdateDevice(new Pad(checkInRespData.getGroup(), checkInRespData.getId(), checkInRespData.getSsId(), checkInRespData.getUserId(), checkInRespData.getTableNo()));
+            saveOrUpdateDevice(new Pad(checkInRespData.getGroup(), checkInRespData.getId(), checkInRespData.getSsId(), checkInRespData.getMeid()));
             //登录需要ack
             MsgForwardData msgForwardData = MsgForwardTran.getPadCheckInRespConfirm(JSON.toJSONString(new ResponseData()));
             msgForwardData.setSerialNumber(serialNumber);

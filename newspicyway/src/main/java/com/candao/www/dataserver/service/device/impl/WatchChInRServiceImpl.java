@@ -9,13 +9,15 @@ import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.WatchCheckInRespData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ytq on 2016/3/23.
@@ -35,7 +37,7 @@ public class WatchChInRServiceImpl extends DeviceServiceImpl {
             target.put(checkInRespData.getGroup(), new ArrayList<String>() {{
                 add(checkInRespData.getId());
             }});
-            saveOrUpdateDevice(new Watch(checkInRespData.getGroup(), checkInRespData.getId(), checkInRespData.getSsId(), checkInRespData.getUserId()));
+            saveOrUpdateDevice(new Watch(checkInRespData.getGroup(), checkInRespData.getId(), checkInRespData.getSsId(), checkInRespData.getMeId()));
             //登录需要ack
             MsgForwardData msgForwardData = MsgForwardTran.getWatchCheckInRespConfirm(JSON.toJSONString(new ResponseData()));
             msgForwardData.setSerialNumber(serialNumber);

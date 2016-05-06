@@ -6,20 +6,15 @@ import com.candao.communication.vo.Response;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.mapper.DeviceMapper;
 import com.candao.www.dataserver.model.DeviceData;
-import com.candao.www.dataserver.model.MsgResponseData;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.util.BeanUtilEx;
-import com.candao.www.dataserver.util.MsgAnalyzeTool;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ytq on 2016/3/23.
@@ -106,16 +101,17 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
     }
 
     @Override
-    public List<Map> getDeviceByUserId(String userId) {
-        List<Map> mapList = new ArrayList<>();
-        for (Device device : deviceMapper.getDeviceByUserId(userId)) {
-            Map map = new HashMap<>();
-            map.put("group", device.getDeviceGroup());
-            map.put("id", device.getDeviceId());
-            map.put("tableNo", device.getTableNo());
-            map.put("ssId", device.getSsId());
-            mapList.add(map);
+    public DeviceObject getDeviceByMeId(String meid) {
+        Device device = deviceMapper.getDeviceByMeId(meid);
+        DeviceObject deviceObject = new DeviceObject();
+        if (device != null) {
+            try {
+                BeanUtilEx.copyProperties(deviceObject, device);
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e);
+            }
         }
-        return mapList;
+        return deviceObject;
     }
 }

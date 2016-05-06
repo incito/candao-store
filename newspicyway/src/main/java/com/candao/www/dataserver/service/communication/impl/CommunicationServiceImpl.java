@@ -3,16 +3,13 @@ package com.candao.www.dataserver.service.communication.impl;
 import com.candao.communication.callback.MsgCallback;
 import com.candao.communication.client.NettyService;
 import com.candao.communication.vo.Response;
-import com.candao.www.dataserver.service.SpringContextUtils;
 import com.candao.www.dataserver.service.communication.CommunicationService;
 import com.candao.www.utils.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by ytq on 2016/3/9.

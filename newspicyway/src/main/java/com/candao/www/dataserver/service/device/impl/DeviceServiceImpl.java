@@ -28,7 +28,7 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceMapper.countByGroupAndId(group, id) > 0;
     }
 
-    public void saveOrUpdateDevice(Device device) {
+    public synchronized void saveOrUpdateDevice(Device device) {
         if (deviceMapper.countByGroupAndId(device.getDeviceGroup(), device.getDeviceId()) > 0) {
             deviceMapper.update(device);
         } else {

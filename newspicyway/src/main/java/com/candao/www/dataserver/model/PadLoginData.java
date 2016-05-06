@@ -13,7 +13,16 @@ public class PadLoginData extends BaseData {
     private String padLicenceNo;
     private Date loginDate;
     private String loginType;
+    private String meid;
     private String tableNo;
+
+    public String getMeid() {
+        return meid;
+    }
+
+    public void setMeid(String meid) {
+        this.meid = meid;
+    }
 
     public String getUserId() {
         return userId;

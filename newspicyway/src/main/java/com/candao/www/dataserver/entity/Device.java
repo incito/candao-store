@@ -10,37 +10,27 @@ public class Device {
     private String deviceGroup;
     private String deviceId;
     private String deviceType;
-
+    private String meid;
     private String ssId;
-    private String userId;
     private Date createTime;
     private Date updateTime;
     private Integer validFlag;
-    public String tableNo;
 
     public Device() {
 
     }
 
-    public Device(String deviceGroup, String deviceId, String ssId, String userId) {
+    public Device(String deviceGroup, String deviceId, String ssId, String meid) {
         this.deviceGroup = deviceGroup;
         this.deviceId = deviceId;
         this.ssId = ssId;
-        this.userId = userId;
+        this.meid = meid;
     }
 
     public Device(String deviceGroup, String deviceId, String ssId) {
         this.deviceGroup = deviceGroup;
         this.deviceId = deviceId;
         this.ssId = ssId;
-    }
-
-    public String getTableNo() {
-        return tableNo;
-    }
-
-    public void setTableNo(String tableNo) {
-        this.tableNo = tableNo;
     }
 
     public Integer getId() {
@@ -65,14 +55,6 @@ public class Device {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public Date getCreateTime() {
@@ -113,5 +95,13 @@ public class Device {
 
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
+    }
+
+    public String getMeid() {
+        return meid;
+    }
+
+    public void setMeid(String meid) {
+        this.meid = meid;
     }
 }

@@ -22,15 +22,11 @@ public class DeviceObject extends Device {
 
     }
 
-    public DeviceObject(String deviceGroup, String deviceId, String tableNo, String userId) {
-        super(deviceGroup, deviceId, tableNo, userId);
-    }
-
-    private String sendMsgSync(Integer id, String msg) {
+    private String sendMsgSync(String msg) {
         return this.msgForwardService.broadCastMsgSync(getId(), msg);
     }
 
-    private void sendMsg(Integer id, String msg) {
+    private void sendMsg(String msg) {
         this.msgForwardService.broadCastMsg(getId(), msg);
     }
 

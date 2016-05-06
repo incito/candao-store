@@ -7,31 +7,26 @@
         <result column="device_group" property="deviceGroup"/>
         <result column="device_id" property="deviceId"/>
         <result column="device_type" property="deviceType"/>
-        <result column="user_id" property="userId"/>
-        <result column="table_no" property="tableNo"/>
         <result column="ss_id" property="ssId"/>
+        <result column="meid" property="meid"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="valid_flag" property="validFlag"/>
     </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.candao.www.dataserver.entity.Device">
-        INSERT INTO t_device(device_group, device_id, device_type, user_id,
-        table_no,ss_id,create_time,update_time,valid_flag)
-        VALUES (#{deviceGroup},#{deviceId},#{deviceType},#{userId},#{tableNo},#{ssId},now(),now(), 1)
+        INSERT INTO t_device(device_group, device_id, device_type,ss_id,meid,create_time,update_time,valid_flag)
+        VALUES (#{deviceGroup},#{deviceId},#{deviceType},#{ssId,#{meid},now(),now(), 1)
     </insert>
     <update id="update">
         update t_device set update_time=now()
         <if test="deviceType!=null">
             ,device_type=#{deviceType}
         </if>
-        <if test="userId!=null">
-            ,user_id=#{userId}
-        </if>
-        <if test="tableNo!=null">
-            ,table_no=#{tableNo}
-        </if>
         <if test="ssId!=null">
             ,ss_id=#{ssId}
+        </if>
+        <if test="meid!=null">
+            ,meid=#{meid}
         </if>
         <if test="validFlag!=null">
             ,valid_flag=#{validFlag}
@@ -47,8 +42,8 @@
     <select id="getAllDevice" resultMap="BaseResultMap">
       SELECT * FROM t_device
     </select>
-    <select id="getDeviceByUserId" resultMap="BaseResultMap">
-        SELECT * FROM t_device WHERE user_id=#{userId}
+    <select id="getDeviceByMeId" resultMap="BaseResultMap">
+        SELECT * FROM t_device WHERE meid=#{meid}
     </select>
     <select id="getDeviceById" resultMap="BaseResultMap">
         SELECT * FROM t_device WHERE id=#{id}

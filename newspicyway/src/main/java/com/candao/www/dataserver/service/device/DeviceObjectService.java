@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by ytq on 2016/3/23.
  */
 public interface DeviceObjectService {
-    org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DeviceService.class);
+    org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DeviceObjectService.class);
 
     //查询该门店所有设备
     List<DeviceObject> getAllDevice();
@@ -22,8 +22,9 @@ public interface DeviceObjectService {
     //查询所有在线设备
     List<DeviceObject> getOnLineDevice();
 
-    //根据用户id查询用户对应的机具信息
-    List<Map> getDeviceByUserId(String userId);
+    //根据meid查询设备信息
+    DeviceObject getDeviceByMeId(String meid);
+
 
     DeviceObject getByGroupAndId(String group, String id);
 }

@@ -46,7 +46,7 @@ public class PadChInRServiceImplTest {
 //        };
         new NonStrictExpectations(DeviceServiceImpl.class) {
             {
-                padChInRService.saveOrUpdateDevice(new Pad(anyString, anyString, anyString, anyString, anyString));
+                padChInRService.saveOrUpdateDevice(new Pad(anyString, anyString, anyString, anyString));
             }
         };
         new NonStrictExpectations(MsgProcessServiceImpl.class) {
