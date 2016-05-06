@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -163,7 +164,21 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/importfile")
 	@ResponseBody
-	public String importfile(@RequestParam("seatImagefiles") CommonsMultipartFile[] seatImagefiles,HttpServletRequest request,String[] seatImagename){
+	public String importfile(HttpServletRequest request,String[] seatImagename){
+		//@RequestParam("seatImagefiles") CommonsMultipartFile[] seatImagefiles,
+		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
+		List<CommonsMultipartFile> seatImagefiles=new ArrayList<>();
+		if(fileMap.get("seatImgIpt0") != null){
+			MultipartFile file  = fileMap.get("seatImgIpt0");
+			seatImagefiles.add((CommonsMultipartFile) file);
+		}
+		if(fileMap.get("seatImgIpt1") != null){
+			MultipartFile file  =  fileMap.get("seatImgIpt1");
+			seatImagefiles.add((CommonsMultipartFile) file);
+		}
+		
+		
 		String realpath=request.getSession().getServletContext().getRealPath("");
 		realpath=realpath+File.separator+"uploads"+File.separator;
 		String seatimagenames="";
