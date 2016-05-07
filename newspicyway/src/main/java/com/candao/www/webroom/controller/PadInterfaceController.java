@@ -173,7 +173,7 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/deletefile")
 	@ResponseBody
-	public String deletefile(HttpServletRequest request,String[] seatImagename,String fileurl0,String fileurl1){
+	public String deletefile(HttpServletRequest request,String seatImagename0,String seatImagename1,String fileurl0,String fileurl1){
 		fileurl0=getValue(fileurl0);
 		fileurl1=getValue(fileurl1);
 		String realpath=request.getSession().getServletContext().getRealPath("");
@@ -218,7 +218,7 @@ public class PadInterfaceController {
 	        		  if(!file.getParentFile().exists()){
 	        			  file.getParentFile().mkdirs();
 	        		  }
-	        		  seatimagenames=seatimagenames+seatImagename[temp++]+";";
+	        		  seatimagenames=seatimagenames+"seatImagename"+temp+++";";
 	        		  seatimageurls=seatimageurls+"upload"+File.separator+newfilename+";";
 	        		System.out.println(realpath);
 	                try {  
