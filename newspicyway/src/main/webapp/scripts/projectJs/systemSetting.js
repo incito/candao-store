@@ -501,6 +501,7 @@ $("#test").click(function(){
 		var isUploadFile = true;//上传或者更新图片
 		var isUpdateFile = true ;//删除或更新图片名称
 		var updateObj = {};
+		var updateObjLen = 0;
 		//var flag = ture;
 		if(me.hasClass('btn-submit')) {
 			
@@ -525,7 +526,7 @@ $("#test").click(function(){
 				var $seatname = me.find('.seatname').val();
 				
 				if(me.hasClass('hasDel')) {//删除图片
-					updateObj['fileurl' + i + ""] = me.find('.seat-img').attr('src');
+					updateObj['fileurl' + i + ""] = me.attr('src-img');
 					updateObj['seatImagename' + i + ""] = '';
 					return true
 				}
@@ -561,14 +562,18 @@ $("#test").click(function(){
 				isUploadFile = false;
 			}
 			
-			//if(!(typeOf(updateObj) == "undefined")) {
-				//isUpdateFile = false;
-			//}
+			
+			for(var v in updateObj){
+				updateObjLen++;
+			}
+			if(updateObjLen === 0) {
+				isUpdateFile = false;
+			}
 			
 			
-			//if(validateFlag && selectedDishsTop !== null) {
-				//selectedDishsTop && saveSelectedGifts(selectedDishsTop,'save');
-			//}
+			if(validateFlag && selectedDishsTop !== null) {
+				selectedDishsTop && saveSelectedGifts(selectedDishsTop,'save');
+			}
 			
 			
 			//上传图片
@@ -848,8 +853,10 @@ function doGetPadData(){
 			
 			
 			//设置座位图
-			$.each(data.seatImagename,function(i){
+			$.each(data.seatImagename,function(i,v){
 				var me = $seatItem.eq(i);
+
+				if(v == "") return false;
 				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.seatImagefileurls[i].replace(/\\/g,'/');
 				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
 				me.attr({'img-src':data.seatImagefileurls[i]})
