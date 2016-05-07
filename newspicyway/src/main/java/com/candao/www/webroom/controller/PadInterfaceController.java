@@ -208,6 +208,7 @@ public class PadInterfaceController {
 	
 	/**
 	 * 座位图上传
+	 * 必须有file对象才会进入该方法
 	 * @param seatImagefiles
 	 * @param padConfig
 	 * @return
@@ -218,29 +219,76 @@ public class PadInterfaceController {
 		fileurl0=getValue(fileurl0);
 		fileurl1=getValue(fileurl1);
 		String realpath=request.getSession().getServletContext().getRealPath("");
+		System.out.println(realpath);
 		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
 		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
 		List<CommonsMultipartFile> seatImagefiles=new ArrayList<>();
 		if(fileMap.get("seatImgIpt0") != null){
 			MultipartFile file  = fileMap.get("seatImgIpt0");
 			seatImagefiles.add((CommonsMultipartFile) file);
+			fileurl0=null;
 		}
-		if(fileurl0!=null){
-			MultipartFile file  =(MultipartFile) new File(realpath+File.separator+fileurl0);
-			seatImagefiles.add((CommonsMultipartFile) file);
-		}
-		
 		if(fileMap.get("seatImgIpt1") != null){
 			MultipartFile file  =  fileMap.get("seatImgIpt1");
 			seatImagefiles.add((CommonsMultipartFile) file);
+			fileurl1=null;
+		}
+		if(fileurl0==null && fileurl1==null){
+			return filetwonewFile(seatImagefiles, realpath, seatImagename);//上传2个新文件
 		}
 		
-		if(fileurl1!=null){
-			MultipartFile file  =(MultipartFile) new File(realpath+File.separator+fileurl1);
-			seatImagefiles.add((CommonsMultipartFile) file);
+		Map<String, Object> map=new HashMap<>();
+		PadConfig padConfig= padConfigService.getconfiginfos();
+		String names=padConfig.getSeatimagenames();
+		if(fileurl0!=null && fileurl1==null){//文件0为旧文件，file1为新文件
+						String newfilename=seatImagefiles.get(0).getOriginalFilename();
+			        	if(newfilename.indexOf(".")!=-1){
+			        		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
+			        				+	newfilename.substring(newfilename.indexOf("."));
+			        	}
+						int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
+						if(result==0){//成功
+							PadConfig config=new PadConfig();
+							config.setSeatimagenames(names.split(";")[0]+";"+seatImagename[0]);
+			            	config.setSeatimageurls(fileurl0+";"+"upload"+File.separator+newfilename); 
+			            	padConfigService.saveorupdate(config);
+			            	map.put("code", 0);
+			            	return JacksonJsonMapper.objectToJson(map);
+						}else{
+							map.put("code", 1);
+							map.put("msg", "上传文件失败");
+							return JacksonJsonMapper.objectToJson(map);
+						}
 		}
 		
-		realpath=realpath+File.separator+"upload"+File.separator;
+		if(fileurl0==null && fileurl1!=null){//文件0为新文件，file1为旧文件
+			String newfilename=seatImagefiles.get(0).getOriginalFilename();
+        	if(newfilename.indexOf(".")!=-1){
+        		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
+        				+	newfilename.substring(newfilename.indexOf("."));
+        	}
+			int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
+			if(result==0){//成功
+				PadConfig config=new PadConfig();
+				config.setSeatimagenames(seatImagename[0]+";"+names.split(";")[0]);
+            	config.setSeatimageurls("upload"+File.separator+newfilename+";"+fileurl1); 
+            	padConfigService.saveorupdate(config);
+            	map.put("code", 0);
+            	return JacksonJsonMapper.objectToJson(map);
+			}else{
+				map.put("code", 1);
+				map.put("msg", "上传文件失败");
+				return JacksonJsonMapper.objectToJson(map);
+			}
+}
+		
+		map.put("code", 0);
+		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	
+	
+	private  String  filetwonewFile(List<CommonsMultipartFile> seatImagefiles,String realpath,String[] seatImagename){
 		String seatimagenames="";
 		String seatimageurls="";
 		int temp=0;
@@ -252,36 +300,15 @@ public class PadInterfaceController {
 	            		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
 	            				+	newfilename.substring(newfilename.indexOf("."));
 	            	}
-	            	realpath=realpath+ newfilename;
-	            	  File file = new File(realpath);  
+	            	String imagelocation=realpath+File.separator+"upload"+File.separator+ newfilename;
+	            	  File file = new File(imagelocation);  
 	        		  if(!file.getParentFile().exists()){
 	        			  file.getParentFile().mkdirs();
 	        		  }
+	        		  //文件上传
+	        		  fileupload(commonsMultipartFile, imagelocation);
 	        		  seatimagenames=seatimagenames+seatImagename[temp++]+";";
 	        		  seatimageurls=seatimageurls+"upload"+File.separator+newfilename+";";
-	        		System.out.println(realpath);
-	                try {  
-	                    //拿到输出流，同时重命名上传的文件  
-	                    FileOutputStream os = new FileOutputStream(realpath);  
-	                    //拿到上传文件的输入流  
-	                    FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();  
-	                      
-	                    //以写字节的方式写文件  
-	                    int b = 0;  
-	                    while((b=in.read()) != -1){  
-	                        os.write(b);  
-	                    }  
-	                    os.flush();  
-	                    os.close();  
-	                    in.close();  
-	                    //保存成功
-	                } catch (Exception e) {  
-	                    e.printStackTrace();  
-	                    System.out.println("上传出错");  
-	                    map.put("code", 1);
-	        			map.put("msg", "上传出错");
-	        			return JacksonJsonMapper.objectToJson(map);
-	                }  
 	            }
 	            
 	            PadConfig config=new PadConfig();
@@ -299,7 +326,41 @@ public class PadInterfaceController {
 	            }
 		 }
 		return JacksonJsonMapper.objectToJson(map);
+		
 	}
+	
+	
+	
+	/**
+	 * 0成功  1失败
+	 * @param commonsMultipartFile
+	 * @param imagelocation
+	 * @return
+	 */
+	private int fileupload(CommonsMultipartFile commonsMultipartFile,String imagelocation){
+		   try {  
+               //拿到输出流，同时重命名上传的文件  
+               FileOutputStream os = new FileOutputStream(imagelocation);  
+               //拿到上传文件的输入流  
+               FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();  
+                 
+               //以写字节的方式写文件  
+               int b = 0;  
+               while((b=in.read()) != -1){  
+                   os.write(b);  
+               }  
+               os.flush();  
+               os.close();  
+               in.close();  
+               //保存成功
+           } catch (Exception e) {  
+               e.printStackTrace();  
+               return 1;
+           }  
+		   
+		   return 0;
+	} 
+	
 	
 	/**
 	 * web获取所有可配置项
