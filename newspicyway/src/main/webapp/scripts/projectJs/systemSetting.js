@@ -539,7 +539,7 @@ $("#test").click(function(){
 							return false;
 						} else {
 							seatnameArr.push($seatname);
-							seatImgFilesArr.push('seatImgIpt' + (i+1))
+							seatImgFilesArr.push('seatImgIpt' + i);
 						}
 					} else {//更新图片名称
 						if(!$.trim($seatname).length) {//图片名字为空
