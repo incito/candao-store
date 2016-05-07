@@ -738,19 +738,135 @@
 	<script
 		src="<%=request.getContextPath()%>/scripts/projectJs/systemSetting.js"></script>
 	<script>
-		var haveSelected = null;
-		
-		function changImg(){
-			$('#saveLOGO').removeClass('hide');
-			$('#editLOGO').hide();
-			$('#defaultlogo').attr('src','../images/uplogo.png');
+	/**
+	 * 显示已选择的礼物在系统设置页面中
+	 */
+	function saveSelectedGifts(selectedDishs,type){
+		if(selectedDishs!=null && selectedDishs.length>0){
+			saveGiftsToPage(selectedDishs);
+			if(type === 'save') {
+				saveGifts(selectedDishs);
+			}
 			
-			$('#defaultlogo').css("border","1px dashed #ddd")
-			$('#defaultlogo').click(function(){
-				alert("jjjj");
-				
-			})
 		}
+	}
+	/**
+	 * 保存礼物
+	 */
+	function saveGifts(selectedDishs){
+		$.post(global_Path+"/social/saveGift", {data: JSON.stringify(selectedDishs)}, function(result){
+			console.log(result);
+			if(result.flag == 1){
+				//saveGiftsToPage(selectedDishs);
+			}else{
+				
+			}
+		},'json');
+	}
+
+	function saveGiftsToPage(selectedDishs){
+		haveSelected = new Array();
+		var htm = "";
+		$.each(selectedDishs, function(i, item){
+			haveSelected.push(item);
+			var giftname = (i+1)+"、"+item.dish_title+"("+item.unit+")";
+			console.log(giftname);
+			htm += "<div class='one-gift git-overflow'>"+giftname+"</div>";
+		});
+		$("#gifts-div").html(htm);
+	}
+	/**
+	 * 生成菜品选择分类的显示内容
+	 */
+	function generalDishTitle(){
+		var checkedDishs=$("#dish-select-dialog #accordion").find("input[type='checkbox']:checked");
+		var selectedDishs=[];
+		if(checkedDishs.length > 0){
+			$.each(checkedDishs,function(i,obj){
+				//防止不同分类中的同一菜品重复添加。
+				var d={};
+				d.dish=$(obj).val();
+				d.unit=$(obj).attr("unit");
+				var hasSelected = false;
+				$.each(selectedDishs, function(j, dish){
+					if(dish.dish==d.dish && dish.unit==d.unit){
+						hasSelected = true;
+						return false;
+					}
+				});
+				if(!hasSelected){
+					selectedDishs.push(d);
+				}
+			});
+		}
+		if(selectedDishs.length <= 0){
+			allselected = 0;
+			$("#select-font").text("");
+		} else {
+			allselected = selectedDishs.length;
+			$("#select-font").text("(已选"+selectedDishs.length+"种菜品)");
+		}
+		$.each( $("#dish-select-dialog #accordion").find(".panel"), function(i,panel){
+			var dish_array=[];
+			var dishs= $(this).find("input[type=checkbox]:checked");
+			if(dishs.length > 0){
+				if(dishs.length < $(this).find("input[type=checkbox]").length){
+					$(this).find("img").attr("alt", "1");
+					$(this).find("img").attr("src", global_Path+ "/images/sub_select.png");
+					var panelTitle = "";
+					$.each(dishs, function(i){
+						panelTitle += $(this).parent().text();
+						if(panelTitle.length >= 15){
+							panelTitle = panelTitle.substring(0,15)+"...";
+							return false;
+						}
+						if(i < dishs.length -1){
+							panelTitle +="、";
+						}
+						
+					});
+					panelTitle = "(" + panelTitle + ")";
+					$(this).find(".dish-label").html(panelTitle);
+					dishs.attr("itemtype","");
+					dishs.attr("itemdesc","");
+					dishs.attr("item_select", "");
+				} else {
+					$(this).find("img").attr("alt", "2");
+					$(this).find("img").attr("src", global_Path+ "/images/all_select.png");
+					$(this).find(".dish-label").html("");
+					dishs.attr("itemtype",$(this).find("span").attr("itemtype"));
+					dishs.attr("itemdesc",$(this).find("span").text());
+					dishs.attr("item_select", true);
+				}
+			} else {
+				$(this).find("img").attr("alt", "0");
+				$(this).find("img").attr("src", global_Path+ "/images/none_select.png");
+				$(this).find(".dish-label").html("");
+			}
+		});
+		
+		//更新全选与全不选按钮的状态。当不是全选或者全不选的时候，清除这两个单选按钮的选中状态。
+		$("input[type='checkbox'][name='dish-radio-uncheck']").prop("checked",false);
+		if( checkedDishs.length == 0 ){
+			//当前为不全选。
+			$("input[type='checkbox'][name='dish-radio-uncheck'][value='0']").prop("checked",true); 
+		}else if( checkedDishs.length == $("#dish-select-dialog #accordion").find("input[type='checkbox']").length ){
+			//
+		}
+		
+	}
+
+	function changImg(){
+		$('#saveLOGO').removeClass('hide');
+		$('#editLOGO').hide();
+		$('#defaultlogo').attr('src','../images/uplogo.png');
+		
+		$('#defaultlogo').css("border","1px dashed #ddd")
+		$('#defaultlogo').click(function(){
+			alert("jjjj");
+			
+		})
+	}
 	</script>
 	
 	

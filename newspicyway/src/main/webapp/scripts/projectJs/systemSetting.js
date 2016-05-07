@@ -1,3 +1,4 @@
+var selectedDishsTop = [];
 $(function() {
 $("#test").click(function(){
 	$.ajax({
@@ -496,7 +497,10 @@ $("#test").click(function(){
 		var $seatOp = $('.seat-item-op');
 		var seatnameArr = [];
 		var seatImgFilesArr = [];
-		var flag = true;
+		var validateFlag = true;
+		var isUploadFile = true;//上传或者更新图片
+		var isUpdateFile = true ;//删除或更新图片名称
+		var updateObj = {};
 		//var flag = ture;
 		if(me.hasClass('btn-submit')) {
 			
@@ -520,62 +524,118 @@ $("#test").click(function(){
 				var $seatImgBtn = me.find('.seatImgBtn');
 				var $seatname = me.find('.seatname').val();
 				
-				if(!me.hasClass('seat-item-default') && $seatImgBtn.val()) {
-					if(!$.trim($seatname).length) {
-						flag = false;
-						alert('不能为空');
-					} else {
-						seatnameArr.push($seatname);
-						seatImgFilesArr.push('seatImgIpt' + (i+1))
+				if(me.hasClass('hasDel')) {//删除图片
+					updateObj['fileurl' + i + ""] = me.find('.seat-img').attr('src');
+					updateObj['seatImagename' + i + ""] = '';
+					return true
+				}
+				
+				if(!me.hasClass('seat-item-default')) {
+					if($seatImgBtn.val()) {//上传或者更新图片
+						if(!$.trim($seatname).length) {//图片名字为空
+							validateFlag = false;
+							me.find('.seat-item-tip').show();
+							return false;
+						} else {
+							seatnameArr.push($seatname);
+							seatImgFilesArr.push('seatImgIpt' + (i+1))
+						}
+					} else {//更新图片名称
+						if(!$.trim($seatname).length) {//图片名字为空
+							validateFlag = false;
+							me.find('.seat-item-tip').show();
+							return false;
+						} else {
+							updateObj['fileurl' + i + ""] = me.attr('img-src');
+							updateObj['seatImagename' + i + ""] = $seatname;
+							//seatnameArr.push($seatname);
+							//seatImgFilesArr.push('seatImgIpt' + (i+1))
+						}
 					}
 				}
-			})
+				
+			});
 			
-			flag && $.ajaxFileUpload({
-				url : global_Path + "/padinterface/importfile",
-                    secureuri: false, //是否需要安全协议，一般设置为false
-                    fileElementId: seatImgFilesArr, //文件上传域的ID
-                    //dataType: 'content', //返回值类型 一般设置为json
-                    data : {
-                    	seatImagename : seatnameArr
-                    },
-                    success: function (data, status)  //服务器成功响应处理函数
-                    {
-                        $("#img1").attr("src", data.imgurl);
-                        if (typeof (data.error) != 'undefined') {
-                            if (data.error != '') {
-                                alert(data.error);
-                            } else {
-                                alert(data.msg);
-                            }
-                        }
-                    },
-                    error: function (data, status, e)//服务器响应失败处理函数
-                    {
-                        console.info(e);
-                    }
-                });
 			
-			// $.ajax({
-			// 	type: "POST",
-			// 	dataType : "json",
-			// 	url : global_Path + "/padinterface/saveorupdate",
-			// 	contentType: "application/json;charset=UTF-8",
-			//     data: $.parseJSON({
-			//     	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
-			//     	"viptype" : $('select[name=viptype]').val()
-			//     }),
-			// 	success : function(result) {
-			// 		if (result.code == "0") {
-			// 			me.addClass('btn-edit').removeClass('btn-submit');
-			// 			me.text('编辑');
-			// 			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
-			// 			$selects.attr({"disabled":"disabled"});
-			// 			$seatOp.hide();
-			// 			$editGifts.hide();
-			// 		}
-			// 	}
-			// });
+			if(seatImgFilesArr.length == 0) {
+				isUploadFile = false;
+			}
+			
+			//if(!(typeOf(updateObj) == "undefined")) {
+				//isUpdateFile = false;
+			//}
+			
+			
+			//if(validateFlag && selectedDishsTop !== null) {
+				//selectedDishsTop && saveSelectedGifts(selectedDishsTop,'save');
+			//}
+			
+			
+			//上传图片
+			if(validateFlag && isUploadFile) {
+				$.ajaxFileUpload({
+					url : global_Path + "/padinterface/importfile",
+	                    secureuri: false, //是否需要安全协议，一般设置为false
+	                    fileElementId: seatImgFilesArr, //文件上传域的ID
+	                    //dataType: 'content', //返回值类型 一般设置为json
+	                    data : {
+	                    	seatImagename : seatnameArr
+	                    },
+	                    success: function (data, status)  //服务器成功响应处理函数
+	                    {
+	                        $("#img1").attr("src", data.imgurl);
+	                        if (typeof (data.error) != 'undefined') {
+	                            if (data.error != '') {
+	                                alert(data.error);
+	                            } else {
+	                                alert(data.msg);
+	                            }
+	                        }
+	                    },
+	                    error: function (data, status, e)//服务器响应失败处理函数
+	                    {
+	                        console.info(e);
+	                    }
+	                });
+			}
+			
+			if(validateFlag && isUpdateFile) {
+				//删除图片或者更新图片名称
+				$.ajax({
+					 type: "POST",
+					 dataType : "json",
+						url : global_Path + "/padinterface/deletefile",
+				     data: updateObj,
+				 	success : function(result) {
+				 		if (result.code == "0") {
+				 			alert("图片更新成功");
+				 		}
+				 	}
+				 });
+			}
+			
+			
+			 
+			 //更新其他字段
+			validateFlag && $.ajax({
+				 type: "GET",
+				 dataType : "json",
+					url : global_Path + "/padinterface/saveorupdate",
+			     data: {
+			     	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
+			     	"viptype" : $('select[name=viptype]').val()
+			     },
+			 	success : function(result) {
+			 		if (result.code == "0") {
+			 			me.addClass('btn-edit').removeClass('btn-submit');
+			 			me.text('编辑');
+			 			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+			 			$selects.attr({"disabled":"disabled"});
+			 			$seatOp.hide();
+			 			$editGifts.hide();
+			 		}
+			 	}
+			 });
 		} else {
 			me.addClass('btn-submit').removeClass('btn-edit');
 			me.text('保存');
@@ -587,16 +647,15 @@ $("#test").click(function(){
 		
 	});
 	
-	//座位图上传
+	//座位图删除
 	$(".setup_div_social .J-btn-del").click(function(){
-		//$(this).parents('.seat-item').remove();
-		;
-		$(this).parents('.seat-item').addClass('seat-item-default').find('.seat-img').attr({'src':'../images/upload-img.png'});
-	})
-	
-	
-	
-	
+		var $parent = $(this).parents('.seat-item');
+		$parent.addClass('seat-item-default').find('.seat-img').attr({'src':'../images/upload-img.png'});
+		$parent.find('.seatname').val('');
+		$parent.addClass('hasDel');
+		
+	});
+		
 	//会员设置
 	$(".setup_div_member .J-btn-op").click(function(){
 		var me = $(this);
@@ -751,8 +810,80 @@ function showImg(obj,thumb){
 	var idx = $parent.index()+1;
 	var seatImgUrl = getObjectURL(me[0].files[0]);
 	$parent.removeClass('seat-item-default');
+	$parent.removeClass('hasDel');
 	$parent.find("#seatImagefiles").val(seatImgUrl);
 	$seatImg.attr("src",seatImgUrl);
+}
+
+/**
+ * 查询pad设数据,并初始化
+ */
+function doGetPadData(){
+	$.get(global_Path + "/padinterface/getconfiginfos", function(result) {
+		if(result.code == "0"){
+			var data = result.data;
+			var $seatItem = $('.seat-item');
+			
+			//社交
+			$('select[name=social]').val(data.social ? "0" :"1");
+			
+			if(data.social) {
+				$('.setup_div_social').addClass('active');
+			};
+			
+			//data.seatImagename = [];
+			
+			//data.seatImagename = ['111111111'];
+			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif']
+			
+			//data.seatImagename = ['111111111','222222222222222'];
+			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif','http://www.iteye.com/images/user-logo-thumb.gif?1448702469']
+			
+			//设置上传图片按钮显示
+			if(data.seatImagename.length == 0) {
+				$seatItem.eq(0).show();
+			} else if(data.seatImagename.length == 1){
+				$seatItem.show();
+			}
+			
+			
+			//设置座位图
+			$.each(data.seatImagename,function(i){
+				var me = $seatItem.eq(i);
+				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.seatImagefileurls[i].replace(/\\/g,'/');
+				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
+				me.attr({'img-src':data.seatImagefileurls[i]})
+				me.find('.seat-img').attr('src',imgUrl);
+				me.removeClass('seat-item-default').show();
+				//me.find('.seatImgBtn').val(imgUrl);
+			})
+			
+			
+			//会员设置
+			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
+			$('select[name=viptype]').val(data.viptype);
+			if(data.vipstatus) {
+				$('.setup_div_member').addClass('active');
+			};
+			
+			//其他设置
+			$('select[name=clickimagedish]').val(data.clickimagedish ? "0" :"1");
+			$('select[name=onepage]').val(data.onepage ? "0" :"1");
+			$('select[name=newplayer]').val(data.newplayer ? "0" :"1");
+			$('select[name=chinaEnglish]').val(data.chinaEnglish ? "0" :"1");
+			$('select[name=indexad]').val(data.indexad ? "0" :"1");
+			$('select[name=invoice]').val(data.invoice ? "0" :"1");
+			$('select[name=hidecarttotal]').val(data.hidecarttotal ? "0" :"1");
+			$('select[name=waiterreward]').val(data.waiterreward ? "0" :"1");
+			$('input[name=adtimes]').val(data.adtimes);
+			
+			
+			//统计设置
+			$('input[name=youmengappkey]').val(data.youmengappkey);
+			$('input[name=youmengchinnal]').val(data.youmengchinnal);
+			$('input[name=bigdatainterface]').val(data.bigdatainterface);
+		}
+	},'json');
 }
 
 
@@ -1236,74 +1367,7 @@ function doGet(type){
 	
 	doGetPadData();
 }
-/**
- * 查询pad设数据,并初始化
- */
-function doGetPadData(){
-	$.get(global_Path + "/padinterface/getconfiginfos", function(result) {
-		if(result.code == "0"){
-			var data = result.data;
-			var $seatItem = $('.seat-item');
-			
-			//社交
-			$('select[name=social]').val(data.social ? "0" :"1");
-			
-			if(data.social) {
-				$('.setup_div_social').addClass('active');
-			};
-			
-			//data.seatImagename = [];
-			
-			//data.seatImagename = ['111111111'];
-			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif']
-			
-			//data.seatImagename = ['111111111','222222222222222'];
-			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif','http://www.iteye.com/images/user-logo-thumb.gif?1448702469']
-			
-			//设置上传图片按钮显示
-			if(data.seatImagename.length == 0) {
-				$seatItem.eq(0).show();
-			} else if(data.seatImagename.length == 1){
-				$seatItem.show();
-			}
-			
-			
-			//设置座位图
-			
-			$.each(data.seatImagename,function(i){
-				var me = $seatItem.eq(i);
-				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
-				me.find('.seat-img').attr('src','/newspicyway/' + data.seatImagefileurls[i]);
-				me.removeClass('seat-item-default').show();
-			})
-			
-			
-			//会员设置
-			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
-			$('select[name=viptype]').val(data.viptype);
-			if(data.vipstatus) {
-				$('.setup_div_member').addClass('active');
-			};
-			
-			//其他设置
-			$('select[name=clickimagedish]').val(data.clickimagedish ? "0" :"1");
-			$('select[name=onepage]').val(data.onepage ? "0" :"1");
-			$('select[name=newplayer]').val(data.newplayer ? "0" :"1");
-			$('select[name=chinaEnglish]').val(data.chinaEnglish ? "0" :"1");
-			$('select[name=indexad]').val(data.indexad ? "0" :"1");
-			$('select[name=invoice]').val(data.invoice ? "0" :"1");
-			$('select[name=hidecarttotal]').val(data.hidecarttotal ? "0" :"1");
-			$('select[name=waiterreward]').val(data.waiterreward ? "0" :"1");
-			$('input[name=adtimes]').val(data.adtimes);
-			
-			
-			//统计设置
-			$('input[name=youmengappkey]').val(data.youmengappkey);
-			$('input[name=youmengchinnal]').val(data.youmengchinnal);
-			$('input[name=bigdatainterface]').val(data.bigdatainterface);
-		}
-	},'json');
-}
+
 /**
  * 密码用*代替
  * @param pass
@@ -1430,23 +1494,3 @@ function getObjectURL(file) {
     }
     return url ;
 }
-
-$.extend($.validator.messages, {
-    required: "这是必填字段",
-    remote: "请修正此字段",
-    email: "请输入有效的电子邮件地址",
-    url: "请输入有效的网址",
-    date: "请输入有效的日期",
-    dateISO: "请输入有效的日期 (YYYY-MM-DD)",
-    number: "请输入有效的数字",
-    digits: "只能输入数字",
-    creditcard: "请输入有效的信用卡号码",
-    equalTo: "你的输入不相同",
-    extension: "请输入有效的后缀",
-    maxlength: $.validator.format("最多可以输入 {0} 个字符"),
-    minlength: $.validator.format("最少要输入 {0} 个字符"),
-    rangelength: $.validator.format("请输入长度在 {0} 到 {1} 之间的字符串"),
-    range: $.validator.format("请输入范围在 {0} 到 {1} 之间的数值"),
-    max: $.validator.format("请输入不大于 {0} 的数值"),
-    min: $.validator.format("请输入不小于 {0} 的数值")
-});
