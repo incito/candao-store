@@ -176,6 +176,15 @@ public class PadInterfaceController {
 	public String deletefile(HttpServletRequest request,String seatImagename0,String seatImagename1,String fileurl0,String fileurl1){
 		fileurl0=getValue(fileurl0);
 		fileurl1=getValue(fileurl1);
+		seatImagename0=getValue(seatImagename0);
+		seatImagename1=getValue(seatImagename1);
+		List<String> datas=new ArrayList<>();
+		if(seatImagename0!=null){
+			datas.add(seatImagename0);
+		}
+		if(seatImagename1!=null){
+			datas.add(seatImagename1);
+		}
 		String realpath=request.getSession().getServletContext().getRealPath("");
 		Map<String, Object> map=new HashMap<>();
 		List<CommonsMultipartFile> seatImagefiles=new ArrayList<>();
@@ -218,7 +227,8 @@ public class PadInterfaceController {
 	        		  if(!file.getParentFile().exists()){
 	        			  file.getParentFile().mkdirs();
 	        		  }
-	        		  seatimagenames=seatimagenames+"seatImagename"+temp+++";";
+	        		  seatimagenames=seatimagenames+datas.get(temp)+";";
+	        		  temp++;
 	        		  seatimageurls=seatimageurls+"upload"+File.separator+newfilename+";";
 	        		System.out.println(realpath);
 	                try {  
