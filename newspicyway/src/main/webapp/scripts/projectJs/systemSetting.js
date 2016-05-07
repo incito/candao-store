@@ -543,12 +543,6 @@ $("#test").click(function(){
 						} else {
 							seatnameArr.push($seatname);
 							seatImgFilesArr.push('seatImgIpt' + i);
-							
-							//如果是修改图片名称
-							if(me.attr('img-src')) {
-								fileObj['fileurl' + i + ""] = me.attr('img-src');
-							}
-							
 						}
 					} else {//更新图片名称
 						if(!$.trim($seatname).length) {//图片名字为空
@@ -562,6 +556,11 @@ $("#test").click(function(){
 							//seatImgFilesArr.push('seatImgIpt' + (i+1))
 						}
 					}
+
+					//如果是修改图片名称
+							if(typeof(me.attr('img-src')) != "undefined") {
+								fileObj['fileurl' + i + ""] = me.attr('img-src');
+							}
 				}
 				
 			});
