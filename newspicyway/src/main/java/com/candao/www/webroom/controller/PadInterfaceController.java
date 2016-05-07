@@ -174,101 +174,35 @@ public class PadInterfaceController {
 	@RequestMapping("/deletefile")
 	@ResponseBody
 	public String deletefile(HttpServletRequest request,String seatImagename0,String seatImagename1,String fileurl0,String fileurl1){
+		Map<String, Object> map=new HashMap<>();
 		fileurl0=getValue(fileurl0);
 		fileurl1=getValue(fileurl1);
 		seatImagename0=getValue(seatImagename0);
 		seatImagename1=getValue(seatImagename1);
-		List<String> datas=new ArrayList<>();
-		if(seatImagename0!=null){
-			datas.add(seatImagename0);
+		String imagenames="";
+		String imageurls="";
+		if(fileurl0!=null && fileurl1==null){
+			imagenames=seatImagename0;
+			imageurls=fileurl0;
 		}
-		if(seatImagename1!=null){
-			datas.add(seatImagename1);
+		if(fileurl0==null && fileurl1!=null){
+			imagenames=seatImagename1;
+			imageurls=fileurl1;
 		}
-		String realpath=request.getSession().getServletContext().getRealPath("");
-		Map<String, Object> map=new HashMap<>();
-		List<CommonsMultipartFile> seatImagefiles=new ArrayList<>();
-		if(fileurl0!=null){
-			MultipartFile file  =(MultipartFile) new File(realpath+File.separator+fileurl0);
-			seatImagefiles.add((CommonsMultipartFile) file);
+		if(fileurl0!=null && fileurl1!=null){
+			imagenames=seatImagename0+";"+seatImagename1;
+			imageurls=fileurl0+";"+fileurl1;
 		}
-		
-		if(fileurl1!=null){
-			MultipartFile file  =(MultipartFile) new File(realpath+File.separator+fileurl1);
-			seatImagefiles.add((CommonsMultipartFile) file);
-		}
-		
-		if(fileurl0==null && fileurl1==null){
-			PadConfig config=new PadConfig();
-			config.setSeatimagenames("");
-			config.setSeatimageurls("");
-			int result=padConfigService.saveorupdate(config);
-    		if(result==0){
-    			map.put("code", 1);
-    			map.put("msg", "操作失败");
-    		}else{
-    			map.put("code", 0);
-    		}
-		}
-		realpath=realpath+File.separator+"upload"+File.separator;
-		String seatimagenames="";
-		String seatimageurls="";
-		int temp=0;
-		
-		for(CommonsMultipartFile commonsMultipartFile:seatImagefiles){  
-	            if(!commonsMultipartFile.isEmpty()){  
-	            	String newfilename=commonsMultipartFile.getOriginalFilename();
-	            	if(newfilename.indexOf(".")!=-1){
-	            		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-	            				+	newfilename.substring(newfilename.indexOf("."));
-	            	}
-	            	realpath=realpath+ newfilename;
-	            	  File file = new File(realpath);  
-	        		  if(!file.getParentFile().exists()){
-	        			  file.getParentFile().mkdirs();
-	        		  }
-	        		  seatimagenames=seatimagenames+datas.get(temp)+";";
-	        		  temp++;
-	        		  seatimageurls=seatimageurls+"upload"+File.separator+newfilename+";";
-	        		System.out.println(realpath);
-	                try {  
-	                    //拿到输出流，同时重命名上传的文件  
-	                    FileOutputStream os = new FileOutputStream(realpath);  
-	                    //拿到上传文件的输入流  
-	                    FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();  
-	                      
-	                    //以写字节的方式写文件  
-	                    int b = 0;  
-	                    while((b=in.read()) != -1){  
-	                        os.write(b);  
-	                    }  
-	                    os.flush();  
-	                    os.close();  
-	                    in.close();  
-	                    //保存成功
-	                } catch (Exception e) {  
-	                    e.printStackTrace();  
-	                    System.out.println("上传出错");  
-	                    map.put("code", 1);
-	        			map.put("msg", "上传出错");
-	        			return JacksonJsonMapper.objectToJson(map);
-	                }  
-	            }
-	        
-		 }
 	    PadConfig config=new PadConfig();
-        if(seatimagenames.length()>1&&seatimageurls.length()>1 ){
-        	config.setSeatimagenames(seatimagenames.substring(0, seatimagenames.length()-1));
-        	config.setSeatimageurls(seatimageurls.substring(0, seatimageurls.length()-1)); 
-        	int result=padConfigService.saveorupdate(config);
-    	
-    		if(result==0){
-    			map.put("code", 1);
-    			map.put("msg", "操作失败");
-    		}else{
-    			map.put("code", 0);
-    		}
-        }
+	    config.setSeatimagenames(imagenames);
+    	config.setSeatimageurls(imageurls); 
+        int result=padConfigService.saveorupdate(config);
+		if(result==0){
+			map.put("code", 1);
+			map.put("msg", "操作失败");
+		}else{
+			map.put("code", 0);
+		}
 		return JacksonJsonMapper.objectToJson(map);
 	}
 	
