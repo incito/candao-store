@@ -502,6 +502,9 @@ $("#test").click(function(){
 		var isUpdateFile = true ;//删除或更新图片名称
 		var updateObj = {};
 		var updateObjLen = 0;
+		var fileObj = {
+            	seatImagename : seatnameArr
+        }
 		//var flag = ture;
 		if(me.hasClass('btn-submit')) {
 			
@@ -540,6 +543,12 @@ $("#test").click(function(){
 						} else {
 							seatnameArr.push($seatname);
 							seatImgFilesArr.push('seatImgIpt' + i);
+							
+							//如果是修改图片名称
+							if(me.attr('img-src')) {
+								fileObj['fileurl' + i + ""] = me.attr('img-src');
+							}
+							
 						}
 					} else {//更新图片名称
 						if(!$.trim($seatname).length) {//图片名字为空
@@ -583,9 +592,7 @@ $("#test").click(function(){
 	                    secureuri: false, //是否需要安全协议，一般设置为false
 	                    fileElementId: seatImgFilesArr, //文件上传域的ID
 	                    //dataType: 'content', //返回值类型 一般设置为json
-	                    data : {
-	                    	seatImagename : seatnameArr
-	                    },
+	                    data : fileObj,
 	                    success: function (data, status)  //服务器成功响应处理函数
 	                    {
 	                        $("#img1").attr("src", data.imgurl);
