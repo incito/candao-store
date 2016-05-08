@@ -12,7 +12,7 @@ $("#test").click(function(){
 	});
 	$.widget("ui.timespinner", $.ui.spinner, {
 		options : {
-			// seconds
+			//seconds
 			step : 60 * 1000,
 			// hours
 			page : 60
@@ -455,35 +455,10 @@ $("#test").click(function(){
 	 * 礼物设置
 	 */
 	$("#editGifts").click(function(){
-		$("#dish-select-dialog").load("loadDishSelect");
+		$("#dish-select-dialog").load("loadDishSelect",function(){
+			console.info(haveSelected);
+		});
 		$("#dish-select-dialog").modal("show");
-	});
-
-
-	//编辑 保存按钮切换
-	false && $('.setup_div_box .setup-mt>.btn').click(function(){
-		
-		if(me.hasClass('btn-edit')) {
-			me.addClass('btn-submit').removeClass('btn-edit');
-			me.text('保存');
-			$selects.removeAttr("disabled");
-			$inputs.removeAttr("disabled").removeClass('disabled');
-			
-			//社交功能单独处理
-			if($parent.hasClass('setup_div_social')) {
-				$('.seat-item-op').hide();
-			}
-		} else {
-			me.addClass('btn-edit').removeClass('btn-submit');
-			me.text('编辑');
-			$selects.attr({"disabled":"disabled"});
-			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
-			$btns.hide();
-			$btns.show();
-			if($parent.hasClass('setup_div_social')) {
-				$('.seat-item-op').show();
-			}
-		}
 	});
 	
 	//互动礼品设置
@@ -504,24 +479,8 @@ $("#test").click(function(){
 		var updateObjLen = 0;
 		var fileObj = {
             	seatImagename : seatnameArr
-        }
-		//var flag = ture;
+        };
 		if(me.hasClass('btn-submit')) {
-			
-			// $.ajaxFileUpload({
-			//     url: global_Path+"/padinterface/importfile",  
-			//     secureuri: false, //是否需要安全协议，一般设置为false
-			//     fileElementId: [setimgurl1],  
-   //              dataType: 'json', //返回值类型 一般设置为json
-			//     data : {
-			//     },
-			//     success: function (data, textStatus) {
-			//     },  
-			//     complete: function (XMLHttpRequest, textStatus) {
-			//     	//console.dir(XMLHttpRequest);
-			//     	//console.dir(textStatus);
-			//     }
-		 // 	});
 			
 			$('.seat-item').each(function(i){
 				var me = $(this);
@@ -558,9 +517,9 @@ $("#test").click(function(){
 					}
 
 					//如果是修改图片名称
-							if(typeof(me.attr('img-src')) != "undefined") {
-								fileObj['fileurl' + i + ""] = me.attr('img-src');
-							}
+					if(typeof(me.attr('img-src')) != "undefined") {
+						fileObj['fileurl' + i + ""] = me.attr('img-src');
+					}
 				}
 				
 			});
@@ -579,8 +538,11 @@ $("#test").click(function(){
 			}
 			
 			
+			
+			//更新礼品
 			if(validateFlag && selectedDishsTop !== null) {
 				selectedDishsTop && saveSelectedGifts(selectedDishsTop,'save');
+				console.info();
 			}
 			
 			
@@ -597,9 +559,9 @@ $("#test").click(function(){
 	                        $("#img1").attr("src", data.imgurl);
 	                        if (typeof (data.error) != 'undefined') {
 	                            if (data.error != '') {
-	                                alert(data.error);
+	                            	console.info(data.error);
 	                            } else {
-	                                alert(data.msg);
+	                                console.info(data.msg);
 	                            }
 	                        }
 	                    },
@@ -619,22 +581,19 @@ $("#test").click(function(){
 				     data: updateObj,
 				 	success : function(result) {
 				 		if (result.code == "0") {
-				 			alert("图片更新成功");
+				 			console.info("图片更新成功");
 				 		}
 				 	}
 				 });
 			}
 			
-			
-			 
 			 //更新其他字段
 			validateFlag && $.ajax({
 				 type: "GET",
 				 dataType : "json",
 					url : global_Path + "/padinterface/saveorupdate",
 			     data: {
-			     	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
-			     	"viptype" : $('select[name=viptype]').val()
+			     	"social" : $('select[name=social]').val() === '0' ? true : false
 			     },
 			 	success : function(result) {
 			 		if (result.code == "0") {
@@ -810,9 +769,6 @@ $("#test").click(function(){
 	
 
 });
-/**
- * 编辑保存按钮切换
- */
 
 function showImg(obj,thumb){
 	var me = $(obj);

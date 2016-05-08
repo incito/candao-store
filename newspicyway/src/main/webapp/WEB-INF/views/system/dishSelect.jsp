@@ -79,9 +79,7 @@
 </div>
 <!-- /.modal-dialog -->
 <script type="text/javascript">
-var haveSelected = null;
-
-
+//var haveSelected = null;
 var allselected = 0;
 $(document).ready(function() {
 	$("img.img-close").hover(function(){
@@ -129,6 +127,7 @@ $(document).ready(function() {
 						checkboxContent = dishObj.title;
 					}
 					var checked = "";
+					console.info(haveSelected);
 					if(haveSelected != null && haveSelected.length>0){
 						$.each(haveSelected, function(n, gift){
 							if(gift.dish == dishObj.dishid && gift.dish_title == dishObj.title && gift.unit==dishObj.unit){

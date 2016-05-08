@@ -757,7 +757,7 @@
 		$.post(global_Path+"/social/saveGift", {data: JSON.stringify(selectedDishs)}, function(result){
 			console.log(result);
 			if(result.flag == 1){
-				//saveGiftsToPage(selectedDishs);
+				saveGiftsToPage(selectedDishs);
 			}else{
 				
 			}

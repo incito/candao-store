@@ -1,3 +1,15 @@
+var curWeixintype = "2";//默认为微信商户
+
+function weixintypeChange(val){
+	if(val == "1") {
+		$('.personal-img').show();
+		$('.busness').hide();
+	} else {
+		$('.personal-img').hide();
+		$('.busness').show();
+	}
+	curWeixintype = val;
+ }
 /**
  * 显示提示信息
  * @param message
@@ -85,6 +97,15 @@ function operaPayment(obj, type){
 				$("#appid").val(obj.appid);
 				$("#partner").val(obj.partner);
 				$("#appsecret").val(obj.appsecret);
+				$("#weixintype" + obj.weixintype).get(0).checked = true;
+				weixintypeChange(obj.weixintype);
+				$("#status" + obj.status).get(0).checked = true;
+				
+				
+				if(obj.personweixinurl !== "") {
+					$(".uploadImg").attr({"src":obj.personweixinurl});
+					$('.personal-img').removeClass('img-default');
+				}
 			}
 		},'json');
 	}
@@ -95,13 +116,19 @@ function initDialog(type){
 	$(".popover-errorTips").text("");
 	$('#add-paymentform')[0].reset();
 	if(type == "add" || type == "edit"){
-		$(".payment-dialog input, select, textarea").prop("disabled", false).css("disabled", "").off();
+		$(".payment-dialog input, select, textarea").prop("disabled", false).css("disabled", "");
 		$("#add-btn").removeClass("hide");
 		$("#edit-btn").addClass("hide");
+		$(".img-op").show();
 	}else if(type == "view"){
-		$(".payment-dialog input, select, textarea").prop("disabled", true).css("disabled", "disabled").off();
+		$(".payment-dialog input, select, textarea").prop("disabled", true).css("disabled", "disabled");
 		$("#add-btn").addClass("hide");
 		$("#edit-btn").removeClass("hide");
+		$(".img-op").hide();
+	}
+	if(type == "add"){
+		weixintypeChange("2");
+		$('.personal-img').addClass('img-default').find('.uploadImg').attr("src",'../images/upload-img.png');
 	}
 	$("#payment-add").modal("show");
 }
@@ -176,6 +203,7 @@ function getPaymentList(subPage) {
 						+ '<td>'+row.partner+'</td>'
 						+ '<td>'+row.appid+'</td>'
 						+ '<td>'+row.appsecret+'</td>'
+						+ '<td>'+(row.status === '1' ? '启用' : '禁用')+'</td>'
 						+ '<td class="td-last">'
 						+ '<div class="operate" id="'+row.id+'">'
 						+ '<a href="javascript:void(0)" onclick="operaPayment(this, \'view\')">查看</a>';
