@@ -659,7 +659,7 @@
 			<div class="modal-body" style="padding-top: 0px;">
 				<div class="form-horizontal">
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><span class="c-red">*</span>友盟应用秘钥(APPKEY)：</label>
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟应用秘钥(APPKEY)：</label>
 						<div class="col-xs-3">
 							<div class="edit_info f-pr">
 								<input type="text" value="" name="youmengappkey" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
@@ -668,10 +668,28 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><span class="c-red">*</span>友盟渠道号(HANNEL)：</label>
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>手环友盟应用秘钥(APPKEY)：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+								<input type="text" value="" name="braceletgappkey" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+								<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟渠道号(HANNEL)：</label>
 						<div class="col-xs-3">
 							<div class="edit_info f-pr">
 							<input type="text" value="" name="youmengchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+							<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟渠道号(HANNEL)：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+							<input type="text" value="" name="braceletchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
 							<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
 							</div>
 						</div>

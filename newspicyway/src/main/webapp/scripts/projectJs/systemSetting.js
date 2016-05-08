@@ -553,8 +553,8 @@ $("#test").click(function(){
 					url : global_Path + "/padinterface/importfile",
 	                    secureuri: false, //是否需要安全协议，一般设置为false
 	                    fileElementId: seatImgFilesArr, //文件上传域的ID
-	                    fileFilter:'.jpg',
-	                    //fileSize:2048,
+	                    fileFilter:'.jpg,.png',
+	                    fileSize:'2097152',
 	                    //dataType: 'content', //返回值类型 一般设置为json
 	                    data : fileObj,
 	                    success: function (data, status)  //服务器成功响应处理函数
@@ -792,6 +792,8 @@ $("#test").click(function(){
 			    	"youmengappkey" : $('input[name=youmengappkey]').val(),
 			    	"youmengchinnal" : $('input[name=youmengchinnal]').val(),
 			    	"bigdatainterface" : $('input[name=bigdatainterface]').val(),
+			    	"braceletgappkey" : $('input[name=braceletgappkey]').val(),
+			    	"braceletchinnal" : $('input[name=braceletchinnal]').val(),
 			    },
 				success : function(result) {
 					if (result.code == "0") {
