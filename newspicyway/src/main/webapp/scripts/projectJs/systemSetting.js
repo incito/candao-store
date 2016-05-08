@@ -546,6 +546,8 @@ $("#test").click(function(){
 			}
 			
 			
+			
+			
 			//上传图片
 			if(validateFlag && isUploadFile) {
 				//showPromp('保存图片中');
@@ -573,20 +575,7 @@ $("#test").click(function(){
 	                    },
 		                complete: function (XMLHttpRequest, textStatus) {
 		                	var result = $.parseJSON(XMLHttpRequest.responseText);
-		                	if(validateFlag && isUpdateFile) {
-                				//删除图片或者更新图片名称
-                				$.ajax({
-                					 type: "POST",
-                					 dataType : "json",
-                						url : global_Path + "/padinterface/deletefile",
-                				     data: updateObj,
-                				 	success : function(result) {
-                				 		if (result.code == "0") {
-                				 			console.info("图片更新成功");
-                				 		}
-                				 	}
-                				 });
-                			}
+		                	
                 			
                 			 //更新其他字段
                 			validateFlag && $.ajax({
@@ -612,20 +601,6 @@ $("#test").click(function(){
 	                    
 	                });
 			} else {
-				if(validateFlag && isUpdateFile) {
-					//删除图片或者更新图片名称
-					$.ajax({
-						 type: "POST",
-						 dataType : "json",
-							url : global_Path + "/padinterface/deletefile",
-					     data: updateObj,
-					 	success : function(result) {
-					 		if (result.code == "0") {
-					 			console.info("图片更新成功");
-					 		}
-					 	}
-					 });
-				}
 				
 				 //更新其他字段
 				validateFlag && $.ajax({
@@ -647,6 +622,21 @@ $("#test").click(function(){
 				 	}
 				 });
 			}
+			
+			 if(validateFlag && isUpdateFile) {
+	 				//删除图片或者更新图片名称
+	 				$.ajax({
+	 					 type: "POST",
+	 					 dataType : "json",
+	 						url : global_Path + "/padinterface/deletefile",
+	 				     data: updateObj,
+	 				 	success : function(result) {
+	 				 		if (result.code == "0") {
+	 				 			console.info("图片更新成功");
+	 				 		}
+	 				 	}
+	 				 });
+	 			}
 			
 			
 		} else {
