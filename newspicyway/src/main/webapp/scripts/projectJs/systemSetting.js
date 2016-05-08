@@ -548,15 +548,17 @@ $("#test").click(function(){
 			
 			//上传图片
 			if(validateFlag && isUploadFile) {
+				//showPromp('保存图片中');
 				$.ajaxFileUpload({
 					url : global_Path + "/padinterface/importfile",
 	                    secureuri: false, //是否需要安全协议，一般设置为false
 	                    fileElementId: seatImgFilesArr, //文件上传域的ID
+	                    fileFilter:'.jpg',
+	                    //fileSize:2048,
 	                    //dataType: 'content', //返回值类型 一般设置为json
 	                    data : fileObj,
 	                    success: function (data, status)  //服务器成功响应处理函数
 	                    {
-	                        $("#img1").attr("src", data.imgurl);
 	                        if (typeof (data.error) != 'undefined') {
 	                            if (data.error != '') {
 	                            	console.info(data.error);
@@ -568,44 +570,85 @@ $("#test").click(function(){
 	                    error: function (data, status, e)//服务器响应失败处理函数
 	                    {
 	                        console.info(e);
-	                    }
+	                    },
+		                complete: function (XMLHttpRequest, textStatus) {
+		                	var result = $.parseJSON(XMLHttpRequest.responseText);
+		                	if(validateFlag && isUpdateFile) {
+                				//删除图片或者更新图片名称
+                				$.ajax({
+                					 type: "POST",
+                					 dataType : "json",
+                						url : global_Path + "/padinterface/deletefile",
+                				     data: updateObj,
+                				 	success : function(result) {
+                				 		if (result.code == "0") {
+                				 			console.info("图片更新成功");
+                				 		}
+                				 	}
+                				 });
+                			}
+                			
+                			 //更新其他字段
+                			validateFlag && $.ajax({
+                				 type: "GET",
+                				 dataType : "json",
+                					url : global_Path + "/padinterface/saveorupdate",
+                			     data: {
+                			     	"social" : $('select[name=social]').val() === '0' ? true : false
+                			     },
+                			 	success : function(result) {
+                			 		if (result.code == "0") {
+                			 			me.addClass('btn-edit').removeClass('btn-submit');
+                			 			me.text('编辑');
+                			 			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+                			 			$selects.attr({"disabled":"disabled"});
+                			 			$seatOp.hide();
+                			 			$editGifts.hide();
+                			 		}
+                			 	}
+                			 });
+		        	    }
+	                    
+	                    
 	                });
-			}
-			
-			if(validateFlag && isUpdateFile) {
-				//删除图片或者更新图片名称
-				$.ajax({
-					 type: "POST",
+			} else {
+				if(validateFlag && isUpdateFile) {
+					//删除图片或者更新图片名称
+					$.ajax({
+						 type: "POST",
+						 dataType : "json",
+							url : global_Path + "/padinterface/deletefile",
+					     data: updateObj,
+					 	success : function(result) {
+					 		if (result.code == "0") {
+					 			console.info("图片更新成功");
+					 		}
+					 	}
+					 });
+				}
+				
+				 //更新其他字段
+				validateFlag && $.ajax({
+					 type: "GET",
 					 dataType : "json",
-						url : global_Path + "/padinterface/deletefile",
-				     data: updateObj,
+						url : global_Path + "/padinterface/saveorupdate",
+				     data: {
+				     	"social" : $('select[name=social]').val() === '0' ? true : false
+				     },
 				 	success : function(result) {
 				 		if (result.code == "0") {
-				 			console.info("图片更新成功");
+				 			me.addClass('btn-edit').removeClass('btn-submit');
+				 			me.text('编辑');
+				 			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+				 			$selects.attr({"disabled":"disabled"});
+				 			$seatOp.hide();
+				 			$editGifts.hide();
 				 		}
 				 	}
 				 });
 			}
 			
-			 //更新其他字段
-			validateFlag && $.ajax({
-				 type: "GET",
-				 dataType : "json",
-					url : global_Path + "/padinterface/saveorupdate",
-			     data: {
-			     	"social" : $('select[name=social]').val() === '0' ? true : false
-			     },
-			 	success : function(result) {
-			 		if (result.code == "0") {
-			 			me.addClass('btn-edit').removeClass('btn-submit');
-			 			me.text('编辑');
-			 			$inputs.attr({"disabled":"disabled"}).addClass('disabled');
-			 			$selects.attr({"disabled":"disabled"});
-			 			$seatOp.hide();
-			 			$editGifts.hide();
-			 		}
-			 	}
-			 });
+			
 		} else {
 			me.addClass('btn-submit').removeClass('btn-edit');
 			me.text('保存');

@@ -453,7 +453,7 @@
 									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt0" name="seatImgIpt0" accept="image/*">
 								</div>
 								<div class="seat-item-name">
-									<input type="text" value="" name="seatname1" disabled class="form-control disabled seatname" required="required" />
+									<input type="text" value="" name="seatname1" oninput="if(value.length>20)value=value.slice(0,20)"  disabled class="form-control disabled seatname" required="required" />
 								</div>
 								<div class="seat-item-tip f-dn">请输入作为名称</div>
 							</div>
@@ -468,7 +468,7 @@
 									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt1" name="seatImgIpt1" accept="image/*">
 								</div>
 								<div class="seat-item-name">
-									<input type="text" value="" name="seatname2" disabled class="form-control disabled seatname" required="required" />
+									<input type="text" value="" name="seatname2" disabled  oninput="if(value.length>20)value=value.slice(0,20)" class="form-control disabled seatname" required="required" />
 								</div>
 								<div class="seat-item-tip f-dn">请输入作为名称</div>
 							</div>
