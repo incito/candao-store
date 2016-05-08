@@ -896,6 +896,8 @@ function doGetPadData(){
 			$('input[name=youmengappkey]').val(data.youmengappkey);
 			$('input[name=youmengchinnal]').val(data.youmengchinnal);
 			$('input[name=bigdatainterface]').val(data.bigdatainterface);
+			$('input[name=braceletgappkey]').val(data.braceletgappkey);
+			$('input[name=braceletchinnal]').val(data.braceletchinnal);
 		}
 	},'json');
 }
