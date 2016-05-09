@@ -56,7 +56,11 @@ public class PadConfigServiceImpl  implements PadConfigService{
 			}
 		}
 		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null){
+			
 			padConfig.setSeatImagename(padConfig.getSeatimagenames().split(";"));
+			List<String> imagename=new ArrayList<>();
+			Collections.addAll(imagename, padConfig.getSeatimagenames().split(";"));
+			padConfig.setImagename(imagename);
 			List<String> seatImageurl=new ArrayList<>();
 			String urls=padConfig.getSeatimageurls();
 			if(urls!=null){

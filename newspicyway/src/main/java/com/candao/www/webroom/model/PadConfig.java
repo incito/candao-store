@@ -50,6 +50,7 @@ public class PadConfig implements Serializable{
 	private String personweixinurl;//微信个人二维码地址
 	//不写入数据库字段
 	private List<String> seatImageurl=new ArrayList<>();//座位图地址PAD应用字段
+	private List<String> imagename=new ArrayList<>();//座位图名称PAD应用字段
 	private String logourl;//
 	private String backgroudurl;//
 	public Integer getId() {
@@ -242,6 +243,12 @@ public class PadConfig implements Serializable{
 	}
 	public void setWeixintype(Integer weixintype) {
 		this.weixintype = weixintype;
+	}
+	public List<String> getImagename() {
+		return imagename;
+	}
+	public void setImagename(List<String> imagename) {
+		this.imagename = imagename;
 	}
 
 	
