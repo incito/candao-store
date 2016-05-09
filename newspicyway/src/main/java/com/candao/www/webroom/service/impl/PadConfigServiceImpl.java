@@ -1,5 +1,7 @@
 package com.candao.www.webroom.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +57,15 @@ public class PadConfigServiceImpl  implements PadConfigService{
 		}
 		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null){
 			padConfig.setSeatImagename(padConfig.getSeatimagenames().split(";"));
-			padConfig.setSeatImagefileurls(padConfig.getSeatimageurls().split(";"));
+			List<String> seatImageurl=new ArrayList<>();
+			String urls=padConfig.getSeatimageurls();
+			if(urls!=null){
+				String[] lss=urls.split(";");
+				for(String url :lss){
+					seatImageurl.add(url.replaceAll("\\\\", "/"));
+				}
+			}
+			padConfig.setSeatImageurl(seatImageurl);
 		}
 		
 		Map<String, Object>  map=weixinDao.queryWeixinInfoBybranchid(PropertiesUtils.getValue("current_branch_id"));
