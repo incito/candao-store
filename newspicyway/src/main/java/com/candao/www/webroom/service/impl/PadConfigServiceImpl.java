@@ -61,6 +61,7 @@ public class PadConfigServiceImpl  implements PadConfigService{
 			String urls=padConfig.getSeatimageurls();
 			if(urls!=null){
 				String[] lss=urls.split(";");
+				padConfig.setSeatImagefileurls(lss);
 				for(String url :lss){
 					seatImageurl.add(url.replaceAll("\\\\", "/"));
 				}
