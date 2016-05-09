@@ -75,6 +75,8 @@ public class PadConfigServiceImpl  implements PadConfigService{
 				padConfig.setWeixintype(Integer.parseInt(weixintype.toString()));
 			}
 			padConfig.setPersonweixinurl(map.get("personweixinurl").toString());
+		}else{
+			padConfig.setWeixintype(0);//没配置微信
 		}
 		
 		return padConfig;
