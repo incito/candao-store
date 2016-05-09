@@ -44,6 +44,18 @@
 			</div>
 		</div>
 		<hr />
+<form id="couponForm" method="post" style="display:none;">
+	<input id="_beginTime" name="beginTime" type="hidden"/>
+	<input id="_endTime" name="endTime" type="hidden"/>
+	<input id="_settlementWay" name="settlementWay" type="hidden"/>
+	<input id="_shiftid" name="shiftid" type="hidden"/>
+	<input id="_bankcardno" name="bankcardno" type="hidden"/>
+	<input id="_type" name="type" type="hidden"/>
+	<input id="_payway" name="payway" type="hidden"/>
+	<input id="_ptype" name="ptype" type="hidden"/>
+	<input id="_pname" name="pname" type="hidden"/>
+	<input id="_searchType" name="searchType" type="hidden"/>
+</form>
 		<div class="report-search-box">
 			<div class="form-group">
 				<div class="col-xs-4 long-search">
@@ -191,6 +203,8 @@
 		var bankcardno;
 		var type;
 		var searchType;
+		var beginTime;
+		var endTime;
 		$(document).ready(function() {
 			$("img.img-close").hover(function(){
 			 	$(this).attr("src", "<%=request.getContextPath()%>/images/close-active.png");	 

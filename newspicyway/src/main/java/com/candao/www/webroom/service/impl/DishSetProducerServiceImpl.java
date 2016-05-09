@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.candao.print.entity.PrintObj;
 import com.candao.print.service.DishSetProducerService;
-import com.candao.print.service.MutilDishProducerService;
 
 @Component
 @Service

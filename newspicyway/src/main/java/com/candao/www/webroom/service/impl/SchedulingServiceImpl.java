@@ -11,6 +11,16 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.data.dao.SchedulingDao;
+import com.candao.www.utils.ExcelUtils;
+import com.candao.www.webroom.service.SchedulingService;
+
 import jxl.Workbook;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
@@ -20,14 +30,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.candao.common.utils.PropertiesUtils;
-import com.candao.www.data.dao.SchedulingDao;
-import com.candao.www.utils.ExcelUtils;
-import com.candao.www.webroom.service.SchedulingService;
-
 /**
  * 排班报表分析
  * @author zhouyao
@@ -35,6 +37,8 @@ import com.candao.www.webroom.service.SchedulingService;
  */
 @Service
 public class SchedulingServiceImpl implements SchedulingService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SchedulingServiceImpl.class);
 	@Autowired
 	private SchedulingDao schedulingDao;
 	
@@ -172,6 +176,7 @@ public class SchedulingServiceImpl implements SchedulingService {
              wwb.write();
              wwb.close();
         }catch(Exception e){
+        	logger.error("-->",e);
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);

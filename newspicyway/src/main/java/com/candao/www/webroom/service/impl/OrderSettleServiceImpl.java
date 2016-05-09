@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ import com.candao.www.weixin.dto.WxPayResult;
 
 @Service
 public class OrderSettleServiceImpl implements OrderSettleService{
+	
+	private static final Logger logger = LoggerFactory.getLogger(OrderSettleServiceImpl.class);
 	
 	@Autowired
 	TsettlementMapper settlementMapper;
@@ -138,11 +142,13 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		
 		if(resultMap == null || resultMap.size() == 0  ){
+			logger.error("结算失败！查找餐桌失败 ,订单id:"+orderId);
 			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		
 		if(! "1".equals(String.valueOf(resultMap.get(0).get("status")))){
+			logger.error("结算失败！ 餐桌状态为：status为 1");
 			mapRet.put("result", "1");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
@@ -161,6 +167,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 
 	 TbOpenBizLog bizLog = tbOpenBizLogDao.findOpenBizDate();
 	 if(bizLog == null)	 {
+		 logger.error("结算失败！未找到开业记录");
 		 return "1";
 	 }
 	 
@@ -290,6 +297,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 //		 dish.setOrderNum(String.valueOf(new BigDecimal(dish.getOrderNum() == null?"0":dish.getOrderNum() ).subtract(new BigDecimal(detail.getDishnum() == null?"0":detail.getDishnum()))));
 //		 tdishDao.updateOrderNum(dish);
 //	  }
+	 logger.info("结算成功！");
 	  return "0";
 	}
 
@@ -365,11 +373,13 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 					System.out.println("微信扫码反结算");
 					 if(retMap == null || "1".equals(retMap.get("code"))){	
 						    transactionManager.rollback(status);  //强制回滚
+						    logger.error("反结算失败！微信反结算失败");
 							return Constant.FAILUREMSG;
 					 }
 					 transactionManager.commit(status);
 					 return "2";//微信扫码反结算成功
 				} catch (Exception e) {
+					logger.error("-->",e);
 					e.printStackTrace();
 					transactionManager.rollback(status);
 					return "1";
@@ -377,6 +387,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 }
 	 //
 	 transactionManager.commit(status);
+	 logger.info("反结算成功 ");
      return "0";
 	}
 

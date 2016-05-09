@@ -1,16 +1,17 @@
 package com.candao.www.webroom.service.impl;
 
-import com.candao.www.data.dao.TBusinessAnalysisChartsDao;
-import com.candao.www.utils.DateTimeUtils;
-import com.candao.www.webroom.model.BusinessReport;
-import com.candao.www.webroom.service.BusinessAnalysisChartsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.candao.www.data.dao.TBusinessAnalysisChartsDao;
+import com.candao.www.utils.DateTimeUtils;
+import com.candao.www.webroom.model.BusinessReport;
+import com.candao.www.webroom.service.BusinessAnalysisChartsService;
 
 /**
  * 营业分析图表

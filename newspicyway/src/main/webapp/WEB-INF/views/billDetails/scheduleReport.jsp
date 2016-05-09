@@ -125,6 +125,7 @@
 							<option value="20">20min</option>
 							<option value="25">25min</option>
 							<option value="30">30min</option>
+							<option value="60">1hours</option>
 						</select>
 					</div>
 				</div>
@@ -177,6 +178,10 @@
 	<script type="text/javascript">
 		var shiftid;
 		var searchType;
+		var beginTime;
+		var endTime;
+		var week;
+		var dateinterval;
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");

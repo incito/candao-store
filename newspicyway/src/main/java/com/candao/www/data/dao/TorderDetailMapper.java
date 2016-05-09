@@ -145,5 +145,9 @@ public interface TorderDetailMapper {
 	public Map<String, Object> selectorderinfos(String orderid);
 	
 	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap);
+
+	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid);
+
+	public void deleteTemp(String orderid);
 	
 }

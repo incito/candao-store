@@ -7,10 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +17,15 @@ import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.Pinyin;
 import com.candao.common.utils.UUIDGenerator;
 import com.candao.www.constant.Constant;
-import com.candao.www.data.dao.TItemDetailDao;
-import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.OtherCouponDao;
+import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.model.TbPreferentialActivityBranch;
 import com.candao.www.data.model.TbPreferentialTypeDict;
 import com.candao.www.utils.SessionUtils;
 import com.candao.www.webroom.service.OtherCouponService;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * 更多优惠方式的添加
@@ -34,15 +34,15 @@ import com.candao.www.webroom.service.OtherCouponService;
  */
 @Service
 public class OtherCouponServiceImpl implements OtherCouponService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(OtherCouponServiceImpl.class);
+	
 	@Autowired
     private OtherCouponDao otherCouponDao;
 	@Autowired
 	private TbPreferentialActivityDao tbPreferentialActivityDao;
-	@Autowired
-	private TbBranchDao tbBranchDao;
-	@Autowired
-	private TItemDetailDao titemDetailDao;
-	  /**
+	  
+	/**
 	   * 根据ID查询优惠活动信息表
 	   * @param groupon
 	   */
@@ -163,6 +163,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  resultCount = otherCouponDao.addCouponActivity(params);
 			  
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 		  return resultCount;
@@ -186,6 +187,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  }*/
 			  resultCount = otherCouponDao.addCouponDetail(params);
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	     return resultCount;
@@ -290,6 +292,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  resultCount =  otherCouponDao.updateActivity(params);
 			  this.updateDetail(params);
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 		  return resultCount;
@@ -313,6 +316,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 			  }*/
 			  resultCount = otherCouponDao.updateDetail(params);
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 		  return resultCount;
@@ -362,6 +366,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 		  return resultlistMap;
@@ -386,6 +391,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 		  return resultlistMap;
@@ -407,6 +413,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 						}
 				 }
 			} catch (Exception e) {
+				logger.error("-->",e);
 				e.printStackTrace();
 			}
 		     return resultlistMap;
@@ -428,6 +435,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	     return resultlistMap;
@@ -449,6 +457,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	     return resultlistMap;
@@ -470,6 +479,7 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 					}
 			 }
 		} catch (Exception e) {
+			logger.error("-->",e);
 			e.printStackTrace();
 		}
 	     return resultlistMap;

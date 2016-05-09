@@ -9,19 +9,23 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.candao.www.utils.ExcelUtils;
+
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
-import org.springframework.stereotype.Service;
-
-import com.candao.www.utils.ExcelUtils;
-
 @Service
 public class ExportSettlDetChildService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ExportSettlDetChildService.class);
+	
 	/**
 	 * 导出结算方式明细表详情
 	 * @author weizhifang
@@ -88,6 +92,7 @@ public class ExportSettlDetChildService {
              wwb.write();
              wwb.close();
         }catch(Exception e){
+        	logger.error("-->",e);
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);

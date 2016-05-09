@@ -8,16 +8,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.candao.common.log.LoggerFactory;
-import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.StreamGobbler;
 import com.candao.file.fastdfs.service.FileService;
 
 public class ConvertVideoUtil  extends Thread {
 	
-	LoggerHelper logger = LoggerFactory.getLogger(ConvertVideoUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConvertVideoUtil.class);
 	
 	@Autowired
 	FileService  fileService;
@@ -192,7 +192,7 @@ public class ConvertVideoUtil  extends Thread {
                     try {
 						p.waitFor();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						logger.error("-->",e);
 						e.printStackTrace();
 					} 
                     // 取得命令结果的输出流   
@@ -207,7 +207,8 @@ public class ConvertVideoUtil  extends Thread {
                     	logger.debug(line,"");   
                     }   
                     return true;  
-                } catch (IOException e) {   
+                } catch (IOException e) {
+                	logger.error("-->",e);
                     e.printStackTrace();   
                     return false;
                 }   
@@ -259,7 +260,7 @@ public class ConvertVideoUtil  extends Thread {
                 try {
 					p.waitFor();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					logger.error("-->",e);
 					e.printStackTrace();
 				} 
                 // 取得命令结果的输出流   
@@ -275,7 +276,8 @@ public class ConvertVideoUtil  extends Thread {
                 }   
                 System.out.println("who cares");    
                 return tempFile_home; 
-            } catch (IOException e) {   
+            } catch (IOException e) {
+            	logger.error("-->",e);
                 e.printStackTrace();  
                 return null;  
             }   

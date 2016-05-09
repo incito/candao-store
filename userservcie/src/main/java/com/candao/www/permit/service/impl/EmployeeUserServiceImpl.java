@@ -14,6 +14,8 @@ import java.util.UUID;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,7 @@ import com.candao.www.utils.SessionUtils;
 @Service
 public class EmployeeUserServiceImpl implements EmployeeUserService {
 
+	private Logger logger = LoggerFactory.getLogger(EmployeeUserServiceImpl.class);
 	@Autowired
 	private EmployeeUserDao employeeUserDao;
 	
@@ -422,6 +425,7 @@ public class EmployeeUserServiceImpl implements EmployeeUserService {
 			List<Role> roles=this.roleDao.getRoleListByFunctionsCodes( Arrays.asList(funs));
 			l=this.employeeUserDao.getEmployeeUserByRoles4Store(roles, branchid);
 		}else{
+			logger.error("未设置默认门店！");
 			throw new RuntimeException("未设置默认门店！");
 		}
 		return l;

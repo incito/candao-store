@@ -109,6 +109,8 @@
 	<script type="text/javascript">
 		var shiftid;
 		var searchType;
+		var beginTime;
+		var endTime;
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");
@@ -131,6 +133,8 @@
 			loadChart();
 		});
 		function loadChart(){
+			beginTime = $("#beginTime").val();
+			endTime = $("#endTime").val();
 			shiftid = $("#shiftid").val();
 			$("#paywayChart").load( global_Path + "/settlementOption/paywayChart");
 		}

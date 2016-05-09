@@ -31,8 +31,6 @@ function gethiddenId_nohms(num, obj) {
  */
 function exportReports() {
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
 		var areaid = areasel;
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
@@ -99,6 +97,8 @@ var rows = 0;
  * 查询、初始化数据
  */
 function searchData() {
+	beginTime = $("#beginTime").val();
+	endTime = $("#endTime").val();
 	shiftid = $("#shiftid").val();
 	dataType = $("#dataType").val() == null ? "1" : $("#dataType").val();
 	areasel = $("#areaSel").val()==null?"-1":$("#areaSel").val();
@@ -107,8 +107,8 @@ function searchData() {
 function initDataStat_new() {
 	if(compareBeginEndTime()){
 		$.post(global_Path + "/dataDetailController/findDataStatistics.json", {
-			beginTime : $("#beginTime").val(),
-			endTime : $("#endTime").val(),
+			beginTime : beginTime,
+			endTime : endTime,
 			shiftId : shiftid,
 			dataType : dataType,
 			areaid : areasel

@@ -838,8 +838,8 @@ CREATE TABLE t_gift (
   id VARCHAR(50) NOT NULL,
   gift_no VARCHAR(50) DEFAULT NULL,
   gift_type_id VARCHAR(50) DEFAULT NULL,
-  gift_name VARCHAR(30) DEFAULT NULL,
-  gift_unit VARCHAR(10) DEFAULT NULL,
+  gift_name VARCHAR(300) DEFAULT NULL,
+  gift_unit VARCHAR(100) DEFAULT NULL,
   gift_price DECIMAL(10, 2) DEFAULT NULL,
   member_price DECIMAL(10, 2) DEFAULT NULL,
   image_url VARCHAR(200) DEFAULT NULL,
@@ -864,7 +864,7 @@ CREATE TABLE t_gift_log (
   gift_status CHAR(1) DEFAULT NULL,
   order_id VARCHAR(50) DEFAULT NULL,
   insert_time DATETIME DEFAULT NULL,
-  gift_name VARCHAR(30) DEFAULT NULL,
+  gift_name VARCHAR(300) DEFAULT NULL,
   gift_num INT(4) DEFAULT NULL,
   gift_unit VARCHAR(10) DEFAULT NULL,
   gift_price DECIMAL(10, 2) DEFAULT NULL,
@@ -1254,49 +1254,52 @@ COLLATE utf8_general_ci;
 --
 -- Definition for table t_order_detail
 --
-DROP TABLE IF EXISTS t_order_detail;
-CREATE TABLE t_order_detail (
-  orderid VARCHAR(50) DEFAULT NULL,
-  dishid VARCHAR(50) DEFAULT NULL,
-  dishstatus VARCHAR(50) DEFAULT NULL COMMENT '0 ??????? 1 ??? 2 ??? ',
-  begintime DATETIME DEFAULT NULL,
-  endtime DATETIME DEFAULT NULL,
-  sperequire VARCHAR(200) DEFAULT NULL,
-  dishnum VARCHAR(50) DEFAULT NULL,
-  userName VARCHAR(100) DEFAULT NULL,
-  orderprice DECIMAL(10, 2) DEFAULT NULL,
-  discountrate DECIMAL(10, 2) DEFAULT 0.00 COMMENT '折扣率',
-  discountamount DECIMAL(10, 2) DEFAULT 0.00 COMMENT '折扣金额',
-  fishcode VARCHAR(50) DEFAULT NULL COMMENT '使用鱼券',
-  dishtype INT(11) DEFAULT 0 COMMENT '0 单品 1 火锅 2 套餐',
-  status INT(11) DEFAULT 0,
-  dishunit VARCHAR(100) DEFAULT NULL COMMENT '菜品单位',
-  payamount DECIMAL(10, 2) DEFAULT NULL,
-  predisamount DECIMAL(10, 2) DEFAULT NULL,
-  couponid VARCHAR(50) DEFAULT NULL,
-  disuserid VARCHAR(50) DEFAULT NULL,
-  orignalprice DECIMAL(10, 2) DEFAULT NULL COMMENT '原始价格',
-  pricetype VARCHAR(10) DEFAULT NULL,
-  orderseq VARCHAR(50) DEFAULT NULL,
-  orderdetailid VARCHAR(50) NOT NULL,
-  relatedishid VARCHAR(4000) DEFAULT NULL,
-  ordertype INT(3) DEFAULT NULL COMMENT '''下单类型 0 正常 1 赠送''',
-  parentkey VARCHAR(255) DEFAULT NULL COMMENT '父类主键',
-  superkey VARCHAR(255) DEFAULT NULL COMMENT '套餐的主键',
-  ismaster INT(255) DEFAULT NULL COMMENT '是否是master 默认是 0 不是 1是',
-  primarykey VARCHAR(255) DEFAULT NULL COMMENT '菜品主键',
-  islatecooke INT(2) DEFAULT 0 COMMENT '0 否 1 是',
-  isadddish INT(2) DEFAULT NULL COMMENT '0 否 1 是',
-  childdishtype INT(2) DEFAULT NULL COMMENT '0 单品 1 火锅 2 套餐',
-  ispot INT(2) DEFAULT 0 COMMENT '是否是锅底 0 否 1 是',
-  relateorderid VARCHAR(255) DEFAULT NULL,
-  discarduserid VARCHAR(255) DEFAULT NULL,
-  discardreason VARCHAR(255) DEFAULT NULL,
-  debitamount DECIMAL(20, 2) DEFAULT NULL COMMENT '单个菜品加权实际收入',
-  PRIMARY KEY (orderdetailid),
-  INDEX IX_t_order_detail_begintime (begintime),
-  INDEX t_order_detail_orderdetailid (orderdetailid),
-  INDEX t_order_detail_orderid (orderid)
+DROP TABLE IF EXISTS `t_order_detail`;
+CREATE TABLE `t_order_detail` (
+  `orderid` varchar(50) DEFAULT NULL,
+  `dishid` varchar(50) DEFAULT NULL,
+  `dishstatus` varchar(50) DEFAULT NULL COMMENT '0 ??????? 1 ??? 2 ??? ',
+  `begintime` datetime DEFAULT NULL,
+  `endtime` datetime DEFAULT NULL,
+  `sperequire` varchar(200) DEFAULT NULL,
+  `dishnum` varchar(50) DEFAULT NULL,
+  `userName` varchar(100) DEFAULT NULL,
+  `orderprice` decimal(10,2) DEFAULT NULL,
+  `discountrate` decimal(10,2) DEFAULT '0.00' COMMENT '折扣率',
+  `discountamount` decimal(10,2) DEFAULT '0.00' COMMENT '折扣金额',
+  `fishcode` varchar(50) DEFAULT NULL COMMENT '使用鱼券',
+  `dishtype` int(11) DEFAULT '0' COMMENT '0 单品 1 火锅 2 套餐',
+  `status` int(11) DEFAULT '0',
+  `dishunit` varchar(50) DEFAULT NULL,
+  `payamount` decimal(10,2) DEFAULT NULL,
+  `predisamount` decimal(10,2) DEFAULT NULL,
+  `couponid` varchar(50) DEFAULT NULL,
+  `disuserid` varchar(50) DEFAULT NULL,
+  `orignalprice` decimal(10,2) DEFAULT NULL COMMENT '原始价格',
+  `pricetype` varchar(10) DEFAULT NULL,
+  `orderseq` varchar(50) DEFAULT NULL,
+  `orderdetailid` varchar(50) NOT NULL,
+  `relatedishid` varchar(4000) DEFAULT NULL,
+  `ordertype` int(3) DEFAULT NULL COMMENT '''下单类型 0 正常 1 赠送''',
+  `parentkey` varchar(255) DEFAULT NULL COMMENT '父类主键',
+  `superkey` varchar(255) DEFAULT NULL COMMENT '套餐的主键',
+  `ismaster` int(255) DEFAULT NULL COMMENT '是否是master 默认是 0 不是 1是',
+  `primarykey` varchar(255) DEFAULT NULL COMMENT '菜品主键',
+  `islatecooke` int(2) DEFAULT '0' COMMENT '0 否 1 是',
+  `isadddish` int(2) DEFAULT NULL COMMENT '0 否 1 是',
+  `childdishtype` int(2) DEFAULT NULL COMMENT '0 单品 1 火锅 2 套餐',
+  `ispot` int(2) DEFAULT '0' COMMENT '是否是锅底 0 否 1 是',
+  `relateorderid` varchar(255) DEFAULT NULL,
+  `discarduserid` varchar(255) DEFAULT NULL,
+  `discardreason` varchar(255) DEFAULT NULL,
+  `debitamount` decimal(20,2) DEFAULT NULL COMMENT '单个菜品加权实际收入',
+  PRIMARY KEY (`orderdetailid`),
+  UNIQUE KEY `primarykey` (`primarykey`),
+  KEY `IX_t_order_detail_begintime` (`begintime`),
+  KEY `t_order_detail_orderdetailid` (`orderdetailid`),
+  KEY `t_order_detail_orderid` (`orderid`),
+  KEY `idx_orderprice` (`orderprice`),
+  KEY `idx_dishid` (`dishid`)
 )
 ENGINE = INNODB
 AVG_ROW_LENGTH = 729
@@ -2563,6 +2566,37 @@ CREATE TABLE `t_b_weixin_temp` (
   `status` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+DROP TABLE IF EXISTS `t_billing_detail`;
+
+CREATE TABLE `t_billing_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `orderid` varchar(50) NOT NULL COMMENT '订单编号',
+  `branchid` varchar(50) NOT NULL COMMENT '分店ID',
+  `creaditname` varchar(100) NOT NULL COMMENT '挂账单位名称',
+  `payamount` decimal(8,2) DEFAULT NULL COMMENT '已结金额',
+  `disamount` decimal(8,2) DEFAULT NULL COMMENT '优免金额',
+  `operator` varchar(255) NOT NULL COMMENT '操作员',
+  `inserttime` datetime NOT NULL COMMENT '操作时间',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='挂账信息结算历史表';
+
+DROP TABLE IF EXISTS `t_b_tip`;
+
+CREATE TABLE `t_b_tip` (
+  `waiter_number` varchar(50) NOT NULL COMMENT '服务员编号',
+  `receivables` int(11) NOT NULL COMMENT '应收金额',
+  `paid` int(11) DEFAULT NULL COMMENT '实收金额',
+  `orderid` varchar(50) NOT NULL COMMENT '订单编号',
+  `insertime` datetime NOT NULL COMMENT '创建时间',
+  `branchid` int(11) NOT NULL COMMENT '门店编号',
+  PRIMARY KEY (`orderid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 -- 
 -- Enable foreign keys

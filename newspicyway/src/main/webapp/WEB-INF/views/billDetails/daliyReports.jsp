@@ -106,6 +106,8 @@
 	<script type="text/javascript">
 		var shiftid;
 		var searchType;
+		var beginTime;
+		var endTime;
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");
@@ -157,6 +159,8 @@
 			reloadChart();
 		});
 		function reloadChart() {
+			beginTime = $("#beginTime").val();
+			endTime = $("#endTime").val();
 			shiftid = $("#shiftid").val();
 			$("#daliyChart").load(global_Path + "/daliyReports/daliyChart");
 		}

@@ -9,16 +9,18 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.candao.www.utils.DateTimeUtils;
+import com.candao.www.utils.ExcelUtils;
+
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-
-import org.springframework.stereotype.Service;
-
-import com.candao.www.utils.DateTimeUtils;
-import com.candao.www.utils.ExcelUtils;
 
 /**
  * 导出详细数据统计表excel
@@ -28,6 +30,8 @@ import com.candao.www.utils.ExcelUtils;
  */
 @Service
 public class ExportDataDetailExcelService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ExportDataDetailExcelService.class);
 
 	/**
 	 * 导出excel
@@ -111,6 +115,7 @@ public class ExportDataDetailExcelService {
              wwb.write();
              wwb.close();
         }catch(Exception e){
+        	logger.error("-->",e);
         	e.printStackTrace();
         }
         ExcelUtils.downloadExcel(request,response,fileName,realPath);

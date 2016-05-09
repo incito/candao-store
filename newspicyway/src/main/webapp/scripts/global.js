@@ -430,6 +430,14 @@ function clearIntervalProcess(intervalProcess){
 }
 
 /**
+ * 挂账明细统计表
+ */
+function toCreditReport(){
+	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/topage?path=billDetails/creditReport");
+	$("#allSearch").css("visibility","hidden");
+}
+
+/**
  * 服务员销售报表
  */
 function toWaiterSale(){

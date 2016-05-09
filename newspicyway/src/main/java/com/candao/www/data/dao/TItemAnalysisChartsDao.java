@@ -43,4 +43,10 @@ public interface TItemAnalysisChartsDao {
 	 * 
 	 */
 	public List<Map<String, Object>> getAllOrderCustnum(Map<String,Object> params);
+	
+	/**
+	 * 获取整月的来客数
+	 * 
+	 */
+	public List<Map<String, Object>> getAllOrderCustnumOfMonth(Map<String,Object> params);
 }

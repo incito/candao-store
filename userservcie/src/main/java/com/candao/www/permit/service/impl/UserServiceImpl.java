@@ -1,16 +1,21 @@
 package com.candao.www.permit.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.candao.common.page.Page;
+import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.FunctionDao;
 import com.candao.www.data.dao.RoleDao;
@@ -50,6 +55,8 @@ public class UserServiceImpl implements UserService {
   
   @Autowired
   private FunctionDao functionDao;
+  
+  private Log log = LogFactory.getLog(UserServiceImpl.class.getName());
 
   @Override
   public User login(String loginName, String password) {
@@ -132,8 +139,10 @@ public class UserServiceImpl implements UserService {
 	  queryMap.put("paymentPassword", password);
 	  List<User> resultList = userDao.queryUserList(queryMap);
 	  if(resultList.size()==1){
+		  log.info("员工工号，密码校验结果：" + JacksonJsonMapper.objectToJson(resultList));
 		  return resultList.get(0);
 	  }else{
+		  log.error("员工校验失败，查找不到该用户");
 		  return null;
 	  }
   }

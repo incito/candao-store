@@ -270,7 +270,7 @@ public class WaiterShiftController {
 			if(returnList==null||returnList.size()<=0){
 				returnList = new ArrayList<Map<String,String>>();
 			}
-			String filedisplay = "服务员订单信息表";
+			String filedisplay = "服务员考核统计子表";
 			response.setContentType("application/vnd.ms-excel");
 			String filedi = new String(filedisplay.getBytes("GBK"), "ISO-8859-1");
 			response.setHeader("Content-Disposition", "attachment;filename=" + filedi + ".xls");

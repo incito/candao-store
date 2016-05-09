@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ import com.candao.www.data.model.Ttemplate;
 import com.candao.www.data.model.TtemplateDetail;
 import com.candao.www.data.model.TtemplateDishUnit;
 import com.candao.www.utils.SessionUtils;
+import com.candao.www.webroom.controller.PadInterfaceController;
 import com.candao.www.webroom.model.MenuGroup;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.MenuService;
@@ -54,6 +57,7 @@ public class MenuServiceImpl implements MenuService {
 	@Autowired
 	private DataDictionaryService datadictionaryService;
 	private static final String SEPERATOR = "^thumbnail^";
+	private Logger logger = LoggerFactory.getLogger(MenuServiceImpl.class);
 
 	@Override
 	public boolean saveMenu(MenuGroup menuGroup) {
@@ -443,6 +447,7 @@ public class MenuServiceImpl implements MenuService {
 			columnMap.put("rows", columnList);
 			return columnMap;
 		}else{
+			logger.info("menuList为空");
 			return null;
 		}
 	}
@@ -493,7 +498,9 @@ public class MenuServiceImpl implements MenuService {
 					}
 					if("1".equals(DetailMap.get("status").toString())){//可选项
 						seltgroupDetailList.add(DetailMap);
+						logger.info("可选项");
 					}else{//必选项
+						logger.info("必选项");
 						suretgroupDetailList.add(DetailMap);
 					}
 				}
@@ -566,9 +573,11 @@ public class MenuServiceImpl implements MenuService {
 		List<Map<String,Object>> list=tmenuDao.getHeatDishList(params);
 		map.put("data", list);
 		if(list!=null&&list.size()>0){
+			logger.info("获取数据成功");
 			map.put("flag", "1");
 			map.put("code", "获取数据成功");	
 		}else{
+			logger.info("没有数据");
 			map.put("flag", "0");
 			map.put("code", "没有数据");	
 		}
