@@ -618,6 +618,12 @@ $("#test").click(function(){
 				 			$selects.attr({"disabled":"disabled"});
 				 			$seatOp.hide();
 				 			$editGifts.hide();
+				 			$('.seatname').hide();
+    			 			$('.seatname-info').show();
+    			 			$(".seatname").each(function(){
+    			 				var me = $(this);
+    			 				me.next().text(me.val());
+    			 			})
 				 		}
 				 	}
 				 });
@@ -646,6 +652,8 @@ $("#test").click(function(){
 			$inputs.removeAttr("disabled").removeClass('disabled');
 			$editGifts.show();
 			$seatOp.show();
+			$('.seatname').show();
+ 			$('.seatname-info').hide();
 		}
 		
 	});
@@ -715,7 +723,7 @@ $("#test").click(function(){
 			
 			//验证 
 			if(!/^[1-9]*[1-9][0-9]*$/.test($.trim($('input[name=adtimes]').val()))) {
-				$('.yy-time-tip').show().text('请输入1-11位正整数');
+				$('.yy-time-tip').show().text('请输入1-10位正整数');
 				return false;
 			}
 			jQuery.ajax({
@@ -738,9 +746,11 @@ $("#test").click(function(){
 						me.addClass('btn-edit').removeClass('btn-submit');
 						me.text('编辑');
 						$selects.attr({"disabled":"disabled"});
-						$inputs.attr({"disabled":"disabled"}).addClass('disabled');
-						
-						
+						//$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+						$('.yy-time-tip').hide();
+						$('.yy-time-info').show();
+						$('.yy-time').hide();
+						$('.adtimes-val').text($('input[name=adtimes]').val());
 					}
 				}
 			});
@@ -748,7 +758,9 @@ $("#test").click(function(){
 			me.addClass('btn-submit').removeClass('btn-edit');
 			me.text('保存');
 			$selects.removeAttr("disabled");
-			$inputs.removeAttr("disabled").removeClass('disabled');
+			$('.yy-time-info').hide();
+			$('.yy-time').show();
+			//$inputs.removeAttr("disabled").removeClass('disabled');
 		}
 		
 	})
@@ -760,6 +772,7 @@ $("#test").click(function(){
 		var $selects = $parent.find('.form-group select');
 		var $inputs = $parent.find('.form-group input[type=text]');
 		var $btns = $parent.find('.form-group .btn');
+		var $tip = $parent.find('.tip');
 		var flag = true;//校验标准 
 		if(me.hasClass('btn-submit')) {
 			
@@ -790,6 +803,7 @@ $("#test").click(function(){
 						me.addClass('btn-edit').removeClass('btn-submit');
 						me.text('编辑');
 						$inputs.attr({"disabled":"disabled"}).addClass('disabled');
+						$tip.hide();
 						
 					}
 				}
@@ -800,9 +814,6 @@ $("#test").click(function(){
 			$inputs.removeAttr("disabled").removeClass('disabled');
 		}
 	});
-	
-	
-
 });
 
 function showImg(obj,thumb){
@@ -833,35 +844,23 @@ function doGetPadData(){
 				$('.setup_div_social').addClass('active');
 			};
 			
-			//data.seatImagename = [];
-			
-			//data.seatImagename = ['111111111'];
-			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif']
-			
-			//data.seatImagename = ['111111111','222222222222222'];
-			//data.seatImagefiles = ['http://layznet.iteye.com/images/status/offline.gif','http://www.iteye.com/images/user-logo-thumb.gif?1448702469']
-			
 			//设置上传图片按钮显示
-			if(data.seatImagename.length == 0) {
-				$seatItem.eq(0).show();
-			} else if(data.seatImagename.length == 1){
-				$seatItem.show();
-			}
-			
+			$seatItem.show();
 			
 			//设置座位图
-			$.each(data.seatImagename,function(i,v){
-				var me = $seatItem.eq(i);
-
-				if(v == "") return false;
-				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.seatImagefileurls[i].replace(/\\/g,'/');
-				me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
-				me.attr({'img-src':data.seatImagefileurls[i]})
-				me.find('.seat-img').attr('src',imgUrl);
-				me.removeClass('seat-item-default').show();
-				//me.find('.seatImgBtn').val(imgUrl);
-			})
-			
+			if(data.seatImagename !== "" && data.seatImagename.length !== 0) {
+					$.each(data.seatImagename,function(i,v){
+						var me = $seatItem.eq(i);
+						if(v == "") return false;
+						var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.seatImagefileurls[i].replace(/\\/g,'/');
+						me.find('input[name=seatname' + (i+1) + ']').val(data.seatImagename[i]);
+						me.find('.seatname-info').text(data.seatImagename[i]);
+						me.attr({'img-src':data.seatImagefileurls[i]})
+						me.find('.seat-img').attr('src',imgUrl);
+						me.removeClass('seat-item-default').show();
+						//me.find('.seatImgBtn').val(imgUrl);
+					});
+			}
 			
 			//会员设置
 			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
@@ -880,7 +879,7 @@ function doGetPadData(){
 			$('select[name=hidecarttotal]').val(data.hidecarttotal ? "0" :"1");
 			$('select[name=waiterreward]').val(data.waiterreward ? "0" :"1");
 			$('input[name=adtimes]').val(data.adtimes);
-			
+			$('.adtimes-val').text(data.adtimes);
 			
 			//统计设置
 			$('input[name=youmengappkey]').val(data.youmengappkey);

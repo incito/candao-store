@@ -453,9 +453,10 @@
 									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt0" name="seatImgIpt0" accept="image/*">
 								</div>
 								<div class="seat-item-name">
-									<input type="text" value="" name="seatname1" oninput="if(value.length>20)value=value.slice(0,20)"  disabled class="form-control disabled seatname" required="required" />
+									<input type="text" value="" name="seatname1" oninput="if(value.length>20)value=value.slice(0,20)"  disabled class="form-control disabled seatname" style="display:none;" required="required" />
+									<span class="seatname-info f-toe"></span>
 								</div>
-								<div class="seat-item-tip f-dn">请输入作为名称</div>
+								<div class="seat-item-tip f-dn">请输入座位名称</div>
 							</div>
 							<div class="seat-item  seat-item-default f-dn">
 								<div class="seat-item-pic">
@@ -468,7 +469,8 @@
 									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt1" name="seatImgIpt1" accept="image/*">
 								</div>
 								<div class="seat-item-name">
-									<input type="text" value="" name="seatname2" disabled  oninput="if(value.length>20)value=value.slice(0,20)" class="form-control disabled seatname" required="required" />
+									<input type="text" value="" name="seatname2" disabled  oninput="if(value.length>20)value=value.slice(0,20)" class="form-control disabled seatname" style="display:none;" required="required" />
+									<span class="seatname-info f-toe"></span>
 								</div>
 								<div class="seat-item-tip f-dn">请输入作为名称</div>
 							</div>
@@ -606,14 +608,14 @@
 						</div>
 					</div>
 					<div class="col-xs-6">
-						<label class="col-xs-4 control-label"></label>
-						<div class="col-xs-8 yy-time">
-							<label class="control-label col-xs-5">进入异业营销时间：</label>
-							<div class=" col-xs-7">
-								<input type="text" value="" maxlength="11" oninput="if(value.length>11)value=value.slice(0,11)" class="form-control disabled" disabled name="adtimes" required="required" /><span class="unit">s</span>
-							</div>
-							<div class="c-red f-fr yy-time-tip f-dn"></div>
-							
+						<label class="col-xs-4 control-label">进入异业营销时间：</label>
+						<div class="col-xs-8 yy-time" style="display:none;">
+							<input type="text" value=""  maxlength="10" oninput="if(value.length>11)value=value.slice(0,10)" class="form-control "  style="width:100px;float:left;" name="adtimes" required="required" /><span class="unit">秒</span>
+							<div class="f-cb"></div>
+							<div class="c-red f-fl yy-time-tip f-dn"></div>
+						</div>
+						<div class="col-xs-8 yy-time-info" style="display:block;">
+							<span class="adtimes-val">60</span><span class="unit">秒</span>
 						</div>
 					</div>
 				</div>

@@ -232,6 +232,7 @@ body {
 }
 .seat-item-name {
 	margin-top:10px;
+	overflow:hidden;
 }
 .seat-item-tip{
 	color:red;
@@ -251,9 +252,16 @@ body {
 	position:relative;
 }
 .yy-time .unit {
-	position:absolute;
-	top:6px;
-	right:6px;
+	margin-top: 6px;
+    float: left;
+    margin-left: 2px;
+}
+.yy-time-info {
+	margin-top:8px;
+}
+.seatname-info {
+	font-size:14px;
+	display:block;
 }
 .tag{ 
 	width:250px; 
