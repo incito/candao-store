@@ -679,7 +679,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟渠道号(HANNEL)：</label>
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟渠道号(CHANNEL)：</label>
 						<div class="col-xs-3">
 							<div class="edit_info f-pr">
 							<input type="text" value="" name="youmengchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
@@ -688,7 +688,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟渠道号(HANNEL)：</label>
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>手环友盟渠道号(CHANNEL)：</label>
 						<div class="col-xs-3">
 							<div class="edit_info f-pr">
 							<input type="text" value="" name="braceletchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">

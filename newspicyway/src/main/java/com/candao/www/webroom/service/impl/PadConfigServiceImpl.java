@@ -1,5 +1,7 @@
 package com.candao.www.webroom.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -53,9 +55,22 @@ public class PadConfigServiceImpl  implements PadConfigService{
 						}
 			}
 		}
-		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null){
+		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null&& !"".equals(padConfig.getSeatimageurls())&& !"".equals(padConfig.getSeatimagenames())){
+			
 			padConfig.setSeatImagename(padConfig.getSeatimagenames().split(";"));
-			padConfig.setSeatImagefileurls(padConfig.getSeatimageurls().split(";"));
+			List<String> imagename=new ArrayList<>();
+			Collections.addAll(imagename, padConfig.getSeatimagenames().split(";"));
+			padConfig.setImagename(imagename);
+			List<String> seatImageurl=new ArrayList<>();
+			String urls=padConfig.getSeatimageurls();
+			if(urls!=null){
+				String[] lss=urls.split(";");
+				padConfig.setSeatImagefileurls(lss);
+				for(String url :lss){
+					seatImageurl.add(url.replaceAll("\\\\", "/"));
+				}
+			}
+			padConfig.setSeatImageurl(seatImageurl);
 		}
 		
 		Map<String, Object>  map=weixinDao.queryWeixinInfoBybranchid(PropertiesUtils.getValue("current_branch_id"));
@@ -65,6 +80,18 @@ public class PadConfigServiceImpl  implements PadConfigService{
 				padConfig.setWeixintype(Integer.parseInt(weixintype.toString()));
 			}
 			padConfig.setPersonweixinurl(map.get("personweixinurl").toString());
+			
+			//不启用表示没有配置微信支付
+			Object weixinstatus=map.get("status");
+			if(weixinstatus!=null){
+				if("0".equals(weixinstatus.toString())){
+					padConfig.setWeixintype(0);//没配置微信
+				}
+			}else{//为空也表示没有启用微信
+				padConfig.setWeixintype(0);//没配置微信
+			}
+		}else{
+			padConfig.setWeixintype(0);//没配置微信
 		}
 		
 		return padConfig;
