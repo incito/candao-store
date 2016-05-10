@@ -542,7 +542,6 @@ $("#test").click(function(){
 			//更新礼品
 			if(validateFlag && selectedDishsTop !== null) {
 				selectedDishsTop && saveSelectedGifts(selectedDishsTop,'save');
-				console.info();
 			}
 			
 			
@@ -593,12 +592,11 @@ $("#test").click(function(){
                 			 			$selects.attr({"disabled":"disabled"});
                 			 			$seatOp.hide();
                 			 			$editGifts.hide();
+                			 			$('.seat-item-tip').hide();
                 			 		}
                 			 	}
                 			 });
-		        	    }
-	                    
-	                    
+		        	    }  
 	                });
 			} else {
 				
@@ -620,6 +618,7 @@ $("#test").click(function(){
 				 			$editGifts.hide();
 				 			$('.seatname').hide();
     			 			$('.seatname-info').show();
+    			 			$('.seat-item-tip').hide();
     			 			$(".seatname").each(function(){
     			 				var me = $(this);
     			 				me.next().text(me.val());

@@ -472,7 +472,7 @@
 									<input type="text" value="" name="seatname2" disabled  oninput="if(value.length>20)value=value.slice(0,20)" class="form-control disabled seatname" style="display:none;" required="required" />
 									<span class="seatname-info f-toe"></span>
 								</div>
-								<div class="seat-item-tip f-dn">请输入作为名称</div>
+								<div class="seat-item-tip f-dn">请输入座位名称</div>
 							</div>
 							<div class="f-cb"></div>
 							<div class="seatimg-rule">
