@@ -33,6 +33,7 @@ public class SynSqlObject implements Serializable{
    int orderSeqno;
    
    
+   
 
 public int getOrderSeqno() {
 	return orderSeqno;
