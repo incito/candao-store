@@ -756,6 +756,7 @@ public class WeixinController extends BaseJsonController {
 		tpWxPay1.setOrderId(weixinRequestParam.getOrderid());
 		tpWxPay1.setSpbillCreateIp(weixinRequestParam.getSpbillCreateIp());
 		tpWxPay1.setTotalFee(weixinRequestParam.getTotalFee());
+		tpWxPay1.setAttach(UUID.randomUUID().toString());//必须加的代码
 		String codeurl = getCodeurl(tpWxPay1);
 		if (codeurl == null || "".equals(codeurl)) {
 			return JacksonJsonMapper.objectToJson(getFailInstance(null, "商户id与appid与appsecret不匹配"));
