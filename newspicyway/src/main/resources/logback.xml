@@ -12,12 +12,21 @@
   </encoder>   
  </appender> 
  
+ <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">   
+    <!-- encoder 默认配置为PatternLayoutEncoder -->   
+    <encoder>   
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>   
+    </encoder>   
+  </appender>
+ 
     <root level="info">  
     	<appender-ref ref="candao" />  
+    	<appender-ref ref="STDOUT"/>
   	</root>  
  
+ 	<logger name="dao" level="debug"></logger>
 	
-	<logger name="org.springframework" level="info" >
+	<!-- <logger name="org.springframework" level="info" >
 	   <appender-ref ref="candao" />  
 	</logger>
 	<logger name="org.springframework.web" level="debug" >
@@ -31,7 +40,7 @@
 	</logger>
 	<logger name="org.mybatis.spring" level="info" >
 	       <appender-ref ref="candao" /> 
-	</logger>
+	</logger> -->
     
     
     

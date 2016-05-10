@@ -1,6 +1,8 @@
 package com.candao.www.webroom.controller;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,11 +23,15 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -38,7 +44,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.candao.common.dto.ResultDto;
+import com.candao.common.enums.ResultMessage;
 import com.candao.common.exception.AuthException;
+import com.candao.common.exception.SysException;
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.DateUtils;
@@ -1842,7 +1852,7 @@ public class PadInterfaceController {
 	@RequestMapping("/BraceletSent")
 	@ResponseBody
 
-	public void   BraceletSent(HttpServletRequest request,HttpServletResponse response,@RequestBody String jsonString){
+	public void BraceletSent(HttpServletRequest request,HttpServletResponse response,@RequestBody String jsonString){
 		Map<String, Object> map=JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		int result=userInstrumentService.insertByParams(map);
 		map.clear();
@@ -1911,6 +1921,12 @@ public class PadInterfaceController {
 		orderService.executeSql(sqlData.getSql());
 		return Constant.SUCCESSMSG;
 	}
+	@RequestMapping("/test")
+	@ResponseBody
+	public String test(){
+		branchDataSyn.test();
+		return null;
+	}
 	
 	/**
 	 * After pos end work ,begin synchronize data 
@@ -1919,28 +1935,76 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/jdesyndata")
 	@ResponseBody
-	public String jdeSynData(@RequestBody String json) {
+	public String jdeSynData(String json) {
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		@SuppressWarnings("unchecked")
-		Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+		//Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+		Map<String, String> map = JSON.parseObject(json, Map.class);
 		String key = map.get("synkey");
 		String synKey = PropertiesUtils.getValue("SYNKEY");
 		if (!synKey.equalsIgnoreCase(key)) {
 			return Constant.FAILUREMSG;
 		}
+		//获取同步数据的传送方式
+		String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
 		try {
-			if (branchDataSyn.synBranchData()) {
-				resultMap.put("result", 0);
-			}else{
-				resultMap.put("result", 1);
-				resultMap.put("msg", "修改数据同步的状态失败");
+			//MQ
+			if(type.equals("1")){
+				if (branchDataSyn.synBranchData()) {
+					resultMap.put("result", 0);
+				}else{
+					resultMap.put("result", 1);
+					resultMap.put("msg", "修改数据同步的状态失败");
+				}
+			//HTTP
+			}else if(type.equals("2")){
+				ResultDto dto = executeSyn();
+				resultDeal(resultMap, dto);
 			}
-		} catch (Exception e) {
-			resultMap.put("result", 1);
-			resultMap.put("msg", e.getMessage());
+		}catch (SysException e) {
+			loggers.error("门店上传到总店数据失败",e);
+			//后面执行是否成功的标志
+			boolean afterStatus = false;
+			//如果是传输异常或者响应异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
+			if(e.getCode().equals("10009") || e.getCode().equals("10010")){
+				ResultDto dto = null;
+				for(int i=0;i<3;i++){
+					try{
+						dto = executeSyn();
+						afterStatus = true;
+						break;
+					}catch(SysException sysEx){
+						logger.error(sysEx, "");
+					}
+				}
+				resultDeal(resultMap, dto);
+			}
+			//连续3次执行失败
+			if(afterStatus == false){
+				resultMap.put("result", ResultMessage.INTERNET_EXE.getCode());
+				resultMap.put("msg", ResultMessage.INTERNET_EXE.getMsg());
+			}
+		}catch(Exception e){
+			loggers.error("门店上传到总店数据失败",e);
 		}
-		return JacksonJsonMapper.objectToJson(resultMap);
+		//return JacksonJsonMapper.objectToJson(resultMap);
+		return JSON.toJSONString(resultMap);
+	}
+	//门店同步数据方法执行
+	private ResultDto executeSyn() throws SysException{
+		return branchDataSyn.synLocalData();
+	}
+	//门店同步数据成功后结果的处理
+	private void resultDeal(Map<String, Object> resultMap,ResultDto dto){
+		if(dto != null){
+			logger.info("上传数据结果状态码:"+dto.getCode(), "");
+			if(dto.getCode().equals(ResultMessage.SUCCESS.getCode()))
+				resultMap.put("result", 0);
+			else
+				resultMap.put("result", dto.getCode());
+			resultMap.put("msg", dto.getMessage());
+		}
 	}
 	
 	/**
@@ -1950,7 +2014,7 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/endwork")
 	@ResponseBody
-	public String   endwork(@RequestBody String json){
+	public String endwork(@RequestBody String json){
 	  
 	  @SuppressWarnings("unchecked")
 	 Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
@@ -2333,5 +2397,8 @@ public class PadInterfaceController {
 	private TtellerCashDao tellerCashService;
 	
 	private LoggerHelper logger = LoggerFactory.getLogger(PadInterfaceController.class);
+	
+	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
+	
 	
 }
