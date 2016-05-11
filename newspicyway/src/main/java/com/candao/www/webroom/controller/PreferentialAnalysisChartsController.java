@@ -13,9 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,9 +21,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.utils.DateTimeUtils;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.model.CouponsReptDtail;
 import com.candao.www.webroom.service.ItemDetailService;
-import com.candao.www.webroom.service.PreferentialAnalysisChartsService;
+import com.candao.www.webroom.service.impl.PreferentialAnalysisChartsServiceImpl;
 
 /**
  * 优惠分析图表
@@ -36,7 +35,7 @@ import com.candao.www.webroom.service.PreferentialAnalysisChartsService;
 @RequestMapping(value="/preferentialAnalysisCharts")
 public class PreferentialAnalysisChartsController {
 	@Autowired
-	private PreferentialAnalysisChartsService preferentialAnalysisChartsService;
+	private PreferentialAnalysisChartsServiceImpl preferentialAnalysisChartsService;
 	@Autowired
 	private ItemDetailService itemDetailService;
 	/**
@@ -192,77 +191,33 @@ public class PreferentialAnalysisChartsController {
 	}
 	
 	/**
-	 * 优惠分析报表导出
-	 *
-	 * @param settlementWay
-	 * @param beginTime
-	 * @param endTime
-	 * @param shiftid
-	 * @param bankcardno
-	 * @param type
-	 * @param payway
-	 * @param ptype
-	 * @param pname
-	 * @param searchType
-	 * @param req
+	 * 优惠分析报表子表导出
+	 * @param request
 	 * @param response
+	 * @param params
 	 * @return
 	 */
-	@RequestMapping(value="/exportReportCouDetail/{settlementWay}/{beginTime}/{endTime}/{shiftid}/{bankcardno}/{type}/{payway}/{ptype}/{pname}/{searchType}",method={RequestMethod.GET})
+	@RequestMapping(value="/exportReportCouDetailSub")
 	@ResponseBody
-	public ModelAndView exportReportCouDetail(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "settlementWay") String settlementWay,
-			@PathVariable(value = "beginTime") String beginTime,
-			@PathVariable(value = "endTime") String endTime,
-			@PathVariable(value = "shiftid") String shiftid,
-			@PathVariable(value = "bankcardno") String bankcardno,
-			@PathVariable(value = "type") String type,
-			@PathVariable(value = "payway") String payway,
-			@PathVariable(value = "ptype") String ptype,
-			@PathVariable(value = "pname") String pname,
-			@PathVariable(value = "searchType") String searchType) {
-		Map<String, Object> map = new HashMap<String, Object>();
+	public ModelAndView exportReportCouDetailSub(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) {
 		ModelAndView mav = new ModelAndView();
 		try {
-			if(!bankcardno.equals("-1")){
-				bankcardno = URLDecoder.decode(bankcardno,"UTF-8");
-			}
-			if(pname.equals("null")){
-				pname = "";
-			}else{
-				pname = URLDecoder.decode(pname,"UTF-8");
-			}
-			if(payway.equals("null")){
-				payway ="";
-			}
-			if(ptype.equals("null")){
-				ptype ="";
-			}
-			
-			map.put("settlementWay", settlementWay);
-			map.put("beginTime", beginTime);
-			map.put("shiftid", shiftid);
-			map.put("endTime", endTime);
-			map.put("bankcardno", bankcardno);
-			map.put("pname", pname);
-			map.put("payway", payway);
-			map.put("ptype", ptype);
-			map.put("type", type);
-			map.put("searchType", searchType);
 			String branchid = PropertiesUtils.getValue("current_branch_id");
 			String branchname = itemDetailService.getBranchName(branchid);
-			map.put("names","优惠活动明细表");
-			map.put("branchname", branchname);
+			String bankcardno = params.get("bankcardno").toString();
+			bankcardno = URLDecoder.decode(bankcardno,"UTF-8");
+			params.put("branchname", branchname);
+			params.put("bankcardno",bankcardno);
+			params.put("names","优惠活动明细表");
 			mav.addObject("message", "导出成功！");
-			
-			String dateShowbegin = DateUtils.stringDateFormat(beginTime);
-			String dateShowend = DateUtils.stringDateFormat(endTime);
+			String dateShowbegin = DateUtils.stringDateFormat(params.get("beginTime").toString());
+			String dateShowend = DateUtils.stringDateFormat(params.get("endTime").toString());
 			if (dateShowbegin.equals(dateShowend)) {
-				map.put("dateShow", dateShowbegin);
+				params.put("dateShow", dateShowbegin);
 			} else {
-				map.put("dateShow", dateShowbegin + "-" + dateShowend);
+				params.put("dateShow", dateShowbegin + "-" + dateShowend);
 			}
-			preferentialAnalysisChartsService.exportxlsB(map, request, response);
+			preferentialAnalysisChartsService.exportxlsB(params, request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			mav.addObject("message", "导出失败！");
@@ -286,4 +241,33 @@ public class PreferentialAnalysisChartsController {
 
 		return date;
 	}
+	
+	/**
+	 * 优惠分析主表导出
+	 * @author weizhifang
+	 * @since 2016-4-27
+	 * @param request
+	 * @param response
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping(value="/exportReportCouDetail")
+	@ResponseBody
+	public Map<String,Object> exportReportCouDetail(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) {
+		try {
+			String bankcardno = params.get("bankcardno").toString();
+			bankcardno = URLDecoder.decode(bankcardno,"UTF-8");
+			params.put("bankcardno",bankcardno);
+			String branchid = PropertiesUtils.getValue("current_branch_id");
+			String branchname = itemDetailService.getBranchName(branchid);
+			params.put("branchname", branchname);
+			List<Map<String,Object>> couponsReptList = preferentialAnalysisChartsService.insertPreferential(params);
+			preferentialAnalysisChartsService.exportPreferentialDetailtable(request,response,couponsReptList,params);
+			return ReturnMap.getReturnMap(1, "001", "导出成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ReturnMap.getReturnMap(0, "002", "导出失败");
+		}
+	}
+	
 }

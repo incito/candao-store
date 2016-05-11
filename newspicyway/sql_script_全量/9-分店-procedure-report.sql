@@ -8363,6 +8363,7 @@ BEGIN
   AND tbe.user_id = tbu.id
   AND tbe.job_number = too.userid
   AND tod.dishid = td.dishid
+  AND tbe.branch_id = pi_branchid
   AND td.title LIKE CONCAT('%', v_dish_name, '%')
   AND tbu.name LIKE CONCAT('%', v_waiter_name, '%')
   GROUP BY tbu.id,

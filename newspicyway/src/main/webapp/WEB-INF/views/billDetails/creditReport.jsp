@@ -243,6 +243,11 @@
 	<script type="text/javascript">
 		var searchType;
 		var oTable=null;
+		
+		var beginTime;
+		var endTime;
+		var billName;
+		var clearStatus;
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");

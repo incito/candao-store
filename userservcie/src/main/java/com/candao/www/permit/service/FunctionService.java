@@ -98,4 +98,13 @@ public interface FunctionService {
    */
   public Map<String,Object> getRoleFunctionUrlMap(String account);
   
+  /**
+   * 根据工号查询权限
+   * @author weizhifang
+   * @since 2016-3-21
+   * @param userId
+   * @return
+   */
+  public List<Function> getFunctionForJobNumber(String jobNumber);
+  
 }

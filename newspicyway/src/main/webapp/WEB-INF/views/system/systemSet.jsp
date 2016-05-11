@@ -231,6 +231,39 @@
 			</form>
 		</div>
 
+						<!-- 一页菜谱 -->
+						<div class="setup_div">
+									<form action="" method="post" class="form-horizontal " name="" id="onepage_form">
+									<input type="hidden" id="onepagetype" value="ONEPAGETYPE" />
+									<input type="hidden" id="dictidonepage" name="dictid" />
+									<div style="height: 30px;">
+										<div class="system-setup-title">一页菜谱</div>
+										<button type="button" id="onepagebut" class="btn btn-default">编辑</button>
+										<button type="submit" id="onepagesub" class="btn btn-default hide">保存</button>
+									</div>
+									<hr style="margin: 5px 0px;" />
+									<div class="modal-body" style="padding-top: 0px;">
+										<div class="form-horizontal " id="onepagediv">
+											<div class="form-group">
+												<label
+													class="col-xs-2 control-label">是否开启：</label>
+												 <div class="col-xs-2">
+													<div class="show_info isFree_onepage">
+														<p class="left"></p>
+													</div>
+													<div class="edit_info hide">
+														<label class="radio-inline"> <input type="radio"
+															name="onepageisFree" value="0" checked="checked" />不开启
+														</label> <label class="radio-inline"><input type="radio"
+															name="onepageisFree" value="1" />开启</label>
+													</div>
+												</div>
+											</div>
+									</div>
+								</div>
+								</form>	
+								</div>
+						<!--  -->
 		<div class="setup_div">
 			<div style="height: 30px;">
 				<div class="system-setup-title" style="">忌口设置</div>

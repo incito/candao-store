@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +49,13 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
+import com.candao.www.constant.SystemConstant;
 import com.candao.www.data.dao.TbBranchDao;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TtellerCashDao;
 import com.candao.www.data.model.EmployeeUser;
+import com.candao.www.data.model.Function;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TbMessageInstrument;
 import com.candao.www.data.model.TbOpenBizLog;
@@ -105,8 +107,6 @@ import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.UserInstrumentService;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
-
-import net.sf.json.JSONObject;
 /**
  * 所有pad 端处理的接口
  *  <pre>
@@ -1753,7 +1753,15 @@ public class PadInterfaceController {
 			userInstrumentMap.put("userid", (String) map.get("userid"));
 			userInstrumentMap.put("status", "0");
 			tbUserInstrumentList =userInstrumentService.findByParams(userInstrumentMap);
-			
+			//查询是否有经理手环权限，031201是经理手环的权限
+			List<Function> fun = functionService.getFunctionForJobNumber((String) map.get("userid"));
+			resultmap.put("auth", "0");
+			for(Function f : fun){
+                 if(f.getCode().equals("031201")){
+                	 resultmap.put("auth", "1");
+                	 break;
+                 }
+			}
 			if(tbUserInstrumentList!=null&&tbUserInstrumentList.size()>0){//之前已经登录,将之前的登录数据修改，重新登录
 				TbUserInstrument logoutInfo = tbUserInstrumentList.get(0);
 				logoutInfo.setStatus(1);
@@ -2298,6 +2306,29 @@ public class PadInterfaceController {
 			logger.error("-->",e);
 		}
 		return JacksonJsonMapper.objectToJson(retMap);
+	}
+	
+	/**
+	 * 查询一页菜谱配置信息
+	 * @return
+	 */
+	@RequestMapping("/onepageinfo.json")
+	@ResponseBody
+	public String onepageinfo(){
+		Map<String, Object> resultMap = new HashMap<>();
+		Map  map=new HashMap<>();
+		map.put("type", SystemConstant.ONEPAGETYPE.type());
+		List<Map<String, Object>>  list= dataDictionaryService.findByParams(map);
+		if(list==null || list.size()==0){//没有数据
+			resultMap.put("code", 1);
+			resultMap.put("msg","后台没有配置信息");
+			resultMap.put("data","");
+		}else{
+			resultMap.put("code", 0);
+			resultMap.put("data",list.get(0).get("status").toString());
+		}
+		
+		return  JacksonJsonMapper.objectToJson(resultMap);
 	}
 	
 	

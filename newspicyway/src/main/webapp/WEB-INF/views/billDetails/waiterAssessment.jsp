@@ -151,6 +151,8 @@
 		var shiftid;
 		var searchType;
 		var oTable=null;
+		var beginTime;
+		var endTime;
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");

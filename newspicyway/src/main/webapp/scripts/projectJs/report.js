@@ -728,9 +728,9 @@ function strToFloat(str){
 function initDaliyData() {
 	if(compareBeginEndTime()){
 		$.post(global_Path + "/daliyReports/getDayReportList.json", {
-			beginTime : $("#beginTime").val(),
-			endTime : $("#endTime").val(),
-			shiftid : $("#shiftid").val()
+			beginTime : beginTime,
+			endTime : endTime,
+			shiftid : shiftid
 		}, function(result) {
 			incomeStatistics(result);
 			paidInAmount(result);
@@ -952,8 +952,6 @@ function discountAmount(result) {
  */
 function exportReportDaliy() {
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1013,9 +1011,9 @@ function initPaywayData() {
 	if(compareBeginEndTime()){
 		var tb = "";
 		$.post(global_Path + "/settlementOption/settlementOptionList.json", {
-			beginTime : $("#beginTime").val(),
-			endTime : $("#endTime").val(),
-			shiftid : $("#shiftid").val()
+			beginTime : beginTime,
+			endTime : endTime,
+			shiftid : shiftid
 		}, function(result) {
 			var legend_data = [];
 			var num_series_data = [];
@@ -1059,9 +1057,9 @@ function showPaywaySub(payway, nums, amount, membercardno, itemid){
 	$("#payway-details-dialog").modal("show");
 	$("#payway_sub_tb tbody").html("");
 	$.post(global_Path+"/settlementDetailChild/getSettDetChildList.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		shiftid : $("#shiftid").val(),
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid,
 		payWay : transcoding(payway),
 		membercardno : membercardno,
 		itemid : itemid
@@ -1109,8 +1107,6 @@ function paywayPrices(legend_data, series_data) {
  */
 function exportxlsC(f) {
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1177,6 +1173,8 @@ function exportxlsC(f) {
 var page = 0;
 function initReturnDishData() {
 	if(compareBeginEndTime()){
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
 		shiftid = $("#shiftid").val();
 		page = 0;
 		doReturnPost(function(result){
@@ -1219,9 +1217,9 @@ function initReturnTb(result, isFirst){
 }
 function doReturnPost(callback){
 	$.post(global_Path + "/returnDish/getReturnDishList.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		shiftid : $("#shiftid").val(),
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid,
 		currPage: page,//当前页数
 		pageNums: 20//每页显示条数
 	}, function(result) {
@@ -1233,8 +1231,6 @@ function doReturnPost(callback){
  */
 function exportReturnDishxls() {
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1296,6 +1292,8 @@ function searchData() {
 //调api获取数据
 function initCouponData(){
 	if(compareBeginEndTime()){
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
 		shiftid = $("#shiftid").val();
 		settlementWay = $("#settlementWay").val()==null?"-1":$("#settlementWay").val();
 		bankcardno = transcoding($("#bankcardno").val()==null?"-1":$("#bankcardno").val());
@@ -1310,9 +1308,9 @@ function initCouponData(){
  */
 function doCouponPost(callback){
 	$.post(global_Path + "/preferentialAnalysisCharts/findPreferential.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		shiftid : $("#shiftid").val(),
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid,
 		bankcardno: bankcardno,
 		settlementWay: settlementWay,
 		type: type
@@ -1395,9 +1393,9 @@ function doCouponSubPost(code, payway, ptype, callback){
 	$.post(global_Path + "/preferentialAnalysisCharts/findPreferentialDetail.json", {
 		couponsname: transcoding(code),
 		payway : payway,
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		shiftid : $("#shiftid").val(),
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid,
 		currPage: page,//当前页数
 		pageNums: 20,//每页显示条数
 		type : ptype
@@ -1499,9 +1497,6 @@ function getActiviyType() {
  */
 function exportReportsCou(f) {
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
-		
 		if (beginTime == null || "" == beginTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1550,21 +1545,28 @@ function exportReportsCou(f) {
 		var payway = "";
 		var ptype = "";
 		var pname = "";
+		var action_Path = "";
+		
 		if(f == 1){
-			//pname = transcoding($("#p-coupon-id").val());
-			pname = encodeURI(encodeURI($("#p-coupon-id").val()));
+			pname = $("#p-coupon-id").val();
 			payway = $("#p-coupon-payway").val();
 			ptype = $("#p-type-id").val();
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetailSub.json";// 子表
 		}else{
-			payway = "null";
-			ptype= "null";
-			pname = "null";
+			action_Path = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail.json";// 总表
 		}
-		
-		
-		location.href = global_Path + "/preferentialAnalysisCharts/exportReportCouDetail/"
-			+ settlementWay + "/" + beginTime + "/" + endTime + "/"
-			+ shiftid + "/" + bankcardno + "/" + type + "/"+payway+"/"+ptype+"/"+pname+"/"+searchType+".json";
+		$("#_beginTime").val(beginTime);
+		$("#_endTime").val(endTime);
+		$("#_settlementWay").val(settlementWay);
+		$("#_shiftid").val(shiftid);
+		$("#_bankcardno").val(bankcardno);
+		$("#_type").val(type);
+		$("#_payway").val(payway);
+		$("#_ptype").val(ptype);
+		$("#_pname").val(pname);
+		$("#_searchType").val(searchType);
+		$("#couponForm").attr("action", action_Path);
+		$("#couponForm").submit();
 	}
 }
 /***********************优惠活动明细表 END****************************************/
@@ -1572,6 +1574,8 @@ function exportReportsCou(f) {
 //调api获取数据
 function initItemDetailsData() {
 	if(compareBeginEndTime()){
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
 		shiftid = $("#shiftid").val();
 		itemId = $("#itemID").val()==null?"-1":$("#itemID").val();
 		_dishType = $("#dishType").val();
@@ -1580,9 +1584,9 @@ function initItemDetailsData() {
 }
 function doItemDetailsPost(callback){
 	$.post(global_Path + "/itemDetail/getItemForList.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		shiftid : $("#shiftid").val(),
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid,
 		id : itemId,
 		dishType : _dishType
 	}, function(result) {
@@ -1644,9 +1648,9 @@ function initItemSubTb(id, dishType) {
 	$.post(global_Path + "/itemDetail/getItemDetailForList.json", {
 		id : id,
 		dishType : dishType,
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		shiftid : $("#shiftid").val()
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid
 	}, function(result) {
 		var subTbody = "";
 		$.each(result, function(i, item) {
@@ -1693,86 +1697,83 @@ function getItemType() {
  */
 function exportReportsItem(f) {
 	if(compareBeginEndTime()){
-	var beginTime = $("#beginTime").val();
-	var endTime = $("#endTime").val();
-	if (beginTime == null || "" == beginTime) {
-		var d = new Date();
-		var month = d.getMonth() + 1;
-		if (d.getMonth() + 1 < 10) {
-			month = "0" + month;
+		if (beginTime == null || "" == beginTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			beginTime = d.getFullYear() + '-' + month + '-' + day
+					+ ' 00:00:00';
 		}
-		var day = d.getDate();
-		if (d.getDate() < 10) {
-			day = "0" + day;
-		}
-		beginTime = d.getFullYear() + '-' + month + '-' + day
-				+ ' 00:00:00';
-	}
-
-	if (endTime == null || "" == endTime) {
-		var d = new Date();
-		var month = d.getMonth() + 1;
-		if (d.getMonth() + 1 < 10) {
-			month = "0" + month;
-		}
-		var day = d.getDate();
-		if (d.getDate() < 10) {
-			day = "0" + day;
-		}
-		var day = d.getDate();
-		if (d.getDate() < 10) {
-			day = "0" + day;
-		}
-		var hours = d.getHours();
-		if (d.getHours() < 10) {
-			hours = "0" + hours;
-		}
-		var minutes = d.getMinutes();
-		if (d.getMinutes() < 10) {
-			minutes = "0" + minutes;
-		}
-
-		var second = d.getSeconds();
-		if (d.getSeconds() < 10) {
-			second = "0" + second;
-		}
-
-		endTime = d.getFullYear() + '-' + month + '-' + day + ' '
-				+ hours + ":" + minutes + ":" + second;
-	}
-	if(shiftid == ""){
-		shiftid = "null";
-	}
-	var id = itemId;
-	if(id == null || id == ""){
-		id = "null";
-	}
-	if(_dishType == null || _dishType == ""){
-		_dishType = "null";
-	}
 	
-	var itemids = "";
-	if(f == 1){
-		var itemid = $("#p-item-id").val();
-		var dishtype1 = $("#p-dish-type").val();
-		itemids = itemid+","+dishtype1+"|";
-	}else{
-		itemids = "null";
-	}
+		if (endTime == null || "" == endTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var hours = d.getHours();
+			if (d.getHours() < 10) {
+				hours = "0" + hours;
+			}
+			var minutes = d.getMinutes();
+			if (d.getMinutes() < 10) {
+				minutes = "0" + minutes;
+			}
 	
-//	location.href = global_Path + "/itemDetail/exportxlsA/"
-//			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
-	}
+			var second = d.getSeconds();
+			if (d.getSeconds() < 10) {
+				second = "0" + second;
+			}
 	
-	$("#_beginTime").val(beginTime);
-	$("#_endTime").val(endTime);
-	$("#_shiftid").val(shiftid);
-	$("#_id").val(id);
-	$("#dish_type").val(_dishType);
-	$("#_itemids").val(itemids);
-	$("#_searchType").val(searchType);
-	$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportxlsA.json");
-	$("#itemDetailForm").submit();
+			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
+					+ hours + ":" + minutes + ":" + second;
+		}
+		if(shiftid == ""){
+			shiftid = "null";
+		}
+		var id = itemId;
+		if(id == null || id == ""){
+			id = "null";
+		}
+		if(_dishType == null || _dishType == ""){
+			_dishType = "null";
+		}
+		
+		var itemids = "";
+		if(f == 1){
+			var itemid = $("#p-item-id").val();
+			var dishtype1 = $("#p-dish-type").val();
+			itemids = itemid+","+dishtype1+"|";
+		}else{
+			itemids = "null";
+		}
+		
+	//	location.href = global_Path + "/itemDetail/exportxlsA/"
+	//			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
+		$("#_beginTime").val(beginTime);
+		$("#_endTime").val(endTime);
+		$("#_shiftid").val(shiftid);
+		$("#_id").val(id);
+		$("#dish_type").val(_dishType);
+		$("#_itemids").val(itemids);
+		$("#_searchType").val(searchType);
+		$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportxlsA.json");
+		$("#itemDetailForm").submit();
+	}
 }
 /***********************品项销售明细表 END***************************************/
 /***********************服务员考核 START**************************/
@@ -1780,9 +1781,6 @@ function exportReportsItem(f) {
  * 导出
  */
 function exportWaiterAssess(type){
-	var beginTime = $("#beginTime").val();
-	var endTime = $("#endTime").val();
-	var shiftid = $("#shiftid").val();
 	var userid = $("#p_userid").val();
 	if(type == 0){
 		location.href = global_Path + "/waiter/shift/"+beginTime+"/"+endTime+"/"+shiftid+".json";
@@ -1818,10 +1816,13 @@ function getWaiterAssessData(){
 	if(oTable !=null){
 		oTable.fnClearTable(false);
 	}
+	beginTime = $("#beginTime").val();
+	endTime = $("#endTime").val();
+	shiftid = $("#shiftid").val();
 	$.get(global_Path+"/waiter/shift.json", {
-		beginTime: $("#beginTime").val(),
-		endTime: $("#endTime").val(),
-		shiftid: $("#shiftid").val()
+		beginTime: beginTime,
+		endTime: endTime,
+		shiftid: shiftid
 	}, function(result){
 		console.log(result);
 		if(result.flag == 1){
@@ -1857,9 +1858,9 @@ function showWaiterSecPage(userid){
 }
 function getWaiterDetails(){
 	$.get(global_Path+"/waiter/shiftorders.json", {
-		beginTime: $("#beginTime").val(),
-		endTime: $("#endTime").val(),
-		shiftid: $("#shiftid").val(),
+		beginTime: beginTime,
+		endTime: endTime,
+		shiftid: shiftid,
 		userid: $("#p_userid").val()
 	}, function(result){
 		if(result.flag == 1){
@@ -1886,7 +1887,11 @@ function getWaiterDetails(){
 /***********************排班参考报表 start************************/
 function getScheduleReport(){
 	showLoading();
-	var week  = '-1';
+	beginTime = $("#beginTime").val();
+	endTime = $("#endTime").val();
+	shiftid = "-1";
+	dateinterval = $("#dateinterval").val();
+	week  = '-1';
 	$("input[name='weeky']:checked").each(function(i, o){
 		if(i == 0){
 			week = $(this).val();
@@ -1895,11 +1900,11 @@ function getScheduleReport(){
 		}
 	});
 	$.post(global_Path+"/scheduling/schedulingReport.json",{
-		beginTime: $("#beginTime").val(),
-		endTime: $("#endTime").val(),
-		shiftid: '-1',
+		beginTime: beginTime,
+		endTime: endTime,
+		shiftid: shiftid,
 		week: week,
-		dateinterval: $("#dateinterval").val()
+		dateinterval: dateinterval
 	}, function(result){
 		console.log(result);
 		initScheduleTb(result);
@@ -1983,18 +1988,6 @@ function initScheduleTb(result){
  * 排班导出
  */
 function exportScheduleReport(){
-	var beginTime = $("#beginTime").val();
-	var endTime = $("#endTime").val();
-	var shiftid = '-1';
-	var dateinterval = $("#dateinterval").val();
-	var week  = '-1';
-	$("input[name='weeky']:checked").each(function(i, o){
-		if(i == 0){
-			week = $(this).val();
-		}else{
-			week += ','+$(this).val();
-		}
-	});
 	location.href = global_Path + "/scheduling/exportSchedulingData/"+beginTime+"/"+endTime+"/"+shiftid+"/"+week+"/"+dateinterval+".json";
 }
 /***********************反结算统计表 START***************************************/
@@ -2003,8 +1996,6 @@ function exportScheduleReport(){
  */
 function exportSettlement(){
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
 		location.href = global_Path + "/dishtypeSettlement/exportSettDetailChildList/"+ beginTime + "/" + endTime + "/" + searchType + ".json";
 	}
 }
@@ -2022,8 +2013,8 @@ function initSettlementData(){
  */
 function doSettlementPost(callback){
 	$.post(global_Path+"/dishtypeSettlement/getRethinkSettlementList.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val()
+		beginTime : beginTime,
+		endTime : endTime
 	}, function(result){
 		if(result.flag == 1){
 			callback(result.data);
@@ -2066,8 +2057,6 @@ function initSettlementTb(data){
  */
 function exportPresent(){
 	if(compareBeginEndTime()){
-		var beginTime = $("#beginTime").val();
-		var endTime = $("#endTime").val();
 		location.href = global_Path + "/biz/exportinfos/"+ beginTime + "/" + endTime + ".json";
 	}
 }
@@ -2076,6 +2065,8 @@ function exportPresent(){
  */
 function initPresentData(){
 	if(compareBeginEndTime()){
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
 		doPresentPost(initPresentTb);
 	}
 }
@@ -2085,8 +2076,8 @@ function initPresentData(){
  */
 function doPresentPost(callback){
 	$.post(global_Path+"/biz/infos.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val()
+		beginTime : beginTime,
+		endTime : endTime
 	}, function(result){
 		if(result.flag == 1){
 			callback(result.data);
@@ -2480,17 +2471,15 @@ function getWaiterSaleData() {
 
 //查询服务员销售统计总表
 function doWaiterSalePost(callback){
-	var waiterName = $(obj).attr("waiterName");
-	var dishName = $(obj).attr("dishName");
-	var num = $(obj).attr("num");
-	localStorage.setItem("waiterName", waiterName);
-	localStorage.setItem("dishName", dishName);
-	localStorage.setItem("num",num);
+	beginTime = $("#beginTime").val();
+	endTime = $("#endTime").val();
+	waiterName = $("#waiterName").val();
+	dishName = $("#dishName").val();
 	$.post(global_Path + "/waiterSale/getWaiterSaleList.json", {
-		beginTime : $("#beginTime").val(),
-		endTime : $("#endTime").val(),
-		waiterName : $("#waiterName").val(),
-		dishName : $("#dishName").val(),
+		beginTime : beginTime,
+		endTime : endTime,
+		waiterName : waiterName,
+		dishName : dishName,
 		page: page,//当前页数
 		rows: 20//每页显示条数
 	}, function(result) {
@@ -2583,8 +2572,8 @@ function showWaiterSaleSubTb(userid,dishid,num,name,title,dishunit,dishtype){
 function getWaiterSaleDetails(){
 	var dishunit = $("#p_dishunit").val();
 	$.post(global_Path+"/waiterSale/getWaiterSaleDetail.json", {
-		beginTime: $("#beginTime").val(),
-		endTime: $("#endTime").val(),
+		beginTime: beginTime,
+		endTime: endTime,
 		userid: $("#p_userid").val(),
 		dishid: $("#p_dishid").val(),
 		num: $("#p_num").val(),
@@ -2614,12 +2603,8 @@ function getWaiterSaleDetails(){
 
 /** 导出 */
 function exportWaiterSale(type){
-	var beginTime = $("#beginTime").val();
-	var endTime = $("#endTime").val();
 	var userid = $("#p_userid").val();
 	var dishid = $("#p_dishid").val();
-	var waiterName = $("#waiterName").val();
-	var dishName = $("#dishName").val();
 	var dishtype = $("#p_dishtype").val();
 	var dishunit = $("#p_dishunit").val();
 	$("#_beginTime").val(beginTime);

@@ -337,8 +337,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
 ////	    	   flag=4;
 ////	       }
-		  //操作成功了，插入操作日记
-	     //修改为用dao层的日志引用，防止手动事物嵌套引起异常
+	       //操作成功了，插入操作日记
+	       //修改为用dao层的日志引用，防止手动事物嵌套引起异常
 	        int saveresult= toperationLogDao.save(toperationLog);
 	        if(saveresult>0){
 	            printOrderList( orders.getOrderid(),table.getTableid(), flag);
@@ -346,7 +346,6 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	        	transactionManager.commit(status);
 			   	return Constant.SUCCESSMSG;
 	        }
-	    	log.error("-->插入操作日志出错");
 	          transactionManager.rollback(status);
 		   	 return Constant.FAILUREMSG;
 	 	}catch(Exception ex){
@@ -1941,8 +1940,10 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
+	
 	@Autowired
 	ToperationLogDao  toperationLogDao;
+	
 	@Autowired
 	private DishSetProducerService dishSetService;
 

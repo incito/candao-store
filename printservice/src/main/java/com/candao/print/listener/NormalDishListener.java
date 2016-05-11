@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.jms.Destination;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.Constant;
+import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
@@ -47,8 +50,6 @@ public class NormalDishListener {
 	}
 
 	public String receiveMessage(PrintObj object) {
-		logger.error("-----------------------------", "");
-		logger.error("开始打印，订单号：" + object.getOrderNo(), "");
 		System.out.println("NormalDishListener receive message");
 		OutputStream socketOut = null;
 		OutputStreamWriter writer = null;
