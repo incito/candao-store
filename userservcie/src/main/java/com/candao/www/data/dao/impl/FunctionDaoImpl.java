@@ -117,5 +117,18 @@ public class FunctionDaoImpl implements FunctionDao {
 	public <T, K, V> Integer getFunctionTotal(Map<K, V> params) {
 	    return dao.get(PREFIX + ".getFunctionTotal", params);
 	}
+	
+	/**
+     * 根据工号查询权限
+     * @author weizhifang
+     * @since 2016-3-21
+     * @param userId
+     * @return
+     */
+    public <T, K, V> List<T> getFunctionForJobNumber(String jobNumber){
+    	Map<String,Object> params = new HashMap<String,Object>();
+    	params.put("jobNumber", jobNumber);
+    	return dao.find(PREFIX + ".getFunctionForJobNumber", params);
+    }
 
 }

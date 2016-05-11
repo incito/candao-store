@@ -284,4 +284,21 @@
 		</where>
 		order by r.id,f.id,url.id
 	</select>
+	
+	<!-- 根据工号查询权限 -->
+	<select id="getFunctionForJobNumber" parameterType="map" resultMap="base_result_map">
+		SELECT
+			f.*
+		FROM
+			t_b_function f,
+			t_b_role_function rf,
+			t_b_user_role ur,
+			t_b_employee e
+		<where>
+				f.id = rf.function
+			AND rf.role = ur.role_id
+			AND ur.user_id = e.user_id
+			AND e.job_number = #{jobNumber}
+		</where>
+	</select>
 </mapper>
