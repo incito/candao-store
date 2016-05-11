@@ -27,6 +27,7 @@ import com.candao.www.constant.Constant;
    cloud_fastdfs.url=http://image.candaochina.com/
  * 举例：http://image.candaochina.com/image01/M00/00/1C/wKhlC1aqy6WAKhl8AAMkLo8yqFU253.jpg 或者.apk 或者其他
  * 本地缓存地址是：http://门店IP/newspicyway/cache/image01/M00/00/39/CkIVMVchy62AL6yFAAC15OFYwCc520.png 或者.apk 或者其他
+ * 本地缓存文件地址：/tomcat/webapps/upload/image01/M00/00/39/CkIVMVchy62AL6yFAAC15OFYwCc520.png
  * @author zhaigt
  */
 @Controller
