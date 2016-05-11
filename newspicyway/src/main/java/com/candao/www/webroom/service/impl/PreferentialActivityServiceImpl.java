@@ -1122,6 +1122,9 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 							
 						}
 					}
+					if(dishids!=null && dishids.length()>1){
+						dishids=dishids.substring(1);
+					}
 					//System.out.println("map:" + JacksonJsonMapper.objectToJson( discountDishList ));
 					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					//int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
