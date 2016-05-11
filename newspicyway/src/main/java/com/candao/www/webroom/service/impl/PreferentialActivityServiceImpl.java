@@ -1090,6 +1090,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					BigDecimal orignalprice=null;
 					BigDecimal couponprice=new BigDecimal(0);
 					String dishid="";
+					String dishids="";
 					//菜品原价
 					BigDecimal amountCount = new BigDecimal(0.0);
 					for( TorderDetail d : orderDetailList ){
@@ -1114,6 +1115,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 								tmpMap.put("couponid", preferentialid);
 								tmpMap.put("orderid", orderid);
 								tmpMap.put("dishid", dishid ) ;
+								dishids=dishids+",'"+dishid+"'";
 								discountDishList.add(tmpMap) ; 
 								//System.out.println("dishid:"+dishid+";before:"+d.getOrderprice() +" ;after："+orignalprice +" ;当前共优惠："+amount);
 							}
@@ -1122,7 +1124,10 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					}
 					//System.out.println("map:" + JacksonJsonMapper.objectToJson( discountDishList ));
 					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
-					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
+					//int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
+					if(dishids!=null && dishids.length()>1){
+						int row=torderDetailDao.updateOrderDetailWithPreferentialNew(dishids,orderid,preferentialid);
+					}
 					//设置金额
 					result.setAmount(amount.setScale(2,RoundingMode.HALF_UP));
 					result.setResult(1);

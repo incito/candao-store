@@ -129,6 +129,10 @@ public interface TorderDetailMapper {
 	 * @return
 	 */
 	public List<TorderDetailSimple> getOrderDetailByOrderId(String orderid);
+
+	public void deleteTemp(String orderid);
+
+	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid);
 	
 	
 	/**
