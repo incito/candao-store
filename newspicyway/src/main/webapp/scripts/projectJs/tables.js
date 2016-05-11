@@ -25,12 +25,16 @@ $(document).ready(function(){
 	$("#areanameB").change(function(){
 		$("#areanameB_tip").text("");
 	});
+
 	findPrinterArea();
+
 	$("img.img-close").hover(function(){
 	 	$(this).attr("src",global_Path+"/images/close-active.png");	 
 	},function(){
 			$(this).attr("src",global_Path+"/images/close-sm.png");
 	});
+
+	//阻止游览器默认右键行为
 	 var temp = document.getElementById('nav-tables');
 	 	temp.oncontextmenu = function ()
 	    {
@@ -42,6 +46,7 @@ $(document).ready(function(){
 	    };
 	    
 	showAndHidden();
+
 	$("#add-form1").validate(
 			{
 				
@@ -60,9 +65,28 @@ $(document).ready(function(){
 						$("#tableName").addClass("error");
 						vcheck = false;
 					} 
+
+					if($("#minp").prop('checked') === true && ($("#minprice").val().length === 0 || $("#minprice").val() === "0")) {
+						if($("#minprice_tip").length === 0) {
+							$("#minprice").parents('.col-xs-7').append('<font color="red" id="minprice_tip" class="error">启用时，必须大于零</font>');
+						} else {
+							$("#minprice_tip").show();
+						}
+						vcheck = false;
+					}
+
+					if($("#fixp").prop('checked') === true && ($("#fixprice").val().length === 0 || $("#fixprice").val() === "0"))  {
+						if($("#fixprice_tip").length === 0) {
+							$("#fixprice").parents('.col-xs-7').append('<font color="red" id="fixprice_tip" class="error">启用时，必须大于零</font>');
+						} else {
+							$("#fixprice_tip").show();
+						}
+						vcheck = false;
+					}
 					
 					if (vcheck) {
 						if(check_validate()){
+
 							save_table();
 						}else{
 						}
@@ -89,8 +113,6 @@ $(document).ready(function(){
 			}
 	});
 	$("body").click(function(){
-
-		
 		$(".tables-right-tab").addClass("hidden");
 	});
 
@@ -100,15 +122,10 @@ $(document).ready(function(){
 	getTabletypeTag();
 
 //	getbuildingNoANDTableTypeTag();
-	
-
 
 	$(".icon-remove").mouseover(function(){
 		 $(this).show();
-		
 	});
-
-
 
 //	$("button.tables-type").click(function(e){
 //		$(".nav-tables li").removeClass("active");
@@ -524,7 +541,7 @@ function del() {
 				$(".img-close").click();
 				oneclickTableType($("#nav-tables .active").attr("id"));			
 				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(1);
-				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");//更新餐桌数量
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				alert(errorThrown);
@@ -534,26 +551,22 @@ function del() {
 	
 
 }
+
+
 function getTableTag(){
-	
-	
 	$.ajax({
 		type : "post",
 		async : false,
 		url:global_Path + '/table/getTableTag.json',
 		dataType : "json",
 		success : function(result) {
-			
-			
 			$.each(result, function(i,val){  
 				if(val.areaname==null){
 					val.areaname="";
 				}	
 				$(".areaid").append("<option value ="+val.areaid+"  class='form-control myInfo-select-addrW'>"+val.areaname+"</option>");
 				
-				});
-					
-
+				});	
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
@@ -612,6 +625,7 @@ function save_table() {
 	$("#tabletype option:selected,#areaid option:selected").each(function(index) {
 		tableInfo["" + $(this).parent().attr("name") + ""] = $(this).val();
 	});
+
 	$.ajax({
 		type:"post",
 		async:false,
@@ -648,6 +662,7 @@ function save_table() {
 function doEdit(id) {
 	$("#tables-detailAdd-dialog").modal("show");
 	$("#editTitle2").text("编辑餐台");
+	$("#minprice_tip,#fixprice_tip").hide();
 	$("#table-add").modal("show");
 	init_object();
 	$.ajax({
@@ -775,7 +790,8 @@ function editArea(id){
 	$.ajax({
 		type : "post",
 		async : false,
-		url : global_Path+"/tableArea/findById/"+str+".json",			dataType : "json",
+		url : global_Path+"/tableArea/findById/"+str+".json",
+			dataType : "json",
 		success : function(result) {
 			$("#areaidB").val(result.areaid);					
 			$("#areanameB").val(result.areaname);		
@@ -805,7 +821,8 @@ function save_Area(){
 			alert(errorThrown);
 		}
 	});
-}
+}
+
 function check_validate(){
 	var TN = $("#tableName").val();
 	$("#tableNo").val(TN);
@@ -903,7 +920,7 @@ function checkit(isChecked,id){
 		 $("."+id+"CheckboxSpan").css({"color": "#282828"});
 	 }
 	 else{
-		 $("#"+id+"rice").attr("disabled","disabled");
+		 $("#"+id+"rice").attr("disabled","disabled").val("");
 		 $("#"+id+"rice").next("span").css({"color": "#CECECE"});
 		 $("."+id+"CheckboxSpan").css({"color": " #CECECE"});
 		 
@@ -913,6 +930,8 @@ $("#tables-detailAdd-dialog").click(function(){
 	 a(document.body).removeClass("modal-open");
 });
 $('#tables-detailAdd-dialog').modal('show');
+
+
 function showAndHidden(){
 	var count = $("#nav-tables").find("li").length;
 
@@ -924,13 +943,9 @@ function showAndHidden(){
 		$(".nav-tables-next").css({"display":"none"});
 	}
 	if(count>0){
-
-	
-		$("#tables-detailMain-Add").css({"display":"inline-block"});
+		$("#tables-detailMain-Add").css({"display":"inline-block"});//添加餐台按钮
 		$(".tables-content-title span").text("餐台管理");
 	}else{
-	
-
 		$("#tables-detailMain-Add").css({"display":"none"});
 		$(".tables-content-title span").html("&nbsp;");
 	}
@@ -991,6 +1006,8 @@ function addPrinterArea(list){
 		}
 	});
 }
+
+//获取所有信息
 function findPrinterArea(){
 	$.ajax({
 		type:"post",
