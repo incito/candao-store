@@ -302,6 +302,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
 		  mapParam1.put("orderid", orders.getOrderid());
 		  List<TorderDetail> detailList =   torderDetailMapper.find(mapParam1);
+		  //先删除临时表,防止事物异常造成临时表里面存在数据
+		  torderDetailMapper.deleteTemp(orders.getOrderid());
 		  //调用存储过程插入订单详情的临时表
 		  int success = torderDetailMapper.insertTempOnce(listall);
 			if(success < 1){

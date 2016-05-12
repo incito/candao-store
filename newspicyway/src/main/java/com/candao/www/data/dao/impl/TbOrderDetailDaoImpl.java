@@ -247,5 +247,22 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("orderid", orderid);
 		return dao.get(PREFIX + ".selectorderinfos", params);
 	}
+	
+	@Override
+	public void deleteTemp(String orderid) {
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("orderid", orderid);
+		dao.delete(PREFIX + ".deleteTemp", params);
+	}
+	
+	@Override
+	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid) {
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("dishids", dishids);
+		params.put("orderid", orderid);
+		params.put("preferentialid", preferentialid);
+		dao.update(PREFIX + ".updateOrderDetailWithPreferentialNew", params);
+		return 1;
+	}
 }
  
