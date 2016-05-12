@@ -1946,21 +1946,21 @@ public class PadInterfaceController {
 		if (!synKey.equalsIgnoreCase(key)) {
 			return Constant.FAILUREMSG;
 		}
+		ResultDto dto = null;
 		//获取同步数据的传送方式
 		String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
 		try {
 			//MQ
 			if(type.equals("1")){
 				if (branchDataSyn.synBranchData()) {
-					resultMap.put("result", 0);
+					dto.setInfo(ResultMessage.SUCCESS);
 				}else{
-					resultMap.put("result", 1);
-					resultMap.put("msg", "修改数据同步的状态失败");
+					dto.setCode("1");
+					dto.setMessage("修改数据同步的状态失败");
 				}
 			//HTTP
 			}else if(type.equals("2")){
-				ResultDto dto = executeSyn();
-				resultDeal(resultMap, dto);
+				dto = executeSyn();
 			}
 		}catch (SysException e) {
 			loggers.error("门店上传到总店数据失败",e);
@@ -1968,7 +1968,6 @@ public class PadInterfaceController {
 			boolean afterStatus = false;
 			//如果是传输异常或者响应异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
 			if(e.getCode().equals("10009") || e.getCode().equals("10010")){
-				ResultDto dto = null;
 				for(int i=0;i<3;i++){
 					try{
 						dto = executeSyn();
@@ -1978,18 +1977,25 @@ public class PadInterfaceController {
 						logger.error(sysEx, "");
 					}
 				}
-				resultDeal(resultMap, dto);
 			}
 			//连续3次执行失败
 			if(afterStatus == false){
-				resultMap.put("result", ResultMessage.INTERNET_EXE.getCode());
-				resultMap.put("msg", ResultMessage.INTERNET_EXE.getMsg());
+				dto.setInfo(ResultMessage.INTERNET_EXE);
+				//resultMap.put("result", ResultMessage.INTERNET_EXE.getCode());
+				//resultMap.put("msg", ResultMessage.INTERNET_EXE.getMsg());
 			}
+		//使用原有代码MQ机制时出现的异常处理
 		}catch(Exception e){
 			loggers.error("门店上传到总店数据失败",e);
+			dto = null;
+		}
+		if(dto == null){
+			dto = new ResultDto();
+			dto.setCode("1");
+			dto.setMessage("修改数据同步的状态失败");
 		}
 		//return JacksonJsonMapper.objectToJson(resultMap);
-		return JSON.toJSONString(resultMap);
+		return JSON.toJSONString(dto);
 	}
 	//门店同步数据方法执行
 	private ResultDto executeSyn() throws SysException{

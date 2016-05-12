@@ -197,6 +197,8 @@ public class BranchDataSyn {
 			} else {
 				throw new SysException(ErrorMessage.NO_BRANCH_ID, Module.LOCAL_SHOP);
 			}
+		}else{
+			throw new SysException(ErrorMessage.NO_CLOSE_SHOP, Module.LOCAL_SHOP);
 		}
 		logger.info("synLocalData-end:" + dto);
 		return dto;

@@ -59,7 +59,7 @@ public class HttpUtil {
 	/** 连接超时时间 */
 	private static int defaultConnectionTimeout = 8 * 1000;
 	/** sokect超时时间，由bean factory设置 */
-	private static int defaultSokectTimeout = 120 * 1000;
+	//private static int defaultSokectTimeout = 120 * 1000;
 
 	public static HttpConnectionManager getManager() {
 		if (connectionManager == null) {
@@ -67,8 +67,8 @@ public class HttpUtil {
 			connectionManager.getParams().setDefaultMaxConnectionsPerHost(defaultMaxConnPerHost);
 			connectionManager.getParams().setMaxTotalConnections(defaultMaxTotalConn);
 			connectionManager.getParams().setConnectionTimeout(defaultConnectionTimeout);
-			//String timeOut = PropertiesUtils.getValue("DEFAULT_SOKECT_TIMEOUT");
-			connectionManager.getParams().setSoTimeout(defaultSokectTimeout);
+			String timeOut = PropertiesUtils.getValue("DEFAULT_SOKECT_TIMEOUT");
+			connectionManager.getParams().setSoTimeout(Integer.valueOf(timeOut));
 			
 			connectionManager.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
 		}

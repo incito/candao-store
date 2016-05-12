@@ -11,8 +11,9 @@ import com.candao.common.enums.ResultMessage;
  * @version 1.0
  */
 public class ResultDto {
-	
+	//状态码,当为0000时为成功
 	private String code;
+	//回执信息
 	private String message;
 	
 	public ResultDto(ResultMessage mes){
