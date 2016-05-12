@@ -19,5 +19,5 @@ public interface NodeClassMapper {
 
     int insert(Map<String, Object> param);
 
-    int getTipTotalAmountByClassNo(String jsOrder);
+    Integer getTipTotalAmountByClassNo(String jsOrder);
 }

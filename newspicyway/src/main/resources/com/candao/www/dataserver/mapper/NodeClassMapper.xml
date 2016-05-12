@@ -11,7 +11,7 @@
     <select id="getNodeClassByNo" resultType="java.util.HashMap">
        SELECT *,#{tipTotalAmount} AS tipTotalAmount FROM t_nodeclass WHERE  classno=#{jsOrder}
     </select>
-    <select id="getTipTotalAmountByClassNo" resultType="int">
+    <select id="getTipTotalAmountByClassNo" resultType="java.lang.Integer">
         SELECT
         SUM(t.paid) AS tipTotalAmount
         FROM t_nodeclass n

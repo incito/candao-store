@@ -65,7 +65,7 @@ public class OpenCashServiceImpl implements OpenCashService {
             if ("".equals(classNo)) {
                 classNo = nodeClassMapper.getMaxClassNo();
             }
-            int tipTotalAmount = nodeClassMapper.getTipTotalAmountByClassNo(classNo);
+            Integer tipTotalAmount = nodeClassMapper.getTipTotalAmountByClassNo(classNo);
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo, tipTotalAmount);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
             if (!orderJsonList.isEmpty()) {
