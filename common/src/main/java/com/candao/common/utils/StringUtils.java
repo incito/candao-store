@@ -2,6 +2,7 @@ package com.candao.common.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -255,12 +256,11 @@ private static List<String> subString3(String src, int num, List<String> res) {
 	if (src != null && !"".equals(src)) {
 		for (int i = 0; i < src.length(); i++) {
 			char c = src.charAt(i);
-			// if((c & 0xff00) != 0){
-			// truelength += 2;
-			// } else {
-			// truelength += 1;
-			// }
-			truelength += 1;
+			 if((c & 0xff00) != 0){
+				 truelength += 2;
+			 } else {
+				 truelength += 1;
+			 }
 			if (truelength >= num) {
 				if (truelength == num + 1) {
 					truelength = i == 0 ? 0 : (i - 1);
@@ -278,14 +278,13 @@ private static List<String> subString3(String src, int num, List<String> res) {
 	if (truelength != 0 && truelength < src.length()) {
 		str = src.substring(0, truelength);
 		if (flag)
-			str = str.concat(" "
-					+ " ");
+			str = str.concat(" ");
 		res.add(str);
 		res = subString3(src.substring(truelength), num, res);
 	} else {
 		str = src;
 		for (int i = 0; i < num - truelength; i++) {
-			str = str.concat("  ");
+			str = str.concat(" ");
 		}
 		res.add(str);
 	}
@@ -296,7 +295,7 @@ private static List<String> subString3(String src, int num, List<String> res) {
 	public static String getStr(int num){
 		String res = "";
 		for (int i = 0; i < num; i++) {
-			res +="  ";
+			res +=" ";
 		}
 		return res;
 	}
@@ -317,6 +316,45 @@ private static List<String> subString3(String src, int num, List<String> res) {
 		
 		src = src.replace(s, "");
 		return src;
+	}
+	
+	/**
+	 * 实现打印换行，默认使用unicode
+	 * 
+	 * @param src
+	 *            需要换行的string,按照数组的顺序依次换行
+	 * @param length
+	 *            对应src数组中每个String要保留的大小，超过则换下一行
+	 * @return
+	 */
+	public static String[] getLineFeedText(String[] src, Integer[] length) throws Exception {
+		if (src == null || length == null || src.length > length.length) {
+			return null;
+		}
+		// 换行
+		List<List<String>> dst = new ArrayList<>();
+		for (int i = 0; i < src.length; i++) {
+			dst.add(StringUtils.subString2(StringUtils.bSubstring3(src[i], src[i].length()), length[i]));
+		}
+		// 取最大值
+		int max = 0;
+		for (int i = 0; i < dst.size(); i++) {
+			if (dst.get(i).size() > max)
+				max = dst.get(i).size();
+		}
+		// 结果集
+		String[] res = new String[max];
+		StringBuffer buffer = new StringBuffer();
+		// 拼装
+		for (int i = 0; i < max; i++) {
+			buffer.setLength(0);
+			for (int j = 0; j < dst.size(); j++) {
+				String text = (i + 1 > dst.get(j).size() ? StringUtils.getStr(length[j].intValue()) : dst.get(j).get(i));
+				buffer.append(text).append(" ");
+			}
+			res[i] = buffer.toString();
+		}
+		return res;
 	}
 	
 	public static void main(String[] args) throws Exception {

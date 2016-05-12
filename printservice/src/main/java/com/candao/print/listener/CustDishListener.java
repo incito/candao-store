@@ -3,6 +3,7 @@ package com.candao.print.listener;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +19,6 @@ import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.PrinterService;
 import com.candao.print.service.impl.NormalDishPrintService;
  
@@ -78,17 +78,36 @@ public class CustDishListener {
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("==========================================\r\n");
 			// 一行最多能容下42个字符
-
-			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
-					27)
-					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
-					+ "\r\n");
-
-			writer.write(StringUtils.bSubstring2("服务员:" + object.getUserName(),
-					9)
-					+ StringUtils.bSubstring2(object.getTableArea(), 8)
-					+ StringUtils.bSubstring2(
-							object.getTimeMsg().substring(11), 8) + "\r\n");
+//			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
+//					27)
+//					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
+//					+ "\r\n");
+			
+			String[] name = {object.getOrderNo(),object.getTimeMsg()};
+			Integer[] len = {22,10};
+			String[] header = StringUtils.getLineFeedText(name, len);
+			if(header != null){
+				header[0] = StringUtils.bSubstring2("账单号",3) + header[0];
+				for (int i = 0; i < header.length; i++) {
+					writer.write(header[i]+"\r\n");
+				}				
+			}
+			
+//			writer.write(StringUtils.bSubstring2("服务员:" + object.getUserName(),
+//					9)
+//					+ StringUtils.bSubstring2(object.getTableArea(), 8)
+//					+ StringUtils.bSubstring2(
+//							object.getTimeMsg().substring(11), 8) + "\r\n");
+			
+			String[] username = {object.getUserName(),object.getTableArea(),object.getTimeMsg().substring(11)};
+			Integer[] length = {9,8,8};
+			String[] body = StringUtils.getLineFeedText(username, length);
+			if(body != null){
+				body[0] = StringUtils.bSubstring2("服务员",3) + body[0];
+				for (int i = 0; i < body.length; i++) {
+					writer.write(body[i]+"\r\n");
+				}
+			}
 
 			writer.write("------------------------------------------\r\n");
 		
@@ -106,28 +125,13 @@ public class CustDishListener {
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("     " + "\r\n");
-
-//			for (PrintDish printDish : printDishList) {
-//				String dishName2 = StringUtils.bSubstring2(
-//						StringUtils.BtoQ(printDish.getDishName()), 12);
-//				
-//				String dishNum2 = StringUtils.bSubstring2(StringUtils.BtoQ(
-//						printDish.getDishNum()), 4);
-//				String dishPrice2 = StringUtils.bSubstring2(printDish
-//						.getDishPrice() == null ? "" : StringUtils.BtoQ(printDish.getDishPrice()
-//						.toString()), 5);
-//				writer.write(dishName2);
-//				writer.write( dishNum2 );
-//				writer.write( dishPrice2 + "\r\n");
-//				writer.write("     " + "\r\n");
-//			 }
 			
 			for (PrintDish it : printDishList) {
 				it.setDishName(StringUtils.split3(it.getDishName(), "#"));
 				it.setDishUnit(StringUtils.split3(it.getDishUnit(), "#"));
 			}
 			
-			String[] text = getPrintText(printDishList, 11, 3, 5);
+			String[] text = getPrintText(printDishList, 22, 7, 11);
 			
 			for (int i = 0; i < text.length; i++) {
 				writer.write(text[i]+"\r\n");
@@ -167,30 +171,32 @@ public class CustDishListener {
 	
 	private String[] getPrintText(List<PrintDish> list, int num1, int num2, int num3) throws Exception {
 		List<String> res = new LinkedList<String>();
-		List<String> name = null;
-		List<String> price = null;
-		String dishnum = null;
-
-		int rows = 0;
-		StringBuffer buffer = new StringBuffer();
+		List<String> name = new LinkedList<>();
+		List<Integer> len = new LinkedList<>();
+		
 		for (PrintDish it : list) {
-			name = StringUtils.subString2(StringUtils.BtoQ(it.getDishName()), num1);
-			price = StringUtils.subString2(StringUtils.BtoQ(it.getDishPrice() == null?"":it.getDishPrice().toString()), num3);
-			dishnum = StringUtils.bSubstring2(StringUtils.BtoQ(it.getDishNum()), num2);
-
-			rows = name.size() >price.size()?name.size():price.size() ;
-			for (int i = 0; i < rows; i++) {
-				String name2 = i + 1 > name.size() ? StringUtils.getStr(num1) : name.get(i);
-				String price2 = i + 1 > price.size() ? StringUtils.getStr(num3) : price.get(i);
-				String dishnum2 = i == 0 ? dishnum : StringUtils.getStr(num2);
-				buffer.setLength(0);
-				buffer.append(name2).append("  ").append(dishnum2).append("  ").append(price2);
-				res.add(buffer.toString());
-			}
+			name.clear();
+			len.clear();
+			String dishName = it.getDishName() == null ? "" :it.getDishName();
+			String dishNum = it.getDishNum() == null ? "" :it.getDishNum();
+			String dishPrice = it.getDishPrice() == null ? "" :it.getDishPrice().toString();
+			
+			name.add(dishName);
+			name.add(dishNum);
+			name.add(dishPrice);
+			
+			len.add(num1);
+			len.add(num2);
+			len.add(num3);
+			
+			String[] temp = StringUtils.getLineFeedText(name.toArray(new String[name.size()]), len.toArray(new Integer[len.size()]));
+			
+			res.addAll(Arrays.asList(temp));
 		}
 
 		return res.toArray(new String[res.size()]);
 	}
+
 
 	@Autowired
 	private JmsTemplate jmsTemplate;

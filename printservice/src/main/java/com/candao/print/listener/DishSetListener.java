@@ -134,7 +134,6 @@ public class DishSetListener {
 				writer.write(dishName2);
 				writer.write( dishNum2 );
 				writer.write( dishunit2 + "\r\n");
-				writer.write("     " + "\r\n");
 			 }
 		
 			writer.flush();//  
