@@ -115,7 +115,6 @@ public class MemberServiceImpl implements MemberService {
         String memberNo = orderMapper.selectMemberNoByOrderId(orderId);
         //setMemberPrice3逻辑
         if (!isRevert2) {
-            // 如果是PAD登录过的就不取消会员价
             if (!StringUtil.isEmpty(memberNo)) {
                 return "{\"Data\":\"1\",\"workdate\":\"\",\"Info\":\"\"}";
             }

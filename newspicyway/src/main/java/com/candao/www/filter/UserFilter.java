@@ -18,7 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import com.candao.common.utils.ProjectPath;
 import com.candao.www.constant.Constant;
 public class UserFilter implements Filter {
-
+	private String[] excludedArray;
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
@@ -38,6 +38,15 @@ public class UserFilter implements Filter {
 		response.setContentType("text/html;charset=utf-8");
 		String currentURL = request.getRequestURI(); // 取得根目录所对应的绝对路径:
 		String targetURL = currentURL.substring(currentURL.indexOf("/", 1)); // 截取到当前文件名用于比较
+		/*不过滤排除的URL*/
+		if (null != excludedArray) {
+			for (String excluded : excludedArray) {
+				if (currentURL.startsWith(excluded)) {
+					chain.doFilter(request, response);
+					return;
+				}
+			}
+		}
 		// 若存在会话则返回该会话,否则返回NULL
 		HttpSession session = request.getSession(false);
 
@@ -67,7 +76,10 @@ public class UserFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-	 
+		String excluded = filterConfig.getInitParameter("excluded");
+		if (!org.springframework.util.StringUtils.isEmpty(excluded)) {
+			excludedArray = excluded.split(",");
+		}
 	}
  
 }

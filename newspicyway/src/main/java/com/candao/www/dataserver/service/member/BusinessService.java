@@ -124,6 +124,13 @@ public interface BusinessService {
 
     String getServerTableList2(String orderId, String userId);
 
+    /**
+     * 关台
+     *
+     * @param userId
+     * @param orderId
+     * @return
+     */
     String accountsOrder(String userId, String orderId);
 
     Date getOpenDate();
@@ -136,5 +143,13 @@ public interface BusinessService {
      */
     String getTableNoByOrderId(String orderId);
 
+    /**
+     * 撤销反结算
+     *
+     * @param orderId
+     * @param userId
+     * @param addr
+     * @return
+     */
     String posrebacksettleorder(String orderId, String userId, String addr);
 }
