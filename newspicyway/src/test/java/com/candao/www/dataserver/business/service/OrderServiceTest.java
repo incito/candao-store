@@ -130,19 +130,19 @@ public class OrderServiceTest {
         Assert.assertEquals(responseData.getData(), "0");
     }
 
-    /**
-     * 结算前计算帐单金额
-     */
-    @Test
-    public void testPCaleTableAmount() {
-        new Expectations() {
-            {
-                caleTableAmountMapper.pCaleTableAmount(anyString);
-                result = new Exception();
-            }
-        };
-        String resp = orderService.pCaleTableAmount("123", "H20160303245503000001");
-        ResponseData responseData = JSON.parseObject(resp, ResponseData.class);
-        Assert.assertEquals(responseData.getData(), "0");
-    }
+//    /**
+//     * 结算前计算帐单金额
+//     */
+//    @Test
+//    public void testPCaleTableAmount() {
+//        new Expectations() {
+//            {
+//                caleTableAmountMapper.pCaleTableAmount(anyString);
+//                result = new Exception();
+//            }
+//        };
+//        String resp = orderService.pCaleTableAmount("123", "H20160303245503000001");
+//        ResponseData responseData = JSON.parseObject(resp, ResponseData.class);
+//        Assert.assertEquals(responseData.getData(), "0");
+//    }
 }
