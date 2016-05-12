@@ -38,9 +38,11 @@
         select count(*) from t_order where begintime>=CURRENT_DATE() and orderstatus=0
     </select>
     <select id="selectTableOrder" resultType="map">
-        select a.*,b.*
-        from t_order a  inner join t_table b on(a.currenttableid=b.tableid)
-        where a.orderid=#{orderId} order by a.orderid desc LIMIT 0 , 1
+        SELECT a.*,b.*,IFNULL(c.receivables, 0) AS tipAmount,IFNULL(c.paid,0) as tipPaid
+        FROM t_order a
+        INNER JOIN t_table b on(a.currenttableid=b.tableid)
+        LEFT JOIN t_b_tip c ON (a.orderid = c.orderid)
+        WHERE a.orderid=#{orderId} ORDER BY a.orderid DESC LIMIT 0 , 1
     </select>
     <update id="updatePutOrder" parameterType="map">
         update t_order set payway=3,ordertype=2,gzcode=#{gzCode},gzname=#{gzName},gztele=#{gzTele},gzuser=#{gzUser}
