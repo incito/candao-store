@@ -1936,8 +1936,7 @@ public class PadInterfaceController {
 	@RequestMapping("/jdesyndata")
 	@ResponseBody
 	public String jdeSynData(String json) {
-
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		logger.info("jdeSynData-start:"+json, "");
 		@SuppressWarnings("unchecked")
 		//Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
 		Map<String, String> map = JSON.parseObject(json, Map.class);
