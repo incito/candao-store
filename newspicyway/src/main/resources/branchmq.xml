@@ -183,18 +183,6 @@
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 称重单的 监听 end -->
-    <!-- 结账单监听start -->
-     <bean id="statementMessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="statementQueue" />  
-        <property name="messageListener" ref="statementListenerAdapter" />  
-    </bean>  
-    
-     <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="statementDishListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>  
     <!-- 套餐小票的监听 -->
 	  <bean id="dishSetmessageListenerAdapterContainer"  
         class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
@@ -260,9 +248,6 @@
     </bean>  
       <bean id="tableChangeListener" class="com.candao.print.listener.TableChangeListener">  
         <property name="destination" ref="tableSwitchQueue"/>  
-    </bean> 
-    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener">  
-        <property name="destination" ref="statementQueue"/>  
     </bean> 
     <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">  
         <property name="destination" ref="dishSetQueue"/>  
