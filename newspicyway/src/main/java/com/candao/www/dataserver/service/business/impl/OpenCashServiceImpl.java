@@ -65,10 +65,11 @@ public class OpenCashServiceImpl implements OpenCashService {
             if ("".equals(classNo)) {
                 classNo = nodeClassMapper.getMaxClassNo();
             }
+            int tipTotalAmount = nodeClassMapper.getTipTotalAmountByClassNo(classNo);
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
             if (!orderJsonList.isEmpty()) {
-                responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJsonList,"|"));
+                responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJsonList, "|"));
             }
             responseJsonData.setJsJson(DataServerJsonFormat.jsonFormat(jsJsonList, "|"));
         } catch (Exception e) {

@@ -13,9 +13,11 @@ public interface NodeClassMapper {
 
     String getMaxClassNoToday(@Param("preStr") String preStr);
 
-    List<Map> getNodeClassByNo(String jsOrder);
+    List<Map> getNodeClassByNo(@Param("jsOrder") String jsOrder, @Param("tipTotalAmount") Integer tipTotalAmount);
 
     List<Map> getJsListJsonByNo(String jsOrder);
 
     int insert(Map<String, Object> param);
+
+    int getTipTotalAmountByClassNo(String jsOrder);
 }

@@ -9,7 +9,16 @@
         select max(classno) from t_nodeclass where classno like '${preStr}%'
     </select>
     <select id="getNodeClassByNo" resultType="java.util.HashMap">
-       SELECT * FROM t_nodeclass WHERE  classno=#{jsOrder}
+       SELECT *,#{tipTotalAmount} AS tipTotalAmount FROM t_nodeclass WHERE  classno=#{jsOrder}
+    </select>
+    <select id="getTipTotalAmountByClassNo" resultType="int">
+        SELECT
+        SUM(t.paid) AS tipTotalAmount
+        FROM t_nodeclass n
+        LEFT JOIN t_b_tip t
+        ON (t.insertime > n.vIn
+        AND t.insertime &lt; n.vOut)
+        WHERE classno =#{jsOrder}
     </select>
     <select id="getJsListJsonByNo" resultType="java.util.HashMap">
         SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,
