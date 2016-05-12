@@ -32,7 +32,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 	/**
 	 * 打印机返回正常的状态
 	 */
-	private static final String NORMAL = "10100^0^0^1111^";
+	private static final String NORMAL = "10110";
 
 	Log logger = LogFactory.getLog(AbstractPrintListener.class);
 
@@ -102,15 +102,15 @@ public abstract class AbstractPrintListener implements PrintListener {
 	private boolean checkPrinter(OutputStream socketOut, final Socket socket) throws IOException {
 		String hostAddress = socket.getInetAddress().getHostAddress();
 		InputStream inputStream;
-		socketOut.write(new byte[] { 29, 97, 1 });
-		byte[] rs = new byte[4];
+		socketOut.write(new byte[] { 16, 4, 1 });
+		byte[] rs = new byte[1];
 		try {
 			inputStream = socket.getInputStream();
 			inputStream.read(rs);
 
 			String rs_str = "";
 			for (byte b : rs) {
-				rs_str += Integer.toBinaryString(b) + "^";
+				rs_str += Integer.toBinaryString(b);
 			}
 			if (!rs_str.equals(NORMAL)) {
 				logger.error("打印机状态异常，IP：" + hostAddress + "，状态码：" + rs_str, null);
