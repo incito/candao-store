@@ -155,7 +155,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 			socketOut = socket.getOutputStream();
 			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
 
-			boolean flag = "Y".equals(PropertiesUtils.getValue(Constant.CHECKSTATE).trim().toUpperCase());
+			boolean flag = PropertiesUtils.getValue(Constant.CHECKSTATE) == null || "Y".equals(PropertiesUtils.getValue(Constant.CHECKSTATE).trim().toUpperCase());
 			
 			//打印之前检查打印机状态
 			if(flag){
