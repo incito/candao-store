@@ -32,7 +32,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 	/**
 	 * 打印机返回正常的状态
 	 */
-	private static final String NORMAL = "10110";
+	private static final String NORMAL = "10100^0^0^1111^";
 
 	Log logger = LogFactory.getLog(AbstractPrintListener.class);
 
@@ -97,20 +97,19 @@ public abstract class AbstractPrintListener implements PrintListener {
 	 * @param socketOut
 	 * @param socket
 	 * @param object
-	 * @throws IOException
 	 */
-	private boolean checkPrinter(OutputStream socketOut, final Socket socket) throws IOException {
+	private boolean checkPrinter(OutputStream socketOut, final Socket socket) {
 		String hostAddress = socket.getInetAddress().getHostAddress();
 		InputStream inputStream;
-		socketOut.write(new byte[] { 16, 4, 1 });
-		byte[] rs = new byte[1];
+		byte[] rs = new byte[4];
 		try {
+			socketOut.write(new byte[] { 29, 97, 1 });
 			inputStream = socket.getInputStream();
 			inputStream.read(rs);
 
 			String rs_str = "";
 			for (byte b : rs) {
-				rs_str += Integer.toBinaryString(b);
+				rs_str += Integer.toBinaryString(b) + "^";
 			}
 			if (!rs_str.equals(NORMAL)) {
 				logger.error("打印机状态异常，IP：" + hostAddress + "，状态码：" + rs_str, null);
@@ -152,6 +151,8 @@ public abstract class AbstractPrintListener implements PrintListener {
 			print_port = Integer.parseInt(object.getCustomerPrinterPort());
 
 			socket = new Socket(ipAddress, print_port);
+			socket.setKeepAlive(true);  
+	        socket.setSoTimeout(5 * 1000);      //从inputStream中读打印机状态返回值的超时时间
 			socketOut = socket.getOutputStream();
 			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
 
@@ -176,7 +177,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 
 			//调用各监听器的实现类打印具体的内容
 			printBusinessData(object, socketOut, writer);
-
+			
 			// 下面指令为打印完成后自动走纸
 			writer.write(27);
 			writer.write(100);
@@ -185,13 +186,13 @@ public abstract class AbstractPrintListener implements PrintListener {
 			writer.flush();//
 			socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
 
-			if(flag){
-				//打印完成后检查打印机状态
-				boolean checkPrinter = checkPrinter(socketOut, socket);
-				if(!checkPrinter){
-					resolve(object, ipstr, ipAddress, isMainPrint);
-				}				
-			}
+//			if(flag){
+//				//打印完成后检查打印机状态
+//				boolean checkPrinter = checkPrinter(socketOut, socket);
+//				if(!checkPrinter){
+//					resolve(object, ipstr, ipAddress, isMainPrint);
+//				}				
+//			}
 
 		} catch (SocketException se) {
 			logger.error("------------------------", null);
@@ -252,6 +253,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 				//没有配置备用打印机，但主打印机状态异常
 				logger.error("------------------------", null);
 				logger.error("打印机状态异常，IP:" + ipAddress + ",订单号：" + object.getOrderNo(), null);
+				joinExceptionQueue(object, listenerID);
 			}
 		} else {
 			//备用打印机状态异常，则加入异常队列
