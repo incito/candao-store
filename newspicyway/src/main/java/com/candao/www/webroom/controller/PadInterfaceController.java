@@ -1658,7 +1658,7 @@ public class PadInterfaceController {
 			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 			if(tbOpenBizLog == null){
 				logger.info("操作失败");
-				jsonString = Constant.FAILUREMSG;
+				jsonString = Constant.FAILUROPEMSG;
 				return jsonString;
 			}
 
