@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 
 import javax.jms.Destination;
 
@@ -150,7 +150,8 @@ public abstract class AbstractPrintListener implements PrintListener {
 			int print_port;
 			print_port = Integer.parseInt(object.getCustomerPrinterPort());
 
-			socket = new Socket(ipAddress, print_port);
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(ipAddress, print_port), 5000);//建立连接5秒超时
 			socket.setKeepAlive(true);  
 	        socket.setSoTimeout(5 * 1000);      //从inputStream中读打印机状态返回值的超时时间
 			socketOut = socket.getOutputStream();
@@ -194,7 +195,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 //				}				
 //			}
 
-		} catch (SocketException se) {
+		} catch (IOException se) {
 			logger.error("------------------------", null);
 			logger.error("打印异常(socket异常)，ip："+ipAddress+"，订单号：" + object.getOrderNo() + se.getMessage(), se);
 			if (isMainPrint && hasBackupPrinter(ipstr)) {
