@@ -15,9 +15,7 @@ import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.PrinterService;
-import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
 public class TableChangeListener {
@@ -72,21 +70,31 @@ public class TableChangeListener {
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("==========================================\r\n");
 			writer.flush();// 
-			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
-					27)
-					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
-					+ "\r\n");
+			
+			String[] name = {object.getOrderNo(),object.getTimeMsg().substring(0,10)};
+			//最多显示34个字符
+			Integer[] len = {22,10};
+			String[] header = StringUtils.getLineFeedText(name, len);
+			if(header != null){
+				header[0] = StringUtils.bSubstring2("账单号:",4) + header[0];
+				for (int i = 0; i < header.length; i++) {
+					writer.write(header[i]+"\r\n");
+				}
+			}
 
-			writer.write(StringUtils.bSubstring2("服务员:" + object.getUserName(),
-					17)
-//					+ StringUtils.bSubstring2(object.getTableArea(), 8)
-					+ StringUtils.bSubstring2(
-							object.getTimeMsg().substring(11), 8) + "\r\n");
+			String[] username = {object.getUserName(),object.getTimeMsg().substring(11)};
+			Integer[] length = {12,8};
+			String[] body = StringUtils.getLineFeedText(username, length);
+			if(body != null){
+				body[0] = StringUtils.bSubstring2("服务员:",4) + body[0];
+				for (int i = 0; i < body.length; i++) {
+					writer.write(body[i]+"\r\n");
+				}
+			}
+			
 			writer.write(StringUtils.bSubstring2("授权人:" + object.getDiscardUserId(),
 					20)
 					+"\r\n");
-
-			
 			
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 
@@ -99,6 +107,7 @@ public class TableChangeListener {
 					+StringUtils.bSubstring2(object.getAbbrbillName(), 2)
 					+StringUtils.bSubstring3(object.getWelcomeMsg(), 5)
 					+ "\r\n");
+			
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
 
@@ -138,10 +147,6 @@ public class TableChangeListener {
 	@Autowired
 	@Qualifier("tableSwitchQueue")
 	private Destination destination;
-
-
-	@Autowired
-	private NormalDishProducerService producerService;
 	@Autowired
 	PrinterService    printerService;
 

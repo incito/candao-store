@@ -66,8 +66,6 @@ public static String bSubstring3(String s,int k) throws Exception{
 	   }
 	   	byte[] bytes = s.getBytes("Unicode");
 		
-		
-		
 		String returnMsg = new String(bytes, 0, s.getBytes("Unicode").length, "Unicode");
 
 		return returnMsg;

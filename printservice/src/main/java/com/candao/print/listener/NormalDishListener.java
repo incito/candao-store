@@ -10,8 +10,7 @@ import java.util.List;
 
 import javax.jms.Destination;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -20,12 +19,10 @@ import org.springframework.stereotype.Service;
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.Constant;
-import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
@@ -68,7 +65,6 @@ public class NormalDishListener {
 			print_port = Integer.parseInt(object.getCustomerPrinterPort());// Integer.parseInt(address[1]);
 
 			socket = new Socket(ipAddress, print_port);
-//			socket = new Socket("192.168.40.215", 9100);
 			socketOut = socket.getOutputStream();
 			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
 			socketOut.write(27);
@@ -84,16 +80,28 @@ public class NormalDishListener {
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("==========================================\r\n");
 			writer.flush();// 
-			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
-					27)
-					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
-					+ "\r\n");
-
-			writer.write(StringUtils.bSubstring2("服务员:" + object.getUserName(),
-					9)
-					+ StringUtils.bSubstring2(object.getTableArea(), 8)
-					+ StringUtils.bSubstring2(
-							object.getTimeMsg().substring(11), 8) + "\r\n");
+			
+			String[] name = {object.getOrderNo(),object.getTimeMsg().substring(0,10)};
+			//最多显示34个字符
+			Integer[] len = {22,10};
+			String[] header = StringUtils.getLineFeedText(name, len);
+			if(header != null){
+				header[0] = StringUtils.bSubstring2("账单号:",4) + header[0];
+				for (int i = 0; i < header.length; i++) {
+					writer.write(header[i]+"\r\n");
+				}
+			}
+			
+			String[] username = {object.getUserName(),object.getTableArea(),object.getTimeMsg().substring(11)};
+			Integer[] length = {12,10,8};
+			String[] body = StringUtils.getLineFeedText(username, length);
+			if(body != null){
+				body[0] = StringUtils.bSubstring2("服务员:",4) + body[0];
+				for (int i = 0; i < body.length; i++) {
+					writer.write(body[i]+"\r\n");
+				}
+			}
+			
 			if(object.getDiscardUserId()!=null&&!"".equals(object.getDiscardUserId())){
 			writer.write(StringUtils.bSubstring2("授权人:" + object.getDiscardUserId(),
 					9)
@@ -144,8 +152,6 @@ public class NormalDishListener {
 					+ StringUtils.bSubstring2("数量", 4));
 			writer.write(" ");
 			writer.write( StringUtils.bSubstring2("单位", 2) + "\r\n");
-			
-			writer.write("     " + "\r\n");
 			writer.flush();// 
 			logger.error("------------------------","");
 			logger.error("打印菜品，订单号："+object.getOrderNo()+"*菜品数量：" + (object.getpDish() == null ? 0 : object.getpDish().size()), "");
@@ -154,29 +160,14 @@ public class NormalDishListener {
 				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
 			}
 			
-			//合并打印
-			for (PrintDish singleDish : object.getpDish()) {
-				logger.error("------------------------","");
-				logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + singleDish.getDishName(),"");
-				socketOut.write(PrinterConstant.getFd8Font());
-				String dishNum2 = StringUtils.bSubstring3(
-						singleDish.getDishNum(), 4);
-				String dishunit2 = StringUtils.bSubstring2(singleDish.getDishUnit(),
-						2);
-				
-				int spaceNum = 12;
-				if (2 == printDish.getDishtype()){
-					spaceNum = 9;
-					writer.write("（套）");
-				}
-				String dishName2 = StringUtils.bSubstring2(StringUtils.BtoQ(
-						singleDish.getDishName()), spaceNum );
-				writer.write(dishName2);
-				writer.flush();//  
-				socketOut.write(PrinterConstant.getFdDoubleFont());
-				writer.write( " "+dishNum2 + dishunit2				+ "                    \r\n");
-				writer.flush();//  
+			socketOut.write(PrinterConstant.getFd8Font());
+			Object[] text = getPrintText(object, 24, 8, 11);
+
+			for (int i = 0; i < text.length; i++) {
+				writer.write(text[i].toString()+"\r\n");
 			}
+			writer.flush();
+			
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("------------------------------------------\r\n");
 			writer.flush();//  
@@ -185,11 +176,6 @@ public class NormalDishListener {
 					.getAbbrname() == null ? "　" : printDish
 					.getAbbrname()), 4));
 			
-			
-//			if(printDish.getSperequire()!=null){
-//				special = StringUtils.bSubstring2(printDish
-//						.getSperequire(), 30);
-//			}
 			//菜品套餐信息
 			String parentDishName = "";
 			List<String> buffer = new LinkedList<>();
@@ -235,8 +221,8 @@ public class NormalDishListener {
 			// 只显示出时分秒
 //			writer.write(StringUtils.bSubstring3(String.valueOf(Integer.toString(printDishList.get(0)
 //							.getMaxDishCount())), 8));
-			writer.write(StringUtils.bSubstring3(String.valueOf(object.getOrderseq()== 0 ? "　" : object
-					.getOrderseq()), 8));
+			writer.write(StringUtils.bSubstring3(String.valueOf(object.getOrderseq()== 0 ? "　" : "第"+object
+					.getOrderseq()+"张"), 8));
 			writer.flush();// 
 			socketOut.write(PrinterConstant.getClear_font());				
 			writer.write( StringUtils.bSubstring2(new SimpleDateFormat("HH:mm:ss")
@@ -248,12 +234,29 @@ public class NormalDishListener {
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {
-				writer.write("备注：" + parentDishName + "\r\n");
+				//套餐备注换行
+				String[] dishName = {parentDishName};
+				Integer[] dishLength = {20};
+				String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
+				parentDishNameLineFeed[0] = "备注："+parentDishNameLineFeed[0];
+				for (int j = 0; j < parentDishNameLineFeed.length; j++) {
+					writer.write( parentDishNameLineFeed[j] + "\r\n");					
+				}
+			} else {
+				if (special != null && !"".equals(special))
+					special = "备注：" + special;
 			}
 			
-			socketOut.write(PrinterConstant.getFdDoubleFont());
-			writer.write(special + "\r\n");
+			//忌口信息
+			String[] specialName = {special};
+			Integer[] specialLength = {20};
+			String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
+			for (int j = 0; j < specialLineFeed.length; j++) {
+				writer.write( specialLineFeed[j] + "\r\n");		
+			}
 
+			writer.flush();
+			socketOut.write(PrinterConstant.getClear_font());
 			// 下面指令为打印完成后自动走纸
 			writer.write(27);
 			writer.write(100);
@@ -271,8 +274,7 @@ public class NormalDishListener {
 			logger.error("------------------------","");
 			logger.error("打印异常，订单号："+object.getOrderNo()+e.getMessage(), e, "");
 			
-//			e.printStackTrace();
-			 jmsTemplate.convertAndSend(destination, object);
+			jmsTemplate.convertAndSend(destination, object);
 		} finally {
 
 		}
@@ -280,18 +282,41 @@ public class NormalDishListener {
 		// }
 
 	}
+	
+	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+		Object[] res = null;
+		
+		List<PrintDish> list = object.getpDish();
+
+		for (PrintDish it : list) {
+			// 校验名称
+			String dishName = it.getDishName() == null ? "" : it.getDishName();
+			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
+			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+			logger.error("------------------------","");
+			logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + it.getDishName(),"");
+			
+			if (2 == it.getDishtype()) {
+				dishName = "（套）"+dishName;
+			}
+
+			String[] name = { dishName, dishNum, dishUnit };
+			Integer[] len = { num1, num2, num3 };
+
+			String[] temp = StringUtils.getLineFeedText(name, len);
+
+			res = ArrayUtils.addAll(res, temp);
+		}
+
+		return res;
+	}
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
 	@Autowired
 	@Qualifier("normalDishQueue")
 	private Destination destination;
-
 	@Autowired
 	NormalDishPrintService normalDishPrintService;
-
-	@Autowired
-	// @Qualifier("producerService")
-	private NormalDishProducerService producerService;
 
 }

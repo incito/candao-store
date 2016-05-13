@@ -3,12 +3,11 @@ package com.candao.print.listener;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.jms.Destination;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -62,7 +61,6 @@ public class CustDishListener {
 
 			
 			socket = new Socket(ipAddress, print_port);
-//			socket = new Socket("192.168.40.138", 9100);
 			socketOut = socket.getOutputStream();
 			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
 
@@ -77,33 +75,23 @@ public class CustDishListener {
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("==========================================\r\n");
-			// 一行最多能容下42个字符
-//			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
-//					27)
-//					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
-//					+ "\r\n");
 			
-			String[] name = {object.getOrderNo(),object.getTimeMsg()};
+			String[] name = {object.getOrderNo(),object.getTimeMsg().substring(0,10)};
+			//最多显示34个字符
 			Integer[] len = {22,10};
 			String[] header = StringUtils.getLineFeedText(name, len);
 			if(header != null){
-				header[0] = StringUtils.bSubstring2("账单号",3) + header[0];
+				header[0] = StringUtils.bSubstring2("账单号:",4) + header[0];
 				for (int i = 0; i < header.length; i++) {
 					writer.write(header[i]+"\r\n");
-				}				
+				}
 			}
 			
-//			writer.write(StringUtils.bSubstring2("服务员:" + object.getUserName(),
-//					9)
-//					+ StringUtils.bSubstring2(object.getTableArea(), 8)
-//					+ StringUtils.bSubstring2(
-//							object.getTimeMsg().substring(11), 8) + "\r\n");
-			
 			String[] username = {object.getUserName(),object.getTableArea(),object.getTimeMsg().substring(11)};
-			Integer[] length = {9,8,8};
+			Integer[] length = {12,10,8};
 			String[] body = StringUtils.getLineFeedText(username, length);
 			if(body != null){
-				body[0] = StringUtils.bSubstring2("服务员",3) + body[0];
+				body[0] = StringUtils.bSubstring2("服务员:",4) + body[0];
 				for (int i = 0; i < body.length; i++) {
 					writer.write(body[i]+"\r\n");
 				}
@@ -124,17 +112,16 @@ public class CustDishListener {
 					+ StringUtils.bSubstring2("单价", 5) + "\r\n");
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
-			writer.write("     " + "\r\n");
 			
 			for (PrintDish it : printDishList) {
 				it.setDishName(StringUtils.split3(it.getDishName(), "#"));
 				it.setDishUnit(StringUtils.split3(it.getDishUnit(), "#"));
 			}
 			
-			String[] text = getPrintText(printDishList, 22, 7, 11);
+			Object[] text = getPrintText(printDishList, 22, 7, 11);
 			
 			for (int i = 0; i < text.length; i++) {
-				writer.write(text[i]+"\r\n");
+				writer.write(text[i].toString()+"\r\n");
 			}
 		
 			writer.flush();//  
@@ -169,32 +156,24 @@ public class CustDishListener {
 
 	}
 	
-	private String[] getPrintText(List<PrintDish> list, int num1, int num2, int num3) throws Exception {
-		List<String> res = new LinkedList<String>();
-		List<String> name = new LinkedList<>();
-		List<Integer> len = new LinkedList<>();
-		
+	private Object[] getPrintText(List<PrintDish> list, int num1, int num2, int num3) throws Exception {
+		Object[] res = null;
+
 		for (PrintDish it : list) {
-			name.clear();
-			len.clear();
-			String dishName = it.getDishName() == null ? "" :it.getDishName();
-			String dishNum = it.getDishNum() == null ? "" :it.getDishNum();
-			String dishPrice = it.getDishPrice() == null ? "" :it.getDishPrice().toString();
-			
-			name.add(dishName);
-			name.add(dishNum);
-			name.add(dishPrice);
-			
-			len.add(num1);
-			len.add(num2);
-			len.add(num3);
-			
-			String[] temp = StringUtils.getLineFeedText(name.toArray(new String[name.size()]), len.toArray(new Integer[len.size()]));
-			
-			res.addAll(Arrays.asList(temp));
+			// 校验名称
+			String dishName = it.getDishName() == null ? "" : it.getDishName();
+			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
+			String dishPrice = it.getDishPrice() == null ? "" : it.getDishPrice().toString();
+
+			String[] name = { dishName, dishNum, dishPrice };
+			Integer[] len = { num1, num2, num3 };
+
+			String[] temp = StringUtils.getLineFeedText(name, len);
+
+			res = ArrayUtils.addAll(res, temp);
 		}
 
-		return res.toArray(new String[res.size()]);
+		return res;
 	}
 
 
