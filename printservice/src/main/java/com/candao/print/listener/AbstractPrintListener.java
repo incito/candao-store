@@ -196,7 +196,7 @@ public abstract class AbstractPrintListener implements PrintListener {
 
 		} catch (SocketException se) {
 			logger.error("------------------------", null);
-			logger.error("打印异常(socket异常)，订单号：" + object.getOrderNo() + se.getMessage(), se);
+			logger.error("打印异常(socket异常)，ip："+ipAddress+"，订单号：" + object.getOrderNo() + se.getMessage(), se);
 			if (isMainPrint && hasBackupPrinter(ipstr)) {
 				// 备用机打印
 				ipAddress = getBackupPrinter(ipstr);
