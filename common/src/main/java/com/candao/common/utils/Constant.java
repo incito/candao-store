@@ -37,4 +37,6 @@ public class Constant {
 	public static final String FAILUROPEMSG = "{\"result\":\"2\"}";
 	
 	public static final String SUCCESSMSG = "{\"result\":\"0\"}";
+
+	public static final String CHECKSTATE = "CHECKSTATE";
 }
