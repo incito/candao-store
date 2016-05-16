@@ -95,6 +95,17 @@ public class TbPrintObjDaoImpl implements TbPrintObjDao {
 		 return dao.find(PREFIX + ".findDishGroupByParentKey", map0);
 	}
 
+	/**
+	 * add by wly
+	 * 2016年5月12号修改bug,#2506
+	 * 打印套餐组装数据时单独提取一个方法获取数据
+	 * 获取数据时，sql语句中不使用 group by parentkey进行分组
+	 */
+	@Override
+	public List<PrintDish> findcomboDishByParentKey(Map<String, Object> map0) {
+		return dao.find(PREFIX + ".findcomboDishByParentKey", map0);
+	}
+	
 	@Override
 	public List<PrintDish> findDishNoPot(Map<String, Object> map0) {
 		return dao.find(PREFIX + ".findDishNoPot", map0);

@@ -39,6 +39,13 @@ public interface TbPrintObjDao {
 
 		public List<PrintDish> findDishGroupByParentKey(Map<String, Object> map0);
 
+		/**
+		 * add by wly,2016年5月16号，修改 #2506的bug
+		 * @param map0
+		 * @return
+		 */
+		List<PrintDish> findcomboDishByParentKey(Map<String, Object> map0);
+		
 		public List<PrintDish> findDishNoPot(Map<String, Object> map0);
 
 		public List<PrintDish> findPrinterByDishId(String dishId);
