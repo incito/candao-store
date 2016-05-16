@@ -883,7 +883,7 @@ $$
 --
 DROP PROCEDURE IF EXISTS p_endwork$$
 CREATE PROCEDURE p_endwork(OUT v_endfinish BIT)
-SQL SECURITY INVOKER
+  SQL SECURITY INVOKER
 BEGIN
   DECLARE t_error    INTEGER DEFAULT 0;
   DECLARE v_branchid VARCHAR(50);
@@ -892,7 +892,7 @@ BEGIN
   DECLARE v_opendate DATETIME;
   DECLARE v_username VARCHAR(20);
 
-  -- 异常处理模块，出现异常回滚(20151204 shangwenchao added)
+  
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
   	set t_error = 1;
@@ -901,9 +901,9 @@ BEGIN
   END;
 
 
-  # 初始化数据 (20151204 shangwenchao added)
+  
   SET v_now = now();
-  # 分店id 和 租户id
+  
   SELECT branchid
        , tenantid
   INTO
@@ -913,7 +913,7 @@ BEGIN
   LIMIT
     1;
 
-  # 开业日期 和 用户
+  
   SELECT opendate
        , username
   INTO
@@ -988,8 +988,8 @@ BEGIN
   FROM
     t_syn_sql;
 
-  # 20151204 shangwenchao added
-  # 情空消息推送信息
+  
+  
   DELETE
   FROM
     t_syncclient;
@@ -1005,6 +1005,8 @@ BEGIN
   ELSE
     SET v_endfinish = TRUE;
     COMMIT;
+
+    CALL p_check_source_data(v_branchid, v_opendate, v_now);#结业成功后，检查所有的单子实收是否计算正确
   END IF;
 
 END
@@ -2634,6 +2636,104 @@ OPEN cur_repat_keys;
 				END IF;
   UNTIL done = 1
   END REPEAT;
+
+END
+$$
+
+
+
+
+DROP PROCEDURE IF EXISTS p_check_source_data$$
+CREATE PROCEDURE p_check_source_data(IN pi_branchid  INT,
+                                              IN pi_begintime DATETIME,
+                                              IN pi_endtime   DATETIME
+                                              )
+  SQL SECURITY INVOKER
+  COMMENT '生成JDE数据前,对原始数据的校验：
+    检查项1：结算方式汇总额（每单） = 品项销售汇总额（每单）'
+BEGIN
+  DECLARE v_row_count       INT;
+  DECLARE v_fetch_times     INT DEFAULT 0;
+  DECLARE v_orderid         VARCHAR(50);
+  DECLARE v_debitamount_all NUMERIC(8, 2);
+  DECLARE cur_order CURSOR FOR SELECT orderid
+                               FROM
+                                 t_temp_order_check t;
+
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    GET DIAGNOSTICS CONDITION 1 @error = MESSAGE_TEXT;
+    SELECT 0 AS returnvalue
+         , concat('校验异常:', v_orderid, @error) AS errorinfo;
+  END;
+
+  #创建订单临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_check;
+  CREATE TEMPORARY TABLE t_temp_order_check
+  (
+    orderid VARCHAR(50)
+  ) ENGINE = HEAP DEFAULT CHARSET = utf8;
+  INSERT INTO t_temp_order_check
+  SELECT orderid
+  FROM
+    t_order t
+  WHERE
+    t.begintime BETWEEN pi_begintime AND pi_endtime
+    AND t.orderstatus = 3
+    AND t.branchid = pi_branchid;
+
+  SELECT count(1)
+  INTO
+    v_row_count
+  FROM
+    t_temp_order_check; #获取订单数量
+
+  #创建订单详情临时内存表
+  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail_check;
+  CREATE TEMPORARY TABLE t_temp_order_detail_check
+  (
+    orderid VARCHAR(50),
+    dishid VARCHAR(50),
+    dishtype INT,
+    dishunit VARCHAR(50),
+    superkey VARCHAR(255),
+    primarykey VARCHAR(255),
+    debitamount DECIMAL(20, 2)
+  ) ENGINE = HEAP DEFAULT CHARSET = utf8;
+  INSERT INTO t_temp_order_detail_check
+  SELECT t.orderid
+       , t.dishid
+       , t.dishtype
+       , t.dishunit
+       , t.superkey
+       , t.primarykey
+       , t.debitamount
+  FROM
+    t_order_detail t, t_temp_order_check b
+  WHERE
+    t.orderid = b.orderid;
+
+  
+  OPEN cur_order;
+  WHILE v_fetch_times < v_row_count
+  DO
+    FETCH cur_order INTO v_orderid;
+    SET v_fetch_times = v_fetch_times + 1;
+
+    SELECT ifnull(sum(a.debitamount),0)
+    INTO
+      v_debitamount_all
+    FROM
+      t_temp_order_detail_check a
+    WHERE
+      a.orderid = v_orderid;
+
+    IF v_debitamount_all = 0 THEN
+      CALL p_cal_dish_debit_amount(v_orderid,@a,@b);
+    END IF;
+
+  END WHILE;
+  CLOSE cur_order;
 
 END
 $$
