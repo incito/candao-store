@@ -12,7 +12,6 @@
         select a.*,b.vipprice,b.price,b.unit as dishunit2
         from t_order_detail a inner join t_dish b on(a.dishid=b.dishid)
         where a.orderprice>0 and a.orderid=#{orderId}
-        limit 1
     </select>
     <select id="selectVipPrice" parameterType="Map" resultType="String">
         select vipprice
@@ -25,7 +24,7 @@
     <select id="selectPrice" parameterType="String" resultType="Map">
         select a.*,b.price,b.unit as dishunit2
         from t_order_detail a inner join t_dish b on(a.dishid=b.dishid)
-        where a.orderprice>0 and a.orderid=#{orderId} limit 1
+        where a.orderprice>0 and a.orderid=#{orderId}
     </select>
     <select id="selectNormalPrice" parameterType="Map" resultType="String">
        select price
