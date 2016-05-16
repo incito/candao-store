@@ -12,7 +12,8 @@ public enum ResultMessage {
 	SUCCESS("0000","操作成功"),
 	
 	INTERNET_EXE("1001","数据传输失败,请检查网络是否正常或者稍后再试"),
-	LOST_MESSAGE("1002","数据丢失,请重新尝试")
+	LOST_MESSAGE("1002","数据丢失,请重新尝试"),
+	NO_RETURN_MESSAGE("1003","没有数据返回")
 	;
 	
 	
