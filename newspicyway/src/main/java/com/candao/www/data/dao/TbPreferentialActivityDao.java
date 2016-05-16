@@ -216,4 +216,13 @@ public interface TbPreferentialActivityDao{
    * @return
    */
   public int deleteByPreferenStatus(String id);
+  
+  /**
+   * 根据条件更新优惠活动
+   * @param param
+   * @return
+   */
+  public int updateBySelective(Map param);
+  
+  public List<Map<String, Object>> selectSpecialActivity(Map param);
 }

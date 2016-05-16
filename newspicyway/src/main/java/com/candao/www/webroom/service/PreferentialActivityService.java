@@ -237,6 +237,10 @@ public interface PreferentialActivityService {
     * @return
     */
    public List<Map<String , Object>> findCouponsByType4Pad(String typeid);
+   
+   
+   public List<Map<String , Object>> findCouponsByType4Pad(Map param);
+
    /**
  	 * 查询所有的可挂账的合作单位
  	 *
@@ -271,4 +275,10 @@ public interface PreferentialActivityService {
     */
    public boolean deleteByStatus(String id);
    
+   /**
+    * 根据条件更新优惠活动
+    * @param params
+    * @return
+    */
+   public int updateBySelective(Map params);
 }
