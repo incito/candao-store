@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.NodeClassMapper">
+    <select id="getMaxClassNo" resultType="java.lang.String">
+      select max(classno) from t_nodeclass
+    </select>
+    <select id="getMaxClassNoToday" resultType="java.lang.String" parameterType="String">
+        select max(classno) from t_nodeclass where classno like '${preStr}%'
+    </select>
+    <select id="getNodeClassByNo" resultType="java.util.HashMap">
+       SELECT *,#{tipTotalAmount} AS tipTotalAmount FROM t_nodeclass WHERE  classno=#{jsOrder}
+    </select>
+    <select id="getTipTotalAmountByClassNo" resultType="java.lang.Integer">
+        SELECT
+        SUM(t.paid) AS tipTotalAmount
+        FROM t_nodeclass n
+        LEFT JOIN t_b_tip t
+        ON (t.insertime > n.vIn
+        AND t.insertime &lt; n.vOut)
+        WHERE classno =#{jsOrder}
+    </select>
+    <select id="getJsListJsonByNo" resultType="java.util.HashMap">
+        SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,
+        SUM(payamount) AS payamount,itemDesc FROM t_nodeclass_detail a
+        LEFT JOIN (SELECT itemid,itemDesc FROM t_dictionary WHERE TYPE='PAYWAY')b
+        ON(a.payway=b.itemid) WHERE payway&lt;&gt;7 AND a.payamount&lt;&gt;0 AND a.classno=#{jsOrder}
+        GROUP BY orderid,couponNum,incometype,payway,itemDesc,membercardno,bankcardno
+    </select>
+    <insert id="insert" parameterType="map">
+         INSERT INTO t_nodeclass (classNo, posID, operatorID, operatorName, vIn, vOut, prettyCash, lastNonTable, lastNonDeposit, tBeginPeople, tBeginTableTotal, tNonClosingTable, tNonClosingMoney, tNonClosingDeposit, tClosingTable, tClosingPeople, tPresentedMoney, tRFoodMoney, itemMoney, serviceMoney, roomMoney, lowConsComp, preferenceMoney, accountsReceivableSubtotal, removeMoney, ratedPreferenceMoney, accountsReceivableTotal, includedMoneyTotal, noIncludedMoneyTotal, TotalMoney, tableware, drinks, drinksSmokeNoodle, todayTurnover, priterTime,ipaddress,workdate,shiftid,authorizer)
+        VALUES (#{classNo}, #{posID}, #{operatorID}, #{operatorName}, #{vIn}, #{vOut}, #{prettyCash}, #{lastNonTable}, #{lastNonDeposit}, #{tBeginPeople}, #{tBeginTableTotal}, #{tNonClosingTable}, #{tNonClosingMoney}, #{tNonClosingDeposit}, #{tClosingTable}, #{tClosingPeople}, #{tPresentedMoney}, #{tRFoodMoney}, #{itemMoney}, #{serviceMoney}, #{roomMoney}, #{lowConsComp}, #{preferenceMoney}, #{accountsReceivableSubtotal}, #{removeMoney}, #{ratedPreferenceMoney}, #{accountsReceivableTotal}, #{includedMoneyTotal}, #{noIncludedMoneyTotal}, #{TotalMoney}, #{tableware}, #{drinks}, #{drinksSmokeNoodle}, #{todayTurnover}, #{priterTime},#{ipaddress},#{workdate},#{shiftid},#{authorizer})
+
+    </insert>
+</mapper>

@@ -60,10 +60,12 @@ $(document).ready(function(){
 //				$("#ipAddress_tip").text("必填信息");
 //				vcheck = false;
 //			} 
-			if(!f_check_IP()){
-				$("#ipAddress_tip").text("请输入格式正确的IP");
-				vcheck = false;
-			}
+			/**可以配置备用打印机，通过逗号隔开，所以去掉IP校验**/
+//			if(!f_check_IP()){
+//				$("#ipAddress_tip").text("请输入格式正确的IP");
+//				vcheck = false;
+//			}
+			
 //			if ($("#port").val().trim() == "") {
 //
 //				$("#port_tip").text("必填信息");

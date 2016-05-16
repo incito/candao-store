@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.SettlementDetailMapper">
+    <!--<resultMap id="baseResult" type="com.candao.store.entity.SettlmentDetail">-->
+    <!--<id column="sdetailid" property="sdetailid" jdbcType="VARCHAR"/>-->
+    <!--<result column="orderid" property="orderid" jdbcType="VARCHAR"/>-->
+    <!--<result column="dishid" property="dishid" jdbcType="VARCHAR"/>-->
+    <!--<result column="normalprice" property="normalprice" jdbcType="VARCHAR"/>-->
+    <!--<result column="discountamount" property="discountamount" jdbcType="VARCHAR"/>-->
+    <!--<result column="discountid" property="discountid" jdbcType="VARCHAR"/>-->
+    <!--<result column="couponid" property="couponid" jdbcType="VARCHAR"/>-->
+    <!--<result column="couponamount" property="couponamount" jdbcType="VARCHAR"/>-->
+    <!--<result column="payamount" property="payamount" jdbcType="VARCHAR"/>-->
+    <!--<result column="couponNum" property="couponNum" jdbcType="INTEGER"/>-->
+    <!--<result column="feeamount" property="feeamount" jdbcType="VARCHAR"/>-->
+    <!--<result column="settledid" property="settledid" jdbcType="VARCHAR"/>-->
+    <!--<result column="incometype" property="incometype" jdbcType="INTEGER"/>-->
+    <!--<result column="membercardno" property="membercardno" jdbcType="VARCHAR"/>-->
+    <!--<result column="bankcardno" property="bankcardno" jdbcType="VARCHAR"/>-->
+    <!--<result column="opendate" property="opendate" jdbcType="TIMESTAMP"/>-->
+    <!--<result column="username" property="username" jdbcType="VARCHAR"/>-->
+    <!--<result column="payway" property="payway" jdbcType="INTEGER"/>-->
+    <!--<result column="isclear" property="isclear" jdbcType="INTEGER"/>-->
+    <!--<result column="debitParterner" property="debitParterner" jdbcType="VARCHAR"/>-->
+    <!--<result column="inserttime" property="inserttime" jdbcType="TIMESTAMP"/>-->
+    <!--<result column="coupondetailid" property="coupondetailid" jdbcType="VARCHAR"/>-->
+    <!--</resultMap>-->
+    <insert id="insert" parameterType="com.candao.www.dataserver.entity.SettlmentDetail">
+        INSERT INTO t_settlement_detail (sdetailid,orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, payamount,couponNum, feeamount, settledid, incometype, membercardno, bankcardno, opendate, username, payway)
+        VALUES(#{sdetailid}, #{orderid}, #{dishid}, #{normalprice}, #{discountamount}, #{discountid}, #{couponid}, #{couponamount}, #{payamount}, #{couponNum}, #{feeamount}, #{settledid}, #{incometype}, #{membercardno}, #{bankcardno}, #{opendate}, #{username}, #{payway})
+    </insert>
+    <update id="update" parameterType="java.util.HashMap">
+        update t_settlement_detail set dishid=#{dishId} where (dishid is null or dishid='') and orderid=#{orderId}
+    </update>
+    <update id="setClear" parameterType="map">
+        update t_settlement_detail set isclear=1 where opendate=#{openDate} and username=#{userId} and isclear=0
+    </update>
+    <insert id="insertAfterInputCash" parameterType="map">
+        INSERT INTO t_settlement_detail (sdetailid,orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, payamount,couponNum, feeamount, settledid, incometype, membercardno, bankcardno, opendate, username, payway)
+        VALUES (#{sdetailid},#{orderid}, '', #{normalprice}, 0, 0, 0, 0, #{payamount}, 0, 0, 0, 0, '', '', #{opendate}, #{username}, 16)
+    </insert>
+    <insert id="insertWhenSdetailidExists" parameterType="map">
+        INSERT INTO t_settlement_detail (orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, payamount,couponNum, feeamount, settledid, incometype, membercardno, bankcardno, opendate, username, payway)
+        VALUES (#{orderid}, '', #{normalprice}, 0, 0, 0, 0, #{payamount}, 0, 0, 0, 0, '', '', #{opendate}, #{username}, 16)
+    </insert>
+    <select id="isSdetailidExists" parameterType="String" resultType="int">
+        select 1
+        from t_settlement_detail where sdetailid=#{sdetailid}
+    </select>
+</mapper>

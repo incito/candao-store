@@ -244,6 +244,7 @@
 		var payamount = $("#jiesuajine").val();
 		var disamount = $("#youmianjine").val();
 		var wjje = $("#p_wjje").val();
+		var remark = $("#remark").val();
 		if(inserttime == null || inserttime == ""){
 			alert("结算时间不能为空！");
 			$("#inserttime").val(getNowDate());
@@ -277,6 +278,11 @@
 		var amount = payamount + disamount;
 		if(amount > parseFloat(wjje)){
 			alert("结算金额加优免金额不能大于未结金额!");
+			return false;
+		}
+		var remarkByte = remark.replace(/[^\x00-\xff]/g, 'xx');
+		if(remarkByte.length >= 500){
+			alert("备注不能超过250个汉字!");
 			return false;
 		}
 		$.post(global_Path+"/gisterBill/Billing.json", {

@@ -26,7 +26,6 @@ public class DateUtils {
 	public final static String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	final static String ORDERID_FORMAT = "yyyyMMdd";
-
 	/**
 	 * 根据给定的格式化参数，将字符串转换为日期
 	 * 
