@@ -185,10 +185,9 @@ public class MemberServiceImpl implements MemberService {
             return 0;
         }
         try {
-            Float.parseFloat(obj.toString());
+            return Float.parseFloat(obj.toString());
         } catch (Exception e) {
             return 0;
         }
-        return 0;
     }
 }
