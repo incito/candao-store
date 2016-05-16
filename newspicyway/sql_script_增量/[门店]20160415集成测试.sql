@@ -532,7 +532,7 @@ BEGIN
 
                              , sum(ifnull(b.payamount + b.disamount, 0)) amount
 
-                             , group_concat(b.remark SEPARATOR ';') remark
+                             , group_concat(left(b.remark,200) SEPARATOR '\n') remark
 
                         FROM
 
