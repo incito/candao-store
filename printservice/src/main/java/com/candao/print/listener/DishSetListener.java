@@ -10,8 +10,7 @@ import java.util.List;
 
 import javax.jms.Destination;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -21,7 +20,6 @@ import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.impl.NormalDishPrintService;
 
 /**
@@ -73,23 +71,33 @@ public class DishSetListener {
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 			
 			// 单号
-			writer.write("　　　   " + StringUtils.bSubstring2(billName, 9)
+			writer.write("　　　   " + StringUtils.bSubstring2(billName, 6)
 					+ " \r\n");
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("==========================================\r\n");
 			// 一行最多能容下42个字符
+			
+			String[] name = {object.getOrderNo(),object.getTimeMsg().substring(0,10)};
+			//最多显示34个字符
+			Integer[] len = {22,10};
+			String[] header = StringUtils.getLineFeedText(name, len);
+			if(header != null){
+				header[0] = StringUtils.bSubstring2("账单号:",4) + header[0];
+				for (int i = 0; i < header.length; i++) {
+					writer.write(header[i]+"\r\n");
+				}
+			}
 
-			writer.write(StringUtils.bSubstring2("账单号:" + object.getOrderNo(),
-					27)
-					+ StringUtils.bSubstring2(object.getTimeMsg(), 10)
-					+ "\r\n");
-
-			writer.write(StringUtils.bSubstring2("服务员:" + object.getUserName(),
-					9)
-					+ StringUtils.bSubstring2(object.getTableArea(), 8)
-					+ StringUtils.bSubstring2(
-							object.getTimeMsg().substring(11), 8) + "\r\n");
+			String[] username = {object.getUserName(),object.getTableArea(),object.getTimeMsg().substring(11)};
+			Integer[] length = {12,10,8};
+			String[] body = StringUtils.getLineFeedText(username, length);
+			if(body != null){
+				body[0] = StringUtils.bSubstring2("服务员:",4) + body[0];
+				for (int i = 0; i < body.length; i++) {
+					writer.write(body[i]+"\r\n");
+				}
+			}
 			
 			if(object.getDiscardUserId()!=null&&!"".equals(object.getDiscardUserId())){
 				writer.write(StringUtils.bSubstring2("授权人:" + object.getDiscardUserId(),
@@ -101,9 +109,16 @@ public class DishSetListener {
 		
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getFdDoubleFont());
-			writer.write(StringUtils.bSubstring2(
-					"　　" + object.getTableNo(), 10)
-					+ "\r\n");
+
+			String[] tableName = {object.getTableNo()};
+			Integer[] tableLength = {10};
+			String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+			if(table != null){
+				for (int i = 0; i < table.length; i++) {
+					writer.write("　　" + table[i]+"\r\n");
+				}
+			}
+			
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
 			
@@ -121,23 +136,15 @@ public class DishSetListener {
 				it.setDishName(StringUtils.split2(it.getDishName(), "#"));
 				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
 			}
+			
+			Object[] text = getPrintText(object, 23, 7, 11);
 
-			for (PrintDish printDish : printDishList) {
-				String dishName2 = StringUtils.bSubstring2(
-						StringUtils.BtoQ(printDish.getDishName()), 12);
-				
-				String dishNum2 = StringUtils.bSubstring2(StringUtils.BtoQ(
-						printDish.getDishNum()), 4);
-				String dishunit2 = StringUtils.bSubstring2(printDish
-						.getDishUnit() == null ? "" : StringUtils.BtoQ(printDish.getDishUnit()
-						.toString()), 5);
-				writer.write(dishName2);
-				writer.write( dishNum2 );
-				writer.write( dishunit2 + "\r\n");
-				writer.write("     " + "\r\n");
-			 }
+			for (int i = 0; i < text.length; i++) {
+				writer.write(text[i].toString()+"\r\n");
+			}
 		
 			writer.flush();//  
+			
 			socketOut.write(PrinterConstant.getClear_font());
 			
 			writer.write("------------------------------------------\r\n");
@@ -173,7 +180,8 @@ public class DishSetListener {
 				special = "";
 			}
 			
-			writer.write(StringUtils.bSubstring3(String.valueOf(object.getOrderseq()), 8));
+			writer.write(StringUtils.bSubstring3(String.valueOf(object.getOrderseq()== 0 ? "　" : "第"+object
+					.getOrderseq()+"张"), 6));
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
 			socketOut.write(PrinterConstant.getClear_font());				
 			writer.write( StringUtils.bSubstring2(new SimpleDateFormat("HH:mm:ss")
@@ -184,11 +192,27 @@ public class DishSetListener {
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {
-				writer.write("备注：" + parentDishName + "\r\n");
+				//套餐备注换行
+				String[] dishName = {parentDishName};
+				Integer[] dishLength = {20};
+				String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
+				parentDishNameLineFeed[0] = "备注："+parentDishNameLineFeed[0];
+				for (int j = 0; j < parentDishNameLineFeed.length; j++) {
+					writer.write( parentDishNameLineFeed[j] + "\r\n");					
+				}
+			} else {
+				if (special != null && !"".equals(special))
+					special = "备注：" + special;
 			}
 			
 			socketOut.write(PrinterConstant.getFdDoubleFont());
-			writer.write(special + "\r\n");			
+			//忌口信息
+			String[] specialName = {special};
+			Integer[] specialLength = {20};
+			String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
+			for (int j = 0; j < specialLineFeed.length; j++) {
+				writer.write( specialLineFeed[j] + "\r\n");		
+			}
 			
 			writer.write(27);// 重置
 			writer.write(100);
@@ -207,18 +231,35 @@ public class DishSetListener {
 		return null;
 
 	}
+	
+	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+		Object[] res = null;
+		
+		List<PrintDish> list = object.getList();
+
+		for (PrintDish it : list) {
+			// 校验名称
+			String dishName = it.getDishName() == null ? "" : it.getDishName();
+			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
+			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+
+			String[] name = { dishName, dishNum, dishUnit };
+			Integer[] len = { num1, num2, num3 };
+
+			String[] temp = StringUtils.getLineFeedText(name, len);
+
+			res = ArrayUtils.addAll(res, temp);
+		}
+
+		return res;
+	}
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
 	@Autowired
 	@Qualifier("dishSetQueue")
 	private Destination destination;
-
 	@Autowired
 	NormalDishPrintService normalDishPrintService;
-
-	@Autowired
-	private NormalDishProducerService producerService;
-
-
+	
 }
