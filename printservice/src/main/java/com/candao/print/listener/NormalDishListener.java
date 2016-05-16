@@ -131,7 +131,15 @@ public class NormalDishListener {
 				}
 				String prefixMsg = " ("+ subMsg.split("-")[0] + "台送)";
 				subMsg =   subMsg.split("-")[1] ;
-				writer.write(StringUtils.bSubstring2(subTableMsg + subMsg + prefixMsg, 15)+ "\r\n");
+				
+				String[] tableName = {subTableMsg + subMsg + prefixMsg};
+				Integer[] tableLength = {15};
+				String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+				if(table != null){
+					for (int i = 0; i < table.length; i++) {
+						writer.write(table[i]+"\r\n");
+					}
+				}
 				
 			    if(special.endsWith(",")){
 			    	special = special.substring(0, special.indexOf("[")).concat(special.substring(special.indexOf("]")+2,special.length()));
@@ -140,7 +148,14 @@ public class NormalDishListener {
 			    }
 				
 			}else{
-				writer.write(StringUtils.bSubstring2("　　" + object.getTableNo(), 10)+ "\r\n");
+				String[] tableName = {object.getTableNo()};
+				Integer[] tableLength = {10};
+				String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+				if(table != null){
+					for (int i = 0; i < table.length; i++) {
+						writer.write("　　" + table[i]+"\r\n");
+					}
+				}
 			}
 			
 		

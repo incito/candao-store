@@ -109,9 +109,16 @@ public class DishSetListener {
 		
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getFdDoubleFont());
-			writer.write(StringUtils.bSubstring2(
-					"　　" + object.getTableNo(), 10)
-					+ "\r\n");
+
+			String[] tableName = {object.getTableNo()};
+			Integer[] tableLength = {10};
+			String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+			if(table != null){
+				for (int i = 0; i < table.length; i++) {
+					writer.write("　　" + table[i]+"\r\n");
+				}
+			}
+			
 			writer.flush();//  
 			socketOut.write(PrinterConstant.getClear_font());
 			

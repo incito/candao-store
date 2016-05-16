@@ -114,9 +114,16 @@ public class MultiDishListener {
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
 			socketOut.write(PrinterConstant.getFdDoubleFont());
-			writer.write(StringUtils.bSubstring2(
-					"　　" + object.getTableNo(), 10)
-					+ "\r\n");
+
+			String[] tableName = {object.getTableNo()};
+			Integer[] tableLength = {10};
+			String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+			if(table != null){
+				for (int i = 0; i < table.length; i++) {
+					writer.write("　　" + table[i]+"\r\n");
+				}
+			}
+			
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("------------------------------------------\r\n");
