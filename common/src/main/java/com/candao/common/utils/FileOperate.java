@@ -33,7 +33,7 @@ public class FileOperate {
 	 * @return File 文件file
 	 * @throws IOException 
 	 */
-	public static File createFile(String path,String fileName) throws SysException{
+	public static File createFile(String path,String fileName){
 		File file = new File(path);
 		if(!file.exists()){
 			file.mkdirs();
