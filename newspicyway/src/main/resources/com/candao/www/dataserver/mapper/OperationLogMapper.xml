@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.OperationLogMapper">
+    <delete id="deleteByTableNo" parameterType="String">
+       delete from t_operation_log
+       where tableno=#{tableNo}
+   </delete>
+    <select id="selectMaxSequence" parameterType="String" resultType="String">
+        select ifnull(max(sequence),0) as sequence
+        from t_operation_log
+        where tableno=#{tableNo} and operationType=1
+    </select>
+    <delete id="deletePosOperation">
+        DELETE FROM t_operation_log WHERE	tableno=#{tableNo}AND sequence=999999
+    </delete>
+</mapper>

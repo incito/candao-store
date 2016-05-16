@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.SettlementMapper">
+    <update id="setClear" parameterType="Map">
+        update  t_settlement a set isclear=1
+        where a.opendate=#{openDate} and userid=#{userId} and a.isclear=0
+    </update>
+    <select id="selectClearByOrderId" parameterType="map" resultType="String">
+        select isclear from t_settlement where orderid=#{orderId} limit 1
+    </select>
+</mapper>
