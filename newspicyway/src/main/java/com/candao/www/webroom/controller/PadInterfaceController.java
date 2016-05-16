@@ -1211,6 +1211,21 @@ public class PadInterfaceController {
 		return mav;
 	}
 	
+	@RequestMapping(value="/setPreferentialFavor",method = RequestMethod.POST)
+	@ResponseBody
+	public String setPreferentialFavor(@RequestBody String body){
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		
+		int num = preferentialActivityService.updateBySelective(params);
+		num =(num == 0?1:0);
+		
+		Map<String, Object> res = new HashMap<>();
+		res.put("result", num);
+		res.put("msg", "");
+		
+		return JacksonJsonMapper.objectToJson(res);
+	}
+	
 	/**
 	 * 查询所有的可挂账的合作单位
 	 *

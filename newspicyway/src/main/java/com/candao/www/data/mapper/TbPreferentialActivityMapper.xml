@@ -83,6 +83,9 @@
 		<if test="endtime != null">
 			AND <![CDATA[ tpa.endtime <= #{endtime} ]]>
 		</if>
+		<if test="status != null">
+			AND tpa.status = #{status}
+		</if>
 	</sql>
 	
 	<sql id="preferential_detail_column_list">
@@ -336,39 +339,18 @@
 		</trim>
 	</insert>
 	
-	<update id="updateBySelective" parameterType="com.candao.www.data.model.TbPreferentialActivity">
-		UPDATE t_p_preferential_activity
+	<update id="updateBySelective" parameterType="map">
+		UPDATE t_p_preferential_activity tpa
 		<set>
-			<if test="code != null">
-				code = #{code,jdbcType=CHAR},
-			</if>
-			<if test="name != null">
-				name = #{name,jdbcType=VARCHAR},
-			</if>
-			<if test="nameFirstLetter != null">
-				name_first_letter = #{nameFirstLetter,jdbcType=VARCHAR},
-			</if>
-			<if test="color != null">
-				color = #{color,jdbcType=CHAR},
-			</if>
-			<if test="starttime != null">
-				starttime = #{starttime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="endtime != null">
-				endtime = #{endtime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="applyAll != null">
-				apply_all = #{applyAll,jdbcType=BOOLEAN},
-			</if>
-			<if test="activityIntroduction != null">
-				activity_introduction = #{activityIntroduction,jdbcType=VARCHAR},
-			</if>
-			<if test="useNotice != null">
-				use-_notice = #{useNotice,jdbcType=VARCHAR},
+			<if test="status != null">
+				status = #{status},
 			</if>
 		</set>
 		<where>
-			<include refid="base_condition"></include>
+			(tpa.status is null or tpa.status != 1)
+			<if test="id != null">
+				AND tpa.id = #{id}
+			</if>
 		</where>
 	</update>
 	
@@ -666,6 +648,7 @@
 				<where>
 					<include refid="base_condition"></include>
 					and tpa.apply_all=1 
+					AND (tpa.`status` is null or tpa.`status` != '2')
 				</where>
 				<if test=" branchid !=null">
 					UNION
@@ -692,6 +675,7 @@
 					<where>
 						<include refid="base_condition"></include>
 						and tpa.apply_all=0
+						AND (tpa.`status` is null or tpa.`status` != '2')
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
 						) 
@@ -734,7 +718,7 @@
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 			WHERE
 			  det.preferential = tpa.id 
-			  and (tpa.`status` is null or tpa.status !='1')
+			  and (tpa.`status` is null or (tpa.status !='1' and tpa.status != '2'))
 			  AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
 		      and tpa.apply_all=1 
 			<if test=" branchid !=null">
@@ -772,7 +756,7 @@
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE det.preferential = tpa.id 
 				and
-				(tpa.`status` is null or tpa.status !='1')
+				(tpa.`status` is null or (tpa.status !='1' and tpa.status != '2'))
 						<if test=" type !=null">
 							AND tpa.type not in(01,02,03,04,05,06,0601,0602,08)
 						</if>
@@ -782,6 +766,85 @@
 						) 
 				ORDER BY  preferential , sequence 
 			</if> 
+			</when>
+			<when test="type=='-1'.toString()">
+				SELECT 
+				det.id,
+				det.preferential,
+				det.dish,
+				det.dish_title,
+				det.price,
+				det.sequence,
+				det.unit,
+				det.unitflag,
+				det.discount,
+				det.amount,
+				det.bill_amount,
+				det.free_reason,
+				det.company_name,
+				det.company_first_letter,
+				det.can_credit, 
+				tpa.code,
+				tpa.name,
+				tpa.name_first_letter,
+				tpa.type,
+				tpa.type_name,
+				tpa.subtable_name,
+				tpa.sub_type,
+				tpa.sub_type_name,
+				tpa.color,
+				tpa.apply_all,
+				tpa.activity_introduction,
+				tpa.use_notice,
+				tpa.starttime,
+				tpa.endtime 
+			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
+			WHERE
+			  det.preferential = tpa.id 
+			  and tpa.`status`='2'
+		      and tpa.apply_all=1 
+			<if test=" branchid !=null">
+				UNION
+				SELECT 
+						det.id,
+						det.preferential,
+						det.dish,
+						det.dish_title,
+						det.price,
+						det.sequence,
+						det.unit,
+						det.unitflag,
+						det.discount,
+						det.amount,
+						det.bill_amount,
+						det.free_reason,
+						det.company_name,
+						det.company_first_letter,
+						det.can_credit, 
+						tpa.code,
+						tpa.name,
+						tpa.name_first_letter,
+						tpa.type,
+						tpa.type_name,
+						tpa.subtable_name,
+						tpa.sub_type,
+						tpa.sub_type_name,
+						tpa.color,
+						tpa.apply_all,
+						tpa.activity_introduction,
+						tpa.use_notice,
+						tpa.starttime,
+						tpa.endtime 
+				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
+				WHERE det.preferential = tpa.id 
+				and
+						tpa.status ='2'
+						and tpa.apply_all=0
+						and exists (
+							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
+						) 
+				ORDER BY  preferential , sequence 
+			</if>
 			</when>
 			<otherwise>
 				SELECT 
@@ -828,6 +891,7 @@
 					and det.preferential=#{preferential}
 				</if>
 				AND det.preferential = tpa.id 
+				AND (tpa.`status` is null or tpa.`status` != '2')
 				
 			<if test=" branchid !=null">
 				UNION
@@ -874,6 +938,7 @@
 							and det.preferential=#{preferential}
 						</if>
 						and tpa.apply_all=0
+						AND (tpa.`status` is null or tpa.`status` != '2')
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
 						) 
