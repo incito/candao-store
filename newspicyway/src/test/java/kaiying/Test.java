@@ -2,6 +2,7 @@ package kaiying;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -10,10 +11,26 @@ public class Test {
 	
 	public static void main(String [] args){
 		
-		String sb = "好的认识";
+	/*	String sb = "好的认识";
 		System.out.println(sb.length());
 		byte[] result =  compress(sb.toString()); 
-		System.out.println( result.length);
+		System.out.println( result.length);*/
+		
+
+		// TODO Auto-generated method stub
+		InetAddress ia=null;
+		try {
+			ia=ia.getLocalHost();
+			
+			String localname=ia.getHostName();
+			String localip=ia.getHostAddress();
+			System.out.println("本机名称是："+ localname);
+			System.out.println("本机的ip是 ："+localip);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 		
 //		   List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 //		   Map<String, Object> map = new HashMap<String, Object>();
@@ -80,4 +97,5 @@ public class Test {
 		
 			return compressed;
 	} 
+	
 }

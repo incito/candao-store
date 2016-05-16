@@ -1935,7 +1935,7 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/jdesyndata")
 	@ResponseBody
-	public String jdeSynData(String json) {
+	public String jdeSynData(@RequestBody String json) {
 		logger.info("jdeSynData-start:"+json, "");
 		@SuppressWarnings("unchecked")
 		//Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
@@ -1945,7 +1945,7 @@ public class PadInterfaceController {
 		if (!synKey.equalsIgnoreCase(key)) {
 			return Constant.FAILUREMSG;
 		}
-		ResultDto dto = null;
+		ResultDto dto = new ResultDto();
 		//获取同步数据的传送方式
 		String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
 		try {
@@ -1965,16 +1965,14 @@ public class PadInterfaceController {
 			loggers.error("门店上传到总店数据失败",e);
 			//后面执行是否成功的标志
 			boolean afterStatus = false;
-			//如果是传输异常或者响应异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
-			if(e.getCode().equals("10009") || e.getCode().equals("10010")){
-				for(int i=0;i<3;i++){
-					try{
-						dto = executeSyn();
-						afterStatus = true;
-						break;
-					}catch(SysException sysEx){
-						logger.error(sysEx, "");
-					}
+			//如果异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
+			for(int i=0;i<3;i++){
+				try{
+					dto = executeSyn();
+					afterStatus = true;
+					break;
+				}catch(SysException sysEx){
+					logger.error(sysEx, "");
 				}
 			}
 			//连续3次执行失败
@@ -1990,9 +1988,9 @@ public class PadInterfaceController {
 		}
 		if(dto == null){
 			dto = new ResultDto();
-			dto.setCode("1");
-			dto.setMessage("修改数据同步的状态失败");
+			dto.setInfo(ResultMessage.NO_RETURN_MESSAGE);
 		}
+		logger.info("jdeSynData-end:"+dto, "");
 		//return JacksonJsonMapper.objectToJson(resultMap);
 		return JSON.toJSONString(dto);
 	}
