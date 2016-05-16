@@ -17,13 +17,11 @@
 
 	<appender name="candao_print"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_HOME}/candao_print/print.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<maxHistory>10</maxHistory>
+			<maxFileSize>100MB</maxFileSize> 
 		</rollingPolicy>
-		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      		<maxFileSize>50MB</maxFileSize>
-    	</triggeringPolicy>
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
 		</encoder>
