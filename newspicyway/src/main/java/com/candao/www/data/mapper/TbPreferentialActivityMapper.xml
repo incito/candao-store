@@ -83,9 +83,6 @@
 		<if test="endtime != null">
 			AND <![CDATA[ tpa.endtime <= #{endtime} ]]>
 		</if>
-		<if test="status != null">
-			AND tpa.status = #{status}
-		</if>
 	</sql>
 	
 	<sql id="preferential_detail_column_list">
@@ -650,7 +647,7 @@
 					<include refid="base_condition"></include>
 					and tpa.apply_all=1 
 					<if test="status == 2">
-						AND (tpa.`status` is null or tpa.`status` != #{status})
+						AND tpa.`status` != #{status}
 					</if>
 				</where>
 				<if test=" branchid !=null">
@@ -679,9 +676,9 @@
 					<where>
 						<include refid="base_condition"></include>
 						and tpa.apply_all=0
-						<!-- 判断 -->
+						<!-- 2隐藏优惠，判断是否查询要隐藏的优惠 -->
 					<if test="status == 2">
-						AND (tpa.`status` is null or tpa.`status` != #{status})
+						AND tpa.`status` != #{status}
 					</if>
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
@@ -898,6 +895,7 @@
 				tpa.status
 			FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 			WHERE 1=1 
+			AND ( `status` is null or status !='1')
 				<if test=" type !=null">
 					AND tpa.type = #{type}
 				</if>
@@ -910,8 +908,8 @@
 					and det.preferential=#{preferential}
 				</if>
 				AND det.preferential = tpa.id 
-				<if test="status != null and status == 2">
-					AND (tpa.`status` is null or tpa.`status` != #{status})
+				<if test="status == 2">
+					AND tpa.`status` != #{status}
 				</if>
 				
 			<if test=" branchid !=null">
@@ -950,6 +948,7 @@
 				FROM t_p_preferential_detail det  ,t_p_preferential_activity tpa
 				WHERE 1=1 
 						AND det.preferential = tpa.id 
+						AND ( `status` is null or status !='1')
 						<if test=" type !=null">
 							AND tpa.type = #{type}
 						</if>
@@ -961,7 +960,7 @@
 						</if>
 						and tpa.apply_all=0		
 						<if test=" status == 2">
-							AND (tpa.`status` is null or tpa.`status` != #{status})
+							AND tpa.`status` != #{status}
 						</if>
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
