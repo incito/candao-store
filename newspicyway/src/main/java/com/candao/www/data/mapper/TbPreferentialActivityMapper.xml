@@ -589,6 +589,72 @@
 		preferential=#{preferential}
 	</update>
 
+	<select id="selectSpecialActivity" parameterType="map" resultType="java.util.HashMap">
+				SELECT
+					tpa.id,
+					tpa.id as preferential,
+					tpa.code,
+					tpa.name,
+					tpa.name_first_letter,
+					tpa.type,
+					tpa.type_name,
+					tpa.subtable_name,
+					tpa.sub_type,
+					tpa.sub_type_name,
+					tpa.color,
+					tpa.starttime,
+					tpa.endtime,
+					tpa.apply_all,
+					tpa.activity_introduction,
+					tpa.use_notice,
+					tpa.createtime,
+					tpa.creator,
+					tpa.status
+				FROM t_p_preferential_activity tpa 
+				<where>
+					<include refid="base_condition"></include>
+					and tpa.apply_all=1 
+					<if test="status == 2">
+						AND tpa.`status` = #{status}
+					</if>
+				</where>
+				<if test=" branchid !=null">
+					UNION
+					SELECT
+						tpa.id,
+						tpa.id as preferential,
+						tpa.code,
+						tpa.name,
+						tpa.name_first_letter,
+						tpa.type,
+						tpa.type_name,
+						tpa.subtable_name,
+						tpa.sub_type,
+						tpa.sub_type_name,
+						tpa.color,
+						tpa.starttime,
+						tpa.endtime,
+						tpa.apply_all,
+						tpa.activity_introduction,
+						tpa.use_notice,
+						tpa.createtime,
+						tpa.creator,
+						tpa.status
+					FROM t_p_preferential_activity tpa 
+					<where>
+						<include refid="base_condition"></include>
+						and tpa.apply_all=0
+						<!-- 2隐藏优惠，判断是否查询要隐藏的优惠 -->
+					<if test="status == 2">
+						AND tpa.`status` = #{status}
+					</if>
+						and exists (
+							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
+						) 
+					</where>
+				</if>
+				 ORDER BY code 
+	</select>
 	
 	<!-- 获取优惠列表信息。特价券与其他优惠（手工优免、内部优惠）单独处理。这里是其他优惠。其中ID，采用 detail表的ID 为主 -->
 	<!-- 获取优惠的时候，如果参数传递了 branchid (门店id)，那么需要查询 适合该门店的优惠（优惠部分门店且选择了当前门店、对所有门店有优惠） -->
@@ -816,6 +882,7 @@
 			WHERE
 			  det.preferential = tpa.id 
 			  and tpa.`status`='2'
+			  and tpa.type != '01'
 		      and tpa.apply_all=1 
 			<if test=" branchid !=null">
 				UNION
@@ -854,6 +921,7 @@
 				WHERE det.preferential = tpa.id 
 				and
 						tpa.status ='2'
+			  			and tpa.type != '01'
 						and tpa.apply_all=0
 						and exists (
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
