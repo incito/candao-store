@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.webroom.service.impl.RegisterBillService">
+    <!-- 查询挂账统计表存储过程 -->
+    
+    <select id="getBillCount" parameterType="java.util.Map" statementType="CALLABLE"  resultType="java.util.Map">
+         {
+          call p_report_gzxxtjb 
+           (
+             #{pi_branchid,jdbcType=INTEGER,mode=IN},
+             #{pi_ksrq,jdbcType=DATE,mode=IN},
+             #{pi_jsrq,jdbcType=DATE,mode=IN},
+             #{pi_gzdw,jdbcType=VARCHAR,mode=IN},
+             #{pi_qsbz,jdbcType=VARCHAR,mode=IN},
+             #{pi_dqym,jdbcType=INTEGER,mode=IN},
+             #{pi_myts,jdbcType=INTEGER,mode=IN},
+             #{po_errmsg,jdbcType=VARCHAR,mode=OUT}
+           )
+        }
+    </select>
+    <!-- 挂账信息明细 -->
+    <select id="getBillDetail" parameterType="java.util.Map" statementType="CALLABLE"  resultType="java.util.Map">
+         {
+          call p_report_gzxxmxb 
+           (
+             #{pi_branchid,jdbcType=INTEGER,mode=IN},
+             #{pi_ksrq,jdbcType=DATE,mode=IN},
+             #{pi_jsrq,jdbcType=DATE,mode=IN},
+             #{pi_gzdw,jdbcType=VARCHAR,mode=IN},
+             #{pi_qsbz,jdbcType=VARCHAR,mode=IN},
+             #{pi_dqym,jdbcType=INTEGER,mode=IN},
+             #{pi_myts,jdbcType=INTEGER,mode=IN},
+             #{po_errmsg,jdbcType=VARCHAR,mode=OUT}
+           )
+        }
+    </select>
+    <!-- 结算历史 -->
+    <select id="getBillHistory" parameterType="java.util.Map"  resultType="java.util.Map">
+        
+       SELECT T.id,date_format(T.inserttime,'%Y-%c-%d %H:%i:%s') as inserttime, T.remark, T.operator, T.disamount, T.payamount, T.creaditname,T.branchid,T.orderid 
+       FROM 
+       t_billing_detail T
+         WHERE
+          T.orderid=#{ddbh,jdbcType=VARCHAR,mode=IN} 
+         and
+       	 T.branchid=#{mdid}
+       	 
+       	<!--  SELECT (@rownum := @rownum + 1) as number
+     	, t.*
+		FROM
+ 	 	newspicyway.t_billing_detail t, (SELECT @rownum := 0) number
+ 	 	where 
+ 	 	't.branchid=#{mdid}
+ 	 	and
+ 	 	t.orderid=#{ddbh,jdbcType=VARCHAR,mode=IN}  -->
+ 	 	
+       	 
+       
+    </select>
+    
+    <!-- 结算 -->
+    <insert id="Billing" parameterType="java.util.Map">
+		insert into t_billing_detail (orderid, branchid, creaditname,
+		payamount,disamount, operator, inserttime, remark)
+		values (#{ddbh,jdbcType=VARCHAR},
+		#{mdid,jdbcType=VARCHAR},
+		#{gzdw,jdbcType=VARCHAR},
+		#{payamount},
+		#{disamount}, 
+		#{czy,jdbcType=VARCHAR}, 
+		#{itemtype,jdbcType=DATE},
+		#{remark,jdbcType=VARCHAR})
+	</insert>
+    <!-- 查询挂账单位 -->
+    <select id="getBillUnit" parameterType="java.util.Map"  resultType="java.util.Map">
+	    SELECT DISTINCT T.bankcardno from newspicyway.t_settlement_detail T WHERE T.payway=13 AND T.payamount !=0 AND LENGTH(T.bankcardno) > 0
+    </select>
+</mapper>

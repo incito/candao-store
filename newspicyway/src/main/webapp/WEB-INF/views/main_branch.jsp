@@ -83,14 +83,17 @@
  								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toScheduleReport()">排班参考统计表</a></li>
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterAssess()">服务员考核统计表</a></li>
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterSale()">服务员销售统计表</a></li>
+<!--  								<li><a href="#" class="report-sec ky-menu-success" onclick="toMemberValueReport()">会员储值统计表</a></li> -->
  							</ul>
  						</li>
- 						<!--li class="ky-dropdown-sec report-dropdown-sec">
- 							<a href="#" class="ky-menu-success" onclick="toBusinessReport()">财务报表</a>
+ 						<li class="ky-dropdown-sec report-dropdown-sec">
+ 							<a href="#" class="ky-menu-success" onclick="toCreditReport()">财务报表</a>
  							<ul class="ky-dropdown-sec-menu ky-nav ky-nav-pills">
- 								<li><a href="#" class="report-sec ky-menu-success" onclick="toBusinessReport()">营业报表</a></li>
+ 								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toBusinessReport()">营业报表</a></li-->
+ 								<li><a href="#" class="report-sec ky-menu-success" onclick="toCreditReport()">挂账明细统计表</a></li>
  							</ul>
- 						</li-->
+ 						</li>
 					</ul>
 				</li>
 				</c:if>
