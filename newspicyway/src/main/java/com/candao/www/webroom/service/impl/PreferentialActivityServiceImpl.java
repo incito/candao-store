@@ -977,6 +977,21 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		
 		return list;
 	}
+	
+	public List<Map<String , Object>> findCouponsByType4Pad(Map params){
+		List<Map<String, Object>>  list = new ArrayList();
+		Map branchInfoMap=tbBranchDao.getBranchInfo();
+		//如果没有默认门店，则返回所有的门店信息。 关于branchid，会在SQL中判断，这里只需要 值为 NULL即可
+		String branchid=null;
+		if( null != branchInfoMap ){
+			branchid=(String) branchInfoMap.get("branchid");
+		}
+		params.put("branchid", branchid);
+		params.put("status", 2);
+		List<Map<String, Object>> activitys= this.tbPreferentialActivityDao.findPreferentialDetail(params);
+			
+		return list;
+		}
 	 /**
 	  * 查询所有的可挂账的合作单位
 	  *
