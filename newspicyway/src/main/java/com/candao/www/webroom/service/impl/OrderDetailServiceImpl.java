@@ -1,6 +1,12 @@
 package com.candao.www.webroom.service.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -59,6 +65,9 @@ import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.TableAreaService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.webroom.service.impl.OrderServiceImpl.TsThread;
+
+import net.sf.json.JSONObject;
 
 
 @Service
@@ -113,12 +122,15 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	   tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null?"":tableMap.get("orderid")));
 	   tableService.updateCleanStatus(tbTable);
 	   
+	   String orderid="";
+	   
 	   if(tableMap.get("orderid") != null){
 		   Torder torder = new Torder();
 		   torder.setOrderid(String.valueOf(tableMap.get("orderid")));
 	       torder.setOrderstatus(2);
 	       torder.setEndtime(new Date());
 		   torderMapper.update(torder);
+		   orderid=torder.getOrderid();
 	   }
 	   
 	  //结账之后把操作的数据删掉
@@ -126,9 +138,51 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	  delmap.put("tableno", table.getTableNo());
 	  toperationLogService.deleteToperationLog(delmap);
 	   
+	  //手环发送消息
+	  StringBuffer str=new StringBuffer(Constant.TS_URL);
+	  str.append(Constant.MessageType.msg_2002+"/");
+	  if(!"".equals(orderid)){
+		  Torder torder=orderService.get(orderid);
+		  str.append(torder.getUserid()).append("|").append(tableNo).append("|");
+	  }
+	  
+	  new Thread(new TsThread(str.toString())).run();
+	  
 	   return Constant.SUCCESSMSG;
    }
 	 
+	
+	public class TsThread extends Thread{
+		   String  str ;
+		   TsThread(String  str){
+			   this.str = str;
+		   }
+		   @Override
+		   public void run(){
+				URL urlobj;
+				try {
+				urlobj = new URL(str);
+				URLConnection	urlconn = urlobj.openConnection();
+				urlconn.connect();
+				InputStream myin = urlconn.getInputStream();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+				String content = reader.readLine();
+				JSONObject object = JSONObject.fromObject(content.trim());
+				@SuppressWarnings("unchecked")
+				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
+				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
+					System.out.println("手环清台推送成功");
+				}else{
+					System.out.println("手环清台推送失败");
+				}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					System.out.println("推送异常"+e.toString());
+					e.printStackTrace();
+				}
+		   }
+	   }
+	
 	@Override
 	public List<TorderDetail> find(Map<String, String> mapDetail){
 		return torderDetailMapper.find(mapDetail);

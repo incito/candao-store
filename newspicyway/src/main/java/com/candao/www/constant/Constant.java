@@ -294,6 +294,9 @@ public class Constant {
 		public static final String msg_2103 = "2103"; // 送礼 消息推送
 		
 		public static final String msg_2104 = "2104"; // 微信推送
+		
+		public static final String msg_2002 = "2002"; // 咖啡模式清台
+		
 	}
 	 
 }
