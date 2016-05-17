@@ -83,8 +83,8 @@
  								<!--li><a href="#" class="report-sec ky-menu-success" onclick="toPresentStatistics()">交接班统计表</a></li-->
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toScheduleReport()">排班参考统计表</a></li>
  								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterAssess()">服务员考核统计表</a></li>
- 								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterSale()">服务员销售统计表</a></li>
-<!--  								<li><a href="#" class="report-sec ky-menu-success" onclick="toMemberValueReport()">会员储值统计表</a></li> -->
+<!-- 								<li><a href="#" class="report-sec ky-menu-success" onclick="toWaiterSale()">服务员销售统计表</a></li>
+  								<li><a href="#" class="report-sec ky-menu-success" onclick="toMemberValueReport()">会员储值统计表</a></li> -->
  							</ul>
  						</li>
  						<li class="ky-dropdown-sec report-dropdown-sec">
