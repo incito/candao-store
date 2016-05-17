@@ -94,7 +94,7 @@ jQuery.extend({
     var extention = fielName.substring(fielName.lastIndexOf(".") + 1).toLowerCase();
     if (s.fileFilter && s.fileFilter.indexOf(extention) < 0) {
       alert("仅支持 (" + s.fileFilter + ") 为后缀名的文件!");
-      return;
+      return false;
     }
     //文件大小限制
     if (s.fileSize > 0) {
@@ -244,7 +244,6 @@ jQuery.extend({
       }
     };
 
-
   },
   //上传文件
   uploadHttpData: function(r, type) {
@@ -276,5 +275,7 @@ jQuery.extend({
     }
   }
 });
+
+
 
 
