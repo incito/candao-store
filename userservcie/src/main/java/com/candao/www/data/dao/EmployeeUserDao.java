@@ -89,6 +89,8 @@ public interface EmployeeUserDao {
 	 */
 	public List<EmployeeUser> getEmployeeUserByRoles4Store(List<Role> roles,String branchId);
 	
+	public List<EmployeeUser> getEmployeeUserByRoles4Store(List<Role> roles,String branchId,String jobnumber);
+	
 	/**
 	 * 根据门店ID，获取门店下地所有得员工列表信息
 	 * @param branchId

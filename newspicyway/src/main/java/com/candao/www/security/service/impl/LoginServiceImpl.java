@@ -1,4 +1,5 @@
 package com.candao.www.security.service.impl;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,14 @@ import org.springframework.stereotype.Service;
 
 import com.candao.common.exception.AuthException;
 import com.candao.common.utils.MD5;
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.common.utils.ValidateUtils;
+import com.candao.www.data.dao.EmployeeUserDao;
+import com.candao.www.data.dao.RoleDao;
 import com.candao.www.data.dao.TbResourceDao;
 import com.candao.www.data.dao.UserDao;
+import com.candao.www.data.model.EmployeeUser;
+import com.candao.www.data.model.Role;
 import com.candao.www.data.model.TbResource;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
@@ -35,7 +41,13 @@ public class LoginServiceImpl implements LoginService {
 	private DataDictionaryService datadictionaryService;
 	
 	@Autowired
-	TbResourceDao tbResourceDao;
+	private EmployeeUserDao employeeUserDao;
+	
+	@Autowired
+	private RoleDao roleDao;
+	
+	@Autowired
+	private TbResourceDao tbResourceDao;
 
 	@Override
 	public User authUser(Credentials credentials,int tag) throws AuthException {
@@ -120,13 +132,16 @@ public class LoginServiceImpl implements LoginService {
 	
 	
 	@Override
-	public int existUser(LoginInfo loginInfo ){
-		
-		Map<String ,Object> param=new HashMap();
-		param.put("exactFind", true) ;//是否是完全匹配
-		param.put("jobNumber", loginInfo.getUsername());
-		List l=userDao.queryUserList(param);
-		if( null!=l && l.size()>0){
+	public int existUser(LoginInfo loginInfo){
+//		获取服务员开台权限码
+		String waiterFuns = PropertiesUtils.getValue("employee.role.waiter");
+		String[] funs = waiterFuns.split(",");
+//		获取拥有这些权限的角色
+		List<Role> roles = roleDao.getRoleListByFunctionsCodes(Arrays.asList(funs));
+//		获取门店ID
+		String branchid = PropertiesUtils.getValue("current_branch_id");
+		List<EmployeeUser> users = employeeUserDao.getEmployeeUserByRoles4Store(roles, branchid,loginInfo.getUsername());
+		if(null != users && users.size() > 0){
 			return 0;
 		}else {
 			return 1;

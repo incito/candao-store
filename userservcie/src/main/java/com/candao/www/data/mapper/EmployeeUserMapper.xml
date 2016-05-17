@@ -233,6 +233,9 @@
 		        )
 		        and e.branch_id=#{branchId}
 		        and u.status='01'
+		        <if test="jobNumber != null">
+		        	and e.job_number = #{jobNumber} 
+		        </if>
 		  order by u.order_num desc
 	</select>
 	
