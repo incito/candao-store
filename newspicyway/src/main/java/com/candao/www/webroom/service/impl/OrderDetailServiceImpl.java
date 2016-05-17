@@ -44,6 +44,7 @@ import com.candao.print.service.PrinterService;
 import com.candao.print.service.StatentMentProducerService;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbPrintObjDao;
+import com.candao.www.data.dao.ToperationLogDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.TbTable;
@@ -301,9 +302,12 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
 		  mapParam1.put("orderid", orders.getOrderid());
 		  List<TorderDetail> detailList =   torderDetailMapper.find(mapParam1);
+		 //先删除临时表,防止事物异常造成临时表里面存在数据
+		  torderDetailMapper.deleteTemp(orders.getOrderid());
 		  //调用存储过程插入订单详情的临时表
 		  int success = torderDetailMapper.insertTempOnce(listall);
 			if(success < 1){
+				transactionManager.rollback(status);
 				return Constant.FAILUREMSG;
 			}
 			
@@ -317,6 +321,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	       result = String.valueOf(mapParam.get("result"));
 	       
 	       if("1".equals(result)){
+	    	   transactionManager.rollback(status);
 	    	   return Constant.FAILUREMSG;
 	       } 
 //	       
@@ -324,21 +329,22 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 ////	       if("1".equals(orders.getRows().get(0).getPrinttype())){
 ////	    	   flag=4;
 ////	       }
-	       printOrderList( orders.getOrderid(),table.getTableid(), flag);
-	       printweigth(listall,orders.getOrderid());
-			   	 //操作成功了，插入操作日记
-	        if(toperationLogService.save(toperationLog)){
-	    	  transactionManager.commit(status);
-		   	  return Constant.SUCCESSMSG;
-		   	}else{
-		     	transactionManager.rollback(status);
-		   		return Constant.FAILUREMSG;
-		   	}
-	 }catch(Exception ex){
-				ex.printStackTrace();
-				 transactionManager.rollback(status);
-			   	 return Constant.FAILUREMSG;
-			} 	
+
+		   	 //操作成功了，插入操作日记
+			      int saveresult= toperationLogDao.save(toperationLog);
+			      if(saveresult>0){
+			          printOrderList( orders.getOrderid(),table.getTableid(), flag);
+				        printweigth(listall,orders.getOrderid());
+			      	transactionManager.commit(status);
+					   	return Constant.SUCCESSMSG;
+			      }
+			        transactionManager.rollback(status);
+				   	 return Constant.FAILUREMSG;
+			}catch(Exception ex){
+						ex.printStackTrace();
+						 transactionManager.rollback(status);
+					   	 return Constant.FAILUREMSG;
+					} 	
 	
 		}
 		/**
@@ -1911,7 +1917,8 @@ public class WeigthThread  implements Runnable{
 	@Autowired
 	@Qualifier("t_userService")
 	UserService userService ;
-	
+	@Autowired
+	ToperationLogDao  toperationLogDao;
 	@Autowired
 	private DishSetProducerService dishSetService;
 

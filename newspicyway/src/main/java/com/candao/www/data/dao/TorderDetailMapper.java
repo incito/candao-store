@@ -143,4 +143,8 @@ public interface TorderDetailMapper {
 	
 	public List<Map<String, Object>> getDishesInfoByOrderId(String orderid);
 	public Map<String, Object> selectorderinfos(String orderid);
+
+	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid);
+
+	public void deleteTemp(String orderid);
 }

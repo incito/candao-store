@@ -1129,6 +1129,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					BigDecimal orignalprice=null;
 					BigDecimal couponprice=new BigDecimal(0);
 					String dishid="";
+					String dishids="";
 					//菜品原价
 					BigDecimal amountCount = new BigDecimal(0.0);
 					for( TorderDetail d : orderDetailList ){
@@ -1141,7 +1142,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 								orignalprice = d.getOrderprice().multiply( discount.divide( new BigDecimal(10))); //设置优惠后的金额
 								
 								//如果此菜品是多份，则计算多份总的优惠价格
-								BigDecimal numOfDish = new BigDecimal("1"); 
+								BigDecimal numOfDish = new BigDecimal("0"); 
 								if( new BigDecimal(d.getDishnum()).compareTo(new BigDecimal("0")) > 0 ){
 									numOfDish = new BigDecimal(d.getDishnum());
 								}
@@ -1154,15 +1155,23 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 								tmpMap.put("orderid", orderid);
 								tmpMap.put("dishid", dishid ) ;
 								discountDishList.add(tmpMap) ; 
+								dishids=dishids+",'"+dishid+"'";
 								//System.out.println("dishid:"+dishid+";before:"+d.getOrderprice() +" ;after："+orignalprice +" ;当前共优惠："+amount);
 							}
 							
 						}
 					}
+					if(dishids!=null && dishids.length()>1){
+						dishids=dishids.substring(1);
+					}
 					//System.out.println("map:" + JacksonJsonMapper.objectToJson( discountDishList ));
 					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 //					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
-					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
+					//int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
+					if(dishids!=null && dishids.length()>1){
+						//使用新的更新优惠信息     减少更新操作时间
+						int row=torderDetailDao.updateOrderDetailWithPreferentialNew(dishids,orderid,preferentialid);
+					}
 					//设置金额
 					result.setAmount(amount.setScale(2,RoundingMode.HALF_UP));
 					result.setResult(1);
