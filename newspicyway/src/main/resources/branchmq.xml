@@ -110,6 +110,11 @@
 		</constructor-arg>
 	</bean>
 	
+    <!-- 异常消息队列 -->  
+    <bean id="exceptionQueue" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="exceptionQueue" />  
+    </bean>  
+	
 		<bean id="commMessageConverter" class="com.candao.print.utils.CommMessageConverter"/>
 	
 	<!-- 多个菜品的监听 -->
@@ -118,18 +123,14 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="multiDishQueue" />  
         <property name="messageListener" ref="multiMessageListenerAdapter" />  
-        
-         <property name="maxConcurrentConsumers" value="2" />
-        <property name="concurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
         
     </bean>  
     
      <bean id="multiMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.MultiDishListener"/>  
-        </property>  
+        <property name="delegate" ref="multiDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean> 
     
@@ -142,16 +143,13 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="custDishQueue" />  
         <property name="messageListener" ref="custMessageListenerAdapter" />  
-          <property name="maxConcurrentConsumers" value="2" />
         <property name="concurrentConsumers" value="2" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="custMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.CustDishListener"/>  
-        </property>  
+        <property name="delegate" ref="custDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean> 
     
@@ -163,16 +161,13 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="normalDishQueue" />  
         <property name="messageListener" ref="messageListenerAdapter" />  
-          <property name="maxConcurrentConsumers" value="2" />
         <property name="concurrentConsumers" value="2" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="messageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.NormalDishListener"/>  
-        </property>  
+        <property name="delegate" ref="normalDishListener" />  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 正常下单的 监听 end -->
@@ -183,16 +178,13 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="weightQueue" />  
         <property name="messageListener" ref="weightListenerAdapter" />  
-          <property name="maxConcurrentConsumers" value="2" />
-        <property name="concurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="weightListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.WeighDishListener"/>  
-        </property>  
+        <property name="delegate" ref="weightDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 称重单的 监听 end -->
@@ -205,9 +197,7 @@
     </bean>  
     
      <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.StatementDishListener"/>  
-        </property>  
+        <property name="delegate" ref="statementDishListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 套餐小票的监听 -->
@@ -219,12 +209,25 @@
     </bean>  
     
      <bean id="dishSetMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">
-            <bean class="com.candao.print.listener.DishSetListener"/>  
-        </property>  
+        <property name="delegate" ref="dishSetListener"/>  
+        <property name="defaultListenerMethod" value="receiveMessage"/>  
+    </bean>   
+      
+    <!-- 异常队列的监听 -->
+	  <bean id="exceptionMessageListenerAdapterContainer"  
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="exceptionQueue" />  
+        <property name="messageListener" ref="exceptionMessageListenerAdapter" />  
+        <property name="concurrentConsumers" value="5" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
+    </bean>  
+    
+     <bean id="exceptionMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+        <property name="delegate" ref="printExceptionListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>     
-    
        
     <!--  发送给分店数据的 监听  end -->
     
@@ -234,16 +237,13 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="tableSwitchQueue" />  
         <property name="messageListener" ref="tableChangeListenerAdapter" />  
-          <property name="maxConcurrentConsumers" value="2" />
-        <property name="concurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
     
      <bean id="tableChangeListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.TableChangeListener"/>  
-        </property>  
+        <property name="delegate" ref="tableChangeListener"/>  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 换台和并台的 监听 end -->
@@ -265,7 +265,16 @@
     </bean>  
       <bean id="tableChangeListener" class="com.candao.print.listener.TableChangeListener">  
         <property name="destination" ref="tableSwitchQueue"/>  
-    </bean>  
+    </bean> 
+    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener">  
+        <property name="destination" ref="statementQueue"/>  
+    </bean> 
+    <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">  
+        <property name="destination" ref="dishSetQueue"/>  
+    </bean>
+    <bean id="printExceptionListener" class="com.candao.print.listener.PrintExceptionListener">  
+        <property name="destination" ref="exceptionQueue"/>  
+    </bean>
     
     <!--  - 配置总店mq 信息  -->
     
