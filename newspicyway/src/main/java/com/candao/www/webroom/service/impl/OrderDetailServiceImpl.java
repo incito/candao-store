@@ -143,7 +143,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	  str.append(Constant.MessageType.msg_2002+"/");
 	  if(!"".equals(orderid)){
 		  Torder torder=orderService.get(orderid);
-		  str.append(torder.getUserid()).append("|").append(tableNo).append("|");
+		  str.append(torder.getUserid()).append("|").append(tableNo).append("|").append(torder.getOrderid());
 	  }
 	  
 	  new Thread(new TsThread(str.toString())).run();
