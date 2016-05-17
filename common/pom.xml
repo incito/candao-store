@@ -23,8 +23,8 @@
 				<version>2.0</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-httpClint</groupId>
-				<artifactId>commons-httpClint</artifactId>
+				<groupId>commons-httpClient</groupId>
+				<artifactId>commons-httpClient</artifactId>
 				<version>3.1</version>
 			</dependency>
 			
