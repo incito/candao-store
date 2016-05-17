@@ -1,24 +1,41 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_HOME" value="logs"/>
+	<property name="LOG_HOME" value="/home/cloud-user/candao" />
+	
+	<turboFilter class="ch.qos.logback.classic.turbo.DuplicateMessageFilter"/>
 
-    <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>15</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-    </appender>
+	<appender name="candao"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+		</encoder>
+	</appender>
 
-    <root level="info">
-        <appender-ref ref="candao"/>
-    </root>
+	<appender name="candao_print"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/candao_print/print.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>10</maxHistory>
+			<maxFileSize>50MB</maxFileSize> 
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+		</encoder>
+	</appender>
 
+	<root level="info">
+		<appender-ref ref="candao" />
+	</root>
 
-    <logger name="dao" level="info"></logger>
+	<logger name="dao" level="DEBUG" />
+	<!-- 打印相关日志 -->
+	<logger name="com.candao.print" additivity="false" level="debug">
+		<appender-ref ref="candao_print"/>
+	</logger>
 
     <appender name="device" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -30,7 +47,7 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    <logger name="com.candao.www.dataserver.service.log" level="info">
+    <logger name="com.candao.www.dataserver.service.log" additivity="false" level="info">
         <appender-ref ref="device"/>
     </logger>
 </configuration>

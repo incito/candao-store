@@ -31,11 +31,14 @@
 		  where status ='0'
 	</update>
 	
-	
      <update id="updateSynRecord" parameterType="java.util.Map">
 		  update `t_syn_record` 
 		  set endtime = now(),status ='1'
 		  where status ='0' and  DATE_FORMAT(syntime,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
+	</update>
+	
+      <update id="updateSynData" parameterType="java.util.Map">
+		  update `t_syn_record` set endtime = now(),status =#{status} where status ='0'
 	</update>
 	
       <delete id="deleteSynRecord" >
