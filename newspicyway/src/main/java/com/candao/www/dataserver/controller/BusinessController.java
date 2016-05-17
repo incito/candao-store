@@ -23,7 +23,7 @@ public class BusinessController {
     private BusinessService businessService;
 
     /**
-     * 3、获取帐单列表
+     * 获取帐单列表
      *
      * @param userId  员工号
      * @param orderId 帐单号
@@ -39,6 +39,22 @@ public class BusinessController {
         return s;
     }
 
+    /**
+     * 获取帐单列表
+     *
+     * @param userId  员工号
+     * @param orderId 帐单号
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/GetServerTableList_2/{orderId}/{userId}", produces = {"application/text;charset=UTF-8"})
+    public String getServerTableList2(@PathVariable String userId, @PathVariable String orderId) {
+        logger.info("###REQUEST### BusinessController GetServerTableList_2 userId={}  orderId={}", userId, orderId);
+        String s = businessService.getServerTableList2(orderId,userId );
+        s = "{\"result\":[\"" + s + "\"]}";
+        logger.info("###RESPONSE### BusinessController GetServerTableList_2 response={}", s);
+        return s;
+    }
     /**
      * 开业和是否开业接口
      *
