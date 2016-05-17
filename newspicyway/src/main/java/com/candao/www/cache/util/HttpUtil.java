@@ -2,7 +2,7 @@
  * Copyright (c) 2010 S9,Inc.All rights reserved.
  * Created by 2010-9-9 
  */
-package com.candao.www.cache.controller;
+package com.candao.www.cache.util;
 
 import java.io.BufferedReader;
 import java.io.File;

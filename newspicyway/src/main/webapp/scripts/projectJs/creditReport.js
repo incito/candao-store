@@ -57,16 +57,19 @@
     //查询挂账信息表总表
     function getCreditData(){
 		showLoading();
-		beginTime = $("#beginTime").val();
-		endTime = $("#endTime").val();
-		billName = $("#billName").val();
-		clearStatus = $("#clearStatus").val();
+		localStorage.setItem("beginTime", $("#beginTime").val());
+		localStorage.setItem("endTime", $("#endTime").val());
+		var billName = $(obj).attr("billName");
+		var clearStatus = $(obj).attr("clearStatus");
+		localStorage.setItem("billName", billName);
+		localStorage.setItem("clearStatus", clearStatus);
+		branchId = localStorage.getItem("currentStore");
 		if(compareBeginEndTime()){
 			$.post(global_Path + "/gisterBill/getBillCount.json", {
-				beginTime : beginTime,
-				endTime : endTime,
-				billName : billName,
-				clearStatus : clearStatus
+				beginTime : $("#beginTime").val(),
+				endTime : $("#endTime").val(),
+				billName : $("#billName").val(),
+				clearStatus : $("#clearStatus").val()
 			}, function(result) {
 				hideLoading();
 				if(result.code == 1){
@@ -90,6 +93,8 @@
 				var zcgzsj = obj.zcgzsj;
 				var gzdw = obj.gzdw;
 				tHtml += '<tr beginTime="'+beginTime+'"endTime="'+endTime+'" +gzdw="'+gzdw+'" gzds="'+gzds+'" gzze= "'+gzze.toFixed(2)+'" ondblclick="showCreditSubTb(\''
+				        + beginTime +'\',\''
+				        + endTime + '\',\''
 				        + gzdw + '\',\''
 				        + gzds + '\',\''
 				        + gzze +'\')">'
@@ -108,8 +113,10 @@
 	}
 	
 	//查询第二个弹出表
-	function showCreditSubTb(gzdw,gzds,gzze){
+	function showCreditSubTb(beginTime,endTime,gzdw,gzds,gzze){
 		$("#p_gzdw").val(gzdw);
+		$("#p_begintime").text($("#beginTime").val());
+		$("#p_endtime").text($("#endTime").val());
 		$("#gzdw").text(gzdw);
 		$("#gzds").text(gzds);
 		$("#gzze").text(gzze);
@@ -121,8 +128,8 @@
 	//第二个弹出表拼数据
 	function getCreditDetails(gzdw,gzze){
 		$.post(global_Path+"/gisterBill/getBillDetail.json", {
-			beginTime: beginTime,
-			endTime: endTime,
+			beginTime: $("#beginTime").val(),
+			endTime: $("#endTime").val(),
 			billName: $("#p_gzdw").val(),
 			clearStatus: $("#clearStatus").val()
 		}, function(result){
@@ -244,6 +251,7 @@
 		var payamount = $("#jiesuajine").val();
 		var disamount = $("#youmianjine").val();
 		var wjje = $("#p_wjje").val();
+		var remark = $("#remark").val();
 		if(inserttime == null || inserttime == ""){
 			alert("结算时间不能为空！");
 			$("#inserttime").val(getNowDate());
@@ -279,6 +287,11 @@
 			alert("结算金额加优免金额不能大于未结金额!");
 			return false;
 		}
+		var remarkByte = remark.replace(/[^\x00-\xff]/g, 'xx');
+		if(remarkByte.length >= 500){
+			alert("备注不能超过250个汉字!");
+			return false;
+		}
 		$.post(global_Path+"/gisterBill/Billing.json", {
 			orderid : $("#orderId").val(),
 			creaditname : $("#creaditname").text(),
@@ -302,10 +315,10 @@
 	
 	//导出
 	function exportCreditReport(){
-		$("#_beginTime").val(beginTime);
-		$("#_endTime").val(endTime);
-		$("#_billName").val(billName);
-		$("#_clearStatus").val(clearStatus);
+		$("#_beginTime").val($("#beginTime").val());
+		$("#_endTime").val($("#endTime").val());
+		$("#_billName").val($("#billName").val());
+		$("#_clearStatus").val($("#clearStatus").val());
 		$("#_searchType").val(searchType);
 		$("#creditForm").attr("action", global_Path + "/gisterBill/exportRegisterBill.json");
 		$("#creditForm").submit();

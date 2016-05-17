@@ -83,9 +83,9 @@ public class RegisterBillController {
 			mav.addObject("msg","查询成功!");
 			mav.addObject("resultList",resultList);
 		} catch (Exception e) {
-
 			mav.addObject("code","0");
 			mav.addObject("msg","查询失败!");
+			e.printStackTrace();
 		}
 		return mav;
 	}

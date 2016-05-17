@@ -1,12 +1,5 @@
 ﻿-- 文件描述：本文件为本次集成测试所需增量sql脚本 
 
--- 描述：修改礼物字段长度 ;
--- 作者： 翟光涛; 
--- 时间：2016-04-21
-ALTER TABLE t_gift MODIFY COLUMN gift_name VARCHAR(300);
-ALTER TABLE t_gift MODIFY COLUMN gift_unit VARCHAR(100);
-ALTER TABLE t_gift_type MODIFY COLUMN gift_type_name VARCHAR(100);
-
 -- 描述：修改orderprice DECIMAL(10, 2),
 -- 作者： 蔡蔡; 
 -- 时间：2016-04-21
@@ -1066,3 +1059,10 @@ BEGIN
 
 END */$$
 DELIMITER ;
+
+-- 描述：修改礼物字段长度 ;
+-- 作者： 翟光涛; 
+-- 时间：2016-04-21
+ALTER TABLE t_gift MODIFY COLUMN gift_name VARCHAR(300);
+ALTER TABLE t_gift MODIFY COLUMN gift_unit VARCHAR(100);
+ALTER TABLE t_gift_type MODIFY COLUMN gift_type_name VARCHAR(100);

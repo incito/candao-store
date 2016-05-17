@@ -67,8 +67,10 @@ public class Constant {
 	public static final String TRACKERSERVER_HTTP_TOKEN = PropertiesUtils.getValue("fastdfs.secret_key");
 	
 	public static final String TRACKERSERVER_CHARSET = PropertiesUtils.getValue("fastdfs.charset");
-	
+	// 门店代理文件服务器地址
 	public static final String FILEURL_PREFIX = PropertiesUtils.getValue("fastdfs.url");
+	// 云端文件服务器地址
+	public static final String CLOUD_FILEURL_PREFIX = PropertiesUtils.getValue("cloud_fastdfs.url");
 	public static final String INNERFILEURL_PREFIX = PropertiesUtils.getValue("fastdfs.innerurl");
 	
 	public static final String IMG_GROUP = PropertiesUtils.getValue("fastdfs.group.img");
@@ -310,6 +312,7 @@ public class Constant {
 		public static final String msg_2101 = "2101"; // 社交 送菜信息
 		public static final String msg_2102 = "2102"; // 社交 菜品处理信息
 		public static final String msg_2103 = "2103"; // 送礼 消息推送
+		public static final String msg_2004 = "2004"; // 经理手环消息推送
 		
 		public static final String msg_2104 = "2104"; // 微信推送
 	}
