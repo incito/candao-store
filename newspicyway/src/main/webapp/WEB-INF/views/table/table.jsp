@@ -213,7 +213,7 @@
 							<div class="btn-operate">
 								<button class="btn btn-cancel" type="button" data-dismiss="modal">取消</button>
 								<div  class="btn-division"></div>
-								<button class="btn btn-save" id="counter-type-del" type="button" onclick="delAreaAndTables()">确认</button>
+								<button class="btn btn-save" id="counter-type-del2" type="button" onclick="delAreaAndTables()">确认</button>
 							</div>
 
 						</form>
