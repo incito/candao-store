@@ -154,33 +154,16 @@ public class NormalDishListener {
 			}
 			
 			//合并打印
-			for (PrintDish singleDish : object.getpDish()) {
-				logger.error("------------------------","");
-				logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + singleDish.getDishName(),"");
-				socketOut.write(PrinterConstant.getFd8Font());
-				String dishNum2 = StringUtils.bSubstring3(
-						singleDish.getDishNum(), 4);
-				String dishunit2 = StringUtils.bSubstring2(singleDish.getDishUnit(),
-						2);
-				
-				/*int spaceNum = 11;
-				if (2 == printDish.getDishtype()){
-					spaceNum = 8;
-					writer.write("（套）");
-				}*/
-				/*String dishName2 = StringUtils.bSubstring2(StringUtils.BtoQ(
-						singleDish.getDishName()), spaceNum );
-				writer.write(dishName2);
-				*/
-				String[] text = getPrintText( object.getpDish(), 11, 3, 5,printDish.getDishtype());
-				
-				for (int i = 0; i < text.length; i++) {
-					writer.write(text[i]+"\r\n");
-				}
-				
-				//end
-				writer.flush();//  
+			socketOut.write(PrinterConstant.getFd8Font());
+			String[] text = getPrintText(object.getpDish(), 11, 3, 5, printDish.getDishtype());
+
+			for (int i = 0; i < text.length; i++) {
+				writer.write(text[i] + "\r\n");
 			}
+
+			// end
+			writer.flush();//
+				
 			socketOut.write(PrinterConstant.getClear_font());
 			writer.write("------------------------------------------\r\n");
 			writer.flush();//  
