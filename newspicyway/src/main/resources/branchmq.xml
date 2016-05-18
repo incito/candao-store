@@ -143,7 +143,7 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="custDishQueue" />  
         <property name="messageListener" ref="custMessageListenerAdapter" />  
-        <property name="concurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
@@ -161,7 +161,7 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="normalDishQueue" />  
         <property name="messageListener" ref="messageListenerAdapter" />  
-        <property name="concurrentConsumers" value="2" />
+        <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
@@ -219,7 +219,7 @@
         <property name="connectionFactory" ref="connectionFactory" />  
         <property name="destination" ref="exceptionQueue" />  
         <property name="messageListener" ref="exceptionMessageListenerAdapter" />  
-        <property name="concurrentConsumers" value="5" />
+        <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
     </bean>  
