@@ -699,6 +699,8 @@ CREATE TABLE t_dish (
   abbrdesc VARCHAR(50) DEFAULT NULL,
   dishtype INT(11) DEFAULT NULL,
   orderNum INT(11) DEFAULT NULL,
+  imageWidth INT(10) DEFAULT NULL,
+  imageHeight INT(10) DEFAULT NULL,
   recommend INT(4) DEFAULT 0,
   weigh INT(4) DEFAULT 0,
   py VARCHAR(50) DEFAULT NULL,
