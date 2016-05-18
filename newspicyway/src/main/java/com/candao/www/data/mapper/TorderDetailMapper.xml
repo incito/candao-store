@@ -760,4 +760,12 @@
 	<delete id="deleteTemp" parameterType="map">
 		delete from t_order_detail_temp where orderid=#{orderid}
 	</delete>
+	
+	<select id="getOrderDetailByPrimaryKeyS" parameterType="map" resultType="com.candao.www.data.model.TorderDetail">
+		select <include refid="Base_Column_List" />
+     	from t_order_detail
+     	where primarykey in (${primaryKeyS})
+	</select>
+	
+	
 </mapper>

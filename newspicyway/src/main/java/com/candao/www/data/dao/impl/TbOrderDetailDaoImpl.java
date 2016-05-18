@@ -269,5 +269,12 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("orderid", orderid);
 		dao.delete(PREFIX + ".deleteTemp", params);
 	}
+	
+	@Override
+	public List<TorderDetail> getOrderDetailByPrimaryKeyS(String keys) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("primaryKeyS", keys);
+		return dao.find(PREFIX + ".getOrderDetailByPrimaryKeyS", map);
+	}
 }
  
