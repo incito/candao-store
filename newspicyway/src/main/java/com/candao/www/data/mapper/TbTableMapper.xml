@@ -146,8 +146,7 @@
 	    tableid=#{id} 
 	</delete>
 	<delete id="deleteTablesByAreaid" parameterType="map">
-	   update t_table
-	   set status = 5, modifytime = now()
+	   delete from t_table
 	   where 
 	    areaid=#{areaid} 
 	</delete>
