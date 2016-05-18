@@ -49,7 +49,7 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	 <context:component-scan base-package="com.candao.common.utils"/>
-	  <context:component-scan base-package="com.candao.print"/>
+	 <context:component-scan base-package="com.candao.print"/>
 	 <context:component-scan base-package="com.candao.www"/>
 	 <context:component-scan base-package="com.candao.file"/>
 	 
@@ -126,8 +126,7 @@
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-
-
+	
 	<aop:config>
 		<aop:pointcut id="productServiceMethods"
 			expression="execution(* com.candao.www.*.service.*.*(..))" />
@@ -158,8 +157,8 @@
         <tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
         <tx:method name="merge*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
         <tx:method name="del*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-        <tx:method name="remove*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-          
+        <tx:method name="remove*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+        
         <tx:method name="put*" read-only="true"/>  
         <tx:method name="query*" read-only="true"/>  
         <tx:method name="page*"  read-only="true" />
@@ -196,7 +195,7 @@
      <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
 	    <property name="jobDetail" ref="branchDataJob" />  
 	    <!-- 晚上 1点到 9点 每半小时执行一次  -->
-	    <property name="cronExpression" value="* 30 1-9 * * ?" />  
+	    <property name="cronExpression" value="0 0/30 1-9 * * ?" />  
     </bean>  
     
    <bean id="dataSynJob"  

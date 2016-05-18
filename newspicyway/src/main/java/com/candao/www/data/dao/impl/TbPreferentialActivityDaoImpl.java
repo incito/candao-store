@@ -260,5 +260,18 @@ public class TbPreferentialActivityDaoImpl implements TbPreferentialActivityDao 
     public List<Map<String,Object>> findCooperationUnit(Map params){
 		return dao.find(PREFIX+".findCooperationUnit", params);
 	}
+	
+	/**
+	 * 根据条件更新优惠
+	 */
+	@Override
+	public int updateBySelective(Map param) {
+		return dao.update(PREFIX+".updateBySelective",param);
+	}
+	
+	@Override
+	public List<Map<String, Object>> selectSpecialActivity(Map param) {
+		return dao.find(PREFIX+".selectSpecialActivity",param);
+	}
 
 }

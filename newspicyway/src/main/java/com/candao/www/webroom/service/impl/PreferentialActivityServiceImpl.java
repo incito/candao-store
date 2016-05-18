@@ -969,7 +969,16 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			Map params=new HashMap();
 			params.put("type", typeid);
 			params.put("branchid", branchid);
+			//added by caicai 2 隐藏，表示不提供隐藏的优惠券
+			params.put("status", 2);
 			List<Map<String, Object>> activitys= this.tbPreferentialActivityDao.findPreferentialDetail(params);
+			//特价券单独处理
+			if("-1".equals(typeid)){
+				params.put("type", "01");
+				List<Map<String, Object>> specialActivitys = tbPreferentialActivityDao.selectSpecialActivity(params);
+				if(specialActivitys != null)
+					activitys.addAll(specialActivitys);				
+			}
 			
 			list=filterValidCoupon(activitys);
 			
@@ -977,12 +986,29 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		
 		return list;
 	}
+	
+	public List<Map<String , Object>> findCouponsByType4Pad(Map params){
+		List<Map<String, Object>>  list = new ArrayList();
+		Map branchInfoMap=tbBranchDao.getBranchInfo();
+		//如果没有默认门店，则返回所有的门店信息。 关于branchid，会在SQL中判断，这里只需要 值为 NULL即可
+		String branchid=null;
+		if( null != branchInfoMap ){
+			branchid=(String) branchInfoMap.get("branchid");
+		}
+		params.put("branchid", branchid);
+		//added by caicai 2 隐藏，表示不提供隐藏的优惠券
+		params.put("status", 2);
+		List<Map<String, Object>> activitys= this.tbPreferentialActivityDao.findPreferentialDetail(params);
+			
+		return list;
+		}
 	 /**
 	  * 查询所有的可挂账的合作单位
 	  *
     */
 	@Override
 	public List<Map<String , Object>> findCooperationUnit(Map params){
+		params.put("branchid", PropertiesUtils.getValue("current_branch_id"));
 		List<Map<String, Object>> CooperationUnitList= this.tbPreferentialActivityDao.findCooperationUnit(params);
 		return CooperationUnitList;
 	}
@@ -1158,7 +1184,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					//1.获取手工优免对象。 当是 手工优惠或者内部优惠的时候，这里的 preferentialid代表是详细表的id
 					Map detail_params=new HashMap();
 					detail_params.put("preferential", preferentialid);
-					detail_params.put("type", sub_type);//获取数据的 mybatis中使用
+					detail_params.put("type", type);//获取数据的 mybatis中使用
+					detail_params.put("branchid",PropertiesUtils.getValue("current_branch_id"));
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					if( null==detailList || detailList.size()<1){  //如果没有手工优免对应的优惠记录，则返回，并提示
 						result.setAmount( new BigDecimal(0).setScale(2));
@@ -1231,7 +1258,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					//这里的 preferentialid代表是详细表的id
 					Map detail_params=new HashMap();
 					detail_params.put("preferential", preferentialid);
-					detail_params.put("type", sub_type);//获取数据的 mybatis中使用
+					detail_params.put("type", type);//获取数据的 mybatis中使用
+					detail_params.put("branchid",PropertiesUtils.getValue("current_branch_id"));
 					List<Map<String,Object>> detailList= this.tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 					if( null==detailList || detailList.size()<1){  //如果没有手工优免对应的优惠记录，则返回，并提示
 						result.setAmount( new BigDecimal(0).setScale(2));
@@ -1412,5 +1440,16 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		
 		
 		return tbPreferentialActivityDao.page(params, current, pagesize);
+	}
+	
+	@Override
+	public int updateBySelective(Map params) {
+		if("0".equals(params.get("operationtype"))){
+			params.put("status", 0);
+		}else {
+			params.put("status", 2);
+		}
+		params.put("id", params.get("preferential"));
+		return tbPreferentialActivityDao.updateBySelective(params);
 	}
 }
