@@ -18,21 +18,21 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                Process proc = null;
-                try {
-                    proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
-                    proc.waitFor();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            @Override
+//            public void run() {
+//                Process proc = null;
+//                try {
+//                    proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
+//                    proc.waitFor();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        });
         try {
             logger.info("kill 'start.exe'....");
             Process proc = Runtime.getRuntime().exec("wmic process where name='start.exe' call terminate");
