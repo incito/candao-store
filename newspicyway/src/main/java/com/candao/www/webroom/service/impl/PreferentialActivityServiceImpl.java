@@ -1145,7 +1145,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 								orignalprice = d.getOrderprice().multiply( discount.divide( new BigDecimal(10))); //设置优惠后的金额
 								
 								//如果此菜品是多份，则计算多份总的优惠价格
-								BigDecimal numOfDish = new BigDecimal("1"); 
+								BigDecimal numOfDish = new BigDecimal("0"); 
 								if( new BigDecimal(d.getDishnum()).compareTo(new BigDecimal("0")) > 0 ){
 									numOfDish = new BigDecimal(d.getDishnum());
 								}
