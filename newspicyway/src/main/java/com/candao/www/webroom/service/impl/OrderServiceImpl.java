@@ -599,7 +599,8 @@ public class OrderServiceImpl implements OrderService{
 						//原订单meid不为空，推送清空
 						if(orderMap.get("meid")!=null&&params.get("meid")!=null&&!String.valueOf(orderMap.get("meid")).equals(String.valueOf(params.get("meid")))){
 							StringBuffer str=new StringBuffer(Constant.TS_URL);
-							str.append(Constant.MessageType.msg_1005+"/"+String.valueOf(orderMap.get("meid")));
+							String msg=String.valueOf(orderMap.get("meid"))+"|"+params.get("tableNo");
+							str.append(Constant.MessageType.msg_1005+"/"+msg);
 							System.out.println(str.toString());
 							new Thread(new TsThread(str.toString())).run();
 						}
