@@ -596,14 +596,7 @@ public class OrderServiceImpl implements OrderService{
 						mapRet.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
 						mapRet.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
 						mapRet.put("rows", getMapData(orderid));//获取订单数据
-						//原订单meid不为空，推送清空
-						if(orderMap.get("meid")!=null&&params.get("meid")!=null&&!String.valueOf(orderMap.get("meid")).equals(String.valueOf(params.get("meid")))){
-							StringBuffer str=new StringBuffer(Constant.TS_URL);
-							String msg=String.valueOf(orderMap.get("meid"))+"|"+params.get("tableNo");
-							str.append(Constant.MessageType.msg_1005+"/"+msg);
-							System.out.println(str.toString());
-							new Thread(new TsThread(str.toString())).run();
-						}
+						//xk
 						//当前pad的meid不为空，更新meid
 						if(params.get("meid")!=null){
 							Torder order =new Torder();
@@ -614,6 +607,18 @@ public class OrderServiceImpl implements OrderService{
 							torderMapper.update(order);
 							
 						}
+						//xk
+						//原订单meid不为空，推送清空
+						
+						/*服务员pad不清台
+						 * if(orderMap.get("meid")!=null&&params.get("meid")!=null&&!String.valueOf(orderMap.get("meid")).equals(String.valueOf(params.get("meid")))){
+							StringBuffer str=new StringBuffer(Constant.TS_URL);
+							String msg=String.valueOf(orderMap.get("meid"))+"|"+params.get("tableNo");
+							str.append(Constant.MessageType.msg_1005+"/"+msg);
+							System.out.println(str.toString());
+							new Thread(new TsThread(str.toString())).run();
+						}*/
+						
 						//删除桌子日志
 						toperationLogService.deleteToperationLogByTableNo(String.valueOf(params.get("tableNo")));	
 						
