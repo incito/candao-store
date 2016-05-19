@@ -79,12 +79,6 @@ public class WebInitListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        File file=new File("D:/contextDestroyed");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 
