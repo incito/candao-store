@@ -1688,7 +1688,6 @@ public class PadInterfaceController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/getSystemSetData")
 	@ResponseBody
-
 	public void   getSystemSetData(HttpServletRequest request,HttpServletResponse response,@RequestBody String jsonString){
 		Map<String, Object> map=JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
