@@ -13,7 +13,6 @@
 	src="<%=request.getContextPath()%>/scripts/json2.js"></script>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/tools/calendar_diy/WdatePicker.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
 <script src="<%=request.getContextPath()%>/scripts/jquery.mousewheel.js"></script>
 <script src="<%=request.getContextPath()%>/scripts/globalize.js"></script>
 <script
@@ -231,39 +230,6 @@
 			</form>
 		</div>
 
-						<!-- 一页菜谱 -->
-						<div class="setup_div">
-									<form action="" method="post" class="form-horizontal " name="" id="onepage_form">
-									<input type="hidden" id="onepagetype" value="ONEPAGETYPE" />
-									<input type="hidden" id="dictidonepage" name="dictid" />
-									<div style="height: 30px;">
-										<div class="system-setup-title">一页菜谱</div>
-										<button type="button" id="onepagebut" class="btn btn-default">编辑</button>
-										<button type="submit" id="onepagesub" class="btn btn-default hide">保存</button>
-									</div>
-									<hr style="margin: 5px 0px;" />
-									<div class="modal-body" style="padding-top: 0px;">
-										<div class="form-horizontal " id="onepagediv">
-											<div class="form-group">
-												<label
-													class="col-xs-2 control-label">是否开启：</label>
-												 <div class="col-xs-2">
-													<div class="show_info isFree_onepage">
-														<p class="left"></p>
-													</div>
-													<div class="edit_info hide">
-														<label class="radio-inline"> <input type="radio"
-															name="onepageisFree" value="0" checked="checked" />不开启
-														</label> <label class="radio-inline"><input type="radio"
-															name="onepageisFree" value="1" />开启</label>
-													</div>
-												</div>
-											</div>
-									</div>
-								</div>
-								</form>	
-								</div>
-						<!--  -->
 		<div class="setup_div">
 			<div style="height: 30px;">
 				<div class="system-setup-title" style="">忌口设置</div>
@@ -456,14 +422,290 @@
 			</div>
 			</form>
 		</div>
-		<div class="setup_div">
+		<div class="setup_div setup_div_box setup_div_social">
+			<form action="" method="post" class="form-horizontal" name="" id="">
+				<div class="setup-mt" style="height: 30px;">
+					<div class="system-setup-title">互动礼品设置</div>
+					<button type="button"  class="btn btn-default btn-edit J-btn-op">编辑</button>
+				</div>
+				<hr style="margin: 15px 0px;" />
+				<div class="form-group setup-mc">
+					<label class="col-xs-2 control-label">社交功能：</label>
+						<div class="col-xs-3">
+							<select class="form-control" disabled  name="social">	  
+								<option value="0" class="form-control" selected="selected">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+				</div>
+
+				<div class="form-group form-group-seat">
+					<label class="col-xs-2 control-label">上传座位图：</label>
+					<div class="col-xs-10">
+							<div class="seat-item f-dn seat-item-default">
+								<div class="seat-item-pic ">
+									<input type="hidden" id="seatImagefiles" name="seatImagefiles" value="">
+									<img src="../images/upload-img.png" class="seat-img" class="upload-default">
+								</div>
+								<div class="seat-item-op f-dn">
+									<a href="javascript:void(0);" class="f-fl J-rUpload">重新上传</a>
+									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt0" name="seatImgIpt0" accept="image/*">
+								</div>
+								<div class="seat-item-name">
+									<input type="text" value="" name="seatname1" oninput="if(value.length>20)value=value.slice(0,20)"  disabled class="form-control disabled seatname" style="display:none;" required="required" />
+									<span class="seatname-info f-toe"></span>
+								</div>
+								<div class="seat-item-tip f-dn">请输入座位名称</div>
+							</div>
+							<div class="seat-item  seat-item-default f-dn">
+								<div class="seat-item-pic">
+									<input type="hidden" id="setimgurl2" name="setimgurl2" value="">
+									<img src="../images/upload-img.png" class="seat-img">
+								</div>
+								<div class="seat-item-op f-dn">
+									<a href="javascript:void(0);" class="f-fl J-rUpload">重新上传</a>
+									<a href="javascript:void(0);" class="f-fr J-btn-del">删除</a>
+									<input type="file" onchange="showImg(this)"  size="1"  class="seatImgBtn" id="seatImgIpt1" name="seatImgIpt1" accept="image/*">
+								</div>
+								<div class="seat-item-name">
+									<input type="text" value="" name="seatname2" disabled  oninput="if(value.length>20)value=value.slice(0,20)" class="form-control disabled seatname" style="display:none;" required="required" />
+									<span class="seatname-info f-toe"></span>
+								</div>
+								<div class="seat-item-tip f-dn">请输入座位名称</div>
+							</div>
+							<div class="f-cb"></div>
+							<div class="seatimg-rule">
+					1.上传图片支持jpg 和 png格式<br/>
+					2.上传图片最佳尺寸1536*2048px<br/>
+					3. 上传图片大小不能超过2M
+				</div>
+						</div>
+				</div>
+				
+				
+
+				<div class="form-group form-group-gifts">
+					<label class="col-xs-2 control-label">添加互动礼品：</label>
+					<div class="col-xs-10">
+						<button type="button" id="editGifts" class="btn btn-default store-gifts-add" style="float:left;display:none;" name="addGifts">
+							<i class="icon-plus"></i>添加
+						</button>
+						<div class="f-cb"></div>
+						<div id="gifts-div" class="modal-body"></div>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+		
+		
+		<div class="setup_div setup_div_box setup_div_member">
+			<form action="" method="post" class="form-horizontal" name="" id="">
+				<div class="setup-mt" style="height: 30px;">
+					<div class="system-setup-title">会员设置</div>
+					<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
+				</div>
+				<hr style="margin: 15px 0px;" />
+				<div class="form-group">
+					<label class="col-xs-2 control-label">启用会员：</label>
+						<div class="col-xs-3">
+							<select class="form-control" disabled  name="vipstatus">	  
+								<option value="0" class="form-control" selected="selected">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+				</div>
+
+				<div class="form-group viptype-box">
+					<label class="col-xs-2 control-label">会员类型：</label>
+						<div class="col-xs-3">
+							<select class="form-control" disabled  name="viptype">	  
+								<option value="1" class="form-control" selected="selected">餐道会员</option>
+								<option value="2" class="form-control">雅座会员</option>
+							</select>
+						</div>
+				</div>
+			</form>
+		</div>
+		
+		
+		<div class="setup_div setup_div_box setup_div_other">
+			<form action="" method="post" class="form-horizontal" name="" id="form-other">
+				<div class="setup-mt" style="height: 30px;">
+					<div class="system-setup-title">其他设置</div>
+					<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
+				</div>
+				<hr style="margin: 15px 0px;" />
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">点图点菜：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="clickimagedish">	  
+								<option value="0" class="form-control">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">一页菜谱：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="onepage">	  
+								<option value="0" class="form-control">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">新手引导：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="newplayer">	  
+								<option value="0" class="form-control">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">中英文国际化：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="chinaEnglish">	  
+								<option value="0" class="form-control">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">首页广告：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="indexad">	  
+								<option value="0" class="form-control">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">开发票：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="invoice">	  
+								<option value="0" class="form-control">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">隐藏购物车总价：</label>
+						<div class="col-xs-8">
+							<select class="form-control" disabled name="hidecarttotal">	  
+								<option value="0" class="form-control" selected="selected">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">进入异业营销时间：</label>
+						<div class="col-xs-8 yy-time" style="display:none;">
+							<input type="text" value=""  maxlength="10" oninput="if(value.length>11)value=value.slice(0,10)" class="form-control "  style="width:100px;float:left;" name="adtimes" required="required" /><span class="unit">秒</span>
+							<div class="f-cb"></div>
+							<div class="c-red f-fl yy-time-tip f-dn"></div>
+						</div>
+						<div class="col-xs-8 yy-time-info" style="display:block;">
+							<span class="adtimes-val">60</span><span class="unit">秒</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">服务员打赏：</label>
+						<div class="col-xs-8 f-pr">
+							<select class="form-control" name="waiterreward" disabled>	  
+								<option value="0" class="form-control" selected="selected">启用</option>
+								<option value="1" class="form-control">关闭</option>
+							</select>
+							<div class="f-fr c-red" style="position:absolute;bottom:-20px;right:15px;">（目前打赏功能仅支持Pad端）</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+					</div>
+				</div>
+				
+				<!-- <div class="form-group">
+					<div class="col-xs-6">
+						<label class="col-xs-4 control-label">打赏金额：</label>
+						<div class="col-xs-8">
+							<div class="c-red mt10">5元</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+					</div>
+				</div> -->
+				
+
+				
+			</form>
+		</div>
+		
+		
+		<div class="setup_div setup_div_box setup_div_total" id="form-total">
 			<form action="" method="post" class="form-horizontal " name="" id="">
-			<div style="height: 30px;">
-				<div class="system-setup-title">互动礼品设置</div>
-				<button type="button" id="editGifts" class="btn btn-default">编辑</button>
+			<div class="setup-mt" style="height: 30px;">
+				<div class="system-setup-title">统计设置</div>
+				<button type="button" class="btn btn-default btn-edit J-btn-op">编辑</button>
 			</div>
-			<hr style="margin: 5px 0px;" />
-			<div id="gifts-div" class="modal-body">
+			<hr style="margin: 5px 0px;">
+			<div class="modal-body" style="padding-top: 0px;">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟应用秘钥(APPKEY)：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+								<input type="text" value="" name="youmengappkey" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+								<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>手环友盟应用秘钥(APPKEY)：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+								<input type="text" value="" name="braceletgappkey" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+								<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>Pad友盟渠道号(CHANNEL)：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+							<input type="text" value="" name="youmengchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+							<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>手环友盟渠道号(CHANNEL)：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+							<input type="text" value="" name="braceletchinnal" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" class="form-control disabled" disabled placeholder="">
+							<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><span class="c-red">*</span>大数据接口地址：</label>
+						<div class="col-xs-3">
+							<div class="edit_info f-pr">
+								<input type="text" value="" name="bigdatainterface" class="form-control disabled" maxlength="100" oninput="if(value.length>100)value=value.slice(0,100)" disabled placeholder="">
+								<div class="f-fr c-red tip f-dn" style="position:absolute;bottom:-20px;:15px;">不能为空</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			</form>
 		</div>
@@ -516,19 +758,135 @@
 	<script
 		src="<%=request.getContextPath()%>/scripts/projectJs/systemSetting.js"></script>
 	<script>
-		var haveSelected = null;
-		
-		function changImg(){
-			$('#saveLOGO').removeClass('hide');
-			$('#editLOGO').hide();
-			$('#defaultlogo').attr('src','../images/uplogo.png');
+	/**
+	 * 显示已选择的礼物在系统设置页面中
+	 */
+	function saveSelectedGifts(selectedDishs,type){
+		if(selectedDishs!=null && selectedDishs.length>0){
+			saveGiftsToPage(selectedDishs);
+			if(type === 'save') {
+				saveGifts(selectedDishs);
+			}
 			
-			$('#defaultlogo').css("border","1px dashed #ddd")
-			$('#defaultlogo').click(function(){
-				alert("jjjj");
-				
-			})
 		}
+	}
+	/**
+	 * 保存礼物
+	 */
+	function saveGifts(selectedDishs){
+		$.post(global_Path+"/social/saveGift", {data: JSON.stringify(selectedDishs)}, function(result){
+			console.log(result);
+			if(result.flag == 1){
+				saveGiftsToPage(selectedDishs);
+			}else{
+				
+			}
+		},'json');
+	}
+
+	function saveGiftsToPage(selectedDishs){
+		haveSelected = new Array();
+		var htm = "";
+		$.each(selectedDishs, function(i, item){
+			haveSelected.push(item);
+			var giftname = (i+1)+"、"+item.dish_title+"("+item.unit+")";
+			console.log(giftname);
+			htm += "<div class='one-gift git-overflow'>"+giftname+"</div>";
+		});
+		$("#gifts-div").html(htm);
+	}
+	/**
+	 * 生成菜品选择分类的显示内容
+	 */
+	function generalDishTitle(){
+		var checkedDishs=$("#dish-select-dialog #accordion").find("input[type='checkbox']:checked");
+		var selectedDishs=[];
+		if(checkedDishs.length > 0){
+			$.each(checkedDishs,function(i,obj){
+				//防止不同分类中的同一菜品重复添加。
+				var d={};
+				d.dish=$(obj).val();
+				d.unit=$(obj).attr("unit");
+				var hasSelected = false;
+				$.each(selectedDishs, function(j, dish){
+					if(dish.dish==d.dish && dish.unit==d.unit){
+						hasSelected = true;
+						return false;
+					}
+				});
+				if(!hasSelected){
+					selectedDishs.push(d);
+				}
+			});
+		}
+		if(selectedDishs.length <= 0){
+			allselected = 0;
+			$("#select-font").text("");
+		} else {
+			allselected = selectedDishs.length;
+			$("#select-font").text("(已选"+selectedDishs.length+"种菜品)");
+		}
+		$.each( $("#dish-select-dialog #accordion").find(".panel"), function(i,panel){
+			var dish_array=[];
+			var dishs= $(this).find("input[type=checkbox]:checked");
+			if(dishs.length > 0){
+				if(dishs.length < $(this).find("input[type=checkbox]").length){
+					$(this).find("img").attr("alt", "1");
+					$(this).find("img").attr("src", global_Path+ "/images/sub_select.png");
+					var panelTitle = "";
+					$.each(dishs, function(i){
+						panelTitle += $(this).parent().text();
+						if(panelTitle.length >= 15){
+							panelTitle = panelTitle.substring(0,15)+"...";
+							return false;
+						}
+						if(i < dishs.length -1){
+							panelTitle +="、";
+						}
+						
+					});
+					panelTitle = "(" + panelTitle + ")";
+					$(this).find(".dish-label").html(panelTitle);
+					dishs.attr("itemtype","");
+					dishs.attr("itemdesc","");
+					dishs.attr("item_select", "");
+				} else {
+					$(this).find("img").attr("alt", "2");
+					$(this).find("img").attr("src", global_Path+ "/images/all_select.png");
+					$(this).find(".dish-label").html("");
+					dishs.attr("itemtype",$(this).find("span").attr("itemtype"));
+					dishs.attr("itemdesc",$(this).find("span").text());
+					dishs.attr("item_select", true);
+				}
+			} else {
+				$(this).find("img").attr("alt", "0");
+				$(this).find("img").attr("src", global_Path+ "/images/none_select.png");
+				$(this).find(".dish-label").html("");
+			}
+		});
+		
+		//更新全选与全不选按钮的状态。当不是全选或者全不选的时候，清除这两个单选按钮的选中状态。
+		$("input[type='checkbox'][name='dish-radio-uncheck']").prop("checked",false);
+		if( checkedDishs.length == 0 ){
+			//当前为不全选。
+			$("input[type='checkbox'][name='dish-radio-uncheck'][value='0']").prop("checked",true); 
+		}else if( checkedDishs.length == $("#dish-select-dialog #accordion").find("input[type='checkbox']").length ){
+			//
+		}
+		
+	}
+
+	function changImg(){
+		$('#saveLOGO').removeClass('hide');
+		$('#editLOGO').hide();
+		$('#defaultlogo').attr('src','../images/uplogo.png');
+		
+		$('#defaultlogo').css("border","1px dashed #ddd")
+		$('#defaultlogo').click(function(){
+			alert("jjjj");
+			
+		})
+	}
 	</script>
 	
 	

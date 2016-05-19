@@ -2624,6 +2624,39 @@ CREATE TABLE `t_offline_msg` (
   KEY `group_id` (`device_group`,`device_id`),
   KEY `expire_time` (`expire_time`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+-- ----------------------------
+-- Table structure for `t_b_padconfig`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_b_padconfig`;
+CREATE TABLE `t_b_padconfig` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `padloginpass` varchar(20) DEFAULT NULL,
+  `social` tinyint(1) DEFAULT NULL,
+  `seatimageurls` varchar(500) DEFAULT NULL,
+  `seatimagenames` varchar(100) DEFAULT NULL,
+  `vipstatus` tinyint(1) DEFAULT NULL,
+  `viptype` varchar(8) DEFAULT NULL,
+  `vipcandaourl` varchar(50) DEFAULT NULL,
+  `vipotherurl` varchar(50) DEFAULT NULL,
+  `clickimagedish` tinyint(1) DEFAULT NULL,
+  `onepage` tinyint(1) DEFAULT NULL,
+  `newplayer` tinyint(1) DEFAULT NULL,
+  `chinaEnglish` tinyint(1) DEFAULT NULL,
+  `indexad` tinyint(1) DEFAULT NULL,
+  `invoice` tinyint(1) DEFAULT NULL,
+  `hidecarttotal` tinyint(1) DEFAULT NULL,
+  `adtimes` varchar(10) DEFAULT NULL,
+  `waiterreward` tinyint(1) DEFAULT NULL,
+  `rewardmoney` varchar(10) DEFAULT NULL,
+  `youmengappkey` varchar(50) DEFAULT NULL,
+  `youmengchinnal` varchar(50) DEFAULT NULL,
+  `bigdatainterface` varchar(100) DEFAULT NULL,
+  `braceletgappkey` varchar(50) DEFAULT NULL,
+  `braceletchinnal` varchar(50) DEFAULT NULL,
+  `weixintype` varchar(8) DEFAULT NULL,
+  `personweixinurl` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- 
 -- Enable foreign keys

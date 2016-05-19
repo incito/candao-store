@@ -150,4 +150,5 @@ public interface TorderDetailMapper {
 
 	public void deleteTemp(String orderid);
 	
+	public List<TorderDetail> getOrderDetailByPrimaryKeyS(String keys);
 }

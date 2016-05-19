@@ -155,12 +155,18 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		 * 套餐 2     套餐里面单品4    组合中的鱼和锅3
 		 */
 		public List<TorderDetail> getallTorderDetail(List<TorderDetail> orderDetails){
+			 List<TorderDetail> details = getOrderDetailByKeys(orderDetails);
+			 List<String> strings = new ArrayList<>();
+			 for(TorderDetail detail : details){
+				 String pkey = "";
+				 pkey = detail.getParentkey();
+				 strings.add(pkey);
+			 }
 			 List<TorderDetail> listall=new ArrayList<TorderDetail>();
 			 for(TorderDetail t:orderDetails){
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
 				 String primarykey = t.getPrimarykey();
-				 TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				 if(orderDetail != null){
+				 if(strings.contains(primarykey)){
 					 continue;
 				 }
 				 /**********end************/
@@ -356,6 +362,31 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			} 	
 	
 		}
+ 
+ 		
+		 /**
+		  * 通过PrimaryKey查询所有TorderDetail
+		  * @param orders
+		  * @return
+		  */
+		private List<TorderDetail> getOrderDetailByKeys(List<TorderDetail> torderDetails) {
+			String primarykeys = "";
+			for(TorderDetail t : torderDetails){
+				String primarykey = t.getPrimarykey();
+				primarykeys += "'"+primarykey+"',";
+			}
+			String str = "";
+			if(!"".equals(primarykeys)){
+				str = primarykeys.substring(0,(primarykeys.length()-1));
+			}else{
+				str = "''";
+			}
+			List<TorderDetail> details = torderDetailMapper.getOrderDetailByPrimaryKeyS(str);
+			return details;
+		}
+ 		
+ 
+ 
 		/**
 		 * 打印订单中的需要称重的数据，打印称重单
 		 * @author shen
@@ -1203,15 +1234,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		 * @return
 		 */
 		private boolean isRepetitionOrder(List<TorderDetail> orderDetails){
-			int repeteNum = 0;
-			for(TorderDetail t:orderDetails){
-				String primarykey = t.getPrimarykey();
-				TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				if(orderDetail != null && orderDetail.getOrderdetailid() != ""){
-					repeteNum++;
-				}
-			}
-			return repeteNum == orderDetails.size() ? true : false;
+			List<TorderDetail> details = getOrderDetailByKeys(orderDetails);
+			return details.size()  == orderDetails.size() ? true : false;
 		}
 		
 	  /**

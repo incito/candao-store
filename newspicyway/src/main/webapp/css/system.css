@@ -4,6 +4,18 @@
 	line-height: 1.8;
 	font-family: Arial "微软雅黑";
 }
+.setup_div_member .viptype-box  {
+	display:none;
+}
+.setup_div_member.active .viptype-box {
+	display:block;
+}
+.setup_div_social .form-group-seat,.setup_div_social .form-group-gifts  {
+	display:none;
+}
+.setup_div_social.active .form-group-seat,.setup_div_social.active .form-group-gifts {
+	display:block;
+}
 
 .setup-tb tr td {
 	border-top: 0px;
@@ -146,16 +158,111 @@ body {
   	float: left;
 }
 #gifts-div{
-	padding-top: 0px;
+	padding: 0px 0 0 0;
 	text-align: left;
 	font-size: 14px;
-	width: 90%;
+	line-height:220%;
+}
+.store-gifts-add {
+	margin-bottom:20px;
+}
+.setup_div_box input.disabled {
+	border:none;
+	background: #fff!important;
+    box-shadow: none;
+    padding:2px 0;
+    width:auto;
+    display:inline-block;
+    cursor:default;
+}
+.seat-item {
+	width:132px;
+	position:relative;
+	margin-top:12px;
+	float:left;
+	margin-right:20px;
 }
 
-
-
-
-
+.seat-item-default .seatImgBtn {
+	width:130px;
+	height:130px;
+	top:-100px;
+}
+.seatimg-rule {
+	color:gray;
+	margin-top:10px;
+}
+.seatImgBtn {
+	top:0;
+	left:0;
+	position: absolute; 
+	filter: alpha(opacity = 0);
+	opacity: 0; 
+	width: 60px;
+    height: 28px;
+    cursor:pointer;
+}
+.seat-item-op {
+	padding:5px 0;
+	background:rgba(0,0,0,0.6);
+	position:absolute;
+	top:102px;
+	padding:5px 2px;
+	left:0;
+	width:130px;
+}
+.seat-item-op a {
+	color:#fff;
+}
+.seat-item img{
+	width:130px;
+	height:130px;
+	border: 1px solid #e6e6e6;
+}
+.seat-item-default .J-btn-del,.seat-item-default .J-rUpload{
+	display:none;
+}
+.seat-item.active .seat-item-op {
+	display:block;
+}
+.seat-item-default .seat-item-op {
+	position: absolute; 
+	filter: alpha(opacity = 0);
+	opacity: 0; 
+}
+.seat-item-name {
+	margin-top:10px;
+	overflow:hidden;
+}
+.seat-item-tip{
+	color:red;
+	margin-top:2px;
+}
+.yy-time {
+	position:relative;
+}
+.yy-time .tip {
+	position:absolute;
+	bottom:-20px;
+	right:15px;
+}
+.yy-time label {
+	padding:0;
+	text-align:left!important;
+	position:relative;
+}
+.yy-time .unit {
+	margin-top: 6px;
+    float: left;
+    margin-left: 2px;
+}
+.yy-time-info {
+	margin-top:8px;
+}
+.seatname-info {
+	font-size:14px;
+	display:block;
+}
 .tag{ 
 	width:250px; 
 	height:77px;
@@ -234,7 +341,7 @@ body {
 }
 
 .deflogo{
-    padding: 50px 0px 0px 0px;
+ 
 }
 
 .defBackground{

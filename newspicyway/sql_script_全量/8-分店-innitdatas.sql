@@ -624,6 +624,7 @@ INSERT INTO `t_b_function_url` VALUES ('663ae26b-b2dc-11e5-8ac5-00ff59e0a7b2', '
 INSERT INTO `t_b_function_url` VALUES ('6e8012b2-b2dc-11e5-8ac5-00ff59e0a7b2', '5f5f8848-b2c6-11e5-8ac5-00ff59e0a7b2', '5fd495e0-b2db-11e5-8ac5-00ff59e0a7b2');
 INSERT INTO `t_b_function_url` VALUES ('74673403-b2dc-11e5-8ac5-00ff59e0a7b2', '2944211e-b2da-11e5-8ac5-00ff59e0a7b2', '869b858a-b2db-11e5-8ac5-00ff59e0a7b2');
 INSERT INTO `t_b_function_url` VALUES ('7a723946-b2dc-11e5-8ac5-00ff59e0a7b2', '47d8258a-b2c6-11e5-8ac5-00ff59e0a7b2', '669c400c-b2db-11e5-8ac5-00ff59e0a7b2');
+INSERT INTO `t_b_padconfig` VALUES ('1', '0', '1', null, null, '1', '1', 'http://10.66.21.6:8080', '10.66.21.4:8081', '1', '1', '1', '0', '1', '1', '1', '60', '1', '5', '', '', 'http://10.66.21.4:8080/', null, null, null, null);
 
 commit;
 -- 
