@@ -616,6 +616,7 @@
 		<choose>
 			<when test="type=='0601' || type=='0602'">
 				SELECT 
+				   ac.name,
 					det.id,
 					det.preferential,
 					det.dish,
@@ -636,6 +637,7 @@
 					#{type} as sub_type ,
 					'06' as type 
 				FROM t_p_preferential_detail det  
+				LEFT OUTER JOIN t_p_preferential_activity  ac on det.preferential=ac.id
 				<where>
 					<include refid="preferential_detail_condition"></include>
 				</where>
