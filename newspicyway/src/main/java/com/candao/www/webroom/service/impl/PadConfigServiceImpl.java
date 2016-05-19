@@ -79,7 +79,10 @@ public class PadConfigServiceImpl  implements PadConfigService{
 			if(weixintype!=null){
 				padConfig.setWeixintype(Integer.parseInt(weixintype.toString()));
 			}
-			padConfig.setPersonweixinurl(map.get("personweixinurl").toString());
+			Object personweixinurl=map.get("personweixinurl");
+			if(personweixinurl!=null){
+				padConfig.setPersonweixinurl(personweixinurl.toString());
+			}
 			
 			//不启用表示没有配置微信支付
 			Object weixinstatus=map.get("status");
