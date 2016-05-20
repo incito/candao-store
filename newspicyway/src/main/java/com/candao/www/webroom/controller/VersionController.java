@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.common.utils.HttpUtils;
+import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,5 +57,29 @@ public class VersionController {
 			map.put("maessge", "修改失败");
 		}
 		return JacksonJsonMapper.objectToJson(map);
+	}
+
+	@RequestMapping("/checkVersion")
+	@ResponseBody
+	public Map checkVersion(String branchId,String version,String code) {
+
+		Map<String, String> resultMap = new HashMap<String, String>();
+		resultMap.put("branchId",branchId);
+		resultMap.put("version",version);
+		resultMap.put("code",code);
+		String url = PropertiesUtils.getValue("TENANTSERVER");// 获取接口请求地址
+		url = url+"version/checkVersion";
+		String json ="";
+		try {
+			json = HttpUtils.doPost(url, resultMap);
+			resultMap = JacksonJsonMapper.jsonToObject(json, HashMap.class);
+			String fileurl = Constant.FILEURL_PREFIX + resultMap.get("fileUrl");
+			resultMap.put("fileUrl",fileurl);
+		}catch (Exception e) {
+
+		}
+
+
+		return resultMap;
 	}
 }
