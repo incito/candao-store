@@ -9,6 +9,7 @@ import com.candao.www.dataserver.util.MsgAnalyzeTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,8 +52,9 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
 
     @Override
     public List<OfflineMsg> getByGroupAndId(String group, String id) {
-        deleteMsgByExpireTime();
-        return offlineMsgMapper.getByGroupAndId(group, id);
+        Date curDate = new Date();
+        deleteMsgByExpireTime(curDate);
+        return offlineMsgMapper.getByGroupAndId(group, id, curDate);
     }
 
     @Override
@@ -66,11 +68,11 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
     }
 
     @Override
-    public void deleteMsgByExpireTime() {
+    public void deleteMsgByExpireTime(final Date curDate) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                offlineMsgMapper.deleteMsgByExpireTime();
+                offlineMsgMapper.deleteMsgByExpireTime(curDate);
 
             }
         });

@@ -3,6 +3,7 @@ package com.candao.www.dataserver.service.msghandler;
 
 import com.candao.www.dataserver.entity.OfflineMsg;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,5 +20,5 @@ public interface OfflineMsgService extends MsgHandler {
 
     void deleteById(String id);
 
-    void deleteMsgByExpireTime();
+    void deleteMsgByExpireTime(final Date curDate);
 }

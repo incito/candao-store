@@ -3,6 +3,7 @@ package com.candao.www.dataserver.mapper;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,9 +20,9 @@ public interface OfflineMsgMapper {
 
     Integer saveList(List<OfflineMsg> offlineMsgList);
 
-    List<OfflineMsg> getByGroupAndId(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId);
+    List<OfflineMsg> getByGroupAndId(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId, @Param("curDate") Date curDate);
 
     List<OfflineMsg> getAllOffLineMsg(@Param("deviceGroup") String deviceGroup, @Param("deviceId") String deviceId);
 
-    void deleteMsgByExpireTime();
+    void deleteMsgByExpireTime(Date curDate);
 }
