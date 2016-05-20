@@ -392,14 +392,14 @@ public class BusinessServiceImpl implements BusinessService {
         //获取单头信息
         String tableJson = getServerTableInfo2(tableNo, userId);
         //获取单体信息
-        String orderId = tableMapper.selectOrderId(tableNo);
+        String orderId = tableMapper.selectOrderIdOfStatusN5(tableNo);
         String tableListJson = getServerTableList2(orderId, userId);
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
     }
 
     @Override
     public String getServerTableInfo2(String tableNo, String userId) {
-        String orderId = tableMapper.selectOrderId(tableNo);
+        String orderId = tableMapper.selectOrderIdOfStatusN5(tableNo);
         //还原会员价
         memberService.revertMemberPrice(userId, orderId);
         dishService.updateCj(orderId, userId);
