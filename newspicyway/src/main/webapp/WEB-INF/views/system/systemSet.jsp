@@ -41,11 +41,20 @@
 	href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css" />
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/system.css" />
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/tools/bootstrap/wizard/plugins.min.css" />
 </head>
 
 
 <body>
 	<div style="margin: 10px 10px 200px 10px;">
+		<div class="setup_div">
+			<div style="height: 30px;">
+				<div class="system-setup-title" style="">同步数据</div>
+				<button type="button" class="btn btn-default" id="pullData">开始同步</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+		</div>
 		<div class="setup_div">
 			<div style="height: 30px;">
 				<div class="system-setup-title" style="">营业时间管理</div>
@@ -754,7 +763,47 @@
 	</div>
 	<div class="modal fade " id="dish-select-dialog" aria-hidden="true">
 	</div>
+
+	<div id="rootwizard" class="form-wizard">
+		<ul class="nav nav-pills nav-justified steps">
+			<li>
+				<a href="javascript:void(0);" data-toggle="tab" class="step">
+					<span class="number"> 1 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 同步菜品 </span>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" data-toggle="tab" class="step">
+					<span class="number"> 2 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 同步菜谱 </span>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" data-toggle="tab" class="step active">
+					<span class="number"> 3 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 同步员工 </span>
+				</a>
+			</li>
+			<li>
+				<a href="javascript:void(0);" data-toggle="tab" class="step">
+					<span class="number"> 4 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 同步优惠 </span>
+				</a>
+			</li>
+		</ul>
+		<div id="bar" class="progress progress-striped" role="progressbar">
+			<div class="progress-bar progress-bar-success"> </div>
+		</div>
+	</div>
+
+
 	<script src="<%=request.getContextPath()%>/scripts/global.js"></script>
+	<script src="<%=request.getContextPath()%>/tools/layer/layer.js"></script>
+	<script src="<%=request.getContextPath()%>/tools/bootstrap/wizard/jquery.bootstrap.wizard.min.js" type="text/javascript"></script>
 	<script
 		src="<%=request.getContextPath()%>/scripts/projectJs/systemSetting.js"></script>
 	<script>
@@ -885,6 +934,62 @@
 		$('#defaultlogo').click(function(){
 			alert("jjjj");
 			
+		})
+	}
+	$(document).ready(function() {
+		$('#rootwizard').bootstrapWizard({onTabShow: function(tab, navigation, index) {
+			var $total = navigation.find('li').length;
+			var $current = index+1;
+			var $percent = ($current/$total) * 100;
+			$('#rootwizard').find('#bar').css({width:$percent+'%'});
+		}});
+	});
+	var layerIndex = 0;
+	$("#pullData").on('click', function () {
+		layerIndex = layer.confirm('同步数据会使用云端数据覆盖本地数据，是否确认同步？', {
+			btn: ['同步','取消'] //按钮
+		}, function(){
+			layer.close(layerIndex);
+			layerIndex = layer.open({
+				type: 1,
+				skin: 'layui-layer-demo', //样式类名
+				closeBtn: false, //不显示关闭按钮
+				title: false,
+				shift: 2,
+				shadeClose: false, //开启遮罩关闭
+				content: $('#rootwizard')
+			});
+			pullData(0);
+		});
+
+	});
+	var pullType = ['dish','cookbook','employee','preferential'];
+	function pullData(step) {
+		$('#rootwizard').find('li').eq(step).addClass('active');
+		$('#rootwizard').find('#bar>div').css('width',(step*25 + 12.5) + '%');
+		$.ajax({
+			url: '<%=request.getContextPath()%>/sync/synDataFromCloud?type=' + pullType[step],
+			type: 'GET',
+			success: function (resp) {
+				if(resp && resp.statusCode == 200) {
+					if(step < 3) {
+						$('#rootwizard').find('#bar>div').css('width',(step+1)*25 + '%');
+						pullData(++step);
+					}else {
+						layer.alert("同步成功", {icon: 6});
+						layer.close(layerIndex);
+						$('#rootwizard').find('li').removeClass('active');
+						$('#rootwizard').find('#bar>div').css('width',0);
+					}
+				}else {
+					layer.alert(resp.data || "同步失败", {icon: 5});
+					layer.close(layerIndex);
+				}
+			},
+			error: function (resp) {
+				layer.alert("同步失败", {icon: 2});
+				layer.close(layerIndex);
+			}
 		})
 	}
 	</script>
