@@ -701,7 +701,7 @@ CREATE TABLE t_dish (
   orderNum INT(11) DEFAULT NULL,
   recommend INT(4) DEFAULT 0,
   weigh INT(4) DEFAULT 0,
-  py VARCHAR(50) DEFAULT NULL,
+  py VARCHAR(500) DEFAULT NULL,
   cantakeout BIT(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (dishid),
   UNIQUE INDEX UQ_t_dish_dishid (dishid)
