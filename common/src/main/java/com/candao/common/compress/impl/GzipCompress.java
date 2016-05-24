@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -16,12 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.candao.common.compress.ICompress;
+import com.candao.common.enums.EnCodeType;
 import com.candao.common.enums.ErrorMessage;
 import com.candao.common.enums.Module;
 import com.candao.common.exception.SysException;
-import com.candao.common.utils.DateUtils;
-import com.candao.common.utils.FileOperate;
-import com.candao.common.utils.PropertiesUtils;
 
 /**
  * @Description: gzip压缩和解压方式类
@@ -53,7 +50,7 @@ public class GzipCompress implements ICompress{
 			out = new ByteArrayOutputStream();
 			gzip = new GZIPOutputStream(out);
 			//压缩文件
-			gzip.write(str.toString().getBytes());
+			gzip.write(str.getBytes(EnCodeType.UTF_8.getCode()));
 		} catch (IOException e) {
 			logger.error("解压出现异常",e);
 			throw new SysException(ErrorMessage.GINZIP_READ, Module.LOCAL_SHOP);
@@ -96,7 +93,7 @@ public class GzipCompress implements ICompress{
 				out.write(by,0,index);
 				out.flush();
 			}
-			String value = out.toString();
+			String value = out.toString(EnCodeType.UTF_8.getCode());
 			logger.info("getUnCompress-end:"+value);
 			return value;
 		} catch (IOException e) {
@@ -127,7 +124,7 @@ public class GzipCompress implements ICompress{
 				out.write(by,0,index);
 				out.flush();
 			}
-			String value = out.toString();
+			String value = out.toString(EnCodeType.UTF_8.getCode());
 			logger.info("getUnCompress-end:"+value);
 			return value;
 		} catch (FileNotFoundException e){
@@ -154,7 +151,7 @@ public class GzipCompress implements ICompress{
 		GZIPOutputStream zipOut = null;
 		BufferedOutputStream out = null;
 		try{
-			byteIn = new ByteArrayInputStream(sql.getBytes());
+			byteIn = new ByteArrayInputStream(sql.getBytes(EnCodeType.UTF_8.getCode()));
 			out = new BufferedOutputStream(new FileOutputStream(file));
 			zipOut = new GZIPOutputStream(out);
 			byte[] by = new byte[1024];
@@ -165,9 +162,11 @@ public class GzipCompress implements ICompress{
 			}
 		} catch (FileNotFoundException e){
 			logger.error("没找到对应文件",e);
+			file.delete();
 			throw new SysException(ErrorMessage.NO_EXIST_SYN_GZIP, Module.LOCAL_SHOP);
 		} catch (IOException e) {
 			logger.error("压缩出现异常",e);
+			file.delete();
 			throw new SysException(ErrorMessage.GINZIP_WRITE, Module.LOCAL_SHOP);
 		}finally{
 			try{
@@ -181,6 +180,5 @@ public class GzipCompress implements ICompress{
 			}
 		}
 	}
-	
 
 }
