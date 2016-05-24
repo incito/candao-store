@@ -2044,11 +2044,14 @@ public class PadInterfaceController {
 			boolean afterStatus = false;
 			//如果异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
 			for(int i=0;i<3;i++){
+				int j = i + 1;
 				try{
 					dto = executeSyn();
 					afterStatus = true;
+					loggers.info("第"+ j +"次执行重传成功");
 					break;
 				}catch(SysException sysEx){
+					loggers.info("第"+ j +"次执行重传失败");
 					logger.error(sysEx, "");
 				}
 			}
@@ -2071,6 +2074,7 @@ public class PadInterfaceController {
 		//return JacksonJsonMapper.objectToJson(resultMap);
 		return JSON.toJSONString(dto);
 	}
+	
 	//门店同步数据方法执行
 	private ResultDto executeSyn() throws SysException{
 		return branchDataSyn.synLocalData();

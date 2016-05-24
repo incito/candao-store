@@ -11,6 +11,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.candao.common.enums.ErrorMessage;
+import com.candao.common.enums.Module;
+import com.candao.common.exception.SysException;
+
 /**
  * @author maew
  * @category see 日期工具
@@ -340,13 +344,13 @@ public class DateUtils {
 		time = formatter.format(d); 
 		return time; 
 	}
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2015);
 		calendar.set(Calendar.MONTH, 1);
 		calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));  
 		System.out.println(toString(calendar.getTime()));
-	}
+	}*/
 
 
 	/**
@@ -450,5 +454,24 @@ public class DateUtils {
 	        }
 	    return false;                               
 	}
+	/**
+	 * 
+	 * @Description:字符串date转换为日期
+	 * @create: 余城序
+	 * @Modification:
+	 * @param date 
+	 * void
+	 * @throws ParseException 
+	 */
+	public static Date stringToDate(String date) throws SysException{
+		SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
+		try {
+			return sdf.parse(date);
+		} catch (ParseException e) {
+			logger.error("stringToDate-error",e);
+			throw new SysException(ErrorMessage.FORWARD_ERROR,Module.LOCAL_SHOP);
+		}
+	}
+	
 	
 }

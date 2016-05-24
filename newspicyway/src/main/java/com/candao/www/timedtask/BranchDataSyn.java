@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,8 +103,8 @@ public class BranchDataSyn {
 	//测试
 	public void test(){}
 	
-	public static void main(String args[]) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-		 String url="jdbc:mysql://10.66.21.5:3306/newspicyway?characterEncoding=UTF-8";
+	public static void main(String args[]) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, SysException{
+		/* String url="jdbc:mysql://10.66.21.5:3306/newspicyway?characterEncoding=UTF-8";
 			 String username="root";
 			 String password="mysql.candao";
 			 String driver="com.mysql.jdbc.Driver";
@@ -128,7 +129,9 @@ public class BranchDataSyn {
 		    	//输出到文件 sql.out 中；不设置该属性，默认输出到控制台
 		 
 		    	sqlExec.setProject(new Project()); // 要指定这个属性，不然会出错
-		    	sqlExec.execute();
+		    	sqlExec.execute();*/
+		Date date = DateUtils.stringToDate("2016-05-23 16:48:59");
+		System.out.println(date.getTime());
 	}
 
 	public boolean synBranchData() throws Exception {
@@ -138,7 +141,7 @@ public class BranchDataSyn {
 
 	//凌晨1-9点定时执行没有同步起的数据重传
 	public void reSynData() {
-
+		logger.info("reSynData-start");
 		int bizFlag = branchDataSynDao.checkLastSynDataFinish();
 		if (bizFlag > 0) {
 			try {
@@ -152,7 +155,7 @@ public class BranchDataSyn {
 				logger.error(e.getMessage(), e);
 			}
 		}
-
+		logger.info("reSynData-end");
 	}
 
 	/**
@@ -168,23 +171,21 @@ public class BranchDataSyn {
 		logger.info("synLocalData-start");
 		int bizFlag = branchDataSynDao.checkBizData();
 		ResultDto dto = null;
-		
 		// 表示已经结业或未开业状态
 		if (bizFlag == 0) {
 			// 获取分店id
 			String branchId = PropertiesUtils.getValue("current_branch_id");
-			logger.info("分店id", branchId);
+			logger.info("分店id:"+branchId);
 			// 如果分店id存在
 			if (branchId != null) {
 				// 添加同步记录
-				Integer id = addSynRecord();
+				addSynRecord();
 
 				// 获取需要同步的表
 				String[] tables = getSynTables();
 
 				// 需要存储的sql
 				String sql = getSynSql(tables);
-
 				// 同步数据到总店
 				String result = synData(sql, branchId);
 				
@@ -466,7 +467,7 @@ public class BranchDataSyn {
 		String need_syn_tables = PropertiesUtils.getValue("need_syn_tables");
 		String[] tables = need_syn_tables.split(",");
 
-		logger.info("需要同步的表" + tables.toString());
+		logger.info("需要同步的表数量:" + tables.length);
 
 		return tables;
 	}
@@ -485,11 +486,11 @@ public class BranchDataSyn {
 		Map<String, String> bizMap = branchDataSynDao.getBizDate();
 		String openDate = bizMap.get("opendate");
 		String endDate = bizMap.get("enddate");
-		
+		Date date = DateUtils.stringToDate(endDate);
 		//需要同步的sql
 		String synSql = "";
 		// 压缩文件存放路径
-		String fileName = "/" + DateUtils.toString(DateUtils.parse(endDate))
+		String fileName = "/" + date.getTime()
 				+ SQL_FILE_NAME;
 		String path = PropertiesUtils.getValue("COMPRESS_DATA_PATH");
 		String url = path + "/" + fileName;
@@ -538,4 +539,5 @@ public class BranchDataSyn {
 	private boolean isExistCompress(String path) {
 		return FileOperate.isExist(path);
 	}
+	
 }

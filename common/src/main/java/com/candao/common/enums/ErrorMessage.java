@@ -21,7 +21,8 @@ public enum ErrorMessage {
 	IO_CLOSE("20007","数据流管道关闭失败,请重新尝试"),
 	GINZIP_WRITE("20008","压缩数据失败,请重新尝试"),
 	HTTP_TRANS_ERROR("20009","数据传输失败,请重新上传"),
-	HTTP_RESPONSE_ERROR("20010","对方服务器响应超时")
+	HTTP_RESPONSE_ERROR("20010","对方服务器响应超时"),
+	FORWARD_ERROR("20011","数据转换错误")
 	;
 	
 	
