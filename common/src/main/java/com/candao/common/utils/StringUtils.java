@@ -66,8 +66,6 @@ public static String bSubstring3(String s,int k) throws Exception{
 	   }
 	   	byte[] bytes = s.getBytes("Unicode");
 		
-		
-		
 		String returnMsg = new String(bytes, 0, s.getBytes("Unicode").length, "Unicode");
 
 		return returnMsg;
@@ -235,6 +233,128 @@ public static String bSubstring4(String s,int k) throws Exception{
 	
 }
 
+public static List<String> subString2(String src ,int num) throws UnsupportedEncodingException {
+	List<String> res = new LinkedList<>();
+	return subString3(src, num, res);
+}
+
+/**
+ * 按需求宽度递归，每一行放入rse中
+ * @param src
+ * @param num
+ * @param res
+ * @return
+ */
+	private static List<String> subString3(String src, int num, List<String> res) {
+		if (res == null)
+			return null;
+		String str = "";
+		boolean flag = false;
+		int truelength = 0;
+		if (src != null && !"".equals(src)) {
+			for (int i = 0; i < src.length(); i++) {
+				char c = src.charAt(i);
+				if ((c & 0xff00) != 0) {
+					truelength += 2;
+				} else {
+					truelength += 1;
+				}
+				if (truelength >= num) {
+					if (truelength == num + 1) {
+						truelength = i == 0 ? 0 : i;
+						flag = true;
+					} else {
+						truelength = i == src.length() - 1 ? truelength : i + 1;
+					}
+					break;
+				}
+			}
+		} else {
+			return res;
+		}
+
+		if (truelength != 0 && truelength < src.length()) {
+			str = src.substring(0, truelength);
+			if (flag)
+				str = str.concat(" ");
+			res.add(str);
+			res = subString3(src.substring(truelength), num, res);
+		} else {
+			str = src;
+			for (int i = 0; i < num - truelength; i++) {
+				str = str.concat(" ");
+			}
+			res.add(str);
+		}
+
+		return res;
+	}
+
+	public static String getStr(int num){
+		String res = "";
+		for (int i = 0; i < num; i++) {
+			res +=" ";
+		}
+		return res;
+	}
+	
+	public static String split2(String src , String s){
+		if(src == null || src.isEmpty())
+			return null;
+		int i = 0;
+		if((i = src.indexOf(s)) != -1){
+			src = src.substring(0, i);
+		}
+		return src;
+	}
+	
+	public static String split3(String src ,String s){
+		if(src == null || src.isEmpty())
+			return null;
+		
+		src = src.replace(s, "");
+		return src;
+	}
+	
+	/**
+	 * 实现打印换行，默认使用unicode
+	 * 
+	 * @param src
+	 *            需要换行的string,按照数组的顺序依次换行
+	 * @param length
+	 *            对应src数组中每个String要保留的大小，超过则换下一行
+	 * @return
+	 */
+	public static String[] getLineFeedText(String[] src, Integer[] length) throws Exception {
+		if (src == null || length == null || src.length > length.length) {
+			return null;
+		}
+		// 换行
+		List<List<String>> dst = new ArrayList<>();
+		for (int i = 0; i < src.length; i++) {
+			dst.add(StringUtils.subString2(StringUtils.bSubstring3(src[i], src[i].length()), length[i]));
+		}
+		// 取最大值
+		int max = 0;
+		for (int i = 0; i < dst.size(); i++) {
+			if (dst.get(i).size() > max)
+				max = dst.get(i).size();
+		}
+		// 结果集
+		String[] res = new String[max];
+		StringBuffer buffer = new StringBuffer();
+		// 拼装
+		for (int i = 0; i < max; i++) {
+			buffer.setLength(0);
+			for (int j = 0; j < dst.size(); j++) {
+				String text = (i + 1 > dst.get(j).size() ? StringUtils.getStr(length[j].intValue()) : dst.get(j).get(i));
+				buffer.append(text).append(" ");
+			}
+			res[i] = buffer.toString();
+		}
+		return res;
+	}
+	
 	/**
 	 * 将src按delimiter和指定
 	 * size递归分割
