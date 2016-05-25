@@ -147,6 +147,7 @@ public class BranchDataSyn {
 			try {
 				//获取同步数据的传送方式
 				String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
+				logger.info("上传方式type:"+type);
 				if(type.equals("1"))
 					synData();
 				else
@@ -191,7 +192,8 @@ public class BranchDataSyn {
 				
 				dto = resultDeal(result);
 				if(dto.getCode().equals(ResultMessage.SUCCESS.getCode())){
-					updateSynRecord();
+					Integer id = branchDataSynDao.getMaxId();
+					updateSynRecord(id.toString());
 				}else{
 					throw new SysException(ErrorMessage.SYNDATA_FAIL, Module.LOCAL_SHOP);
 				}
@@ -323,6 +325,12 @@ public class BranchDataSyn {
 
 	private boolean updateSynRecord() {
 		return branchDataSynDao.updateSynRecord(null) > 0;
+	}
+	
+	private boolean updateSynRecord(String id) {
+		Map<String, Object> map = new HashMap<String,Object>();
+		map.put("id", id);
+		return branchDataSynDao.updateSynRecord(map) > 0;
 	}
 
 	public void deleteRecord() {
