@@ -249,7 +249,7 @@ public class NormalDishListener {
 //			writer.write(StringUtils.bSubstring3(String.valueOf(Integer.toString(printDishList.get(0)
 //							.getMaxDishCount())), 8));
 			writer.write(StringUtils.bSubstring3(String.valueOf(object.getOrderseq()== 0 ? "　" : "第"+object
-					.getOrderseq()+"张"), 8));
+					.getOrderseq()+"张"), 7));
 			writer.flush();// 
 			socketOut.write(PrinterConstant.getClear_font());				
 			writer.write( StringUtils.bSubstring2(new SimpleDateFormat("HH:mm:ss")
@@ -272,8 +272,7 @@ public class NormalDishListener {
 			} else {
 				if (bufferList != null && !bufferList.isEmpty()){
 					String temp = bufferList.get(0);
-					bufferList.clear();
-					bufferList.add("备注:" + temp);
+					bufferList.set(0,"备注:" + temp);
 				}
 			}
 			
