@@ -2554,6 +2554,9 @@ CREATE TABLE `t_b_weixin` (
   `appid` varchar(50) NOT NULL,
   `partner` varchar(50) NOT NULL,
   `appsecret` varchar(50) NOT NULL,
+  `weixintype` int(11) DEFAULT NULL,
+  `personweixinurl` varchar(100) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
