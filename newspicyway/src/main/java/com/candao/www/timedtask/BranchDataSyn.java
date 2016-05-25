@@ -103,6 +103,36 @@ public class BranchDataSyn {
 	//测试
 	public void test(){}
 	
+	public static void main(String args[]) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, SysException{
+		/* String url="jdbc:mysql://10.66.21.5:3306/newspicyway?characterEncoding=UTF-8";
+			 String username="root";
+			 String password="mysql.candao";
+			 String driver="com.mysql.jdbc.Driver";
+			 SQLExec sqlExec = new SQLExec();
+		    	//设置数据库参数
+		    	sqlExec.setDriver(driver);
+		    	sqlExec.setEncoding("UTF8");
+		    	
+//		    	String dbUrl = dbConfig.getDbdefaultstr();
+//		    	dbUrl = String.format(dbUrl, dbConfig.getDbip(),dbConfig.getDbport(),dbName);
+		    	sqlExec.setUrl(url);
+		    	sqlExec.setUserid(username);
+		    	sqlExec.setPassword(password);
+		    	//要执行的脚本
+		    	File file = new File("c://sql.txt");
+		    	sqlExec.setSrc(file);
+		    	 
+		    	//有出错的语句该如何处理
+		    	sqlExec.setOnerror((SQLExec.OnError)(EnumeratedAttribute.getInstance(
+		    	SQLExec.OnError.class, "abort")));
+		    	sqlExec.setPrint(false); //设置是否输出
+		    	//输出到文件 sql.out 中；不设置该属性，默认输出到控制台
+		 
+		    	sqlExec.setProject(new Project()); // 要指定这个属性，不然会出错
+		    	sqlExec.execute();*/
+		Date date = DateUtils.stringToDate("2016-05-23 16:48:59");
+		System.out.println(date.getTime());
+	}
 
 	public boolean synBranchData() throws Exception {
 		synData();
@@ -299,7 +329,8 @@ public class BranchDataSyn {
 	
 	private boolean updateSynRecord(String id) {
 		Map<String, Object> map = new HashMap<String,Object>();
-		return branchDataSynDao.updateSynRecords(map) > 0;
+		map.put(id, "id");
+		return branchDataSynDao.updateSynRecord(map) > 0;
 	}
 
 	public void deleteRecord() {
