@@ -2010,8 +2010,7 @@ public class PadInterfaceController {
 					loggers.info("第"+ j +"次执行重传成功");
 					break;
 				}catch(SysException sysEx){
-					loggers.info("第"+ j +"次执行重传失败");
-					logger.error("重传失败",sysEx);
+					loggers.error("第"+ j +"次执行重传失败",sysEx);
 				}
 			}
 			//连续3次执行失败
@@ -2037,17 +2036,6 @@ public class PadInterfaceController {
 	//门店同步数据方法执行
 	private ResultDto executeSyn() throws SysException{
 		return branchDataSyn.synLocalData();
-	}
-	//门店同步数据成功后结果的处理
-	private void resultDeal(Map<String, Object> resultMap,ResultDto dto){
-		if(dto != null){
-			logger.info("上传数据结果状态码:"+dto.getCode(), "");
-			if(dto.getCode().equals(ResultMessage.SUCCESS.getCode()))
-				resultMap.put("result", 0);
-			else
-				resultMap.put("result", dto.getCode());
-			resultMap.put("msg", dto.getMessage());
-		}
 	}
 	
 	/**
