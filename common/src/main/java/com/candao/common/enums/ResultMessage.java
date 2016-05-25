@@ -32,5 +32,5 @@ public enum ResultMessage {
 	public String getMsg() {
 		return msg;
 	}
-
+	
 }

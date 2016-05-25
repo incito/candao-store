@@ -31,11 +31,25 @@
 		  where status ='0'
 	</update>
 	
-     <update id="updateSynRecord" parameterType="java.util.Map">
+     <update id="updateSynRecords" parameterType="java.util.Map">
+		  update `t_syn_record` 
+		  set endtime = now(),status ='1'
+		  where id = #{id}
+	</update>
+	
+      <update id="updateSynRecord" parameterType="java.util.Map">
 		  update `t_syn_record` 
 		  set endtime = now(),status ='1'
 		  where status ='0' and  DATE_FORMAT(syntime,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
 	</update>
+	
+     <select id="getMaxId" resultType="java.lang.Integer">
+		  select max(id) from t_syn_record;
+	 </select>
+	
+     <select id="checkLastSynDataFinish" resultType="com.candao.www.webroom.model.SynSqlObject">
+		 select count(1) as result from t_syn_record where status ='0' and id = (select max(id) from t_syn_record);
+	 </select>
 	
       <update id="updateSynData" parameterType="java.util.Map">
 		  update `t_syn_record` set endtime = now(),status =#{status} where status ='0'
@@ -46,7 +60,7 @@
 	</delete>
 	
 	<select id="getBizDate" resultType="java.util.Map">
-		select   date_format(opendate,'%Y-%m-%d %H:%i:%s') as opendate, date_format(enddate,'%Y-%m-%d %H:%i:%s') as enddate  from t_branch_biz_log
+		select  date_format(opendate,'%Y-%m-%d %H:%i:%s') as opendate, date_format(enddate,'%Y-%m-%d %H:%i:%s') as enddate  from t_branch_biz_log
 		where branchid in (select branchid from t_branch_info )
 	</select>
 	
