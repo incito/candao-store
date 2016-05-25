@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -218,15 +219,21 @@ public class NormalDishListener {
 			for (PrintDish singleDish : object.getpDish()) {
 				if(preSperequire != singleDish.getSperequire() && (preSperequire != null && !preSperequire.equals(singleDish.getSperequire()))){
 					isSame = false;
+					break;
 				}
-				preSperequire = singleDish.getSperequire();
+			}
+			
+			List<String> bufferList = new ArrayList<>();
+			if (special != null && !special.isEmpty()) {
+				bufferList.add(special);
 			}
 			//非全单备注
 			if(!isSame){
 				special = "";
+				bufferList.clear();
 				for (PrintDish singleDish : object.getpDish()) {
 					if(singleDish.getSperequire() != null && !singleDish.getSperequire().isEmpty()){
-						special += singleDish.getDishName() + "：" + singleDish.getSperequire() + "\r\n";
+						bufferList.add(singleDish.getDishName() + "：" + singleDish.getSperequire());
 					}
 				}
 			}
@@ -235,7 +242,8 @@ public class NormalDishListener {
 				special = "";
 			}
 			if(!special.isEmpty() && isSame && object.getpDish().size() > 1){//合并打印时全单备注特殊处理
-				special = "全单" + special;
+				bufferList.clear();
+				bufferList.add("全单" + special);
 			}
 			// 只显示出时分秒
 //			writer.write(StringUtils.bSubstring3(String.valueOf(Integer.toString(printDishList.get(0)
@@ -250,28 +258,35 @@ public class NormalDishListener {
 
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 
-			socketOut.write(PrinterConstant.getFdDoubleFont());
+			socketOut.write(PrinterConstant.getFd8Font());
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {
 				//套餐备注换行
 				String[] dishName = {parentDishName};
-				Integer[] dishLength = {20};
+				Integer[] dishLength = {38};
 				String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
 				parentDishNameLineFeed[0] = "备注："+parentDishNameLineFeed[0];
 				for (int j = 0; j < parentDishNameLineFeed.length; j++) {
 					writer.write( parentDishNameLineFeed[j] + "\r\n");					
 				}
 			} else {
-				if (special != null && !"".equals(special))
-					special = "备注：" + special;
+				if (bufferList != null && !bufferList.isEmpty()){
+					String temp = bufferList.get(0);
+					bufferList.clear();
+					bufferList.add("备注:" + temp);
+				}
 			}
 			
 			//忌口信息
-			String[] specialName = {special};
-			Integer[] specialLength = {20};
-			String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
-			for (int j = 0; j < specialLineFeed.length; j++) {
-				writer.write( specialLineFeed[j] + "\r\n");		
+			if(bufferList != null && !bufferList.isEmpty()){
+				for (String it : bufferList) {
+					String[] specialName = {it};
+					Integer[] specialLength = {38};
+					String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
+					for (int j = 0; j < specialLineFeed.length; j++) {
+						writer.write( specialLineFeed[j] + "\r\n");		
+					}									
+				}
 			}
 
 			writer.flush();

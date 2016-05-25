@@ -195,11 +195,12 @@ public class DishSetListener {
 
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
+			socketOut.write(PrinterConstant.getFd8Font());
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {
 				//套餐备注换行
 				String[] dishName = {parentDishName};
-				Integer[] dishLength = {20};
+				Integer[] dishLength = {38};
 				String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
 				parentDishNameLineFeed[0] = "备注："+parentDishNameLineFeed[0];
 				for (int j = 0; j < parentDishNameLineFeed.length; j++) {
@@ -210,14 +211,16 @@ public class DishSetListener {
 					special = "备注：" + special;
 			}
 			
-			socketOut.write(PrinterConstant.getFdDoubleFont());
 			//忌口信息
 			String[] specialName = {special};
-			Integer[] specialLength = {20};
+			Integer[] specialLength = {38};
 			String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
 			for (int j = 0; j < specialLineFeed.length; j++) {
 				writer.write( specialLineFeed[j] + "\r\n");		
 			}
+			
+			writer.flush();
+			socketOut.write(PrinterConstant.getClear_font());
 			
 			writer.write(27);// 重置
 			writer.write(100);

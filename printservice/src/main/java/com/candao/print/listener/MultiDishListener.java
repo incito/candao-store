@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -176,11 +177,16 @@ public class MultiDishListener {
 					parentDishName = parentDishName.concat(buffer.get(i));
 				}
 			}
-
+			
 			String special = "";
 			special = printDishList.get(0).getSperequire() == null ? "" : printDishList.get(0).getSperequire();
 			if (special == null || "null".equals(special)) {
 				special = "";
+			}
+			
+			List<String> bufferList = new ArrayList<>();
+			if (special != null && !special.isEmpty()) {
+				bufferList.add(special);
 			}
 			// 只显示出时分秒
 //			writer.write(StringUtils.bSubstring3(String.valueOf(Integer.toString(printDishList.get(0)
@@ -197,28 +203,33 @@ public class MultiDishListener {
 
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
-			socketOut.write(PrinterConstant.getFdDoubleFont());
+			socketOut.write(PrinterConstant.getFd8Font());
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {
 				//套餐备注换行
 				String[] dishName = {parentDishName};
-				Integer[] dishLength = {20};
+				Integer[] dishLength = {38};
 				String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
 				parentDishNameLineFeed[0] = "备注："+parentDishNameLineFeed[0];
 				for (int j = 0; j < parentDishNameLineFeed.length; j++) {
 					writer.write( parentDishNameLineFeed[j] + "\r\n");					
 				}
 			} else {
-				if (special != null && !"".equals(special))
-					special = "备注：" + special;
+				if (bufferList != null && !bufferList.isEmpty()){
+					String temp = bufferList.get(0);
+					bufferList.clear();
+					bufferList.add("备注:" + temp);
+				}
 			}
 			
 			//忌口信息
-			String[] specialName = {special};
-			Integer[] specialLength = {20};
-			String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
-			for (int j = 0; j < specialLineFeed.length; j++) {
-				writer.write( specialLineFeed[j] + "\r\n");		
+			if(bufferList != null && !bufferList.isEmpty()){
+				String[] specialName = {bufferList.get(0)};
+				Integer[] specialLength = {38};
+				String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
+				for (int j = 0; j < specialLineFeed.length; j++) {
+					writer.write( specialLineFeed[j] + "\r\n");		
+				}				
 			}
 
 			writer.flush();
