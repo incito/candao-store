@@ -82,6 +82,7 @@ public class LocalDownController {
       OutputStream out = response.getOutputStream();
       fis = new FileInputStream(local_path);
       byte[] b = new byte[fis.available()];
+      response.setContentLength(b.length);
       fis.read(b);
       out.write(b);
       out.flush();
