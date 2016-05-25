@@ -335,39 +335,18 @@
 		</trim>
 	</insert>
 	
-	<update id="updateBySelective" parameterType="com.candao.www.data.model.TbPreferentialActivity">
-		UPDATE t_p_preferential_activity
+	<update id="updateBySelective" parameterType="map">
+		UPDATE t_p_preferential_activity tpa
 		<set>
-			<if test="code != null">
-				code = #{code,jdbcType=CHAR},
-			</if>
-			<if test="name != null">
-				name = #{name,jdbcType=VARCHAR},
-			</if>
-			<if test="nameFirstLetter != null">
-				name_first_letter = #{nameFirstLetter,jdbcType=VARCHAR},
-			</if>
-			<if test="color != null">
-				color = #{color,jdbcType=CHAR},
-			</if>
-			<if test="starttime != null">
-				starttime = #{starttime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="endtime != null">
-				endtime = #{endtime,jdbcType=TIMESTAMP},
-			</if>
-			<if test="applyAll != null">
-				apply_all = #{applyAll,jdbcType=BOOLEAN},
-			</if>
-			<if test="activityIntroduction != null">
-				activity_introduction = #{activityIntroduction,jdbcType=VARCHAR},
-			</if>
-			<if test="useNotice != null">
-				use-_notice = #{useNotice,jdbcType=VARCHAR},
+			<if test="status != null">
+				status = #{status},
 			</if>
 		</set>
 		<where>
-			<include refid="base_condition"></include>
+			(tpa.status is null or tpa.status != 1)
+			<if test="id != null">
+				AND tpa.id = #{id}
+			</if>
 		</where>
 	</update>
 	
