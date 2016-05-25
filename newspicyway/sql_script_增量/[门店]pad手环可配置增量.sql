@@ -53,3 +53,6 @@ CREATE TABLE `t_b_padconfig` (
 -- Records of t_b_padconfig
 -- ----------------------------
 INSERT INTO `t_b_padconfig` VALUES ('1', '0', '1', null, null, '1', '1', 'http://10.66.21.6:8080', '10.66.21.4:8081', '1', '1', '1', '0', '1', '1', '1', '60', '1', '5', '', '', 'http://10.66.21.4:8080/', null, null, null, null);
+alter table t_b_weixin add COLUMN weixintype int;
+alter table t_b_weixin add COLUMN personweixinurl varchar(100);
+alter table t_b_weixin add COLUMN status int;
