@@ -163,13 +163,10 @@ CREATE TABLE `t_billing_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='挂账信息结算历史表';
 
-/* Procedure structure for procedure `p_report_gzxxmxb` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `p_report_gzxxmxb` */;
-
+DROP PROCEDURE IF EXISTS `p_report_gzxxmxb`;
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxmxb`(IN  pi_branchid INT(11),
+ CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxmxb`(IN  pi_branchid INT(11),
 
                                               IN  pi_ksrq     DATETIME, #开始时间
 
@@ -532,7 +529,7 @@ BEGIN
 
                              , sum(ifnull(b.payamount + b.disamount, 0)) amount
 
-                             , group_concat(left(b.remark,200) SEPARATOR '\n') remark
+                             , group_concat(b.remark SEPARATOR ';') remark
 
                         FROM
 
@@ -598,16 +595,13 @@ BEGIN
 
 
 
-END */$$
+END $$
 DELIMITER ;
 
-/* Procedure structure for procedure `p_report_gzxxtjb` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `p_report_gzxxtjb` */;
-
+DROP PROCEDURE IF EXISTS `p_report_gzxxtjb`;
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxtjb`(IN  pi_branchid INT(11),
+ CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxtjb`(IN  pi_branchid INT(11),
 
                                               IN  pi_ksrq     DATETIME, #开始时间
 
@@ -1064,5 +1058,5 @@ BEGIN
 
 
 
-END */$$
+END $$
 DELIMITER ;
