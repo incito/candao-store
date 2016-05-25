@@ -2051,8 +2051,7 @@ public class PadInterfaceController {
 					loggers.info("第"+ j +"次执行重传成功");
 					break;
 				}catch(SysException sysEx){
-					loggers.info("第"+ j +"次执行重传失败");
-					logger.error(sysEx, "");
+					loggers.error("第"+ j +"次执行重传失败",sysEx);
 				}
 			}
 			//连续3次执行失败
