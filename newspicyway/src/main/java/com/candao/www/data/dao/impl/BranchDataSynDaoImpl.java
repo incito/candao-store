@@ -34,6 +34,14 @@ public class BranchDataSynDaoImpl implements BranchDataSynDao{
 		}
 		return 1;
 	}
+	@Override
+	public int checkLastSynDataFinish(){
+		SynSqlObject retMap = daoSupport.findOne(PREFIX+".checkLastSynDataFinish");
+		if(retMap == null || "0".equals(retMap.getResult())){
+			return 0; 
+		}
+		return 1;
+	}
 
 	@Override
 	public int insertSynRecord(Map<String, String> mapValue) {
@@ -43,6 +51,20 @@ public class BranchDataSynDaoImpl implements BranchDataSynDao{
 	@Override
 	public int updateSynRecord(Map<String, Object> mapValue) {
 		return daoSupport.insert(PREFIX+".updateSynRecord", mapValue);
+	}
+	
+	@Override
+	public int updateSynRecords(Map<String, Object> mapValue) {
+		return daoSupport.insert(PREFIX+".updateSynRecords", mapValue);
+	}
+	
+	@Override
+	public int updateSynData(Map<String, Object> mapValue) {
+		return daoSupport.update(PREFIX+".updateSynData", mapValue);
+	}
+	
+	public Integer getMaxId(){
+		return daoSupport.findOne(PREFIX+".getMaxId");
 	}
 
 	@Override

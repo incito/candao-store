@@ -42,7 +42,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.candao.common.dto.ResultDto;
+import com.candao.common.enums.ResultMessage;
 import com.candao.common.exception.AuthException;
+import com.candao.common.exception.SysException;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -1969,29 +1973,70 @@ public class PadInterfaceController {
 	@RequestMapping("/jdesyndata")
 	@ResponseBody
 	public String jdeSynData(@RequestBody String json) {
-
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		logger.info("jdeSynData-start:"+json, "");
 		@SuppressWarnings("unchecked")
-		Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+		//Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+		Map<String, String> map = JSON.parseObject(json, Map.class);
 		String key = map.get("synkey");
 		String synKey = PropertiesUtils.getValue("SYNKEY");
 		if (!synKey.equalsIgnoreCase(key)) {
-			logger.error("结业数据上传失败！SYNKEY匹配错误");
 			return Constant.FAILUREMSG;
 		}
+		ResultDto dto = new ResultDto();
+		//获取同步数据的传送方式
+		String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
 		try {
-			if (branchDataSyn.synBranchData()) {
-				resultMap.put("result", 0);
-			}else{
-				resultMap.put("result", 1);
-				resultMap.put("msg", "修改数据同步的状态失败");
+			//MQ
+			if(type.equals("1")){
+				if (branchDataSyn.synBranchData()) {
+					dto.setInfo(ResultMessage.SUCCESS);
+				}else{
+					dto.setCode("1");
+					dto.setMessage("修改数据同步的状态失败");
+				}
+			//HTTP
+			}else if(type.equals("2")){
+				dto = executeSyn();
 			}
-		} catch (Exception e) {
-			resultMap.put("result", 1);
-			resultMap.put("msg", e.getMessage());
-			logger.error("结业数据上传失败！", e);
+		}catch (SysException e) {
+			loggers.error("门店上传到总店数据失败",e);
+			//后面执行是否成功的标志
+			boolean afterStatus = false;
+			//如果异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
+			for(int i=0;i<3;i++){
+				int j = i + 1;
+				try{
+					dto = executeSyn();
+					afterStatus = true;
+					loggers.info("第"+ j +"次执行重传成功");
+					break;
+				}catch(SysException sysEx){
+					logger.error("第"+ j +"次执行重传失败",sysEx);
+				}
+			}
+			//连续3次执行失败
+			if(afterStatus == false){
+				dto.setInfo(ResultMessage.INTERNET_EXE);
+				//resultMap.put("result", ResultMessage.INTERNET_EXE.getCode());
+				//resultMap.put("msg", ResultMessage.INTERNET_EXE.getMsg());
+			}
+		//使用原有代码MQ机制时出现的异常处理
+		}catch(Exception e){
+			loggers.error("门店上传到总店数据失败",e);
+			dto = null;
 		}
-		return JacksonJsonMapper.objectToJson(resultMap);
+		if(dto == null){
+			dto = new ResultDto();
+			dto.setInfo(ResultMessage.NO_RETURN_MESSAGE);
+		}
+		logger.info("jdeSynData-end:"+dto, "");
+		//return JacksonJsonMapper.objectToJson(resultMap);
+		return JSON.toJSONString(dto);
+	}
+	
+	//门店同步数据方法执行
+	private ResultDto executeSyn() throws SysException{
+		return branchDataSyn.synLocalData();
 	}
 	
 	/**
@@ -2485,5 +2530,6 @@ public class PadInterfaceController {
 	private SystemServiceImpl systemServiceImpl;
 	
 	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
+	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
 	
 }

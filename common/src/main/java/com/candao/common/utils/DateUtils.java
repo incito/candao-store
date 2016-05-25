@@ -13,6 +13,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.candao.common.enums.ErrorMessage;
+import com.candao.common.enums.Module;
+import com.candao.common.exception.SysException;
+
 /**
  * @author maew
  * @category see 日期工具
@@ -578,6 +582,25 @@ public class DateUtils {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		String time = format.format(date);
 		return time;
+	}
+	
+	/**
+	 * 
+	 * @Description:字符串date转换为日期
+	 * @create: 余城序
+	 * @Modification:
+	 * @param date 
+	 * void
+	 * @throws ParseException 
+	 */
+	public static Date stringToDate(String date) throws SysException{
+		SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
+		try {
+			return sdf.parse(date);
+		} catch (ParseException e) {
+			logger.error("stringToDate-error",e);
+			throw new SysException(ErrorMessage.FORWARD_ERROR,Module.LOCAL_SHOP);
+		}
 	}
 	
 	
