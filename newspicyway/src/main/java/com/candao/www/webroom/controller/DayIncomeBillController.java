@@ -14,12 +14,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.candao.common.utils.PropertiesUtils;
-import com.candao.www.utils.DateTimeUtils;
-import com.candao.www.webroom.model.*;
-import com.candao.www.webroom.service.*;
-
 import org.apache.commons.lang.StringUtils;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -33,6 +29,29 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.candao.common.page.Page;
 import com.candao.common.utils.DateUtils;
+import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.utils.DateTimeUtils;
+import com.candao.www.utils.ReturnMap;
+import com.candao.www.webroom.model.BusinessReport;
+import com.candao.www.webroom.model.BusinessReport1;
+import com.candao.www.webroom.model.Code;
+import com.candao.www.webroom.model.CouponsRept;
+import com.candao.www.webroom.model.CouponsReptDtail;
+import com.candao.www.webroom.model.DataStatistics;
+import com.candao.www.webroom.model.Dishsalerept;
+import com.candao.www.webroom.model.ItemReport;
+import com.candao.www.webroom.model.PaywayRpet;
+import com.candao.www.webroom.model.PreferentialReport;
+import com.candao.www.webroom.model.SettlementReport;
+import com.candao.www.webroom.model.TableArea;
+import com.candao.www.webroom.model.TjObj;
+import com.candao.www.webroom.service.BusinessAnalysisChartsService;
+import com.candao.www.webroom.service.BusinessDataDetailService;
+import com.candao.www.webroom.service.DataDetailService;
+import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.DayIncomeBillService;
+import com.candao.www.webroom.service.ItemDetailService;
+import com.candao.www.webroom.service.ReportExportService;
 import com.candao.www.webroom.service.impl.ExportDataDetailExcelService;
 import com.candao.www.webroom.service.impl.ExportDateStatisticsExcelService;
 import com.candao.www.webroom.service.impl.ExportItemDetailService;
@@ -1623,4 +1642,31 @@ public class DayIncomeBillController<V, K> {
 		return mad;
 	}
 
+	/**
+	 * 导出营业分析报表
+	 * @author weizhifang
+	 * @since 2016-5-18
+	 * @param params
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/exportBusinessReport")
+	@ResponseBody
+	public JSONObject exportBusinessReport(@RequestParam Map<String, Object> params,HttpServletRequest request, HttpServletResponse response){
+		Map<String,Object> map = new HashMap<String,Object>();
+		try{
+			String branchid = (String)params.get("branchId");
+			String branchname = itemDetailService.getBranchName(branchid);
+			params.put("branchName", branchname);
+			params.put("branchId", branchid);
+			List<BusinessReport> BusinessList = businessAnalysisChartsService.isfindBusinessReport(params);
+			businessAnalysisChartsService.createBusinessReportExcel(request, response, BusinessList, params);
+			map = ReturnMap.getReturnMap(1, "001", "导出成功！");
+		}catch(Exception e){
+			map = ReturnMap.getReturnMap(0, "002", "导出失败！");
+			e.printStackTrace();
+		}
+		return JSONObject.fromObject(map);
+	}
 }

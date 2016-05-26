@@ -1,15 +1,27 @@
 package com.candao.www.webroom.service.impl;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.candao.www.data.dao.TBusinessAnalysisChartsDao;
 import com.candao.www.utils.DateTimeUtils;
+import com.candao.www.utils.ExcelUtils;
 import com.candao.www.webroom.model.BusinessReport;
 import com.candao.www.webroom.service.BusinessAnalysisChartsService;
 
@@ -99,4 +111,71 @@ public class BusinessAnalysisChartsServiceImpl implements BusinessAnalysisCharts
         }
         return businessList;
     }
+    
+    /**
+	 * 导出营业分析报表
+	 * @author weizhifang
+	 * @since 2016-5-18
+	 * @param request
+	 * @param response
+	 * @param BusinessList
+	 * @param params
+	 */
+	public void createBusinessReportExcel(HttpServletRequest request, HttpServletResponse response,List<BusinessReport> list,Map<String, Object> params){
+		// 文件名称与路径  
+        String fileName = "营业数据分析表.xls";  
+        String excelUrl = request.getSession().getServletContext().getRealPath("/");
+        String realPath =  excelUrl + fileName;
+        // 创建Excel工作薄     
+        WritableWorkbook wwb = null;
+        try {
+        	 //表头
+        	 WritableCellFormat wcfTitle = ExcelUtils.setWcfTitle();// 单元格定义  
+             //标题
+             WritableCellFormat wcfHead = ExcelUtils.setWcfHead();  
+             //内容
+             WritableCellFormat wcfTable = ExcelUtils.setWcfTable();   
+        	 OutputStream os = new FileOutputStream(realPath);
+             wwb = Workbook.createWorkbook(os);  
+             WritableSheet sheet = wwb.createSheet("营业数据分析表", 1);// 建立工作簿 
+             // 写表头  
+             sheet.mergeCells(0, 0, 5, 0);
+             sheet.setRowView(0, 1200);
+             String title = "营业数据分析表"+"\n门店名称:"+params.get("branchName")+"\n时间:"+params.get("beginTime")+"——"+params.get("endTime");
+             jxl.write.Label labelTitle = new jxl.write.Label(0, 0, title);
+             labelTitle.setCellFormat(wcfTitle); 
+             sheet.addCell(labelTitle);// 放入工作簿  
+             String text [] = {"时间","应收总额","实收总额","折扣总额","人均","桌数"};
+             for(int i=0;i<text.length;i++){
+            	 sheet.setColumnView(i,25);
+            	 sheet.addCell(new Label(i,1,text[i],wcfHead));  
+             }
+             if(!list.toString().equals("[null]")){
+            	 int rowNum = 1;
+	             for(int i=0;i<list.size();i++){
+	            	 rowNum++;
+	            	 sheet.setColumnView(i,25);
+	            	 BusinessReport bus = list.get(i);
+	            	 String statistictime = bus.getStatistictime();
+	            	 BigDecimal shouldamount = bus.getShouldamount();
+	            	 BigDecimal paidinamount = bus.getPaidinamount();
+	            	 BigDecimal discountamount = bus.getDiscountamount();
+	            	 BigDecimal personPercent = bus.getPersonPercent();
+	            	 BigDecimal tablenum = bus.getTablenum();
+	            	 sheet.addCell(new Label(0, rowNum, statistictime, wcfTable));
+	            	 sheet.addCell(new Label(1, rowNum, shouldamount.toString(), wcfTable));
+	            	 sheet.addCell(new Label(2, rowNum, paidinamount.toString(), wcfTable));
+	            	 sheet.addCell(new Label(3, rowNum, discountamount.toString(), wcfTable));
+	            	 sheet.addCell(new Label(4, rowNum, personPercent.toString(), wcfTable));
+	            	 sheet.addCell(new Label(5, rowNum, tablenum.toString(), wcfTable));
+	             }
+             }
+             // 写入数据     
+             wwb.write();
+             wwb.close();
+         }catch(Exception e){
+        	 e.printStackTrace();
+         }
+         ExcelUtils.downloadExcel(request,response,fileName,realPath);
+	}
 }
