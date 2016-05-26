@@ -1660,6 +1660,8 @@ public class DayIncomeBillController<V, K> {
 			String branchname = itemDetailService.getBranchName(branchid);
 			params.put("branchName", branchname);
 			params.put("branchid", branchid);
+			params.put("begintime", params.get("beginTime").toString());
+			params.put("endtime", params.get("endTime").toString());
 			List<BusinessReport> BusinessList = businessAnalysisChartsService.isfindBusinessReport(params);
 			businessAnalysisChartsService.createBusinessReportExcel(request, response, BusinessList, params);
 			map = ReturnMap.getReturnMap(1, "001", "导出成功！");
