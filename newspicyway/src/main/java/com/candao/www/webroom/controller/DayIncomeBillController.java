@@ -1656,10 +1656,10 @@ public class DayIncomeBillController<V, K> {
 	public JSONObject exportBusinessReport(@RequestParam Map<String, Object> params,HttpServletRequest request, HttpServletResponse response){
 		Map<String,Object> map = new HashMap<String,Object>();
 		try{
-			String branchid = (String)params.get("branchId");
+			String branchid = PropertiesUtils.getValue("current_branch_id");
 			String branchname = itemDetailService.getBranchName(branchid);
 			params.put("branchName", branchname);
-			params.put("branchId", branchid);
+			params.put("branchid", branchid);
 			List<BusinessReport> BusinessList = businessAnalysisChartsService.isfindBusinessReport(params);
 			businessAnalysisChartsService.createBusinessReportExcel(request, response, BusinessList, params);
 			map = ReturnMap.getReturnMap(1, "001", "导出成功！");
