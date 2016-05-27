@@ -45,7 +45,10 @@ public class SyncService {
       connection.setAutoCommit(false);
 
       for (String tableName : tableNames) {
-        stmt.addBatch("TRUNCATE table " + tableName);
+        if("t_dictionary".equalsIgnoreCase(tableName))
+          stmt.addBatch("DELETE FROM " + tableName + " WHERE `type` IN('SPECIAL','DISHSTATUS')");
+        else
+          stmt.addBatch("TRUNCATE table " + tableName);
       }
       String[] sqls = sql.split(";");
       for (String s : sqls) {
