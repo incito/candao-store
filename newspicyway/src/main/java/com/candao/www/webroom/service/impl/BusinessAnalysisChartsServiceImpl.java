@@ -141,7 +141,7 @@ public class BusinessAnalysisChartsServiceImpl implements BusinessAnalysisCharts
              // 写表头  
              sheet.mergeCells(0, 0, 5, 0);
              sheet.setRowView(0, 1200);
-             String title = "营业数据分析表"+"\n门店名称:"+params.get("branchName")+"\n时间:"+params.get("beginTime")+"——"+params.get("endTime");
+             String title = "营业数据分析表"+"\n门店名称:"+params.get("branchName")+"\n时间:"+params.get("begintime")+"——"+params.get("endtime");
              jxl.write.Label labelTitle = new jxl.write.Label(0, 0, title);
              labelTitle.setCellFormat(wcfTitle); 
              sheet.addCell(labelTitle);// 放入工作簿  
