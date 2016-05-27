@@ -279,7 +279,21 @@ public class OrderServiceImpl implements OrderService{
 		order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
 		order.setChildNum(tOrder.getChildNum());
 		order.setCurrenttableid(tableId);
-		order.setCustnum((tOrder.getManNum() == null?0:tOrder.getManNum()) + (tOrder.getWomanNum() == null?0:tOrder.getWomanNum()));
+		
+//		Modify by wly, bug#6248
+		if(tOrder.getCustnum() != null && tOrder.getCustnum() > 0){
+			order.setCustnum(tOrder.getCustnum());
+		}else{
+			Integer custum = 0;
+			if(tOrder.getManNum() != null || tOrder.getManNum() != 0){
+				custum += tOrder.getManNum();
+			}
+			if(tOrder.getWomanNum() != null || tOrder.getWomanNum() != 0){
+				custum += tOrder.getWomanNum();
+			}
+			order.setCustnum(custum);
+		}
+		
 		order.setManNum(tOrder.getManNum());
 		order.setSpecialrequied(tOrder.getSpecialrequied());
 		order.setUserid(tOrder.getUsername());
