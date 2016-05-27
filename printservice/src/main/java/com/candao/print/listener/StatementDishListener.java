@@ -14,13 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 
 @Service
 public class StatementDishListener extends AbstractPrintListener{
-	
+
+	LoggerHelper logger = LoggerFactory.getLogger(StatementDishListener.class);
 	
 	public StatementDishListener() {
 		super("statementDishListener");
@@ -46,6 +49,8 @@ public class StatementDishListener extends AbstractPrintListener{
 	@Override
 	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer) throws Exception {
 		System.out.println("StatamentListener receive message");
+		logger.error("-------------------------------------", "");
+		logger.error("打印结账单开始,订单号：" + object.getOrderNo(), "");
 		
 		String billName = object.getBillName();
 		
@@ -136,6 +141,9 @@ public class StatementDishListener extends AbstractPrintListener{
 
 		writer.flush();// 
 		socketOut.write(PrinterConstant.getFdDoubleFont());
+
+		logger.error("-------------------------------------", "");
+		logger.error("打印结账单结束,订单号：" + object.getOrderNo(), "");
 	}
 
 	public String receiveMessage(PrintObj object) {

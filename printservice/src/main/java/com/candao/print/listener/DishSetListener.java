@@ -12,6 +12,8 @@ import javax.jms.Destination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
@@ -24,6 +26,8 @@ import com.candao.print.entity.PrinterConstant;
  */
 public class DishSetListener extends AbstractPrintListener {
 
+	LoggerHelper logger = LoggerFactory.getLogger(DishSetListener.class);
+	
 	@Autowired
 	@Qualifier("dishSetQueue")
 	private Destination destination;
@@ -52,6 +56,8 @@ public class DishSetListener extends AbstractPrintListener {
 	@Override
 	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer)
 			throws Exception {
+		logger.error("-------------------------------------", "");
+		logger.error("打印套餐小票开始,订单号：" + object.getOrderNo(), "");
 		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();
 		
@@ -174,7 +180,9 @@ public class DishSetListener extends AbstractPrintListener {
 		
 		socketOut.write(PrinterConstant.getFdDoubleFont());
 		writer.write(special + "\r\n");	
-		
+
+		logger.error("-------------------------------------", "");
+		logger.error("打印套餐小票结束,订单号：" + object.getOrderNo(), "");
 	}
 
 	@Override

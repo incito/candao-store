@@ -8,13 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.log.LoggerFactory;
+import com.candao.common.log.LoggerHelper;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 
 @Service
 public class TableChangeListener extends AbstractPrintListener{
-	
+
+	LoggerHelper logger = LoggerFactory.getLogger(TableChangeListener.class);
 	
 	public TableChangeListener() {
 		super("TableChangeListener");
@@ -42,6 +45,8 @@ public class TableChangeListener extends AbstractPrintListener{
 		System.out.println("TableChangeListener receive message");
 
 		String billName = object.getBillName();
+		logger.error("-------------------------------------", "");
+		logger.error("打印"+ billName +"开始,订单号：" + object.getOrderNo(), "");
 		
 		socketOut.write(PrinterConstant.getFdDoubleFont());
 		// 单号
@@ -81,7 +86,9 @@ public class TableChangeListener extends AbstractPrintListener{
 
 		writer.flush();// 
 		socketOut.write(PrinterConstant.getFdDoubleFont());
-		
+
+		logger.error("-------------------------------------", "");
+		logger.error("打印"+ billName +"结束,订单号：" + object.getOrderNo(), "");
 	}
 	
 	public String receiveMessage(PrintObj object) {
