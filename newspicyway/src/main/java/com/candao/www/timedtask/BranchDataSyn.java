@@ -330,7 +330,7 @@ public class BranchDataSyn {
 	private boolean updateSynRecord(String id) {
 		Map<String, Object> map = new HashMap<String,Object>();
 		map.put("id", id);
-		return branchDataSynDao.updateSynRecord(map) > 0;
+		return branchDataSynDao.updateSynRecords(map) > 0;
 	}
 
 	public void deleteRecord() {
