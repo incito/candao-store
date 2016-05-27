@@ -2039,10 +2039,12 @@ CREATE TABLE t_settlement_detail_history (
   debitParterner VARCHAR(10) DEFAULT NULL COMMENT '挂账单位',
   inserttime DATETIME DEFAULT NULL,
   coupondetailid VARCHAR(50) DEFAULT NULL COMMENT '优惠明细主键',
-  id VARCHAR(50) DEFAULT NULL
+  PRIMARY KEY (sdetailid),
+  INDEX t_order_settlement_detail_orderid (orderid),
+  UNIQUE INDEX UQ_t_settlement_detail_sdetailid (sdetailid)
 )
 ENGINE = INNODB
-AVG_ROW_LENGTH = 331
+AVG_ROW_LENGTH = 336
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
