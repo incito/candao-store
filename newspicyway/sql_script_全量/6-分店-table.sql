@@ -1355,55 +1355,6 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 
-
---
--- Definition for table t_order_detail_history
---
-DROP TABLE IF EXISTS t_order_detail_history;
-CREATE TABLE t_order_detail_history (
-  orderid varchar(50) DEFAULT NULL,
-  dishid varchar(50) DEFAULT NULL,
-  dishstatus varchar(50) DEFAULT NULL COMMENT '0 ??????? 1 ??? 2 ??? ',
-  begintime datetime DEFAULT NULL,
-  endtime datetime DEFAULT NULL,
-  sperequire varchar(200) DEFAULT NULL,
-  dishnum varchar(50) DEFAULT NULL,
-  userName varchar(100) DEFAULT NULL,
-  orderprice decimal(10,2) DEFAULT NULL,
-  discountrate decimal(10,2) DEFAULT '0.00' COMMENT '折扣率',
-  discountamount decimal(10,2) DEFAULT '0.00' COMMENT '折扣金额',
-  fishcode varchar(50) DEFAULT NULL COMMENT '使用鱼券',
-  dishtype int(11) DEFAULT '0' COMMENT '0 单品 1 火锅 2 套餐',
-  status int(11) DEFAULT '0',
-  dishunit varchar(100) DEFAULT NULL COMMENT '菜品单位',
-  payamount decimal(10,2) DEFAULT NULL,
-  predisamount decimal(10,2) DEFAULT NULL,
-  couponid varchar(50) DEFAULT NULL,
-  disuserid varchar(50) DEFAULT NULL,
-  orignalprice decimal(10,2) DEFAULT NULL COMMENT '原始价格',
-  pricetype varchar(10) DEFAULT NULL,
-  orderseq int(11) DEFAULT NULL,
-  orderdetailid varchar(50) NOT NULL,
-  relatedishid varchar(4000) DEFAULT NULL,
-  ordertype int(3) DEFAULT NULL COMMENT '''下单类型 0 正常 1 赠送''',
-  parentkey varchar(255) DEFAULT NULL COMMENT '父类主键',
-  superkey varchar(255) DEFAULT NULL COMMENT '套餐的主键',
-  ismaster int(255) DEFAULT NULL COMMENT '是否是master 默认是 0 不是 1是',
-  primarykey varchar(255) DEFAULT NULL COMMENT '菜品主键',
-  islatecooke int(2) DEFAULT '0' COMMENT '0 否 1 是',
-  isadddish int(2) DEFAULT NULL COMMENT '0 否 1 是',
-  childdishtype int(2) DEFAULT NULL COMMENT '0 单品 1 火锅 2 套餐',
-  ispot int(2) DEFAULT '0' COMMENT '是否是锅底 0 否 1 是',
-  relateorderid varchar(255) DEFAULT NULL,
-  discarduserid varchar(255) DEFAULT NULL,
-  discardreason varchar(255) DEFAULT NULL,
-  debitamount decimal(20,2) DEFAULT NULL COMMENT '单个菜品加权实际收入'
-)
-ENGINE = INNODB
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
-
 --
 -- Definition for table t_order_detail_temp
 --
@@ -1453,59 +1404,6 @@ AVG_ROW_LENGTH = 744
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
-
-
---
--- Definition for table t_order_history
---
-DROP TABLE IF EXISTS t_order_history;
-CREATE TABLE t_order_history (
-  orderid varchar(50) NOT NULL,
-  userid varchar(50) DEFAULT NULL,
-  begintime datetime DEFAULT NULL,
-  endtime datetime DEFAULT NULL,
-  orderstatus int(11) NOT NULL COMMENT '0 ???e? 1 ???????? 2 ????????????????  3 ???????',
-  custnum int(11) DEFAULT NULL,
-  tableids varchar(1000) DEFAULT NULL,
-  specialrequied varchar(100) DEFAULT NULL,
-  womanNum int(11) DEFAULT NULL,
-  childNum int(11) DEFAULT NULL,
-  mannum int(11) DEFAULT NULL,
-  currenttableid varchar(200) DEFAULT NULL,
-  fulldiscountrate decimal(8,2) unsigned zerofill DEFAULT '000000.00' COMMENT '全单折扣',
-  dueamount decimal(8,2) unsigned zerofill DEFAULT '000000.00' COMMENT '应收金额',
-  discountamount decimal(8,2) unsigned zerofill DEFAULT '000000.00' COMMENT '折扣金额',
-  freeamount decimal(8,2) unsigned zerofill DEFAULT '000000.00' COMMENT '优惠金额',
-  wipeamount decimal(8,2) unsigned zerofill DEFAULT '000000.00' COMMENT '抹零金额',
-  payway int(11) DEFAULT NULL,
-  partnername varchar(50) DEFAULT NULL,
-  couponname varchar(100) DEFAULT NULL,
-  disuserid varchar(50) DEFAULT NULL,
-  relateorderid varchar(50) DEFAULT NULL,
-  printcount int(11) DEFAULT '0',
-  befprintcount int(11) DEFAULT '0',
-  workdate datetime DEFAULT NULL COMMENT '工作日期',
-  shiftid int(11) DEFAULT '0' COMMENT '班别编号 0早班 1晚班',
-  closeshiftid int(11) DEFAULT '0',
-  memberno varchar(50) DEFAULT NULL,
-  ymamount decimal(8,2) DEFAULT '0.00' COMMENT '优免金额',
-  gzamount decimal(8,2) DEFAULT '0.00' COMMENT '挂帐金额',
-  ssamount decimal(8,2) DEFAULT '0.00' COMMENT '实收金额 现金，银行卡，会员卡，会员积分',
-  ageperiod varchar(255) DEFAULT NULL,
-  meid varchar(100) DEFAULT NULL COMMENT 'PAD 端编码',
-  orderseq int(11) DEFAULT NULL,
-  branchid int(11) DEFAULT NULL,
-  ordertype int(11) DEFAULT '0',
-  gzcode varchar(20) DEFAULT NULL,
-  gzname varchar(50) DEFAULT NULL,
-  gztele varchar(20) DEFAULT NULL,
-  gzuser varchar(20) DEFAULT NULL,
-  invoice_id varchar(50) DEFAULT NULL,
-  gift_status char(2) DEFAULT '0'
-)
-ENGINE = INNODB
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
 
 
 --
@@ -2009,79 +1907,6 @@ CREATE TABLE t_settlement_detail (
 )
 ENGINE = INNODB
 AVG_ROW_LENGTH = 336
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
---
--- Definition for table t_settlement_detail_history
---
-DROP TABLE IF EXISTS t_settlement_detail_history;
-CREATE TABLE t_settlement_detail_history (
-  sdetailid VARCHAR(50) NOT NULL,
-  orderid VARCHAR(50) NOT NULL,
-  dishid VARCHAR(50) DEFAULT NULL,
-  normalprice DECIMAL(10, 2) DEFAULT NULL,
-  discountamount DECIMAL(10, 2) DEFAULT NULL,
-  discountid VARCHAR(50) DEFAULT NULL COMMENT '¹ØÁªt_discount ±í',
-  couponid VARCHAR(50) DEFAULT NULL COMMENT '¹ØÁªt_coupons',
-  couponamount DECIMAL(10, 2) DEFAULT NULL,
-  payamount DECIMAL(10, 2) DEFAULT NULL COMMENT '实际支付金额',
-  couponNum INT(11) DEFAULT NULL,
-  feeamount DECIMAL(10, 2) DEFAULT NULL,
-  settledid VARCHAR(50) DEFAULT NULL,
-  incometype INT(11) DEFAULT NULL COMMENT '是否内部收入',
-  membercardno VARCHAR(50) DEFAULT NULL,
-  bankcardno VARCHAR(50) DEFAULT NULL,
-  opendate DATE DEFAULT NULL,
-  username VARCHAR(50) DEFAULT NULL,
-  payway INT(11) DEFAULT NULL COMMENT '结算方式：见字典表payway',
-  isclear SMALLINT(8) UNSIGNED ZEROFILL DEFAULT 00000000,
-  debitParterner VARCHAR(10) DEFAULT NULL COMMENT '挂账单位',
-  inserttime DATETIME DEFAULT NULL,
-  coupondetailid VARCHAR(50) DEFAULT NULL COMMENT '优惠明细主键',
-  PRIMARY KEY (sdetailid),
-  INDEX t_order_settlement_detail_orderid (orderid),
-  UNIQUE INDEX UQ_t_settlement_detail_sdetailid (sdetailid)
-)
-ENGINE = INNODB
-AVG_ROW_LENGTH = 336
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
-
---
--- Definition for table t_settlement_history
---
-DROP TABLE IF EXISTS t_settlement_history;
-CREATE TABLE t_settlement_history (
-  settledId VARCHAR(50) NOT NULL,
-  debitamount DECIMAL(10, 2) DEFAULT NULL,
-  creditamount DECIMAL(10, 2) DEFAULT NULL,
-  orderid VARCHAR(50) DEFAULT NULL,
-  inserttime DATETIME DEFAULT NULL,
-  indiscount DECIMAL(10, 2) DEFAULT NULL,
-  outdiscount DECIMAL(10, 2) DEFAULT NULL,
-  userid VARCHAR(50) NOT NULL,
-  settleddetailid VARCHAR(50) DEFAULT NULL,
-  cashamount DECIMAL(10, 2) DEFAULT NULL,
-  bankamount DECIMAL(10, 2) DEFAULT NULL,
-  memeberamount DECIMAL(10, 2) DEFAULT NULL,
-  status INT(11) DEFAULT NULL COMMENT '是否结算：1结算 0反结算',
-  couponamount DECIMAL(10, 2) DEFAULT NULL,
-  feeamount DECIMAL(10, 2) DEFAULT NULL,
-  incometype INT(11) DEFAULT NULL,
-  opendate DATE DEFAULT NULL,
-  shiftid INT(11) DEFAULT 0 COMMENT '结算时的班别 0早市 1晚市',
-  isclear INT(11) DEFAULT 0 COMMENT '1表示已经清过机',
-  id VARCHAR(50) DEFAULT NULL,
-  reason VARCHAR(100) DEFAULT NULL,
-  rebacktime DATETIME DEFAULT NULL,
-  again_settle_nums int(3) DEFAULT 1,
-  authorizer_name VARCHAR(50),
-  Inflated decimal(8,2)
-)
-ENGINE = INNODB
-AVG_ROW_LENGTH = 496
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
@@ -2662,6 +2487,18 @@ CREATE TABLE `t_b_padconfig` (
   `personweixinurl` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+
+/*************************** 反结算全量脚本  start ***************************/
+CREATE TABLE t_order_history LIKE t_order;
+CREATE TABLE t_order_detail_history LIKE t_order_detail;
+CREATE TABLE t_settlement_detail_history LIKE t_settlement_detail;
+CREATE TABLE t_settlement_history LIKE t_settlement;
+alter table t_settlement_history add column again_settle_nums int(3) DEFAULT 1;
+alter table t_settlement_history add column authorizer_name VARCHAR(50);
+alter table t_settlement_history add column Inflated decimal(8,2);
+/*************************** 反结算全量脚本  end ***************************/
+
 
 -- 
 -- Enable foreign keys
