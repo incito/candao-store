@@ -30,6 +30,11 @@ public class Table {
 	 */
 	private  String discardUserId; 
 	
+	/**
+	 * 是否清空目标餐台，0：不清空，1：清空
+	 */
+	private int  cleanTable = 0;
+	
 	
 
 	public String getDiscardUserId() {
@@ -136,8 +141,14 @@ public class Table {
 	public void setTableNo(String tableNo) {
 		this.tableNo = tableNo;
 	}
+
+	public boolean getCleanTable() {
+		return cleanTable == 1 ? true : false;
+	}
+
+	public void setCleanTable(int cleanTable) {
+		this.cleanTable = cleanTable;
+	}
  
-	
-	
 	
 }

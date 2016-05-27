@@ -155,6 +155,18 @@ public class TbOrderDaoImpl implements TorderMapper {
 	public void setOrderMember(Map<String, Object> mapParam){
 		dao.get(PREFIX + ".setOrderMember", mapParam);
 	}
+
+	@Override
+	public int updateOrderForMergeTable(Map<String, Object> mapParam) {
+		return dao.get(PREFIX + ".updateOrderForMergeTable", mapParam);
+	}
+
+	@Override
+	public int deleteByPrimaryKey(String orderId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("orderid", orderId);
+		return dao.delete(PREFIX + ".deleteByPrimaryKey", map );
+	}
  
 }
 

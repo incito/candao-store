@@ -473,4 +473,31 @@
  
   </select>
  
+ <update id="updateOrderForMergeTable" parameterType="java.util.Map" >
+    update t_order
+    <set >
+    	payway = '1',
+    	relateorderid = CONCAT(${sourceTableNo,jdbcType=VARCHAR}, ',', ${targetTableNo,jdbcType=VARCHAR})
+      <if test="targetCustnum != null" >
+       custnum = custnum + ifnull(${targetCustnum,jdbcType=INTEGER},0)
+      </if>
+      <if test="targetWomannum != null" >
+      womanNum = womanNum + ifnull(${targetWomannum,jdbcType=INTEGER},0)
+      </if>
+      <if test="targetChildnum != null" >
+       childNum = childNum + ifnull(${targetChildnum,jdbcType=INTEGER},0)
+      </if>
+      <if test="targetMannum != null" >
+       mannum = mannum + ifnull(${targetMannum,jdbcType=INTEGER},0)
+      </if>
+      <if test="targetAgeperiod != null" >
+       ageperiod = CONCAT(ageperiod,ifnull(${targetAgeperiod,jdbcType=VARCHAR},''))
+      </if>
+      <if test="targetMemberno != null" >
+      memberno = ifNUll(memberno,${targetMemberno,jdbcType=VARCHAR})
+      </if>
+    </set>
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+ 
 </mapper>

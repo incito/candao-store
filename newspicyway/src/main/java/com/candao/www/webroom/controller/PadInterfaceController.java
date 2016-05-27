@@ -612,24 +612,25 @@ public class PadInterfaceController {
 	 */
 	@RequestMapping("/mergetable")
 	@ResponseBody
-	public String mergetable(@RequestBody Table table,HttpServletRequest reqeust){
+	public String mergetable(@RequestBody Table table, HttpServletRequest reqeust) {
 
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(JacksonJsonMapper.objectToJson(table));
 		record.setPadpath("mergetable");
 		jsonRecordService.insertJsonRecord(record);
-		ToperationLog toperationLog=new ToperationLog();
+		ToperationLog toperationLog = new ToperationLog();
 		toperationLog.setId(IdentifierUtils.getId().generate().toString());
 		toperationLog.setTableno(table.getOrignalTableNo());
 		toperationLog.setOperationtype(Constant.operationType.MERGETABLE);
 		toperationLog.setSequence(table.getSequence());
-		int flag=judgeRepeatData(toperationLog);
-		if(flag==0){
-			return tableService.mergetable(table,toperationLog);
-		}else if(flag==1){
-			return Constant.FAILUREMSG;
-		}else{
-			return Constant.SUCCESSMSG;
+		try {
+			return tableService.mergetableMultiMode(table, toperationLog);
+		} catch (Exception e) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("msg", e.getMessage());
+			map.put("result", "1");
+			JSONObject object = JSONObject.fromObject(map);
+			return object.toString();
 		}
 	}
 

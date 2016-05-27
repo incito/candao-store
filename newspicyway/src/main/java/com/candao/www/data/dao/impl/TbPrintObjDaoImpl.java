@@ -163,6 +163,15 @@ public class TbPrintObjDaoImpl implements TbPrintObjDao {
 	public int findPrintTable(Map<String, Object> paramMap) {
 		 return dao.get(PREFIX + ".findPrintTable", paramMap);
 	}
+
+	@Override
+	public int updatePrintdishForMerge(String sourceOrderid, String targetOrderid) {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("sourceOrderid", sourceOrderid);
+		paramMap.put("targetOrderid", targetOrderid);
+		return dao.update(PREFIX + ".updatePrintdishForMerge", paramMap);
+	}
+	
 }
 
 

@@ -361,6 +361,11 @@
    <update id="updateSettleOrderNull" parameterType="com.candao.www.data.model.TbTable">
 	   update t_table set orderid = null ,status ='0'  where    tableid !=#{tableid} and orderid = #{orderid}
  </update>
+ <update id="updateByOrderNo" parameterType="map">
+ 		UPDATE t_table
+											SET orderid = ${sourceOrderId}
+											WHERE orderid = ${targetOrderId};
+ </update>
  <!-- 根据桌号获取客户打印机信息 -->
 	<select id="findDetail" parameterType="map" resultMap="findResultMap">
 		select t.tableid,t.custPrinter,t.tableNo,p.port,p.ipaddress from
