@@ -160,7 +160,6 @@ public class BranchDataSyn {
 				dto = resultDeal(result);
 				if(dto.getCode().equals(ResultMessage.SUCCESS.getCode())){
 					Integer id = branchDataSynDao.getMaxId();
-					logger.info("需要更新的同步记录id:"+id);
 					updateSynRecord(id.toString());
 				}else{
 					throw new SysException(ErrorMessage.SYNDATA_FAIL, Module.LOCAL_SHOP);
