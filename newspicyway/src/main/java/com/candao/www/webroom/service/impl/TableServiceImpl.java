@@ -235,7 +235,7 @@ public class TableServiceImpl implements TableService {
 	@Override
 	public String mergetableMultiMode(Table mergeTable, ToperationLog toperationLog) throws Exception {
 		//是否清空目标餐台
-		boolean cleanTargetTable = mergeTable.getCleanTable();
+		boolean isCleanTarget = mergeTable.getCleanTable();
 		
 		String sourceTableNo = mergeTable.getOrignalTableNo();
 		String targetTableNo = mergeTable.getTableNo();
@@ -244,12 +244,11 @@ public class TableServiceImpl implements TableService {
 		map.put("tableNo", sourceTableNo);
 		List<Map<String, Object>> resultMap = tableDao.find(map);
 		if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
-			logger.error("源餐台不存在或者重复，size:" + ((resultMap == null) ? 0 : resultMap.size()));
+			logger.error("源餐台不存在或者重复，tableNo:"+sourceTableNo+",size:" + ((resultMap == null) ? 0 : resultMap.size()));
 			return Constant.FAILUREMSG;
 		}
 		//源餐台数据
 		Map<String, Object> sourceTable = resultMap.get(0);
-		String sourceTableId = String.valueOf(sourceTable.get("tableid"));
 		String sourceOrderId = String.valueOf(sourceTable.get("orderid"));
 		Map<String, Object> sourceOrder = torderMapper.findOne(sourceOrderId);
 		if (sourceOrder == null || sourceOrder.size() == 0 || !"0".equals(String.valueOf(sourceOrder.get("orderstatus")))) {
@@ -261,7 +260,7 @@ public class TableServiceImpl implements TableService {
 		map1.put("tableNo", targetTableNo);
 		List<Map<String, Object>> listTables = tableDao.find(map1);
 		if (listTables == null || listTables.size() == 0 || listTables.size() > 1) {
-			logger.error("目标餐台不存在，tableNo:" + targetTableNo);
+			logger.error("目标餐台不存在或者重复，tableNo:" + targetTableNo + ",size:" + ((listTables == null) ? 0 : listTables.size()));
 			return Constant.FAILUREMSG;
 		}
 		//目标餐台数据
@@ -292,15 +291,10 @@ public class TableServiceImpl implements TableService {
 		if (isTableUsing(targetTable)) {
 			//目标餐台还没结账
 			if (isOrderNotPay(targetOrder)) {
-				// 订单主表的合并
-				mergeMap.put("targetCustnum", targetOrder.get("custnum"));
-				mergeMap.put("targetWomannum", targetOrder.get("womannum"));
-				mergeMap.put("targetChildnum", targetOrder.get("childnum"));
-				mergeMap.put("targetMannum", targetOrder.get("mannum"));
-				mergeMap.put("targetAgeperiod", targetOrder.get("ageperiod"));
-				mergeMap.put("targetMemberno", targetOrder.get("memberno"));
-				// TODO 更新会员价
-
+				// 封装订单主表需要合并的数据
+				packMergeMap(targetOrder, mergeMap);
+				// 更新会员价
+				updateVipPrice(sourceOrderId, sourceOrder, targetOrderId, targetOrder);
 				// 更新餐台表--多次并台后会更新多条记录，不能省略
 				if (tableDao.updateByOrderNo(sourceOrderId, targetOrderId) < 1) {
 					logger.error("更新餐台订单号失败");
@@ -323,23 +317,15 @@ public class TableServiceImpl implements TableService {
 				packResultMap(targetTableNo, targetTable, targetOrderId, targetOrder, resultmap);
 
 			}
+			//更新餐台的订单号
+			updateOrdernoForTable(sourceOrderId, targetTableId, false);
 			//判断是否需要释放餐台
-			if(cleanTargetTable){
-				TbTable tbTable = new TbTable();
-				tbTable.setTableid(targetTableId);
-				tbTable.setStatus(0);
-				if(tableDao.updateStatus(tbTable) < 1){
-					logger.error("释放目标餐台失败");
-					throw new Exception("释放目标餐台失败");
-				}
+			if(isCleanTarget){
+				cleanTargetTable(targetTableId);
 			}
 		}else{
-			//占用目标餐台并更新目标餐台的订单号为源餐台的订单
-			TbTable tbTable = new TbTable();
-			tbTable.setTableid(targetTableId);
-			tbTable.setStatus(1);
-			tbTable.setOrderid(sourceOrderId);
-			tableDao.updateStatus(tbTable);
+			//更新餐台的订单号并占用餐台
+			updateOrdernoForTable(sourceOrderId, targetTableId, true);
 		}
 		//更新源账单并台信息
 		if(torderMapper.updateOrderForMergeTable(mergeMap ) < 1){
@@ -356,6 +342,72 @@ public class TableServiceImpl implements TableService {
 		
 		return JacksonJsonMapper.objectToJson(resultmap);
 
+	}
+	/**
+	 * 更新餐台的订单号
+	 * @param sourceOrderId
+	 * @param targetTableId
+	 * @param markUsing
+	 */
+	private void updateOrdernoForTable(String sourceOrderId, String targetTableId, boolean markUsing) {
+		Map<String, Object> map = new HashMap<>(); 
+		map.put("tableid", targetTableId);
+		map.put("orderid", sourceOrderId);
+		if(markUsing){
+			map.put("status", 1);
+		}
+		tableDao.updateTableById(map);
+	}
+	/**
+	 * 清空目标餐台
+	 * @param targetTableId
+	 * @throws Exception
+	 */
+	private void cleanTargetTable(String targetTableId) throws Exception {
+		Map<String, Object> map = new HashMap<>(); 
+		map.put("tableid", targetTableId);
+		map.put("status", 0);
+		if(tableDao.updateTableById(map) < 1){
+			logger.error("释放目标餐台失败");
+			throw new Exception("释放目标餐台失败");
+		}
+	}
+	
+	/**
+	 * 封装订单主表合并的数据
+	 * @param targetOrder
+	 * @param mergeMap
+	 */
+	private void packMergeMap(Map<String, Object> targetOrder, Map<String, Object> mergeMap) {
+		mergeMap.put("targetCustnum", targetOrder.get("custnum") == null ? 0 : targetOrder.get("custnum"));
+		mergeMap.put("targetWomannum", targetOrder.get("womannum") == null ? 0 : targetOrder.get("womannum"));
+		mergeMap.put("targetChildnum", targetOrder.get("childnum") == null ? 0 : targetOrder.get("childnum"));
+		mergeMap.put("targetMannum", targetOrder.get("mannum") == null ? 0 : targetOrder.get("mannum"));
+		mergeMap.put("targetAgeperiod", targetOrder.get("ageperiod") == null ? 0 : targetOrder.get("ageperiod"));
+	}
+	
+	/**
+	 * 更新菜品的价格为会员价
+	 * @param sourceOrderId
+	 * @param sourceOrder
+	 * @param targetOrderId
+	 * @param targetOrder
+	 * @throws Exception 
+	 */
+	private void updateVipPrice(String sourceOrderId, Map<String, Object> sourceOrder, String targetOrderId,
+			Map<String, Object> targetOrder) throws Exception {
+		String sourceMemberno = (String) sourceOrder.get("memberno");
+		String targetMemberno = (String) targetOrder.get("memberno");
+		boolean sourceIsVip = sourceMemberno != null && !sourceMemberno.isEmpty();
+		boolean targetIsVip = targetMemberno != null && !targetMemberno.isEmpty();
+		if(sourceIsVip && !targetIsVip){//源桌台登录了会员
+			torderMapper.updateVipPrice(targetOrderId);
+		}else if(!sourceIsVip && targetIsVip){//目标桌台登录了会员
+			torderMapper.updateVipPrice(sourceOrderId);
+			if(torderMapper.updateMemberno(sourceOrderId, targetMemberno) < 1){
+				throw new Exception("更新订单的会员号失败");
+			}
+		}
 	}
 	
 	/**

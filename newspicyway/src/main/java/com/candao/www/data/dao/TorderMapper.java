@@ -68,4 +68,8 @@ public interface TorderMapper {
 	public int updateOrderForMergeTable(Map<String, Object> mapParam);
 	
 	public int deleteByPrimaryKey(String orderId);
+	
+	public void updateVipPrice(String orderId);
+	
+	public int updateMemberno(String orderid, String memberno);
 }

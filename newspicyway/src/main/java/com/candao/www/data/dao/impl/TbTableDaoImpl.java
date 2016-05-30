@@ -174,6 +174,11 @@ public class TbTableDaoImpl implements TbTableDao {
 		params.put("targetOrderid", targetOrderid);
 		return dao.update(PREFIX + ".updateByOrderNo", params);
 	}
+
+	@Override
+	public int updateTableById(Map<String, Object> map) {
+		return dao.update(PREFIX + ".updateTableById", map);
+	}
 	
 }
 

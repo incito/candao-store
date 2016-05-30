@@ -540,8 +540,8 @@
   </update>
   
   <update id ="updatePrintdishForMerge" parameterType="map" >
-  update t_printdish set printobjid = (select id from t_printobj where orderno =${sourceOrderid})
-           where printobjid = (select id from t_printobj where orderno = ${targetOrderid});
+  update t_printdish set printobjid = (select id from t_printobj where orderno =#{sourceOrderid})
+           where printobjid = (select id from t_printobj where orderno = #{targetOrderid});
   </update>
   
     <select id ="findDishByObjId" parameterType="map" resultType="com.candao.print.entity.PrintDish">

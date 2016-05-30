@@ -158,7 +158,7 @@ public class TbOrderDaoImpl implements TorderMapper {
 
 	@Override
 	public int updateOrderForMergeTable(Map<String, Object> mapParam) {
-		return dao.get(PREFIX + ".updateOrderForMergeTable", mapParam);
+		return dao.update(PREFIX + ".updateOrderForMergeTable", mapParam);
 	}
 
 	@Override
@@ -166,6 +166,21 @@ public class TbOrderDaoImpl implements TorderMapper {
 		Map<String, Object> map = new HashMap<>();
 		map.put("orderid", orderId);
 		return dao.delete(PREFIX + ".deleteByPrimaryKey", map );
+	}
+
+	@Override
+	public void updateVipPrice(String orderId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("i_orderid", orderId);
+		dao.find(PREFIX + ".updateVipPrice", map);
+	}
+
+	@Override
+	public int updateMemberno(String orderid, String memberno) {
+		Map<String, Object> mapParam = new HashMap<>();
+		mapParam.put("orderid", orderid);
+		mapParam.put("memberno", memberno);
+		return dao.update(PREFIX + ".updateMemberno", mapParam );
 	}
  
 }

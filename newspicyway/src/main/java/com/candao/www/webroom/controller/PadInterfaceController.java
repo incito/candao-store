@@ -626,6 +626,7 @@ public class PadInterfaceController {
 		try {
 			return tableService.mergetableMultiMode(table, toperationLog);
 		} catch (Exception e) {
+			logger.error("并台失败：" + e.getMessage(), e);
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("msg", e.getMessage());
 			map.put("result", "1");
