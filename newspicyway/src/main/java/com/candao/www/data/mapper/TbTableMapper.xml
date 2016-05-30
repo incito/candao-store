@@ -260,6 +260,10 @@
 	     <if test="custPrinter != null and custPrinter != ''">
 	        and a.custPrinter=#{custPrinter}
 	     </if>
+	      <if test="status != null and status != ''">
+	        and a.status=#{status}
+	     </if>
+	     
 	   </where>
 	    GROUP BY
 			  a.tableid
