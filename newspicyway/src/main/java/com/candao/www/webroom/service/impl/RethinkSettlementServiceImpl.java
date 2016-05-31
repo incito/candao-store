@@ -182,10 +182,11 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 		settlement.put("invoiceamount", "0.00");
 		if(payways != null){
 			settlement.put("payway", payways.get("payway"));
-			settlement.put("payamount", payways.get("payamount"));
+			BigDecimal payamount = (BigDecimal)payways.get("payamount");
+			settlement.put("payamount", ratioTransform2(payamount));
 		}else{
-			settlement.put("payway", 7);
-			settlement.put("payamount", 0.00);
+			settlement.put("payway", "7");
+			settlement.put("payamount", "0.00");
 		}
 		return settlement;
 	}

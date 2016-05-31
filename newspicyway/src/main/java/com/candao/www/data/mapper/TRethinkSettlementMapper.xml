@@ -188,26 +188,26 @@
     
     <!-- 查询抹零和四舍五入 -->
     <select id="queryMoLing" parameterType="map" resultType="map">
-		select payway,IFNULL(payamount,0) as payamount from t_settlement_detail where orderid = #{orderid} and payway in (7,20)
+		select payway,IFNULL(payamount,0.00) as payamount from t_settlement_detail where orderid = #{orderid} and payway in (7,20)
     </select>
     
     <!-- 查询应收 -->
     <select id="totalconsumption" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(tod.dishnum*tod.orignalprice),0) as totalconsumption from t_order_detail tod where orderid = #{orderid} and pricetype <![CDATA[ <> ]]> 1
+        select IFNULL(sum(tod.dishnum*tod.orignalprice),0.00) as totalconsumption from t_order_detail tod where orderid = #{orderid} and pricetype <![CDATA[ <> ]]> 1
     </select>
     
     <!-- 查询实收 -->
     <select id="paidamount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(payamount),0) as paidamount from t_settlement_detail where orderid = #{orderid} and payway in (0,1,5,8,13,17,18)
+        select IFNULL(sum(payamount),0.00) as paidamount from t_settlement_detail where orderid = #{orderid} and payway in (0,1,5,8,13,17,18)
     </select>
     
     <!-- 查询赠菜金额 -->
     <select id="giveamount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(orignalprice),0) as giveamount from t_order_detail where orderid = #{orderid} and pricetype = 1
+        select IFNULL(sum(orignalprice),0.00) as giveamount from t_order_detail where orderid = #{orderid} and pricetype = 1
     </select>
     
     <!-- 查询套餐金额 -->
     <select id="taocanAmount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(dishnum*orignalprice),0) as taocan from t_order_detail where orderid = #{orderid} and dishtype = 2 AND superkey <![CDATA[ <> ]]> primarykey
+        select IFNULL(sum(dishnum*orignalprice),0.00) as taocan from t_order_detail where orderid = #{orderid} and dishtype = 2 AND superkey <![CDATA[ <> ]]> primarykey
     </select>
 </mapper>
