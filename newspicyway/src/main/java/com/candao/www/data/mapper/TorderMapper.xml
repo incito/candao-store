@@ -473,4 +473,40 @@
  
   </select>
  
+ <update id="updateOrderForMergeTable" parameterType="java.util.Map" >
+    update t_order
+    <set >
+    	payway = '1',
+    	relateorderid = CONCAT(#{sourceTableNo}, ',', #{targetTableNo})
+      <if test="targetCustnum != null" >
+       ,custnum = custnum + #{targetCustnum}
+      </if>
+      <if test="targetWomannum != null" >
+      ,womanNum = womanNum + #{targetWomannum}
+      </if>
+      <if test="targetChildnum != null" >
+       ,childNum = childNum + #{targetChildnum}
+      </if>
+      <if test="targetMannum != null" >
+       ,mannum = mannum + #{targetMannum}
+      </if>
+      <if test="targetAgeperiod != null" >
+       ,ageperiod = CONCAT(ageperiod,#{targetAgeperiod})
+      </if>
+    </set>
+    where orderid = #{orderid}
+  </update>
+  
+  <update id="updateMemberno" parameterType="java.util.Map" >
+    update t_order set memberno = #{memberno} where orderid = #{orderid}
+  </update>
+  
+  <select id="updateVipPrice" parameterType="java.util.Map" statementType="CALLABLE" >  
+	  {  
+	      call  p_update2vipprice(  
+	       #{i_orderid,jdbcType=VARCHAR,mode=IN}
+	      )
+	  }  
+  </select>
+ 
 </mapper>
