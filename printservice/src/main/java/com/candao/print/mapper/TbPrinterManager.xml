@@ -382,7 +382,7 @@
 	</select>
 	
 	
-  	<select id ="findNoDishPrinter" parameterType="map"  resultType="com.candao.print.entity.TbPrinterManager">
+<select id ="findNoDishPrinter" parameterType="map"  resultType="com.candao.print.entity.TbPrinterManager">
 	      select  distinct printertype,ipaddress,port 
 			from t_printer tp ,t_printer_area tpa  ,t_table tt
 			where tp.printerid = tpa.printerid 
@@ -390,7 +390,9 @@
 			and tp.status =#{status}
 			and tp.printertype = #{printertype}
 			and tt.tableid = #{tableid}
+			and tpa.tableid=#{tableid}
 	</select>
+	
 	<!--此方法是称重单专用，别修改  -->
     <select id ="findPrintByType" parameterType="map" resultType="com.candao.print.entity.TbPrinterManager">
 	      select distinct printertype,ipaddress,port from t_printer where `status`=#{status} and printertype=#{printertype}
