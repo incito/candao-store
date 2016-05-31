@@ -78,7 +78,7 @@ public class Constant {
 	public static final String VIDEO_GROUP = PropertiesUtils.getValue("fastdfs.group.video");
  
 	public static final String FAILUREMSG = "{\"result\":\"1\"}";
-	
+	public static final String UPDATE_MENU= "{\"result\":\"3\"}";
 	public static final String FAILUROPEMSG = "{\"result\":\"2\"}";
 	
 	public static final String SUCCESSMSG = "{\"result\":\"0\"}";

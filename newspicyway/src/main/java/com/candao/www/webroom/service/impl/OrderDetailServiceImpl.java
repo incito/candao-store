@@ -110,6 +110,12 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		   log.error("-->resultMapList为空(查询table为空)，参数tableNo为："+tableNo);
 		   return Constant.FAILUREMSG;
 	   }
+		// 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
+		//计算菜单订单下面财大个数如果大与0 表示不能 清台
+		long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
+		if (menuNum > 0) {
+			return Constant.UPDATE_MENU;
+		}
 	   Map<String, Object> tableMap = resultMapList.get(0);
 	   String tableId = String.valueOf(tableMap.get("tableid"));
 		   

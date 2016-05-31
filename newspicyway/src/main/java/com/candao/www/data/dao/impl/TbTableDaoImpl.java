@@ -166,6 +166,25 @@ public class TbTableDaoImpl implements TbTableDao {
 		params.put("orderid", orderid);
 		return dao.get(PREFIX + ".findTableByOrder", params);
 	}
+
+	@Override
+	public int updateByOrderNo(String sourceOrderid, String targetOrderid) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("sourceOrderid", sourceOrderid);
+		params.put("targetOrderid", targetOrderid);
+		return dao.update(PREFIX + ".updateByOrderNo", params);
+	}
+
+	@Override
+	public int updateTableById(Map<String, Object> map) {
+		return dao.update(PREFIX + ".updateTableById", map);
+	}
+	
+	@Override
+	public long getMenuInfoByCount(Map<String, Object> params) {
+		
+		return dao.get(PREFIX+".menuInfoByorderidToCount", params);
+	}
 	
 }
 

@@ -28,6 +28,7 @@ import com.candao.print.entity.PrintObj;
 import com.candao.print.service.PrinterService;
 import com.candao.print.service.TableOptionService;
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.data.dao.TbTableDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderMapper;
@@ -82,6 +83,9 @@ public class TableServiceImpl implements TableService {
 	PrinterService  printerService;
 	@Autowired
 	TableOptionService  tableOptionService;
+	
+	@Autowired
+	TbPrintObjDao tbPrintObjDao;
     
 	@Override
 	public Page<Map<String, Object>> grid(Map<String, Object> params, int current, int pagesize) {
@@ -225,6 +229,275 @@ public class TableServiceImpl implements TableService {
 			   tableOptionService.sendMessage( printObj );
 		   }
 	   }
+	
+	
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class) 
+	@Override
+	public String mergetableMultiMode(Table mergeTable, ToperationLog toperationLog) throws Exception {
+		//是否清空目标餐台
+		boolean isCleanTarget = mergeTable.getCleanTable();
+		
+		String sourceTableNo = mergeTable.getOrignalTableNo();
+		String targetTableNo = mergeTable.getTableNo();
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("tableNo", sourceTableNo);
+		List<Map<String, Object>> resultMap = tableDao.find(map);
+		if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
+			logger.error("源餐台不存在或者重复，tableNo:"+sourceTableNo+",size:" + ((resultMap == null) ? 0 : resultMap.size()));
+			return Constant.FAILUREMSG;
+		}
+		//源餐台数据
+		Map<String, Object> sourceTable = resultMap.get(0);
+		String sourceOrderId = String.valueOf(sourceTable.get("orderid"));
+		Map<String, Object> sourceOrder = torderMapper.findOne(sourceOrderId);
+		if (sourceOrder == null || sourceOrder.size() == 0 || !"0".equals(String.valueOf(sourceOrder.get("orderstatus")))) {
+			logger.error("源餐台未开台或者账单状态异常，ordersize:" + ((sourceOrder == null) ? 0 : sourceOrder.size()) + ",orderstatus:" + String.valueOf(sourceOrder.get("orderstatus")));
+			return Constant.FAILUROPEMSG;
+		}
+		
+		Map<String, Object> map1 = new HashMap<String, Object>();
+		map1.put("tableNo", targetTableNo);
+		List<Map<String, Object>> listTables = tableDao.find(map1);
+		if (listTables == null || listTables.size() == 0 || listTables.size() > 1) {
+			logger.error("目标餐台不存在或者重复，tableNo:" + targetTableNo + ",size:" + ((listTables == null) ? 0 : listTables.size()));
+			return Constant.FAILUREMSG;
+		}
+		//目标餐台数据
+		Map<String, Object> targetTable = listTables.get(0);
+		String targetTableId = String.valueOf(targetTable.get("tableid"));
+		String targetOrderId = String.valueOf(targetTable.get("orderid"));
+		// 如果目标桌和原始桌的订单号相同，直接返回并台成功
+		if (sourceOrderId.equals(targetOrderId)) {
+			logger.error("目标餐台与源餐台是同一个账单，tableNo:" + targetTableNo);
+			return Constant.SUCCESSMSG;
+		}
+		Map<String, Object> targetOrder = torderMapper.findOne(targetOrderId);
+		
+		//清空以前的日志
+		toperationLogService.deleteToperationLogByTableNo(sourceTableNo);
+		toperationLogService.deleteToperationLogByTableNo(targetTableNo);
+		//封装账单合并数据
+		Map<String, Object> mergeMap = new HashMap<>();
+		mergeMap.put("orderid", sourceOrderId);
+		mergeMap.put("targetTableNo", targetTableNo);
+		mergeMap.put("sourceTableNo", sourceTableNo);
+		
+		// ---------------------------------------------------------
+		// 并桌的时候查询目标桌是否开台，是否下单了 下单了，并桌的时候把下单的数据返回给pad。并桌只能并一个桌
+		Map<String, Object> resultmap = new HashMap<String, Object>();
+		resultmap.put("result", "0");
+		//目标餐台被占用
+		if (isTableUsing(targetTable)) {
+			//目标餐台还没结账
+			if (isOrderNotPay(targetOrder)) {
+				// 封装订单主表需要合并的数据
+				packMergeMap(targetOrder, mergeMap);
+				// 更新会员价
+				updateVipPrice(sourceOrderId, sourceOrder, targetOrderId, targetOrder);
+				// 更新餐台表--多次并台后会更新多条记录，不能省略
+				if (tableDao.updateByOrderNo(sourceOrderId, targetOrderId) < 1) {
+					logger.error("更新餐台订单号失败");
+					throw new Exception("更新餐台订单号失败");
+				}
+				// 更新订单详细 表关系
+				torderDetailMapper.updateOrderDetailForMergeTable(sourceOrderId, targetOrderId);
+				// 更新退菜表的关系
+				torderDetailMapper.updateOrderDetailDiscard(sourceOrderId, targetOrderId);
+				// 更新打印菜品表的关系
+				tbPrintObjDao.updatePrintdishForMerge(sourceOrderId, targetOrderId);
+				// 删除订单主表
+				if (torderMapper.deleteByPrimaryKey(targetOrderId) < 1) {
+					logger.error("删除目标餐台账单失败");
+					throw new Exception("删除目标餐台账单失败");
+				}
+				// 通知目标餐台的PAD
+				notifyTargetPad(targetOrder);
+				//
+				packResultMap(targetTableNo, targetTable, targetOrderId, targetOrder, resultmap);
+
+			}
+			//更新餐台的订单号
+			updateOrdernoForTable(sourceOrderId, targetTableId, false);
+			//判断是否需要释放餐台
+			if(isCleanTarget){
+				cleanTargetTable(targetTableId);
+			}
+		}else{
+			//更新餐台的订单号并占用餐台
+			updateOrdernoForTable(sourceOrderId, targetTableId, true);
+		}
+		//更新源账单并台信息
+		if(torderMapper.updateOrderForMergeTable(mergeMap ) < 1){
+			logger.error("合并账单失败");
+			throw new Exception("合并账单失败");
+		}
+		//记录并台日志
+		if(!toperationLogService.save(toperationLog)){
+			logger.error("向t_operation_log表记录并台日志失败");
+			throw new Exception("记录并台日志失败");
+		}
+		//打印合并小票
+		printMergeTableTicket(mergeTable, sourceOrderId, sourceOrder);
+		
+		return JacksonJsonMapper.objectToJson(resultmap);
+
+	}
+	/**
+	 * 更新餐台的订单号
+	 * @param sourceOrderId
+	 * @param targetTableId
+	 * @param markUsing
+	 */
+	private void updateOrdernoForTable(String sourceOrderId, String targetTableId, boolean markUsing) {
+		Map<String, Object> map = new HashMap<>(); 
+		map.put("tableid", targetTableId);
+		map.put("orderid", sourceOrderId);
+		if(markUsing){
+			map.put("status", 1);
+		}
+		tableDao.updateTableById(map);
+	}
+	/**
+	 * 清空目标餐台
+	 * @param targetTableId
+	 * @throws Exception
+	 */
+	private void cleanTargetTable(String targetTableId) throws Exception {
+		Map<String, Object> map = new HashMap<>(); 
+		map.put("tableid", targetTableId);
+		map.put("status", 0);
+		if(tableDao.updateTableById(map) < 1){
+			logger.error("释放目标餐台失败");
+			throw new Exception("释放目标餐台失败");
+		}
+	}
+	
+	/**
+	 * 封装订单主表合并的数据
+	 * @param targetOrder
+	 * @param mergeMap
+	 */
+	private void packMergeMap(Map<String, Object> targetOrder, Map<String, Object> mergeMap) {
+		mergeMap.put("targetCustnum", targetOrder.get("custnum") == null ? 0 : targetOrder.get("custnum"));
+		mergeMap.put("targetWomannum", targetOrder.get("womannum") == null ? 0 : targetOrder.get("womannum"));
+		mergeMap.put("targetChildnum", targetOrder.get("childnum") == null ? 0 : targetOrder.get("childnum"));
+		mergeMap.put("targetMannum", targetOrder.get("mannum") == null ? 0 : targetOrder.get("mannum"));
+		mergeMap.put("targetAgeperiod", targetOrder.get("ageperiod") == null ? 0 : targetOrder.get("ageperiod"));
+	}
+	
+	/**
+	 * 更新菜品的价格为会员价
+	 * @param sourceOrderId
+	 * @param sourceOrder
+	 * @param targetOrderId
+	 * @param targetOrder
+	 * @throws Exception 
+	 */
+	private void updateVipPrice(String sourceOrderId, Map<String, Object> sourceOrder, String targetOrderId,
+			Map<String, Object> targetOrder) throws Exception {
+		String sourceMemberno = (String) sourceOrder.get("memberno");
+		String targetMemberno = (String) targetOrder.get("memberno");
+		boolean sourceIsVip = sourceMemberno != null && !sourceMemberno.isEmpty();
+		boolean targetIsVip = targetMemberno != null && !targetMemberno.isEmpty();
+		if(sourceIsVip && !targetIsVip){//源桌台登录了会员
+			torderMapper.updateVipPrice(targetOrderId);
+		}else if(!sourceIsVip && targetIsVip){//目标桌台登录了会员
+			torderMapper.updateVipPrice(sourceOrderId);
+			if(torderMapper.updateMemberno(sourceOrderId, targetMemberno) < 1){
+				throw new Exception("更新订单的会员号失败");
+			}
+		}
+	}
+	
+	/**
+	 * 封裝数据返回给源PAD
+	 * @param targetTableNo
+	 * @param targetTable
+	 * @param targetOrderId
+	 * @param targetOrder
+	 * @param resultmap
+	 */
+	private void packResultMap(String targetTableNo, Map<String, Object> targetTable, String targetOrderId,
+			Map<String, Object> targetOrder, Map<String, Object> resultmap) {
+		Map<String, Object> mappa = new HashMap<String, Object>();
+		mappa.put("orderid", targetOrderId);
+		TbDataDictionary dd = datadictionaryService.findById("backpsd");
+		TbDataDictionary vipaddress = datadictionaryService.findById("vipaddress");
+		TbDataDictionary locktime = datadictionaryService.findById("locktime");
+		TbDataDictionary delaytime = datadictionaryService.findById("delaytime");
+		resultmap.put("flag", "1");
+		resultmap.put("desc", "获取数据成功");
+		resultmap.put("currenttableid", targetTableNo);
+		resultmap.put("orderid", targetTable.get("orderid"));
+		resultmap.put("memberno", targetOrder.get("memberno"));
+		resultmap.put("manNum", targetOrder.get("manNum"));
+		resultmap.put("womanNum", targetOrder.get("womanNum"));
+		resultmap.put("waiterNum", targetOrder.get("userid"));
+		resultmap.put("ageperiod", targetOrder.get("ageperiod"));
+		resultmap.put("begintime", targetOrder.get("begintime"));
+		resultmap.put("result", "0");
+		resultmap.put("orderid", targetOrderId);
+		resultmap.put("backpsd", dd == null ? "" : dd.getItemid());// 退菜密码
+		resultmap.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址
+		resultmap.put("locktime", locktime == null ? "" : locktime.getItemid()); // 屏保锁屏时间
+		resultmap.put("delaytime", delaytime == null ? "" : delaytime.getItemid()); // 屏保停留时间
+		resultmap.put("rows", orderServiceImpl.getMapData(targetOrderId));
+	}
+	/**
+	 * 判断账单是否已结账
+	 * @param targetOrder
+	 * @return true:未结账，false:已结账或已取消
+	 */
+	private boolean isOrderNotPay(Map<String, Object> targetOrder) {
+		return targetOrder != null && targetOrder.size() != 0 && "0".equals(String.valueOf(targetOrder.get("orderstatus")));
+	}
+	/**
+	 * 判断餐台是否被占用
+	 * @param targetTable
+	 * @return
+	 */
+	private boolean isTableUsing(Map<String, Object> targetTable) {
+		return targetTable.get("status") != null && "1".equals(String.valueOf(targetTable.get("status")));
+	}
+	
+	/**
+	 * 打印并台小票
+	 * @param mergeTable
+	 * @param sourceOrderId
+	 * @param sourceOrder
+	 */
+	private void printMergeTableTicket(Table mergeTable, String sourceOrderId, Map<String, Object> sourceOrder) {
+		String userId = (String) sourceOrder.get("userid");
+		User mapUser = userService.getUserByjobNum(userId);
+		User disUser = userService.getUserByjobNum(mergeTable.getDiscardUserId());
+		PrintObj pj = new PrintObj();
+		pj.setUserName(mapUser.getName());
+		pj.setBillName("并台单");
+		pj.setAbbrbillName("并");
+		pj.setOrderNo(sourceOrderId);
+		pj.setTimeMsg(DateUtils.dateToString(new Date()));
+		pj.setWelcomeMsg(mergeTable.getTableNo());// 换到的台
+		pj.setTableNo(mergeTable.getOrignalTableNo());
+		pj.setDiscardUserId(disUser.getName());
+
+		printTableChangeBill(pj, "6");
+	}
+	
+	
+	/**
+	 * 通知目标餐台的PAD
+	 * @param orderMap
+	 */
+	private void notifyTargetPad(Map<String, Object> orderMap) {
+		// 订单不为空，调用推送接口，清空目标pad的数据
+		if (orderMap.get("meid") != null) {
+			StringBuffer str = new StringBuffer(Constant.TS_URL);
+			str.append(Constant.MessageType.msg_1005 + "/" + String.valueOf(orderMap.get("meid")));
+			new Thread(new TsThread(str.toString())).run();
+		}
+	}
+	
 	
 	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class) 
 	@Override
@@ -469,6 +742,10 @@ public class TableServiceImpl implements TableService {
 	@Override
 	public TbTable findTableByOrder(String orderid) {
 		return tableDao.findTableByOrder(orderid);
+	}
+	@Override
+	public long getMenuInfoByCount(Map<String, Object> params) {
+		return tableDao.getMenuInfoByCount(params);
 	}
 
 }

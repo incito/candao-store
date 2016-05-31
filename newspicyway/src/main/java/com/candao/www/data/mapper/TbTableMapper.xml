@@ -185,6 +185,9 @@
 	</select>
 
 
+	   <select id="menuInfoByorderidToCount" parameterType="map" resultType="java.lang.Long">
+	    select COUNT(orderid) FROM t_order_detail WHERE orderid =#{orderid}
+	   </select>
 
 	<select id="find" parameterType="map" resultMap="findResultMap">
 	   select 
@@ -338,6 +341,17 @@
 	   update t_table set status = #{status},orderid =#{orderid} where    tableid=#{tableid}
  </update>
  
+ <update id="updateTableById" parameterType="java.util.Map">
+ 	update t_table 
+ 	<set >
+ 		orderid = #{orderid} 
+      	<if test="status != null" >
+	 	,status = #{status}
+	 	</if>
+    </set>
+ 	where tableid=#{tableid}
+ </update>
+ 
   <update id="updateSettleStatus" parameterType="com.candao.www.data.model.TbTable">
 	   update t_table set status = #{status}  where    orderid =#{orderid}
  </update>
@@ -364,6 +378,11 @@
  
    <update id="updateSettleOrderNull" parameterType="com.candao.www.data.model.TbTable">
 	   update t_table set orderid = null ,status ='0'  where    tableid !=#{tableid} and orderid = #{orderid}
+ </update>
+ <update id="updateByOrderNo" parameterType="map">
+ 		UPDATE t_table
+											SET orderid = #{sourceOrderid}
+											WHERE orderid = #{sourceOrderid};
  </update>
  <!-- 根据桌号获取客户打印机信息 -->
 	<select id="findDetail" parameterType="map" resultMap="findResultMap">

@@ -150,4 +150,8 @@ public interface TorderDetailMapper {
 
 	public void deleteTemp(String orderid);
 	
+	public int updateOrderDetailDiscard(String sourceOrderid, String targetOrderid);
+	
+	public int updateOrderDetailForMergeTable(String sourceOrderid, String targetOrderid);
+	
 }

@@ -21,7 +21,7 @@ import com.candao.print.entity.PrinterConstant;
 public class WeighDishListener extends AbstractPrintListener{
 
 	public WeighDishListener() {
-		super("WeighDishListener");
+		super("weightDishListener");
 	}
 
 	/**
