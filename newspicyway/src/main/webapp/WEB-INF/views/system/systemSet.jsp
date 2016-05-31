@@ -764,7 +764,7 @@
 	<div class="modal fade " id="dish-select-dialog" aria-hidden="true">
 	</div>
 
-	<div id="rootwizard" class="form-wizard">
+	<div id="rootwizard" class="form-wizard" style="display: none;">
 		<ul class="nav nav-pills nav-justified steps">
 			<li>
 				<a href="javascript:void(0);" data-toggle="tab" class="step">
@@ -968,7 +968,7 @@
 		$('#rootwizard').find('li').eq(step).addClass('active');
 		$('#rootwizard').find('#bar>div').css('width',(step*25 + 12.5) + '%');
 		$.ajax({
-			url: '<%=request.getContextPath()%>/sync/synDataFromCloud?type=' + pullType[step],
+			url: '<%=request.getContextPath()%>/sync/synDataFromCloud?type=' + pullType[step] + '&v=' + new Date(),
 			type: 'GET',
 			success: function (resp) {
 				if(resp && resp.statusCode == 200) {
