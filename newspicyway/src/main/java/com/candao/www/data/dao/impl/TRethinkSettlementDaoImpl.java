@@ -122,4 +122,56 @@ public class TRethinkSettlementDaoImpl implements TRethinkSettlementDao {
 		params.put("orderid", orderid);
 		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".queryMemberInflate", params);
 	}
+	
+	/**
+	 * 查询四舍五入和抹零
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public Map<String,Object> queryMoLing(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return daoSupport.get(PREFIX + ".queryMoLing", params);
+	}
+	
+	/**
+	 * 查询应收
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal totalconsumption(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".totalconsumption", params);
+	}
+	
+	/**
+	 * 查询实收
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal paidamount(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".paidamount", params);
+	}
+	
+	/**
+	 * 查询赠菜金额
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal giveamount(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".giveamount", params);
+	}
 }
