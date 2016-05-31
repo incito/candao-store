@@ -49,7 +49,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                     orderMapper.updatePrintCount(orderId);
                     break;
             }
-            int zdAmount = orderMapper.getZdAmountByOrderId(orderId);
+            float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
             List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
             List<Map> listJson = orderMapper.getListJson(orderId);
             List<Map> jsJson = orderMapper.getJsJson(orderId);

@@ -11,7 +11,7 @@
     <update id="updatePrintCount">
 		update t_order set printcount=printcount+1  where orderid=#{orderId}
 	</update>
-    <select id="getZdAmountByOrderId" resultType="int">
+    <select id="getZdAmountByOrderId" resultType="float">
         SELECT IFNULL(SUM(orignalprice*dishnum),0) AS zdAmount FROM t_order_detail WHERE orderid =#{orderId} AND pricetype=1
     </select>
     <select id="getOrderJson" resultType="java.util.HashMap">
