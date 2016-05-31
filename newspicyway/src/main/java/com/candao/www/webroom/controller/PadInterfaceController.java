@@ -606,13 +606,39 @@ public class PadInterfaceController {
 
 
 	}
-
+	
 	/**
 	 * 拼凑台 接口
 	 */
 	@RequestMapping("/mergetable")
 	@ResponseBody
-	public String mergetable(@RequestBody Table table, HttpServletRequest reqeust) {
+	public String mergetable(@RequestBody Table table,HttpServletRequest reqeust){
+
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(JacksonJsonMapper.objectToJson(table));
+		record.setPadpath("mergetable");
+		jsonRecordService.insertJsonRecord(record);
+		ToperationLog toperationLog=new ToperationLog();
+		toperationLog.setId(IdentifierUtils.getId().generate().toString());
+		toperationLog.setTableno(table.getOrignalTableNo());
+		toperationLog.setOperationtype(Constant.operationType.MERGETABLE);
+		toperationLog.setSequence(table.getSequence());
+		int flag=judgeRepeatData(toperationLog);
+		if(flag==0){
+			return tableService.mergetable(table,toperationLog);
+		}else if(flag==1){
+			return Constant.FAILUREMSG;
+		}else{
+			return Constant.SUCCESSMSG;
+		}
+	}
+
+	/**
+	 * 新的并台接口，支持释放目标餐台的模式，对应的PAD版本1.7.6以上
+	 */
+	@RequestMapping("/mergetableMultiMode")
+	@ResponseBody
+	public String mergetableMultiMode(@RequestBody Table table, HttpServletRequest reqeust) {
 
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(JacksonJsonMapper.objectToJson(table));
