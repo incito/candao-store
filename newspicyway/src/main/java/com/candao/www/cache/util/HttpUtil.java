@@ -26,7 +26,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class HttpUtil {
  
-    private static int connectTimeout = 3000;// 连接超时值 ,单位:毫秒
+    private static int connectTimeout = 5000;// 连接超时值 ,单位:毫秒
     
     /**
      *  以GET的方式请求一个http资源,并将结果以字符串的方式返回
@@ -223,6 +223,7 @@ public class HttpUtil {
             conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.102 Safari/537.36");  // 模拟手机系统
             conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");//只接受text/html类型，当然也可以接受图片,pdf,*/*任意，就是tomcat/conf/web里面定义那些
             conn.connect();
+            conn.setConnectTimeout(connectTimeout);// 设置链接超时时间
             InputStream is = conn.getInputStream();
            
             File file = new File(path);

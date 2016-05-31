@@ -94,4 +94,40 @@ public interface TRethinkSettlementDao {
 	 */
 	public BigDecimal queryMemberInflate(String orderid);
 	
+	/**
+	 * 查询四舍五入和抹零
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public Map<String,Object> queryMoLing(String orderid);
+	
+	/**
+	 * 查询应收
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal totalconsumption(String orderid);
+	
+	/**
+	 * 查询实收
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal paidamount(String orderid);
+	
+	/**
+	 * 查询赠菜金额
+	 * @author weizhifang
+	 * @since 2016-5-30
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal giveamount(String orderid);
+	
 }
