@@ -291,6 +291,8 @@ public class TableServiceImpl implements TableService {
 		if (isTableUsing(targetTable)) {
 			//目标餐台还没结账
 			if (isOrderNotPay(targetOrder)) {
+				//封装返回给PAD的数据----只能放在第一行，因为订单关系改变后，不能获取到数据
+				packResultMap(targetTableNo, targetTable, targetOrderId, targetOrder, resultmap);
 				// 封装订单主表需要合并的数据
 				packMergeMap(targetOrder, mergeMap);
 				// 更新会员价
@@ -313,8 +315,6 @@ public class TableServiceImpl implements TableService {
 				}
 				// 通知目标餐台的PAD
 				notifyTargetPad(targetOrder);
-				//
-				packResultMap(targetTableNo, targetTable, targetOrderId, targetOrder, resultmap);
 
 			}
 			//更新餐台的订单号
@@ -380,9 +380,9 @@ public class TableServiceImpl implements TableService {
 	 */
 	private void packMergeMap(Map<String, Object> targetOrder, Map<String, Object> mergeMap) {
 		mergeMap.put("targetCustnum", targetOrder.get("custnum") == null ? 0 : targetOrder.get("custnum"));
-		mergeMap.put("targetWomannum", targetOrder.get("womannum") == null ? 0 : targetOrder.get("womannum"));
-		mergeMap.put("targetChildnum", targetOrder.get("childnum") == null ? 0 : targetOrder.get("childnum"));
-		mergeMap.put("targetMannum", targetOrder.get("mannum") == null ? 0 : targetOrder.get("mannum"));
+		mergeMap.put("targetWomannum", targetOrder.get("womanNum") == null ? 0 : targetOrder.get("womanNum"));
+		mergeMap.put("targetChildnum", targetOrder.get("childNum") == null ? 0 : targetOrder.get("childNum"));
+		mergeMap.put("targetMannum", targetOrder.get("manNum") == null ? 0 : targetOrder.get("manNum"));
 		mergeMap.put("targetAgeperiod", targetOrder.get("ageperiod") == null ? 0 : targetOrder.get("ageperiod"));
 	}
 	
