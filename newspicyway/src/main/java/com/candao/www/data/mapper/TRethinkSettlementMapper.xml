@@ -193,7 +193,7 @@
     
     <!-- 查询应收 -->
     <select id="totalconsumption" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(tod.dishnum*tod.orignalprice),0) as totalconsumption from t_order_detail tod where orderid = #{orderid}
+        select IFNULL(sum(tod.dishnum*tod.orignalprice),0) as totalconsumption from t_order_detail tod where orderid = #{orderid} and pricetype <![CDATA[ <> ]]> 1
     </select>
     
     <!-- 查询实收 -->
@@ -203,6 +203,11 @@
     
     <!-- 查询赠菜金额 -->
     <select id="giveamount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(orignalprice),0) as giveamount from t_order_detail where orderid = #{orderid}and pricetype = 1
+        select IFNULL(sum(orignalprice),0) as giveamount from t_order_detail where orderid = #{orderid} and pricetype = 1
+    </select>
+    
+    <!-- 查询套餐金额 -->
+    <select id="taocanAmount" resultType="BigDecimal" parameterType="map" >
+        select IFNULL(sum(dishnum*orignalprice),0) as taocan from t_order_detail where orderid = #{orderid} and dishtype = 2 AND superkey <![CDATA[ <> ]]> primarykey
     </select>
 </mapper>

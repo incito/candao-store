@@ -1,6 +1,8 @@
 package com.candao.www.webroom.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -158,21 +160,52 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 	 * @return
 	 */
 	public Map<String,Object> querySettlementDetail(String orderid){
+		Map<String,Object> settlement = new HashMap<String,Object>();
 		//四舍五入/抹零
 		Map<String,Object> payways = tRethinkSettlementDao.queryMoLing(orderid);
 		//应收
-		BigDecimal totalconsumption = tRethinkSettlementDao.totalconsumption(orderid);
+		BigDecimal yingshou = tRethinkSettlementDao.totalconsumption(orderid);
+		//套餐
+		BigDecimal taocan = tRethinkSettlementDao.taocanAmount(orderid);
+		//实际应收=应收-套餐
+		BigDecimal totalconsumption = yingshou.subtract(taocan).setScale(2,BigDecimal.ROUND_HALF_UP);
 		//实收
 		BigDecimal paidamount = tRethinkSettlementDao.paidamount(orderid);
 		//赠菜
 		BigDecimal giveamount = tRethinkSettlementDao.giveamount(orderid);
 		//总优惠
 		BigDecimal couponamount = totalconsumption.subtract(paidamount).setScale(2,BigDecimal.ROUND_HALF_UP);
-		payways.put("totalconsumption", totalconsumption);
-		payways.put("paidamount", paidamount);
-		payways.put("giveamount", giveamount);
-		payways.put("couponamount", couponamount);
-		payways.put("invoiceamount", "0.00");
-		return payways;
+		settlement.put("totalconsumption", ratioTransform2(totalconsumption));
+		settlement.put("paidamount", ratioTransform2(paidamount));
+		settlement.put("giveamount", ratioTransform2(giveamount));
+		settlement.put("couponamount", ratioTransform2(couponamount));
+		settlement.put("invoiceamount", "0.00");
+		if(payways != null){
+			settlement.put("payway", payways.get("payway"));
+			settlement.put("payamount", payways.get("payamount"));
+		}else{
+			settlement.put("payway", 7);
+			settlement.put("payamount", 0.00);
+		}
+		return settlement;
+	}
+	
+	/** 
+     * BigDecimal 保留2位小数
+     * @author weizhifang
+     * @since 2016-5-31
+     * @param amount 金额 
+     * @param scale 精度 
+     * @return 
+     */  
+    public static String ratioTransform2(BigDecimal amount) {  
+        DecimalFormat df = new DecimalFormat("0.00");  
+        df.setRoundingMode(RoundingMode.HALF_UP);  
+        return df.format(amount);  
+    }  
+    
+    public static void main(String[] args) {
+    	RethinkSettlementServiceImpl r = new RethinkSettlementServiceImpl();
+    	System.out.println(r.ratioTransform2(new BigDecimal("3.1415926")));
 	}
 }

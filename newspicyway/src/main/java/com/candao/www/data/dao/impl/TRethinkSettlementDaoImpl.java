@@ -174,4 +174,17 @@ public class TRethinkSettlementDaoImpl implements TRethinkSettlementDao {
 		params.put("orderid", orderid);
 		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".giveamount", params);
 	}
+	
+	/**
+	 * 获取套餐金额
+	 * @author weizhifang
+	 * @since 2016-5-31
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal taocanAmount(String orderid){
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".taocanAmount", params);
+	}
 }

@@ -130,4 +130,13 @@ public interface TRethinkSettlementDao {
 	 */
 	public BigDecimal giveamount(String orderid);
 	
+	/**
+	 * 获取套餐金额
+	 * @author weizhifang
+	 * @since 2016-5-31
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal taocanAmount(String orderid);
+	
 }
