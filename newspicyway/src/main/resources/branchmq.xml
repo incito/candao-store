@@ -197,9 +197,7 @@
     </bean>  
     
      <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.print.listener.StatementDishListener"/>  
-        </property>  
+        <property name="delegate" ref="statementDishListener" />  
         <property name="defaultListenerMethod" value="receiveMessage"/>  
     </bean>  
     <!-- 套餐小票的监听 -->
@@ -270,6 +268,9 @@
     </bean> 
     <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">  
         <property name="destination" ref="dishSetQueue"/>  
+    </bean>
+    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener"/>  
+    	<property name="destination" ref="statementQueue"/>  
     </bean>
     <bean id="printExceptionListener" class="com.candao.print.listener.PrintExceptionListener">  
         <property name="destination" ref="exceptionQueue"/>  
