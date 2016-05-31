@@ -13,7 +13,7 @@ public interface OrderOpMapper {
 
     void updatePrintCount(String orderId);
 
-    int getZdAmountByOrderId(String orderId);
+    float getZdAmountByOrderId(String orderId);
 
     List<Map> getOrderJson(@Param("zdAmount") String zdAmount, @Param("orderId") String orderId);
 

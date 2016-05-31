@@ -46,7 +46,7 @@ public class SyncService {
 
       for (String tableName : tableNames) {
         if("t_dictionary".equalsIgnoreCase(tableName))
-          stmt.addBatch("DELETE FROM " + tableName + " WHERE `type` IN('SPECIAL','DISHSTATUS')");
+          stmt.addBatch("DELETE FROM t_dictionary WHERE `type` IN ('SPECIAL','DISHSTATUS')");
         else
           stmt.addBatch("TRUNCATE table " + tableName);
       }

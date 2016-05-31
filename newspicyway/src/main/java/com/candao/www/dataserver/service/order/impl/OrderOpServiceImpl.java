@@ -49,7 +49,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                     orderMapper.updatePrintCount(orderId);
                     break;
             }
-            int zdAmount = orderMapper.getZdAmountByOrderId(orderId);
+            float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
             List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
             List<Map> listJson = orderMapper.getListJson(orderId);
             List<Map> jsJson = orderMapper.getJsJson(orderId);
@@ -142,6 +142,12 @@ public class OrderOpServiceImpl implements OrderOpService {
                         //begintime需要格式化
                         long beginTimeL = ((Timestamp) begintime).getTime();
                         map.put("begintime", DateUtils.toString(new Date(beginTimeL), "yyyyMMdd HH:mm:ss"));
+                    }
+                    Object endtime = map.get("endtime");
+                    if (!StringUtil.isEmpty(endtime)) {
+                        //begintime需要格式化
+                        long endTimeL = ((Timestamp) endtime).getTime();
+                        map.put("endtime", DateUtils.toString(new Date(endTimeL), "yyyyMMdd HH:mm:ss"));
                     }
                 }
             }
