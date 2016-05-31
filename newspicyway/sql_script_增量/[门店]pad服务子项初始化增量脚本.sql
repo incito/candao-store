@@ -1,0 +1,4 @@
+-- 通知消息类型（原始数据，需要根据实际情况更改）
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('notification1', '4', '加盐', '4', '1', 'NOTIFICATION', '消息通知类型', NULL, NULL, NULL, NULL, NULL, NULL, '160');
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('notification2', '5', '加水', '5', '1', 'NOTIFICATION', '消息通知类型', NULL, NULL, NULL, NULL, NULL, NULL, '150');
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('notification3', '6', '换碟', '6', '1', 'NOTIFICATION', '消息通知类型', NULL, NULL, NULL, NULL, NULL, NULL, '140');
