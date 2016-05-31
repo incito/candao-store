@@ -143,6 +143,12 @@ public class OrderOpServiceImpl implements OrderOpService {
                         long beginTimeL = ((Timestamp) begintime).getTime();
                         map.put("begintime", DateUtils.toString(new Date(beginTimeL), "yyyyMMdd HH:mm:ss"));
                     }
+                    Object endtime = map.get("endtime");
+                    if (!StringUtil.isEmpty(endtime)) {
+                        //begintime需要格式化
+                        long endTimeL = ((Timestamp) endtime).getTime();
+                        map.put("endtime", DateUtils.toString(new Date(endTimeL), "yyyyMMdd HH:mm:ss"));
+                    }
                 }
             }
             responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
