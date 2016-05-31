@@ -269,7 +269,7 @@
     <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">  
         <property name="destination" ref="dishSetQueue"/>  
     </bean>
-    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener"/>  
+    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener">  
     	<property name="destination" ref="statementQueue"/>  
     </bean>
     <bean id="printExceptionListener" class="com.candao.print.listener.PrintExceptionListener">  
