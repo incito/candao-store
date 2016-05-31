@@ -131,6 +131,64 @@ function chartData(xAxis_data, legend_datav, series_data1, series_data2,
 	};
 	launchExample(domMain, option);
 }
+
+/**
+ * 营业数据分析表 导出
+ */
+function exportReportAnalysisDaliy() {
+	if(compareBeginEndTime()){
+		if (beginTime == null || "" == beginTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			beginTime = d.getFullYear() + '-' + month + '-' + day
+					+ ' 00:00:00';
+		}
+	
+		if (endTime == null || "" == endTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var hours = d.getHours();
+			if (d.getHours() < 10) {
+				hours = "0" + hours;
+			}
+			var minutes = d.getMinutes();
+			if (d.getMinutes() < 10) {
+				minutes = "0" + minutes;
+			}
+	
+			var second = d.getSeconds();
+			if (d.getSeconds() < 10) {
+				second = "0" + second;
+			}
+	
+			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
+					+ hours + ":" + minutes + ":" + second;
+		}
+		$("#_beginTime").val(beginTime);
+		$("#_endTime").val(endTime);
+		$("#_Datetype").val(dateType == 0 ? "D" : (dateType == 1 ? "M" : "Y"));
+		$("#daliyReportsForm").attr("action", global_Path +"/daliyReports/exportBusinessReport.json");
+		$("#daliyReportsForm").submit();
+	}
+}
 /** *****************营业数据统计 END ******************************************** */
 /** ******************品项销售统计 START **************************************** */
 /**
@@ -2004,6 +2062,8 @@ function exportSettlement(){
  */
 function initSettlementData(){
 	if(compareBeginEndTime()){
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
 		doSettlementPost(initSettlementTb);
 	}
 }

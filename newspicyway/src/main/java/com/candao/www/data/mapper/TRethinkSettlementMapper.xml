@@ -185,4 +185,24 @@
     <select id="queryMemberInflate" resultType="BigDecimal" parameterType="map" >
         select Inflated from t_order_member where orderid = #{orderid}
     </select>
+    
+    <!-- 查询抹零和四舍五入 -->
+    <select id="queryMoLing" parameterType="map" resultType="map">
+		select payway,IFNULL(payamount,0) as payamount from t_settlement_detail where orderid = #{orderid} and payway in (7,20)
+    </select>
+    
+    <!-- 查询应收 -->
+    <select id="totalconsumption" resultType="BigDecimal" parameterType="map" >
+        select IFNULL(sum(tod.dishnum*tod.orignalprice),0) as totalconsumption from t_order_detail tod where orderid = #{orderid}
+    </select>
+    
+    <!-- 查询实收 -->
+    <select id="paidamount" resultType="BigDecimal" parameterType="map" >
+        select IFNULL(sum(payamount),0) as paidamount from t_settlement_detail where orderid = #{orderid} and payway in (0,1,5,8,13,17,18)
+    </select>
+    
+    <!-- 查询赠菜金额 -->
+    <select id="giveamount" resultType="BigDecimal" parameterType="map" >
+        select IFNULL(sum(orignalprice),0) as giveamount from t_order_detail where orderid = #{orderid}and pricetype = 1
+    </select>
 </mapper>

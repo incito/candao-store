@@ -37,6 +37,8 @@
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
 				<span>营业数据分析表</span>
+				<a href="Javascript:exportReportAnalysisDaliy()" ><img
+					src="../images/download.png" alt="" /></a>
 			</div>
 			<hr />
 			<div class="report-search-box">
@@ -106,6 +108,11 @@
 			</div>
 		</div>
 	</div>
+<form id="daliyReportsForm" method="post" style="display:none;">
+	<input id="_beginTime" name="beginTime" type="hidden"/>
+	<input id="_endTime" name="endTime" type="hidden"/>
+	<input id="_Datetype" name="Datetype" type="hidden"/>
+</form>
 	<script type="text/javascript">
 		var myDate;
 		var dateType = 0;

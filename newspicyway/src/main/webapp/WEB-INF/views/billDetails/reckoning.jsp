@@ -55,7 +55,7 @@
 				+ '<tr><td class="text">结算备注：</td> <td colspan="3"></td></tr>'
 				+ '<tr><td class="text">合计：</td> <td></td> <td class="right-align">'+data.totalconsumption+'</td><td></td></tr>';
 			var colname = "抹零";
-			if(data.payway == data.payway == 20){
+			if(data.payway == 20){
 				colname = "四舍五入";
 			}
 			dishTr += '<tr><td class="text">'+colname+'：</td> <td></td> <td class="right-align">'+data.payamount+'</td><td></td></tr>'
