@@ -54,8 +54,17 @@ public class BranchDataSynDaoImpl implements BranchDataSynDao{
 	}
 	
 	@Override
+	public int updateSynRecords(Map<String, Object> mapValue) {
+		return daoSupport.insert(PREFIX+".updateSynRecords", mapValue);
+	}
+	
+	@Override
 	public int updateSynData(Map<String, Object> mapValue) {
 		return daoSupport.update(PREFIX+".updateSynData", mapValue);
+	}
+	
+	public Integer getMaxId(){
+		return daoSupport.findOne(PREFIX+".getMaxId");
 	}
 
 	@Override

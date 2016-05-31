@@ -24,6 +24,15 @@ public interface BranchDataSynDao {
 	public int updateSynRecord(Map<String, Object> mapValue) ;
 	/**
 	 * 
+	 * @Description:更新数据是否上传状态
+	 * @create: 余城序
+	 * @Modification:
+	 * @param mapValue
+	 * @return int
+	 */
+	public int updateSynRecords(Map<String, Object> mapValue) ;
+	/**
+	 * 
 	 * @Description:更新同步数据的记录
 	 * @create: 余城序
 	 * @Modification:
@@ -31,6 +40,8 @@ public interface BranchDataSynDao {
 	 * @return int
 	 */
 	public int updateSynData(Map<String, Object> mapValue);
+	
+	public Integer getMaxId();
 
 	public void transferToHistory();
 	
