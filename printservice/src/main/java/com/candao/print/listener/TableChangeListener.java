@@ -17,7 +17,7 @@ public class TableChangeListener extends AbstractPrintListener{
 	
 	
 	public TableChangeListener() {
-		super("TableChangeListener");
+		super("tableChangeListener");
 	}
 
 	/**

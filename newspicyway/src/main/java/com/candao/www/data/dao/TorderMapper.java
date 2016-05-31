@@ -65,5 +65,11 @@ public interface TorderMapper {
 
 	public String callEndWork(String userName, String isSucess);
 
- 
+	public int updateOrderForMergeTable(Map<String, Object> mapParam);
+	
+	public int deleteByPrimaryKey(String orderId);
+	
+	public void updateVipPrice(String orderId);
+	
+	public int updateMemberno(String orderid, String memberno);
 }

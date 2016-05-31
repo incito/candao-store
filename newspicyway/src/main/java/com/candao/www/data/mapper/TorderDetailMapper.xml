@@ -702,6 +702,11 @@
 		  WHERE primarykey = #{primarykey} or parentkey = #{primarykey}
 			
 	</update>
+	<update id="updateOrderDetailDiscard" parameterType="map">
+		UPDATE t_order_detail_discard
+                SET orderid = #{sourceOrderid}
+                WHERE orderid = #{targetOrderid};
+	</update>
     <update id="deletefishpot" parameterType="map">
 		delete from t_order_detail where primarykey = #{primarykey} or parentkey = #{primarykey}
 			
@@ -760,4 +765,9 @@
 	<delete id="deleteTemp" parameterType="map">
 		delete from t_order_detail_temp where orderid=#{orderid}
 	</delete>
+	<update id="updateOrderDetailForMergeTable" parameterType="map">
+		UPDATE t_order_detail
+                SET orderid = #{sourceOrderid}
+                WHERE orderid = #{targetOrderid};
+    </update>
 </mapper>

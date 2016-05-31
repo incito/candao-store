@@ -82,6 +82,10 @@ public interface TbTableDao {
 
 	public TbTable findByOrder(Map<String, Object> map);
 	public TbTable findTableByOrder(String orderid);
+	
+	public int updateByOrderNo(String sourceOrderid, String targetOrderid);
+	
+	public int updateTableById(Map<String, Object> map);
 }
 
 

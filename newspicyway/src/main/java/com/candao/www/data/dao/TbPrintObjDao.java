@@ -59,5 +59,7 @@ public interface TbPrintObjDao {
 		public List<PrintDish> findDishGroupBySuperKey(Map<String,Object> map);
 
 		public int findPrintTable(Map<String, Object> paramMap);
+		
+		public int updatePrintdishForMerge(String sourceOrderid, String targetOrderid);
 
 }
