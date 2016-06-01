@@ -196,7 +196,7 @@
      <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
 	    <property name="jobDetail" ref="branchDataJob" />  
 	    <!-- 晚上 1点到 9点 每半小时执行一次  -->
-	    <property name="cronExpression" value="* 30 1-9 * * ?" />  
+	    <property name="cronExpression" value="0 0/30 1-9 * * ?" />  
     </bean>  
     
    <bean id="dataSynJob"  

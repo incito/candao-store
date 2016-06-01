@@ -1054,7 +1054,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		  }
 	  }
 	  private void printMutilDish( Map<String, Object> map0,PrintObj printObj,int flag,Map<String,Object> paramsMap){
-		  List<PrintDish> listPrint  = tbPrintObjDao.findDishGroupByParentKey(map0);
+		  List<PrintDish> listPrint  = tbPrintObjDao.findcomboDishByParentKey(map0);
 		  
 		  if(listPrint != null&&listPrint.size()!=0){
 			  for(PrintDish pd : listPrint){
