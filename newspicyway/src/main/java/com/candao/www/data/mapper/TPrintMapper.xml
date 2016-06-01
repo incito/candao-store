@@ -415,6 +415,50 @@
 			 group by parentkey
 	 </select>
 	 
+	 
+	 
+	 <!-- add by wly -->
+	  <select id="findcomboDishByParentKey" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		 select <include refid="BASE_DISH_SELECT"/>
+		 from t_printdish
+		 where printobjid=#{printobjid}
+	     <if test="dishid != null ">
+		  and dishid =#{dishid,jdbcType=VARCHAR}
+		 </if>
+		 <if test="dishUnit != null ">
+		  and dishUnit =#{dishUnit,jdbcType=VARCHAR}
+		</if>
+	    <if test="relatedishid != null ">
+		  and relatedishid =#{relatedishid,jdbcType=VARCHAR}
+		</if>
+	    <if test="dishtype != null ">
+		  and dishtype =#{dishtype,jdbcType=VARCHAR}
+		</if>
+		   <if test="islatecooke != null ">
+		  and islatecooke  =#{islatecooke,jdbcType=INTEGER}
+		</if>
+		 <if test="parentkey != null ">
+		  and parentkey  =#{parentkey,jdbcType=VARCHAR}
+		</if>
+		 <if test="printnum != null ">
+		  and printnum  =#{printnum,jdbcType=INTEGER}
+		</if>
+		 <if test="childdishtype != null ">
+		  and childdishtype  =#{childdishtype,jdbcType=INTEGER}
+		</if>
+		<if test="ismaster != null and ismaster !='0'">
+		  and ismaster  =#{ismaster,jdbcType=INTEGER}
+		</if>
+		 <if test="primarykey != null ">
+		  and primarykey  =#{primarykey,jdbcType=VARCHAR}
+		</if>
+	 </select>
+	 
+	 
+	 
+	 
+	 
+	 
   <select id="findDishExceptNow" parameterType="map" resultType="com.candao.print.entity.PrintDish">
 		select
 		 <include refid="BASE_DISH_SELECT"/>

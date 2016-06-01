@@ -1,5 +1,24 @@
 package com.candao.common.utils;
 
+import net.sf.json.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,23 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-
 /** 
 * http工具类
 * 用来模拟一些http的请求或者处理http相关的对象
@@ -34,8 +36,10 @@ import org.apache.http.util.EntityUtils;
 * @date 2015/05/08
 */ 
 public final class HttpUtils { 
-	private static Log log = LogFactory.getLog(HttpUtils.class); 
-	
+	private static Log log = LogFactory.getLog(HttpUtils.class);
+	private static final CloseableHttpClient client = HttpClients.createDefault();
+	private static final RequestConfig config = RequestConfig.custom().setSocketTimeout(300000).setConnectTimeout(5000).build();
+
 	/** 
 	 * 执行一个HTTP GET请求，返回请求响应的HTML 
 	 * 
@@ -52,11 +56,12 @@ public final class HttpUtils {
 		//HttpGet httpRequst = new HttpGet(URI uri);
 		//HttpGet httpRequst = new HttpGet(String uri);
 		HttpGet httpRequst = new HttpGet(uriAPI);
+		httpRequst.setConfig(config);
 	
 		try {
 			//使用DefaultHttpClient类的execute方法发送HTTP GET请求，并返回HttpResponse对象。
 			//new DefaultHttpClient().execute(HttpUriRequst requst);
-			HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequst);//其中HttpGet是HttpUriRequst的子类
+			HttpResponse httpResponse = client.execute(httpRequst);//其中HttpGet是HttpUriRequst的子类
 		    if(httpResponse.getStatusLine().getStatusCode() == 200)
 		    {
 		    	HttpEntity httpEntity = httpResponse.getEntity();

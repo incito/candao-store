@@ -79,14 +79,20 @@ public class EmployeeUserDaoImpl implements EmployeeUserDao{
 	}
 
 	@Override
-	public List<EmployeeUser> getEmployeeUserByRoles4Store(List<Role> roles,
-			String branchId) {
-		Map<String ,Object > param= new HashMap();
-		param.put("branchId", branchId);
-		param.put("roles", roles);
-		return this.dao.find(PREFIX+".getEmployeeUserByRoles4Store", param);
+	public List<EmployeeUser> getEmployeeUserByRoles4Store(List<Role> roles,String branchId) {
+		return getEmployeeUserByRoles4Store(roles,branchId,null);
 	}
 
+	@Override
+	public List<EmployeeUser> getEmployeeUserByRoles4Store(List<Role> roles, String branchId, String jobnumber) {
+		Map<String ,Object > param= new HashMap<>();
+		param.put("branchId", branchId);
+		param.put("roles", roles);
+		param.put("jobNumber", jobnumber);
+		return this.dao.find(PREFIX+".getEmployeeUserByRoles4Store", param);
+	}
+	
+	
 	@Override
 	public List<EmployeeUser> getEmployeeUser4Store(String branchId) {
 		Map<String ,String > params=new HashMap();

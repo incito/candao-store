@@ -234,9 +234,23 @@
 	#{item.areaid} 
 	</foreach>
 	</update>
+	
 	<select id="findTableCountAndAreaname"  resultMap="findResultMap">
-		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' FROM  t_tablearea tt LEFT JOIN 
-		`t_table` t on t.areaid=tt.areaid where  tt.status =1 and (t.`status` is null or t.`status`!=5)
-		GROUP BY tt.areaid order by tt.areaSort asc
+		SELECT
+			tt.areaid,
+			tt.areaname,
+			count(t.tableid) 'tableCount'
+		FROM
+			t_tablearea tt
+		LEFT JOIN 
+			t_table t ON t.areaid = tt.areaid
+		AND 
+			t.`status` != 5
+		WHERE
+			tt.`status` = 1
+		GROUP BY
+			tt.areaid
+		ORDER BY
+			tt.areaSort ASC
  	</select>
 </mapper> 

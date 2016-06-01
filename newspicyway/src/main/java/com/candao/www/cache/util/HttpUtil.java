@@ -27,7 +27,6 @@ import java.util.zip.GZIPInputStream;
 public class HttpUtil {
  
     private static int connectTimeout = 3000;// 连接超时值 ,单位:毫秒
-    private static int readTimeout = 18000000;// 获取结果超时时间5分钟，单位:毫秒
 
     /**
      *  以GET的方式请求一个http资源,并将结果以字符串的方式返回
@@ -43,7 +42,6 @@ public class HttpUtil {
         URLConnection conn = u.openConnection();
         conn.connect();
         conn.setConnectTimeout(connectTimeout);// 设置链接超时时间
-        conn.setReadTimeout(readTimeout);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(),charset));
         String line;

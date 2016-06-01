@@ -39,14 +39,29 @@ public class SyncController {
     String url = PropertiesUtils.getValue("cloud.url") + "/sync/dish";
     String queryString = "tenantId=" + PropertiesUtils.getValue("tenant_id") + "&branchId=" + PropertiesUtils.getValue("current_branch_id") + "&type=" + type;
     String result = HttpUtils.doGet(url, queryString);
-    Map<String, Object> map = JacksonJsonMapper.jsonToObject(result, Map.class);
+    Map<String, Object> map = null;
+
+    if ("Read timed out".equalsIgnoreCase(result)) {
+      resp.put("statusCode", "500");
+      resp.put("data", "从总店获取数据超时");
+      return resp;
+    }
+
     try {
-      syncservice.saveDish((String)map.get("sql"), (List) map.get("tableNames"));
+      map = JacksonJsonMapper.jsonToObject(result, Map.class);
+    } catch (Exception e) {
+      resp.put("statusCode", "500");
+      resp.put("data", "从总店获取数据失败\n" + result);
+      return resp;
+    }
+
+    try {
+      syncservice.saveDish((String) map.get("sql"), (List) map.get("tableNames"));
       resp.put("statusCode", "200");
     } catch (Exception e) {
       e.printStackTrace();
       resp.put("statusCode", "500");
-      resp.put("data", e.getMessage());
+      resp.put("data", "保存数据失败\n" + e.getMessage());
     }
     return resp;
   }

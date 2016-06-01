@@ -176,6 +176,7 @@
 				)
 		)	AS newtpa 
 		<where>
+			newtpa.`status` != 1
 			<if test="id != null">
 				AND newtpa.id = #{id}
 			</if>

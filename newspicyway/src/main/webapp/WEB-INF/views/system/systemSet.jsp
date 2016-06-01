@@ -970,6 +970,7 @@
 		$.ajax({
 			url: '<%=request.getContextPath()%>/sync/synDataFromCloud?type=' + pullType[step] + '&v=' + new Date(),
 			type: 'GET',
+			cache: false,
 			success: function (resp) {
 				if(resp && resp.statusCode == 200) {
 					if(step < 3) {
