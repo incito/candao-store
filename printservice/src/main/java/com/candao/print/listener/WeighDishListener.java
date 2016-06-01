@@ -1,10 +1,7 @@
 package com.candao.print.listener;
 
-//import groovy.transform.Synchronized;
-
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -14,18 +11,19 @@ import javax.jms.Destination;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
-import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.PrinterService;
 
 @Service
-public class WeighDishListener {
+public class WeighDishListener extends AbstractPrintListener{
+
+	public WeighDishListener() {
+		super("weightDishListener");
+	}
 
 	/**
 	 * 
@@ -33,7 +31,6 @@ public class WeighDishListener {
 	 * @return
 	 */
 	public String receiveMessage(String message) {
-
 		return null;
 	}
 
@@ -41,40 +38,14 @@ public class WeighDishListener {
 		return destination;
 	}
 
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
-
-	public String receiveMessage(PrintObj object) {
+	@Override
+	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer) throws Exception {
 		System.out.println("WeighDishListener receive message");
 
-		OutputStream socketOut = null;
-		OutputStreamWriter writer = null;
-		Socket socket = null;
-		String ipAddress = null;
-		int print_port;
-//		int printType = object.getPrintType();
-//		int printWay = object.getPrintway();
-		String billName = "";
+		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();
-
-		// synchronized (printDishList) {
-
-		try {
-
-			ipAddress = object.getCustomerPrinterIp();
-			billName = object.getBillName();
-			print_port = Integer.parseInt(object.getCustomerPrinterPort());// Integer.parseInt(address[1]);
-
-			
-			socket = new Socket(ipAddress, print_port);
-//			socket = new Socket("192.168.40.138", 9100);
-			socketOut = socket.getOutputStream();
-			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
-			socketOut.write(27);
-			socketOut.write(27);
-			writer.flush();//
-			socketOut.write(PrinterConstant.getFdDoubleFont());
+		
+		socketOut.write(PrinterConstant.getFdDoubleFont());
 
 			// 单号
 			writer.write("　　　　" + StringUtils.bSubstring2(billName, 6)
@@ -161,29 +132,17 @@ public class WeighDishListener {
 					+ "\r\n");
 
 			writer.write("------------------------------------------\r\n");
+//		writer.flush();//  
+//		socketOut.write(PrinterConstant.getFdDoubleFont());
+//		writer.write(special + "\r\n");
+	}
+	
+	public void setDestination(Destination destination) {
+		this.destination = destination;
+	}
 
-			// 下面指令为打印完成后自动走纸
-			writer.write(27);
-			writer.write(100);
-			writer.write(4);
-			writer.write(10);
-			writer.flush();// 
-			socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
-			writer.close();
-			socketOut.close();
-			socket.close();
-
-		} catch (Exception e) {
-			//查询object下的打印机ip与端口是否存在，如果数据库中存在，表示打印机故障，重新加入队列等待打印机修复
-			int result=printerService.queryPrintIsExsit(object.getCustomerPrinterIp(),object.getCustomerPrinterPort());
-			if(result>0){
-				//该数据存在，重新加入队列等待打印机修复
-				jmsTemplate.convertAndSend(destination, object);
-			}
-			//不存在则表示垃圾数据直接清除
-		} finally {
-
-		}
+	public String receiveMessage(PrintObj object) {
+		printForm(object);
 		return null;
 	}
 	
@@ -211,13 +170,9 @@ public class WeighDishListener {
 
 		return res;
 	}
-
-	@Autowired
-	private JmsTemplate jmsTemplate;
 	@Autowired
 	@Qualifier("weightQueue")
 	private Destination destination;
-	@Autowired
-	PrinterService    printerService;
+
 }
 

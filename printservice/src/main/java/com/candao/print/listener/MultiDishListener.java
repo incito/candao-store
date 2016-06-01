@@ -4,7 +4,6 @@ package com.candao.print.listener;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,28 +15,26 @@ import javax.jms.Destination;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
-import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.service.PrinterService;
-import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
-public class MultiDishListener {
+public class MultiDishListener extends AbstractPrintListener {
 
-	/**
-	 * 
-	 * @param message
-	 * @return
-	 */
-	public String receiveMessage(String message) {
-
-		return null;
+	@Autowired
+	@Qualifier("multiDishQueue")
+	private Destination destination;
+	
+	@Autowired
+	PrinterService    printerService;
+	
+	public MultiDishListener() {
+		super("multiDishListener");
 	}
 
 	public Destination getDestination() {
@@ -51,31 +48,16 @@ public class MultiDishListener {
 	public String receiveMessage(PrintObj object) {
 		System.out.println("MultiDishListener receive message");
 
-		OutputStream socketOut = null;
-		OutputStreamWriter writer = null;
-		Socket socket = null;
-		String ipAddress = null;
-		int print_port;
-//		int printType = object.getPrintType();
-//		int printWay = object.getPrintway();
-		String billName = "";
+		printForm(object);
+		return null;
+	}
+	
+	@Override
+	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer)
+			throws Exception {
+		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();
 
-		// synchronized (printDishList) {
-
-		try {
-
-			ipAddress = object.getCustomerPrinterIp();
-			billName = object.getBillName();
-			print_port = Integer.parseInt(object.getCustomerPrinterPort());// Integer.parseInt(address[1]);
-
-			
-			socket = new Socket(ipAddress, print_port);
-			socketOut = socket.getOutputStream();
-			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
-			socketOut.write(27);
-			socketOut.write(27);
-			writer.flush();//
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 
 			// 单号
@@ -231,35 +213,7 @@ public class MultiDishListener {
 					writer.write( specialLineFeed[j] + "\r\n");		
 				}				
 			}
-
-			writer.flush();
-			socketOut.write(PrinterConstant.getClear_font());
-			// 下面指令为打印完成后自动走纸
-			writer.write(27);
-			writer.write(100);
-			writer.write(4);
-			writer.write(10);
-			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
-			socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
-			writer.close();
-			socketOut.close();
-			socket.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			//查询object下的打印机ip与端口是否存在，如果数据库中存在，表示打印机故障，重新加入队列等待打印机修复
-			int result=printerService.queryPrintIsExsit(object.getCustomerPrinterIp(),object.getCustomerPrinterPort());
-			if(result>0){
-				//该数据存在，重新加入队列等待打印机修复
-				jmsTemplate.convertAndSend(destination, object);
-			}
-			//不存在则表示垃圾数据直接清除
-		} finally {
-
 		}
-		return null;
-	}
-	
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
 		Object[] res = null;
 		
@@ -281,15 +235,5 @@ public class MultiDishListener {
 
 		return res;
 	}
-
-	@Autowired
-	private JmsTemplate jmsTemplate;
-	@Autowired
-	@Qualifier("multiDishQueue")
-	private Destination destination;
-	@Autowired
-	NormalDishPrintService normalDishPrintService;
-	@Autowired
-	PrinterService    printerService;
 
 }

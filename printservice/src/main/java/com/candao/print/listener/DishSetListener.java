@@ -2,7 +2,6 @@ package com.candao.print.listener;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -13,22 +12,27 @@ import javax.jms.Destination;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 
-import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.impl.NormalDishPrintService;
 
 /**
  *套餐小票（传菜员使用）监听类 
  * @author caicai
  *
  */
-public class DishSetListener {
+public class DishSetListener extends AbstractPrintListener {
 
+	@Autowired
+	@Qualifier("dishSetQueue")
+	private Destination destination;
+
+	public DishSetListener() {
+		super("dishSetListener");
+	}
+	
 	/**
 	 * 
 	 * @param message
@@ -46,28 +50,12 @@ public class DishSetListener {
 		this.destination = destination;
 	}
 
-	public String receiveMessage(PrintObj object) {
-		System.out.println("DishSetListener receive message");
-
-		OutputStream socketOut = null;
-		OutputStreamWriter writer = null;
-		Socket socket = null;
-		String ipAddress = null;
-		int print_port;
-
-		String billName = "";
+	@Override
+	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer)
+			throws Exception {
+		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();
-		try {
-			billName = object.getBillName();
-			ipAddress = object.getCustomerPrinterIp();
-			print_port = Integer.parseInt(object.getCustomerPrinterPort());
-
-			socket = new Socket(ipAddress, print_port);
-			socketOut = socket.getOutputStream();
-			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
-			socketOut.write(27);
-			socketOut.write(27);
-			writer.flush();// 
+		
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 			
 			// 单号
@@ -210,7 +198,7 @@ public class DishSetListener {
 				if (special != null && !"".equals(special))
 					special = "备注：" + special;
 			}
-			
+		
 			//忌口信息
 			String[] specialName = {special};
 			Integer[] specialLength = {38};
@@ -218,28 +206,12 @@ public class DishSetListener {
 			for (int j = 0; j < specialLineFeed.length; j++) {
 				writer.write( specialLineFeed[j] + "\r\n");		
 			}
-			
-			writer.flush();
-			socketOut.write(PrinterConstant.getClear_font());
-			
-			writer.write(27);// 重置
-			writer.write(100);
-			writer.write(4);
-			writer.write(10);// 换行
-			writer.flush();//  
-			socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
-			writer.close();
-			socketOut.close();
-			socket.close();
-		} catch (Exception e) {
-			jmsTemplate.convertAndSend(destination, object);
-		} finally {
-
 		}
+	@Override
+	public String receiveMessage(PrintObj object) {
+		printForm(object);
 		return null;
-
 	}
-	
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
 		Object[] res = null;
 		
@@ -261,13 +233,4 @@ public class DishSetListener {
 
 		return res;
 	}
-
-	@Autowired
-	private JmsTemplate jmsTemplate;
-	@Autowired
-	@Qualifier("dishSetQueue")
-	private Destination destination;
-	@Autowired
-	NormalDishPrintService normalDishPrintService;
-	
 }

@@ -252,6 +252,7 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		boolean flag = false;
 		int truelength = 0;
 		if (src != null && !"".equals(src)) {
+			//计算真实长度
 			for (int i = 0; i < src.length(); i++) {
 				char c = src.charAt(i);
 				if ((c & 0xff00) != 0) {
@@ -260,11 +261,16 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 					truelength += 1;
 				}
 				if (truelength >= num) {
+					//num+1说明结尾是中文字符
 					if (truelength == num + 1) {
-						truelength = i == 0 ? 0 : i;
+						//truelength此时标记换行点在src中的位置
+						truelength = i;
 						flag = true;
 					} else {
-						truelength = i == src.length() - 1 ? truelength : i + 1;
+						//判断是否已经遍历到src末尾
+						//如果是，说明不用换行，truelength标识真实长度
+						//如果否，truelength标识换行位置
+						truelength = (i == src.length() - 1) ? truelength : i + 1;
 					}
 					break;
 				}
@@ -272,12 +278,14 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		} else {
 			return res;
 		}
-
+		//1 如果不用换行，truelength代表真实长度，大于等于src长度
+		//2 如果换行 truelength代表换行位置，小于src长度
 		if (truelength != 0 && truelength < src.length()) {
 			str = src.substring(0, truelength);
 			if (flag)
 				str = str.concat(" ");
 			res.add(str);
+			//递归处理剩余字符串
 			res = subString3(src.substring(truelength), num, res);
 		} else {
 			str = src;
@@ -347,7 +355,8 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		for (int i = 0; i < max; i++) {
 			buffer.setLength(0);
 			for (int j = 0; j < dst.size(); j++) {
-				String text = (i + 1 > dst.get(j).size() ? StringUtils.getStr(length[j].intValue()) : dst.get(j).get(i));
+				List<String> strBuffer = dst.get(j);
+				String text = (i + 1 > strBuffer.size() ? StringUtils.getStr(length[j].intValue()) : strBuffer.get(i));
 				buffer.append(text).append(" ");
 			}
 			res[i] = buffer.toString();

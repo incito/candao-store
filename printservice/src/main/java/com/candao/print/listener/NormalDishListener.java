@@ -2,7 +2,6 @@ package com.candao.print.listener;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,29 +13,26 @@ import javax.jms.Destination;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.log.LoggerFactory;
 import com.candao.common.log.LoggerHelper;
-import com.candao.common.utils.Constant;
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.impl.NormalDishPrintService;
 
 @Service
-public class NormalDishListener {
+public class NormalDishListener extends AbstractPrintListener {
+	
 	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
-	/**
-	 * 
-	 * @param message
-	 * @return
-	 */
-	public String receiveMessage(String message) {
 
-		return null;
+	@Autowired
+	@Qualifier("normalDishQueue")
+	private Destination destination;
+	
+	public NormalDishListener() {
+		super("normalDishListener");
 	}
 
 	public Destination getDestination() {
@@ -49,28 +45,17 @@ public class NormalDishListener {
 
 	public String receiveMessage(PrintObj object) {
 		System.out.println("NormalDishListener receive message");
-		OutputStream socketOut = null;
-		OutputStreamWriter writer = null;
-		Socket socket = null;
-		String ipAddress = null;
-		int print_port;
-//		int printType = object.getPrintType();
-		String billName = "";
-//		List<PrintDish> printDishList = object.getList();
-//		PrintDish printDish=object.getpDish();
 		
+		printForm(object);
 		
-		try {
-			ipAddress = object.getCustomerPrinterIp();
-			billName = object.getBillName();
-			print_port = Integer.parseInt(object.getCustomerPrinterPort());// Integer.parseInt(address[1]);
+		return null;
 
-			socket = new Socket(ipAddress, print_port);
-			socketOut = socket.getOutputStream();
-			writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
-			socketOut.write(27);
-			socketOut.write(27);
-			
+	}
+
+	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer) throws Exception
+	 {
+
+		String billName = object.getBillName();
 			PrintDish printDish = object.getpDish().get(0);//TODO 临时处理
 			writer.flush();//
 			socketOut.write(PrinterConstant.getFdDoubleFont());
@@ -287,34 +272,7 @@ public class NormalDishListener {
 					}									
 				}
 			}
-
-			writer.flush();
-			socketOut.write(PrinterConstant.getClear_font());
-			// 下面指令为打印完成后自动走纸
-			writer.write(27);
-			writer.write(100);
-			writer.write(4);
-			writer.write(10);
-			writer.flush();// 
-			socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
-			writer.close();
-			socketOut.close();
-			socket.close();
-			logger.error("-----------------------------", "");
-			logger.error("打印完成，订单号：" + object.getOrderNo(), "");
-
-		} catch (Exception e) {
-			logger.error("------------------------","");
-			logger.error("打印异常，订单号："+object.getOrderNo()+e.getMessage(), e, "");
-			
-			jmsTemplate.convertAndSend(destination, object);
-		} finally {
-
 		}
-		return null;
-		// }
-
-	}
 	
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
 		Object[] res = null;
@@ -343,13 +301,5 @@ public class NormalDishListener {
 
 		return res;
 	}
-
-	@Autowired
-	private JmsTemplate jmsTemplate;
-	@Autowired
-	@Qualifier("normalDishQueue")
-	private Destination destination;
-	@Autowired
-	NormalDishPrintService normalDishPrintService;
 
 }
