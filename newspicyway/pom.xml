@@ -84,7 +84,7 @@
 				<configuration>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
 					<webAppConfig>
-						<jettyEnvXml>/newspicyway/config/jetty-env.xml</jettyEnvXml>
+						<!--<jettyEnvXml>/newspicyway/config/jetty-env.xml</jettyEnvXml>-->
 						<contextPath>/newspicyway </contextPath>
 					</webAppConfig>
 				</configuration>
