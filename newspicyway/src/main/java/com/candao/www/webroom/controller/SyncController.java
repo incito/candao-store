@@ -36,7 +36,7 @@ public class SyncController {
   @ResponseBody
   public Map<String, Object> synDataFromCloud(String type) {
     Map<String, Object> resp = new HashMap<>();
-    String url = PropertiesUtils.getValue("cloud.url") + "/sync/dish";
+    String url = "http://" + PropertiesUtils.getValue("cloud.host") + "/" + PropertiesUtils.getValue("cloud.webroot") + "/sync/dish";
     String queryString = "tenantId=" + PropertiesUtils.getValue("tenant_id") + "&branchId=" + PropertiesUtils.getValue("current_branch_id") + "&type=" + type;
     String result = HttpUtils.doGet(url, queryString);
     Map<String, Object> map = null;
