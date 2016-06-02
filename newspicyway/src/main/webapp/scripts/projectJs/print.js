@@ -847,6 +847,17 @@ function editPrintBox(e){
 				});
 				showAllSelectStoreDivGroup();
 			}
+			
+			$("#printArea-add-dialog input[type='checkbox']").each(function(){
+				var me = $(this);
+				if(me.prop("checked") === true) {
+					me.prop({"checked":false})
+				}
+			});
+			$.each(findTableids, function(key,obj) {
+				$("#table_"+obj).click();
+			});
+			
 			if(!jQuery.isEmptyObject(findTableids)){
 //				$("#print-area-add").html(getAreaslistTag.join(","));
 				$("#print-area-add").text("已选中"+findTableids.length + "个餐台");
