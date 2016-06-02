@@ -400,7 +400,7 @@ INSERT INTO t_b_url(id, name, url, type, description, createtime, creator) VALUE
 INSERT INTO t_b_url(id, name, url, type, description, createtime, creator) VALUES ('f92d606d-ff25-48d2-ad1c-1e02d10ffaa3', '登陆分店', '/login/shopLogin', NULL, NULL, '2015-06-09 16:30:55', NULL);
 
 
-INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('0828b45c-6c25-412d-9748-3087b07c2272', '2', NULL, NULL, 1, 'ACCURACY', '零头精确度', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('0828b45c-6c25-412d-9748-3087b07c2272', '1', NULL, NULL, 1, 'ACCURACY', '零头精确度', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('1', '0', '123', 1, 1, 'PASSWORD', '通用密码', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('10', '2', '已被模板选择', 3, 1, 'DISHSTATUS', '菜品状态', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES ('100', '1', '应收金额', 1, 1, 'Statistics', '应收金额', '2015-06-08 00:00:00', '2015-06-08 00:00:00', '', '', '', '', NULL);
