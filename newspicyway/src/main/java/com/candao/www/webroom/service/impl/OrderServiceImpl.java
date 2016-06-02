@@ -781,5 +781,323 @@ public class OrderServiceImpl implements OrderService{
 		torderMapper.setOrderMember(params);
 	}
  
-	   
+	@Override
+	public String updateOrderwaiter(Torder  tOrder){
+		
+		//开台前清空当前台的操作日记
+		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());		
+		Torder  order = new Torder();
+		order.setOrderid(tOrder.getOrderNo());
+		order.setChildNum(tOrder.getChildNum());
+		order.setCustnum(tOrder.getCustnum());
+		order.setManNum(tOrder.getManNum());
+		order.setUserid(tOrder.getUsername());
+		order.setWomanNum(tOrder.getWomanNum());
+		order.setAgeperiod(tOrder.getAgeperiod());
+		
+	    User tbUser =  userService.findMaxOrderNum();
+	    userService.updateUserOrderNum(tOrder.getUsername(),tbUser.getOrderNum());
+	    
+		int result = torderMapper.update(order);
+		if(result > 0 ){
+			return Constant.SUCCESSMSG;
+		} 
+		
+		return Constant.FAILUREMSG;
+	}
+	
+	/**
+	 * 服务员pad开台
+	 */
+	@Override
+	public String startOrderwaiter(Torder  tOrder){
+		
+		Map<String, String> mapRet = new HashMap<String, String>();
+		
+		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+		if(tbOpenBizLog == null){
+			mapRet.put("result", "3");
+			return JacksonJsonMapper.objectToJson(mapRet); 
+		}
+		
+	 synchronized(this){
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("tableNo", tOrder.getTableNo());
+//		map.put("status", "0");
+		List<Map<String, Object>> resultMap = tableService.find(map);
+		
+		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
+			mapRet.put("result", "2");
+			return JacksonJsonMapper.objectToJson(mapRet); 
+		}
+		if(! "0".equals(String.valueOf(resultMap.get(0).get("status")))){
+			mapRet.put("result", "1");
+			return JacksonJsonMapper.objectToJson(mapRet); 
+		}
+		//1.预定桌子
+		
+//		boolean bTable = tableService.updateStatus(tTable);
+//		if(!bTable){
+//			mapRet.put("result", "1");
+//			return JacksonJsonMapper.objectToJson(mapRet); 
+//		}
+		
+		//2.生成订单号码 正在下单
+//		String orderId = IdentifierUtils.getId().generate().toString();
+		String tableId = String.valueOf(resultMap.get(0).get("tableid"));
+		
+        int shiftid = 0;
+		
+		String currentTime = DateUtils.getCurrentTime();
+		
+		List<Map<String, Object>> listDict = dictionaryDao.getDatasByType("BIZPERIODDATE");
+		if(listDict == null || listDict.size() == 0 ){
+			shiftid = 0;
+		}else{
+			for(Map<String, Object> mapWorkDay: listDict){
+				
+				if( mapWorkDay.get("itemid") == null){
+					continue;
+				}
+				String itemId = (String)mapWorkDay.get("itemid");
+				String data_type = (String)mapWorkDay.get("datetype");
+				String begin_time = (String)mapWorkDay.get("begintime");
+				String end_time = (String)mapWorkDay.get("endtime");
+				
+				currentTime = currentTime.replaceAll(":", "");
+				begin_time = begin_time.replaceAll(":", "");
+				end_time = end_time.replaceAll(":", "");
+				
+				//0 午市
+				if("0".equals(itemId)){
+					//T today N next day
+					if("T".equalsIgnoreCase(data_type)){
+						
+						if(currentTime.compareTo(begin_time) >0 && currentTime.compareTo(end_time) <= 0){
+							shiftid = 0;
+						}else if(currentTime.compareTo(begin_time) >0 && currentTime.compareTo(end_time) >= 0){
+							shiftid = 1;
+						}
+					}else if("N".equalsIgnoreCase(data_type)){
+						if(currentTime.compareTo(begin_time) >0 && currentTime.compareTo(end_time) <= 0){
+							shiftid = 0;
+						}else{
+							if(currentTime.compareTo(begin_time) <0 && currentTime.compareTo(end_time) <= 0){
+								shiftid = 0;
+							}else{
+								shiftid = 1;
+							}
+						}
+					}
+				}else if("1".equals(itemId)){
+					// 1 晚市
+					//T today N next day
+					if("T".equalsIgnoreCase(data_type)){
+						
+						if(currentTime.compareTo(begin_time) >0 && currentTime.compareTo(end_time) <= 0){
+							shiftid = 1;
+						}else {
+							shiftid = 0;
+						}
+					}else if("N".equalsIgnoreCase(data_type)){
+						if(currentTime.compareTo(begin_time) >0 && currentTime.compareTo(end_time) <= 0){
+							shiftid = 1;
+						}else{
+							if(currentTime.compareTo(begin_time) >0 && currentTime.compareTo(end_time) >= 0){
+								shiftid = 1;
+							}else{
+								shiftid = 0;
+							}
+						}
+					}
+				}
+			}
+
+		}
+		
+		String orderId = torderMapper.getPrimaryKey();
+		String orderIdDate = "H"+DateUtils.toOrderIdString(new Date());
+		Torder toder = torderMapper.getMaxOrderNum(orderIdDate);
+		//使用了最大客户数返回的最大订单数
+		int maxOrderNum = toder.getCustnum();
+		Torder  order = new Torder();
+		order.setTableids(tableId);
+		order.setOrderid(orderId);
+		order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
+		order.setChildNum(tOrder.getChildNum());
+		order.setCurrenttableid(tableId);
+		order.setCustnum(tOrder.getCustnum());
+		order.setManNum(tOrder.getManNum());
+		order.setSpecialrequied(tOrder.getSpecialrequied());
+		order.setUserid(tOrder.getUsername());
+		order.setWomanNum(tOrder.getWomanNum());
+		order.setBranchid(Integer.valueOf(PropertiesUtils.getValue("current_branch_id")));
+		//根据数据字典配置 得出早市还是晚市
+		order.setShiftid(shiftid);
+		order.setAgeperiod(tOrder.getAgeperiod());
+		order.setMeid(tOrder.getMeid());
+		order.setOrderNum(maxOrderNum);
+		order.setCustnum(tOrder.getCustnum());
+		torderMapper.insert(order);
+		
+	
+		TbTable tTable = new TbTable();
+		tTable.setTableid(tableId);
+		tTable.setOrderid(orderId);
+		
+		tTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
+		tableService.updateStatus(tTable);
+		
+		//设定用户排序数量限定
+//	    String user_order_num = PropertiesUtils.getValue("user_order_num");
+////	    int orderNum = 0;
+//	    if(user_order_num != null){
+//	    	orderNum = Integer.parseInt(user_order_num);
+//	    }
+	    //查询当前t_user 表最大的排序数目
+	    //select max(ordernum) from t_user
+//	    TbUser tbUser = userService.findById(tOrder.getUsername());
+		
+	    User tbUser =  userService.findMaxOrderNum();
+
+	    userService.updateUserOrderNum(tOrder.getUsername(),tbUser.getOrderNum());
+	    
+//	    if(tbUser != null && (tbUser.getOrderNum() == 0 || tbUser.getOrderNum() < orderNum)){
+////	    	 if( tbUser.getOrdernum() < orderNum){
+//		    	userService.updateUserOrderNum(tOrder.getUsername(),tbUser.getOrderNum());
+////	    	 }
+//	    }
+
+		TbDataDictionary dd =datadictionaryService.findById("backpsd");
+		TbDataDictionary vipaddress =datadictionaryService.findById("vipaddress");
+		TbDataDictionary locktime =datadictionaryService.findById("locktime");
+		TbDataDictionary delaytime =datadictionaryService.findById("delaytime");
+		
+		mapRet.put("result", "0");
+		mapRet.put("orderid", orderId);
+		mapRet.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
+		
+		mapRet.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
+		mapRet.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
+		mapRet.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
+		//添加日志
+//		Tworklog tworklog = new Tworklog();
+//		tworklog.setWorkid(UUID.randomUUID().toString());
+//		List<Map<String, Object>> list = datadictionaryService.getDatasByType("WORKTYPE");
+//		for(int i=0;i<list.size();i++){
+//			if(list.get(i).get("itemDesc").equals("开桌")){
+//				tworklog.setWorktype(list.get(i).get("itemid").toString());
+//			};
+//		}
+//		tworklog.setUserid(tOrder.getUsername());
+//		tworklog.setBegintime(new Date());
+//		tworklog.setEndtime(new Date());
+//		tworklog.setIpaddress("127.0.0.1");
+//		tworklog.setStatus(1);
+//		tworklog.setTableid(tOrder.getTableNo());
+//		workLogService.saveLog(tworklog);
+		
+		//开台前清空当前台的操作日记
+		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());		
+	 }
+		return JacksonJsonMapper.objectToJson(mapRet); 
+	}
+	/**
+	 * 服务员pad换台
+	 */
+	@Override
+	public Map<String, Object> switchPadOrderInfowaiter(Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		Map<String, Object> mapRet = new HashMap<String, Object>();
+		List<Map<String, Object>> resultMap = tableService.find(params);
+		if(resultMap !=null &&resultMap.size() > 0 ){
+			String orderid=String.valueOf(resultMap.get(0).get("orderid"));
+			if(orderid!=null&&!"".equals(orderid)){
+				Map<String,Object> orderMap=torderMapper.findOne(orderid);
+				if(orderMap!=null){
+					if("3".equals(String.valueOf(orderMap.get("orderstatus")))){
+						mapRet.put("flag", "3");
+						mapRet.put("desc", "该桌已结账");
+						return mapRet; 
+					}
+					if("0".equals(String.valueOf(orderMap.get("orderstatus")))){
+//						t.mannum,t.childNum,t.womanNum
+						mapRet.put("flag", "1");
+						mapRet.put("desc", "获取数据成功");
+						mapRet.put("currenttableid",params.get("tableNo"));
+						mapRet.put("orderid",orderid);
+						mapRet.put("memberno",orderMap.get("memberno"));
+						mapRet.put("manNum",orderMap.get("manNum"));
+						mapRet.put("womanNum",orderMap.get("womanNum"));
+						mapRet.put("custnum",orderMap.get("custnum"));
+						mapRet.put("waiterNum",orderMap.get("userid"));
+						mapRet.put("ageperiod",orderMap.get("ageperiod"));
+						mapRet.put("begintime",orderMap.get("begintime"));
+						Map<String,Object> mappa=new HashMap<String,Object>();
+						mappa.put("orderid", orderid);
+						TbDataDictionary dd =datadictionaryService.findById("backpsd");
+						TbDataDictionary vipaddress =datadictionaryService.findById("vipaddress");
+						TbDataDictionary locktime =datadictionaryService.findById("locktime");
+						TbDataDictionary delaytime =datadictionaryService.findById("delaytime");
+						mapRet.put("result", "0");
+						mapRet.put("orderid", orderid);
+						mapRet.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
+						mapRet.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
+						mapRet.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
+						mapRet.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
+						mapRet.put("rows", getMapData(orderid));//获取订单数据
+						//xk
+						//当前pad的meid不为空，更新meid
+						if(params.get("meid")!=null){
+							Torder order =new Torder();
+							order.setOrderid(orderid);
+							order.setMeid(String.valueOf(params.get("meid")));
+//							order.setShiftid(Integer.valueOf(String.valueOf(orderMap.get("shiftid"))));
+//							update(order);
+							torderMapper.update(order);
+							
+						}
+						//xk
+						//原订单meid不为空，推送清空
+						
+						/*服务员pad不清台
+						 * if(orderMap.get("meid")!=null&&params.get("meid")!=null&&!String.valueOf(orderMap.get("meid")).equals(String.valueOf(params.get("meid")))){
+							StringBuffer str=new StringBuffer(Constant.TS_URL);
+							String msg=String.valueOf(orderMap.get("meid"))+"|"+params.get("tableNo");
+							str.append(Constant.MessageType.msg_1005+"/"+msg);
+							System.out.println(str.toString());
+							new Thread(new TsThread(str.toString())).run();
+						}*/
+						
+						//删除桌子日志
+						toperationLogService.deleteToperationLogByTableNo(String.valueOf(params.get("tableNo")));	
+						
+						return mapRet;
+					}
+					mapRet.put("flag", "4");
+					mapRet.put("desc", "订单为空");
+					return mapRet;
+				}else{
+					mapRet.put("flag", "4");
+					mapRet.put("desc", "订单为空");
+					return mapRet; 
+				}
+				
+			}else{
+				mapRet.put("flag", "2");
+				mapRet.put("desc", "已清机");
+				return mapRet; 
+			}
+			
+		
+			
+		}
+		else{
+			//没找到这个桌号
+			mapRet.put("flag", "0");
+			mapRet.put("desc", "未找到这个桌号");
+			return mapRet; 
+		}
+	}
 }
