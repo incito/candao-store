@@ -306,8 +306,8 @@ public class TableServiceImpl implements TableService {
 				torderDetailMapper.updateOrderDetailForMergeTable(sourceOrderId, targetOrderId);
 				// 更新退菜表的关系
 				torderDetailMapper.updateOrderDetailDiscard(sourceOrderId, targetOrderId);
-				// 更新打印菜品表的关系
-				tbPrintObjDao.updatePrintdishForMerge(sourceOrderId, targetOrderId);
+				//TODO 
+				updatePrintTableRelation(sourceOrder, sourceTable, sourceOrderId, targetOrderId);
 				// 删除订单主表
 				if (torderMapper.deleteByPrimaryKey(targetOrderId) < 1) {
 					logger.error("删除目标餐台账单失败");
@@ -342,6 +342,40 @@ public class TableServiceImpl implements TableService {
 		
 		return JacksonJsonMapper.objectToJson(resultmap);
 
+	}
+	/**
+	 * 更新打印表(t_printobj,t_printdish)的关系
+	 * @param sourceOrder 
+	 * @param sourceTable 
+	 * @param sourceOrderId
+	 * @param targetOrderId
+	 * @throws Exception 
+	 */
+	private void updatePrintTableRelation(Map<String, Object> sourceOrder, Map<String, Object> sourceTable, String sourceOrderId, String targetOrderId) throws Exception {
+		//查询源餐台的打印主表是否有记录
+		Map<String, Object> params = new HashMap<>();
+		params.put("orderno", sourceOrderId);
+		boolean sourceHasDish = tbPrintObjDao.find(params) != null;
+		//查询目标餐台的打印主表是否有记录
+		params.put("orderno", targetOrderId);
+		boolean targetHasDish = tbPrintObjDao.find(params) != null;
+		//原餐台和目标餐台都点过菜
+		if(sourceHasDish && targetHasDish)
+		{
+			tbPrintObjDao.updatePrintdishForMerge(sourceOrderId, targetOrderId);
+		}
+		else if(!sourceHasDish && targetHasDish)
+		{
+			Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("sourceOrderid", sourceOrderId);
+			paramMap.put("targetOrderid", targetOrderId);
+			paramMap.put("tableid", sourceTable.get("tableid"));
+			paramMap.put("tableno", "桌号: " + sourceTable.get("tableNo"));
+			paramMap.put("tableArea", sourceTable.get("areaname"));
+			if(tbPrintObjDao.updateByOrderno(paramMap) < 1){
+				throw new Exception("并台时更新t_printobj表的关系失败");
+			}
+		}
 	}
 	/**
 	 * 更新餐台的订单号
@@ -633,9 +667,9 @@ public class TableServiceImpl implements TableService {
 				@SuppressWarnings("unchecked")
 				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
 				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
-					System.out.println("清空pad推送成功");
+					logger.info("清空pad推送成功:" + str);
 				}else{
-					System.out.println("清空pad推送失败");
+					logger.info("清空pad推送失败:" + str);
 				}
 				} catch (IOException e) {
 					logger.error("-->",e);

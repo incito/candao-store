@@ -61,5 +61,7 @@ public interface TbPrintObjDao {
 		public int findPrintTable(Map<String, Object> paramMap);
 		
 		public int updatePrintdishForMerge(String sourceOrderid, String targetOrderid);
+		
+		public int updateByOrderno(Map<String, Object> paramMap);
 
 }

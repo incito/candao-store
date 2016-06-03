@@ -132,6 +132,10 @@
 
 	</update>
 	
+	<update id="updateByOrderno" parameterType="java.util.Map">
+		update t_printobj set orderno=#{sourceOrderid}, tableno=#{tableno}, tableArea=#{tableArea}, tableid=#{tableid}  where orderno = #{targetOrderid}
+	</update>
+	
 	<update id ="updateDishCall" parameterType = "java.util.Map">
 	    update t_printdish 
 	    set printnum = 1
