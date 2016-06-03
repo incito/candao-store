@@ -31,7 +31,6 @@ public class SyncService {
   private SqlSessionFactory sessionFactory;
 
   public void saveDish(String sql, List<String> tableNames) {
-    System.out.println(sql);
 
     DataSourceTransactionManager transactionManager = (DataSourceTransactionManager) SpringContext.getBean(DataSourceTransactionManager.class);
     DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
@@ -50,6 +49,7 @@ public class SyncService {
         else
           stmt.addBatch("DELETE FROM " + tableName);
       }
+
       String[] sqls = sql.split(";");
       for (String s : sqls) {
         if (StringUtils.hasText(s))
