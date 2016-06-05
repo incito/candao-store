@@ -1333,392 +1333,391 @@ $$
 --
 -- Definition for procedure p_orderdish
 --
-DROP PROCEDURE IF EXISTS p_orderdish$$
-CREATE PROCEDURE p_orderdish(IN i_orderid varchar(50), IN i_printobjid int, INOUT o_result varchar(50))
-  SQL SECURITY INVOKER
-BEGIN
-  
+DROP PROCEDURE IF EXISTS `p_orderdish`$$
+CREATE PROCEDURE `p_orderdish`(IN i_orderid varchar(50), IN i_printobjid int, INOUT o_code varchar(50), INOUT o_msg varchar(300))
+    SQL SECURITY INVOKER
+label_main:
+  BEGIN
 
-  DECLARE flag int;
+    DECLARE flag int;
 
-  
+    DECLARE v_g_printobjid int;
 
-  DECLARE v_g_printobjid int;
+    DECLARE v_r_status varchar(2);
 
-  DECLARE v_r_status varchar(2);
+    DECLARE V_TABLEID varchar(100);
 
-  DECLARE V_TABLEID varchar(100);
+    DECLARE v_order varchar(100);
 
-  DECLARE v_order varchar(100);
+    DECLARE v_printobj_count int;
 
-  DECLARE v_printobj_count int;
+    DECLARE v_printdish_count int;
 
-  DECLARE v_printdish_count int;
+    DECLARE v_tablearea varchar(100) CHARACTER SET utf8;
 
-  DECLARE v_tablearea varchar(100) CHARACTER SET utf8;
+    DECLARE v_orderid varchar(50);
 
-  DECLARE v_orderid varchar(50);
+    DECLARE v_tableno varchar(100) CHARACTER SET utf8;
 
-  DECLARE v_tableno varchar(100) CHARACTER SET utf8;
+    DECLARE v_dishid varchar(50);
 
-  DECLARE v_dishid varchar(50);
+    DECLARE v_dishstatus varchar(50);
 
-  DECLARE v_dishstatus varchar(50);
+    DECLARE v_begintime datetime;
 
-  DECLARE v_begintime datetime;
+    DECLARE v_endtime datetime;
 
-  DECLARE v_endtime datetime;
+    DECLARE v_sperequire varchar(200) CHARACTER SET utf8;
 
-  DECLARE v_sperequire varchar(200) CHARACTER SET utf8;
+    DECLARE v_dishnum varchar(50);
 
-  DECLARE v_dishnum varchar(50);
+    DECLARE v_userName varchar(100) CHARACTER SET utf8;
 
-  DECLARE v_userName varchar(100) CHARACTER SET utf8;
+    DECLARE v_orderprice decimal(10, 2);
 
-  DECLARE v_orderprice decimal(10, 2);
+    DECLARE v_discountrate decimal(10, 2);
 
-  DECLARE v_discountrate decimal(10, 2);
+    DECLARE v_discountamount decimal(10, 2);
 
-  DECLARE v_discountamount decimal(10, 2);
+    DECLARE v_fishcode varchar(50);
 
-  DECLARE v_fishcode varchar(50);
+    DECLARE v_dishtype int(11);
 
-  DECLARE v_dishtype int(11);
+    DECLARE v_status int(11);
 
-  DECLARE v_status int(11);
+    DECLARE v_dishunit varchar(50) CHARACTER SET utf8;
 
-  DECLARE v_dishunit varchar(300) CHARACTER SET utf8;
+    DECLARE v_payamount decimal(10, 2);
 
-  DECLARE v_payamount decimal(10, 2);
+    DECLARE v_predisamount decimal(10, 2);
 
-  DECLARE v_predisamount decimal(10, 2);
+    DECLARE v_couponid varchar(50);
 
-  DECLARE v_couponid varchar(50);
+    DECLARE v_disuserid varchar(50);
 
-  DECLARE v_disuserid varchar(50);
+    DECLARE v_orignalprice decimal(10, 2);
 
-  DECLARE v_orignalprice decimal(10, 2);
+    DECLARE v_pricetype varchar(10);
 
-  DECLARE v_pricetype varchar(10);
+    DECLARE v_printtype varchar(10);
 
-  DECLARE v_printtype varchar(10);
+    DECLARE v_printdishid int;
 
-  DECLARE v_printdishid int;
+    DECLARE v_maxDishCount int;
 
-  DECLARE v_open_date date;
+    DECLARE v_printaddress varchar(100);
 
-  DECLARE v_open_date_str varchar(50);
+    DECLARE v_printport varchar(10);
 
-  DECLARE v_maxDishCount int;
+    DECLARE v_timemsg varchar(30);
 
-  DECLARE v_printaddress varchar(100);
+    DECLARE v_customeraddress varchar(100);
 
-  DECLARE v_printport varchar(10);
+    DECLARE v_customerport varchar(10);
 
-  DECLARE v_timemsg varchar(30);
+    DECLARE v_relatedishid varchar(4000);
 
-  DECLARE v_customeraddress varchar(100);
+    DECLARE v_orderseq integer;
 
-  DECLARE v_customerport varchar(10);
+    DECLARE v_dishname varchar(300) CHARACTER SET utf8;
 
-  DECLARE v_relatedishid varchar(4000);
+    DECLARE v_full_name varchar(30) CHARACTER SET utf8;
 
-  DECLARE v_orderseq integer;
+    DECLARE done int DEFAULT 0;
 
-  DECLARE v_dishname varchar(300) CHARACTER SET utf8;
+    DECLARE tmpFlag int;
 
-  DECLARE v_full_name varchar(30) CHARACTER SET utf8;
+    DECLARE v_printer varchar(100);
 
-  DECLARE done int DEFAULT 0;
+    DECLARE v_ordertype int;
 
-  DECLARE tmpFlag int;
+    DECLARE v_parentkey varchar(255);
 
-  DECLARE v_printer varchar(100);
+    DECLARE v_superkey varchar(255);
 
-  DECLARE v_ordertype  int;  
+    DECLARE v_ismaster int;
 
-  DECLARE v_parentkey varchar(255); 
+    DECLARE v_primarykey varchar(255);
 
-  DECLARE v_superkey varchar(255);
+    DECLARE v_islatecooke int;
 
-  DECLARE v_ismaster int ;
+    DECLARE v_isadddish int;
 
-  DECLARE v_primarykey varchar(255); 
+    DECLARE v_childdishtype int;
 
-  DECLARE v_islatecooke  int ; 
+    DECLARE v_ispot int;
 
-  DECLARE v_isadddish  int;  
+    DECLARE v_dish_count int;
 
-  DECLARE v_childdishtype int; 
+    DECLARE v_menu_dish_count int;
 
-  DECLARE v_ispot  int ; 
+    DECLARE v_branch_id varchar(50);
 
-  DECLARE v_dish_count int;
-   DECLARE v_menu_dish_count int;
+    DECLARE v_order_detail_count int;
 
-  DECLARE v_branch_id varchar(50);
-
-  declare v_order_detail_count int;
-
-declare v_menuid  varchar(50);
+    DECLARE v_menuid varchar(50);
 
     DECLARE autocommit int;
 
-   DECLARE cur_order CURSOR FOR
+    DECLARE cur_order CURSOR FOR
+
+    SELECT
+      orderid,
+      dishid,
+      dishstatus,
+      begintime,
+      endtime,
+      sperequire,
+      dishnum,
+      username,
+      orderprice,
+      discountrate,
+      discountamount,
+      fishcode,
+      dishtype,
+      status,
+      dishunit,
+      payamount,
+      predisamount,
+      couponid,
+      username,
+      orignalprice,
+      pricetype,
+      printtype,
+      relatedishid,
+      ordertype,
+      parentkey,
+      superkey,
+      ismaster,
+      primarykey,
+      islatecooke,
+      isadddish,
+      childdishtype,
+      ispot
+    FROM t_order_detail_temp t
+    WHERE t.orderid = i_orderid FOR UPDATE;
 
-  SELECT
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-    orderid,
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+      ##其他错误 code 3
+      SET o_code = '3';
+      GET DIAGNOSTICS CONDITION 1 o_msg = MESSAGE_TEXT;
+      ##删除临时表
+      DELETE
+        FROM t_order_detail_temp
+      WHERE orderid = i_orderid;
+    END;
 
-    dishid,
+    SELECT
+      COUNT(1) INTO v_order_detail_count
+    FROM t_order_detail
+    WHERE orderid = i_orderid;
 
-    dishstatus,
+    IF v_order_detail_count = 0 THEN
+      SET v_orderseq = 1;
+    ELSE
+      SELECT
+        MAX(orderseq) + 1 INTO v_orderseq
+      FROM t_order_detail
+      WHERE orderid = i_orderid;
+    END IF;
 
-    begintime,
+    SELECT
+      tm.menuid INTO v_menuid
+    FROM t_branch_info tbf,
+         t_menu_branch mb,
+         t_menu tm
+    WHERE tbf.branchid = mb.branchid
+    AND mb.menuid = tm.menuid
+    AND tm.status = '1'
+    ORDER BY tm.effecttime DESC LIMIT 1;
 
-    endtime,
+    IF done = 1 THEN
+      SET o_code = '1';
+      SET o_msg = '菜谱更新中';
 
-    sperequire,
+      ##删除临时表
+      DELETE
+        FROM t_order_detail_temp
+      WHERE orderid = i_orderid;
 
-    dishnum,
+      LEAVE label_main;
+    END IF;
 
-    userName,
+    OPEN cur_order;
 
-    orderprice,
+    REPEAT
 
-    discountrate,
+      FETCH cur_order INTO v_orderid,
 
-    discountamount,
+      v_dishid,
 
-    fishcode,
+      v_dishstatus,
 
-    dishtype,
+      v_begintime,
 
-    status,
+      v_endtime,
 
-    dishunit,
+      v_sperequire,
 
-    payamount,
+      v_dishnum,
 
-    predisamount,
+      v_userName,
 
-    couponid,
+      v_orderprice,
 
-    userName,
+      v_discountrate,
 
-    orignalprice,
+      v_discountamount,
 
-    pricetype,
+      v_fishcode,
 
-    printtype,
+      v_dishtype,
 
-    relatedishid,
+      v_status,
 
-    
-   ordertype,
-   parentkey,
-   superkey,
-   ismaster,
-    primarykey,
-    islatecooke,
-    isadddish ,
-    childdishtype,
-    ispot 
+      v_dishunit,
 
-  FROM t_order_detail_temp t
-  WHERE t.orderid =  i_orderid for update;
+      v_payamount,
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+      v_predisamount,
 
-    select count(1) into v_order_detail_count from t_order_detail where orderid = i_orderid;
-     if v_order_detail_count = 0 THEN
-        set v_orderseq = 1;
-     ELSE
-         select max(orderseq) + 1 into v_orderseq from t_order_detail where orderid = i_orderid;
-     end if ;
+      v_couponid,
 
+      v_disuserid,
 
-  OPEN cur_order;
+      v_orignalprice,
 
-  REPEAT
+      v_pricetype,
 
-    FETCH cur_order INTO v_orderid,
+      v_printtype,
 
-    v_dishid,
+      v_relatedishid,
 
-    v_dishstatus,
+      v_ordertype,
 
-    v_begintime,
+      v_parentkey,
 
-    v_endtime,
+      v_superkey,
 
-    v_sperequire,
+      v_ismaster,
 
-    v_dishnum,
+      v_primarykey,
 
-    v_userName,
+      v_islatecooke,
 
-    v_orderprice,
+      v_isadddish,
 
-    v_discountrate,
+      v_childdishtype,
 
-    v_discountamount,
+      v_ispot;
 
-    v_fishcode,
+      IF done <> 1 THEN
 
-    v_dishtype,
-
-    v_status,
-
-    v_dishunit,
-
-    v_payamount,
-
-    v_predisamount,
-
-    v_couponid,
-
-    v_disuserid,
-
-    v_orignalprice,
-
-    v_pricetype,
-
-    v_printtype,
-
-    v_relatedishid,
-
- 
-   v_ordertype,
-   v_parentkey,
-   v_superkey,
-   v_ismaster,
-   v_primarykey,
-   v_islatecooke,
-   v_isadddish ,
-   v_childdishtype,
-   v_ispot;
-        
-  IF done <> 1 THEN
-
-      IF v_open_date IS NULL THEN
-
-        SELECT
-
-          tol.opendate INTO v_open_date
-
-        FROM t_open_log tol;
-
-      END IF;
-
-
-
-      IF v_open_date_str IS NULL THEN
-
-        SELECT
-
-          SUBSTRING(i_orderid, 1, 9) INTO v_open_date_str;
-
-      END IF;
- 
-
-     
-   
- 
-    INSERT INTO  t_order_detail (orderdetailid,orderid, dishid, dishstatus, begintime, endtime, sperequire, dishnum,
-        userName, orderprice, discountrate, discountamount, fishcode,
+        INSERT INTO t_order_detail (orderdetailid, orderid, dishid, dishstatus, begintime, endtime, sperequire, dishnum,
+        username, orderprice, discountrate, discountamount, fishcode,
         dishtype, status, dishunit, payamount, predisamount,
         couponid, disuserid, orignalprice,
-        pricetype, orderseq,relatedishid,   
+        pricetype, orderseq, relatedishid,
         ordertype,
         parentkey,
         superkey,
         ismaster,
         primarykey,
         islatecooke,
-        isadddish ,
+        isadddish,
         childdishtype,
         ispot)
+          VALUES (UUID(), v_orderid, v_dishid, v_dishstatus, v_begintime, v_endtime, v_sperequire, v_dishnum, v_userName, v_orderprice, v_discountrate, v_discountamount, v_fishcode, v_dishtype, v_status, v_dishunit, v_payamount, v_predisamount, v_couponid, v_disuserid, v_orignalprice, v_pricetype, v_orderseq, v_relatedishid, v_ordertype, v_parentkey, v_superkey, v_ismaster, v_primarykey, v_printtype, v_isadddish, v_childdishtype, v_ispot);
 
-          VALUES (uuid(),v_orderid, v_dishid, v_dishstatus, v_begintime, v_endtime, v_sperequire, v_dishnum, v_userName, v_orderprice, v_discountrate, v_discountamount, v_fishcode, v_dishtype, v_status, v_dishunit, v_payamount, v_predisamount, v_couponid, v_disuserid, v_orignalprice, v_pricetype, v_orderseq,v_relatedishid,
-             v_ordertype,
-             v_parentkey,
-             v_superkey,
-             v_ismaster,
-             v_primarykey,
-             v_printtype,
-             v_isadddish ,
-             v_childdishtype,
-             v_ispot
-          );
- 
+        SELECT
+          tableseqno('printdishid') INTO v_printdishid;
 
-  
-  SELECT  tableseqno('printdishid') INTO v_printdishid;
-   
-   SELECT COUNT(1) INTO v_dish_count 
-    FROM t_dish td
-      WHERE dishid = v_dishid; 
+        SELECT
+          COUNT(1) INTO v_dish_count
+        FROM t_dish td
+        WHERE dishid = v_dishid;
 
-   IF v_dish_count > 0 then
+        IF v_dish_count > 0 THEN
 
-		select tm.menuid into v_menuid
-    from t_branch_info tbf,
-        t_menu_branch mb,
-        t_menu tm 
-		where tbf.branchid = mb.branchid 
-		 and mb.menuid = tm.menuid
-		 and tm.status ='1' order by tm.effecttime desc limit 1;
+          SELECT
+            COUNT(1) INTO v_menu_dish_count
+          FROM t_template_dishunit
+          WHERE menuid = v_menuid
+          AND dishid = v_dishid;
 
-		SELECT COUNT(1) INTO v_menu_dish_count
-      FROM t_template_dishunit
-		 where menuid = v_menuid 
-						and dishid = v_dishid;
-    IF v_menu_dish_count>0 THEN
+          IF v_menu_dish_count > 0 THEN
 
-		select IFNULL(dishname,'') into v_dishname 
-		 from t_template_dishunit
-		 where menuid = v_menuid 
-						and dishid = v_dishid limit 1;
+            SELECT
+              IFNULL(dishname, '') INTO v_dishname
+            FROM t_template_dishunit
+            WHERE menuid = v_menuid
+            AND dishid = v_dishid LIMIT 1;
 
-    
-    
+          ELSE
 
-    else 
-       SELECT
-        td.title INTO v_dishname
-      FROM t_dish td
-      WHERE dishid = v_dishid;
-      END IF;
-    end IF;
-  
-   
+            SELECT
+              td.title INTO v_dishname
+            FROM t_dish td
+            WHERE dishid = v_dishid;
 
-      SELECT      CURRENTTABLEID INTO V_TABLEID
-      FROM t_order T
-      WHERE T.orderid = v_orderid;
+          END IF;
+
+					ELSE 
+						SET o_code = '2';
+						SET o_msg = '菜品更新中';
+
+						##删除临时表
+						DELETE
+							FROM t_order_detail_temp
+						WHERE orderid = i_orderid;
+
+						LEAVE label_main;
+        END IF;
+
+        IF done = 1 THEN
+          SET o_code = '2';
+          SET o_msg = '菜品更新中';
+
+          ##删除临时表
+          DELETE
+            FROM t_order_detail_temp
+          WHERE orderid = i_orderid;
+
+          LEAVE label_main;
+        END IF;
+
+        SELECT
+          currenttableid INTO V_TABLEID
+        FROM t_order T
+        WHERE T.orderid = v_orderid;
 
 
-   
-      SELECT
-        CONCAT('桌号:', ' ', IFNULL(tableno, '')) INTO v_tableno
-      FROM t_tablearea ta,
-           t_table tb
-      WHERE tb.areaid = ta.areaid
-      AND tb.tableid = V_TABLEID;
+        SELECT
+          CONCAT('桌号:', ' ', IFNULL(tableno, '')) INTO v_tableno
+        FROM t_tablearea ta,
+             t_table tb
+        WHERE tb.areaid = ta.areaid
+        AND tb.tableid = V_TABLEID;
 
-   
-     IF v_dishtype IS not NULL AND  v_dishtype = '1'   AND v_parentkey != v_primarykey THEN
-        set v_dishname  = CONCAT('-',v_dishname);
 
-      END IF;
-    
-    IF v_dishtype IS not NULL AND   v_dishtype = '2'  AND v_parentkey != v_primarykey THEN
-        set v_dishname  = CONCAT('-',v_dishname);
-    END IF;
+        IF v_dishtype IS NOT NULL
+          AND v_dishtype = '1'
+          AND v_parentkey != v_primarykey THEN
+          SET v_dishname = CONCAT('-', v_dishname);
 
-    
-     INSERT INTO  t_printdish (printdishid
+        END IF;
+
+        IF v_dishtype IS NOT NULL
+          AND v_dishtype = '2'
+          AND v_parentkey != v_primarykey THEN
+          SET v_dishname = CONCAT('-', v_dishname);
+        END IF;
+
+
+        INSERT INTO t_printdish (printdishid
         , printobjid
         , dishname
         , dishnum
@@ -1727,192 +1726,189 @@ declare v_menuid  varchar(50);
         , payamount
         , sperequire
         , tableNomsg
-        , dishUnit
+        , dishunit
         , printipaddress
         , printport
         , printnum
         , dishid
-       , printtype
+        , printtype
         , relatedishid
         , orderseq
         , dishtype
         , printerId,
-          ordertype,
-          parentkey,
-          superkey,
-          ismaster,
-          primarykey,
-          islatecooke,
-          isadddish ,
-          childdishtype,
-          ispot )
+        ordertype,
+        parentkey,
+        superkey,
+        ismaster,
+        primarykey,
+        islatecooke,
+        isadddish,
+        childdishtype,
+        ispot)
 
-          VALUES (v_printdishid 
-          , i_printobjid 
-          , v_dishname 
-          , v_dishnum 
-          , v_orderprice 
-          , 0 
-          , 0 
-          ,  v_sperequire  
-          , v_tableno 
-          , v_dishunit 
-          , v_printaddress 
-          , v_printport 
-          , '0', v_dishid, IFNULL(v_printtype, 2), v_relatedishid, v_orderseq, v_dishtype, v_printer,
-           v_ordertype,
-           v_parentkey,
-           v_superkey,
-           v_ismaster,
-           v_primarykey,
-           v_printtype,
-           v_isadddish ,
-           v_childdishtype,
-          v_ispot  
-          );
-   
+          VALUES (v_printdishid, i_printobjid, v_dishname, v_dishnum, v_orderprice, 0, 0, v_sperequire, v_tableno, v_dishunit, v_printaddress, v_printport, '0', v_dishid, IFNULL(v_printtype, 2), v_relatedishid, v_orderseq, v_dishtype, v_printer, v_ordertype, v_parentkey, v_superkey, v_ismaster, v_primarykey, v_printtype, v_isadddish, v_childdishtype, v_ispot);
 
-    set v_dishname = NULL;
-    set v_printtype = null;
+
+        SET v_dishname = NULL;
+        SET v_printtype = NULL;
+
+        IF done = 1 THEN
+          SET o_code = '3';
+          GET DIAGNOSTICS CONDITION 1 o_msg = MESSAGE_TEXT;
+
+          ##删除临时表
+          DELETE
+            FROM t_order_detail_temp
+          WHERE orderid = i_orderid;
+
+          LEAVE label_main;
+        END IF;
+
+      END IF;
+
+    UNTIL done = 1
+    END REPEAT;
+
+    CLOSE cur_order;
+
+    SET done = 0;
+
+    SELECT
+      COUNT(1) INTO v_printobj_count
+    FROM t_printobj tp
+
+    WHERE tp.orderno = i_orderid;
+
+    IF v_printobj_count = 0 THEN
+
+      SELECT
+        currenttableid INTO V_TABLEID
+      FROM t_order T
+      WHERE T.orderid = v_orderid;
+
+      UPDATE t_table
+      SET status = '1',
+          orderid = v_orderid
+      WHERE tableid = V_TABLEID;
+
+      UPDATE t_order
+      SET orderstatus = '0'
+      WHERE orderid = v_orderid;
+
+      SELECT
+        CURRENT_TIMESTAMP() INTO v_timemsg;
+
+      SELECT
+        branchid INTO v_branch_id
+      FROM t_branch_info LIMIT 1;
+
+      SELECT
+        name INTO v_full_name
+      FROM t_b_user
+      WHERE id
+      IN (SELECT
+          user_id
+        FROM t_b_employee
+        WHERE job_number = v_userName
+        AND branch_id = v_branch_id);
+
+      SELECT
+        currenttableid INTO V_TABLEID
+      FROM t_order T
+      WHERE T.orderid = v_orderid;
+
+      SELECT
+        ta.areaname INTO v_tablearea
+      FROM t_tablearea ta,
+           t_table tb
+      WHERE tb.areaid = ta.areaid
+      AND tb.tableid = V_TABLEID;
+
+      INSERT INTO t_printobj (id,
+      printtype
+      , orderno
+      , username
+      , tableno
+      , timemsg
+      , customerprinterip
+      , customerprinterport
+      , tableArea,
+      tableid)
+
+        VALUES (i_printobjid, '3', i_orderid, v_full_name, v_tableno, v_timemsg, v_customeraddress, v_customerport, v_tablearea, V_TABLEID);
+
     END IF;
 
-  UNTIL done = 1
-  END REPEAT;
+    IF done = 1 THEN
+      SET o_code = '3';
+      GET DIAGNOSTICS CONDITION 1 o_msg = MESSAGE_TEXT;
 
-  CLOSE cur_order;
+      ##删除临时表
+      DELETE
+        FROM t_order_detail_temp
+      WHERE orderid = i_orderid;
 
-  
-  SELECT
-    COUNT(1) INTO v_printobj_count
-  FROM t_printobj tp
+      LEAVE label_main;
+    END IF;
 
-  WHERE tp.orderno = i_orderid;
+    DELETE
 
-  
+      FROM t_order_detail_temp
 
-  IF v_printobj_count = 0 THEN
+    WHERE orderid = i_orderid;
 
-    SELECT     CURRENTTABLEID INTO V_TABLEID
-    FROM t_order T
-    WHERE T.orderid = v_orderid;
+    SET o_code = '0';
+    SET o_msg = '下单成功';
 
-    UPDATE t_table
-    SET status = '1',orderid = v_orderid
-    WHERE tableid = V_TABLEID;
-
-    UPDATE t_order
-    SET orderstatus = '0'
-    WHERE orderid = v_orderid;
- 
-    SELECT   CURRENT_TIMESTAMP() INTO v_timemsg;
-
-
-
-   select branchid into v_branch_id from t_branch_info limit 1;
-
-   select name INTO v_full_name from t_b_user where id
-     in (select user_id  from t_b_employee where job_number = v_userName and branch_id = v_branch_id);
-
-
-    SELECT CURRENTTABLEID INTO V_TABLEID
-    FROM t_order T
-    WHERE T.orderid = v_orderid;
-
-    SELECT    ta.areaname INTO v_tablearea
-    FROM t_tablearea ta,   t_table tb
-    WHERE tb.areaid = ta.areaid
-    AND tb.tableid = V_TABLEID;
-
-
-  
-
-    INSERT INTO t_printobj (id,
-    printtype
-    , orderno
-    , username
-    , tableno
-    , timemsg
-    , customerprinterip
-    , customerprinterport
-    , tablearea,
-     tableid)
-
-      VALUES (i_printobjid,
-      '3', 
-      i_orderid,
-      v_full_name,
-      v_tableno,
-      v_timemsg, 
-      v_customeraddress, 
-      v_customerport,
-      v_tablearea,
-      V_TABLEID
-      );
-
-  END IF;
-
-
- 
-   DELETE
-
-     FROM t_order_detail_temp
-
-   WHERE orderid = i_orderid;
- 
-
-
-  SET o_result = i_printobjid;
-
-END
+  END
 $$
 
 --
 -- Definition for procedure p_setOrderDish
 --
-DROP PROCEDURE IF EXISTS p_setOrderDish$$
-CREATE PROCEDURE p_setOrderDish(IN i_orderid varchar(50), INOUT o_result varchar(50))
-  SQL SECURITY INVOKER
+DROP PROCEDURE IF EXISTS `p_setOrderDish`$$
+CREATE PROCEDURE `p_setOrderDish`(IN i_orderid varchar(50), INOUT o_code varchar(50), INOUT o_msg varchar(300))
+    SQL SECURITY INVOKER
 BEGIN
 
 
   DECLARE v_printobjid int;
 
   DECLARE v_printobj_count int;
- 
 
-SELECT
+
+  SELECT
 
     COUNT(1) INTO v_printobj_count
 
   FROM t_printobj tp
 
   WHERE tp.orderno = i_orderid;
- 
 
-IF v_printobj_count = 0 THEN
- 
 
-SELECT
+  IF v_printobj_count = 0 THEN
+
+
+    SELECT
 
       tableseqno('printobjid') INTO v_printobjid;
- 
+
 
   ELSE
- 
 
-SELECT DISTINCT
+
+    SELECT DISTINCT
 
       tp.id INTO v_printobjid
 
     FROM t_printobj tp
 
     WHERE tp.orderno = i_orderid;
- 
 
   END IF;
 
-CALL newspicyway.p_orderdish(i_orderid, v_printobjid, o_result);
- 
+  CALL newspicyway.p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
+
 
 END
 $$
