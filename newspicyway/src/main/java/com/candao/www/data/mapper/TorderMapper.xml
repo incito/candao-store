@@ -431,7 +431,8 @@
 	  {  
 	      call  p_setOrderDish(  
 	       #{orderid,jdbcType=VARCHAR,mode=IN},
-	       #{result,jdbcType=VARCHAR,mode=INOUT}
+	       #{result,jdbcType=VARCHAR,mode=INOUT},
+	       #{msg,jdbcType=VARCHAR,mode=INOUT}
 	    )
 	   }  
  

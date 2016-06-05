@@ -277,7 +277,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	     */
  @Override 
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
- public String saveOrderDetailList(Order orders,ToperationLog toperationLog) {
+ public Map<String, Object> setOrderDetailList(Order orders,ToperationLog toperationLog) {
 	 
 	  DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 	  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
@@ -292,24 +292,24 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			orders.setOrderid(table.getOrderid());
 		}else{
 			log.error("-->t_table表中该table为空，tableNo为："+tableNo);
-			return Constant.FAILUREMSG;
+			return getResult("3","查询不到该餐台","");
 		}
 		
 //		判断是否重复下单
 		if(isRepetitionOrder(orders.getRows())){
 			log.info("-->重复下单");
-			return Constant.SUCCESSMSG;
+			return getResult("0","下单成功","");
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
 	    List<TorderDetail> listall = getallTorderDetail(orders.getRows());
 		if(listall == null || listall.size() == 0){
 			log.error("-->OrderDetail为空,orders.getRows()值为："+orders.getRows());
-			return Constant.FAILUREMSG;
+			return getResult("3","订单中没有菜品","");
 		}
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
 			  log.error("-->orderId为："+orders.getOrderid());
-			  return Constant.FAILUREMSG;
+				return getResult("3","查询不到该订单","");
 		  }
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
 		  mapParam1.put("orderid", orders.getOrderid());
@@ -321,22 +321,24 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if(success < 1){
 				log.error("-->插入订单临时表t_order_detail_temp出错，参数"+JSONObject.fromObject(listall).toString());
 				 transactionManager.rollback(status);
-				return Constant.FAILUREMSG;
+				return getResult("3","服务器异常","");
 			}
 			
 //			//执行存储过程，将订单详情临时表中的数据插入到t_order_detail
 //		 
 		   String result = "1";
+		   String msg = "1";
 	       Map<String, Object> mapParam = new HashMap<String, Object>();
 	       mapParam.put("orderid", orders.getOrderid());
 	       mapParam.put("result", result);
+	       mapParam.put("msg", msg);
 	       torderMapper.setOrderDish(mapParam);
 	       result = String.valueOf(mapParam.get("result"));
 	       
-	       if("1".equals(result)){
+	       if(!"0".equals(result)){
 	    	   log.error("-->result为："+1);
 	    	   transactionManager.rollback(status);
-	    	   return Constant.FAILUREMSG;
+	    	   return getResult(result,String.valueOf(mapParam.get("msg")),"");
 	       } 
 //	       
 	       int flag = (detailList == null  || detailList.size() == 0 ?0:1);
@@ -350,18 +352,26 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	            printOrderList( orders.getOrderid(),table.getTableid(), flag);
 	  	        printweigth(listall,orders.getOrderid());
 	        	transactionManager.commit(status);
-			   	return Constant.SUCCESSMSG;
+			   	return getResult("0","下单成功","");
 	        }
 	          transactionManager.rollback(status);
-		   	 return Constant.FAILUREMSG;
+		   	 return getResult("3","服务器异常","");
 	 	}catch(Exception ex){
 		 		log.error("-->",ex);
 				ex.printStackTrace();
 				 transactionManager.rollback(status);
-			   	 return Constant.FAILUREMSG;
+			   	 return getResult("3","服务器异常 ","");
 			} 	
 	
 		}
+ 
+ 		private Map<String, Object> getResult(String code ,String msg,Object data){
+ 			Map<String, Object> res = new HashMap<>();
+ 			res.put("result", code);
+ 			res.put("msg", msg);
+ 			res.put("data", data);
+ 			return res;
+ 		}
 		/**
 		 * 打印订单中的需要称重的数据，打印称重单
 		 * @author shen

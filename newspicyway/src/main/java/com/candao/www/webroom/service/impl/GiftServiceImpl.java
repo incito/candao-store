@@ -170,14 +170,12 @@ public class GiftServiceImpl implements GiftLogService{
 			toperationLog.setOperationtype(Constant.operationType.SAVEORDERINFOLIST);
 			toperationLog.setSequence(saveorder.getSequence());
 			int flag= judgeRepeatData(toperationLog);
-			String resultStr = "";
+			Map<String, Object> res = null;
 			if(flag==0){
-				resultStr =  orderDetailService.saveOrderDetailList(saveorder,toperationLog);
+				res =  orderDetailService.setOrderDetailList(saveorder,toperationLog);
 			}
 			
-			JSONObject resultObject = JSONObject.fromObject(resultStr);
-			
-			if(resultObject==null||!resultObject.containsKey("result")||StringUtils.isBlank(resultObject.getString("result"))||!resultObject.getString("result").equals("0")){
+			if(res==null||!res.containsKey("result")||StringUtils.isBlank(String.valueOf(res.get("result")))||!String.valueOf(res.get("result")).equals("0")){
 				returnnum = 3;
 				return returnnum;
 			}

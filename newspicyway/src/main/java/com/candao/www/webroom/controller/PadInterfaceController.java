@@ -347,9 +347,7 @@ public class PadInterfaceController {
 		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
 		
 		if(flag==0){
-			String returnStr = orderDetailService.saveOrderDetailList(order,toperationLog);
-			if(returnStr.equals(Constant.SUCCESSMSG)){
-			}
+			Map<String, Object> res = orderDetailService.setOrderDetailList(order,toperationLog);
 			try{
 				String type = "12";
 				if((orderDetileList!=null&&orderDetileList.size()>0)||(orderDetileTempList!=null&&orderDetileTempList.size()>0)){
@@ -362,7 +360,7 @@ public class PadInterfaceController {
 			}
 			logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
 			logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
-			return returnStr;
+			return JacksonJsonMapper.objectToJson(res);
 		}else if(flag==1){
 			return Constant.FAILUREMSG;
 		}else{
