@@ -36,12 +36,13 @@ public class SyncController {
   @ResponseBody
   public Map<String, Object> synDataFromCloud(String type) {
     Map<String, Object> resp = new HashMap<>();
-    String url = PropertiesUtils.getValue("cloud.url") + "/sync/dish";
+    String url = "http://" + PropertiesUtils.getValue("cloud.host") + "/" + PropertiesUtils.getValue("cloud.webroot") + "/sync/dish";
     String queryString = "tenantId=" + PropertiesUtils.getValue("tenant_id") + "&branchId=" + PropertiesUtils.getValue("current_branch_id") + "&type=" + type;
     String result = HttpUtils.doGet(url, queryString);
     Map<String, Object> map = null;
 
     if ("Read timed out".equalsIgnoreCase(result)) {
+      logger.error("从总店同步数据超时：" + url + "?" + queryString);
       resp.put("statusCode", "500");
       resp.put("data", "从总店获取数据超时");
       return resp;
@@ -50,8 +51,9 @@ public class SyncController {
     try {
       map = JacksonJsonMapper.jsonToObject(result, Map.class);
     } catch (Exception e) {
+      logger.error("从总店同步数据失败\n" + result);
       resp.put("statusCode", "500");
-      resp.put("data", "从总店获取数据失败\n" + result);
+      resp.put("data", "从总店获取数据失败");
       return resp;
     }
 
@@ -59,9 +61,9 @@ public class SyncController {
       syncservice.saveDish((String) map.get("sql"), (List) map.get("tableNames"));
       resp.put("statusCode", "200");
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("从总店同步数据异常", e);
       resp.put("statusCode", "500");
-      resp.put("data", "保存数据失败\n" + e.getMessage());
+      resp.put("data", "保存数据失败");
     }
     return resp;
   }
