@@ -216,41 +216,45 @@ public class HttpUtil {
      * @throws Exception 
      * */
     public static boolean downLoad(String url,String path) throws IOException{
-        try {
+      File tmp_file = null;  
+      try {
 //            url = EncodeUtil.ecode(url, "utf-8");
-            URL u = new URL(url);
-            URLConnection conn = u.openConnection();
-            conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.102 Safari/537.36");  // 模拟手机系统
-            conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");//只接受text/html类型，当然也可以接受图片,pdf,*/*任意，就是tomcat/conf/web里面定义那些
-            conn.connect();
-            int filesize = conn.getContentLength();
-            InputStream is = conn.getInputStream();
-           
-            File file = new File(path+".tmp");// 创建临时文件
-            File parent = file.getParentFile();// 获取文件上级目录
-            if(!parent.exists()){// 判断目录是否存在 如果不存在自动创建目录
-                parent.mkdirs();// 创建连续的目录
-            }
-            FileOutputStream fos = new FileOutputStream(file);
-            
-            byte[] buffer = new byte[2048];
-            int len = 0 ;
-            int fileReadSize = 0;
-            while ((len = is.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
-                fileReadSize += len;
-            }
-            is.close();
-            fos.close();
-            if(filesize == fileReadSize){
-              file.renameTo(new File(path));//改名
-            }else{
-              file.deleteOnExit();// 删除临时文件
-            }
-        } catch (IOException e) {
-            throw e;
+          URL u = new URL(url);
+          URLConnection conn = u.openConnection();
+          conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.102 Safari/537.36");  // 模拟手机系统
+          conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");//只接受text/html类型，当然也可以接受图片,pdf,*/*任意，就是tomcat/conf/web里面定义那些
+          conn.connect();
+          int filesize = conn.getContentLength();
+          InputStream is = conn.getInputStream();
+         
+          tmp_file = new File(path+".tmp");// 创建临时文件
+          File parent = tmp_file.getParentFile();// 获取文件上级目录
+          if(!parent.exists()){// 判断目录是否存在 如果不存在自动创建目录
+              parent.mkdirs();// 创建连续的目录
+          }
+          FileOutputStream fos = new FileOutputStream(tmp_file);
+          
+          byte[] buffer = new byte[2048];
+          int len = 0 ;
+          int fileReadSize = 0;
+          while ((len = is.read(buffer)) != -1) {
+              fos.write(buffer, 0, len);
+              fileReadSize += len;
+          }
+          is.close();
+          fos.close();
+          if(filesize == fileReadSize){
+            tmp_file.renameTo(new File(path));//改名
+          }else{
+            tmp_file.deleteOnExit();// 删除临时文件
+          }
+      } catch (IOException e) {
+        if(tmp_file !=null){
+          tmp_file.deleteOnExit();//异常时 删除临时文件
         }
-        return true;
+        throw e;
+      }
+      return true;
     }
     
     public static String[] UserAgent = {

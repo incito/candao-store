@@ -58,8 +58,11 @@ public class LocalDownController {
         // 返回文件流
         download(response, local_path);
       } else {
-        // 异步缓存资源到本地
-        uploadPool.execute(new FileDownLoadThread(could_url, local_path));
+        File tmp_file = new File(local_path+".tmp");
+        if(!tmp_file.exists()){// 临时文件存在，表示已经开始下载了，无需重复下载
+          // 异步缓存资源到本地
+          uploadPool.execute(new FileDownLoadThread(could_url, local_path));
+        }
         // 第一次本地没有缓存的情况下 跳转到原始目标地址
         return "redirect:" + could_url;
       }
