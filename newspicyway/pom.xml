@@ -84,8 +84,8 @@
 				<configuration>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
 					<webAppConfig>
-						<jettyEnvXml>/newspicyway/config/jetty-env.xml</jettyEnvXml>
-						<contextPath>/newspicyway </contextPath>
+						<!--<jettyEnvXml>/newspicyway/config/jetty-env.xml</jettyEnvXml>-->
+						<contextPath>/newspicyway</contextPath>
 					</webAppConfig>
 				</configuration>
 			</plugin>
@@ -121,6 +121,7 @@
 					<include>**/*.xml</include>
 					<include>**/*.properties</include>
 					<include>**/*.template</include>
+					<include>**/other/*</include>
 				</includes>
 			</resource>
 		</resources>

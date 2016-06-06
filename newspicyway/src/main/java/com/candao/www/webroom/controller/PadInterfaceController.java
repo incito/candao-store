@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.candao.www.utils.DataServerUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2151,83 +2152,106 @@ public class PadInterfaceController {
 	 * @return
 	 */
 	class PadThread implements Runnable {
-		   String finaltableno ;
-    	   String finalmsgType ;
-    	   String finalcallStatus;
-    	   String backno ;
-    	
-		   public PadThread(String finaltableno,String msgType){
-			   this.finaltableno = finaltableno;
-			   this.finalmsgType = msgType;
-			   this.finalcallStatus = "0";
-		   }
-		   @Override
-		   public void run(){
-	        	StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2011+"/");
-	        	Map<String, Object> params = new HashMap<String, Object>(1);
-	        	params.put("tableNo", finaltableno);
-	    		List<Map<String, Object>> tableList=tableService.find(params);
-	    		if(tableList!=null&&tableList.size()>0){
-	    			String orderinfoid=String.valueOf(tableList.get(0).get("orderid"));
-	    			Torder torder=torderMapper.get(orderinfoid);
-	    			if(torder!=null&&torder.getUserid()!=""){
-	    				String userid=torder.getUserid();
-	    				Map<String,Object> map1=new HashMap<String,Object>();
-	    				map1.put("status", "0");
-	    				map1.put("userid", userid);
-	    				List<TbUserInstrument> listuser=tbUserInstrumentDao.findByParams(map1);
-	    				if(listuser!=null&&listuser.size()>0){
-	    					//服务员还在线
-	    					//服务员编号|消息类型|区号|台号|消息id
-	    				}else{
-	    					//服务员退出了,找到同一区的服务员 进行推送
-	    					String areaid=String.valueOf(tableList.get(0).get("areaid"));
-	    					Map<String,Object> map=new HashMap<String,Object>();
-	    					map.put("areaid", areaid);
-	    					map.put("status", "1");
-	    					List<Map<String, Object>> retableList=tableService.find(map);
-	    					String useridstr=callService.findrelateUserid(retableList,finaltableno);
-	    					if(useridstr!=null&&!useridstr.equals("")){
-	    						userid = useridstr;
-	    					}
-	    				}
-	    				String areaname = null;
-						String tableNo = null;
-	    				try {
-	    					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
-							 tableNo = java.net.URLEncoder.encode(finaltableno,"utf-8");
-	    				} catch (UnsupportedEncodingException e) {
-	    					logger.error("--->",e);
-	    					e.printStackTrace();
-	    				}
-	    				if(!userid.equals("")){
-	    					messageinfo.append(userid+"|"+finalmsgType+"|"+finalcallStatus+"|"+areaname+"|"+tableNo+"|"+IdentifierUtils.getId().generate().toString());
-	        				//new TsThread(messageinfo.toString()).start();
-	    					URL urlobj;
-	    					try {
-	    					urlobj = new URL(messageinfo.toString());
-	    					URLConnection	urlconn = urlobj.openConnection();
-	    					urlconn.connect();
-	    					InputStream myin = urlconn.getInputStream();
-	    					BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-	    					String content = reader.readLine();
-	    					JSONObject object = JSONObject.fromObject(content.trim());
-	    					@SuppressWarnings("unchecked")
-	    					List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
-	    					if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
-	    						System.out.println("推送成功");
-	    					}else{
-	    						System.out.println("推送失败");
-	    					}
-	    					} catch (IOException e) {
-	    						logger.error("--->",e);
-	    						e.printStackTrace();
-	    					}
-	    				}
-	    			}
-	    		}
-			   //根据动作打印不同的小票
-		   }
+		private Logger logger = LoggerFactory.getLogger(PadThread.class);
+		private boolean restarted = false;
+		String finaltableno;
+		String finalmsgType;
+		String finalcallStatus;
+		String backno;
+
+		public PadThread(String finaltableno, String msgType) {
+			this.finaltableno = finaltableno;
+			this.finalmsgType = msgType;
+			this.finalcallStatus = "0";
+		}
+
+		@Override
+		public void run() {
+			StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2011 + "/");
+			Map<String, Object> params = new HashMap<String, Object>(1);
+			params.put("tableNo", finaltableno);
+			List<Map<String, Object>> tableList = tableService.find(params);
+			if (tableList != null && tableList.size() > 0) {
+				String orderinfoid = String.valueOf(tableList.get(0).get("orderid"));
+				Torder torder = torderMapper.get(orderinfoid);
+				if (torder != null && torder.getUserid() != "") {
+					String userid = torder.getUserid();
+					Map<String, Object> map1 = new HashMap<String, Object>();
+					map1.put("status", "0");
+					map1.put("userid", userid);
+					List<TbUserInstrument> listuser = tbUserInstrumentDao.findByParams(map1);
+					if (listuser != null && listuser.size() > 0) {
+						//服务员还在线
+						//服务员编号|消息类型|区号|台号|消息id
+					} else {
+						//服务员退出了,找到同一区的服务员 进行推送
+						String areaid = String.valueOf(tableList.get(0).get("areaid"));
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put("areaid", areaid);
+						map.put("status", "1");
+						List<Map<String, Object>> retableList = tableService.find(map);
+						String useridstr = callService.findrelateUserid(retableList, finaltableno);
+						if (useridstr != null && !useridstr.equals("")) {
+							userid = useridstr;
+						}
+					}
+					String areaname = null;
+					String tableNo = null;
+					try {
+						areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")), "utf-8");
+						tableNo = java.net.URLEncoder.encode(finaltableno, "utf-8");
+					} catch (UnsupportedEncodingException e) {
+						logger.error("--->", e);
+						e.printStackTrace();
+					}
+					if (!userid.equals("")) {
+						messageinfo.append(userid + "|" + finalmsgType + "|" + finalcallStatus + "|" + areaname + "|" + tableNo + "|" + IdentifierUtils.getId().generate().toString());
+						//new TsThread(messageinfo.toString()).start();
+						URL urlobj;
+						try {
+							urlobj = new URL(messageinfo.toString());
+							URLConnection urlconn = urlobj.openConnection();
+							urlconn.connect();
+							InputStream myin = urlconn.getInputStream();
+							BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+							String content = reader.readLine();
+							/**
+							 * 如果DataServer推送异常(特征值判断)，则重启Dataserver后重新推送
+							 */
+							if (null != content && content.startsWith("Access violation")) {
+								restartAndRetry();
+							}
+							JSONObject object = JSONObject.fromObject(content.trim());
+							@SuppressWarnings("unchecked")
+							List<Map<String, Object>> resultList = (List<Map<String, Object>>) object.get("result");
+							if ("1".equals(String.valueOf(resultList.get(0).get("Data")))) {
+								System.out.println("推送成功");
+							} else {
+								System.out.println("推送失败");
+							}
+						} catch (IOException e) {
+							logger.error("--->", e);
+							e.printStackTrace();
+							restartAndRetry();
+						}
+					}
+				}
+			}
+			//根据动作打印不同的小票
+		}
+
+		private void restartAndRetry() {
+			//已重启过则放弃
+			if (restarted) {
+				return;
+			}
+			restarted = true;
+			if (DataServerUtil.restart()) {
+				run();
+			} else {
+				logger.error("尝试重启DataServer失败");
+			}
+		}
 	}
 	
 	/**
