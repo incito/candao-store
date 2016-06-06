@@ -534,7 +534,7 @@ DELIMITER ;
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `p_setOrderDish`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `p_setOrderDish`(IN i_orderid varchar(50), INOUT o_code varchar(50), INOUT o_msg varchar(300))
+CREATE PROCEDURE `p_setOrderDish`(IN i_orderid varchar(50), INOUT o_code varchar(50), INOUT o_msg varchar(300))
     SQL SECURITY INVOKER
 BEGIN
 
