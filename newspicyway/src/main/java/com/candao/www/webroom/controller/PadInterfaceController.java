@@ -392,7 +392,7 @@ public class PadInterfaceController {
 		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
 		
 		if(flag==0){
-			String returnStr = orderDetailService.saveOrderDetailList(order,toperationLog);
+			String returnStr = orderDetailService.setOrderDetailList(order,toperationLog);
 			if(returnStr.equals(Constant.SUCCESSMSG)){
 			}
 			try{

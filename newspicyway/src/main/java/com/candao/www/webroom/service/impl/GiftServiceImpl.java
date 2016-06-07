@@ -168,7 +168,7 @@ public class GiftServiceImpl implements GiftLogService{
 			int flag= judgeRepeatData(toperationLog);
 			String resultStr = "";
 			if(flag==0){
-				resultStr =  orderDetailService.saveOrderDetailList(saveorder,toperationLog);
+				resultStr =  orderDetailService.setOrderDetailList(saveorder,toperationLog);
 			}
 			
 			JSONObject resultObject = JSONObject.fromObject(resultStr);

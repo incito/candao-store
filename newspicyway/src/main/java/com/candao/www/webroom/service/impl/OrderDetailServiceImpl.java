@@ -269,7 +269,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	     */
  @Override 
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
- public String saveOrderDetailList(Order orders,ToperationLog toperationLog) {
+ public String setOrderDetailList(Order orders,ToperationLog toperationLog) {
 	 
 	  DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 	  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 

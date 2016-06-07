@@ -12,7 +12,7 @@ import com.candao.www.webroom.model.UrgeDish;
 public interface OrderDetailService {
 
 //	public String saveOrderDetails(Order order );
-	public String saveOrderDetailList(Order order,ToperationLog toperationLog );
+	public String setOrderDetailList(Order order,ToperationLog toperationLog );
 	
 	
 	public void discardOrderDetail(TorderDetail orderDetail,String discardUserId,String discardReason);
