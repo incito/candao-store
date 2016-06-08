@@ -74,6 +74,7 @@ public class DataServerUtil {
                 return true;
             }
         }
+        logger.info("dataserver重启后重连失败，重启失败。");
         return false;
     }
 

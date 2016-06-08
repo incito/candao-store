@@ -2,6 +2,8 @@ package com.candao.www.webroom.controller;
 
 import com.candao.www.constant.Constant;
 import com.candao.www.utils.DataServerUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +22,7 @@ import java.net.URLConnection;
 @Controller
 @RequestMapping("/controller")
 public class ControllerController {
+	private static Logger logger= LoggerFactory.getLogger(ControllerController.class);
 
 	/**
 	 * 重启dataserver
@@ -39,9 +42,9 @@ public class ControllerController {
 		Thread t = new Thread() {
 			@Override
 			public void run() {
-				System.out.println("【Dataserver监控线程】启动");
+				logger.info("【Dataserver监控线程】启动");
 				if (org.springframework.util.StringUtils.isEmpty(Constant.TS_URL)) {
-					System.out.println("【Dataserver监控线程】ts_url未配置，退出线程");
+					logger.error("【Dataserver监控线程】ts_url未配置，退出线程");
 					return;
 				}
 				String urlFlag = "datasnap/rest/TServerMethods1/";
@@ -54,13 +57,13 @@ public class ControllerController {
 						for(String uri:uris){
 							String result = get(url + uri);
 							if(!volidateResult(result)){
-								System.out.println("【Dataserver监控线程】结果解析失败，重启dataserver");
+								logger.info("【Dataserver监控线程】结果解析失败，重启dataserver");
 								DataServerUtil.restart();
 								break;
 							}
 						}
 					} catch (IOException e) {
-						System.out.println("【Dataserver监控线程】连接超时，重启dataserver");
+						logger.info("【Dataserver监控线程】连接超时，重启dataserver");
 						DataServerUtil.restart();
 					}
 					try {
