@@ -21,13 +21,18 @@ public class PrinterServiceImpl implements PrinterService {
 	public List<Map<String,Object>> find(Map<String, Object> params){
 		return tbPrinterDao.find(params);
 	}
-	
+
+	@Override
+	public List<Map<String, Object>> findAll(Map<String, Object> params) {
+		return tbPrinterDao.findAll(params);
+	}
+
 	/*public List<Map<String,Object>> findAll(String id) {
-		// TODO Auto-generated method stub
-		Map<String, Object> params=new HashMap<String, Object>();
-		params.put("id",  id);
-		return tbasicDataDao.find( params);
-	}*/
+            // TODO Auto-generated method stub
+            Map<String, Object> params=new HashMap<String, Object>();
+            params.put("id",  id);
+            return tbasicDataDao.find( params);
+        }*/
 	@Override
 	public boolean save(TbPrinter tbPrinter) {
 		return tbPrinterDao.insert(tbPrinter)>0;

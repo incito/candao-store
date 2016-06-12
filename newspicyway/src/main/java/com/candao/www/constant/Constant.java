@@ -316,5 +316,15 @@ public class Constant {
 		
 		public static final String msg_2104 = "2104"; // 微信推送
 	}
+
+	/**
+	 * 打印机状态
+	 */
+	public class PRINTER_STATUS {
+		public static final short INVALID=0;//未知
+		public static final short BAD=1;//较差
+		public static final short GOOD=2;//良好
+		public static final short NOT_REACHABLE=3;//连接断开
+	}
 	 
 }

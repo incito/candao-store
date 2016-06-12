@@ -2218,7 +2218,7 @@ public class PadInterfaceController {
 							/**
 							 * 如果DataServer推送异常(特征值判断)，则重启Dataserver后重新推送
 							 */
-							if (null != content && content.startsWith("Access violation")) {
+							if (null != content && content.contains("Access violation")) {
 								restartAndRetry();
 							}
 							JSONObject object = JSONObject.fromObject(content.trim());

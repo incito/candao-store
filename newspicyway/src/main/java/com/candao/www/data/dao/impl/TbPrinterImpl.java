@@ -41,6 +41,12 @@ public class TbPrinterImpl implements TbPrinterDao {
 		
 		return dao.find(PREFIX + ".find", params);
 	}
+
+	@Override
+	public <T, K, V> List<T> findAll(Map<K, V> params) {
+		return dao.find(PREFIX + ".findAll", params);
+	}
+
 	public <T, K, V> List<T> getCount(Map<K, V> params) {
 		return dao.find(PREFIX+".count",params);
 	}

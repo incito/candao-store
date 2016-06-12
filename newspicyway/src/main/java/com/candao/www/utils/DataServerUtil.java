@@ -71,6 +71,7 @@ public class DataServerUtil {
                 e.printStackTrace();
             }
             if (checkOnline()) {
+                logger.info("dataserver重启成功");
                 return true;
             }
         }

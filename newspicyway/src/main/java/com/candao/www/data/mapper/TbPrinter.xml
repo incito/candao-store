@@ -82,7 +82,10 @@
 				port=#{port},
 			</if>
 			<if test="status != null">
-				status=#{status}
+				status=#{status},
+			</if>
+			<if test="workStatus != null">
+				workStatus=#{workStatus}
 			</if>
 		    <if test="printNum != null">
 				printNum = IFNULL(printnum,0) + #{printNum}
@@ -171,6 +174,56 @@
 	        and port=#{port}
 	     </if>
 	     
+	     <if test="status != null and status != ''">
+	        and status=#{status}
+	     </if>
+	   </where>
+			order by printerNo asc
+	</select>
+	<select id="findAll" parameterType="map" resultMap="findResultMap">
+		select
+			printerid,
+			printerNo,
+			printername,
+			printertype,
+			createuserid,
+			inserttime,
+			ipaddress,
+			port,
+			status,
+			printNum,
+			workStatus
+			from t_printer
+
+			 <where>
+	     <if test="status != null and status != ''">
+			 status=#{status}
+	     </if>
+				 <if test="printerid != null and printerid != ''">
+	        printerid=#{printerid}
+	     </if>
+	     <if test="printerNo != null and printerNo != ''">
+	        and printerNo=#{printerNo}
+	     </if>
+	     <if test="printername != null and printername != ''">
+	        and printername=#{printername}
+	     </if>
+	     <if test="printertype != null and printertype != ''">
+	        and printertype=#{printertype}
+	     </if>
+	     <if test="createuserid != null and createuserid != ''">
+	        and createuserid=#{createuserid}
+	     </if>
+	     <if test="inserttime != null and inserttime != ''">
+	        and inserttime=#{inserttime}
+	     </if>
+	     <if test="ipaddress != null and ipaddress != ''">
+	        and ipaddress=#{ipaddress}
+	     </if>
+	     <if test="port != null and port != ''">
+	        and port=#{port}
+	     </if>
+
 	     <if test="status != null and status != ''">
 	        and status=#{status}
 	     </if>
