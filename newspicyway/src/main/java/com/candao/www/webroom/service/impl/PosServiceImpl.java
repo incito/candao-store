@@ -38,6 +38,7 @@ public class PosServiceImpl implements PosService {
                 printerList.add(map);
             }
         }
+        response.setIsSuccess(true);
         response.setData(printerList);
         return response;
     }

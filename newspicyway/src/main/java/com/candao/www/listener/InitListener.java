@@ -12,7 +12,7 @@ import javax.servlet.ServletContextListener;
 public class InitListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-//        startPrinterMoniter();
+        startPrinterMoniter();
     }
 
     @Override

@@ -30,7 +30,14 @@ public class PosController {
     @RequestMapping(value = "/printerlist.json", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String printerlist() {
-        AjaxResponse printerList = posService.getPrinterList();
+        AjaxResponse printerList;
+        try {
+             printerList = posService.getPrinterList();
+        }catch (Exception e){
+            logger.error("printerlist.json出现异常",e);
+            printerList=new AjaxResponse();
+            printerList.setErrorMsg("后台服务出现异常");
+        }
         return JSON.toJSONString(printerList);
     }
 }
