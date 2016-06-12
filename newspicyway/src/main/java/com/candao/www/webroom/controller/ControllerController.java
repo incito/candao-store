@@ -32,7 +32,7 @@ public class ControllerController {
 	@RequestMapping(value = "/restartDataserver", produces = {"application/html;charset=UTF-8"})
 	@ResponseBody
 	public String restartDataServer() {
-		return DataServerUtil.restart() ? "0" : "1";
+		return DataServerUtil.restart() ? "{\"result\":\"0\"}" : "{\"result\":\"1\"}";
 	}
 
 	static {
