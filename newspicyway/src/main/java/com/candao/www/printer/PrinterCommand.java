@@ -6,7 +6,7 @@ package com.candao.www.printer;
  */
 public class PrinterCommand {
     /**
-     *
+     *开启自动状态返回
      */
-    public static final byte[] AUTO_STATUS=new byte[]{0x1D,0x61,0xFF};
+    public static final byte[] AUTO_STATUS=new byte[]{0x1D,0x61,(byte)0xFF};
 }

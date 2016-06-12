@@ -47,9 +47,7 @@ public class PrinterHandler extends ChannelHandlerAdapter {
             if (null != channel) {
                 printer.setChannel(channel);
                 //发送自动状态返回命令
-                channel.writeAndFlush(0x1d);
-                channel.writeAndFlush(0x61);
-                channel.writeAndFlush(0xff);
+                channel.writeAndFlush(PrinterCommand.AUTO_STATUS);
                 break;
             }
             Thread.sleep(3000);
