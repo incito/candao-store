@@ -20,6 +20,7 @@ public class TbPrinter {
 	private Integer status;
 	private  Integer printNum;
 	private String areaid;
+	private short workStatus;
 	
 	
 	
@@ -89,6 +90,15 @@ public class TbPrinter {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+
+	public short getWorkStatus() {
+		return workStatus;
+	}
+
+	public void setWorkStatus(short workStatus) {
+		this.workStatus = workStatus;
+	}
+
 	public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("printerid");

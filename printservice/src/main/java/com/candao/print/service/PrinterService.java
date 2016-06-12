@@ -23,6 +23,13 @@ public interface PrinterService {
   */
  public List<Map<String,Object>> find(Map<String, Object> params);
 
+ /**
+  * 查询所有数据，不强制过滤状态
+  * @param params
+  * @return
+     */
+ public List<Map<String,Object>> findAll(Map<String, Object> params);
+
  public boolean save(TbPrinter tbPrinter);
  /**
   * 更改数据
