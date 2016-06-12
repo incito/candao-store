@@ -1,5 +1,6 @@
 package com.candao.www.printer;
 
+import com.candao.print.entity.PrinterConstant;
 import io.netty.channel.Channel;
 
 import java.util.concurrent.locks.Condition;
@@ -32,21 +33,25 @@ public class Printer {
      * @param msg
      * @return
      */
-    public PrintResult print(String msg) {
+    public PrintResult print(Object[] msg) {
         PrintResult result = new PrintResult();
         printLock.lock();
         try {
             while (true) {
                 initChannel();
                 if (null != channel && channel.isActive()) {
+                    channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
+                    channel.writeAndFlush(PrinterConstant.LINE);
+                    channel.writeAndFlush(PrinterConstant.LINE);
                     channel.writeAndFlush(msg);
-                    try {
-                        printCondition.await();
-                        byte a=0xff;
+                    channel.writeAndFlush(PrinterConstant.getLineN(4));
+                    channel.writeAndFlush(PrinterConstant.CUT);
+//                    try {
+//                        printCondition.await();
                         break;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 } else {
                     // TODO: 2016/6/12 调用备用打印机
                 }

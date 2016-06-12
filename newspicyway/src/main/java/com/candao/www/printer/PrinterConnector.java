@@ -17,10 +17,9 @@ import org.slf4j.LoggerFactory;
  */
 class PrinterConnector {
     private static Logger logger = LoggerFactory.getLogger(PrinterConnector.class);
-
-    public static Channel createConnection(String host, int port) {
-        EventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap bootstrap = new Bootstrap();
+    private static EventLoopGroup group = new NioEventLoopGroup();
+    private static Bootstrap bootstrap = new Bootstrap();
+    static{
         bootstrap.group(group)
                 .channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
 
@@ -29,6 +28,8 @@ class PrinterConnector {
                 ch.pipeline().addLast(new PrinterHandler());
             }
         });
+    }
+    public static Channel createConnection(String host, int port) {
         //发起异步链接操作
         ChannelFuture channelFuture = null;
         try {

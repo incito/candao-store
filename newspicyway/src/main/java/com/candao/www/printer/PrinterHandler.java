@@ -1,5 +1,6 @@
 package com.candao.www.printer;
 
+import com.candao.print.entity.PrinterConstant;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,7 +18,10 @@ public class PrinterHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+        Channel channel = ctx.channel();
+        channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
+        channel.writeAndFlush(PrinterConstant.getLineN(4));
+        channel.writeAndFlush(PrinterConstant.CUT);
     }
 
     @Override
@@ -47,7 +51,7 @@ public class PrinterHandler extends ChannelHandlerAdapter {
             if (null != channel) {
                 printer.setChannel(channel);
                 //发送自动状态返回命令
-                channel.writeAndFlush(PrinterCommand.AUTO_STATUS);
+                channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
                 break;
             }
             Thread.sleep(3000);

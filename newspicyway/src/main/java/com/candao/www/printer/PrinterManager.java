@@ -12,4 +12,10 @@ public class PrinterManager {
     public static Printer getPrinter(String ipAddr) {
         return printers.get(ipAddr);
     }
+    public static void addPrinter(Printer printer){
+        if(null==printer.getKey()){
+            throw new NullPointerException("打印机标示不能为空");
+        }
+        printers.put(printer.getKey(),printer);
+    }
 }
