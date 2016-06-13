@@ -38,9 +38,10 @@ public class PrinterTest {
 //        PrinterManager.getPrinter("10.66.18.250").print(msg);
         Thread.sleep(10000000);
     }
-//public static void main(String[] args) throws IOException {
+//public static void main(String[] args) throws IOException, InterruptedException {
 //   Socket socket = new Socket();
 //    socket.connect(new InetSocketAddress("10.66.18.3", 9100), 5000);//建立连接5秒超时
+//    System.out.println(1);
 //    socket.setKeepAlive(true);
 //    socket.setSoTimeout(5 * 1000);      //从inputStream中读打印机状态返回值的超时时间
 //    OutputStream socketOut = socket.getOutputStream();
@@ -48,6 +49,9 @@ public class PrinterTest {
 //    socketOut.write(new byte[] { 29, 97, 1 });
 //    socketOut.write(27);
 //    socketOut.write(27);
+//    writer.close();
+//    socketOut = socket.getOutputStream();
+//    writer = new OutputStreamWriter(socketOut, Constant.PRINTERENCODE);
 //    writer.flush();//
 //    writer.write("第1行\r\n第2行\r\n第3行\r\n第4行\r\n");
 //    writer.write(27);

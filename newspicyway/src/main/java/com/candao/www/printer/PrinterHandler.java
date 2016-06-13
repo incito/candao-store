@@ -52,24 +52,25 @@ public class PrinterHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("channelInactive");
         String ipAddress = getIpAddress(ctx.channel());
         logger.info("打印机[" + ipAddress + "]断线:，准备重连。");
         Printer printer = PrinterManager.getPrinter(ipAddress);
         Channel channel;
-        /**
-         * 循环重连直到连上
-         */
-        while (true) {
-            logger.info("打印机[" + ipAddress + "]尝试重连");
-            channel = PrinterConnector.createConnection(printer.getIp(), printer.getPort());
-            if (null != channel) {
-                printer.setChannel(channel);
-                //发送自动状态返回命令
-                channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
-                break;
-            }
-            Thread.sleep(3000);
-        }
+//        /**
+//         * 循环重连直到连上
+//         */
+//        while (true) {
+//            logger.info("打印机[" + ipAddress + "]尝试重连");
+//            channel = PrinterConnector.createConnection(printer.getIp(), printer.getPort());
+//            if (null != channel) {
+//                printer.setChannel(null);
+//                //发送自动状态返回命令
+//                channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
+//                break;
+//            }
+//            Thread.sleep(3000);
+//        }
     }
 
     private String getIpAddress(Channel channel) {

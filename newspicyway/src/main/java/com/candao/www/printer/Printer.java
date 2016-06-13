@@ -3,9 +3,13 @@ package com.candao.www.printer;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
 import com.candao.www.utils.ToolsUtil;
-import io.netty.channel.Channel;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,8 +30,11 @@ public class Printer {
     private String key;
     private String ip;
     private int port;
-    private Channel channel;
+    private Socket channel;
     private Lock printLock = new ReentrantLock();
+    private Lock reqLock = new ReentrantLock();
+    private Condition reqCondition = reqLock.newCondition();
+    private byte[] result;
     private Condition printCondition = printLock.newCondition();
     private Printer[] backPrinters;
 
@@ -47,10 +54,17 @@ public class Printer {
         try {
             while (true) {
                 initChannel();
-                if (null != channel && channel.isActive()) {
-                    channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
-                    channel.write(new byte[]{27, 27});
-
+                if (null != channel && channel.isConnected()) {
+                    OutputStream outputStream = channel.getOutputStream();
+                    //检查打印机状态
+                    int state = PrintControl.printerIsReady();
+                    //如果打印机不可用，进入下次循环
+                    if(state!=PrintControl.STATUS_OK){
+                        continue;
+                    }
+                    /*开始打印*/
+                    outputStream.write(PrinterConstant.AUTO_STATUS);
+                    outputStream.write(new byte[]{27, 27});
                     for (Object o : msg) {
                         byte[] line;
                         if (o instanceof Byte) {
@@ -60,11 +74,23 @@ public class Printer {
                         } else {
                             line = o.toString().getBytes(CHARSET);
                         }
-                        channel.writeAndFlush(line);
+                        outputStream.write(line);
+                        outputStream.flush();
                     }
-                    channel.write(PrinterConstant.getLineN((byte) 4));
-                    channel.writeAndFlush(new byte[]{10});
-                    channel.writeAndFlush(PrinterConstant.CUT);
+                    outputStream.write(PrinterConstant.getLineN((byte) 4));
+                    outputStream.write(new byte[]{10});
+                    outputStream.flush();
+                    outputStream.write(PrinterConstant.CUT);
+                    outputStream.flush();
+                    InputStream inputStream = channel.getInputStream();
+                    byte[] ret=new byte[4];
+                    state = PrintControl.CheckJob();
+                    switch (state){
+                        case PrintControl.STATUS_PRINT_DONE:
+                            result.setCode(state);
+                            break;
+                    }
+
 //                    try {
 //                        printCondition.await();
                     break;
@@ -75,6 +101,8 @@ public class Printer {
                     // TODO: 2016/6/12 调用备用打印机
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             printLock.unlock();
         }
@@ -135,11 +163,11 @@ public class Printer {
         this.port = port;
     }
 
-    public Channel getChannel() {
+    public Socket getChannel() {
         return channel;
     }
 
-    public void setChannel(Channel channel) {
+    public void setChannel(Socket channel) {
         this.channel = channel;
     }
 
