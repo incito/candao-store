@@ -19,26 +19,26 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
 
 	<description>Spring公共配置</description>
-	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">  
-        <property name="connectionFactory" ref="connectionFactory"/>  
-        <property name="messageConverter" ref="commMessageConverter" />  
-        <property name="explicitQosEnabled" value="true" /> <!-- deliveryMode, priority, timeToLive 的开关，要生效，必须配置为true，默认false-->  
-        <property name="deliveryMode" value="2" /> <!-- 发送模式  DeliveryMode.NON_PERSISTENT=1:非持久 ; DeliveryMode.PERSISTENT=2:持久-->  
-         <property name="sessionAcknowledgeMode" value="1" />   
-    </bean>  
-      
-    <!-- 分店 内负责打印单据 的 配置-->  
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageConverter" ref="commMessageConverter" />
+        <property name="explicitQosEnabled" value="true" /> <!-- deliveryMode, priority, timeToLive 的开关，要生效，必须配置为true，默认false-->
+        <property name="deliveryMode" value="2" /> <!-- 发送模式  DeliveryMode.NON_PERSISTENT=1:非持久 ; DeliveryMode.PERSISTENT=2:持久-->
+         <property name="sessionAcknowledgeMode" value="1" />
+    </bean>
+
+    <!-- 分店 内负责打印单据 的 配置-->
 <!--     <bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">   -->
 <!--         <property name="brokerURL" value="tcp://localhost:61616"/>   -->
 <!--     </bean>   -->
-    
-      
-    <!--  分店内部使用 的连接 -->  
-    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">  
-        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->  
-        <property name="targetConnectionFactory" ref="targetConnectionFactory"/>  
-    </bean>  
- 
+
+
+    <!--  分店内部使用 的连接 -->
+    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="targetConnectionFactory" ref="targetConnectionFactory"/>
+    </bean>
+
      <bean id="redeliveryPolicybranch" class="org.apache.activemq.RedeliveryPolicy">
 		<property name="initialRedeliveryDelay" value="15000" />
 		<property name="maximumRedeliveries" value="-1" />
@@ -47,7 +47,7 @@
 		<property name="queue" value="*" />
 		<property name="topic" value="*" />
 	 </bean>
-	 
+
 <!--  org.springframework.jms.connection.CachingConnectionFactory -->
     <bean id="targetConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
         init-method="start" destroy-method="stop"  >
@@ -59,39 +59,39 @@
         </property>
         <property name="maxConnections" value="30" />
         <property name="idleTimeout" value="0"/>
-      
+
     </bean>
- 
-    
-    <!-- 正常点菜消息队列 -->  
-    <bean id="normalDishQueue" class="org.apache.activemq.command.ActiveMQQueue">  
-        <constructor-arg value="normalDishQueue" />  
-    </bean>  
-    
-     <!-- 客户打印消息队列 -->  
-    <bean id="custDishQueue" class="org.apache.activemq.command.ActiveMQQueue">  
-        <constructor-arg value="custDishQueue" />  
-    </bean>  
-    
-     <!-- 套餐小票打印消息队列 -->  
-    <bean id="dishSetQueue" class="org.apache.activemq.command.ActiveMQQueue">  
-        <constructor-arg value="dishSetQueue" />  
-    </bean> 
-    
-	    <!-- 多个菜品的消息队列 -->  
+
+
+    <!-- 正常点菜消息队列 -->
+    <bean id="normalDishQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="normalDishQueue" />
+    </bean>
+
+     <!-- 客户打印消息队列 -->
+    <bean id="custDishQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="custDishQueue" />
+    </bean>
+
+     <!-- 套餐小票打印消息队列 -->
+    <bean id="dishSetQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="dishSetQueue" />
+    </bean>
+
+	    <!-- 多个菜品的消息队列 -->
 	<bean id ="multiDishQueue" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg>
 			<value>multiDishQueue</value>
 		</constructor-arg>
 	</bean>
-	
-	  <!-- 接收分店数据的队列 -->  
-    <bean id="branchDataQueue" class="org.apache.activemq.command.ActiveMQQueue">  
-        <constructor-arg value="branchDataQueue" />  
-    </bean>  
- 
-    
-    		    <!-- 打印换台和并台的消息队列 -->  
+
+	  <!-- 接收分店数据的队列 -->
+    <bean id="branchDataQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="branchDataQueue" />
+    </bean>
+
+
+    		    <!-- 打印换台和并台的消息队列 -->
 	<bean id ="tableSwitchQueue" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg>
 			<value>tableSwitchQueue</value>
@@ -103,197 +103,197 @@
 			<value>statementQueue</value>
 		</constructor-arg>
 	</bean>
-	    		    <!-- 打印称重单的消息队列 -->  
+	    		    <!-- 打印称重单的消息队列 -->
 	<bean id ="weightQueue" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg>
 			<value>weightQueue</value>
 		</constructor-arg>
 	</bean>
-	
-    <!-- 异常消息队列 -->  
-    <bean id="exceptionQueue" class="org.apache.activemq.command.ActiveMQQueue">  
-        <constructor-arg value="exceptionQueue" />  
-    </bean>  
-	
+
+    <!-- 异常消息队列 -->
+    <bean id="exceptionQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="exceptionQueue" />
+    </bean>
+
 		<bean id="commMessageConverter" class="com.candao.print.utils.CommMessageConverter"/>
-	
+
 	<!-- 多个菜品的监听 -->
-	  <bean id="multimessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="multiDishQueue" />  
-        <property name="messageListener" ref="multiMessageListenerAdapter" />  
-		<property name="concurrentConsumers" value="1" />        
+	  <!--<bean id="multimessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="multiDishQueue" />
+        <property name="messageListener" ref="multiMessageListenerAdapter" />
+		<property name="concurrentConsumers" value="1" />
 		<property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
-        
-    </bean>  
-    
-     <bean id="multiMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="multiDishListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean> 
-    
+
+    </bean>
+
+     <bean id="multiMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="multiDishListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
+
      <!-- 多个菜品的监听  end -->
-     
-     
+
+
     <!-- 客户联的监听 -->
-	  <bean id="custmessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="custDishQueue" />  
-        <property name="messageListener" ref="custMessageListenerAdapter" />  
+	  <!--<bean id="custmessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer" >
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="custDishQueue" />
+        <property name="messageListener" ref="custMessageListenerAdapter" />
 		<property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
-        <property name="transactionTimeout" value="300"/>    
-    </bean>  
-    
-     <bean id="custMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="custDishListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean> 
-    
+        <property name="transactionTimeout" value="300"/>
+    </bean>
+
+     <bean id="custMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="custDishListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
+
      <!-- 客户联的监听  end -->
-    
+
      <!--  正常下单的 监听 -->
-     <bean id="normalMessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="normalDishQueue" />  
-        <property name="messageListener" ref="messageListenerAdapter" />  
+     <!--<bean id="normalMessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="normalDishQueue" />
+        <property name="messageListener" ref="messageListenerAdapter" />
 		<property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
-    </bean>  
-    
-     <bean id="messageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="normalDishListener" />  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>  
+    </bean>
+
+     <bean id="messageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="normalDishListener" />
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
     <!-- 正常下单的 监听 end -->
-    
+
          <!--  称重单的 监听 -->
-     <bean id="weightMessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="weightQueue" />  
-        <property name="messageListener" ref="weightListenerAdapter" />  
+    <!-- <bean id="weightMessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="weightQueue" />
+        <property name="messageListener" ref="weightListenerAdapter" />
 		<property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
-    </bean>  
-    
-     <bean id="weightListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="weightDishListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>  
+    </bean>
+
+     <bean id="weightListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="weightDishListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
     <!-- 称重单的 监听 end -->
     <!-- 结账单监听start -->
-     <bean id="statementMessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="statementQueue" />  
-        <property name="messageListener" ref="statementListenerAdapter" />  
-    </bean>  
-    
-     <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="statementDishListener" />  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>  
+     <!--<bean id="statementMessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="statementQueue" />
+        <property name="messageListener" ref="statementListenerAdapter" />
+    </bean>
+
+     <bean id="statementListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="statementDishListener" />
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
     <!-- 套餐小票的监听 -->
-	  <bean id="dishSetmessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="dishSetQueue" />  
-        <property name="messageListener" ref="dishSetMessageListenerAdapter" />  
-    </bean>  
-    
-     <bean id="dishSetMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="dishSetListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>   
-      
+	  <!--<bean id="dishSetmessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="dishSetQueue" />
+        <property name="messageListener" ref="dishSetMessageListenerAdapter" />
+    </bean>
+
+     <bean id="dishSetMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="dishSetListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
+
     <!-- 异常队列的监听 -->
-	  <bean id="exceptionMessageListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="exceptionQueue" />  
-        <property name="messageListener" ref="exceptionMessageListenerAdapter" />  
+	 <!-- <bean id="exceptionMessageListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="exceptionQueue" />
+        <property name="messageListener" ref="exceptionMessageListenerAdapter" />
         <property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
-    </bean>  
-    
-     <bean id="exceptionMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="printExceptionListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>     
-       
+    </bean>
+
+     <bean id="exceptionMessageListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="printExceptionListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
+
     <!--  发送给分店数据的 监听  end -->
-    
+
               <!--  换台和并台的 监听 -->
-     <bean id="tableSwitchListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="connectionFactory" />  
-        <property name="destination" ref="tableSwitchQueue" />  
-        <property name="messageListener" ref="tableChangeListenerAdapter" />  
+  <!--   <bean id="tableSwitchListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="tableSwitchQueue" />
+        <property name="messageListener" ref="tableChangeListenerAdapter" />
 		<property name="concurrentConsumers" value="1" />
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
-    </bean>  
-    
-     <bean id="tableChangeListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate" ref="tableChangeListener"/>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>  
-    <!-- 换台和并台的 监听 end -->
-    
-    <bean id="normalDishListener" class="com.candao.print.listener.NormalDishListener">  
-        <property name="destination" ref="normalDishQueue"/>  
-    </bean>  
-    
-    <bean id="custDishListener" class="com.candao.print.listener.CustDishListener">  
-        <property name="destination" ref="custDishQueue"/>  
-    </bean>  
-    
-   <bean id="multiDishListener" class="com.candao.print.listener.MultiDishListener">  
-        <property name="destination" ref="multiDishQueue"/>  
-    </bean>  
-    
-      <bean id="weightDishListener" class="com.candao.print.listener.WeighDishListener">  
-        <property name="destination" ref="weightQueue"/>  
-    </bean>  
-      <bean id="tableChangeListener" class="com.candao.print.listener.TableChangeListener">  
-        <property name="destination" ref="tableSwitchQueue"/>  
-    </bean> 
-    <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">  
-        <property name="destination" ref="dishSetQueue"/>  
     </bean>
-    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener">  
-    	<property name="destination" ref="statementQueue"/>  
-    </bean>
-    <bean id="printExceptionListener" class="com.candao.print.listener.PrintExceptionListener">  
-        <property name="destination" ref="exceptionQueue"/>  
-    </bean>
-    
-    <!--  - 配置总店mq 信息  -->
-    
-    <!--         负责总店数据下发的mq   -->
-    
-      <bean id="jmsTemplateCenter" class="org.springframework.jms.core.JmsTemplate">  
-        <property name="connectionFactory" ref="centerConnectionFactory"/>  
-        <property name="messageConverter" ref="commMessageConverter" />  
-        <property name="explicitQosEnabled" value="true" /> <!-- deliveryMode, priority, timeToLive 的开关，要生效，必须配置为true，默认false-->  
-        <property name="deliveryMode" value="2" /> <!-- 发送模式  DeliveryMode.NON_PERSISTENT=1:非持久 ; DeliveryMode.PERSISTENT=2:持久-->  
-         <property name="sessionAcknowledgeMode" value="1" />   
-          <property name="timeToLive" value="1000000"/>  
-        <property name="receiveTimeout" value="60000" /> 
-    </bean>  
-     
-     
-          
 
-	 
+     <bean id="tableChangeListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="tableChangeListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>-->
+    <!-- 换台和并台的 监听 end -->
+
+    <bean id="normalDishListener" class="com.candao.print.listener.NormalDishListener">
+        <property name="destination" ref="normalDishQueue"/>
+    </bean>
+
+    <bean id="custDishListener" class="com.candao.print.listener.CustDishListener">
+        <property name="destination" ref="custDishQueue"/>
+    </bean>
+
+   <bean id="multiDishListener" class="com.candao.print.listener.MultiDishListener">
+        <property name="destination" ref="multiDishQueue"/>
+    </bean>
+
+      <bean id="weightDishListener" class="com.candao.print.listener.WeighDishListener">
+        <property name="destination" ref="weightQueue"/>
+    </bean>
+      <bean id="tableChangeListener" class="com.candao.print.listener.TableChangeListener">
+        <property name="destination" ref="tableSwitchQueue"/>
+    </bean>
+    <bean id="dishSetListener" class="com.candao.print.listener.DishSetListener">
+        <property name="destination" ref="dishSetQueue"/>
+    </bean>
+    <bean id="statementDishListener" class="com.candao.print.listener.StatementDishListener">
+    	<property name="destination" ref="statementQueue"/>
+    </bean>
+    <bean id="printExceptionListener" class="com.candao.print.listener.PrintExceptionListener">
+        <property name="destination" ref="exceptionQueue"/>
+    </bean>
+
+    <!--  - 配置总店mq 信息  -->
+
+    <!--         负责总店数据下发的mq   -->
+
+      <bean id="jmsTemplateCenter" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="centerConnectionFactory"/>
+        <property name="messageConverter" ref="commMessageConverter" />
+        <property name="explicitQosEnabled" value="true" /> <!-- deliveryMode, priority, timeToLive 的开关，要生效，必须配置为true，默认false-->
+        <property name="deliveryMode" value="2" /> <!-- 发送模式  DeliveryMode.NON_PERSISTENT=1:非持久 ; DeliveryMode.PERSISTENT=2:持久-->
+         <property name="sessionAcknowledgeMode" value="1" />
+          <property name="timeToLive" value="1000000"/>
+        <property name="receiveTimeout" value="60000" />
+    </bean>
+
+
+
+
+
   <bean id="redeliveryPolicy" class="org.apache.activemq.RedeliveryPolicy">
     <property name="backOffMultiplier" value="2" />
     <property name="initialRedeliveryDelay" value="2000" />
@@ -303,51 +303,63 @@
     <property name="redeliveryDelay" value="15000" />
     <property name="useExponentialBackOff" value="true" />
   </bean>
-  
+
     <bean id="centerTargetConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
         destroy-method="stop">
         <property name="connectionFactory">
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                 <property name="brokerURL" value="${mq_url}"/>  
+                 <property name="brokerURL" value="${mq_url}"/>
                  <property name="redeliveryPolicy" ref="redeliveryPolicy"/>
-                 
+
             </bean>
         </property>
         <property name="idleTimeout" value="0"/>
     </bean>
-    
-    
-    
-    <bean id="centerConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">  
-        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->  
-        <property name="targetConnectionFactory" ref="centerTargetConnectionFactory"/>  
-        <property name="reconnectOnException" value="true"/>  
-        
-    </bean>  
-   
+
+
+
+    <bean id="centerConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="targetConnectionFactory" ref="centerTargetConnectionFactory"/>
+        <property name="reconnectOnException" value="true"/>
+
+    </bean>
+
 <!--         	  发送数据到分店数据的队列   -->
-    <bean id="branchDataTopic" name="branchDataTopic" class="org.apache.activemq.command.ActiveMQTopic">  
-        <constructor-arg value="branchDataTopic_${tenant_id}" />  
-    </bean> 
- 
-    <bean id="centerQueue" name="centerQueue" class="org.apache.activemq.command.ActiveMQQueue">  
-        <constructor-arg value="centerQueue" />  
-    </bean>  
+    <bean id="branchDataTopic" name="branchDataTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="branchDataTopic_${tenant_id}" />
+    </bean>
+
+    <bean id="centerQueue" name="centerQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="centerQueue" />
+    </bean>
 
          <!--  总店发送给分店数据的 监听 -->
-     <bean id="branchTopicListenerAdapterContainer"  
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
-        <property name="connectionFactory" ref="centerConnectionFactory" />  
-        <property name="destination" ref="branchDataTopic" />  
-        <property name="messageListener" ref="branchTopicListenerAdapter" />  
-    </bean>  
-    
-     <bean id="branchTopicListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
-        <property name="delegate">  
-            <bean class="com.candao.www.interceptor.BranchReceiveDataListener"/>  
-        </property>  
-        <property name="defaultListenerMethod" value="receiveMessage"/>  
-    </bean>  
+     <bean id="branchTopicListenerAdapterContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="centerConnectionFactory" />
+        <property name="destination" ref="branchDataTopic" />
+        <property name="messageListener" ref="branchTopicListenerAdapter" />
+    </bean>
+
+     <bean id="branchTopicListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate">
+            <bean class="com.candao.www.interceptor.BranchReceiveDataListener"/>
+        </property>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>
     <!--  总店发送给分店数据的 监听  end -->
- 
+
+    <!--分店监听模板创建模板类-->
+    <bean id="messageListener" class="com.candao.www.print.listener.DefaultMessageListenerContainerAdapter" scope="prototype">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="sessionTransacted" value="true" />
+        <property name="transactionTimeout" value="300"/>
+        <property name="destinationName" value="dst"/>
+    </bean>
+
+    <bean id="printerListenerManager" class="com.candao.www.print.listener.PrinterListenerManager">
+        <property name="messageListener" value="messageListener"/>
+    </bean>
 </beans>
