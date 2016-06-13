@@ -5,11 +5,15 @@ import com.candao.www.utils.ToolsUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -20,22 +24,27 @@ public class PrinterHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("active:"+Thread.currentThread().getName());
-//        Channel channel = ctx.channel();
-//        channel.writeAndFlush(PrinterConstant.getLineN(4));
-//        channel.writeAndFlush("顶顶顶顶顶顶顶顶顶顶\r\n".getBytes("GBK"));
-//        channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
-//        channel.writeAndFlush(PrinterConstant.getLineN(4));
-//        channel.writeAndFlush(PrinterConstant.CUT);
+        System.out.println("active:" + Thread.currentThread().getName());
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            //读超时，超时后设置超时次数，次数超过（包含）${idleLimit}后，关闭连接。
+            if (e.state() == IdleState.WRITER_IDLE) {
+                ctx.channel().writeAndFlush(PrinterConstant.AUTO_STATUS);
+            }
+        }
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        byte[] b=(byte[])msg;
-        System.out.println(Thread.currentThread().getName()+ Arrays.toString(b));
+        byte[] b = (byte[]) msg;
+        System.out.println(Thread.currentThread().getName() + Arrays.toString(b));
         String ipAddress = getIpAddress(ctx.channel());
         Printer printer = PrinterManager.getPrinter(ipAddress);
-        if(null!=printer){
+        if (null != printer) {
             printer.doOperation(ToolsUtil.byte2int(b));
         }
 

@@ -36,7 +36,7 @@ public class PrintControl {
 //		new PrintControl().printerIsReady(iDevNum, iTimeOut);
 	}
 
-	public int printerIsReady(int iDevNum, int iTimeOut, OutputStream socketOut, InputStream inputStream) throws IOException {
+	public static int printerIsReady(int iTimeOut, OutputStream socketOut, InputStream inputStream) throws IOException {
 
         long iStartTime = 0;
         long iEndTime = 0;
@@ -94,7 +94,7 @@ public class PrintControl {
                 case STATUS_STOPPRINT:
                     //Clearing stop printing status data bit (1B 41)
                     //Chinese note:清除禁止打印状态
-                    if (ClearStopPrint(iDevNum) == OPERATION_ERROR)
+                    if (ClearStopPrint(socketOut) == OPERATION_ERROR)
                     {
                         return STATUS_OFFLINE;
                     }
@@ -104,7 +104,7 @@ public class PrintControl {
                 case STATUS_CLEAR_STOPPRINT_END:
                     //Clearing stop printing end status data bit (10 06 07 08 04)
                     //Chinese note:清除已完成清除禁止打印状态标志
-                    if (ClearStopPrintEnd(iDevNum) == OPERATION_ERROR)
+                    if (ClearStopPrintEnd(socketOut) == OPERATION_ERROR)
                     {
                         return STATUS_OFFLINE;
                     }
@@ -114,7 +114,7 @@ public class PrintControl {
                 case STATUS_PRINT_UNDONE:
                     //Reset printer status(10 06 07 08 08)
                     //Chinese note:复位打印机状态
-                    if (ResetDevStatus(iDevNum) == OPERATION_ERROR)
+                    if (ResetDevStatus(socketOut) == OPERATION_ERROR)
                     {
                         return STATUS_OFFLINE;
                     }
@@ -137,7 +137,7 @@ public class PrintControl {
         return STATUS_OK;
 	}
 
-	public int ReadDeviceStatus(byte[] cReadBuf) throws IOException {
+	private static int ReadDeviceStatus(byte[] cReadBuf) throws IOException {
 		boolean bIsAbnormity, bIsPaperEnd, bIsPaperNearEnd, bIsCoverOpen, bIsCutError, bIsPrinting, bIsStopPrint,
 				bIsClearStopPrintEnd, bIsPrintUndone;// IsPaperNearEndIsPrinting
 
@@ -298,7 +298,7 @@ public class PrintControl {
 	 * @param inputStream 
 	 * @throws IOException 
      ********************************************************************/
-     public int CheckJob(int iDevNum, int iTimeOut, InputStream inputStream) throws IOException
+     public static int CheckJob(int iDevNum, int iTimeOut, InputStream inputStream) throws IOException
      {
          if (iTimeOut < 1000)
          {
@@ -458,15 +458,16 @@ public class PrintControl {
 	 * of device. Chinese note: 设备编号
 	 **
 	 ** Return Value: Success : OPERATION_OK Failure : OPERATION_ERROR
+	 * @param socketOut 
 	 ********************************************************************/
-	private int ClearStopPrint(int iDevNum) {
+	private static int ClearStopPrint(OutputStream socketOut) {
 		byte[] cTempBuf = new byte[5];
 		int iWriteLen = -1;
 
 		cTempBuf[0] = 0x1b;
 		cTempBuf[1] = 0x41;
 
-		if (ByWritePort(iDevNum, cTempBuf, 2, iWriteLen) != 0) {
+		if (ByWritePort(cTempBuf, 2, iWriteLen, socketOut) != 0) {
 			return OPERATION_ERROR;
 		}
 
@@ -483,8 +484,9 @@ public class PrintControl {
 	 * device. Chinese note: 设备编号
 	 **
 	 ** Return Value: Success : OPERATION_OK Failure : OPERATION_ERROR
+	 * @param socketOut 
 	 ********************************************************************/
-	private int ResetDevStatus(int iDevNum) {
+	private static int ResetDevStatus(OutputStream socketOut) {
 		byte[] cTempBuf = new byte[6];
 		int iWriteLen = -1;
 
@@ -494,7 +496,7 @@ public class PrintControl {
 		cTempBuf[3] = 0x08;
 		cTempBuf[4] = 0x08;
 
-		if (ByWritePort(iDevNum, cTempBuf, 5, iWriteLen) != 0) {
+		if (ByWritePort(cTempBuf, 5, iWriteLen, socketOut) != 0) {
 			return OPERATION_ERROR;
 		}
 
@@ -511,8 +513,9 @@ public class PrintControl {
 	 ** iDevNum: Discriminating number of device. Chinese note: 设备编号
 	 **
 	 ** Return Value: Success : OPERATION_OK Failure : OPERATION_ERROR
+	 * @param socketOut 
 	 ********************************************************************/
-	private int ClearStopPrintEnd(int iDevNum) {
+	private static int ClearStopPrintEnd(OutputStream socketOut) {
 		byte[] cTempBuf = new byte[6];
 		int iWriteLen = -1;
 
@@ -522,7 +525,7 @@ public class PrintControl {
 		cTempBuf[3] = 0x08;
 		cTempBuf[4] = 0x04;
 
-		if (ByWritePort(iDevNum, cTempBuf, 5, iWriteLen) != 0) {
+		if (ByWritePort(cTempBuf, 5, iWriteLen, socketOut) != 0) {
 			return OPERATION_ERROR;
 		}
 
@@ -533,11 +536,18 @@ public class PrintControl {
 		return OPERATION_OK;
 	}
 
-	public native int ByWritePort(int iDevNum, byte[] cTempBuf, int i, int iWriteLen);
+	private static int ByWritePort(byte[] cTempBuf, int i, int iWriteLen, OutputStream socketOut){
+		try {
+			socketOut.write(cTempBuf);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 
-	public native int ByReadASBStatus(int iDevNum, byte p, int i, int iReadLen);
+//	public native int ByReadASBStatus(int iDevNum, byte p, int i, int iReadLen);
 
-	public long GetTickCount(){
+	private static long GetTickCount(){
 		return System.currentTimeMillis();
 	}
 }

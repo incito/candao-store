@@ -27,7 +27,7 @@ public class PrinterConstant {
     /**
      * 走纸一行
      */
-    public static final int LINE = 10;
+    public static final byte LINE = 10;
 
     public static byte[] getClear_font() {
 
@@ -45,8 +45,8 @@ public class PrinterConstant {
      * @param n
      * @return
      */
-    public static int[] getLineN(int n) {
-        return new int[]{27,100,n};
+    public static byte[] getLineN(byte n) {
+        return new byte[]{27,100,n};
     }
 
 
