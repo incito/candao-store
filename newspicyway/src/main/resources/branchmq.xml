@@ -249,7 +249,7 @@
     <!-- 换台和并台的 监听 end -->
 
     <bean id="normalDishListener" class="com.candao.print.listener.NormalDishListener">
-        <property name="destination" ref="normalDishQueue"/>
+        <!--<property name="destination" ref="normalDishQueue"/>-->
     </bean>
 
     <bean id="custDishListener" class="com.candao.print.listener.CustDishListener">
@@ -357,9 +357,18 @@
         <property name="sessionTransacted" value="true" />
         <property name="transactionTimeout" value="300"/>
         <property name="destinationName" value="dst"/>
+        <property name="messageListener" ref="ipQueueListenerAdapter"/>
     </bean>
 
     <bean id="printerListenerManager" class="com.candao.www.print.listener.PrinterListenerManager">
-        <property name="messageListener" value="messageListener"/>
+        <property name="messageListeners" value="messageListener"/>
     </bean>
+
+    <bean id="ipQueueListenerAdapter" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="IPQueueListener"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
+    </bean>
+
+    <bean id="IPQueueListener" class="com.candao.print.listener.IPQueueListener"/>
+
 </beans>

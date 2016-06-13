@@ -15,5 +15,12 @@ public class DefaultMessageListenerContainerAdapter extends DefaultMessageListen
         super.start();
     }
 
-
+//    @Override
+//    public void stop() {
+//    }
+//
+//    @Override
+//    public void stop(Runnable callback) {
+//        isr
+//    }
 }
