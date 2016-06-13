@@ -298,7 +298,7 @@ public class PrintControl {
 	 * @param inputStream 
 	 * @throws IOException 
      ********************************************************************/
-     public int CheckJob(int iDevNum, int iTimeOut, InputStream inputStream) throws IOException
+     public static int CheckJob(int iDevNum, int iTimeOut, InputStream inputStream) throws IOException
      {
          if (iTimeOut < 1000)
          {
