@@ -1,9 +1,9 @@
 package com.candao.www.printer;
 
 import com.candao.print.entity.PrinterConstant;
+import com.candao.print.utils.PrintControl;
+import com.candao.www.utils.ToolsUtil;
 import io.netty.channel.Channel;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.locks.Condition;
@@ -19,6 +19,7 @@ public class Printer {
      * 打印机响应超时时间 单位秒
      */
     private static final long SEND_TIMEOUT = 3;
+    private static final Charset CHARSET = Charset.forName("GBK");
     /**
      * 打印机标示，默认为ip
      */
@@ -36,9 +37,10 @@ public class Printer {
      * @param msg
      * @return
      */
-    public PrintResult print(String msg) {
+    public PrintResult print(Object[] msg) {
+
         if (null == msg) {
-            msg = "";
+            msg = new Object[]{};
         }
         PrintResult result = new PrintResult();
         printLock.lock();
@@ -47,26 +49,22 @@ public class Printer {
                 initChannel();
                 if (null != channel && channel.isActive()) {
                     channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
-                    channel.write(new byte[]{27});
-//                    try {
-                        channel.writeAndFlush(new byte[]{27});
-//                    channel.writeAndFlush(PrinterConstant.LINE);
-//                    channel.writeAndFlush(PrinterConstant.LINE);
-                        channel.writeAndFlush("第1行\r\n".getBytes(Charset.forName("GBK")));
-                        channel.writeAndFlush("第2行\r\n".getBytes(Charset.forName("GBK")));
-                        channel.writeAndFlush("第3行\r\n".getBytes(Charset.forName("GBK")));
-                        channel.writeAndFlush("第4行\r\n".getBytes(Charset.forName("GBK"))).addListener(new GenericFutureListener<Future<? super Void>>() {
-                            @Override
-                            public void operationComplete(Future<? super Void> future) throws Exception {
-                                channel.write(PrinterConstant.getLineN(4));
-                                channel.writeAndFlush(new byte[]{10});
-                                channel.writeAndFlush(PrinterConstant.CUT);
-                            }
-                        });
+                    channel.write(new byte[]{27, 27});
 
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
+                    for (Object o : msg) {
+                        byte[] line;
+                        if (o instanceof Byte) {
+                            line = new byte[]{(byte) o};
+                        } else if (o instanceof byte[]) {
+                            line = (byte[]) o;
+                        } else {
+                            line = o.toString().getBytes(CHARSET);
+                        }
+                        channel.writeAndFlush(line);
+                    }
+                    channel.write(PrinterConstant.getLineN((byte) 4));
+                    channel.writeAndFlush(new byte[]{10});
+                    channel.writeAndFlush(PrinterConstant.CUT);
 //                    try {
 //                        printCondition.await();
                     break;
@@ -110,16 +108,8 @@ public class Printer {
     public void doOperation(int code) {
         printLock.lock();
         try {
-            int ret = checkCode(code);
-            switch (ret) {
-                case PrinterStatus.PRINTING:
-                    break;
-                case PrinterStatus.FINISHED:
-                    printCondition.signal();
-                    break;
-                case PrinterStatus.FAILED:
-                    // TODO: 2016/6/12 调用备用打印机
-            }
+            int ret = PrintControl.ReadDeviceStatus(ToolsUtil.int2byte(code));
+            System.out.println(ret);
         } finally {
             printLock.unlock();
         }
