@@ -1,5 +1,9 @@
 package com.candao.print.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * 打印控制类
  * 
@@ -32,10 +36,10 @@ public class PrintControl {
 //		new PrintControl().printerIsReady(iDevNum, iTimeOut);
 	}
 
-	public int printerIsReady(int iDevNum, int iTimeOut) {
+	public int printerIsReady(int iDevNum, int iTimeOut, OutputStream socketOut, InputStream inputStream) throws IOException {
 
-        int iStartTime = 0;
-        int iEndTime = 0;
+        long iStartTime = 0;
+        long iEndTime = 0;
         int iState = -1;
         int iReadNum = 0;
 
@@ -43,7 +47,7 @@ public class PrintControl {
         {
             iTimeOut = 1000;
         }
-        long timeMillis = System.currentTimeMillis();
+        
         iStartTime = GetTickCount();
         iEndTime = iStartTime + iTimeOut;
 
@@ -51,9 +55,18 @@ public class PrintControl {
         {
         //Send check command (1D 61 FF)
         //Chinese note:发送查询指令
+        	try {
+				socketOut.write(new byte[]{0x1D, 0x61, (byte) 0xFF});
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
             //Get the printer's status
             //Chinese note:获取设备状态
-            iState = ReadDeviceStatus(iDevNum, new byte[2]);
+        	byte[] cReadBuf = new byte[inputStream.available()];
+     		inputStream.read(cReadBuf);
+            iState = ReadDeviceStatus(cReadBuf);
 
             switch (iState)
             {
@@ -124,11 +137,13 @@ public class PrintControl {
         return STATUS_OK;
 	}
 
-	public int ReadDeviceStatus(int iDevNum, byte[] cReadBuf) {
+	public int ReadDeviceStatus(byte[] cReadBuf) throws IOException {
 		boolean bIsAbnormity, bIsPaperEnd, bIsPaperNearEnd, bIsCoverOpen, bIsCutError, bIsPrinting, bIsStopPrint,
 				bIsClearStopPrintEnd, bIsPrintUndone;// IsPaperNearEndIsPrinting
 
 //		byte[] cReadBuf = new byte[100];
+		
+
 		int iReadLen = cReadBuf.length;
 
 		// Read printer status data
@@ -264,6 +279,177 @@ public class PrintControl {
 
 		return STATUS_OK;
 	}
+	
+	/*******************************************************************
+     **Function Name: CheckJob
+     **Function: Check result of printing job
+                 Chinese note:查询打印作业打印结果
+     **Parameter:
+     **       iDevNum: Discriminating number of device.
+                       Chinese note:设备编号    
+     **       iTimeOut: Set time out of operation
+                        Chinese note:操作超时时间
+     **Return Value:     
+     **        Success : STATUS_OK  
+     **        Failure : STATUS_OFFLINE, STATUS_ABNAMAL, etc.  
+     **Remark: iTimeOut parameter setting depend on printing speed and printing length. 
+               Chinese note: iTimeOut参数值的设置与打印速度及票面的打印长度有关。                
+	 * @param socketOut 
+	 * @param inputStream 
+	 * @throws IOException 
+     ********************************************************************/
+     public int CheckJob(int iDevNum, int iTimeOut, InputStream inputStream) throws IOException
+     {
+         if (iTimeOut < 1000)
+         {
+             iTimeOut = 1000;
+         }
+         //定义变量并初始化
+         int iReturnValue = STATUS_PRINT_DONE;	//函数返回值
+         long iStartTime = 0;						//计时起始时间
+         long iEndTime = 0;						//计时终止时间
+//         byte[] cReadBuf = new byte[100];		//接收缓冲区
+         int iReadLen = 0;						//读取数据长度
+         boolean bIsAbnormal = false;				//出错标志
+         boolean bIsPrinting = false;				//打印过程
+         boolean bIsPrintingStart = false;			//启动打印标志
+         boolean bIsStopPrint = false;				//禁止打印标志
+         boolean bIsPrintUndone = false;			//打印未完成标志
+         int ii = 0;								//循环变量
+
+         
+         int iReadValue = 0;                     //临时变量，用于记录ByReadASBStatus的返回值
+
+         //Timeout operation
+         //Chinese note:超时操作
+         iStartTime = GetTickCount();
+         iEndTime = iStartTime + iTimeOut;
+         while (iStartTime < iEndTime)
+         {
+             //Read device automatic status back data
+             //Chinese note:读取自动状态返回数据
+
+         	byte[] cReadBuf = new byte[inputStream.available()];
+     		inputStream.read(cReadBuf);
+     		iReadLen = cReadBuf.length;
+     		iReadValue = ReadDeviceStatus(cReadBuf);
+        	 
+//             for (ii = 0; ii < 100; ii++)
+//             {
+//                 cReadBuf[ii] = 0;
+//             }
+//
+//             fixed (byte* p = cReadBuf)
+//             {
+//                 iReadValue = ByReadASBStatus(iDevNum, p, 100, ref iReadLen);
+//             }
+
+             if ((iReadValue == 0) && (iReadLen > 0))
+             {
+                 //Chinese note: 检查返回数据长度是否合法
+                 if (iReadLen % 4 != 0)
+                 {
+                     iReturnValue = STATUS_ABNORMAL;
+                     return iReturnValue;
+                 }
+             }
+
+             for (ii = 0; ii < (iReadLen / 4); ii++)
+             {
+                 //Parse status
+                 //Chinese note:解析具体状态
+                 if ((cReadBuf[0 + (ii * 4)] & 0x10) == 0x01)
+                 {
+                     bIsAbnormal = true;
+                 }
+                 else
+                 {
+                     bIsAbnormal = false;
+                 }
+
+                 if ((cReadBuf[2 + (ii * 4)] & 0x40) == 0x00)
+                 {
+                     bIsPrinting = false;
+                 }
+                 else
+                 {
+                     bIsPrinting = true;
+                 }
+
+                 if ((cReadBuf[3 + (ii * 4)] & 0x40) == 0x00)
+                 {
+                     bIsStopPrint = false;
+                 }
+                 else
+                 {
+                     bIsStopPrint = true;
+                 }
+
+                 if ((cReadBuf[2 + (ii * 4)] & 0x20) == 0x00)
+                 {
+                     bIsPrintUndone = false;
+                 }
+                 else
+                 {
+                     bIsPrintUndone = true;
+                 }
+
+                 //Printer status is abnormal
+                 //Chinese note:状态是否异常
+                 if (bIsAbnormal)
+                 {
+                     iReturnValue = STATUS_ABNORMAL;
+                     return iReturnValue;
+                 }
+
+                 //Printer is stopped printing status
+                 //Chinese note:是否出现禁止打印状态
+                 if (bIsStopPrint)
+                 {
+                     iReturnValue = STATUS_STOPPRINT;
+                     return iReturnValue;
+                 }
+
+                 //Printer is start printing status
+                 //Chinese note:启动打印状态
+                 if (bIsPrinting)
+                 {
+                     bIsPrintingStart = true;
+                 }
+
+                 //Printer is printing status
+                 //Chinese note:正在打印状态是否结束
+                 if (bIsPrintingStart)
+                 {
+                     if (bIsPrintUndone)//非正常完成
+                     {
+                         iReturnValue = STATUS_PRINT_UNDONE;
+                         return iReturnValue;
+                     }
+                     if (!bIsPrinting)//打印完成
+                     {
+                    	 return iReturnValue;
+                     }
+                 }
+             }
+
+             try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+             iStartTime = GetTickCount();
+         }
+
+         //Checking timeout
+         //Chinese note:超时判断
+         if (iStartTime >= iEndTime)
+         {
+             iReturnValue = STATUS_DEVTIMEOUT;
+         }
+         return iReturnValue;
+
+     }
 
 	/*******************************************************************
 	 ** Function Name: ClearStopPrintEnd(int iDevNum) Function: Clear status flag
@@ -351,5 +537,7 @@ public class PrintControl {
 
 	public native int ByReadASBStatus(int iDevNum, byte p, int i, int iReadLen);
 
-	public native int GetTickCount();
+	public long GetTickCount(){
+		return System.currentTimeMillis();
+	}
 }
