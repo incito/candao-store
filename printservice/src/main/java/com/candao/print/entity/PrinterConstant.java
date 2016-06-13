@@ -19,7 +19,7 @@ public class PrinterConstant {
     /**
      * 开启自动状态返回
      */
-    public static final byte[] AUTO_STATUS = new byte[]{0x1D, 0x61, (byte) 0xFF};
+    public static final byte[] AUTO_STATUS = new byte[]{29, 97, 1};
     /**
      * 切纸
      */

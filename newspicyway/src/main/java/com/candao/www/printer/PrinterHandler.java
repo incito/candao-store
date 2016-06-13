@@ -1,6 +1,7 @@
 package com.candao.www.printer;
 
 import com.candao.print.entity.PrinterConstant;
+import com.candao.www.utils.ToolsUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 
 /**
  * Created by liaoy on 2016/6/12.
@@ -18,22 +20,25 @@ public class PrinterHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
-        channel.writeAndFlush(PrinterConstant.getLineN(4));
-        channel.writeAndFlush(PrinterConstant.CUT);
+        System.out.println("active:"+Thread.currentThread().getName());
+//        Channel channel = ctx.channel();
+//        channel.writeAndFlush(PrinterConstant.getLineN(4));
+//        channel.writeAndFlush("顶顶顶顶顶顶顶顶顶顶\r\n".getBytes("GBK"));
+//        channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
+//        channel.writeAndFlush(PrinterConstant.getLineN(4));
+//        channel.writeAndFlush(PrinterConstant.CUT);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        int code=1;
+        byte[] b=(byte[])msg;
+        System.out.println(Thread.currentThread().getName()+ Arrays.toString(b));
         String ipAddress = getIpAddress(ctx.channel());
         Printer printer = PrinterManager.getPrinter(ipAddress);
         if(null!=printer){
-            // TODO: 2016/6/12 接收到响应，调用对应printer的doOperation方法
-            printer.doOperation(code);
+            printer.doOperation(ToolsUtil.byte2int(b));
         }
-        System.out.println(msg);
+
     }
 
     @Override

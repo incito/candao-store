@@ -28,6 +28,7 @@ class PrinterConnector {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ByteArrayEncoder());
+                ch.pipeline().addLast(new ByteArrayDecoder());
                 ch.pipeline().addLast(new PrinterHandler());
             }
         });
