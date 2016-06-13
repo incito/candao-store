@@ -2,7 +2,10 @@ package com.candao.www.printer;
 
 import com.candao.print.entity.PrinterConstant;
 import io.netty.channel.Channel;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,7 +36,10 @@ public class Printer {
      * @param msg
      * @return
      */
-    public PrintResult print(Object[] msg) {
+    public PrintResult print(String msg) {
+        if (null == msg) {
+            msg = "";
+        }
         PrintResult result = new PrintResult();
         printLock.lock();
         try {
@@ -41,14 +47,29 @@ public class Printer {
                 initChannel();
                 if (null != channel && channel.isActive()) {
                     channel.writeAndFlush(PrinterConstant.AUTO_STATUS);
-                    channel.writeAndFlush(PrinterConstant.LINE);
-                    channel.writeAndFlush(PrinterConstant.LINE);
-                    channel.writeAndFlush(msg);
-                    channel.writeAndFlush(PrinterConstant.getLineN(4));
-                    channel.writeAndFlush(PrinterConstant.CUT);
+                    channel.write(new byte[]{27});
+//                    try {
+                        channel.writeAndFlush(new byte[]{27});
+//                    channel.writeAndFlush(PrinterConstant.LINE);
+//                    channel.writeAndFlush(PrinterConstant.LINE);
+                        channel.writeAndFlush("第1行\r\n".getBytes(Charset.forName("GBK")));
+                        channel.writeAndFlush("第2行\r\n".getBytes(Charset.forName("GBK")));
+                        channel.writeAndFlush("第3行\r\n".getBytes(Charset.forName("GBK")));
+                        channel.writeAndFlush("第4行\r\n".getBytes(Charset.forName("GBK"))).addListener(new GenericFutureListener<Future<? super Void>>() {
+                            @Override
+                            public void operationComplete(Future<? super Void> future) throws Exception {
+                                channel.write(PrinterConstant.getLineN(4));
+                                channel.writeAndFlush(new byte[]{10});
+                                channel.writeAndFlush(PrinterConstant.CUT);
+                            }
+                        });
+
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
 //                    try {
 //                        printCondition.await();
-                        break;
+                    break;
 //                    } catch (InterruptedException e) {
 //                        e.printStackTrace();
 //                    }
