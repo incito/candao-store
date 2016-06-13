@@ -137,7 +137,7 @@ public class PrintControl {
         return STATUS_OK;
 	}
 
-	public int ReadDeviceStatus(byte[] cReadBuf) throws IOException {
+	public static int ReadDeviceStatus(byte[] cReadBuf) {
 		boolean bIsAbnormity, bIsPaperEnd, bIsPaperNearEnd, bIsCoverOpen, bIsCutError, bIsPrinting, bIsStopPrint,
 				bIsClearStopPrintEnd, bIsPrintUndone;// IsPaperNearEndIsPrinting
 

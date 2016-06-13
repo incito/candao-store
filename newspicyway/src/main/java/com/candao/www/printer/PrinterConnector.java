@@ -10,8 +10,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 打印机连接管理
@@ -29,6 +32,7 @@ class PrinterConnector {
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ByteArrayEncoder());
                 ch.pipeline().addLast(new ByteArrayDecoder());
+                ch.pipeline().addLast(new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS));
                 ch.pipeline().addLast(new PrinterHandler());
             }
         });
