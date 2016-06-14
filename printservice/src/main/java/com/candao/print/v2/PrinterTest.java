@@ -1,4 +1,4 @@
-package com.candao.www.printer;
+package com.candao.print.v2;
 
 import com.candao.print.entity.PrinterConstant;
 
@@ -10,18 +10,6 @@ import java.util.List;
  */
 public class PrinterTest {
     public static void main(String[] args) throws InterruptedException {
-        Printer printer = new Printer();
-        printer.setIp("10.66.18.3");
-        printer.setPort(9100);
-        printer.setKey("10.66.18.3");
-
-        Printer printer1 = new Printer();
-        printer1.setIp("10.66.18.250");
-        printer1.setPort(9100);
-        printer1.setKey("10.66.18.250");
-
-        PrinterManager.addPrinter(printer);
-        PrinterManager.addPrinter(printer1);
 
         List<Object> msg = new ArrayList<>();
         msg.add(PrinterConstant.getFdDoubleFont());

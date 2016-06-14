@@ -1,6 +1,5 @@
-package com.candao.www.printer;
+package com.candao.print.v2;
 
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +14,18 @@ import java.net.Socket;
 class PrinterConnector {
     private static Logger logger = LoggerFactory.getLogger(PrinterConnector.class);
 
-    public static Socket createConnection(String host, int port) {
+    /**
+     * 创建连接
+     * @param host
+     * @param port
+     * @param timeout 超时时间 单位ms
+     * @return
+     */
+    public static Socket createConnection(String host, int port,int timeout) {
         Socket socket = new Socket();
 
         try {
-            socket.connect(new InetSocketAddress("10.66.18.3", 9100), 5000);//建立连接5秒超时
+            socket.connect(new InetSocketAddress("10.66.18.3", 9100), timeout);//建立连接5秒超时
             return socket;
         } catch (IOException e) {
             logger.error("创建连接失败[" + host + ":" + port + "]", e);
