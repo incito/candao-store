@@ -1,4 +1,4 @@
-package com.candao.print.v2;
+package com.candao.www.printer.v2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

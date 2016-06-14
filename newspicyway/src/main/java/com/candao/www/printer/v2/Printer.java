@@ -1,4 +1,4 @@
-package com.candao.print.v2;
+package com.candao.www.printer.v2;
 
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;

@@ -1,7 +1,7 @@
-package com.candao.print.v2;
+package com.candao.www.printer.v2;
 
 import com.candao.print.service.PrinterService;
-import com.candao.print.utils.SpringContext;
+import com.candao.www.spring.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;

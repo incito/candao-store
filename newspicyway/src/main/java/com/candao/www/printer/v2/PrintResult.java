@@ -1,4 +1,4 @@
-package com.candao.print.v2;
+package com.candao.www.printer.v2;
 
 /**
  * 打印结果
