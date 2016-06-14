@@ -15,6 +15,7 @@ public final static String PREFIX = TbPrinterDao.class.getName();
 	
 
 	public <T, K, V> List<T> find(Map<K, V> params);
+	public <T, K, V> List<T> findAll(Map<K, V> params);
 	
 	public <T, K, V> List<T> getCount(Map<K, V> params);
 	

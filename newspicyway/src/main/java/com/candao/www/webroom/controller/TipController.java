@@ -3,10 +3,7 @@
  */
 package com.candao.www.webroom.controller;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -217,7 +214,14 @@ public class TipController {
 		if(falg.equals("1")){  //今日
 			startTime = DateUtils.today() + " 00:00:00";
 		}else if(falg.equals("2")){  //本周
-			startTime = DateUtils.weekOfFirstDay() + " 00:00:00";
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+			Calendar c = Calendar.getInstance();
+			int day = c.get(Calendar.DAY_OF_WEEK) - 1;
+			if (day == 0){
+				day = 7;
+			}
+			c.add(Calendar.DATE, -day + 1);
+			startTime = sdf.format(c.getTime());
 		}else if(falg.equals("3")){  //本月
 			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
 		}else if(falg.equals("4")){   //上月
