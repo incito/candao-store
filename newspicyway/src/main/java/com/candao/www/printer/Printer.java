@@ -34,9 +34,8 @@ public class Printer {
     private Lock printLock = new ReentrantLock();
     private Lock reqLock = new ReentrantLock();
     private Condition reqCondition = reqLock.newCondition();
-    private byte[] result;
     private Condition printCondition = printLock.newCondition();
-    private Printer[] backPrinters;
+    private Printer backPrinters;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -56,10 +55,12 @@ public class Printer {
                 initChannel();
                 if (null != channel && channel.isConnected()) {
                     OutputStream outputStream = channel.getOutputStream();
+                    InputStream inputStream = channel.getInputStream();
                     //检查打印机状态
-                    int state = PrintControl.printerIsReady();
+                    int state = PrintControl.printerIsReady(1,8,outputStream,inputStream);
                     //如果打印机不可用，进入下次循环
                     if(state!=PrintControl.STATUS_OK){
+                        // TODO: 2016/6/14 可恢复异常 等待；不可恢复异常 调用打印机 
                         continue;
                     }
                     /*开始打印*/
@@ -82,9 +83,7 @@ public class Printer {
                     outputStream.flush();
                     outputStream.write(PrinterConstant.CUT);
                     outputStream.flush();
-                    InputStream inputStream = channel.getInputStream();
-                    byte[] ret=new byte[4];
-                    state = PrintControl.CheckJob();
+                    state = PrintControl.CheckJob(1,8,inputStream);
                     switch (state){
                         case PrintControl.STATUS_PRINT_DONE:
                             result.setCode(state);
@@ -134,13 +133,13 @@ public class Printer {
      * 处理自动状态返回
      */
     public void doOperation(int code) {
-        printLock.lock();
-        try {
-            int ret = PrintControl.ReadDeviceStatus(ToolsUtil.int2byte(code));
-            System.out.println(ret);
-        } finally {
-            printLock.unlock();
-        }
+//        printLock.lock();
+//        try {
+//            int ret = PrintControl.ReadDeviceStatus(ToolsUtil.int2byte(code));
+//            System.out.println(ret);
+//        } finally {
+//            printLock.unlock();
+//        }
     }
 
     private int checkCode(int code) {
