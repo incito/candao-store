@@ -9,9 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Method;
 
 /**
  * Created by Administrator on 2016-6-13.
@@ -55,8 +52,8 @@ public class IPQueueListener implements ApplicationContextAware{
 
     private void print(Object[] src) throws  Exception{
         //TODO
-        System.out.println("2333333333333333333333333333333");
-        System.out.println(JacksonJsonMapper.objectToJson(src));
+//        System.out.println("2333333333333333333333333333333");
+//        System.out.println(JacksonJsonMapper.objectToJson(src));
     }
 
     @Override

@@ -10,6 +10,9 @@ public abstract class AbstractQueueListener implements QueueListener{
 
 
     protected PrintData prepareData(PrintObj obj,PrintData data) throws Exception {
+    	if (data == null) {
+			data = new PrintData();
+		}
         data.write(new byte[27]);
         data.write(new byte[27]);
         data.flush();//
