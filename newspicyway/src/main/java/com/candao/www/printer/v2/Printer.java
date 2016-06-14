@@ -2,6 +2,9 @@ package com.candao.www.printer.v2;
 
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by liaoy on 2016/6/12.
  */
 public class Printer {
-    private static Logger logger = LoggerFactory.getLogger(Printer.class);
+    private static Log logger = LogFactory.getLog(Printer.class.getName());
     /**
      * 打印机响应超时时间 单位秒
      */

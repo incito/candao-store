@@ -13,19 +13,19 @@ public abstract class AbstractQueueListener implements QueueListener{
     	if (data == null) {
 			data = new PrintData();
 		}
-        data.write(new byte[27]);
-        data.write(new byte[27]);
+//        data.write(new byte[27]);
+//        data.write(new byte[27]);
         data.flush();//
 
         printBusinessData(obj,data,data);
 
         // 下面指令为打印完成后自动走纸
-        data.write(new byte[27]);
-        data.write(new byte[100]);
-        data.write(new byte[4]);
-        data.write(new byte[10]);
-        data.flush();//
-        data.write(new byte[] { 0x1B, 0x69 });// 切纸
+//        data.write(new byte[27]);
+//        data.write(new byte[100]);
+//        data.write(new byte[4]);
+//        data.write(new byte[10]);
+//        data.flush();//
+//        data.write(new byte[] { 0x1B, 0x69 });// 切纸
 
         return data;
     }

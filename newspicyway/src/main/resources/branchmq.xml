@@ -67,6 +67,7 @@
         <constructor-arg value="branchDataQueue" />
     </bean>
 
+		<bean id="commMessageConverter" class="com.candao.print.utils.CommMessageConverter"/>
     <!--  - 配置总店mq 信息  -->
 
     <!--         负责总店数据下发的mq   -->
@@ -153,6 +154,6 @@
         <property name="defaultListenerMethod" value="receiveMessage"/>
     </bean>
 
-    <bean id="IPQueueListener" class="com.candao.print.listener.IPQueueListener"/>
+    <bean id="IPQueueListener" class="com.candao.www.printer.listener.IPQueueListener"/>
 
 </beans>

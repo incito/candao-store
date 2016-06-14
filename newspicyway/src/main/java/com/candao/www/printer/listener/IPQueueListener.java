@@ -1,9 +1,12 @@
-package com.candao.print.listener;
+package com.candao.www.printer.listener;
 
 import com.candao.common.utils.Constant;
-import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
+import com.candao.print.listener.QueueListener;
+import com.candao.www.printer.v2.Printer;
+import com.candao.www.printer.v2.PrinterManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -36,24 +39,37 @@ public class IPQueueListener implements ApplicationContextAware{
            data = dst.receiveMessage(obj);
         } catch (Exception e) {
             log.error("打印数据处理失败------------ ");
+            log.error("处理方法类型：" + obj.getListenerType().toString());
             log.error("订单号： "+obj.getOrderNo());
             e.printStackTrace();
         }
         if (data != null){
             try {
-                print(data.convert());
+                print(data.convert(),obj);
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("打印失败",e);
+                log.error("打印失败!订单号：" + obj.getOrderNo(),e);
             }
         }
 
     }
 
-    private void print(Object[] src) throws  Exception{
+    private void print(Object[] src,PrintObj obj) throws  Exception{
         //TODO
 //        System.out.println("2333333333333333333333333333333");
 //        System.out.println(JacksonJsonMapper.objectToJson(src));
+    	String ipAddress = obj.getCustomerPrinterIp();
+		if (ipAddress.contains(",")) {
+			String[] ips = ipAddress.split(",");
+			ipAddress = ips[0];
+		}
+    	Printer printer = PrinterManager.getPrinter(ipAddress);
+    	if(printer == null){
+			log.error("-----------------------");
+			log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
+    		return;
+    	}
+    	printer.print(src);
     }
 
     @Override
