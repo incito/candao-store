@@ -51,10 +51,11 @@ public class PrinterManager {
 
                 Printer p = new Printer();
                 //备用打印机处理
-                String[] ips = ipStr.split(":");
+                String[] ips = ipStr.split(",");
                 p.setKey(ips[0]);
                 p.setIp(ips[0]);
                 p.setPort(portInt);
+                p.setId(printer.get("printerid").toString());
                 if (ips.length > 1) {
                     Printer backPrinter = new Printer();
                     backPrinter.setKey(ips[1]);

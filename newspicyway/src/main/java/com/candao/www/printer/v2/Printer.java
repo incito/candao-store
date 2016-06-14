@@ -2,11 +2,8 @@ package com.candao.www.printer.v2;
 
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +24,10 @@ public class Printer {
      * 打印机响应超时时间 单位秒
      */
     private static final Charset CHARSET = Charset.forName("GBK");
+    /**
+     * 打印机数据库ID
+     */
+    private String id;
     /**
      * 打印机标示，默认为ip
      */
@@ -273,14 +274,16 @@ public class Printer {
                 return true;
         }
     }
-    private void sleep(long time){
-        logger.debug("["+ip+"]休眠"+time+"ms");
+
+    private void sleep(long time) {
+        logger.debug("[" + ip + "]休眠" + time + "ms");
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+
     public String getIp() {
         return ip;
     }
@@ -319,5 +322,13 @@ public class Printer {
 
     public void setBackPrinter(Printer backPrinter) {
         this.backPrinter = backPrinter;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
