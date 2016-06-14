@@ -39,4 +39,21 @@ public class Constant {
 	public static final String SUCCESSMSG = "{\"result\":\"0\"}";
 
 	public static final String CHECKSTATE = "CHECKSTATE";
+
+	public enum ListenerType {
+		NormalListener("normalDishListener"), MultiDishListener("multiDishListener"), DishSetListener("dishSetListener"),
+		CustDishListener("custDishListener"), StatementDishListener("statementDishListener"), TableChangeListener("tableChangeListener"),
+		WeighDishListener("weighDishListener");
+
+		private String name;
+
+		private ListenerType(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
+	}
 }

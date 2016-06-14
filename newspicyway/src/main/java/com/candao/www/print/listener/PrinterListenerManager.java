@@ -34,17 +34,17 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 
     private final String activeMonitor = "activeMonitor";
 
-    private String messageListener = "";
+    private String messageListeners = "";
 
     public PrinterListenerManager() {
     }
 
-    public String getMessageListener() {
-        return messageListener;
+    public String getMessageListeners() {
+        return messageListeners;
     }
 
-    public void setMessageListener(String messageListener) {
-        this.messageListener = messageListener;
+    public void setMessageListeners(String messageListeners) {
+        this.messageListeners = messageListeners;
     }
 
     @Override
@@ -54,6 +54,10 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 
     @Override
     public void stop(Runnable callback) {
+        this.stop();
+        System.out.println(123456);
+        running = false;
+        callback.run();
     }
 
     private void stopConnections() {
@@ -66,6 +70,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
                 it.getValue().stop();
             }
         }
+        listeners.clear();
     }
 
     @Override
@@ -94,7 +99,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
                 }
                 if (listeners.get(ipaddress) == null) {
                     Destination dst = new ActiveMQQueue(ipaddress);
-                    DefaultMessageListenerContainerAdapter listener = (DefaultMessageListenerContainerAdapter) applicationContext.getBean(messageListener);
+                    DefaultMessageListenerContainerAdapter listener = (DefaultMessageListenerContainerAdapter) applicationContext.getBean(messageListeners);
                     listener.setDestination(dst);
                     listener.trulyStart();
                     listeners.put(ipaddress, listener);
@@ -106,6 +111,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
     @Override
     public void stop() {
         synchronized (activeMonitor) {
+            System.out.println(12345);
             stopListeners();
             stopConnections();
         }
