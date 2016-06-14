@@ -57,7 +57,7 @@ public class Printer {
                         InputStream inputStream = channel.getInputStream();
                         //检查打印机状态
                         logger.info("[" + ip + "]检查打印机状态");
-                        int state = PrintControl.printerIsReady(5000, outputStream, inputStream);
+                        int state = PrintControl.printerIsReady(3000, outputStream, inputStream);
                         logger.info("[" + ip + "]打印机状态:" + state);
                         if (state != PrintControl.STATUS_OK) {
                             logger.info("[" + ip + "]打印机不可用:" + state);
@@ -84,7 +84,7 @@ public class Printer {
                         doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
-                        state = PrintControl.CheckJob(5000, inputStream);
+                        state = PrintControl.CheckJob(3000, inputStream);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
                         if (state == PrintControl.STATUS_PRINT_DONE) {
