@@ -1,4 +1,4 @@
-package com.candao.www.print.listener;
+package com.candao.www.printer.listener;
 
 import com.candao.print.dao.TbPrinterManagerDao;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -34,6 +34,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 
     private final String activeMonitor = "activeMonitor";
 
+    //消息监听模板
     private String messageListeners = "";
 
     public PrinterListenerManager() {
@@ -55,7 +56,6 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
     @Override
     public void stop(Runnable callback) {
         this.stop();
-        System.out.println(123456);
         running = false;
         callback.run();
     }
@@ -68,6 +68,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
         if (listeners != null && !listeners.isEmpty()) {
             for (Map.Entry<String, DefaultMessageListenerContainerAdapter> it : listeners.entrySet()) {
                 it.getValue().stop();
+                it.getValue().destroy();
             }
         }
         listeners.clear();
@@ -111,7 +112,6 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
     @Override
     public void stop() {
         synchronized (activeMonitor) {
-            System.out.println(12345);
             stopListeners();
             stopConnections();
         }

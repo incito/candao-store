@@ -3,13 +3,10 @@ package com.candao.print.listener;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
 /**
  * Created by Administrator on 2016-6-13.
  */
-public abstract class AbstractPrinterListener implements PrinterListener{
+public abstract class AbstractQueueListener implements QueueListener{
 
 
     protected PrintData prepareData(PrintObj obj,PrintData data) throws Exception {

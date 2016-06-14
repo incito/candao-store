@@ -1,33 +1,20 @@
 package com.candao.print.listener;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.Destination;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.StringUtils;
+import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 
 @Service
-public class StatementDishListener extends AbstractPrintListener {
-
-	@Autowired
-	@Qualifier("statementQueue")
-	private Destination destination;
-	
-	public StatementDishListener() {
-		super("statementDishListener");
-	}
+public class StatementDishListener extends AbstractQueueListener {
 
 	/**
 	 * 
@@ -38,18 +25,9 @@ public class StatementDishListener extends AbstractPrintListener {
 
 		return null;
 	}
-
-	public Destination getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
-
 	
 	@Override
-	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer)
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer)
 			throws Exception {
 		System.out.println("StatamentListener receive message");
 
@@ -146,9 +124,8 @@ public class StatementDishListener extends AbstractPrintListener {
 	}
 
 	@Override
-	public String receiveMessage(PrintObj object) {
-		printForm(object);
-		return null;
+	public PrintData receiveMessage(PrintObj object) throws Exception {
+		return prepareData(object,new PrintData());
 	}
 
 }

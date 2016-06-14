@@ -1,14 +1,21 @@
 package com.candao.print.entity;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by Administrator on 2016-6-13.
  */
-public class PrintData {
+public class PrintData implements Serializable{
+	
 
-    private List data = new LinkedList();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2979473667712649065L;
+
+	private List<Object> data = new LinkedList<Object>();
 
     private String ipAddress;
 

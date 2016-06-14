@@ -2,58 +2,31 @@ package com.candao.print.listener;
 
 //import groovy.transform.Synchronized;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.jms.Destination;
-
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.StringUtils;
+import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
-import com.candao.print.service.PrinterService;
 
 @Service
-public class MultiDishListener extends AbstractPrintListener {
+public class MultiDishListener extends AbstractQueueListener {
 
-	@Autowired
-	@Qualifier("multiDishQueue")
-	private Destination destination;
-	
-	@Autowired
-	PrinterService    printerService;
-	
-	public MultiDishListener() {
-		super("multiDishListener");
-	}
-
-	public Destination getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
-
-	public String receiveMessage(PrintObj object) {
+	public PrintData receiveMessage(PrintObj object) throws Exception {
 		System.out.println("MultiDishListener receive message");
-
-		printForm(object);
-		return null;
+		return prepareData(object,new PrintData());
 	}
 	
 	@Override
-	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer)
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer)
 			throws Exception {
 		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();

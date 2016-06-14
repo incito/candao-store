@@ -1,4 +1,4 @@
-package com.candao.www.print.listener;
+package com.candao.www.printer.listener;
 
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
