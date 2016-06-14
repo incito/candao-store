@@ -22,6 +22,6 @@ public class InitListener implements ServletContextListener {
 
     private void startPrinterMoniter() {
         Thread t = new PrinterMonitor();
-//        t.start();
+        t.start();
     }
 }
