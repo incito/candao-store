@@ -1,11 +1,11 @@
 package com.candao.www.webroom.service.impl;
 
-import javax.jms.Destination;
-
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.utils.Constant;
 import com.candao.print.entity.PrintObj;
 import com.candao.www.webroom.service.PrintCommonService;
 
@@ -14,22 +14,25 @@ public class PrintCommonServiceImpl implements PrintCommonService{
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
- 
-	private Destination destination;
+	
+	private ActiveMQQueue PrintCommon = new ActiveMQQueue();
 	
  
 	public void sendMessage(final PrintObj obj) {
-	 
-		 if(obj == null){
-			 return ;
-		 }
-		jmsTemplate.convertAndSend(destination, obj);
-	}
 
-	public void setDestination(Destination destination) {
-	     
-		  this.destination = destination;
+		if (obj == null) {
+			return;
+		}
+
+		obj.setListenerType(Constant.ListenerType.WeighDishListener);
+		String ipAddress = obj.getCustomerPrinterIp();
+		if (ipAddress.contains(",")) {
+			String[] ips = ipAddress.split(",");
+			ipAddress = ips[0];
+		}
+		PrintCommon.setPhysicalName(ipAddress);
+		
+		jmsTemplate.convertAndSend(PrintCommon, obj);
 	}
  
-
 }

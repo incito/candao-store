@@ -24,9 +24,9 @@ public class IPQueueListener implements ApplicationContextAware{
 
     public void receiveMessage(PrintObj obj) {
         Constant.ListenerType listenerType = obj.getListenerType();
-        PrinterListener dst = null;
+        QueueListener dst = null;
         try {
-            dst = (PrinterListener) applicationContext.getBean(listenerType.toString());
+            dst = (QueueListener) applicationContext.getBean(listenerType.toString());
         } catch (BeansException e){
             e.printStackTrace();
             log.error("找不到监听类： "+listenerType.toString(),e);

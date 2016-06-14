@@ -6,7 +6,7 @@ import com.candao.print.entity.PrintObj;
 /**
  * Created by Administrator on 2016-6-13.
  */
-public interface PrinterListener {
+public interface QueueListener {
 
     public PrintData receiveMessage(PrintObj object) throws Exception;
 

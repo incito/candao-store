@@ -1,28 +1,19 @@
 package com.candao.print.listener;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
-import javax.jms.Destination;
-
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.StringUtils;
+import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
  
 
 @Service
-public class CustDishListener extends AbstractPrintListener{
-
-	public CustDishListener() {
-		super("custDishListener");
-	}
+public class CustDishListener extends AbstractQueueListener{
 
 	/**
 	 * 
@@ -32,17 +23,9 @@ public class CustDishListener extends AbstractPrintListener{
 	public String receiveMessage(String message) {
 		return null;
 	}
-
-	public Destination getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
 	
 	@Override
-	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer) throws Exception {
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer) throws Exception {
 		System.out.println("CustDishListener receive message");
 
 		String billName = object.getBillName();
@@ -124,9 +107,8 @@ public class CustDishListener extends AbstractPrintListener{
 			writer.write("          欢迎品尝       谢谢惠顾\r\n");
 	}
 
-	public String receiveMessage(PrintObj object) {
-		printForm(object);
-		return null;
+	public PrintData receiveMessage(PrintObj object) throws Exception {
+		return prepareData(object,new PrintData());
 	}
 	
 	private Object[] getPrintText(List<PrintDish> list, int num1, int num2, int num3) throws Exception {
@@ -150,10 +132,5 @@ public class CustDishListener extends AbstractPrintListener{
 
 		return res;
 	}
-
-
-	@Autowired
-	@Qualifier("custDishQueue")
-	private Destination destination;
 
 }
