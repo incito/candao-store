@@ -265,11 +265,11 @@ public class Printer {
      * 状态检查
      */
     public void checkState() {
+        //超过检测周期
+        if (System.currentTimeMillis() - lastActiveTime < checkStateInterval) {
+            return;
+        }
         try {
-            //超过检测周期
-            if (System.currentTimeMillis() - lastActiveTime < checkStateInterval) {
-                return;
-            }
             logger.error("[" + ip + "]尝试发起状态检查");
             boolean tryLock = printLock.tryLock(4000, TimeUnit.MILLISECONDS);
             if (tryLock) {
