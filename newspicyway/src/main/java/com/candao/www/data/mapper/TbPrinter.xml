@@ -290,9 +290,16 @@
 		SELECT
 			ps.ip,
 			ps.workstatus,
-			p.printername
+			(
+				SELECT
+					p.printername
+				FROM
+					t_printer p
+				WHERE
+					p.ipaddress LIKE CONCAT('%', ps.ip, '%')
+				LIMIT 1
+			) printername
 		FROM
 			t_printer_state ps
-		LEFT JOIN t_printer p ON p.ipaddress LIKE CONCAT('%', ps.ip, '%')
 	</select>
 </mapper> 
