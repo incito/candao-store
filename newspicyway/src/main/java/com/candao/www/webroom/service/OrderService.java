@@ -55,5 +55,11 @@ public interface OrderService {
 
 	public String callEndWork(String userName, String isSucess);
 
+	public Map<String, Object> switchPadOrderInfowaiter(Map<String, Object> params);
+
+	public String startOrderwaiter(Torder order);
+
+	public String updateOrderwaiter(Torder order);
+
     
 }

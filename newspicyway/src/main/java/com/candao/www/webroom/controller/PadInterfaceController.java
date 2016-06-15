@@ -2486,6 +2486,87 @@ public class PadInterfaceController {
 		return map;
 	}
 	
+	//服务员pad
+	/**
+	 * 服务员pad获取信息
+	 * @param jsonString
+	 * @param request
+	 * @param response
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value="/getOrderInfowaiter",method = RequestMethod.POST)
+	@ResponseBody
+	public void getOrderInfowaiter(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
+		Map<String,Object> params=JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+		Map<String, Object> map = orderService.switchPadOrderInfowaiter(params);
+		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		try{
+			response.reset();
+			response.setHeader("Content-Type", "application/json");
+			response.setContentType("text/json;charset=UTF-8");
+			OutputStream stream = response.getOutputStream();
+			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			stream.flush();
+			stream.close();
+
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 	PAD 开台 
+	 *  桌号 ，人数 
+	 * @author zhao
+	 */
+	@RequestMapping("/setorderwaiter")
+	@ResponseBody
+	public String startOrderInfowaiter(@RequestBody Torder order){
+
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(JacksonJsonMapper.objectToJson(order));
+		record.setPadpath("setorder");
+		jsonRecordService.insertJsonRecord(record);
+
+		String returnStr =  orderService.startOrderwaiter(order);
+		
+		JSONObject returnobject = JSONObject.fromObject(returnStr);
+		
+		
+		if(!StringUtils.isBlank(order.getIsShield())&&order.getIsShield().equals("0")&&returnobject.containsKey("result")&&!StringUtils.isBlank(returnobject.getString("result"))&&returnobject.getString("result").equals("0")){
+			try{
+				String orderid = returnobject.containsKey("orderid")?returnobject.getString("orderid"):"";
+				if(!StringUtils.isBlank(orderid)){
+					giftService.updateOrderStatus(orderid);
+				}
+				
+			}catch(Exception ex){
+				
+			}
+		}
+		return returnStr;
+	}
+	
+	
+	/**
+	 * 	PAD 开台 
+	 *  更新 桌号 人数 
+	 * @author zhao
+	 */
+	@RequestMapping("/updateorderwaiter")
+	@ResponseBody
+	public String updateorderwaiter(@RequestBody Torder order){
+
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(JacksonJsonMapper.objectToJson(order));
+		record.setPadpath("updateorder");
+		jsonRecordService.insertJsonRecord(record);
+
+		return orderService.updateOrderwaiter(order);
+	}	
+	
+	
+	//end
 	
 	
 	/**
