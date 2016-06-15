@@ -72,7 +72,7 @@ public class PrinterStatusManager {
             case NORMAL:
                 return "正常";
             case PAPEREND:
-                return "打印会已用尽";
+                return "打印纸已用尽";
             case COVEROPEN:
                 return "上盖打开";
             case CUTERROR:
