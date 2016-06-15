@@ -24,31 +24,28 @@ public class PrinterStatusManager {
      * @return
      */
     public static boolean stateMonitor(int nowState, Printer printer) {
-        if (printer.getLastState() == nowState) {
-            return false;
-        }
         /**
          * 要处理的状态列表
          */
         short state;
         switch (nowState) {
-            case PrintControl.STATUS_OK:
-                state = 1;
-                break;
             case PrintControl.STATUS_PAPEREND:
                 state = 2;
                 break;
             case PrintControl.STATUS_COVEROPEN:
                 state = 3;
                 break;
-            case PrintControl.STATUS_OFFLINE:
+            case PrintControl.STATUS_DISCONNECTE:
                 state = 4;
                 break;
             default:
-                return false;
+                state = 1;
+        }
+        if (printer.getLastState() == state) {
+            return false;
         }
         //修改打印机最后状态
-        printer.setLastState(nowState);
+        printer.setLastState(state);
         executor.submit(new StatusRunable(printer, state));
         return true;
     }

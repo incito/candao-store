@@ -65,6 +65,10 @@ public class PrintControl {
     public static final int STATUS_DEVTIMEOUT = 13;
     public static final int STATUS_PRNCTRL = 14;
     public static final int STATUS_NOPRNCTRL = 15;
+    /**
+     * 未连接
+     */
+    public static final int STATUS_DISCONNECTE = 16;
 
     /**
      * 指令正常执行完成
