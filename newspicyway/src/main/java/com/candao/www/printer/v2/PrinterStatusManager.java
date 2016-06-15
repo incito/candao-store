@@ -95,6 +95,7 @@ public class PrinterStatusManager {
         return printerService;
     }
 
+
     static class StatusRunable implements Runnable {
         private Printer printer;
         private short state;

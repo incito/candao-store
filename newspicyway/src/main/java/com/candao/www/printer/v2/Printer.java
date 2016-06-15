@@ -25,6 +25,10 @@ public class Printer {
      */
     private static final Charset CHARSET = Charset.forName("GBK");
     /**
+     * 打印机空闲间隔，超过该时间会发起打印机状态检查
+     */
+    private static long checkStateInterval = 3 * 60 * 1000;
+    /**
      * 打印机数据库ID
      */
     private String id;
@@ -41,6 +45,10 @@ public class Printer {
      * 上次打印机状态，该状态的值见{@link PrinterStatusManager PrinterStatusManager}
      */
     private int lastState;
+    /**
+     * 最后活跃时间
+     */
+    private long lastActiveTime;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -57,6 +65,7 @@ public class Printer {
         printLock.lock();
         try {
             while (true) {
+                lastActiveTime = System.currentTimeMillis();
                 try {
                     initChannel();
                     /*打印机是否连接成功*/
@@ -246,6 +255,47 @@ public class Printer {
             printLock.unlock();
         }
         return result;
+    }
+
+    /**
+     * 状态检查
+     */
+    public void checkState() {
+        try {
+            //超过检测周期
+            if (System.currentTimeMillis() - lastActiveTime < checkStateInterval) {
+                return;
+            }
+            logger.error("[" + ip + "]尝试发起状态检查");
+            boolean tryLock = printLock.tryLock(4000, TimeUnit.MILLISECONDS);
+            if (tryLock) {
+                logger.info("[" + ip + "]开始状态检查");
+                if (null == channel || channel.isClosed()) {
+                    logger.info("[" + ip + "]打印机连接已断开，尝试重连");
+                    channel = PrinterConnector.createConnection(ip, port, 2000);
+                }
+                if (null == channel || channel.isClosed()) {
+                    logger.info("[" + ip + "]尝试重连失败");
+                    PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
+                    return;
+                }
+                try {
+                    int state = PrintControl.printerIsReady(3000, channel.getOutputStream(), channel.getInputStream());
+                    if (state == PrintControl.STATUS_OFFLINE) {
+                        state = PrintControl.STATUS_OK;
+                    }
+                    PrinterStatusManager.stateMonitor(state, this);
+                } catch (IOException e) {
+                    PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
+                }
+            } else {
+                logger.info("[" + ip + "]尝试发起状态检查失败");
+            }
+        } catch (InterruptedException e) {
+            logger.error("[" + ip + "]尝试发起状态检查失败", e);
+        } finally {
+            printLock.unlock();
+        }
     }
 
     private void initChannel() {

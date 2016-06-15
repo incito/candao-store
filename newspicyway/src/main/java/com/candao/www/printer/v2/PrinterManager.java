@@ -84,6 +84,8 @@ public class PrinterManager {
      * 周期性检测打印机状态
      */
     public static void schedule(){
-        
+        for(Printer printer:printers.values()){
+            printer.checkState();
+        }
     }
 }
