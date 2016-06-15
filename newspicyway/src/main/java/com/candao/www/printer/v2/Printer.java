@@ -4,6 +4,7 @@ import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,6 @@ public class Printer {
     private int port;
     private Socket channel;
     private Lock printLock = new ReentrantLock();
-    private Printer backPrinter;
     /**
      * 上次打印机状态，该状态的值见{@link PrinterStatusManager PrinterStatusManager}
      */
@@ -52,7 +52,7 @@ public class Printer {
      * @param msg
      * @return
      */
-    public PrintResult print(Object[] msg) {
+    public PrintResult print(Object[] msg, String backPrinterIp) {
 
         if (null == msg) {
             msg = new Object[]{};
@@ -76,7 +76,12 @@ public class Printer {
                         if (state != PrintControl.STATUS_OK) {
                             logger.info("[" + ip + "]打印机不可用:" + state);
                             boolean needCallBackPrinter = needCallBackPrinter(state);
-                            if (needCallBackPrinter) {
+                            if (needCallBackPrinter && !StringUtils.isEmpty(backPrinterIp)) {
+                                Printer backPrinter = PrinterManager.getPrinter(backPrinterIp);
+                                if (null == backPrinter) {
+                                    logger.info("[" + ip + "]备用打印机[" + backPrinterIp + "]不存在");
+                                    continue;
+                                }
                                 logger.info("[" + ip + "]尝试调用备用打印机[" + backPrinter.getIp() + "]");
                                 //调用备用打印机
                                 PrintResult printResult = backPrinter.tryPrint(msg, 2000);
@@ -118,6 +123,7 @@ public class Printer {
                         }
                         logger.info("[" + ip + "]尝试重连失败");
                         //重连失败，调用备用打印机
+                        Printer backPrinter = PrinterManager.getPrinter(backPrinterIp);
                         if (null != backPrinter) {
                             logger.info("[" + ip + "]尝试调用备用打印机:[" + backPrinter.getIp() + "]");
                             PrintResult printResult = backPrinter.tryPrint(msg, 2);
@@ -311,9 +317,6 @@ public class Printer {
      * @return
      */
     private boolean needCallBackPrinter(int state) {
-        if (null == backPrinter) {
-            return false;
-        }
         switch (state) {
             case PrintControl.STATUS_OK:
             case PrintControl.STATUS_PAPEREND:
@@ -372,14 +375,6 @@ public class Printer {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public Printer getBackPrinter() {
-        return backPrinter;
-    }
-
-    public void setBackPrinter(Printer backPrinter) {
-        this.backPrinter = backPrinter;
     }
 
     public int getLastState() {

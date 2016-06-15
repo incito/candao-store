@@ -1,7 +1,6 @@
 package com.candao.www.printer.v2;
 
 import com.candao.print.service.PrinterService;
-import com.candao.print.utils.PrintControl;
 import com.candao.www.spring.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,30 +50,21 @@ public class PrinterManager {
                 }
 
                 String[] ips = ipStr.split(",");
-                Printer p = hasCreated(ips[0]);
-                //如果该打印机还不存在，创建
-                if(null==p) {
-                    p = new Printer();
-                    p.setKey(ips[0]);
-                    p.setIp(ips[0]);
-                    p.setPort(portInt);
-                }
-                //备用打印机处理
-                if (ips.length > 1) {
-                    Printer backPrinter = hasCreated(ips[1]);
-                    if(null==backPrinter){
-                        backPrinter = new Printer();
-                        backPrinter.setKey(ips[1]);
-                        backPrinter.setIp(ips[1]);
-                        backPrinter.setPort(portInt);
+                int length = ips.length > 2 ? 2 : ips.length;
+                for (int i = 0; i < length; i++) {
+                    String ip = ips[i];
+                    Printer p = hasCreated(ip);
+                    //如果该打印机还不存在，创建
+                    if (null == p) {
+                        p = new Printer();
+                        p.setKey(ips[0]);
+                        p.setIp(ips[0]);
+                        p.setPort(portInt);
+                        printers.put(p.getKey(), p);
+                        //初始化打印机状态
+                        printerService.updateWorkState(p.getIp(), PrinterStatusManager.NORMAL);
                     }
-                    p.setBackPrinter(backPrinter);
-                    //初始化打印机状态
-                    printerService.updateWorkState(backPrinter.getIp(), PrinterStatusManager.NORMAL);
                 }
-                //初始化打印机状态
-                printerService.updateWorkState(p.getIp(), PrinterStatusManager.NORMAL);
-                printers.put(p.getKey(), p);
             }
         }
 //        // TODO: 2016/6/14 测试代码
@@ -88,28 +78,24 @@ public class PrinterManager {
 
     /**
      * 检查打印机对象是否已被创建
+     *
      * @param key
      * @return
      */
-    private static Printer hasCreated(String key){
-        for(Printer printer:printers.values()){
-            if(key.equals(printer.getKey())){
+    private static Printer hasCreated(String key) {
+        for (Printer printer : printers.values()) {
+            if (key.equals(printer.getKey())) {
                 return printer;
-            }
-            Printer backPrinter = printer.getBackPrinter();
-            if(null!=backPrinter){
-                if(key.equals(backPrinter.getKey())){
-                    return backPrinter;
-                }
             }
         }
         return null;
     }
+
     /**
      * 周期性检测打印机状态
      */
-    public static void schedule(){
-        for(Printer printer:printers.values()){
+    public static void schedule() {
+        for (Printer printer : printers.values()) {
             printer.checkState();
         }
     }
