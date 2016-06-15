@@ -29,10 +29,6 @@ public class Printer {
      */
     private static long checkStateInterval = 3 * 60 * 1000;
     /**
-     * 打印机数据库ID
-     */
-    private String id;
-    /**
      * 打印机标示，默认为ip
      */
     private String key;
@@ -384,14 +380,6 @@ public class Printer {
 
     public void setBackPrinter(Printer backPrinter) {
         this.backPrinter = backPrinter;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public int getLastState() {

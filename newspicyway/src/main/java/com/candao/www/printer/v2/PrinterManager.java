@@ -51,17 +51,23 @@ public class PrinterManager {
                 }
 
                 String[] ips = ipStr.split(",");
-                Printer p = new Printer();
-                p.setKey(ips[0]);
-                p.setIp(ips[0]);
-                p.setPort(portInt);
-                p.setId(printer.get("printerid").toString());
+                Printer p = hasCreated(ips[0]);
+                //如果该打印机还不存在，创建
+                if(null==p) {
+                    p = new Printer();
+                    p.setKey(ips[0]);
+                    p.setIp(ips[0]);
+                    p.setPort(portInt);
+                }
                 //备用打印机处理
                 if (ips.length > 1) {
-                    Printer backPrinter = new Printer();
-                    backPrinter.setKey(ips[1]);
-                    backPrinter.setIp(ips[1]);
-                    backPrinter.setPort(portInt);
+                    Printer backPrinter = hasCreated(ips[1]);
+                    if(null==backPrinter){
+                        backPrinter = new Printer();
+                        backPrinter.setKey(ips[1]);
+                        backPrinter.setIp(ips[1]);
+                        backPrinter.setPort(portInt);
+                    }
                     p.setBackPrinter(backPrinter);
                     //初始化打印机状态
                     printerService.updateWorkState(backPrinter.getIp(), PrinterStatusManager.NORMAL);
@@ -80,6 +86,25 @@ public class PrinterManager {
 //        printers.put(p.getKey(),p);
     }
 
+    /**
+     * 检查打印机对象是否已被创建
+     * @param key
+     * @return
+     */
+    private static Printer hasCreated(String key){
+        for(Printer printer:printers.values()){
+            if(key.equals(printer.getKey())){
+                return printer;
+            }
+            Printer backPrinter = printer.getBackPrinter();
+            if(null!=backPrinter){
+                if(key.equals(backPrinter.getKey())){
+                    return backPrinter;
+                }
+            }
+        }
+        return null;
+    }
     /**
      * 周期性检测打印机状态
      */
