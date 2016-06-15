@@ -79,4 +79,11 @@ public class PrinterManager {
 //        p.setPort(9100);
 //        printers.put(p.getKey(),p);
     }
+
+    /**
+     * 周期性检测打印机状态
+     */
+    public static void schedule(){
+        
+    }
 }

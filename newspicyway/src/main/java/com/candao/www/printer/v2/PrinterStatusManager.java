@@ -34,6 +34,9 @@ public class PrinterStatusManager {
          */
         short state;
         switch (nowState) {
+            //忽略状态11
+            case PrintControl.STATUS_OFFLINE:
+                return false;
             case PrintControl.STATUS_PAPEREND:
                 state = PAPEREND;
                 break;
@@ -91,7 +94,6 @@ public class PrinterStatusManager {
         }
         return printerService;
     }
-
 
     static class StatusRunable implements Runnable {
         private Printer printer;

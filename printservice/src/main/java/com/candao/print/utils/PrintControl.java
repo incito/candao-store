@@ -110,8 +110,12 @@ public class PrintControl {
             switch (iState) {
                 case STATUS_OFFLINE: {
                     iReadNum++;
-
-                    if (iReadNum > 2) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (iReadNum > 5) {
                         return iState;
                     } else {
                         continue;

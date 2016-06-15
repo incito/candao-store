@@ -25,7 +25,7 @@ class PrinterConnector {
         Socket socket = new Socket();
 
         try {
-            socket.connect(new InetSocketAddress("10.66.18.3", 9100), timeout);//建立连接5秒超时
+            socket.connect(new InetSocketAddress(host, port), timeout);//建立连接5秒超时
             return socket;
         } catch (IOException e) {
             logger.error("创建连接失败[" + host + ":" + port + "]", e);
@@ -33,4 +33,11 @@ class PrinterConnector {
         return null;
     }
 
+    public static void closeConnection(Socket socket){
+        try {
+            socket.close();
+        } catch (IOException e) {
+            logger.error("打印机连接关闭失败",e);
+        }
+    }
 }
