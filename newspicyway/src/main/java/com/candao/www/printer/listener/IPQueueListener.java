@@ -54,19 +54,25 @@ public class IPQueueListener implements ApplicationContextAware{
 
     }
 
-    private void print(Object[] src,PrintObj obj) throws  Exception{
-        //TODO
-//        System.out.println("2333333333333333333333333333333");
-//        System.out.println(JacksonJsonMapper.objectToJson(src));
-    	String ipAddress = obj.getCustomerPrinterIp();
-    	Printer printer = PrinterManager.getPrinter(ipAddress);
-    	if(printer == null){
+	private void print(Object[] src, PrintObj obj) throws Exception {
+		// TODO
+		// System.out.println("2333333333333333333333333333333");
+		// System.out.println(JacksonJsonMapper.objectToJson(src));
+		String ipAddress = obj.getCustomerPrinterIp();
+		String backupAddress = "";
+		if (ipAddress.contains(",")) {
+			String[] ips = ipAddress.split(",");
+			ipAddress = ips[0];
+			backupAddress = ips.length > 2 ? ips[1] : backupAddress;
+		}
+		Printer printer = PrinterManager.getPrinter(ipAddress);
+		if (printer == null) {
 			log.error("-----------------------");
 			log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
-    		return;
-    	}
-    	printer.print(src);
-    }
+			return;
+		}
+		printer.print(src, backupAddress);
+	}
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
