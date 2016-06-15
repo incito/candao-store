@@ -86,7 +86,7 @@ public class Printer {
                                 //调用备用打印机
                                 PrintResult printResult = backPrinter.tryPrint(msg, 2000);
                                 //备用打印机正常打印，返回打印结果。
-                                if (printResult.getCode() == PrintControl.STATUS_OK) {
+                                if (printResult.getCode() == PrintControl.STATUS_PRINT_DONE) {
                                     logger.info("[" + ip + "]尝试调用备用打印机[" + backPrinter.getIp() + "]打印成功");
                                     return printResult;
                                 } else {
@@ -128,7 +128,7 @@ public class Printer {
                             logger.info("[" + ip + "]尝试调用备用打印机:[" + backPrinter.getIp() + "]");
                             PrintResult printResult = backPrinter.tryPrint(msg, 2);
                             //备用打印机正常打印，返回打印结果。
-                            if (printResult.getCode() == PrintControl.STATUS_OK) {
+                            if (printResult.getCode() == PrintControl.STATUS_PRINT_DONE) {
                                 logger.info("[" + ip + "]尝试调用备用打印机[" + backPrinter.getIp() + "]打印成功");
                                 return printResult;
                             } else {
