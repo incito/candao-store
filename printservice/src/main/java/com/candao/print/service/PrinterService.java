@@ -58,4 +58,12 @@ public interface PrinterService {
   public List<Map<String,Object>> getTableTag();
   public TbPrinter findByCode(String string);
   public int queryPrintIsExsit(String customerPrinterIp, String customerPrinterPort);
+
+ /**
+  * 更新打印机工作状态
+  * @return
+     */
+  public int updateWorkState(String ip,short workstatus);
+
+ public List<Map<String,Object>> queryPrinterWorkStatus();
 } 

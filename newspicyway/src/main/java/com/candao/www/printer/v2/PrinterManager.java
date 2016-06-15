@@ -1,6 +1,7 @@
 package com.candao.www.printer.v2;
 
 import com.candao.print.service.PrinterService;
+import com.candao.print.utils.PrintControl;
 import com.candao.www.spring.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,20 +50,24 @@ public class PrinterManager {
                     continue;
                 }
 
-                Printer p = new Printer();
-                //备用打印机处理
                 String[] ips = ipStr.split(",");
+                Printer p = new Printer();
                 p.setKey(ips[0]);
                 p.setIp(ips[0]);
                 p.setPort(portInt);
                 p.setId(printer.get("printerid").toString());
+                //备用打印机处理
                 if (ips.length > 1) {
                     Printer backPrinter = new Printer();
                     backPrinter.setKey(ips[1]);
                     backPrinter.setIp(ips[1]);
                     backPrinter.setPort(portInt);
                     p.setBackPrinter(backPrinter);
+                    //初始化打印机状态
+                    printerService.updateWorkState(backPrinter.getIp(), PrinterStatusManager.NORMAL);
                 }
+                //初始化打印机状态
+                printerService.updateWorkState(p.getIp(), PrinterStatusManager.NORMAL);
                 printers.put(p.getKey(), p);
             }
         }

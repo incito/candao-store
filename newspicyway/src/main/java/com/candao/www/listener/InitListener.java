@@ -1,7 +1,5 @@
 package com.candao.www.listener;
 
-import com.candao.www.utils.PrinterMonitor;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -12,7 +10,6 @@ import javax.servlet.ServletContextListener;
 public class InitListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        startPrinterMoniter();
     }
 
     @Override
@@ -20,8 +17,4 @@ public class InitListener implements ServletContextListener {
 
     }
 
-    private void startPrinterMoniter() {
-        Thread t = new PrinterMonitor();
-//        t.start();
-    }
 }

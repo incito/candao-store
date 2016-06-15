@@ -13,6 +13,11 @@ import java.util.concurrent.TimeUnit;
  * Created by liaoy on 2016/6/14.
  */
 public class PrinterStatusManager {
+    public static final short NORMAL = 1;
+    public static final short PAPEREND = 2;
+    public static final short COVEROPEN = 3;
+    public static final short CUTERROR = 4;
+    public static final short DISCONNECT = 5;
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     private static PrinterService printerService;
 
@@ -30,16 +35,19 @@ public class PrinterStatusManager {
         short state;
         switch (nowState) {
             case PrintControl.STATUS_PAPEREND:
-                state = 2;
+                state = PAPEREND;
                 break;
             case PrintControl.STATUS_COVEROPEN:
-                state = 3;
+                state = COVEROPEN;
                 break;
             case PrintControl.STATUS_DISCONNECTE:
-                state = 4;
+                state = DISCONNECT;
+                break;
+            case PrintControl.STATUS_CUTTER_ERROR:
+                state = CUTERROR;
                 break;
             default:
-                state = 1;
+                state = NORMAL;
         }
         if (printer.getLastState() == state) {
             return false;
@@ -48,6 +56,29 @@ public class PrinterStatusManager {
         printer.setLastState(state);
         executor.submit(new StatusRunable(printer, state));
         return true;
+    }
+
+    /**
+     * 转换状态编码为文字描述
+     *
+     * @param state
+     * @return
+     */
+    public static String convertState(short state) {
+        switch (state) {
+            case NORMAL:
+                return "正常";
+            case PAPEREND:
+                return "打印会已用尽";
+            case COVEROPEN:
+                return "上盖打开";
+            case CUTERROR:
+                return "切刀异常";
+            case DISCONNECT:
+                return "未连接";
+
+        }
+        return "正常";
     }
 
     private static PrinterService getPrinterService() {
@@ -74,10 +105,7 @@ public class PrinterStatusManager {
         @Override
         public void run() {
             PrinterService service = getPrinterService();
-            com.candao.print.entity.TbPrinter tbprinter = new com.candao.print.entity.TbPrinter();
-            tbprinter.setPrinterid(printer.getId());
-            tbprinter.setWorkStatus(state);
-            service.update(tbprinter);
+            service.updateWorkState(printer.getIp(), state);
         }
     }
 }

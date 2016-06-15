@@ -84,9 +84,6 @@
 			<if test="status != null">
 				status=#{status},
 			</if>
-			<if test="workStatus != null">
-				workStatus=#{workStatus}
-			</if>
 		    <if test="printNum != null">
 				printNum = IFNULL(printnum,0) + #{printNum}
 			</if>
@@ -192,7 +189,6 @@
 			port,
 			status,
 			printNum,
-			workStatus
 			from t_printer
 
 			 <where>
@@ -284,5 +280,19 @@
 
 	<select id="queryPrintIsExsit" resultType="java.util.HashMap" parameterType="map">
 		select count(1) isExsit from t_printer where ipaddress=#{customerPrinterIp} and port=#{customerPrinterPort} and status=1
+	</select>
+	<!--更新打印机状态-->
+	<insert id="insertOrUpdateState" parameterType="map">
+		INSERT INTO t_printer_state (ip, workstatus)
+		VALUES	(#{ip}, #{workstatus}) ON DUPLICATE KEY UPDATE workstatus = #{workstatus};
+	</insert>
+	<select id="queryPrinterWorkStatus" resultType="java.util.HashMap">
+		SELECT
+			ps.ip,
+			ps.workstatus,
+			p.printername
+		FROM
+			t_printer_state ps
+		LEFT JOIN t_printer p ON p.ipaddress LIKE CONCAT('%', ps.ip, '%')
 	</select>
 </mapper> 

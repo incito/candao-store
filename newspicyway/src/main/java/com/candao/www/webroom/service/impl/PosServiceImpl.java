@@ -3,6 +3,7 @@ package com.candao.www.webroom.service.impl;
 import com.candao.common.utils.AjaxResponse;
 import com.candao.print.service.PrinterService;
 import com.candao.www.constant.Constant;
+import com.candao.www.printer.v2.PrinterStatusManager;
 import com.candao.www.webroom.service.PosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,19 +23,24 @@ public class PosServiceImpl implements PosService {
 
     @Override
     public AjaxResponse getPrinterList() {
-        Map<String, Object> param = new HashMap<>();
-        List<Map<String, Object>> printers = printerService.findAll(param);
+        List<Map<String, Object>> printers = printerService.queryPrinterWorkStatus();
         AjaxResponse response = new AjaxResponse();
         List<Map<String, Object>> printerList = new ArrayList<>();
         if (null != printers) {
             for (Map<String, Object> printer :
                     printers) {
                 Map<String, Object> map = new HashMap<>(4);
-                map.put("ip", printer.get("ipaddress"));
+                map.put("ip", printer.get("ip"));
                 map.put("name", printer.get("printername"));
-                Object workStatus = printer.get("workStatus");
+                Object workStatus = printer.get("workstatus");
+                short status;
+                try{
+                    status=Short.parseShort(workStatus.toString());
+                }catch (Exception e){
+                    status=PrinterStatusManager.DISCONNECT;
+                }
                 map.put("status", workStatus);
-                map.put("statusTitle", getStatusTitle(workStatus));
+                map.put("statusTitle", PrinterStatusManager.convertState(status));
                 printerList.add(map);
             }
         }
@@ -42,23 +48,4 @@ public class PosServiceImpl implements PosService {
         response.setData(printerList);
         return response;
     }
-
-    private String getStatusTitle(Object status) {
-        short workStatus = 0;
-        try {
-            workStatus = Short.parseShort(status.toString());
-        } catch (Exception e) {
-        }
-        switch (workStatus) {
-            case Constant.PRINTER_STATUS.GOOD:
-                return "良好";
-            case Constant.PRINTER_STATUS.BAD:
-                return "很差";
-            case Constant.PRINTER_STATUS.NOT_REACHABLE:
-                return "无连接";
-            default:
-                return "未知";
-        }
-    }
-
 }
