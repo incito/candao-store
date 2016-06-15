@@ -59,10 +59,6 @@ public class IPQueueListener implements ApplicationContextAware{
 //        System.out.println("2333333333333333333333333333333");
 //        System.out.println(JacksonJsonMapper.objectToJson(src));
     	String ipAddress = obj.getCustomerPrinterIp();
-		if (ipAddress.contains(",")) {
-			String[] ips = ipAddress.split(",");
-			ipAddress = ips[0];
-		}
     	Printer printer = PrinterManager.getPrinter(ipAddress);
     	if(printer == null){
 			log.error("-----------------------");
