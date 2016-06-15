@@ -63,7 +63,7 @@ public class IPQueueListener implements ApplicationContextAware{
 		if (ipAddress.contains(",")) {
 			String[] ips = ipAddress.split(",");
 			ipAddress = ips[0];
-			backupAddress = ips.length > 2 ? ips[1] : backupAddress;
+			backupAddress = ips.length > 1 ? ips[1] : backupAddress;
 		}
 		Printer printer = PrinterManager.getPrinter(ipAddress);
 		if (printer == null) {
