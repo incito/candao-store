@@ -16,14 +16,21 @@ public class PrinterStatusManager {
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     private static PrinterService printerService;
 
-    public static boolean updateStatus(int lastState, int nowState, Printer printer) {
-        if (lastState == nowState) {
+    /**
+     * 打印机状态监控
+     *
+     * @param nowState
+     * @param printer
+     * @return
+     */
+    public static boolean stateMonitor(int nowState, Printer printer) {
+        if (printer.getLastState() == nowState) {
             return false;
         }
         /**
          * 要处理的状态列表
          */
-        short state = 0;
+        short state;
         switch (nowState) {
             case PrintControl.STATUS_OK:
                 state = 1;
@@ -40,8 +47,10 @@ public class PrinterStatusManager {
             default:
                 return false;
         }
+        //修改打印机最后状态
+        printer.setLastState(nowState);
         executor.submit(new StatusRunable(printer, state));
-        return false;
+        return true;
     }
 
     private static PrinterService getPrinterService() {
@@ -71,7 +80,7 @@ public class PrinterStatusManager {
             com.candao.print.entity.TbPrinter tbprinter = new com.candao.print.entity.TbPrinter();
             tbprinter.setPrinterid(printer.getId());
             tbprinter.setWorkStatus(state);
-            printerService.update(tbprinter);
+            service.update(tbprinter);
         }
     }
 }

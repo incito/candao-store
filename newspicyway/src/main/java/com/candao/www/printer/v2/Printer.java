@@ -37,6 +37,10 @@ public class Printer {
     private Socket channel;
     private Lock printLock = new ReentrantLock();
     private Printer backPrinter;
+    /**
+     *上次打印机状态
+     */
+    private int lastState;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -62,6 +66,7 @@ public class Printer {
                         //检查打印机状态
                         logger.info("[" + ip + "]检查打印机状态");
                         int state = PrintControl.printerIsReady(3000, outputStream, inputStream);
+                        PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印机状态:" + state);
                         if (state != PrintControl.STATUS_OK) {
                             logger.info("[" + ip + "]打印机不可用:" + state);
@@ -89,6 +94,7 @@ public class Printer {
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
                         state = PrintControl.CheckJob(3000, inputStream);
+                        PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
                         if (state == PrintControl.STATUS_PRINT_DONE) {
@@ -198,6 +204,7 @@ public class Printer {
                 InputStream inputStream = channel.getInputStream();
                 logger.info("[" + ip + "]检查打印机状态");
                 int state = PrintControl.printerIsReady(2000, outputStream, inputStream);
+                PrinterStatusManager.stateMonitor(state, this);
                 if (state != PrintControl.STATUS_OK) {
                     logger.info("[" + ip + "]打印机状态不正常:" + state);
                     result.setCode(state);
@@ -207,6 +214,7 @@ public class Printer {
                 logger.info("[" + ip + "]检查打印结果");
                 state = PrintControl.CheckJob(2000, inputStream);
                 result.setCode(state);
+                PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回
                 if (state == PrintControl.STATUS_PRINT_DONE) {
                     logger.info("[" + ip + "]打印完成");
@@ -330,5 +338,13 @@ public class Printer {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getLastState() {
+        return lastState;
+    }
+
+    public void setLastState(int lastState) {
+        this.lastState = lastState;
     }
 }
