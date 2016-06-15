@@ -77,8 +77,8 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 				it.getValue().stop();
 				it.getValue().destroy();
 			}
+			listeners.clear();
 		}
-		listeners.clear();
 	}
 
 	@Override
