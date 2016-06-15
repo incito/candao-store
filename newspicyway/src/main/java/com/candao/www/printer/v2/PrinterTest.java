@@ -16,7 +16,7 @@ public class PrinterTest {
         msg.add("第1行\r\n第2行\r\n第3行\r\n第4行\r\n11===\r\n");
         msg.add(PrinterConstant.getClear_font());
         msg.add("的任务二问问\r\n");
-        PrinterManager.getPrinter("10.66.18.3").print(msg.toArray());
+        PrinterManager.getPrinter("10.66.18.3").print(msg.toArray(),null);
 //        PrinterManager.getPrinter("10.66.18.250").print(msg);
 //        Thread.sleep(10000000);
     }

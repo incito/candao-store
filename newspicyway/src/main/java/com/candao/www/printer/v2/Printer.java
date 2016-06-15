@@ -4,6 +4,7 @@ import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +26,9 @@ public class Printer {
      */
     private static final Charset CHARSET = Charset.forName("GBK");
     /**
-     * 打印机数据库ID
+     * 打印机空闲间隔，超过该时间会发起打印机状态检查
      */
-    private String id;
+    private static long checkStateInterval = 3 * 60 * 1000;
     /**
      * 打印机标示，默认为ip
      */
@@ -36,11 +37,14 @@ public class Printer {
     private int port;
     private Socket channel;
     private Lock printLock = new ReentrantLock();
-    private Printer backPrinter;
     /**
      * 上次打印机状态，该状态的值见{@link PrinterStatusManager PrinterStatusManager}
      */
     private int lastState;
+    /**
+     * 最后活跃时间
+     */
+    private long lastActiveTime;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -48,7 +52,7 @@ public class Printer {
      * @param msg
      * @return
      */
-    public PrintResult print(Object[] msg) {
+    public PrintResult print(Object[] msg, String backPrinterIp) {
 
         if (null == msg) {
             msg = new Object[]{};
@@ -57,6 +61,7 @@ public class Printer {
         printLock.lock();
         try {
             while (true) {
+                lastActiveTime = System.currentTimeMillis();
                 try {
                     initChannel();
                     /*打印机是否连接成功*/
@@ -71,12 +76,17 @@ public class Printer {
                         if (state != PrintControl.STATUS_OK) {
                             logger.info("[" + ip + "]打印机不可用:" + state);
                             boolean needCallBackPrinter = needCallBackPrinter(state);
-                            if (needCallBackPrinter) {
+                            if (needCallBackPrinter && !StringUtils.isEmpty(backPrinterIp)) {
+                                Printer backPrinter = PrinterManager.getPrinter(backPrinterIp);
+                                if (null == backPrinter) {
+                                    logger.info("[" + ip + "]备用打印机[" + backPrinterIp + "]不存在");
+                                    continue;
+                                }
                                 logger.info("[" + ip + "]尝试调用备用打印机[" + backPrinter.getIp() + "]");
                                 //调用备用打印机
                                 PrintResult printResult = backPrinter.tryPrint(msg, 2000);
                                 //备用打印机正常打印，返回打印结果。
-                                if (printResult.getCode() == PrintControl.STATUS_OK) {
+                                if (printResult.getCode() == PrintControl.STATUS_PRINT_DONE) {
                                     logger.info("[" + ip + "]尝试调用备用打印机[" + backPrinter.getIp() + "]打印成功");
                                     return printResult;
                                 } else {
@@ -113,11 +123,12 @@ public class Printer {
                         }
                         logger.info("[" + ip + "]尝试重连失败");
                         //重连失败，调用备用打印机
+                        Printer backPrinter = PrinterManager.getPrinter(backPrinterIp);
                         if (null != backPrinter) {
                             logger.info("[" + ip + "]尝试调用备用打印机:[" + backPrinter.getIp() + "]");
                             PrintResult printResult = backPrinter.tryPrint(msg, 2);
                             //备用打印机正常打印，返回打印结果。
-                            if (printResult.getCode() == PrintControl.STATUS_OK) {
+                            if (printResult.getCode() == PrintControl.STATUS_PRINT_DONE) {
                                 logger.info("[" + ip + "]尝试调用备用打印机[" + backPrinter.getIp() + "]打印成功");
                                 return printResult;
                             } else {
@@ -248,6 +259,47 @@ public class Printer {
         return result;
     }
 
+    /**
+     * 状态检查
+     */
+    public void checkState() {
+        try {
+            //超过检测周期
+            if (System.currentTimeMillis() - lastActiveTime < checkStateInterval) {
+                return;
+            }
+            logger.error("[" + ip + "]尝试发起状态检查");
+            boolean tryLock = printLock.tryLock(4000, TimeUnit.MILLISECONDS);
+            if (tryLock) {
+                logger.info("[" + ip + "]开始状态检查");
+                if (null == channel || channel.isClosed()) {
+                    logger.info("[" + ip + "]打印机连接已断开，尝试重连");
+                    channel = PrinterConnector.createConnection(ip, port, 2000);
+                }
+                if (null == channel || channel.isClosed()) {
+                    logger.info("[" + ip + "]尝试重连失败");
+                    PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
+                    return;
+                }
+                try {
+                    int state = PrintControl.printerIsReady(3000, channel.getOutputStream(), channel.getInputStream());
+                    if (state == PrintControl.STATUS_OFFLINE) {
+                        state = PrintControl.STATUS_OK;
+                    }
+                    PrinterStatusManager.stateMonitor(state, this);
+                } catch (IOException e) {
+                    PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
+                }
+            } else {
+                logger.info("[" + ip + "]尝试发起状态检查失败");
+            }
+        } catch (InterruptedException e) {
+            logger.error("[" + ip + "]尝试发起状态检查失败", e);
+        } finally {
+            printLock.unlock();
+        }
+    }
+
     private void initChannel() {
         if (null == channel) {
             synchronized (this) {
@@ -265,9 +317,6 @@ public class Printer {
      * @return
      */
     private boolean needCallBackPrinter(int state) {
-        if (null == backPrinter) {
-            return false;
-        }
         switch (state) {
             case PrintControl.STATUS_OK:
             case PrintControl.STATUS_PAPEREND:
@@ -326,22 +375,6 @@ public class Printer {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public Printer getBackPrinter() {
-        return backPrinter;
-    }
-
-    public void setBackPrinter(Printer backPrinter) {
-        this.backPrinter = backPrinter;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public int getLastState() {
