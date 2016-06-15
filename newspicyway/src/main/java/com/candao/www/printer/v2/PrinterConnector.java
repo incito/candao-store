@@ -34,6 +34,9 @@ class PrinterConnector {
     }
 
     public static void closeConnection(Socket socket){
+        if(null==socket){
+            return;
+        }
         try {
             socket.close();
         } catch (IOException e) {

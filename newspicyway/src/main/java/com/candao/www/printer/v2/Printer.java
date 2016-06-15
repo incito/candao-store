@@ -138,6 +138,7 @@ public class Printer {
                         }
                     }
                 } catch (IOException e) {
+                    PrinterConnector.closeConnection(channel);
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
                     logger.info("[" + ip + "]打印发生异常，尝试重连", e);
                     channel = PrinterConnector.createConnection(ip, port, 2000);
@@ -237,6 +238,7 @@ public class Printer {
         } catch (InterruptedException e) {
             logger.error("[" + ip + "]打印线程被中断", e);
         } catch (IOException e) {
+            PrinterConnector.closeConnection(channel);
             PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
             logger.info("[" + ip + "]打印机连接异常", e);
             //重置连接
@@ -288,6 +290,7 @@ public class Printer {
                     }
                     PrinterStatusManager.stateMonitor(state, this);
                 } catch (IOException e) {
+                    PrinterConnector.closeConnection(channel);
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
                 }
             } else {
