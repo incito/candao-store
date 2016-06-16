@@ -8,13 +8,9 @@ public class PrinterConstant {
 
     public static final String LISTLABEL = "listdata";
 
-    //���õ�
     public static final String CUST_TEMPLATE_NAME = "customerbill.vm";
-    //�� ����
     public static final String COOKIE_TEMPLATE_NAME = "normal.vm";
-    //Ԥ�ᵥ
     public static final String SETTLE_TEMPLATE_NAME = "settlement.vm";
-    //��Ӳ�
     public static final String ADDDISH_TEMPLATE_NAME = "adddish.vm";
     /**
      * 开启自动状态返回
@@ -31,7 +27,6 @@ public class PrinterConstant {
 
     public static byte[] getClear_font() {
 
-        // ��������Ŵ�һ��
         byte[] clear_font = new byte[3];
         clear_font[0] = 0x1d;
         clear_font[1] = 0x21;
@@ -112,7 +107,6 @@ public class PrinterConstant {
         return fd_font;
     }
 
-    // �����ӡָ��
     public static byte[] getPrintCode() {
         byte[] print_code = new byte[9];
         print_code[0] = 0x1d;
@@ -129,10 +123,7 @@ public class PrinterConstant {
     }
 
     /**
-     * �ַ��Ȳ���,�����ӡʱ����,������ӡҳ��,�������ļ�������е�����
      *
-     * @param strs Դ�ַ�
-     * @param len  ָ���ַ��
      * @return
      * @throws UnsupportedEncodingException
      */
@@ -189,52 +180,52 @@ public class PrinterConstant {
     }
 
 
-    public static String byteSubstring(String s, int length) {
-
-        byte[] bytes = null;
-        byte[] rebytes = new byte[length];
-        try {
-            bytes = s.getBytes("Unicode");
-            int n = 0; // ��ʾ��ǰ���ֽ���
-            int i = 2; // Ҫ��ȡ���ֽ���ӵ�3���ֽڿ�ʼ
-            for (; i < bytes.length && n < length; i++) {
-                // ����λ�ã���3��5��7�ȣ�ΪUCS2�����������ֽڵĵڶ����ֽ�
-                if (i % 2 == 1) {
-                    n++; // ��UCS2�ڶ����ֽ�ʱn��1
-                } else {
-                    // ��UCS2����ĵ�һ���ֽڲ�����0ʱ����UCS2�ַ�Ϊ���֣�һ�������������ֽ�
-                    if (bytes[i] != 0) {
-                        n++;
-                    }
-                }
-            }
-            // ���iΪ����ʱ�������ż��
-            if (i % 2 == 1)
-
-            {
-                // ��UCS2�ַ��Ǻ���ʱ��ȥ�������һ��ĺ���
-                if (bytes[i - 1] != 0)
-                    i = i - 1;
-                    // ��UCS2�ַ�����ĸ�����֣��������ַ�
-                else
-                    i = i + 1;
-            }
-
-
-            if (bytes.length < length) {
-                System.arraycopy(bytes, 0, rebytes, 0, bytes.length);
-//			        	int maxsize = rebytes.length;
-                while (i < length) {
-                    byte b = 32;
-                    rebytes[i++] = b;
-                }
-
-            }
-
-            return new String(rebytes, 0, length, "Unicode");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return new String(rebytes);
-    }
+//    public static String byteSubstring(String s, int length) {
+//
+//        byte[] bytes = null;
+//        byte[] rebytes = new byte[length];
+//        try {
+//            bytes = s.getBytes("Unicode");
+//            int n = 0; // ��ʾ��ǰ���ֽ���
+//            int i = 2; // Ҫ��ȡ���ֽ���ӵ�3���ֽڿ�ʼ
+//            for (; i < bytes.length && n < length; i++) {
+//                // ����λ�ã���3��5��7�ȣ�ΪUCS2�����������ֽڵĵڶ����ֽ�
+//                if (i % 2 == 1) {
+//                    n++; // ��UCS2�ڶ����ֽ�ʱn��1
+//                } else {
+//                    // ��UCS2����ĵ�һ���ֽڲ�����0ʱ����UCS2�ַ�Ϊ���֣�һ�������������ֽ�
+//                    if (bytes[i] != 0) {
+//                        n++;
+//                    }
+//                }
+//            }
+//            // ���iΪ����ʱ�������ż��
+//            if (i % 2 == 1)
+//
+//            {
+//                // ��UCS2�ַ��Ǻ���ʱ��ȥ�������һ��ĺ���
+//                if (bytes[i - 1] != 0)
+//                    i = i - 1;
+//                    // ��UCS2�ַ�����ĸ�����֣��������ַ�
+//                else
+//                    i = i + 1;
+//            }
+//
+//
+//            if (bytes.length < length) {
+//                System.arraycopy(bytes, 0, rebytes, 0, bytes.length);
+////			        	int maxsize = rebytes.length;
+//                while (i < length) {
+//                    byte b = 32;
+//                    rebytes[i++] = b;
+//                }
+//
+//            }
+//
+//            return new String(rebytes, 0, length, "Unicode");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        return new String(rebytes);
+//    }
 }

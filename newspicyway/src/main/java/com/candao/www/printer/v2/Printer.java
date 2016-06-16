@@ -188,6 +188,7 @@ public class Printer {
      * @return
      */
     public PrintResult tryPrint(Object[] msg, long time) {
+        lastActiveTime=System.currentTimeMillis();
         if (time < 1000) {
             time = 1000;
         }
