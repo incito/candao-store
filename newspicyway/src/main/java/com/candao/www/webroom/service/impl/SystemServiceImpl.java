@@ -301,8 +301,10 @@ public class SystemServiceImpl {
 		jsonObject.put("typename", m.get("typename") == null ? "" : m.get("typename").toString());
 		jsonObject.put("begin_time", m.get("begintime") == null ? "" : m.get("begintime").toString());
 		jsonObject.put("end_time", m.get("endtime") == null ? "" : m.get("endtime").toString());
-		jsonObject.put("charges_status", m.get("charges_status") == null ? "" : m.get("charges_status").toString());
-		jsonObject.put("member_price", m.get("member_price") == null ? "" : m.get("member_price").toString());
+		jsonObject.put("charges_status", m.get("chargesstatus") == null ? "" : m.get("chargesstatus").toString());
+//		jsonObject.put("charges_status", m.get("charges_status") == null ? "" : m.get("charges_status").toString());
+		jsonObject.put("member_price", m.get("memberprice") == null ? "" : m.get("memberprice").toString());
+//		jsonObject.put("member_price", m.get("member_price") == null ? "" : m.get("member_price").toString());
 		jsonObject.put("price", m.get("price") == null ? "" : m.get("price").toString());
 		jsonObject.put("date_type", m.get("datetype") == null ? "" : m.get("datetype").toString());
 		jsonObject.put("item_value", m.get("itemValue") == null ? "" : m.get("itemValue").toString());
