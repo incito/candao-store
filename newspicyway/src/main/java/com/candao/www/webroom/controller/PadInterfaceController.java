@@ -2285,7 +2285,7 @@ public class PadInterfaceController {
 		Map<String,Object> retMap = new HashMap<>();
 		try{
 			Map<String, Object> timeMap = dataDictionaryService.getOpenEndTime("BIZPERIODDATE");
-			timeMap.remove("datetype");
+//			timeMap.remove("datetype");
 			retMap.put("result", "0");
 			retMap.put("detail", timeMap);
 		}catch(Exception e){
