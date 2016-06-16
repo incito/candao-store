@@ -40,4 +40,5 @@ public final static String PREFIX = TbPrinterDao.class.getName();
 	public Map<String, Object> queryPrintIsExsit(String customerPrinterIp, String customerPrinterPort);
 	public int updateWorkstate(String ip,short workStatus);
 	public List<Map<String,Object>> queryPrinterWorkStatus();
+	public int clearWorkStatus();
 }

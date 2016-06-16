@@ -32,6 +32,7 @@ public class PrinterManager {
     private static void initialize() {
         PrinterService printerService = (PrinterService) SpringContext.getBean(PrinterService.class);
         List<Map<String, Object>> printerList = printerService.find(null);
+        printerService.clearWorkStatus();
         if (null != printerList) {
             for (Map<String, Object> printer : printerList) {
                 Object ipaddress = printer.get("ipaddress");

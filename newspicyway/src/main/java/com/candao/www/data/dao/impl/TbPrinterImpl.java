@@ -107,6 +107,11 @@ public class TbPrinterImpl implements TbPrinterDao {
 	public List<Map<String, Object>> queryPrinterWorkStatus() {
 		return dao.find(PREFIX + ".queryPrinterWorkStatus",null);
 	}
+
+	@Override
+	public int clearWorkStatus() {
+		return dao.delete(PREFIX + ".clearWorkStatus",null);
+	}
 }
 
 

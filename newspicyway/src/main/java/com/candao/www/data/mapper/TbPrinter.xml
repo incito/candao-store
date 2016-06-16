@@ -302,4 +302,7 @@
 		FROM
 			t_printer_state ps
 	</select>
+	<delete id="clearWorkStatus">
+		truncate table t_printer_state
+	</delete>
 </mapper> 

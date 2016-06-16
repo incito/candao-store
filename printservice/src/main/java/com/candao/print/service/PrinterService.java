@@ -66,4 +66,10 @@ public interface PrinterService {
   public int updateWorkState(String ip,short workstatus);
 
  public List<Map<String,Object>> queryPrinterWorkStatus();
-} 
+
+ /**
+  * 清除打印机状态列表
+  * @return
+     */
+ public int clearWorkStatus();
+}
