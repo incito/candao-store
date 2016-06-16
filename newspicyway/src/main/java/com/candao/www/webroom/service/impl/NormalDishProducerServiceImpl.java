@@ -5,6 +5,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
+import com.candao.common.utils.Constant;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -21,9 +23,11 @@ public class NormalDishProducerServiceImpl implements NormalDishProducerService 
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
-	@Autowired
-	@Qualifier("normalDishQueue")
-	private Destination normalDishQueue;
+//	@Autowired
+//	@Qualifier("normalDishQueue")
+//	private Destination normalDishQueue;
+
+	private ActiveMQQueue normalDishQueue = new ActiveMQQueue();
 	
 	public void sendMessage( final String message) {
 		System.out.println("--------------- 开始打印-----------------"+message);
@@ -42,8 +46,16 @@ public class NormalDishProducerServiceImpl implements NormalDishProducerService 
 		 if(obj == null){
 			 return ;
 		 }
+
+		obj.setListenerType(Constant.ListenerType.NormalListener);
+		String ipAddress = obj.getCustomerPrinterIp();
+		if (ipAddress.contains(",")) {
+			String[] ips = ipAddress.split(",");
+			ipAddress = ips[0];
+		}
 		
-		 
+		normalDishQueue.setPhysicalName(ipAddress);
+
 		jmsTemplate.convertAndSend(normalDishQueue, obj);
 		
 //		 jmsTemplate.send(destination, new MessageCreator() {   

@@ -1845,7 +1845,7 @@ public class WeigthThread  implements Runnable{
 	@Override
 	public void run(){
 		//根据动作打印不同的小票
-		printCommonService.setDestination(printDishQueue);
+//		printCommonService.setDestination(printDishQueue);
 		printCommonService.sendMessage( printObj );
 		//0.正常下单
 		//1.加菜下单
@@ -1947,9 +1947,9 @@ public class WeigthThread  implements Runnable{
     @Autowired
     PrintCommonServiceImpl  printCommonService;
 
-	@Autowired
-	@Qualifier("weightQueue")
-	private Destination printDishQueue;
+//	@Autowired
+//	@Qualifier("weightQueue")
+//	private Destination printDishQueue;
 	
 	@Autowired
 	 DataSourceTransactionManager transactionManager ;

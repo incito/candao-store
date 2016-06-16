@@ -1,17 +1,16 @@
 package com.candao.www.data.dao.impl;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import com.candao.common.dao.DaoSupport;
 import com.candao.common.page.Page;
 import com.candao.print.entity.TbPrinter;
 import com.candao.www.data.dao.TbPrinterDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 数据访问接口
@@ -94,6 +93,24 @@ public class TbPrinterImpl implements TbPrinterDao {
 		params.put("customerPrinterIp", customerPrinterIp);
 		params.put("customerPrinterPort", customerPrinterPort);
 		return dao.get(PREFIX + ".queryPrintIsExsit", params);
+	}
+
+	@Override
+	public int updateWorkstate(String ip, short workStatus) {
+		Map<String, Object> params = new HashMap<String, Object>(2);
+		params.put("ip", ip);
+		params.put("workstatus", workStatus);
+		return dao.insert(PREFIX + ".insertOrUpdateState", params);
+	}
+
+	@Override
+	public List<Map<String, Object>> queryPrinterWorkStatus() {
+		return dao.find(PREFIX + ".queryPrinterWorkStatus",null);
+	}
+
+	@Override
+	public int clearWorkStatus() {
+		return dao.delete(PREFIX + ".clearWorkStatus",null);
 	}
 }
 

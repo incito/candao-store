@@ -205,20 +205,33 @@
 		</property>  
 		<property name="targetMethod" value="sqlDataSyn" />  
 		<property name="concurrent" value="false" />
-	 </bean> 
+	 </bean>
+	<bean id="printStateJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetClass" value="com.candao.www.printer.v2.PrinterManager">
+		</property>
+		<property name="targetMethod" value="schedule" />
+		<property name="concurrent" value="false" />
+	 </bean>
 	 
      <bean id="sqlCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
 	    <property name="jobDetail" ref="dataSynJob" />  
 	    <!-- sql每半小时执行一次  Seconds Minutes Hours DayofMonth Month DayofWeek Year或  -->
 	    <property name="cronExpression" value="50 * * * * ?" />  
-    </bean>  
+    </bean>
+	<bean id="printStateCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="printStateJob" />
+	    <!-- 每30s执行一次-->
+	    <property name="cronExpression" value="30 * * * * ?" />
+    </bean>
     
      <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
 	    <property name="triggers">  
 	      <list>  
 	      <ref bean="cronTrigger" />  
 	      <ref bean="sqlCronTrigger" />  
-	      </list>  
+	      <ref bean="printStateCronTrigger" />
+	      </list>
 	    </property>  
     </bean>  
  

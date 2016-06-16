@@ -76,5 +76,20 @@ public class PrinterServiceImpl implements PrinterService {
 			}
 		 return 0;
 	}
+
+	@Override
+	public int updateWorkState(String ip,short workstatus) {
+		return tbPrinterDao.updateWorkstate(ip,workstatus);
+	}
+
+	@Override
+	public List<Map<String, Object>> queryPrinterWorkStatus() {
+		return tbPrinterDao.queryPrinterWorkStatus();
+	}
+
+	@Override
+	public int clearWorkStatus() {
+		return tbPrinterDao.clearWorkStatus();
+	}
 }
 

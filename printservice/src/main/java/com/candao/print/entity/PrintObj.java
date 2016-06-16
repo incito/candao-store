@@ -1,5 +1,7 @@
 package com.candao.print.entity;
 
+import com.candao.common.utils.Constant;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +64,10 @@ public class PrintObj implements Serializable,Cloneable {
 	private String discardUserId;
 	
 	private List<PrintDish> pDish;
+
+    private Constant.ListenerType listenerType;
+    //TODO 备用打印机
+    private String ipAddress;
 	
 	
 	//xk add
@@ -264,4 +270,19 @@ public class PrintObj implements Serializable,Cloneable {
 	}
 
 
+    public Constant.ListenerType getListenerType() {
+        return listenerType;
+    }
+
+    public void setListenerType(Constant.ListenerType listenerType) {
+        this.listenerType = listenerType;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 }

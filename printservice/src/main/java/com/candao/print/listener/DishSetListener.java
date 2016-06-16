@@ -1,19 +1,13 @@
 package com.candao.print.listener;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.jms.Destination;
-
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import com.candao.common.utils.StringUtils;
+import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
@@ -23,16 +17,8 @@ import com.candao.print.entity.PrinterConstant;
  * @author caicai
  *
  */
-public class DishSetListener extends AbstractPrintListener {
+public class DishSetListener extends AbstractQueueListener {
 
-	@Autowired
-	@Qualifier("dishSetQueue")
-	private Destination destination;
-
-	public DishSetListener() {
-		super("dishSetListener");
-	}
-	
 	/**
 	 * 
 	 * @param message
@@ -42,16 +28,8 @@ public class DishSetListener extends AbstractPrintListener {
 		return null;
 	}
 
-	public Destination getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
-
 	@Override
-	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer)
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer)
 			throws Exception {
 		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();
@@ -208,9 +186,8 @@ public class DishSetListener extends AbstractPrintListener {
 			}
 		}
 	@Override
-	public String receiveMessage(PrintObj object) {
-		printForm(object);
-		return null;
+	public PrintData receiveMessage(PrintObj object) throws Exception {
+		return prepareData(object,new PrintData());
 	}
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
 		Object[] res = null;

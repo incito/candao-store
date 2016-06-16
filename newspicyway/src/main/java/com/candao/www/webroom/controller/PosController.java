@@ -2,7 +2,6 @@ package com.candao.www.webroom.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.AjaxResponse;
-import com.candao.www.utils.PrinterMonitor;
 import com.candao.www.webroom.service.PosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +31,10 @@ public class PosController {
     public String printerlist() {
         AjaxResponse printerList;
         try {
-             printerList = posService.getPrinterList();
-        }catch (Exception e){
-            logger.error("printerlist.json出现异常",e);
-            printerList=new AjaxResponse();
+            printerList = posService.getPrinterList();
+        } catch (Exception e) {
+            logger.error("printerlist.json出现异常", e);
+            printerList = new AjaxResponse();
             printerList.setErrorMsg("后台服务出现异常");
         }
         return JSON.toJSONString(printerList);

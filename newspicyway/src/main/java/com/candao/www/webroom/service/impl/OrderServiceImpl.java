@@ -91,9 +91,6 @@ public class OrderServiceImpl implements OrderService{
 	@Autowired
 	PrintCommonServiceImpl  printService;
 	
-	@Autowired
-	@Qualifier("weightQueue")
-	private Destination printDishQueue;
 	
 	@Autowired
 	TbDataDictionaryDao  dictionaryDao;
@@ -725,7 +722,7 @@ public class OrderServiceImpl implements OrderService{
 		   @Override
 		   public void run(){
 			   //称重后打印单
-			   printService.setDestination(printDishQueue);
+//			   printService.setDestination(printDishQueue);
 			   printService.sendMessage( printObj );
 			 
 		   }

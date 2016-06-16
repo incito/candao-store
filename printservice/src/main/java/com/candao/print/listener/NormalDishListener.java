@@ -1,18 +1,13 @@
 package com.candao.print.listener;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.jms.Destination;
-
+import com.candao.print.entity.PrintData;
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.log.LoggerFactory;
@@ -23,36 +18,16 @@ import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 
 @Service
-public class NormalDishListener extends AbstractPrintListener {
+public class NormalDishListener extends AbstractQueueListener {
 	
 	LoggerHelper logger = LoggerFactory.getLogger(NormalDishListener.class);
 
-	@Autowired
-	@Qualifier("normalDishQueue")
-	private Destination destination;
-	
-	public NormalDishListener() {
-		super("normalDishListener");
-	}
-
-	public Destination getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Destination destination) {
-		this.destination = destination;
-	}
-
-	public String receiveMessage(PrintObj object) {
+	public PrintData receiveMessage(PrintObj object) throws Exception {
 		System.out.println("NormalDishListener receive message");
-		
-		printForm(object);
-		
-		return null;
-
+		return prepareData(object,new PrintData());
 	}
 
-	protected void printBusinessData(PrintObj object, OutputStream socketOut, OutputStreamWriter writer) throws Exception
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer) throws Exception
 	 {
 
 		String billName = object.getBillName();
