@@ -27,6 +27,8 @@ import com.candao.print.entity.TbPrinterArea;
 import com.candao.print.entity.TbPrinterDetail;
 import com.candao.print.entity.TbPrinterManager;
 import com.candao.print.service.PrinterManagerService;
+import com.candao.www.printer.listener.PrinterListenerManager;
+import com.candao.www.spring.SpringContext;
 import com.candao.www.webroom.service.DishService;
 import com.candao.www.webroom.service.DishTypeService;
 //*
@@ -127,6 +129,10 @@ public class PrinterManagerController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//added by caicai
+		//更新mq监听队列
+		PrinterListenerManager printerListener = (PrinterListenerManager) SpringContext.getBean(PrinterListenerManager.class);
+		printerListener.updateListener();
 		
 		if (b) {
 			if (ValidateUtils.isEmpty(id)) {

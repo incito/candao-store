@@ -1,14 +1,21 @@
 package com.candao.www.printer.listener;
 
 import com.candao.print.dao.TbPrinterManagerDao;
+import com.candao.www.printer.v2.PrinterManager;
+
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.jms.Destination;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +44,8 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private String messageListeners = "";
 
 	private Runnable callback;
+	
+	private List<String> ipPool;
 
 	public PrinterListenerManager() {
 	}
@@ -74,10 +83,18 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private void stopListeners() {
 		if (listeners != null && !listeners.isEmpty()) {
 			for (Map.Entry<String, DefaultMessageListenerContainerAdapter> it : listeners.entrySet()) {
-				it.getValue().stop();
-				it.getValue().destroy();
+				stopListener(it.getValue());
 			}
 			listeners.clear();
+		}
+	}
+	
+	private void stopListener(DefaultMessageListenerContainer container){
+		if (container != null) {
+			if (container.isRunning()) {
+				container.stop();
+			}
+			container.destroy();
 		}
 	}
 
@@ -85,14 +102,14 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	public void start() {
 		synchronized (activeMonitor) {
 			createListeners();
-			createConnections();
+//			createConnections();
 			callback = null;
 			running = true;
 		}
 	}
 
-	private void createConnections() {
-		// TODO
+	private void createConnections(List<String> ipPool2) {
+		PrinterManager.initialize(ipPool2);
 	}
 
 	// 创建队列
@@ -107,15 +124,20 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 					ipaddress = ips[0];
 				}
 				if (listeners.get(ipaddress) == null) {
-					Destination dst = new ActiveMQQueue(ipaddress);
-					DefaultMessageListenerContainerAdapter listener = (DefaultMessageListenerContainerAdapter) applicationContext
-							.getBean(messageListeners);
-					listener.setDestination(dst);
+					DefaultMessageListenerContainerAdapter listener = getListener(ipaddress);
 					listener.trulyStart();
 					listeners.put(ipaddress, listener);
 				}
 			}
 		}
+	}
+	
+	private DefaultMessageListenerContainerAdapter getListener(String ipaddress) {
+		Destination dst = new ActiveMQQueue(ipaddress);
+		DefaultMessageListenerContainerAdapter listener = (DefaultMessageListenerContainerAdapter) applicationContext
+				.getBean(messageListeners);
+		listener.setDestination(dst);
+		return listener;
 	}
 
 	@Override
@@ -140,5 +162,64 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+	}
+	
+	/**
+	 * 更新监听队列
+	 */
+	public synchronized void updateListener(){
+		Map<String, Object> params = new HashMap<>();
+		List<Map<String, Object>> printers = tbPrinterManagerDao.find(params);
+		if (ipPool == null) {
+			ipPool = new ArrayList<>();
+		}
+		ipPool.clear();
+		
+		List<String> buffer = new ArrayList<>();
+		if (printers != null && !printers.isEmpty()) {
+			for (Map<String, Object> it : printers) {
+				String ipaddress = String.valueOf(it.get("ipaddress"));
+				if (ipaddress.contains(",")) {
+					String[] ips = ipaddress.split(",");
+					ipaddress = ips[0];
+				}
+				ipPool.add(ipaddress + ":" + it.get("port"));
+				
+				if (listeners.get(ipaddress) == null) {
+					DefaultMessageListenerContainerAdapter listener = getListener(ipaddress);
+					listener.trulyStart();
+					listeners.put(ipaddress, listener);
+				}
+				buffer.add(ipaddress);
+			}
+		}
+		
+		if (!CollectionUtils.isEmpty(listeners)) {
+			List<String> temp = new ArrayList<>();
+			for (String ip : listeners.keySet()) {
+				if (!buffer.contains(ip)) {
+					temp.add(ip);
+				}
+			}
+			this.clearListeners(temp);
+		}
+		
+		this.createConnections(ipPool);
+	}
+	
+	private void clearListeners(List<String> ipAddresss){
+		for (String it : ipAddresss) {
+			clearListener(it);
+		}
+	}
+	
+	private void clearListener(String ipAddress){
+		if (StringUtils.isEmpty(ipAddress)) {
+			return;
+		}
+		if ( !CollectionUtils.isEmpty(listeners) && listeners.get(ipAddress) != null) {
+			DefaultMessageListenerContainerAdapter listener = listeners.remove(ipAddress);
+			this.stopListener(listener);
+		}
 	}
 }
