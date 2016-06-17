@@ -326,6 +326,7 @@ public class PadInterfaceController {
 	@RequestMapping("/bookorderList")
 	@ResponseBody
 	public String saveOrderInfoList(@RequestBody String jsonString,HttpServletRequest reqeust){
+		logger.error("saveOrderInfoList-start:"+jsonString,"");
 		long start = System.currentTimeMillis();
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(jsonString);
@@ -346,7 +347,7 @@ public class PadInterfaceController {
 		List<Map<String,String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
 		
 		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
-		
+		String result = "";
 		if(flag==0){
 			Map<String, Object> res = orderDetailService.setOrderDetailList(order,toperationLog);
 			try{
@@ -361,12 +362,14 @@ public class PadInterfaceController {
 			}
 			logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
 			logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
-			return JacksonJsonMapper.objectToJson(res);
+			result = JacksonJsonMapper.objectToJson(res);
 		}else if(flag==1){
-			return Constant.FAILUREMSG;
+			result = Constant.FAILUREMSG;
 		}else{
-			return Constant.SUCCESSMSG;
+			result = Constant.SUCCESSMSG;
 		}
+		logger.error("saveOrderInfoList-end:"+result,"");
+		return result;
 	}
 
 	/**

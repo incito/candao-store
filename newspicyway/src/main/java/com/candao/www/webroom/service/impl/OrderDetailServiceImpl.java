@@ -278,7 +278,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
  @Override 
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
  public Map<String, Object> setOrderDetailList(Order orders,ToperationLog toperationLog) {
-	 
+	 	
 	  DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 	  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
 	  TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
@@ -352,6 +352,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	            printOrderList( orders.getOrderid(),table.getTableid(), flag);
 	  	        printweigth(listall,orders.getOrderid());
 	        	transactionManager.commit(status);
+	        	log.info(orders.getOrderid()+"下单成功");
 			   	return getResult("0","下单成功","");
 	        }
 	          transactionManager.rollback(status);
