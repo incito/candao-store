@@ -41,7 +41,7 @@ public class UserFilter implements Filter {
 		// 若存在会话则返回该会话,否则返回NULL
 		HttpSession session = request.getSession(false);
 
-		if (currentURL.indexOf(".mp4") > 0 ||currentURL.indexOf(".jpg") > 0 || currentURL.indexOf(".bmp") > 0 || currentURL.indexOf(".gif") > 0 || currentURL.indexOf(".css") > 0 || ".js".equals(StringUtils.right(currentURL, 3)) || currentURL.indexOf("index.jsp") > 0|| currentURL.indexOf("login.jsp") > 0 || currentURL.indexOf(".png") > 0) {
+		if (currentURL.indexOf(".mp4") > 0 ||currentURL.indexOf(".jpg") > 0 || currentURL.indexOf(".bmp") > 0 || currentURL.indexOf(".gif") > 0 || currentURL.indexOf(".css") > 0 || ".js".equals(StringUtils.right(currentURL, 3)) || currentURL.indexOf("index.jsp") > 0|| currentURL.indexOf("login.jsp") > 0 || currentURL.indexOf(".png") > 0 || currentURL.indexOf("version.jsp") > 0) {
 			chain.doFilter(request, response);
 			return;
 		}
