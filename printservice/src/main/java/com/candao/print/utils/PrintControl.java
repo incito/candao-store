@@ -1,8 +1,11 @@
 package com.candao.print.utils;
 
+import com.candao.print.entity.PrinterConstant;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * 打印控制类
@@ -99,14 +102,13 @@ public class PrintControl {
 
         // Send check command (1D 61 FF)
         // Chinese note:发送查询指令
-        socketOut.write(new byte[]{0x1D, 0x61, (byte) 0xFF});
+        socketOut.write(PrinterConstant.AUTO_STATUS);
         while (iStartTime < iEndTime) {
             // Get the printer's status
             // Chinese note:获取设备状态
             byte[] cReadBuf = new byte[inputStream.available()];
             inputStream.read(cReadBuf);
             iState = ReadDeviceStatus(cReadBuf);
-
             switch (iState) {
                 case STATUS_OFFLINE: {
                     iReadNum++;
@@ -123,12 +125,10 @@ public class PrintControl {
                 }
                 case STATUS_ABNORMAL:
                 case STATUS_OK:
-                    return iState;
                 case STATUS_COVEROPEN:
                 case STATUS_PAPEREND:
                 case STATUS_CUTTER_ERROR:
-                    iStartTime = GetTickCount();
-                    continue;
+                    return iState;
                 case STATUS_STOPPRINT:
                     // Clearing stop printing status data bit (1B 41)
                     // Chinese note:清除禁止打印状态

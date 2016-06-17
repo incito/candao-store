@@ -1,5 +1,7 @@
 package com.candao.www.listener;
 
+import com.candao.www.printer.v2.PrinterManager;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -10,6 +12,7 @@ import javax.servlet.ServletContextListener;
 public class InitListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        PrinterManager.initialize();
     }
 
     @Override

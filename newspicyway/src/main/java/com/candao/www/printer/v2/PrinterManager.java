@@ -43,12 +43,14 @@ public class PrinterManager {
      *
      * @param printerAddress
      */
+    @Deprecated
     public synchronized static void initialize(List<String> printerAddress) {
         logger.info("重新初始化打印机");
         clearPrinter();
-        PrinterService printerService = (PrinterService) SpringContext.getBean(PrinterService.class);
+        PrinterService printerService = getPrinterService();
         printerService.clearWorkStatus();
         if (null == printerAddress) {
+            logger.info("重新初始化打印机结束");
             return;
         }
         for (String address : printerAddress) {
@@ -63,9 +65,13 @@ public class PrinterManager {
             }
             createPrinter(ip, port);
         }
+        logger.info("重新初始化打印机结束");
     }
 
-    private static void initialize() {
+    /**
+     * 初始化打印机
+     */
+    public synchronized static void initialize() {
         PrinterService printerService = getPrinterService();
         printerService.clearWorkStatus();
         List<Map<String, Object>> printerList = printerService.find(null);
@@ -89,13 +95,6 @@ public class PrinterManager {
                 createPrinter(ipStr, portInt);
             }
         }
-//        // TODO: 2016/6/14 测试代码
-//        Printer p = new Printer();
-//        //备用打印机处理
-//        p.setKey("10.66.18.3");
-//        p.setIp("10.66.18.3");
-//        p.setPort(9100);
-//        printers.put(p.getKey(),p);
     }
 
     private static void createPrinter(String ipStr, int portInt) {
@@ -111,8 +110,7 @@ public class PrinterManager {
                 p.setIp(ips[0]);
                 p.setPort(portInt);
                 printers.put(p.getKey(), p);
-                //初始化打印机状态
-                getPrinterService().updateWorkState(p.getIp(), PrinterStatusManager.NORMAL);
+                PrinterStatusManager.stateMonitor(PrinterStatusManager.NORMAL,p);
             }
         }
     }
@@ -160,6 +158,7 @@ public class PrinterManager {
                 }
             }
         }
+//        printers.clear();
     }
 
     public static void main(String[] args) {
