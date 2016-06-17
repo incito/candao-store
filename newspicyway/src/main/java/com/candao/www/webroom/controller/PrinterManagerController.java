@@ -132,7 +132,8 @@ public class PrinterManagerController {
 		//added by caicai
 		//更新mq监听队列
 		PrinterListenerManager printerListener = (PrinterListenerManager) SpringContext.getBean(PrinterListenerManager.class);
-		printerListener.updateListener();
+		// TODO: 2016/6/17 刷新监听器有可能造成线程阻塞 ，弃用
+//		printerListener.updateListener();
 		
 		if (b) {
 			if (ValidateUtils.isEmpty(id)) {
