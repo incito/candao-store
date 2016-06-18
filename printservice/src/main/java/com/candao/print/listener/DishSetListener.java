@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.stereotype.Service;
+
 import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
@@ -17,6 +19,7 @@ import com.candao.print.entity.PrinterConstant;
  * @author caicai
  *
  */
+@Service
 public class DishSetListener extends AbstractQueueListener {
 
 	/**
