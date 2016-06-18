@@ -1,19 +1,11 @@
 package com.candao.www.webroom.service.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.jms.Destination;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +34,7 @@ import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
 import com.candao.www.webroom.service.CouponsService;
@@ -51,8 +44,6 @@ import com.candao.www.webroom.service.OpenBizService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
-
-import net.sf.json.JSONObject;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -545,37 +536,37 @@ public class OrderServiceImpl implements OrderService{
 			return mapRet; 
 		}
 	}
-	public class TsThread extends Thread{
-		   String  str ;
-		   TsThread(String  str){
-			   this.str = str;
-		   }
-		   @Override
-		   public void run(){
-			   //根据动作打印不同的小票
-				URL urlobj;
-				try {
-				urlobj = new URL(str);
-				URLConnection	urlconn = urlobj.openConnection();
-				urlconn.connect();
-				InputStream myin = urlconn.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-				String content = reader.readLine();
-				JSONObject object = JSONObject.fromObject(content.trim());
-				@SuppressWarnings("unchecked")
-				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
-				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
-					System.out.println("清空pad推送成功");
-				}else{
-					System.out.println("清空pad推送失败");
-				}
-				} catch (IOException e) {
-					logger.error("-->",e);
-					System.out.println("推送异常"+e.toString());
-					e.printStackTrace();
-				}
-		   }
-	   }
+//	public class TsThread extends Thread{
+//		   String  str ;
+//		   TsThread(String  str){
+//			   this.str = str;
+//		   }
+//		   @Override
+//		   public void run(){
+//			   //根据动作打印不同的小票
+//				URL urlobj;
+//				try {
+//				urlobj = new URL(str);
+//				URLConnection	urlconn = urlobj.openConnection();
+//				urlconn.connect();
+//				InputStream myin = urlconn.getInputStream();
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+//				String content = reader.readLine();
+//				JSONObject object = JSONObject.fromObject(content.trim());
+//				@SuppressWarnings("unchecked")
+//				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
+//				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
+//					System.out.println("清空pad推送成功");
+//				}else{
+//					System.out.println("清空pad推送失败");
+//				}
+//				} catch (IOException e) {
+//					logger.error("-->",e);
+//					System.out.println("推送异常"+e.toString());
+//					e.printStackTrace();
+//				}
+//		   }
+//	   }
 	/**
 	 * 组织菜谱数据给pad，在更换pad时使用
 	 * @author shen
@@ -696,9 +687,10 @@ public class OrderServiceImpl implements OrderService{
 					params.put("printobjid", printObj.getId());
 					flag=flag&&tbPrintObjDao.updateDishWeight(params)>0;
 				}
-				if(flag){
+				if(flag){				
 					mapRet.put("result", "0");
 					mapRet.put("desc", "更新成功");
+					mapRet.put("orderid", orderid);
 				}else{
 					mapRet.put("result", "2");
 					mapRet.put("desc", "未找到相应的菜品");

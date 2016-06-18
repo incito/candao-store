@@ -1,20 +1,13 @@
 package com.candao.www.webroom.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,10 +24,10 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.common.utils.ValidateUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
-import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.Tmenu;
 import com.candao.www.utils.ImageCompress;
 import com.candao.www.utils.SessionUtils;
+import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.MenuGroup;
 import com.candao.www.webroom.service.MenuService;
 //*
@@ -235,36 +228,36 @@ public class MenuController {
 		}
 		return mav;
 	}
-	public class TsThread extends Thread{
-		   String  str ;
-		   public TsThread(String  str){
-			   this.str = str;
-		   }
-		   @Override
-		   public void run(){
-			   //根据动作打印不同的小票
-				URL urlobj;
-				try {
-				urlobj = new URL(str);
-				URLConnection	urlconn = urlobj.openConnection();
-				urlconn.connect();
-				InputStream myin = urlconn.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-				String content = reader.readLine();
-				JSONObject object = JSONObject.fromObject(content.trim());
-				@SuppressWarnings("unchecked")
-				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
-				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
-					System.out.println("推送成功");
-				}else{
-					System.out.println("推送失败");
-				}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		   }
-	   }
+//	public class TsThread extends Thread{
+//		   String  str ;
+//		   public TsThread(String  str){
+//			   this.str = str;
+//		   }
+//		   @Override
+//		   public void run(){
+//			   //根据动作打印不同的小票
+//				URL urlobj;
+//				try {
+//				urlobj = new URL(str);
+//				URLConnection	urlconn = urlobj.openConnection();
+//				urlconn.connect();
+//				InputStream myin = urlconn.getInputStream();
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+//				String content = reader.readLine();
+//				JSONObject object = JSONObject.fromObject(content.trim());
+//				@SuppressWarnings("unchecked")
+//				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
+//				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
+//					System.out.println("推送成功");
+//				}else{
+//					System.out.println("推送失败");
+//				}
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//		   }
+//	   }
 	/**
 	 * 调整图片，图片裁剪
 	 * {"image":"","oldimage":"","flag":"1or2(1表示直接拖进去2图片裁剪)","type":"1,2,3,4","x":"","y":"","h":"","w":""}

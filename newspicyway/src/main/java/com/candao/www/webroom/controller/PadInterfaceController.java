@@ -1561,6 +1561,13 @@ public class PadInterfaceController {
 	public void updateDishWeight(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
 		Map<String,Object> params=JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
+		if(map.get("result").equals("0")){
+			String orderid = (String) map.get("orderid");
+			//发送广播通知
+			StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2201 + "/" + orderid);
+			logger.info("称重发送通知，订单号：[" + orderid + "],菜品id:[" + params.get("dishid") + "]");
+			executor.execute(new TsThread(messageinfo.toString()));
+		}
 		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
 		logger.info("更新菜品称重结果： "+wholeJsonStr);
 		try{

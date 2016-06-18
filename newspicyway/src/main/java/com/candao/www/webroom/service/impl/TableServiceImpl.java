@@ -1,11 +1,5 @@
 package com.candao.www.webroom.service.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,14 +35,13 @@ import com.candao.www.data.model.Tworklog;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.WorkLogService;
-
-import net.sf.json.JSONObject;
 @Service
 public class TableServiceImpl implements TableService {
 	
@@ -654,36 +647,36 @@ public class TableServiceImpl implements TableService {
 	    }
 	}
 	//推送的线程
-	public class TsThread extends Thread{
-		   String  str ;
-		   TsThread(String  str){
-			   this.str = str;
-		   }
-		   @Override
-		   public void run(){
-			   //根据动作打印不同的小票
-				URL urlobj;
-				try {
-				urlobj = new URL(str);
-				URLConnection	urlconn = urlobj.openConnection();
-				urlconn.connect();
-				InputStream myin = urlconn.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-				String content = reader.readLine();
-				JSONObject object = JSONObject.fromObject(content.trim());
-				@SuppressWarnings("unchecked")
-				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
-				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
-					logger.info("清空pad推送成功:" + str);
-				}else{
-					logger.info("清空pad推送失败:" + str);
-				}
-				} catch (IOException e) {
-					logger.error("-->",e);
-					e.printStackTrace();
-				}
-		   }
-	   }
+//	public class TsThread extends Thread{
+//		   String  str ;
+//		   TsThread(String  str){
+//			   this.str = str;
+//		   }
+//		   @Override
+//		   public void run(){
+//			   //根据动作打印不同的小票
+//				URL urlobj;
+//				try {
+//				urlobj = new URL(str);
+//				URLConnection	urlconn = urlobj.openConnection();
+//				urlconn.connect();
+//				InputStream myin = urlconn.getInputStream();
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+//				String content = reader.readLine();
+//				JSONObject object = JSONObject.fromObject(content.trim());
+//				@SuppressWarnings("unchecked")
+//				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
+//				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
+//					logger.info("清空pad推送成功:" + str);
+//				}else{
+//					logger.info("清空pad推送失败:" + str);
+//				}
+//				} catch (IOException e) {
+//					logger.error("-->",e);
+//					e.printStackTrace();
+//				}
+//		   }
+//	   }
 	
 	  public String accountcash(AccountCash accountCash){
 		  //判断当前用户是不是经理
