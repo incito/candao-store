@@ -297,6 +297,7 @@
 					t_printer p
 				WHERE
 					p.ipaddress LIKE CONCAT('%', ps.ip, '%')
+					and p.`status`=1
 				LIMIT 1
 			) printername
 		FROM
