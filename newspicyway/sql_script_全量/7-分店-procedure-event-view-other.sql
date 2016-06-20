@@ -939,9 +939,6 @@ BEGIN
   FROM
     t_open_log;
 
-  DELETE
-  FROM
-    t_operation_log;
 
   DELETE
   FROM
@@ -1076,9 +1073,7 @@ SELECT
  
 IF v_count = 1 THEN
 
-      
-      delete  from t_operation_log where tableno = i_orignaltableno;
-     delete  from t_operation_log where tableno = i_targettableno;
+
      
 SELECT
         status,
@@ -2011,12 +2006,7 @@ BEGIN
       END IF;
 
      
-     update t_operation_log 
-     set tableno = i_targettableno
-     where tableno in ( 
-                  select tableno  from t_table where orderid in (
-                   select orderid  from t_table 
-                      where tableno = i_orignaltableno) );
+
 
       
       UPDATE t_table
@@ -2053,8 +2043,6 @@ BEGIN
       where tp.orderno =   v_orderid ;
 
 
-      delete  from t_operation_log where tableno = i_orignaltableno;
-     delete  from t_operation_log where tableno = i_targettableno;
 
     
       SET o_result = '0';
@@ -2348,7 +2336,6 @@ BEGIN
 
   if pi_type = 1 then
     DELETE FROM t_open_log;
-    DELETE FROM t_operation_log;
     delete FROM t_open_log;
     DELETE FROM t_branch_biz_log;  
     update t_printer SET printnum = 0;
