@@ -606,6 +606,8 @@
 			
 		}
 	} */
+
+	var haveSelected = null;
 	/* /**
 	 * 保存礼物
 	 */
