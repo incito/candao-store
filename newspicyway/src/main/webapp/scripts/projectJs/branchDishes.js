@@ -167,9 +167,9 @@ function editMenuView(id){
 					$("#imgsrc").attr("src",img_Path+result.dish[0].image);
 				}
 				if(result.dish[0].status==1){
-					$("#menuViewStatus").html('<img src="../images/menu-state-on.png" value="1" title="不足">');
+					$("#menuViewStatus").html('<img src="../images/menu-state-off.png" value="1" title="不足">');
 				}else{
-					$("#menuViewStatus").html('<img src="../images/menu-state-off.png" value="0" title="充足">');
+					$("#menuViewStatus").html('<img src="../images/menu-state-on.png" value="0" title="充足">');
 
 				}
 				$("#tasteAndLabel").append(result.dish[0].imagetitle);
@@ -221,9 +221,9 @@ function updateDishStatus(statusTtd){
 	
 			if(result=="1"){
 				if($("#menuViewStatus").find("img").attr("value")=="0"){
-					$("#menuViewStatus").html('<img src="../images/menu-state-on.png" value="1" title="不足">');
+					$("#menuViewStatus").html('<img src="../images/menu-state-off.png" value="1" title="不足">');
 				}else if($("#menuViewStatus").find("img").attr("value")=="1"){
-					$("#menuViewStatus").html('<img src="../images/menu-state-off.png" value="0" title="充足">');
+					$("#menuViewStatus").html('<img src="../images/menu-state-on.png" value="0" title="充足">');
 				}
 				
 			}
