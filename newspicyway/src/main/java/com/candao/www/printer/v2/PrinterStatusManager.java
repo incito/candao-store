@@ -28,7 +28,7 @@ public class PrinterStatusManager {
      * @param printer
      * @return
      */
-    public static boolean stateMonitor(int nowState, Printer printer) {
+    public static synchronized boolean stateMonitor(int nowState, Printer printer) {
         /**
          * 要处理的状态列表
          */
