@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.OfflineMsgMapper">
+    <resultMap id="BaseResultMap" type="com.candao.www.dataserver.entity.OfflineMsg">
+        <result column="id" property="id"/>
+        <result column="msg_type" property="msgType"/>
+        <result column="content" property="content"/>
+        <result column="device_group" property="deviceGroup"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="is_single" property="isSingle"/>
+    </resultMap>
+    <select id="getByGroupAndId" resultMap="BaseResultMap">
+        select * from t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId} and expire_time>#{curDate}
+    </select>
+    <select id="getAllOffLineMsg" resultMap="BaseResultMap">
+        select * from t_offline_msg WHERE 1=1
+        <if test="deviceGroup!=null and deviceGroup!=''">
+            AND device_group=#{deviceGroup}
+        </if>
+        <if test="deviceId!=null and deviceId!=''">
+            AND device_id=#{deviceId}
+        </if>
+    </select>
+    <insert id="save" parameterType="com.candao.www.dataserver.entity.OfflineMsg">
+       INSERT INTO t_offline_msg(id,msg_type, content,device_group, device_id,is_single,create_time,expire_time) VALUES
+        (#{id},#{msgType},#{content},#{deviceGroup},#{deviceId},#{isSingle}, #{createTime},#{expireTime})
+    </insert>
+    <delete id="deleteById">
+        DELETE FROM t_offline_msg WHERE id=#{id}
+    </delete>
+    <delete id="deleteMsg">
+        DELETE FROM t_offline_msg WHERE device_group=#{deviceGroup} and device_id=#{deviceId} and msg_type=#{msgType}
+    </delete>
+    <delete id="deleteMsgByList" parameterType="java.util.List">
+        DELETE FROM t_offline_msg WHERE msg_type=#{msgType} and device_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+    </delete>
+    <insert id="saveList" parameterType="java.util.List">
+        INSERT INTO t_offline_msg(id,msg_type, content,device_group, device_id,is_single,create_time,expire_time) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.msgType},#{item.content},#{item.deviceGroup},#{item.deviceId},#{item.isSingle},
+            #{item.createTime},#{item.expireTime})
+        </foreach>
+    </insert>
+    <delete id="deleteMsgByExpireTime">
+        DELETE FROM t_offline_msg WHERE expire_time &lt;=#{curDate};
+    </delete>
+</mapper>

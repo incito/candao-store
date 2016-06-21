@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.OrderOpMapper">
+    <update id="updateOrderTypeById">
+        update t_order set  ordertype=#{orderType}  where orderid=#{orderId}
+    </update>
+    <update id="updateBefPrintCount">
+        update t_order set befprintcount=befprintcount+1 where orderid=#{orderId}
+    </update>
+    <update id="updatePrintCount">
+		update t_order set printcount=printcount+1  where orderid=#{orderId}
+	</update>
+    <select id="getZdAmountByOrderId" resultType="float">
+        SELECT IFNULL(SUM(orignalprice*dishnum),0) AS zdAmount FROM t_order_detail WHERE orderid =#{orderId} AND pricetype=1
+    </select>
+    <select id="getOrderJson" resultType="java.util.HashMap">
+      SELECT a.*,c.tableName,e.areaNo,e.areaname,f.fullname,g.payamount,womanNum+mannum AS pnum,
+      CASE WHEN a.fulldiscountrate>0 THEN h.couponname ELSE '' END AS couponname3,f.fullName,IFNULL(p.payamount,0) AS payamount2,
+      #{zdAmount} AS zdAmount,
+      IFNULL(t.receivables,0) AS tipAmount,IFNULL(t.paid,0) AS tipPaid FROM t_order a
+      INNER JOIN t_table c ON(a.currenttableid=c.tableid)  LEFT JOIN t_tablearea e ON(e.areaid=c.areaid)
+      LEFT JOIN (SELECT a.job_number,b.name AS fullName FROM t_b_employee a INNER JOIN t_b_user b ON(a.user_id=b.id)) f ON(a.userid=f.job_number)
+      LEFT JOIN t_settlement_detail g ON(g.orderid=a.orderid AND g.payway=7)  LEFT JOIN t_coupons h ON(a.couponname=h.couponid)
+      LEFT JOIN t_settlement_detail p ON(p.orderid=a.orderid AND p.payway=20) LEFT JOIN t_b_tip t ON(t.orderid=a.orderid)
+      WHERE a.orderid=#{orderId}
+    </select>
+    <select id="getListJson" resultType="java.util.HashMap">
+        SELECT SUM((IFNULL(a.orderprice,0)*a.dishnum)-IFNULL(a.discountamount,0)) AS amount,
+        SUM(a.dishnum) AS dishnum,a.dishid AS dishidleft,a.begintime AS begintime,a.username,
+        MAX(IFNULL(a.orderprice,0))AS orderprice,MAX(a.discountrate) AS discountrate,SUM(a.discountamount) AS
+        discountamount,
+        b.dishtype,a.dishunit,SUM(a.payamount) AS payamount,SUM(a.predisamount) AS predisamount,
+        CASE WHEN a.pricetype=2 THEN CONCAT('(礼)',IFNULL(f.dishname,MAX(b.title))) ELSE IFNULL(f.dishname,MAX(b.title))
+        END AS title,
+        b.image,b.dishid,c.itemid,c.itemdesc,a.dishstatus,a.pricetype FROM t_order_detail a INNER JOIN t_dish b
+        ON(a.dishid=b.dishid)
+        LEFT JOIN t_basicdata c ON(b.source=c.ID) LEFT JOIN (SELECT MAX(dishname) AS dishname,dishid FROM
+        t_template_dishunit
+        WHERE menuid=(SELECT tm.menuid FROM t_branch_info tbf,t_menu_branch mb,t_menu tm WHERE tbf.branchid =
+        mb.branchid AND
+        mb.menuid = tm.menuid AND tm.status ='1' ORDER BY tm.effecttime DESC LIMIT 1) GROUP BY dishid) f
+        ON(a.dishid=f.dishid)
+        WHERE (NOT a.dishtype IN(3,4)) AND a.status&lt;&gt;5 AND a.orderid=#{orderId}
+        GROUP BY a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.orderprice ORDER BY
+        c.itemid,a.orderdetailid,a.pricetype
+    </select>
+    <select id="getJsJson" resultType="java.util.HashMap">
+        SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,SUM(payamount) AS
+        payamount,
+        itemDesc FROM t_settlement_detail a LEFT JOIN (SELECT itemid,itemDesc FROM t_dictionary WHERE TYPE='PAYWAY')b
+        ON(a.payway=b.itemid)
+        WHERE payway&lt;&gt;7 AND a.payamount&lt;&gt;0 AND payway&lt;&gt;20 AND a.orderid=#{orderId}GROUP BY
+        orderid,couponNum,incometype,payway,itemDesc,membercardno,bankcardno
+    </select>
+    <select id="getMemberSaleInfo" resultType="java.util.HashMap">
+        SELECT * FROM t_order_member WHERE orderid=#{orderId}
+    </select>
+    <select id="getOrderRuleByOrderId" resultType="java.util.HashMap">
+        select * from t_order_rule  where   orderid=#{orderId}
+    </select>
+    <select id="getAllOrderInfo2" resultType="java.util.HashMap">
+        SELECT a.*,c.tableName,e.areaNo,e.areaname,f.fullname,g.payamount,womanNum+mannum AS pnum,CASE WHEN a.fulldiscountrate>0
+        THEN h.couponname ELSE '' END AS couponname3 FROM t_order a
+        INNER JOIN t_table c ON(a.currenttableid=c.tableid)
+        LEFT JOIN t_tablearea e ON(e.areaid=c.areaid)
+        LEFT JOIN (SELECT a.job_number,b.name AS fullName FROM
+        (SELECT * FROM t_b_employee WHERE branch_id IN(SELECT branchid FROM t_branch_info)) a
+        INNER JOIN t_b_user b ON(a.user_id=b.id)) f
+        ON(a.userid=f.job_number)  LEFT JOIN t_order_detail g ON(g.orderid=a.orderid AND payway=7)
+        LEFT JOIN t_coupons h ON(a.couponname=h.couponid)
+        WHERE a.begintime>=#{workDate} AND (orderstatus=3 OR orderstatus=0 OR payway=3)  ORDER BY a.orderid desc
+    </select>
+    <update id="updateParternerPY">
+        update t_parterner set py=convert(getPY(name) using utf8)
+    </update>
+    <select id="getAllGZDW" resultType="java.util.HashMap">
+      SELECT CODE,TYPE,NAME,parternerid,telephone,address,telephone, py,relaperson FROM t_parterner WHERE STATUS=1
+    </select>
+    <insert id="saveSettlement">
+        INSERT INTO t_settlement_detail_batch(sdetailid,orderid,PayJsonArray,inserttime,userid)
+        VALUES(#{sDetailId},#{orderId},#{payJsonArray},NOW(),#{userId})
+    </insert>
+    <select id="getSettlementDetailBatch" resultType="java.util.HashMap">
+       SELECT payjsonarray FROM t_settlement_detail_batch WHERE orderid=#{orderId}
+    </select>
+    <delete id="deleteDetailBatch">
+        DELETE FROM t_settlement_detail_batch WHERE sdetailid=#{sDetailId}
+    </delete>
+    <select id="getCustnumByOrderId" resultType="java.lang.String">
+        select custnum from t_order where orderid=#{orderId}
+    </select>
+    <select id="getDishIdByOrDiId" resultType="java.lang.String">
+        SELECT
+        dishid
+        FROM
+        t_order_detail
+        WHERE
+        orderid = #{orderId}
+        AND dishid = #{dishId}
+    </select>
+    <select id="getDishNumByOrDiId" resultType="float">
+        select dishnum from t_order_detail where orderid=#{orderId} AND dishid = #{dishId}
+    </select>
+    <select id="countByOrderId" resultType="int">
+     SELECT count(*) FROM t_order_detail WHERE orderid =#{orderId}
+    </select>
+    <select id="getStatusByOrderId" resultType="java.lang.String">
+        select orderstatus from t_order where orderid=#{orderId}
+    </select>
+    <insert id="saveOrderDetail">
+    INSERT INTO t_order_detail (
+	orderid,
+	dishid,
+	dishstatus,
+	begintime,
+	endtime,
+	sperequire,
+	dishnum,
+	userName,
+	orderprice,
+	discountrate,
+	discountamount,
+	dishtype,
+	dishunit
+     )
+    VALUES
+	   ( #{orderId},
+		'826ffa67-4a32-4ad0-b4ab-85694cab1db4',
+		'1',
+		now(),
+		now(),
+		'',
+		#{custnum},
+		#{userId},
+		#{orderPrice},
+		0.00,
+		0.00,
+		0,
+		#{dishUnit}
+	   )
+    </insert>
+    <select id="getInfoByOrderId" resultType="java.util.HashMap">
+SELECT
+	a.*, b.*
+FROM
+	t_order a
+INNER JOIN t_table b ON (a.currenttableid = b.tableid)
+WHERE
+	a.orderid = #{orderId}
+ORDER BY
+	a.orderid DESC
+LIMIT 0,1
+    </select>
+    <select id="getReBackOrderByOrderId" resultType="java.util.HashMap">
+        SELECT
+	(
+		SELECT
+			orderstatus
+		FROM
+			t_order
+		WHERE
+			orderid = #{orderId}
+	) AS orderstatus,
+	(
+		SELECT
+			isclear
+		FROM
+			t_settlement
+		WHERE
+			orderid = #{orderId}
+	) AS isclear,
+	(
+		SELECT
+			currenttableid
+		FROM
+			t_order
+		WHERE
+			orderid =  #{orderId}
+	) AS tableid
+FROM
+	DUAL
+    </select>
+    <select id="getReBackOrderByTableId" resultType="java.util.HashMap">
+     SELECT tableno,`status` FROM t_table WHERE tableid=#{tableId}
+    </select>
+    <delete id="deleteByOrderId">
+    delete from t_order where orderid=#{orderId}
+    </delete>
+</mapper>
