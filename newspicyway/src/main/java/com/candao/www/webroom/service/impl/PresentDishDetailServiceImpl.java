@@ -1,6 +1,7 @@
 package com.candao.www.webroom.service.impl;
 
 import com.candao.www.data.dao.TReturnDishDetailDao;
+import com.candao.www.utils.OrderDetailParse;
 import com.candao.www.webroom.service.PresentDishDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class PresentDishDetailServiceImpl implements PresentDishDetailService {
         for (Map<String, Object> map : getPresentDishList(params)) {
             String beginTime = sdf.format(new Date(Long.parseLong(map.get("beginTime") + "")));
             map.put("beginTime", beginTime);
+            String sperequire = map.get("sperequire") + "";
+            map.put("waiter", OrderDetailParse.getFreeUser(sperequire));
+            map.put("presentReason", OrderDetailParse.getFreeReason(sperequire));
             mapList.add(map);
         }
         return mapList;
