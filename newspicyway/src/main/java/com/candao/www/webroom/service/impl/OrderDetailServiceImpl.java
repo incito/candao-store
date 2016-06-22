@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jms.Destination;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -306,6 +304,18 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			log.error("-->OrderDetail为空,orders.getRows()值为："+orders.getRows());
 			return getResult("3","订单中没有菜品","");
 		}
+		//added by caicai
+		//排序规则 忌口/口味/全单备注/赠菜原因。。。
+		StringBuilder buffer = new StringBuilder();
+		for (TorderDetail it : listall) {
+			buffer.setLength(0);
+			buffer.append(it.getSperequire()!= null ? it.getSperequire() : "");
+			buffer.append(com.candao.common.utils.Constant.DELIMITER_SPECIAL + it.getSperequire()!= null ? it.getSperequire() : "");
+			buffer.append(com.candao.common.utils.Constant.DELIMITER_SPECIAL + it.getSperequire()!= null ? it.getSperequire() : "");
+			buffer.append(com.candao.common.utils.Constant.DELIMITER_SPECIAL + it.getSperequire()!= null ? it.getSperequire() : "");
+			it.setSperequire(buffer.toString());
+		}
+		
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
 			  log.error("-->orderId为："+orders.getOrderid());
@@ -594,6 +604,13 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				// 去零
 				for (PrintDish it : dishsetlists) {
 					formatDishNum(it);
+					try {
+						it.initData();
+					} catch (Exception e) {
+						log.error("------------------菜品解析失败！-------------");
+						log.error("菜品忌口信息解析失败！ :" + it.getDishName(), e);
+						e.printStackTrace();
+					}
 				}
 				
 				printObj.setList(dishsetlists);
@@ -681,6 +698,18 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 //	        	  }
 //	          }
 //			  Collections.sort(listPrint);
+	          if (listall != null && !listall.isEmpty()) {
+	  			for (PrintDish it : listall) {
+	  				try {
+	  					it.initData();
+	  				} catch (Exception e) {
+	  					log.error("------------------菜品解析失败！-------------");
+	  					log.error("菜品忌口信息解析失败！ :"+ it.getDishName(), e);
+	  					e.printStackTrace();
+	  				}
+	  			}
+	  		}
+	          
 			  printObj.setList(listall);
 			  //得到区域
 			  //1. 厨打单
@@ -715,7 +744,19 @@ public class OrderDetailServiceImpl implements OrderDetailService{
     LoggerHelper logger = LoggerFactory.getLogger(OrderDetailServiceImpl.class);
 	private void printSingleDish(Map<String, Object> map0, PrintObj printObj, int refundDish, Map<String, Object> paramsMap) {
 		List<PrintDish> listPrint = tbPrintObjDao.findDish(map0);
-
+		
+		if (listPrint != null && !listPrint.isEmpty()) {
+			for (PrintDish it : listPrint) {
+				try {
+					it.initData();
+				} catch (Exception e) {
+					log.error("------------------菜品解析失败！-------------");
+					log.error("菜品忌口信息解析失败！ :"+ it.getDishName(), e);
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		Collections.sort(listPrint);
 		printObj.setList(listPrint);
 		logger.error("------------------------","");
@@ -1128,6 +1169,19 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							  }  
 						  }
 							  printObj.setList(fishesList);
+							  //初始化，解析忌口字段
+							  if (!fishesList.isEmpty()) {
+									for (PrintDish it : fishesList) {
+										try {
+											it.initData();
+										} catch (Exception e) {
+											log.error("------------------菜品解析失败！-------------");
+											log.error("菜品忌口信息解析失败！ :"+ it.getDishName(), e);
+											e.printStackTrace();
+										}
+									}
+								}
+							  
 							  //查询火锅打印机
 							  Map<String,Object> paramMap = new HashMap<String, Object>();
 							  paramMap.put("status", "1");

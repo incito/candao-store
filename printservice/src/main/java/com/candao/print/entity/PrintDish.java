@@ -1,7 +1,10 @@
 package com.candao.print.entity;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+
+import com.candao.common.utils.Constant;
 
 public class PrintDish implements Serializable,Comparable<PrintDish>{
 
@@ -29,8 +32,8 @@ public class PrintDish implements Serializable,Comparable<PrintDish>{
 	private BigDecimal payAmount;
 	
 	private String  printerId;
-	
-	private String sperequire;
+	//排序规则： sperequire|globalsperequire|taste|freeuser|freeauthorize|freereason
+	private String sperequire;//菜品忌口信息
 	
 	private String tableNomsg;
 	
@@ -78,9 +81,60 @@ public class PrintDish implements Serializable,Comparable<PrintDish>{
     
     private int printnum;
     private int ispot;
+    //口味
+    private String taste;
+    //赠菜人
+    private String freeuser;
+    //赠菜授权人
+    private String freeauthorize;
+    //赠菜原因
+    private String freereason;
+    //全单备注
+    private String globalsperequire;
+    
     
     private String parentDishName;
 
+
+	public String getTaste() {
+		return taste;
+	}
+
+	public void setTaste(String taste) {
+		this.taste = taste;
+	}
+
+	public String getFreeuser() {
+		return freeuser;
+	}
+
+	public void setFreeuser(String freeuser) {
+		this.freeuser = freeuser;
+	}
+
+	public String getFreeauthorize() {
+		return freeauthorize;
+	}
+
+	public void setFreeauthorize(String freeauthorize) {
+		this.freeauthorize = freeauthorize;
+	}
+
+	public String getFreereason() {
+		return freereason;
+	}
+
+	public void setFreereason(String freereason) {
+		this.freereason = freereason;
+	}
+
+	public String getGlobalsperequire() {
+		return globalsperequire;
+	}
+
+	public void setGlobalsperequire(String globalsperequire) {
+		this.globalsperequire = globalsperequire;
+	}
 
 	public int getIspot() {
 		return ispot;
@@ -335,6 +389,22 @@ public class PrintDish implements Serializable,Comparable<PrintDish>{
 
 	public void setParentDishName(String parentDishName) {
 		this.parentDishName = parentDishName;
+	}
+	
+	/**
+	 * 根据sperequire初始化相关字段
+	 * @throws Exception 
+	 */
+	public void initData() throws Exception{
+		if (this.sperequire != null && !this.sperequire.isEmpty()) {
+			String [] properties = {"sperequire","globalsperequire","taste","freeuser","freeauthorize","freereason"};
+			String[] sperequires = sperequire.trim().split(Constant.DELIMITER_SPECIAL);
+			for (int i = 0; i < sperequires.length; i++) {
+				Field field = this.getClass().getDeclaredField(properties[i]);
+				field.setAccessible(true);
+				field.set(this, sperequires[i]);
+			}
+		}
 	}
 
 }
