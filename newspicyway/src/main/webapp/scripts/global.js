@@ -48,7 +48,7 @@ function contains(array, obj) {
 }
 /**
  * 计算两日期之间的天数
- * 
+ *
  * @param sDate1
  * @param sDate2
  * @returns
@@ -91,107 +91,107 @@ function dateDiff(sDate1, sDate2, type) { // sDate1和sDate2是2006-12-18格式
 		number = number+1;
 	}
 	return number;
-}    
+}
 
 
-function HashMap(){ 
+function HashMap(){
 	/** 存放键的数组(遍历用到) */
 	this.keys = new Array();
     //创建一个对象  
-    var obj = new Object();  
-  
-    /** 
-    * 判断Map是否为空 
-    */  
-    this.isEmpty = function(){  
-        return this.keys.length == 0;  
-    };  
-  
-    /** 
-    * 判断对象中是否包含给定Key 
-    */  
-    this.containsKey=function(key){  
-        return (key in obj);  
-    };  
-  
-    /** 
-    * 判断对象中是否包含给定的Value 
-    */  
-    this.containsValue=function(value){  
-        for(var key in obj){  
-            if(obj[key] == value){  
-                return true;  
-            }  
-        }  
-        return false;  
-    };  
-  
-    /** 
-    *向map中添加数据 
-    */  
-    this.put=function(key,value){  
+    var obj = new Object();
+
+    /**
+    * 判断Map是否为空
+    */
+    this.isEmpty = function(){
+        return this.keys.length == 0;
+    };
+
+    /**
+    * 判断对象中是否包含给定Key
+    */
+    this.containsKey=function(key){
+        return (key in obj);
+    };
+
+    /**
+    * 判断对象中是否包含给定的Value
+    */
+    this.containsValue=function(value){
+        for(var key in obj){
+            if(obj[key] == value){
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+    *向map中添加数据
+    */
+    this.put=function(key,value){
         if(!this.containsKey(key)){
         	this.keys.push(key);
-        }  
-        obj[key] = value;  
-    };  
+        }
+        obj[key] = value;
+    };
 
-    /** 
-    * 根据给定的Key获得Value 
-    */  
-    this.get=function(key){  
-        return this.containsKey(key)?obj[key]:null;  
-    };  
-  
-    /** 
-    * 根据给定的Key删除一个值 
-    */  
-    this.remove=function(key){  
-        if(this.containsKey(key)&&(delete obj[key])){  
+    /**
+    * 根据给定的Key获得Value
+    */
+    this.get=function(key){
+        return this.containsKey(key)?obj[key]:null;
+    };
+
+    /**
+    * 根据给定的Key删除一个值
+    */
+    this.remove=function(key){
+        if(this.containsKey(key)&&(delete obj[key])){
         	this.keys.remove(key);
-        }  
-    };  
-  
-    /** 
-    * 获得Map中的所有Value 
-    */  
-    this.values=function(){  
-        var _values= new Array();  
-        for(var key in obj){  
-            _values.push(obj[key]);  
-        }  
-        return _values;  
-    };  
-  
-    /** 
-    * 获得Map中的所有Key 
-    */  
-    this.keySet=function(){  
-        var _keys = new Array();  
-        for(var key in obj){  
-            _keys.push(key);  
-        }  
-        return _keys;  
-    };  
-  
-    /** 
-    * 获得Map的长度 
-    */  
-    this.size = function(){  
-        return this.keys.length;  
-    };  
-  
-    /** 
-    * 清空Map 
-    */  
-    this.clear = function(){  
-    	this.keys = new Array(); 
-        obj = new Object();  
-    };  
-    
+        }
+    };
+
+    /**
+    * 获得Map中的所有Value
+    */
+    this.values=function(){
+        var _values= new Array();
+        for(var key in obj){
+            _values.push(obj[key]);
+        }
+        return _values;
+    };
+
+    /**
+    * 获得Map中的所有Key
+    */
+    this.keySet=function(){
+        var _keys = new Array();
+        for(var key in obj){
+            _keys.push(key);
+        }
+        return _keys;
+    };
+
+    /**
+    * 获得Map的长度
+    */
+    this.size = function(){
+        return this.keys.length;
+    };
+
+    /**
+    * 清空Map
+    */
+    this.clear = function(){
+    	this.keys = new Array();
+        obj = new Object();
+    };
+
 	/**
 	 * 遍历Map,执行处理函数
-	 * 
+	 *
 	 * @param {Function}
 	 *            回调函数 function(key,value,index){..}
 	 */
@@ -227,15 +227,15 @@ function toSaleRept(beginTime,endTime, dateType){
 	}else{
 		$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/daysalerept?beginTime="+beginTime+"&endTime="+endTime+"&dateType="+dateType);
 	}
-	
+
 	$("#allSearch").css("visibility","hidden");
 }
- 
+
 function toSettleDetailRept(){
 	$(parent.document.all("detail")).attr("src", global_Path+"/daliyReports/paywayrept");
 	$("#allSearch").css("visibility","hidden");
 }
- 
+
 function toDishSaleRept(beginTime,endTime, dateType){
 	$("#title_p").html("品项销售明细表");
 	if(beginTime == null || beginTime == ""){
@@ -245,7 +245,7 @@ function toDishSaleRept(beginTime,endTime, dateType){
 	}
 	$("#allSearch").css("visibility","hidden");
 }
- 
+
 function toCouponsRept(beginTime,endTime, dateType){
 	$("#title_p").html("优惠活动明细表");
 	if(beginTime == null || beginTime == ""){
@@ -341,8 +341,14 @@ function toSetup(){
 
 //退菜明细表
 function toAskedForARefund(){
-	
+
 	$(parent.document.all("detail")).attr("src",global_Path+"/returnDish/askedForARefund");
+	$("#allSearch").css("visibility","hidden");
+}
+//赠菜明细表
+function toPresentDishDetail(){
+
+	$(parent.document.all("detail")).attr("src",global_Path+"/returnDish/presentDishDetail");
 	$("#allSearch").css("visibility","hidden");
 }
 /**
@@ -401,9 +407,9 @@ function iFrameHeight() {
 /**
  * easyui loading 添加
  */
-function ajaxLoading(){ 
-    $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:$(window).height()}).appendTo("body"); 
-    $("<div class=\"datagrid-mask-msg\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({display:"block",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2}); 
+function ajaxLoading(){
+    $("<div class=\"datagrid-mask\"></div>").css({display:"block",width:"100%",height:$(window).height()}).appendTo("body");
+    $("<div class=\"datagrid-mask-msg\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({display:"block",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});
 }
 /**
  * easyui loading 取消
@@ -411,7 +417,7 @@ function ajaxLoading(){
 function ajaxLoadEnd(){
 	$(".datagrid-mask").remove();
 	$(".datagrid-mask-msg").remove();
-} 
+}
 function isNullObj(obj){
     for(var i in obj){
         if(obj.hasOwnProperty(i)){

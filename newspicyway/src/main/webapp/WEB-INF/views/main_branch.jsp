@@ -74,6 +74,7 @@
 		 						<li><a href="#" class="report-sec ky-menu-success sub_coup_menu" onclick="toCouponsRept()">优惠活动明细表</a></li>
 		 						<li><a href="#" class="report-sec ky-menu-success" onclick="toDataStatistics()">详细数据统计表</a></li>
 		 						<li><a href="#" class="report-sec ky-menu-success" onclick="toAskedForARefund()">退菜数据明细表</a></li>
+		 						<li><a href="#" class="report-sec ky-menu-success" onclick="toPresentDishDetail()">赠菜数据明细表</a></li>
  							</ul>
  					 	</li>
  					 	<li class="ky-dropdown-sec report-dropdown-sec">

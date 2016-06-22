@@ -21,8 +21,8 @@ import java.util.Map;
 
 /**
  * 退菜明细表
- * @author Administrator
  *
+ * @author Administrator
  */
 @Controller
 @RequestMapping("/returnDish")
@@ -33,15 +33,21 @@ public class ReturnDishDetailController<V, K> {
 
     @Autowired
     private ExportReturnDishService exportReturnDishService;
-    
+
     @Autowired
-	private ItemDetailService itemDetailService;
+    private ItemDetailService itemDetailService;
 
 
     // 退菜明细表跳转
     @RequestMapping("/askedForARefund")
     public String askedForARefund() {
         return "/billDetails/askedForARefund";
+    }
+
+    //赠菜细表跳转
+    @RequestMapping("/presentDishDetail")
+    public String presentDishDetail() {
+        return "/billDetails/presentDishDetail";
     }
 
     @RequestMapping("/getReturnDishList")
@@ -52,8 +58,7 @@ public class ReturnDishDetailController<V, K> {
         params.put("result", "success");// 返回结果
 
         List<Map<String, Object>> dishResult = returnDishDetailService.returnDishList(params);
-        if (dishResult != null && dishResult.size() > 0 && dishResult.get(0) == null)
-        { // 出错处理
+        if (dishResult != null && dishResult.size() > 0 && dishResult.get(0) == null) { // 出错处理
             LoggerHelper loggerHelper = LoggerHelper.getLogger("aa");
             loggerHelper.error("退菜存储过程报错", "error");
             dishResult = null;
@@ -77,9 +82,9 @@ public class ReturnDishDetailController<V, K> {
         params.put("branchid", branchid);// 门店id
         String branchname = itemDetailService.getBranchName(branchid);
         params.put("branchname", branchname);
-        params.put("currPage","0");
-        params.put("pageNums","10000");
+        params.put("currPage", "0");
+        params.put("pageNums", "10000");
         List<Map<String, Object>> dishResult = returnDishDetailService.returnDishList(params);
-        exportReturnDishService.exportReturnDishExcel(dishResult,request,response,params);
+        exportReturnDishService.exportReturnDishExcel(dishResult, request, response, params);
     }
 }
