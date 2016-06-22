@@ -1,46 +1,32 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<property name="LOG_HOME" value="/home/cloud-user/candao" />
 	
-<turboFilter class="ch.qos.logback.classic.turbo.DuplicateMessageFilter"/>
-
-	<appender name="candao"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>15</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
-		</encoder>
-	</appender>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
-		</encoder>
-	</appender>
-
-	<appender name="candao_print"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_HOME}/candao_print/print.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      		<maxFileSize>50MB</maxFileSize>
-    	</triggeringPolicy>
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
-		</encoder>
-	</appender>
-
-	<root level="info">
-		<appender-ref ref="candao" />
-		<!--<appender-ref ref="STDOUT" />-->
-	</root>
-
-	<logger name="dao" level="DEBUG" />
-	<!-- 打印相关日志 -->
-	<logger name="com.candao.print" additivity="false" level="debug">
-		<appender-ref ref="candao_print"/>
-	</logger></configuration>
+  <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender" >  
+  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+	   <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>   
+	   <maxHistory>30</maxHistory>  
+  </rollingPolicy>   
+  <encoder>   
+  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>   
+  </encoder>   
+ </appender> 
+ 
+ <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">  
+    <encoder>  
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>  
+    </encoder>  
+  </appender> 
+ 
+ 
+    <root level="info">  
+    	<appender-ref ref="candao"/>
+    	<appender-ref ref="STDOUT"/>
+  	</root>  
+ 
+	<logger name="dao" level="DEBUG"/>
+	
+	<logger name="org.springframework" level="debug" >
+	</logger>
+    
+</configuration>

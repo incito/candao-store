@@ -4,10 +4,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.candao.www.constant.Constant;
+import com.candao.www.utils.OrderDetailParse;
+
 public class TorderDetail {
 	
-
-
 	private String orderdetailid;
 
 	
@@ -93,6 +94,30 @@ public class TorderDetail {
     
     private String discardReason;
     
+    /**
+     * 全单备注信息
+     */
+    private String globalSperequire;
+    
+    /**
+     * 口味
+     */
+    private String taste;
+    
+    /**
+     * 赠菜人，收银员工号
+     */
+    private String freeuser;
+    
+    /**
+     * 赠菜授权人
+     */
+    private String freeauthorize;
+    
+    /**
+     * 赠菜原因
+     */
+    private String freereason;
     
     
     
@@ -403,6 +428,65 @@ public class TorderDetail {
 	public void setIsadddish(int isadddish) {
 		this.isadddish = isadddish;
 	}
-    
-    
+
+	public void setTaste(String taste) {
+		this.taste = taste;
+	}
+
+	public void setFreeuser(String freeuser) {
+		this.freeuser = freeuser;
+	}
+
+	public void setFreeauthorize(String freeauthorize) {
+		this.freeauthorize = freeauthorize;
+	}
+
+	public void setFreereason(String freereason) {
+		this.freereason = freereason;
+	}
+
+	public String getTaste() {
+		return taste == null ? Constant.BLANK_VALUE : taste;
+	}
+
+	public String getFreeuser() {
+		return freeuser == null ? Constant.BLANK_VALUE : freeuser;
+	}
+
+	public String getFreeauthorize() {
+		return freeauthorize == null ? Constant.BLANK_VALUE : freeauthorize;
+	}
+
+	public String getFreereason() {
+		return freereason == null ? Constant.BLANK_VALUE : freereason;
+	}
+	
+	public String getGlobalSperequire() {
+		return globalSperequire == null ? Constant.BLANK_VALUE : globalSperequire;
+	}
+
+	public void setGlobalSperequire(String globalSperequire) {
+		this.globalSperequire = globalSperequire;
+	}
+
+	/**
+	 * 解析订单详细表的公共字段
+	 * @return 订单菜品详细对象
+	 */
+	public TorderDetail parseRemark(){
+		//忌口
+		setSperequire(OrderDetailParse.getSperequire(sperequire));
+		//全单备注
+		setGlobalSperequire(OrderDetailParse.getGlobalRemark(sperequire));
+		//口味
+		setTaste(OrderDetailParse.getTaste(sperequire));
+		//赠菜人
+		setFreeuser(OrderDetailParse.getFreeUser(sperequire));
+		//赠菜授权人
+		setFreeauthorize(OrderDetailParse.getFreeAuthorize(sperequire));
+		//赠菜原因
+		setFreereason(OrderDetailParse.getFreeReason(sperequire));
+		return this;
+	}
+	
 }
