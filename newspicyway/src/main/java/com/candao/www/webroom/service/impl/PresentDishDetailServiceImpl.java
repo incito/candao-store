@@ -27,8 +27,13 @@ public class PresentDishDetailServiceImpl implements PresentDishDetailService {
     public List<Map<String, Object>> presentDishList(Map<String, Object> params) {
         List<Map<String, Object>> mapList = new ArrayList<>();
         for (Map<String, Object> map : getPresentDishList(params)) {
-            String beginTime = sdf.format(new Date(Long.parseLong(map.get("beginTime") + "")));
-            map.put("beginTime", beginTime);
+            String obTime = map.get("beginTime") + "";
+            if (!obTime.contains(".0")) {
+                String beginTime = sdf.format(new Date(Long.parseLong(obTime)));
+                map.put("beginTime", beginTime);
+            } else {
+                map.put("beginTime", obTime.replace(".0", ""));
+            }
             String sperequire = map.get("sperequire") + "";
             map.put("waiter", OrderDetailParse.getFreeUser(sperequire));
             map.put("presentReason", OrderDetailParse.getFreeReason(sperequire));

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,8 +64,19 @@ public class PresentDishController {
         String branchname = itemDetailService.getBranchName(branchid);
         params.put("branchname", branchname);
         params.put("currPage", "0");
-        params.put("pageNums", "10000");
-        List<Map<String, Object>> dishResult = presentDishDetailService.presentDishList(params);
-        exportReturnDishService.exportReturnDishExcel(dishResult, request, response, params);
+        params.put("offset", 0);
+        int pageNums = 1000;
+        params.put("pageNums", pageNums);
+        List<Map<String, Object>> dishResult = new ArrayList<>();
+        while (true) {
+            List<Map<String, Object>> dishResultTemp = presentDishDetailService.presentDishList(params);
+            if (dishResultTemp.isEmpty()) {
+                break;
+            } else {
+                dishResult.addAll(dishResultTemp);
+                params.put("offset", Integer.valueOf(params.get("offset") + "") + pageNums);
+            }
+        }
+        exportReturnDishService.exportPresentDishExcel(dishResult, request, response, params);
     }
 }
