@@ -68,8 +68,18 @@ public class PrintObj implements Serializable,Cloneable {
     private Constant.ListenerType listenerType;
     //TODO 备用打印机
     private String ipAddress;
+    
+    private String printName;
 	
 	
+	public String getPrintName() {
+		return printName;
+	}
+
+	public void setPrintName(String printName) {
+		this.printName = printName;
+	}
+
 	//xk add
 	private Map<String, Object>  ordermap=new HashMap<>();
 	
