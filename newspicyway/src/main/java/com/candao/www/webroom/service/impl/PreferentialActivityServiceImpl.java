@@ -1216,6 +1216,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					Map< String , Object > tmpMap=null;
 					BigDecimal orignalprice=null;
 					BigDecimal couponprice=new BigDecimal(0);
+					String dishids="";
 					//菜品原价
 					BigDecimal amountCount = new BigDecimal(0.0);
 					for( TorderDetail d : orderDetailList ){   
@@ -1234,6 +1235,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 								tmpMap.put("couponid", preferentialid);
 								tmpMap.put("orderid", orderid);
 								tmpMap.put("dishid", d.getDishid() ) ;
+								dishids=dishids+",'"+d.getDishid()+"'";
 								discountDishList.add(tmpMap) ;
 								amount=amount.add( d.getOrderprice().multiply(numOfDish).subtract( orignalprice ) );
 								//System.out.println("特价券优惠：-- 优惠前："+d.getOrderprice() +" ;优惠后："+orignalprice +" ;当前共优惠："+amount);
@@ -1242,7 +1244,14 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 							
 							
 					}
-					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
+					if(dishids!=null && dishids.length()>1){
+						dishids=dishids.substring(1);
+					}
+					if(dishids!=null && dishids.length()>1){
+						int row=torderDetailDao.updateOrderDetailWithPreferentialNew(dishids,orderid,preferentialid);
+					}
+					
+					//int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
 					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 //					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
@@ -1278,6 +1287,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					Map< String , Object > tmpMap=null;
 					BigDecimal orignalprice=null;
 					BigDecimal couponprice=new BigDecimal(0);
+					String dishids="";
 					//菜品原价
 					BigDecimal amountCount = new BigDecimal(0.0);
 					for( TorderDetail d : orderDetailList ){   
@@ -1299,13 +1309,21 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 								tmpMap.put("orderid", orderid);
 								tmpMap.put("dishid", d.getDishid() ) ;
 								discountDishList.add(tmpMap) ;
+								dishids=dishids+",'"+d.getDishid()+"'";
 								amount=amount.add( d.getOrderprice().multiply(numOfDish).subtract( orignalprice ) );
 								//System.out.println("特价券优惠：-- 优惠前："+d.getOrderprice() +" ;优惠后："+orignalprice +" ;当前共优惠："+amount);
 							 
 							}
 
 					}
-					int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
+					
+					if(dishids!=null && dishids.length()>1){
+						dishids=dishids.substring(1);
+					}
+					if(dishids!=null && dishids.length()>1){
+						int row=torderDetailDao.updateOrderDetailWithPreferentialNew(dishids,orderid,preferentialid);
+					}
+					//int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					//设置金额
 					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 //					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
