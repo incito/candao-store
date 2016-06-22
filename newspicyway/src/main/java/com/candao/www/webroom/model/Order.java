@@ -2,6 +2,7 @@ package com.candao.www.webroom.model;
 
 import java.util.List;
 
+import com.candao.www.constant.Constant;
 import com.candao.www.data.model.TorderDetail;
 
 public class Order implements java.io.Serializable{
@@ -58,7 +59,7 @@ public class Order implements java.io.Serializable{
 
 
 	public String getGlobalsperequire() {
-		return globalsperequire;
+		return globalsperequire == null ? Constant.BLANK_VALUE : globalsperequire;
 	}
 
 

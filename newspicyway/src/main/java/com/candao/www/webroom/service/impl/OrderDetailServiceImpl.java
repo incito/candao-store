@@ -84,7 +84,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			return Constant.FAILUREMSG;
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
-	     List<TorderDetail> listall=getallTorderDetail(orders.getRows());
+	     List<TorderDetail> listall=getallTorderDetail(orders);
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")))){
 			  return Constant.FAILUREMSG;
@@ -154,15 +154,31 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	//从传过来的数据中，获取订单详情的所有信息
 		/**
 		 * 1 获取所有的订单详情信息   2删除个数为0的菜品 
-		 * @param orderDetails
+		 * @param order
 		 * @return dishtype
 		 * 单品 0
 		 * 组合    组合里面的鱼和锅 1
 		 * 套餐 2     套餐里面单品4    组合中的鱼和锅3
 		 */
-		public List<TorderDetail> getallTorderDetail(List<TorderDetail> orderDetails){
+		public List<TorderDetail> getallTorderDetail(Order order){
+			List<TorderDetail> orderDetails = order.getRows();
 			 List<TorderDetail> listall=new ArrayList<TorderDetail>();
-			 for(TorderDetail t:orderDetails){
+			for(TorderDetail t:orderDetails){
+				 //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+				 StringBuilder sperequire = new StringBuilder();
+				 sperequire.append(t.getSperequire());
+				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+				 sperequire.append(order.getGlobalsperequire());
+				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+				 sperequire.append(t.getTaste());
+				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+				 sperequire.append(t.getFreeuser());
+				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+				 sperequire.append(t.getFreeauthorize());
+				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+				 sperequire.append(t.getFreeauthorize());
+				 t.setSperequire(sperequire.toString());
+				 
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
 				 String primarykey = t.getPrimarykey();
 				 TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
@@ -301,7 +317,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			return getResult("0","下单成功","");
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
-	    List<TorderDetail> listall = getallTorderDetail(orders.getRows());
+	    List<TorderDetail> listall = getallTorderDetail(orders);
 		if(listall == null || listall.size() == 0){
 			log.error("-->OrderDetail为空,orders.getRows()值为："+orders.getRows());
 			return getResult("3","订单中没有菜品","");
