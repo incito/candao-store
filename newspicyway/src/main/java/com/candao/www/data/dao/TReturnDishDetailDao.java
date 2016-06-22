@@ -5,12 +5,14 @@ import java.util.Map;
 
 /**
  * 退菜明细表
- * @author Administrator
  *
+ * @author Administrator
  */
 public interface TReturnDishDetailDao {
 
-	String PREFIX = TReturnDishDetailDao.class.getName();
+    String PREFIX = TReturnDishDetailDao.class.getName();
 
-	<T, K, V> List<T> getReturnDishList(Map<K, V> params);
+    <T, K, V> List<T> getReturnDishList(Map<K, V> params);
+
+    <T, K, V> List<T> getPresentDishList(Map<K, V> params);
 }
