@@ -133,6 +133,7 @@ public class PrinterOther extends Printer {
                 PrinterStatusManager.stateMonitor(PrintControl.STATUS_OK, this);
             } finally {
                 PrinterConnector.closeConnection(channel);
+                printLock.unlock();
             }
         } else {
             logger.info("[" + getIp() + "]尝试发起状态检查失败");
