@@ -104,7 +104,7 @@ public class Constant {
 	/**
 	 * 下单备注的数据存储分隔符
 	 */
-	public static final String ORDER_REMARK_SEPARATOR = "|";
+	public static final char ORDER_REMARK_SEPARATOR = '|';
 
 	/**
 	 * 空字符串
