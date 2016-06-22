@@ -45,8 +45,7 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
-				<span>退菜数据明细表</span> 
-				<a href="Javascript:exportReturnDishxls()"><img
+				<a href="Javascript:exportFreeDishxls()"><img
 					src="../images/download.png" alt="" /></a>
 			</div>
 		</div>
@@ -90,7 +89,7 @@
 				</div>
 				<!-- onclick="doSubmit()" -->
 				<div class="col-xs-1 report-confirm-btn" id="div1">
-					<button type="button" id="submit" onclick="initReturnDishData();"
+					<button type="button" id="submit" onclick="initFreeDishData();"
 						name="submit" class="btn btn-default">确认</button>
 				</div>
 				<div class="col-xs-2 short-search">
@@ -107,17 +106,17 @@
 		</div>
 		<div class="bottom-div">
 		<div class="report-tb-div">
-			<table class="ky-table table table-list click-table" id="return_dish_data">
+			<table class="ky-table table table-list click-table" id="free_dish_data">
 				<thead>
 					<tr>
-						<th>发生时间</th>
+						<th>赠菜时间</th>
 						<th>结账单号</th>
 						<th>菜品名称</th>
 						<th>份数</th>
 						<th>金额</th>
-						<th>退菜申请人</th>
-						<th>退菜授权人</th>
-						<th>退菜原因</th>
+						<th>赠菜申请人</th>
+						<th>赠菜授权人</th>
+						<th>赠菜原因</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -150,7 +149,7 @@
 			});
 			setshiftid(-1);
 			changeDataType(0);
-			initReturnDishData();
+			initFreeDishData();
 		});
 	</script>
 </body>
