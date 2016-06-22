@@ -1227,6 +1227,117 @@ function exportxlsC(f) {
 }
 /** ********************结算方式明细报表 END*************************************** */
 
+/***********************赠菜明细表 START *******************************************/
+function initFreeDishData() {
+	if(compareBeginEndTime()){
+		beginTime = $("#beginTime").val();
+		endTime = $("#endTime").val();
+		shiftid = $("#shiftid").val();
+		page = 0;
+		doFreePost(function(result){
+			initFreeTb(result, true);
+		});
+	}
+}
+function initFreeTb(result, isFirst){
+	var tb = "";
+	var len = result.length;
+	if (result != null && result.length > 0) {
+		page ++;
+		if(isFirst){
+			var more = '<tr><td id="show-more" class="show-more" colspan="8">加载更多</td></tr>';
+			$("#free_dish_data tbody").html(more);
+		}
+		$.each(result, function(i, item) {
+			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title
+				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter
+				+ '</td><td>' + item.accreditWaiter + '</td><td>'
+				+ item.presentReason
+				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
+				+ '</td></tr>';
+		});
+		$("#show-more").parent().before(tb);
+		if(len < 20){
+			$("#show-more").parent().remove();
+		}
+	}else{
+		if(isFirst){
+			var nodata = '<tr><td colspan="8">没有数据</td></tr>';
+			$("#free_dish_data tbody").html(nodata);
+		}else{
+			alert("没有更多数据");
+		}
+	}
+	$("#show-more").unbind("click").click(function(){
+		doFreePost(initFreeTb);
+	});
+}
+function doFreePost(callback){
+	$.post(global_Path + "/presentDish/getPreDishDetailList.json", {
+		beginTime : beginTime,
+		endTime : endTime,
+		shiftid : shiftid,
+		currPage: page,//当前页数
+		pageNums:20//每页显示条数
+	}, function(result) {
+		callback(result);
+	});
+}
+/**
+ * 赠菜明细表 导出
+ */
+function exportFreeDishxls() {
+	if(compareBeginEndTime()){
+		if (beginTime == null || "" == beginTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			beginTime = d.getFullYear() + '-' + month + '-' + day
+				+ ' 00:00:00';
+		}
+
+		if (endTime == null || "" == endTime) {
+			var d = new Date();
+			var month = d.getMonth() + 1;
+			if (d.getMonth() + 1 < 10) {
+				month = "0" + month;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var day = d.getDate();
+			if (d.getDate() < 10) {
+				day = "0" + day;
+			}
+			var hours = d.getHours();
+			if (d.getHours() < 10) {
+				hours = "0" + hours;
+			}
+			var minutes = d.getMinutes();
+			if (d.getMinutes() < 10) {
+				minutes = "0" + minutes;
+			}
+			var second = d.getSeconds();
+			if (d.getSeconds() < 10) {
+				second = "0" + second;
+			}
+
+			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
+				+ hours + ":" + minutes + ":" + second;
+		}
+		location.href = global_Path + "/presentDish/exportXls?beginTime="
+			+ beginTime + "&endTime=" + endTime + "&shiftid=" + shiftid+"&currPage=-1&pageNums=20&searchType="+searchType;
+	}
+}
+/***********************赠菜明细表 START *******************************************/
+
 /***********************退菜明细表 START *******************************************/
 var page = 0;
 function initReturnDishData() {

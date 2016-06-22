@@ -11,17 +11,22 @@ import java.util.Map;
 
 /**
  * 退菜明细表
- * @author Administrator
  *
+ * @author Administrator
  */
 @Repository
 public class TReturnDishDetailDaoImpl implements TReturnDishDetailDao {
 
-	@Autowired
-	private DaoSupport daoSupport;
+    @Autowired
+    private DaoSupport daoSupport;
 
-	@Override
-	public <T, K, V> List<T> getReturnDishList(Map<K, V> params) {
-		return daoSupport.find(PREFIX + ".getReturnDishList", params);
-	}
+    @Override
+    public <T, K, V> List<T> getReturnDishList(Map<K, V> params) {
+        return daoSupport.find(PREFIX + ".getReturnDishList", params);
+    }
+
+    @Override
+    public <T, K, V> List<T> getPresentDishList(Map<K, V> params) {
+        return daoSupport.find(PREFIX + ".getPresentDishList", params);
+    }
 }
