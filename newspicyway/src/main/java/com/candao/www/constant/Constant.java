@@ -100,7 +100,16 @@ public class Constant {
 	public static final String ZOOKEEPERQUEUE = PropertiesUtils.getValue("zookeeper.server.queue");
 	
 	public static final String CHARSET = "utf-8";
- 
+	
+	/**
+	 * 下单备注的数据存储分隔符
+	 */
+	public static final String ORDER_REMARK_SEPARATOR = "|";
+
+	/**
+	 * 空字符串
+	 */
+	public static final String BLANK_VALUE = "";
 	
 	public class ORDERSTATUS{
 		

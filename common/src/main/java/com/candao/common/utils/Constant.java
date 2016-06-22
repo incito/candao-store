@@ -56,4 +56,7 @@ public class Constant {
 			return this.name;
 		}
 	}
+	
+	/** */
+	public static final String DELIMITER_SPECIAL = "|";
 }
