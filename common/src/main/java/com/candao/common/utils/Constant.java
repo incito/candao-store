@@ -58,5 +58,5 @@ public class Constant {
 	}
 	
 	/** */
-	public static final String DELIMITER_SPECIAL = "\\|";
+	public static final String DELIMITER_SPECIAL = "|";
 }

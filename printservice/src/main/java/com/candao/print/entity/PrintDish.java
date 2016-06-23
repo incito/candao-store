@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
+import org.springframework.util.StringUtils;
+
 import com.candao.common.utils.Constant;
 
 public class PrintDish implements Serializable,Comparable<PrintDish>{
@@ -397,9 +399,10 @@ public class PrintDish implements Serializable,Comparable<PrintDish>{
 	 */
 	public void initData() throws Exception{
 		if (this.sperequire != null && !this.sperequire.isEmpty()) {
+			//6个特殊需求,数组顺序即为排序规则
 			String [] properties = {"sperequire","globalsperequire","taste","freeuser","freeauthorize","freereason"};
-			String[] sperequires = sperequire.trim().split(Constant.DELIMITER_SPECIAL);
-			for (int i = 0; i < sperequires.length; i++) {
+			String[] sperequires = StringUtils.delimitedListToStringArray(sperequire.trim(), Constant.DELIMITER_SPECIAL);
+			for (int i = 0; i < sperequires.length && i < properties.length; i++) {
 				Field field = this.getClass().getDeclaredField(properties[i]);
 				field.setAccessible(true);
 				field.set(this, sperequires[i]);
