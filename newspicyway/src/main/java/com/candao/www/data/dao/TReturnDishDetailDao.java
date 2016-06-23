@@ -15,4 +15,6 @@ public interface TReturnDishDetailDao {
     <T, K, V> List<T> getReturnDishList(Map<K, V> params);
 
     <T, K, V> List<T> getPresentDishList(Map<K, V> params);
+
+    List<Map<String, String>> getUserMapList();
 }

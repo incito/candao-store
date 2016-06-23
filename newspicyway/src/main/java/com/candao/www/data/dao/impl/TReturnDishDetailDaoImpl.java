@@ -29,4 +29,8 @@ public class TReturnDishDetailDaoImpl implements TReturnDishDetailDao {
     public <T, K, V> List<T> getPresentDishList(Map<K, V> params) {
         return daoSupport.find(PREFIX + ".getPresentDishList", params);
     }
+
+    public List<Map<String, String>> getUserMapList() {
+        return daoSupport.find(PREFIX + ".getUserMapList");
+    }
 }

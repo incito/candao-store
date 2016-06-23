@@ -25,17 +25,12 @@
         e.title,
         d.dishnum AS num,
         d.dishnum * d.orignalprice AS amount,
-        c.name AS accreditWaiter,
         d.sperequire
         FROM t_order_detail d
         INNER JOIN t_order a
         ON d.orderid = a.orderid
         LEFT JOIN t_dish e
         ON d.dishid = e.dishid
-        LEFT JOIN t_b_employee b
-        ON a.userid = b.job_number
-        LEFT JOIN t_b_user c
-        ON b.user_id = c.id
         WHERE d.pricetype=1 AND a.orderstatus=3
         AND a.begintime BETWEEN #{beginTime} and #{endTime}
         <if test="shiftid!=-1">
@@ -43,5 +38,13 @@
         </if>
         ORDER BY a.begintime DESC
         limit ${offset},${pageNums}
+    </select>
+    <select id="getUserMapList" resultType="map">
+        SELECT
+        a.job_number,
+        b.name
+        FROM t_b_employee a
+        LEFT JOIN t_b_user b
+        ON a.user_id = b.id
     </select>
 </mapper>
