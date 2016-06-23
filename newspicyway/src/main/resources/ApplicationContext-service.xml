@@ -13,9 +13,12 @@
         <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>
     </bean>
     <util:properties id="msgConfig" location="classpath:msg-config.properties"/>
-    <bean id="communicationService" init-method="initOn" lazy-init="true"
+    <bean id="communicationService"
           class="com.candao.www.dataserver.service.communication.impl.CommunicationServiceImpl">
     </bean>
+    <!--<bean id="communicationService" init-method="initOn" lazy-init="true"-->
+    <!--class="com.candao.www.dataserver.service.communication.impl.CommunicationServiceImpl">-->
+    <!--</bean>-->
     <bean id="deviceService" class="com.candao.www.dataserver.service.device.impl.DeviceServiceImpl"/>
     <bean id="watchService" class="com.candao.www.dataserver.service.device.impl.WatchServiceImpl"/>
     <bean id="watchChInRService" class="com.candao.www.dataserver.service.device.impl.WatchChInRServiceImpl"/>
