@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by liaoy on 2016/6/12.
  */
 public class Printer {
-    private static Log logger = LogFactory.getLog(Printer.class.getName());
+    protected static Log logger = LogFactory.getLog(Printer.class.getName());
     /**
      * 打印机响应超时时间 单位秒
      */
@@ -28,7 +28,7 @@ public class Printer {
     /**
      * 打印机空闲间隔，超过该时间会发起打印机状态检查
      */
-    private static long checkStateInterval = 3 * 60 * 1000;
+    protected static long checkStateInterval = 3 * 60 * 1000;
     /**
      * 打印机标示，默认为ip
      */
@@ -36,7 +36,7 @@ public class Printer {
     private String ip;
     private int port;
     private Socket channel;
-    private Lock printLock = new ReentrantLock();
+    protected Lock printLock = new ReentrantLock();
     /**
      * 上次打印机状态，该状态的值见{@link PrinterStatusManager PrinterStatusManager}
      */
@@ -44,7 +44,7 @@ public class Printer {
     /**
      * 最后活跃时间
      */
-    private long lastActiveTime;
+    protected long lastActiveTime;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -53,7 +53,6 @@ public class Printer {
      * @return
      */
     public PrintResult print(Object[] msg, String backPrinterIp) {
-
         if (null == msg) {
             msg = new Object[]{};
         }
@@ -155,7 +154,7 @@ public class Printer {
         return result;
     }
 
-    private void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
+    protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         outputStream.write(PrinterConstant.AUTO_STATUS);
         outputStream.write(new byte[]{27, 27});
         for (Object o : msg) {
@@ -198,71 +197,71 @@ public class Printer {
         long endTime = System.currentTimeMillis() + time;
         PrintResult result = new PrintResult();
         result.setCode(PrintControl.STATUS_ABNORMAL);
+        logger.info("[" + ip + "]尝试获取打印机锁");
+        boolean tryLock = false;
         try {
-            logger.info("[" + ip + "]尝试获取打印机锁");
-            boolean tryLock = printLock.tryLock(time, TimeUnit.MILLISECONDS);
-            if (tryLock) {
-                try {
-                    initChannel();
-                    if (null == channel || channel.isClosed()) {
-                        PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
-                        logger.info("[" + ip + "]打印机连接关闭，尝试重连");
-                        channel = PrinterConnector.createConnection(ip, port, 1000);
-                        if (null == channel) {
-                            logger.info("[" + ip + "]尝试重连失败");
-                            return result;
-                        }
-                    }
-                    OutputStream outputStream = channel.getOutputStream();
-                    InputStream inputStream = channel.getInputStream();
-                    logger.info("[" + ip + "]检查打印机状态");
-                    int state = PrintControl.printerIsReady(2000, outputStream, inputStream);
-                    PrinterStatusManager.stateMonitor(state, this);
-                    if (state != PrintControl.STATUS_OK) {
-                        logger.info("[" + ip + "]打印机状态不正常:" + state);
-                        result.setCode(state);
-                        return result;
-                    }
-                    doPrint(msg, outputStream);
-                    logger.info("[" + ip + "]检查打印结果");
-                    state = PrintControl.CheckJob(3000, inputStream);
-                    result.setCode(state);
-                    PrinterStatusManager.stateMonitor(state, this);
-                    //打印完成则返回
-                    if (state == PrintControl.STATUS_PRINT_DONE) {
-                        logger.info("[" + ip + "]打印完成");
-                    } else {
-                        logger.info("[" + ip + "]打印不成功:" + state);
-                    }
-                    return result;
-
-                } catch (IOException e) {
-                    PrinterConnector.closeConnection(channel);
+            tryLock = printLock.tryLock(time, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            logger.info("[" + ip + "]打印线程被中断");
+        }
+        if (tryLock) {
+            try {
+                initChannel();
+                if (null == channel || channel.isClosed()) {
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
-                    logger.info("[" + ip + "]打印机连接异常", e);
-                    //重置连接
-                    channel = null;
-                    if (System.currentTimeMillis() > endTime) {
-                        result.setCode(PrintControl.STATUS_DEVTIMEOUT);
-                        return result;
-                    }
-                    logger.info("[" + ip + "]尝试重连");
+                    logger.info("[" + ip + "]打印机连接关闭，尝试重连");
                     channel = PrinterConnector.createConnection(ip, port, 1000);
                     if (null == channel) {
                         logger.info("[" + ip + "]尝试重连失败");
                         return result;
                     }
-                    PrinterStatusManager.stateMonitor(PrintControl.STATUS_OK, this);
-                    logger.info("[" + ip + "]尝试重连失败");
-                } finally {
-                    printLock.unlock();
                 }
-            }
-            logger.info("[" + ip + "]尝试获取打印机锁失败");
-        } catch (InterruptedException e) {
-            logger.error("[" + ip + "]打印线程被中断", e);
-        }
+                OutputStream outputStream = channel.getOutputStream();
+                InputStream inputStream = channel.getInputStream();
+                logger.info("[" + ip + "]检查打印机状态");
+                int state = PrintControl.printerIsReady(2000, outputStream, inputStream);
+                PrinterStatusManager.stateMonitor(state, this);
+                if (state != PrintControl.STATUS_OK) {
+                    logger.info("[" + ip + "]打印机状态不正常:" + state);
+                    result.setCode(state);
+                    return result;
+                }
+                doPrint(msg, outputStream);
+                logger.info("[" + ip + "]检查打印结果");
+                state = PrintControl.CheckJob(3000, inputStream);
+                result.setCode(state);
+                PrinterStatusManager.stateMonitor(state, this);
+                //打印完成则返回
+                if (state == PrintControl.STATUS_PRINT_DONE) {
+                    logger.info("[" + ip + "]打印完成");
+                } else {
+                    logger.info("[" + ip + "]打印不成功:" + state);
+                }
+                return result;
 
+            } catch (IOException e) {
+                PrinterConnector.closeConnection(channel);
+                PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
+                logger.info("[" + ip + "]打印机连接异常", e);
+                //重置连接
+                channel = null;
+                if (System.currentTimeMillis() > endTime) {
+                    result.setCode(PrintControl.STATUS_DEVTIMEOUT);
+                    return result;
+                }
+                logger.info("[" + ip + "]尝试重连");
+                channel = PrinterConnector.createConnection(ip, port, 1000);
+                if (null == channel) {
+                    logger.info("[" + ip + "]尝试重连失败");
+                    return result;
+                }
+                PrinterStatusManager.stateMonitor(PrintControl.STATUS_OK, this);
+                logger.info("[" + ip + "]尝试重连失败");
+            } finally {
+                printLock.unlock();
+            }
+        }
+        logger.info("[" + ip + "]尝试获取打印机锁失败");
         return result;
     }
 

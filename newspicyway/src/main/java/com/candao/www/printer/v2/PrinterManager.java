@@ -1,5 +1,6 @@
 package com.candao.www.printer.v2;
 
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.print.service.PrinterService;
 import com.candao.www.spring.SpringContext;
 import org.slf4j.Logger;
@@ -19,6 +20,10 @@ public class PrinterManager {
     private static Logger logger = LoggerFactory.getLogger(PrinterManager.class);
     private static Map<String, Printer> printers = new ConcurrentHashMap<>();
     private static PrinterService printerService;
+    /**
+     * 是否支持一票一控
+     */
+    private static boolean printerControl = false;
 
     /**
      * 获取打印机实例
@@ -72,6 +77,9 @@ public class PrinterManager {
      * 初始化打印机
      */
     public synchronized static void initialize() {
+        String printerControlStr = PropertiesUtils.getValue("PRINTER_CONTROL");
+        printerControl = null != printerControlStr && "y".equals(printerControlStr.toLowerCase());
+
         PrinterService printerService = getPrinterService();
         printerService.clearWorkStatus();
         List<Map<String, Object>> printerList = printerService.find(null);
@@ -105,12 +113,16 @@ public class PrinterManager {
             Printer p = hasCreated(ip);
             //如果该打印机还不存在，创建
             if (null == p) {
-                p = new Printer();
+                if (printerControl) {
+                    p = new Printer();
+                } else {
+                    p = new PrinterOther();
+                }
                 p.setKey(ips[0]);
                 p.setIp(ips[0]);
                 p.setPort(portInt);
                 printers.put(p.getKey(), p);
-                PrinterStatusManager.stateMonitor(PrinterStatusManager.NORMAL,p);
+                PrinterStatusManager.stateMonitor(PrinterStatusManager.NORMAL, p);
             }
         }
     }
@@ -158,7 +170,7 @@ public class PrinterManager {
                 }
             }
         }
-//        printers.clear();
+        printers.clear();
     }
 
     public static void main(String[] args) {
