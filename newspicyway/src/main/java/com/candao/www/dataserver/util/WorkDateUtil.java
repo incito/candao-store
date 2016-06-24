@@ -45,7 +45,20 @@ public class WorkDateUtil {
             return DateUtils.toString(workDate, "yyyy-MM-dd");
         }
     }
-
+    public static String getWorkTime() {
+        Date openDate = businessService.getOpenDate();
+        if (null != openDate) {
+            return DateUtils.toString(openDate, "yyyy-MM-dd HH:mm:ss");
+        } else {
+            Date workDate = new Date();
+            if (workDate.getHours() < 6) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 1);
+                workDate = calendar.getTime();
+            }
+            return DateUtils.toString(workDate, "yyyy-MM-dd");
+        }
+    }
     public static Date getWorkDate1() {
         String workDate = getWorkDate();
         return DateUtils.parse(workDate, "yyyy-MM-dd");
