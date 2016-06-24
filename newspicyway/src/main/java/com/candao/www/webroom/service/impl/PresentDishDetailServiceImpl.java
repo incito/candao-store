@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 退菜明细表
@@ -22,10 +19,18 @@ public class PresentDishDetailServiceImpl implements PresentDishDetailService {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     @Autowired
     private TReturnDishDetailDao treturnDishDetailDao;
+    Map<String, Object> mapWaiter = new HashMap<>();
 
     @Override
     public List<Map<String, Object>> presentDishList(Map<String, Object> params) {
         List<Map<String, Object>> mapList = new ArrayList<>();
+        int currPage = Integer.valueOf(params.get("currPage") + "");
+        if (0 == currPage) {
+            mapWaiter.clear();
+            for (Map<String, String> map : treturnDishDetailDao.getUserMapList()) {
+                mapWaiter.put(map.get("job_number"), map.get("name"));
+            }
+        }
         for (Map<String, Object> map : getPresentDishList(params)) {
             String obTime = map.get("beginTime") + "";
             if (!obTime.contains(".0")) {
@@ -35,7 +40,14 @@ public class PresentDishDetailServiceImpl implements PresentDishDetailService {
                 map.put("beginTime", obTime.replace(".0", ""));
             }
             String sperequire = map.get("sperequire") + "";
-            map.put("waiter", OrderDetailParse.getFreeUser(sperequire));
+            String freeUserId = OrderDetailParse.getFreeUser(sperequire);
+            if (mapWaiter.containsKey(freeUserId)) {
+                map.put("waiter", mapWaiter.get(freeUserId));
+            }
+            String freeAuthorizeUserId = OrderDetailParse.getFreeAuthorize(sperequire);
+            if (mapWaiter.containsKey(freeAuthorizeUserId)) {
+                map.put("accreditWaiter", mapWaiter.get(freeAuthorizeUserId));
+            }
             map.put("presentReason", OrderDetailParse.getFreeReason(sperequire));
             mapList.add(map);
         }

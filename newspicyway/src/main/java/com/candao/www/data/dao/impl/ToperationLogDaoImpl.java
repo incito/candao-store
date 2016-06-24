@@ -16,7 +16,6 @@ public class ToperationLogDaoImpl implements ToperationLogDao {
 	@Override
 	public int save(ToperationLog toperationLog) {
 		// TODO Auto-generated method stub
-		//return daoSupport.insert(PREFIX+".insert", toperationLog);
 		return 1;
 	}
 
@@ -29,14 +28,12 @@ public class ToperationLogDaoImpl implements ToperationLogDao {
 	@Override
 	public int deleteToperationLog(Map<String, Object> map) {
 		// TODO Auto-generated method stub
-		//return daoSupport.update(PREFIX+".update", map);
 		return 1;
 	}
 
 	@Override
 	public int deleteToperationLogByTableNo(String tableNO) {
 		// TODO Auto-generated method stub
-		//return daoSupport.update(PREFIX+".deleteToperationLogByTableNo", tableNO);
 		return 1;
 	}
 

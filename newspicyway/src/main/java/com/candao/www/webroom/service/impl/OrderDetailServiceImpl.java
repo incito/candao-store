@@ -660,7 +660,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							IPList.add(tbPrinter.getIpaddress());
 						}
 						printObj.setCustomerPrinterIp(pm.getIpaddress());
-						printObj.setCustomerPrinterPort(pm.getPort());
+						printObj.setCustomerPrinterPort(pm.getPort());;
+						
 						new Thread(new PrintDishSetThread(printObj)).run();
 					}
 				}
@@ -736,6 +737,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				 for(TbPrinterManager  tPrinterManager : tps){
 				  printObj.setCustomerPrinterIp(tPrinterManager.getIpaddress());
 				  printObj.setCustomerPrinterPort(tPrinterManager.getPort());
+				  //added by caicai
+				  printObj.setPrintName(tPrinterManager.getPrintername());
+					
 				  new Thread(new PrintCustThread(printObj)).run();
 //				  executor.execute(new PrintCustThread(printObj));
 			     } 
@@ -842,7 +846,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				pd.setDishNum("-" + pd.getDishNum());
 			}
 			if (map0.get("discardReason") != null && refundDish == 1) {
-				pd.setSperequire(String.valueOf(map0.get("discardReason")));
+				pd.setGlobalsperequire(String.valueOf(map0.get("discardReason")));
 			}
 			paramMap.put("dishid", pd.getDishId());
 
@@ -925,6 +929,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					printObj.setCustomerPrinterIp(tbPrinter.getIpaddress());
 					printObj.setCustomerPrinterPort(tbPrinter.getPort());
 					printObj.setpDish(pdList);
+					//added by caicai
+					printObj.setPrintName(tbPrinter.getPrintername());
+					
 					logger.error("------------------------,菜品数量"+pdList.size(),"");
 					for (PrintDish printDish : pdList) {
 						logger.error("封装数据结束，订单号："+printObj.getOrderNo()+"*菜品名称："+printDish.getDishName(),"");
@@ -949,6 +956,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 						printObj.setOrderseq(pd.getOrderseq());
 						printObj.setCustomerPrinterIp((String) tbPrinter.get("ipaddress"));
 						printObj.setCustomerPrinterPort((String) tbPrinter.get("port"));
+						//added by caicai
+						printObj.setPrintName((String) tbPrinter.get("printername"));
+						
 						List<PrintDish> list = new ArrayList<>();
 						list.add(pd);
 						printObj.setpDish(list);
@@ -1073,6 +1083,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							  printObj.setOrderseq(0);
 							  printObj.setCustomerPrinterIp((String)tbPrinter.get("ipaddress"));
 							  printObj.setCustomerPrinterPort((String)tbPrinter.get("port"));
+							  //added by caicai
+							  printObj.setPrintName((String) tbPrinter.get("printername"));
+							  
 							  List<PrintDish> list  = new ArrayList<>();
 							  list.add(pdish);
 							  printObj.setpDish(list);
@@ -1158,7 +1171,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					}
 					  if(fishesList != null){
 						  if(map0.get("discardReason")!=null&&flag==1 ){
-							  fishesList.get(0).setSperequire(String.valueOf(map0.get("discardReason")));
+							  fishesList.get(0).setGlobalsperequire((String.valueOf(map0.get("discardReason"))));
 						  }
 						  if(flag==1){
 							  for(PrintDish printDish:fishesList){
@@ -1241,7 +1254,11 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 								  		}
 									  printObj.setCustomerPrinterIp(pm.getIpaddress());
 									  printObj.setCustomerPrinterPort(pm.getPort());
+									  //added by caicai
+									  printObj.setPrintName(pm.getPrintername());
+									  
 									  new Thread(new PrintMutiThread(printObj)).run();
+									  
 //									  executor.execute(new PrintMutiThread(printObj));
 						          }
 							  }
@@ -1261,6 +1278,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 										  printObj.setOrderseq(pd.getOrderseq());
 										  printObj.setCustomerPrinterIp((String)tbPrinterMap.get("ipaddress"));
 										  printObj.setCustomerPrinterPort((String)tbPrinterMap.get("port"));
+										  //added by caicai
+										  printObj.setPrintName((String)tbPrinterMap.get("printername"));
+										  
 										  new Thread(new PrintMutiThread(printObj)).run();
 //										  executor.execute(new PrintMutiThread(printObj));
 									  }
