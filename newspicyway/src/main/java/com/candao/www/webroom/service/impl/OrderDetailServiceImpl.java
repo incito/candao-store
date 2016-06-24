@@ -1000,10 +1000,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	 * @param pd
 	 */
 	private void formatDishNum(PrintDish pd) {
-		String num = pd.getDishNum();
-		if (!"".equals(num) && num.endsWith(".0")) {
-			pd.setDishNum(num.substring(0, num.lastIndexOf(".")));
-		}
+//		String num = pd.getDishNum();
+//		if (!"".equals(num) && num.endsWith(".0")) {
+//			pd.setDishNum(num.substring(0, num.lastIndexOf(".")));
+//		}
 	}
 
 	/**

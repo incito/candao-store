@@ -10,6 +10,7 @@ import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
+import com.candao.print.listener.template.ListenerTemplate;
  
 
 @Service
@@ -25,7 +26,7 @@ public class CustDishListener extends AbstractQueueListener{
 	}
 	
 	@Override
-	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer) throws Exception {
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template) throws Exception {
 		System.out.println("CustDishListener receive message");
 
 		String billName = object.getBillName();
@@ -107,8 +108,8 @@ public class CustDishListener extends AbstractQueueListener{
 			writer.write("          欢迎品尝       谢谢惠顾\r\n");
 	}
 
-	public PrintData receiveMessage(PrintObj object) throws Exception {
-		return prepareData(object,new PrintData());
+	public PrintData receiveMessage(PrintObj object , ListenerTemplate template) throws Exception {
+		return prepareData(object,new PrintData(),template);
 	}
 	
 	private Object[] getPrintText(List<PrintDish> list, int num1, int num2, int num3) throws Exception {
