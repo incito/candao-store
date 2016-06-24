@@ -1,9 +1,13 @@
 package com.candao.www.printer.listener;
 
+import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.dao.TbPrinterManagerDao;
+import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.printer.v2.PrinterManager;
 
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -46,8 +50,19 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private Runnable callback;
 	
 	private List<String> ipPool;
-
+	//监听模板对应字体
+	private Map<ListenerType, Integer> listenerTemplate = new ConcurrentHashMap<>();
+	//标准板式
+	private static final Integer STANDARD = 0;
+	//大字体
+	private static final Integer LARGE = 1;
+	//小字体
+	private static final Integer SMALL = 2;
+	
+	private Log log = LogFactory.getLog(PrinterListenerManager.class.getName());
+	
 	public PrinterListenerManager() {
+
 	}
 
 	public String getMessageListeners() {
@@ -103,6 +118,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 		synchronized (activeMonitor) {
 			createListeners();
 //			createConnections();
+			createListenerTemplate();
 			callback = null;
 			running = true;
 		}
@@ -222,4 +238,25 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			this.stopListener(listener);
 		}
 	}
+	
+	private void createListenerTemplate(){
+		//TODO
+		this.listenerTemplate.put(ListenerType.NormalListener, PrinterListenerManager.STANDARD);
+	}
+	
+	/**
+	 * 根据监听类型找到对应的模板
+	 * @param listenerType
+	 * @return
+	 */
+	public ListenerTemplate getListenerTemplate(ListenerType listenerType){
+		if ( !this.listenerTemplate.containsKey(listenerType)) {
+			log.error("------------  找不到打印模板！" + listenerType.toString());
+			return null;
+		}
+		//模板大小
+		Integer type = listenerTemplate.get(listenerType);
+		return ListenerTemplateFactory.getTemplate(listenerType, type);
+	}
+	
 }

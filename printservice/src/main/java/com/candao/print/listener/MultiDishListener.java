@@ -16,17 +16,20 @@ import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
+import com.candao.print.listener.template.ListenerTemplate;
+
+import groovy.text.Template;
 
 @Service
 public class MultiDishListener extends AbstractQueueListener {
 
-	public PrintData receiveMessage(PrintObj object) throws Exception {
+	public PrintData receiveMessage(PrintObj object,ListenerTemplate template) throws Exception {
 		System.out.println("MultiDishListener receive message");
-		return prepareData(object,new PrintData());
+		return prepareData(object,new PrintData(),template);
 	}
 	
 	@Override
-	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer)
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template)
 			throws Exception {
 		String billName = object.getBillName();
 		List<PrintDish> printDishList = object.getList();
