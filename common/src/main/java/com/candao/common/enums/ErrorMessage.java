@@ -8,7 +8,9 @@ package com.candao.common.enums;
  */
 public enum ErrorMessage {
 	
-	
+	/**
+	 * 1开头的表示,业务错误,2开头的表示非业务异常
+	 */
 	UNCOMPRESS("10001","解压失败,数据出现错误,请确认数据是否正确"),
 	DATA_UNCOMPLETE("10002","获取的数据不完整,请重新尝试"),
 	SYNDATA_FAIL("10003","同步数据失败,请重新操作"),
@@ -22,7 +24,11 @@ public enum ErrorMessage {
 	GINZIP_WRITE("20008","压缩数据失败,请重新尝试"),
 	HTTP_TRANS_ERROR("20009","数据传输失败,请重新上传"),
 	HTTP_RESPONSE_ERROR("20010","对方服务器响应超时"),
-	FORWARD_ERROR("20011","数据转换错误")
+	FORWARD_ERROR("20011","数据转换错误"),
+	SQLEXE_ERROR("20012","sql执行错误"),
+	SQLCONNECTION_ERROR("20013","数据库连接错误"),
+	DATASERVER_OPERATE_ERROR("20014","数据库操作出现错误"),
+	ENCODE_ERROR("20015","编码格式转换错误")
 	;
 	
 	

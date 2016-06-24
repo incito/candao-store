@@ -2024,7 +2024,7 @@ public class PadInterfaceController {
 	@RequestMapping("/jdesyndata")
 	@ResponseBody
 	public String jdeSynData(@RequestBody String json) {
-		logger.info("jdeSynData-start:"+json, "");
+		loggers.info("jdeSynData-start:"+json, "");
 		@SuppressWarnings("unchecked")
 		//Map<String, String> map = JacksonJsonMapper.jsonToObject(json, Map.class);
 		Map<String, String> map = JSON.parseObject(json, Map.class);
@@ -2037,40 +2037,11 @@ public class PadInterfaceController {
 		//获取同步数据的传送方式
 		String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
 		try {
-			//MQ
-			if(type.equals("1")){
-				if (branchDataSyn.synBranchData()) {
-					dto.setInfo(ResultMessage.SUCCESS);
-				}else{
-					dto.setCode("1");
-					dto.setMessage("修改数据同步的状态失败");
-				}
-			//HTTP
-			}else if(type.equals("2")){
-				dto = executeSyn();
-			}
+			dto = selectMethod(type);
 		}catch (SysException e) {
 			loggers.error("门店上传到总店数据失败",e);
-			//后面执行是否成功的标志
-			boolean afterStatus = false;
-			//如果异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
-			for(int i=0;i<3;i++){
-				int j = i + 1;
-				try{
-					dto = executeSyn();
-					afterStatus = true;
-					loggers.info("第"+ j +"次执行重传成功");
-					break;
-				}catch(SysException sysEx){
-					loggers.error("第"+ j +"次执行重传失败",sysEx);
-				}
-			}
-			//连续3次执行失败
-			if(afterStatus == false){
-				dto.setInfo(ResultMessage.INTERNET_EXE);
-				//resultMap.put("result", ResultMessage.INTERNET_EXE.getCode());
-				//resultMap.put("msg", ResultMessage.INTERNET_EXE.getMsg());
-			}
+			//异常处理机制
+			dto = exceptionDeal(type);
 		//使用原有代码MQ机制时出现的异常处理
 		}catch(Exception e){
 			loggers.error("门店上传到总店数据失败",e);
@@ -2080,9 +2051,64 @@ public class PadInterfaceController {
 			dto = new ResultDto();
 			dto.setInfo(ResultMessage.NO_RETURN_MESSAGE);
 		}
-		logger.info("jdeSynData-end:"+dto, "");
+		loggers.info("jdeSynData-end:"+dto, "");
 		//return JacksonJsonMapper.objectToJson(resultMap);
 		return JSON.toJSONString(dto);
+	}
+	
+	//出现异常处理机制,重新执行直到成功,最多执行3次
+	private ResultDto exceptionDeal(String type){
+		ResultDto dto = new ResultDto();
+		//后面执行是否成功的标志
+		boolean afterStatus = false;
+		//如果异常,则重新执行三次,直到成功或者3次执行完(后期建议通过任务处理器优化)
+		for(int i=0;i<3;i++){
+			int j = i + 1;
+			try{
+				dto = selectMethod(type);
+				afterStatus = true;
+				loggers.info("第"+ j +"次执行重传成功");
+				break;
+			}catch(SysException sysEx){
+				loggers.error("第"+ j +"次执行重传失败",sysEx);
+			}catch(Exception exc){
+				loggers.error("门店上传到总店数据失败",exc);
+				dto = null;
+			}
+		}
+		//连续3次执行失败
+		if(afterStatus == false){
+			dto.setInfo(ResultMessage.INTERNET_EXE);
+		}
+		return dto;
+	}
+	
+	/**
+	 * 
+	 * @Description:选择要执行的方法路径
+	 * @create: 余城序
+	 * @Modification:
+	 * @return ResultDto 结果集对象
+	 * @throws SysException 
+	 */
+	private ResultDto selectMethod(String type) throws Exception{
+		ResultDto dto = new ResultDto();
+		//MQ传输sql方式,http接口化方式稳定后将被舍弃
+		if(type.equals("1")){
+			if (branchDataSyn.synBranchData()) {
+				dto.setInfo(ResultMessage.SUCCESS);
+			}else{
+				dto.setCode("1");
+				dto.setMessage("修改数据同步的状态失败");
+			}
+		//HTTP传输sql方式,http接口化传输方式稳定后将被舍弃
+		}else if(type.equals("2")){
+			dto = executeSyn();
+		//HTTP接口化传输方式
+		}else if(type.equals("3")){
+			dto = branchDataSyn.synData();
+		}
+		return dto;
 	}
 	
 	//门店同步数据方法执行

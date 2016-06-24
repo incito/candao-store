@@ -1,170 +1,150 @@
 package com.candao.www.webroom.model;
-import java.io.Serializable;
 
-public class SynSqlObject implements Serializable{
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+public class SynSqlObject implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	public String id;
 
-   public String branchid;
-   
-   public String generattime;
-   
-   public String sql;
-   
-   public int status;
-   
-   public String sqltext;
-   
-   public String path;
-   
-   String  flag;
-   
-   String sequenceNo;
-   
-   String tenantid;
-   
-   String result;
-   
-   int orderSeqno;
-   
-   
-   
+	public String branchid;
 
-public int getOrderSeqno() {
-	return orderSeqno;
-}
+	public String generattime;
 
+	public String sql;
+	/**
+	 * 需要同步的对象
+	 */
+	private Map<String, List<Map<String, String>>> synDatas;
 
+	public int status;
 
-public void setOrderSeqno(int orderSeqno) {
-	this.orderSeqno = orderSeqno;
-}
+	public String sqltext;
 
+	public String path;
 
+	String flag;
 
-public String getResult() {
-	return result;
-}
+	String sequenceNo;
 
+	String tenantid;
 
+	String result;
 
-public void setResult(String result) {
-	this.result = result;
-}
+	int orderSeqno;
 
+	public int getOrderSeqno() {
+		return orderSeqno;
+	}
 
+	public void setOrderSeqno(int orderSeqno) {
+		this.orderSeqno = orderSeqno;
+	}
 
-public String getTenantid() {
-	return tenantid;
-}
+	public String getResult() {
+		return result;
+	}
 
+	public void setResult(String result) {
+		this.result = result;
+	}
 
+	public String getTenantid() {
+		return tenantid;
+	}
 
-public void setTenantid(String tenantid) {
-	this.tenantid = tenantid;
-}
+	public void setTenantid(String tenantid) {
+		this.tenantid = tenantid;
+	}
 
+	public String getSequenceNo() {
+		return sequenceNo;
+	}
 
+	public void setSequenceNo(String sequenceNo) {
+		this.sequenceNo = sequenceNo;
+	}
 
-public String getSequenceNo() {
-	return sequenceNo;
-}
+	public String getFlag() {
+		return flag;
+	}
 
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
 
+	public SynSqlObject() {
 
-public void setSequenceNo(String sequenceNo) {
-	this.sequenceNo = sequenceNo;
-}
+	}
 
+	public String getPath() {
+		return path;
+	}
 
+	public void setPath(String path) {
+		this.path = path;
+	}
 
-public String getFlag() {
-	return flag;
-}
+	public String getSqltext() {
+		return sqltext;
+	}
 
+	public void setSqltext(String sqltext) {
+		this.sqltext = sqltext;
+	}
 
+	public int getStatus() {
+		return status;
+	}
 
-public void setFlag(String flag) {
-	this.flag = flag;
-}
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
+	public String getId() {
+		return id;
+	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
 
-public  SynSqlObject(){
-	   
-   }
+	public String getBranchid() {
+		return branchid;
+	}
 
-   
-   
-public String getPath() {
-	return path;
-}
+	public void setBranchid(String branchid) {
+		this.branchid = branchid;
+	}
 
+	public String getGenerattime() {
+		return generattime;
+	}
 
+	public void setGenerattime(String generattime) {
+		this.generattime = generattime;
+	}
 
-public void setPath(String path) {
-	this.path = path;
-}
+	public String getSql() {
+		return sql;
+	}
 
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
 
+	public Map<String, List<Map<String, String>>> getSynDatas() {
+		return synDatas;
+	}
 
-public String getSqltext() {
-	return sqltext;
-}
+	public void setSynDatas(Map<String, List<Map<String, String>>> synDatas) {
+		this.synDatas = synDatas;
+	}
 
-public void setSqltext(String sqltext) {
-	this.sqltext = sqltext;
-}
-
-public int getStatus() {
-	return status;
-}
-
-public void setStatus(int status) {
-	this.status = status;
-}
-
-public String getId() {
-	return id;
-}
-
-public void setId(String id) {
-	this.id = id;
-}
-
- 
-
-public String getBranchid() {
-	return branchid;
-}
-
-public void setBranchid(String branchid) {
-	this.branchid = branchid;
-}
-
- 
-
-public String getGenerattime() {
-	return generattime;
-}
-
-public void setGenerattime(String generattime) {
-	this.generattime = generattime;
-}
-
-public String getSql() {
-	return sql;
-}
-
-public void setSql(String sql) {
-	this.sql = sql;
-}
-   
-   
-   
 }
