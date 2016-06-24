@@ -14,9 +14,9 @@ import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.listener.template.ListenerTemplate;
 
-public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
+public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 	
-	private Log logger = LogFactory.getLog(SimpleNormalDishTemplateImpl.class.getName());
+	private Log logger = LogFactory.getLog(SimpleMultiDishTemplateImpl.class.getName());
 	//模板大小
 	private Integer type;
 
@@ -115,10 +115,41 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 		return new String[]{abbrName,ordersq,timestamp};
 	}
 	
+//	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+//		Object[] res = null;
+//		List<PrintDish> list = object.getpDish();
+//		
+//		for (PrintDish it : list) {
+//			// 校验名称
+//			String dishName = it.getDishName() == null ? "" : it.getDishName();
+//			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
+//			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+//			String taste = it.getTaste() != null && !it.getTaste().isEmpty()? "(" + it.getTaste().trim()+")":"";
+//			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()? "(" + it.getSperequire().trim()+")":"";
+//			dishName += taste+Sperequire;
+//			logger.error("------------------------");
+//			logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + it.getDishName());
+//			
+//			if (2 == it.getDishtype()) {
+//				dishName = "（套）"+dishName;
+//			}
+//			
+//			String[] name = { dishName, dishNum, dishUnit };
+//			Integer[] len = { num1, num2, num3 };
+//			
+//			String[] temp = StringUtils.getLineFeedText(name, len);
+//			
+//			res = ArrayUtils.addAll(res, temp);
+//		}
+//		
+//		return res;
+//	}
+	
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
 		Object[] res = null;
-		List<PrintDish> list = object.getpDish();
 		
+		List<PrintDish> list = object.getList();
+
 		for (PrintDish it : list) {
 			// 校验名称
 			String dishName = it.getDishName() == null ? "" : it.getDishName();
@@ -127,21 +158,15 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 			String taste = it.getTaste() != null && !it.getTaste().isEmpty()? "(" + it.getTaste().trim()+")":"";
 			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()? "(" + it.getSperequire().trim()+")":"";
 			dishName += taste+Sperequire;
-			logger.error("------------------------");
-			logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + it.getDishName());
-			
-			if (2 == it.getDishtype()) {
-				dishName = "（套）"+dishName;
-			}
-			
+
 			String[] name = { dishName, dishNum, dishUnit };
 			Integer[] len = { num1, num2, num3 };
-			
+
 			String[] temp = StringUtils.getLineFeedText(name, len);
-			
+
 			res = ArrayUtils.addAll(res, temp);
 		}
-		
+
 		return res;
 	}
 
