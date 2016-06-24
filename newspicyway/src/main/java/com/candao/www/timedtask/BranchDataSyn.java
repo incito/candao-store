@@ -1,20 +1,14 @@
 package com.candao.www.timedtask;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,23 +16,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.httpclient.HttpException;
-import org.apache.ibatis.jdbc.ScriptRunner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Execute;
-import org.apache.tools.ant.taskdefs.SQLExec;
-import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.candao.common.compress.impl.GzipCompress;
 import com.candao.common.dao.SynDataTools;
 import com.candao.common.dto.ResultDto;
@@ -53,10 +39,8 @@ import com.candao.common.utils.HttpUtil;
 import com.candao.common.utils.MD5;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.common.utils.StringUtils;
-import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.BranchDataSynDao;
 import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.support.FunctionTag;
 import com.candao.www.webroom.model.SynSqlObject;
 import com.candao.www.webroom.service.BranchProducerService;
 import com.candao.www.webroom.service.BranchShopService;
@@ -100,39 +84,6 @@ public class BranchDataSyn {
 
 	// 存储压缩包的压缩包名
 	private final String SQL_FILE_NAME = "sql.gz";
-	//测试
-	public void test(){}
-	
-	public static void main(String args[]) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, SysException{
-		/* String url="jdbc:mysql://10.66.21.5:3306/newspicyway?characterEncoding=UTF-8";
-			 String username="root";
-			 String password="mysql.candao";
-			 String driver="com.mysql.jdbc.Driver";
-			 SQLExec sqlExec = new SQLExec();
-		    	//设置数据库参数
-		    	sqlExec.setDriver(driver);
-		    	sqlExec.setEncoding("UTF8");
-		    	
-//		    	String dbUrl = dbConfig.getDbdefaultstr();
-//		    	dbUrl = String.format(dbUrl, dbConfig.getDbip(),dbConfig.getDbport(),dbName);
-		    	sqlExec.setUrl(url);
-		    	sqlExec.setUserid(username);
-		    	sqlExec.setPassword(password);
-		    	//要执行的脚本
-		    	File file = new File("c://sql.txt");
-		    	sqlExec.setSrc(file);
-		    	 
-		    	//有出错的语句该如何处理
-		    	sqlExec.setOnerror((SQLExec.OnError)(EnumeratedAttribute.getInstance(
-		    	SQLExec.OnError.class, "abort")));
-		    	sqlExec.setPrint(false); //设置是否输出
-		    	//输出到文件 sql.out 中；不设置该属性，默认输出到控制台
-		 
-		    	sqlExec.setProject(new Project()); // 要指定这个属性，不然会出错
-		    	sqlExec.execute();*/
-		Date date = DateUtils.stringToDate("2016-05-23 16:48:59");
-		System.out.println(date.getTime());
-	}
 
 	public boolean synBranchData() throws Exception {
 		synData();
@@ -181,22 +132,14 @@ public class BranchDataSyn {
 			if (branchId != null) {
 				// 添加同步记录
 				addSynRecord();
-
 				// 获取需要同步的表
 				String[] tables = getSynTables();
-
 				// 需要存储的sql
 				String sql = getSynSql(tables);
 				// 同步数据到总店
 				String result = synData(sql, branchId);
-				
+				//结果集处理
 				dto = resultDeal(result);
-				if(dto.getCode().equals(ResultMessage.SUCCESS.getCode())){
-					Integer id = branchDataSynDao.getMaxId();
-					updateSynRecord(id.toString());
-				}else{
-					throw new SysException(ErrorMessage.SYNDATA_FAIL, Module.LOCAL_SHOP);
-				}
 			} else {
 				throw new SysException(ErrorMessage.NO_BRANCH_ID, Module.LOCAL_SHOP);
 			}
@@ -207,16 +150,54 @@ public class BranchDataSyn {
 		return dto;
 	}
 	
+	public ResultDto synData() throws SysException{
+		logger.info("synData-start");
+		int bizFlag = branchDataSynDao.checkBizData();
+		ResultDto dto = null;
+		// 表示已经结业或未开业状态
+		if (bizFlag == 0) {
+			// 获取分店id
+			String branchId = PropertiesUtils.getValue("current_branch_id");
+			logger.info("分店id:"+branchId);
+			// 如果分店id存在
+			if (branchId != null) {
+				// 添加同步记录
+				addSynRecord();
+				// 获取需要同步的表
+				String[] tables = getSynTables();
+				// 需要存储的对象
+				Map<String,List<Map<String,String>>> datas = getSynData(tables);
+				// 同步数据到总店
+				String result = synData(datas, branchId);
+				//结果集处理
+				dto = resultDeal(result);
+			} else {
+				throw new SysException(ErrorMessage.NO_BRANCH_ID, Module.LOCAL_SHOP);
+			}
+		}else{
+			throw new SysException(ErrorMessage.NO_CLOSE_SHOP, Module.LOCAL_SHOP);
+		}
+		logger.info("synData-end:" + dto);
+		return dto;
+	
+	}
+	
 	//门店同步数据成功后结果的处理
-	private ResultDto resultDeal(String result){
+	private ResultDto resultDeal(String result) throws SysException{
 		ResultDto dto = null;
 		if(!"".equals(result)){
 			dto = JSON.parseObject(result, ResultDto.class);
 		}
+		if(dto.getCode().equals(ResultMessage.SUCCESS.getCode())){
+			Integer id = branchDataSynDao.getMaxId();
+			updateSynRecord(id.toString());
+		}else{
+			throw new SysException(ErrorMessage.SYNDATA_FAIL, Module.LOCAL_SHOP);
+		}
 		return dto;
 	}
 
-	public void synData() throws Exception {
+	public void syn() throws Exception {
 		int bizFlag = branchDataSynDao.checkBizData();
 		// bizFlag = 0;
 		// 表示已经结业或未开业状态
@@ -406,7 +387,7 @@ public class BranchDataSyn {
 			logger.error("http数据传输失败",e);
 			throw new SysException(ErrorMessage.HTTP_TRANS_ERROR, Module.LOCAL_SHOP);
 		} catch (IOException e) {
-			logger.error("服务器lianjie出现异常",e);
+			logger.error("服务器连接出现异常",e);
 			throw new SysException(ErrorMessage.HTTP_RESPONSE_ERROR, Module.LOCAL_SHOP);
 		}
 
@@ -430,6 +411,17 @@ public class BranchDataSyn {
 	private String synData(String sql, String branchId) throws SysException {
 		// 创建需要同步的数据
 		SynSqlObject synSqlObject = createSynData(sql, branchId);
+		// 将数据转换成json,禁用循环引用检测
+		String json = JSON.toJSONString(synSqlObject);
+		// 上传数据到总店
+		String result = upToData(json);
+
+		return result;
+	}
+	
+	private String synData(Map<String,List<Map<String,String>>> datas, String branchId) throws SysException {
+		// 创建需要同步的数据
+		SynSqlObject synSqlObject = createSynData(datas, branchId);
 		// 将数据转换成json
 		String json = JSON.toJSONString(synSqlObject);
 		// 上传数据到总店
@@ -437,31 +429,39 @@ public class BranchDataSyn {
 
 		return result;
 	}
-
+	
 	/**
 	 * 
 	 * @Description:创建要同步数据的对象
 	 * @create: 余城序
 	 * @Modification:
-	 * @param sql
-	 *            需要同步的sql
-	 * @param branchId
-	 *            分店id
+	 * @param sql 需要同步的sql
+	 * @param branchId 分店id
 	 * @return SynSqlObject
 	 */
 	private SynSqlObject createSynData(String sql, String branchId) {
-
 		SynSqlObject synSqlObject = new SynSqlObject();
+		setSynSqlObject(synSqlObject);
+		synSqlObject.setBranchid(branchId);
+		synSqlObject.setSql(sql);
+		return synSqlObject;
+	}
+	
+	private SynSqlObject createSynData(Map<String,List<Map<String,String>>> datas, String branchId) {
+		SynSqlObject synSqlObject = new SynSqlObject();
+		setSynSqlObject(synSqlObject);
+		synSqlObject.setBranchid(branchId);
+		synSqlObject.setSynDatas(datas);
+		return synSqlObject;
+	}
+	
+	private void setSynSqlObject(SynSqlObject synSqlObject){
 		Map branchinfo = branchDao.getBranchInfo();
 		synSqlObject.setId(UUID.randomUUID().toString());
-		synSqlObject.setBranchid(branchId);
 		synSqlObject.setTenantid((String) branchinfo.get("tenantid"));
-		synSqlObject.setSql(sql);
 		synSqlObject.setFlag("1");
 		int sequenceNo = 0;
 		synSqlObject.setSequenceNo("" + sequenceNo++);
-
-		return synSqlObject;
 	}
 
 	/**
@@ -474,7 +474,7 @@ public class BranchDataSyn {
 	private String[] getSynTables() {
 		String need_syn_tables = PropertiesUtils.getValue("need_syn_tables");
 		String[] tables = need_syn_tables.split(",");
-
+		
 		logger.info("需要同步的表数量:" + tables.length);
 
 		return tables;
@@ -486,6 +486,21 @@ public class BranchDataSyn {
 		mapValue.put("branchid", PropertiesUtils.getValue("current_branch_id"));
 		mapValue.put("datapath", "暂时不用");
 		return branchDataSynDao.insertSynRecord(mapValue);
+	}
+	
+	private Map<String,List<Map<String,String>>> getSynData(String[] tables) throws SysException{
+		// 获取开业日期 和结业日期
+		Map<String, String> bizMap = branchDataSynDao.getBizDate();
+		String openDate = bizMap.get("opendate");
+		String endDate = bizMap.get("enddate");
+		
+		Map<String,List<Map<String,String>>> tableMap = new HashMap<String,List<Map<String,String>>>(32);
+		for (String table : tables) {
+			List<Map<String,String>> datas = branchDataSynDao.getSynData(table,
+					SynDataTools.getConditionSql(table, openDate, endDate));
+			tableMap.put(table, datas);
+		}
+		return tableMap;
 	}
 
 	// 获取需要同步的sql

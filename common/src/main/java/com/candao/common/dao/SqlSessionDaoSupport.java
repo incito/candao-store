@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,11 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 
+import ch.qos.logback.classic.Logger;
+
+import com.candao.common.enums.ErrorMessage;
+import com.candao.common.enums.Module;
+import com.candao.common.exception.SysException;
 import com.candao.common.page.Page;
 import com.candao.common.page.PageContainer;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
@@ -132,10 +138,14 @@ public class SqlSessionDaoSupport implements DaoSupport {
 	public  String  getSynSql(String tableName,String sqlCondition) {
 		 
 		SqlSessionFactory factory = sqlSession.getSqlSessionFactory();
+		
 		Connection conn = factory.openSession().getConnection();
-		SynDataTools  syn = new SynDataTools(conn);
-		 String sql = syn.generateSQLList(tableName,sqlCondition);
-		 try {
+		
+		SynDataTools syn = new SynDataTools(conn);
+		
+		String sql = syn.generateSQLList(tableName,sqlCondition);
+		
+		try {
 			 if(!conn.isClosed()){
 				 conn.close();
 			 }
@@ -144,6 +154,27 @@ public class SqlSessionDaoSupport implements DaoSupport {
 			e.printStackTrace();
 		}
 		return sql;
+	}
+	
+	@Override
+	public List<Map<String,String>> getSynData(String tableName,String sqlCondition) throws SysException {
+		 
+		SqlSessionFactory factory = sqlSession.getSqlSessionFactory();
+		
+		Connection conn = factory.openSession().getConnection();
+		
+		SynDataTools syn = new SynDataTools(conn);
+		
+		List<Map<String,String>> result = syn.generateData(tableName,sqlCondition);
+		
+		try {
+			 if(!conn.isClosed()){
+				 conn.close();
+			 }
+		} catch (SQLException e) {
+			throw new SysException(ErrorMessage.SQLCONNECTION_ERROR, Module.LOCAL_SHOP);
+		}
+		return result;
 	}
 	
 	@Override
@@ -163,8 +194,6 @@ public class SqlSessionDaoSupport implements DaoSupport {
 	}
 	
 	private void executeSqlDelimiter(String sql, Connection conn){
-
-
 		 String[] sqls = null;
 	      if(sql != null){
 	    	  sqls = sql.split(";");

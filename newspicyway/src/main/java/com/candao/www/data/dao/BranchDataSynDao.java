@@ -1,6 +1,10 @@
 package com.candao.www.data.dao;
 
+import java.sql.ResultSet;
+import java.util.List;
 import java.util.Map;
+
+import com.candao.common.exception.SysException;
 
 
 
@@ -46,6 +50,16 @@ public interface BranchDataSynDao {
 	public void transferToHistory();
 	
 	public String getSynSql(String tableName,String sqlCondition);
+	/**
+	 * 
+	 * @Description:获取需要同步的数据
+	 * @create: 余城序
+	 * @Modification:
+	 * @param tableName 表名
+	 * @param sqlCondition 查询需要同步的数据的sql
+	 * @return List 结果集
+	 */
+	public List<Map<String,String>> getSynData(String tableName,String sqlCondition) throws SysException;
 
 	public void deleteSynRecord();
 

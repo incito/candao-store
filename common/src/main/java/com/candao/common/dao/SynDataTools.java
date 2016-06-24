@@ -4,19 +4,126 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.candao.common.enums.ErrorMessage;
+import com.candao.common.enums.Module;
+import com.candao.common.exception.SysException;
  
 
 public class SynDataTools {
+	
+    private Logger logger = LoggerFactory.getLogger(SynDataTools.class);
 
-   Connection  connection = null;
+    Connection  connection = null;
 	public SynDataTools( Connection  connection){
 		this.connection = connection;
+	}
+	
+	
+	public List<Map<String,String>> generateData(String tableName,String sqlCondition)throws SysException{
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<Map<String,String>> result = null;
+		try {
+			stmt = connection.createStatement();
+			DatabaseMetaData metadata = connection.getMetaData();
+			// /////////////////////////////////////////////////////
+			// 导出TESTt
+			// /////////////////////////////////////////////////////
+			String sqlExport = generateQuerySQL(metadata, tableName, sqlCondition);
+			rs = stmt.executeQuery(sqlExport);
+			//获取列名集合
+			List<String> columns = getColumns(rs);
+			//设置同步对象
+			result = setData(rs,columns);
+		} catch (SQLException e) {
+			throw new SysException(ErrorMessage.SQLEXE_ERROR, Module.LOCAL_SHOP);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	/**
+	 * 
+	 * @Description:设置对应字段和值的对象
+	 * @create: 余城序
+	 * @Modification:
+	 * @param map 需要设置进去的对象
+	 * @param columns 队列集合
+	 * @return void
+	 * @throws  
+	 */
+	private List<Map<String,String>> setData(ResultSet rs,List<String> columns) throws SysException{
+		String colsValue = "";
+		String value = "";
+		Map<String,String> map = null;
+		//数据集合
+		List<Map<String,String>> list = new ArrayList<Map<String,String>>(64);
+		try {
+			while(rs.next()){
+				map = new HashMap<String,String>();
+				//循环获取每列的数据,第1列从1开始.所以获取列名,或列值,都是从1开始
+				for (int i = 0; i < columns.size(); i++) {
+					colsValue = rs.getString(columns.get(i));
+					value = StringUtils.trimToEmpty(colsValue == null ? "" : new String(colsValue.getBytes(),"gbk"));
+					map.put(columns.get(i), value);
+				}
+				list.add(map);
+			}
+			return list;
+		} catch (SQLException e) {
+			logger.error("数据库ResultSet操作失败",e);
+			throw new SysException(ErrorMessage.DATASERVER_OPERATE_ERROR, Module.LOCAL_SHOP);
+		}catch (UnsupportedEncodingException e) {
+			logger.error("字符串格式错误",e);
+			throw new SysException(ErrorMessage.ENCODE_ERROR, Module.LOCAL_SHOP);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Description:根据某个表的ResultSet获取该表的字段
+	 * @create: 余城序
+	 * @Modification:
+	 * @param result ResultSet
+	 * @return List<String> 字段集合
+	 */
+	private List<String> getColumns(ResultSet rs) throws SysException{
+		ResultSetMetaData rsm = null;
+		int col;//列的个数
+		try {
+			rsm =rs.getMetaData();
+			col = rsm.getColumnCount(); //获得列的个数
+			//获得列集
+			List<String> list = new ArrayList<String>(col);
+			//第一列,从1开始.所以获取列名,或列值,都是从1开始
+			for (int i = 1; i <= col; i++) {
+				list.add(rsm.getColumnName(i));
+			}
+			return list;
+		} catch (SQLException e) {
+			logger.error("数据库ResultSet操作失败",e);
+			throw new SysException(ErrorMessage.DATASERVER_OPERATE_ERROR, Module.LOCAL_SHOP);
+		}
 	}
 
 	/**
@@ -25,7 +132,7 @@ public class SynDataTools {
 	 * @param id
 	 * @return
 	 */
-	public   String generateSQLList(String tableName,String sqlCondition) {
+	public String generateSQLList(String tableName,String sqlCondition) {
 //		List<String> sqlList = new ArrayList<String>();
 
 		Statement stmt = null;
@@ -277,7 +384,7 @@ public class SynDataTools {
 				retStr = "orderdetailid";
 				break;
 			case "t_settlement":
-				retStr = "settledid";
+				retStr = "settledId";
 				break;
 			case "t_settlement_history":
 				retStr = "settledid";
