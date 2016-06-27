@@ -296,7 +296,7 @@
 			<hr style="margin: 5px 0px;" />
 			<div class="form-horizontal " id="">
 				<div class="form-group">
-					<input type="hidden" id="avoidtype" value="SPECIAL" />
+					<input type="hidden" id="avoidtype" value="JI_KOU_SPECIAL" />
 					<div class="avoid-tag-table col-xs-10" id="avoid-list"
 						style="overflow: auto;">
 						<div class="add-reason avoid-li btn btn-default hide"
