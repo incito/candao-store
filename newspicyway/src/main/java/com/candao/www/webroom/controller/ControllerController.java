@@ -91,7 +91,7 @@ public class ControllerController {
 				return !str.contains("Access violation");
 			}
 		};
-		t.setDaemon(true);
-		t.start();
+//		t.setDaemon(true);
+//		t.start();
 	}
 }
