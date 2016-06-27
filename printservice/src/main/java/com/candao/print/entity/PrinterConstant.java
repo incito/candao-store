@@ -12,6 +12,8 @@ public class PrinterConstant {
     public static final String COOKIE_TEMPLATE_NAME = "normal.vm";
     public static final String SETTLE_TEMPLATE_NAME = "settlement.vm";
     public static final String ADDDISH_TEMPLATE_NAME = "adddish.vm";
+    public static final byte ESC = 27;//换码
+    public static final byte GS = 29;//组分隔符
     /**
      * 开启自动状态返回
      */
@@ -178,54 +180,70 @@ public class PrinterConstant {
         }
         return templateName;
     }
+    
+    //added by caicai
+    /**
+     * 居中对齐
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
+    public static byte[] alignCenter()
+	{
+		byte[] result = new byte[3];
+		result[0] = ESC;
+		result[1] = 97;
+		result[2] = 1;
+		return result;
+	}
+    /**
+     * 左对齐
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
+    public static byte[] alignLeft()
+	{
+		byte[] result = new byte[3];
+		result[0] = 27;
+		result[1] = 97;
+		result[2] = 0;
+		return result;
+	}
+    //纵向放大两倍（汉字，英文，数字都支持）
+	public static String longitudinalDouble() {
+		byte[] result = new byte[3];
+		result[0] = GS;
+		result[1] = 33;
+		result[2] = 1;
+		return new String(result);
+	}
+    
+	//纵向，横向放大两倍（汉字，英文，数字都支持）
+	public static String bothDouble() {
+		byte[] result = new byte[3];
+		result[0] = GS;
+		result[1] = 33;
+		result[2] = 17;
+		return new String(result);
+	}
+	
+	public static byte[] VerticalDoubleFont() {
+		byte[] fd_font = new byte[3];
+        fd_font[0] = 0x1d;
+        fd_font[1] = 0x21;
+        fd_font[2] = 0x02;
 
+        return fd_font;
+    }
+	/**
+	 * 纵向放大一倍
+	 * @return
+	 */
+	public static byte[] VerticalFont() {
+		byte[] fd_font = new byte[3];
+        fd_font[0] = 0x1d;
+        fd_font[1] = 0x21;
+        fd_font[2] = 0x01;
 
-//    public static String byteSubstring(String s, int length) {
-//
-//        byte[] bytes = null;
-//        byte[] rebytes = new byte[length];
-//        try {
-//            bytes = s.getBytes("Unicode");
-//            int n = 0; // ��ʾ��ǰ���ֽ���
-//            int i = 2; // Ҫ��ȡ���ֽ���ӵ�3���ֽڿ�ʼ
-//            for (; i < bytes.length && n < length; i++) {
-//                // ����λ�ã���3��5��7�ȣ�ΪUCS2�����������ֽڵĵڶ����ֽ�
-//                if (i % 2 == 1) {
-//                    n++; // ��UCS2�ڶ����ֽ�ʱn��1
-//                } else {
-//                    // ��UCS2����ĵ�һ���ֽڲ�����0ʱ����UCS2�ַ�Ϊ���֣�һ�������������ֽ�
-//                    if (bytes[i] != 0) {
-//                        n++;
-//                    }
-//                }
-//            }
-//            // ���iΪ����ʱ�������ż��
-//            if (i % 2 == 1)
-//
-//            {
-//                // ��UCS2�ַ��Ǻ���ʱ��ȥ�������һ��ĺ���
-//                if (bytes[i - 1] != 0)
-//                    i = i - 1;
-//                    // ��UCS2�ַ�����ĸ�����֣��������ַ�
-//                else
-//                    i = i + 1;
-//            }
-//
-//
-//            if (bytes.length < length) {
-//                System.arraycopy(bytes, 0, rebytes, 0, bytes.length);
-////			        	int maxsize = rebytes.length;
-//                while (i < length) {
-//                    byte b = 32;
-//                    rebytes[i++] = b;
-//                }
-//
-//            }
-//
-//            return new String(rebytes, 0, length, "Unicode");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        return new String(rebytes);
-//    }
+        return fd_font;
+    }
 }
