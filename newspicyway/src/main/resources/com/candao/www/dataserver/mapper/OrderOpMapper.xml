@@ -20,7 +20,7 @@
       #{zdAmount} AS zdAmount,
       IFNULL(t.receivables,0) AS tipAmount,IFNULL(t.paid,0) AS tipPaid FROM t_order a
       INNER JOIN t_table c ON(a.currenttableid=c.tableid)  LEFT JOIN t_tablearea e ON(e.areaid=c.areaid)
-      LEFT JOIN (SELECT a.job_number,b.name AS fullName FROM t_b_employee a INNER JOIN t_b_user b ON(a.user_id=b.id)) f ON(a.userid=f.job_number)
+      LEFT JOIN (SELECT a.job_number,b.name AS fullName FROM t_b_employee a INNER JOIN t_b_user b ON(a.user_id=b.id) WHERE a.branch_id = ( SELECT branchid FROM t_branch_info LIMIT 0,1)) f ON(a.userid=f.job_number)
       LEFT JOIN t_settlement_detail g ON(g.orderid=a.orderid AND g.payway=7)  LEFT JOIN t_coupons h ON(a.couponname=h.couponid)
       LEFT JOIN t_settlement_detail p ON(p.orderid=a.orderid AND p.payway=20) LEFT JOIN t_b_tip t ON(t.orderid=a.orderid)
       WHERE a.orderid=#{orderId}

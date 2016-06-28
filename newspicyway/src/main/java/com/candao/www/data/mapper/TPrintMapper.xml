@@ -332,6 +332,63 @@
 			order by (a.printdishid+0) asc
 	 </select>
 	 
+	 <select id="findDishBycolumn" parameterType="map" resultType="com.candao.print.entity.PrintDish">
+		select
+		 a.printdishid
+		 ,a.printobjid
+		 ,a.dishname
+		 ,a.dishnum
+		 ,a.dishprice
+		 ,a.totalamount
+		 ,a.payamount
+		 ,a.sperequire
+		 ,a.tableNomsg
+		 ,a.maxDishCount
+		 ,a.dishUnit
+		  ,a.printtype
+		  ,a.dishId,a.relatedishid,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
+		 a.printnum,a.primarykey,a.parentkey,a.ispot,a.superkey
+		from t_printdish a ,t_dish b
+		where	  a.dishId = b.dishid
+				and  printobjid=#{printobjid}
+			 
+		     <if test="dishid != null ">
+			  and 	a.dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			 <if test="dishUnit != null ">
+			  and 	a.dishUnit =#{dishUnit,jdbcType=VARCHAR}
+			</if>
+		    <if test="relatedishid != null ">
+			  and 	a.relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+		    <if test="dishtype != null ">
+			  and 	a.dishtype =#{dishtype,jdbcType=VARCHAR}
+			</if>
+			   <if test="islatecooke != null ">
+			  and 	a.islatecooke  =#{islatecooke,jdbcType=INTEGER}
+			</if>
+			 <if test="parentkey != null ">
+			  and 	a.parentkey  =#{parentkey,jdbcType=VARCHAR}
+			</if>
+			 <if test="printnum != null ">
+			  and 	a.printnum  =#{printnum,jdbcType=INTEGER}
+			</if>
+			 <if test="ismaster != null ">
+			  and 	a.ismaster  =#{ismaster,jdbcType=INTEGER}
+			</if>
+			
+			 <if test="childdishtype != null ">
+			  and 	a.childdishtype  =#{childdishtype,jdbcType=INTEGER}
+			</if>
+			 <if test="primarykey != null ">
+			  and 	a.primarykey  =#{primarykey,jdbcType=VARCHAR}
+			</if>
+			 <if test="superkey != null ">
+			  and 	a.superkey  =#{superkey,jdbcType=VARCHAR}
+			</if>
+			order by (b.columnid) asc
+	 </select>
+	 
  <select id="findPrinterByDishId" parameterType="map" resultType="com.candao.print.entity.PrintDish">
 		select distinct c.ipaddress printipaddress ,
 		 c.port printport 

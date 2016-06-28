@@ -174,7 +174,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
 				 sperequire.append(t.getFreeauthorize());
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-				 sperequire.append(t.getFreeauthorize());
+				 sperequire.append(t.getFreereason());
 				 t.setSperequire(sperequire.toString());
 				 
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
@@ -291,7 +291,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	     */
  @Override 
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
- public Map<String, Object> setOrderDetailList(Order orders,ToperationLog toperationLog) {
+ public synchronized Map<String, Object> setOrderDetailList(Order orders,ToperationLog toperationLog) {
 	 	
 	  DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 	  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
@@ -1000,10 +1000,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	 * @param pd
 	 */
 	private void formatDishNum(PrintDish pd) {
-		String num = pd.getDishNum();
-		if (!"".equals(num) && num.endsWith(".0")) {
-			pd.setDishNum(num.substring(0, num.lastIndexOf(".")));
-		}
+//		String num = pd.getDishNum();
+//		if (!"".equals(num) && num.endsWith(".0")) {
+//			pd.setDishNum(num.substring(0, num.lastIndexOf(".")));
+//		}
 	}
 
 	/**

@@ -12,6 +12,7 @@ import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
+import com.candao.print.listener.template.ListenerTemplate;
 
 @Service
 public class WeighDishListener extends AbstractQueueListener{
@@ -26,7 +27,7 @@ public class WeighDishListener extends AbstractQueueListener{
 	}
 
 	@Override
-	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer) throws Exception {
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template) throws Exception {
 		System.out.println("WeighDishListener receive message");
 
 		String billName = object.getBillName();
@@ -124,9 +125,9 @@ public class WeighDishListener extends AbstractQueueListener{
 //		writer.write(special + "\r\n");
 	}
 	
-	public PrintData receiveMessage(PrintObj object) throws Exception {
+	public PrintData receiveMessage(PrintObj object,ListenerTemplate template) throws Exception {
 
-		return prepareData(object,new PrintData());
+		return prepareData(object,new PrintData(),template);
 	}
 	
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {

@@ -242,7 +242,7 @@ public class SystemServiceImpl {
 
 		List<Map<String, Object>> mapList = tbDataDictionaryDao.getSystemList();
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("SPECIAL", getJsonArrary(mapList, "SPECIAL"));
+		jsonObject.put("JI_KOU_SPECIAL", getJsonArrary(mapList, "JI_KOU_SPECIAL"));
 		jsonObject.put("BIZPERIODDATE", getJsonArrary(mapList, "BIZPERIODDATE"));
 		jsonObject.put("DISHES", getJsonArrary(mapList, "DISHES"));
 		jsonObject.put("RETURNDISH", getJsonArrary(mapList, "RETURNDISH"));

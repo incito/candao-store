@@ -12,6 +12,7 @@ import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
+import com.candao.print.listener.template.ListenerTemplate;
 
 @Service
 public class StatementDishListener extends AbstractQueueListener {
@@ -27,7 +28,7 @@ public class StatementDishListener extends AbstractQueueListener {
 	}
 	
 	@Override
-	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer)
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template)
 			throws Exception {
 		System.out.println("StatamentListener receive message");
 
@@ -124,8 +125,8 @@ public class StatementDishListener extends AbstractQueueListener {
 	}
 
 	@Override
-	public PrintData receiveMessage(PrintObj object) throws Exception {
-		return prepareData(object,new PrintData());
+	public PrintData receiveMessage(PrintObj object,ListenerTemplate template) throws Exception {
+		return prepareData(object,new PrintData(),template);
 	}
 
 }

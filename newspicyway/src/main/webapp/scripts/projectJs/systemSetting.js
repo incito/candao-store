@@ -217,7 +217,7 @@ $("#test").click(function(){
 			avoidArr.push(avoid);
 		});
 		doPost(type, avoidArr, function(data){
-			$("#avoid-list").find(".dishTasteUl").last().attr("dictid",data.SPECIAL[data.SPECIAL.length-1].dictid);
+			$("#avoid-list").find(".dishTasteUl").last().attr("dictid",data.JI_KOU_SPECIAL[data.JI_KOU_SPECIAL.length-1].dictid);
 			$("#saveAvoid").addClass("hide");
 			$("#editAvoid").removeClass("hide");
 			$("#avoid-list .avoid-li").attr("disabled", true);
@@ -839,7 +839,7 @@ function initData(data, type){
 	
 	if(type == 3 || type == null){
 		//忌口设置
-		var speciallist = data.SPECIAL;
+		var speciallist = data.JI_KOU_SPECIAL;
 		var len = speciallist.length;
 		$.each(speciallist, function(i, item){
 			var itemDesc = item.itemDesc;

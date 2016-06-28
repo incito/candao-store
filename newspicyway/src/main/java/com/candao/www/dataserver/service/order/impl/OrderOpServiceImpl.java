@@ -133,7 +133,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         ResponseJsonData responseJsonData = new ResponseJsonData();
         try {
             LOGGER.info("###getAllOrderInfo2 userId={}###", aUserId);
-            String workDate = WorkDateUtil.getWorkDate();
+            String workDate = WorkDateUtil.getWorkTime();
             List<Map> orderJson = orderMapper.getAllOrderInfo2(workDate);
             if (null != orderJson && !orderJson.isEmpty()) {
                 for (Map map : orderJson) {
@@ -151,7 +151,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                     }
                 }
             }
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
+            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson));
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于帐单查询）异常");
