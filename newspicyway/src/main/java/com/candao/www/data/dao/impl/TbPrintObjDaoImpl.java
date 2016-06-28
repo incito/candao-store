@@ -32,6 +32,11 @@ public class TbPrintObjDaoImpl implements TbPrintObjDao {
 	public <T, K, V> List<T> findDish(Map<K, V> params) {
 		 return dao.find(PREFIX + ".findDish", params);
 	}
+	
+	@Override
+	public <T, K, V> List<T> findDishBycolumn(Map<K, V> params) {
+		 return dao.find(PREFIX + ".findDishBycolumn", params);
+	}
 
 	@Override
 	public int update(PrintObj printObj) {

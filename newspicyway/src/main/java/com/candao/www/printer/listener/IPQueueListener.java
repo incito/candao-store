@@ -4,12 +4,14 @@ import com.candao.common.utils.Constant;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.listener.QueueListener;
+import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.printer.v2.Printer;
 import com.candao.www.printer.v2.PrinterManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -21,6 +23,9 @@ public class IPQueueListener implements ApplicationContextAware{
     private ApplicationContext applicationContext;
 
     private Log log = LogFactory.getLog(IPQueueListener.class.getName());
+    
+    @Autowired
+    private PrinterListenerManager printerListenerManager;
 
     public void receiveMessage(PrintObj obj) {
         Constant.ListenerType listenerType = obj.getListenerType();
@@ -33,10 +38,11 @@ public class IPQueueListener implements ApplicationContextAware{
             log.error("订单号： "+obj.getOrderNo());
             return;
         }
-
+        
+        ListenerTemplate listenerTemplate = printerListenerManager.getListenerTemplate(obj.getPrinterid(), listenerType);
         PrintData data = null;
         try {
-           data = dst.receiveMessage(obj);
+           data = dst.receiveMessage(obj,listenerTemplate);
         } catch (Exception e) {
             log.error("打印数据处理失败------------ ");
             log.error("处理方法类型：" + obj.getListenerType().toString());

@@ -1741,7 +1741,7 @@ label_main:
         childdishtype,
         ispot)
 
-          VALUES (v_printdishid, i_printobjid, v_dishname, v_dishnum, v_orderprice, 0, 0, v_sperequire, v_tableno, v_dishunit, v_printaddress, v_printport, '0', v_dishid, IFNULL(v_printtype, 2), v_relatedishid, v_orderseq, v_dishtype, v_printer, v_ordertype, v_parentkey, v_superkey, v_ismaster, v_primarykey, v_printtype, v_isadddish, v_childdishtype, v_ispot);
+          VALUES (v_printdishid, i_printobjid, v_dishname, v_dishnum, v_orderprice, 0, 0, v_sperequire, v_tableno, v_dishunit, v_printaddress, v_pricetype, '0', v_dishid, IFNULL(v_printtype, 2), v_relatedishid, v_orderseq, v_dishtype, v_printer, v_ordertype, v_parentkey, v_superkey, v_ismaster, v_primarykey, v_printtype, v_isadddish, v_childdishtype, v_ispot);
 
 
         SET v_dishname = NULL;

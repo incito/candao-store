@@ -1,7 +1,9 @@
 package com.candao.print.listener;
 
+import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
+import com.candao.print.listener.template.ListenerTemplate;
 
 /**
  * Created by Administrator on 2016-6-13.
@@ -9,15 +11,15 @@ import com.candao.print.entity.PrintObj;
 public abstract class AbstractQueueListener implements QueueListener{
 
 
-    protected PrintData prepareData(PrintObj obj,PrintData data) throws Exception {
+    protected PrintData prepareData(PrintObj obj,PrintData data,ListenerTemplate template) throws Exception {
     	if (data == null) {
 			data = new PrintData();
 		}
 //        data.write(new byte[27]);
 //        data.write(new byte[27]);
         data.flush();//
-
-        printBusinessData(obj,data,data);
+        
+        printBusinessData(obj,data,data,template);
 
         // 下面指令为打印完成后自动走纸
 //        data.write(new byte[27]);
@@ -30,5 +32,14 @@ public abstract class AbstractQueueListener implements QueueListener{
         return data;
     }
 
-    protected abstract void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer) throws Exception;
+    protected abstract void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template) throws Exception;
+    
+    public void write(PrintData writer,Object[] msg){
+		if (msg != null && msg.length != 0) {
+			for (int i = 0; i < msg.length; i++) {
+				writer.write(msg[i].toString());
+				writer.write("\r\n");
+			}
+		}
+	}
 }

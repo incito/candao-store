@@ -70,6 +70,8 @@ public class PrintObj implements Serializable,Cloneable {
     private String ipAddress;
     
     private String printName;
+    
+    private String printerid;
 	
 	
 	public String getPrintName() {
@@ -295,4 +297,12 @@ public class PrintObj implements Serializable,Cloneable {
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
+
+	public String getPrinterid() {
+		return printerid;
+	}
+
+	public void setPrinterid(String printerid) {
+		this.printerid = printerid;
+	}
 }

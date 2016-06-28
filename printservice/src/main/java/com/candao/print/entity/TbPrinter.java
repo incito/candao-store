@@ -20,7 +20,7 @@ public class TbPrinter {
 	private Integer status;
 	private  Integer printNum;
 	private String areaid;
-
+	private String fontSize;
 	
 	
 	public String getAreaid() {
@@ -104,5 +104,11 @@ public class TbPrinter {
        	sb.append('}');
         return sb.toString();
     }
+	public String getFontSize() {
+		return fontSize;
+	}
+	public void setFontSize(String fontSize) {
+		this.fontSize = fontSize;
+	}
 	
 }

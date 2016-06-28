@@ -1,9 +1,14 @@
 package com.candao.www.printer.listener;
 
+import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.dao.TbPrinterManagerDao;
+import com.candao.print.entity.TbPrinter;
+import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.printer.v2.PrinterManager;
 
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -20,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by caicai on 2016-6-12.
@@ -46,8 +53,21 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private Runnable callback;
 	
 	private List<String> ipPool;
+	//监听模板对应字体
+	private Map<String, Map<String, Object>> listenerTemplate = new ConcurrentHashMap<>();
+	//标准板式
+	private static final Integer STANDARD = 1;
+	//大字体
+	private static final Integer LARGE = 3;
+	//小字体
+	private static final Integer SMALL = 2;
+	
+	private Log log = LogFactory.getLog(PrinterListenerManager.class.getName());
 
+	private static ReadWriteLock lock = new ReentrantReadWriteLock();
+	
 	public PrinterListenerManager() {
+
 	}
 
 	public String getMessageListeners() {
@@ -103,6 +123,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 		synchronized (activeMonitor) {
 			createListeners();
 //			createConnections();
+			createListenerTemplate();
 			callback = null;
 			running = true;
 		}
@@ -222,4 +243,58 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			this.stopListener(listener);
 		}
 	}
+	
+	private void createListenerTemplate(){
+		//TODO
+		List<Map<String, Object>> printers = tbPrinterManagerDao.find(null);
+		if (printers != null && !printers.isEmpty()) {
+			for (Map<String, Object> it : printers) {
+				listenerTemplate.put((String) it.get("printerid"), it);
+			}
+		}
+	}
+	
+	public void updateListenerTemplate() {
+		try{
+			lock.writeLock().lock();
+			
+			listenerTemplate.clear();
+			createListenerTemplate();			
+		} catch (Exception e){
+			e.printStackTrace();
+			log.error("更新监听失败", e);
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * 根据监听类型找到对应的模板
+	 * @param listenerType
+	 * @return
+	 */
+	public ListenerTemplate getListenerTemplate(String printerid, ListenerType listenerType) {
+		try {
+			lock.readLock().lock();
+
+			if (!this.listenerTemplate.containsKey(printerid)) {
+				log.error("------------  找不到打印模板！" + printerid);
+				return null;
+			}
+			// 模板大小
+			Map printer = listenerTemplate.get(printerid);
+			String printerNo = (String) printer.get("printerNo");
+			// 默认使用默认字体 1标准 2小 3大
+			Integer type = Integer.valueOf(printerNo == null || "".equals(printerNo)
+					? PrinterListenerManager.STANDARD.toString() : printerNo.trim());
+			return ListenerTemplateFactory.getTemplate(listenerType, type);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("------------ 获取模板失败", e);
+			return null;
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+	
 }

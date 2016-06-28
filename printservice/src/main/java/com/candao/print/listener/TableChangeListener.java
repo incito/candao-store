@@ -6,6 +6,7 @@ import com.candao.common.utils.StringUtils;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
+import com.candao.print.listener.template.ListenerTemplate;
 
 @Service
 public class TableChangeListener extends AbstractQueueListener{
@@ -21,7 +22,7 @@ public class TableChangeListener extends AbstractQueueListener{
 	}
 
 	@Override
-	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer) throws Exception {
+	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template) throws Exception {
 		System.out.println("TableChangeListener receive message");
 
 		String billName = object.getBillName();
@@ -86,8 +87,8 @@ public class TableChangeListener extends AbstractQueueListener{
 
 	}
 	
-	public PrintData receiveMessage(PrintObj object) throws Exception {
-		return prepareData(object,new PrintData());
+	public PrintData receiveMessage(PrintObj object,ListenerTemplate template) throws Exception {
+		return prepareData(object,new PrintData(),template);
 	}
 
 }

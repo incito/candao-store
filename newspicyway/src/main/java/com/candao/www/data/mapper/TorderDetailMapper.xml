@@ -591,7 +591,7 @@
 	</select>
 	<select id="findOrderDetailPad" parameterType="map" resultMap="findResultMap">
 	select t.orderprice,t.dishunit,t.primarykey,t.dishid,d.title dishname,t.userName,t.orderid,t.orderseq,
-	t.dishtype,t.ispot,t.dishnum,t.sperequire,t.dishstatus,t.islatecooke
+	t.dishtype,t.ispot,t.dishnum,t.sperequire,t.dishstatus,t.islatecooke, t.pricetype
 	from t_order_detail t LEFT JOIN t_dish d on t.dishid=d.dishid 
     <where>
 		<if test="orderid != null and orderid != ''">

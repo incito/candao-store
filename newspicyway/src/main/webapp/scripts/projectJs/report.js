@@ -1251,7 +1251,7 @@ function initFreeTb(result, isFirst){
 		$.each(result, function(i, item) {
 			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title
 				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter
-				+ '</td><td>' + item.accreditWaiter + '</td><td>'
+				+ '</td><td>' + item.accreditWaiter + '</td><td onclick="showReckon(\''+item.orderid+'\')">'
 				+ item.presentReason
 				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
 				+ '</td></tr>';
@@ -1363,7 +1363,7 @@ function initReturnTb(result, isFirst){
 		$.each(result, function(i, item) {
 			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title 
 				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter 
-			    + '</td><td>' + item.discardusername + '</td><td>' 
+			    + '</td><td >' + item.discardusername + '</td><td onclick="showReckon(\''+item.orderid+'\')">'
 			    + item.discardreason 
 			    + '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
 			    + '</td></tr>';
