@@ -390,6 +390,7 @@
 			and tp.status =#{status}
 			and tp.printertype = #{printertype}
 			and tt.tableid = #{tableid}
+			and tpa.tableid=#{tableid}
 	</select>
 	<!--此方法是称重单专用，别修改  -->
     <select id ="findPrintByType" parameterType="map" resultType="com.candao.print.entity.TbPrinterManager">

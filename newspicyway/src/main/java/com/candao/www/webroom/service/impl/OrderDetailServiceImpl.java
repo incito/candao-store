@@ -174,7 +174,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
 				 sperequire.append(t.getFreeauthorize());
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-				 sperequire.append(t.getFreeauthorize());
+				 sperequire.append(t.getFreereason());
 				 t.setSperequire(sperequire.toString());
 				 
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/

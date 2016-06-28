@@ -17,7 +17,7 @@ public enum SystemConstant{
 	BIZPERIODDATE("BIZPERIODDATE","营业时间"),
 	PASSWORD("PASSWORD","通用密码"),
 	DISHES("DISHES","餐具设置"),
-	SPECIAL("SPECIAL","忌口分类"),
+	JI_KOU_SPECIAL("JI_KOU_SPECIAL","忌口分类"),
 	RETURNDISH("RETURNDISH","退菜设置"),
     UNIT("UNIT","计量单位"),
 	CALLTYPE("CALLTYPE","呼叫服务员类型"),
