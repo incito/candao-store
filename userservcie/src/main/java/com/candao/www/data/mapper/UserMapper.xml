@@ -327,6 +327,7 @@
      	AND (
      		bu.account = #{loginName} OR bu.email = #{loginName} OR bu.mobile = #{loginName} or bu.name =#{loginName}
      	)
+     	AND bu.status = '01'
     </where>
   </select>
   
