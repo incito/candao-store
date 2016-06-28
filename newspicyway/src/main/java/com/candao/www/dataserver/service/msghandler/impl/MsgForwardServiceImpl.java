@@ -62,7 +62,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
          /*   SyncMsg syncMsg = new SyncMsg(msgType, msg);
             msgProcessMapper.saveTSyncMsg(syncMsg);
             MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);*/
-            new TsThread(Constant.TS_URL+msgType + "/" + msg).start();
+            new TsThread(Constant.TS_URL+msgType + "/" + msg).run();
 //            int msgId = (int) System.currentTimeMillis();
 //            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
 //            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
