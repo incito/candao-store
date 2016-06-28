@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.candao.print.entity.PrintData;
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.log.LoggerFactory;
@@ -42,7 +41,6 @@ public class NormalDishListener extends AbstractQueueListener {
 			writer.write( StringUtils.bSubstring2(billName, billName.length()) + "\r\n");
 		}
 		// 档口名称
-//		writer.write(StringUtils.bSubstring2("(" + object.getPrintName() + ")", 6) + "\r\n");
 		Object[] portName = template.getPrinterPortMsg(object);
 		this.write(writer, portName);
 
@@ -86,7 +84,6 @@ public class NormalDishListener extends AbstractQueueListener {
 		// -----------------------------分割区------------------------------------
 		writer.write("------------------------------------------\r\n");
 		writer.flush();//
-//		socketOut.write(PrinterConstant.getFdDoubleFont());
 		socketOut.write(template.getBodyFont());
 
 		// 处理送菜的问题 [2-3] 表示从2桌子送菜到3号桌子 ，在桌号前加送字
@@ -136,7 +133,6 @@ public class NormalDishListener extends AbstractQueueListener {
 		}
 
 		writer.flush();//
-//		socketOut.write(PrinterConstant.getClear_font());
 		socketOut.write(template.setClearfont());
 		writer.write("------------------------------------------\r\n");
 
@@ -146,7 +142,6 @@ public class NormalDishListener extends AbstractQueueListener {
 		logger.error("------------------------", "");
 		logger.error("打印菜品，订单号：" + object.getOrderNo() + "*菜品数量："
 				+ (object.getpDish() == null ? 0 : object.getpDish().size()), "");
-		// socketOut.write(PrinterConstant.getDoubleFont());
 		socketOut.write(template.getBodyFont());
 		
 		for (PrintDish it : object.getpDish()) {
@@ -154,7 +149,6 @@ public class NormalDishListener extends AbstractQueueListener {
 			it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
 		}
 
-//		Object[] text = getPrintText(object, 24, 7, 8);
 		
 		Object[] text = template.getBodyMsg(object);
 
@@ -163,11 +157,9 @@ public class NormalDishListener extends AbstractQueueListener {
 		}
 		writer.flush();
 
-//		socketOut.write(PrinterConstant.getClear_font());
 		socketOut.write(template.setClearfont());
 		writer.write("------------------------------------------\r\n");
 		writer.flush();//
-//		socketOut.write(PrinterConstant.getClear_font());
 		
 		//时间，张数等信息
 		socketOut.write(template.getBodyFont());
@@ -182,17 +174,6 @@ public class NormalDishListener extends AbstractQueueListener {
 		writer.write("------------------------------------------\r\n");
 		writer.flush();
 		
-//		writer.write(StringUtils.bSubstring2((printDish.getAbbrname() == null ? "　" : printDish.getAbbrname()), 4));
-//		writer.write(StringUtils
-//				.bSubstring3(String.valueOf(object.getOrderseq() == 0 ? "　" : "第" + object.getOrderseq() + "张"), 7));
-//		
-//		writer.write(
-//				StringUtils.bSubstring2(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()), 8)
-//				+ "\r\n");
-//		
-//		writer.write("------------------------------------------\r\n");
-//		writer.flush();//
-
 		// 菜品套餐信息
 		String parentDishName = "";
 		List<String> buffer = new LinkedList<>();
@@ -210,53 +191,17 @@ public class NormalDishListener extends AbstractQueueListener {
 			}
 		}
 
-		// //合并打印的忌口处理
-		// boolean isSame = true; //判断所有菜品的备注信息是否一样
-		// String preSperequire = object.getpDish().get(0).getSperequire();
-		// for (PrintDish singleDish : object.getpDish()) {
-		// if(preSperequire != singleDish.getSperequire() && (preSperequire !=
-		// null && !preSperequire.equals(singleDish.getSperequire()))){
-		// isSame = false;
-		// break;
-		// }
-		// }
 		// 全单备注
 		String totalSpecial = object.getpDish().get(0).getGlobalsperequire();
 		List<String> bufferList = new ArrayList<>();
 		if (totalSpecial != null && !totalSpecial.isEmpty()) {
 			bufferList.add(totalSpecial);
 		}
-		// //非全单备注
-		// if(!isSame){
-		// special = "";
-		// bufferList.clear();
-		// for (PrintDish singleDish : object.getpDish()) {
-		// if(singleDish.getSperequire() != null &&
-		// !singleDish.getSperequire().isEmpty()){
-		// bufferList.add(singleDish.getDishName() + "：" +
-		// singleDish.getSperequire());
-		// }
-		// }
-		// }
-
-		// if (special == null || "null".equals(special)) {
-		// special = "";
-		// }
-		// if(!special.isEmpty() && isSame && object.getpDish().size() >
-		// 1){//合并打印时全单备注特殊处理
-		// bufferList.clear();
-		// bufferList.add(special);
-		// }
-		// 只显示出时分秒
-		// writer.write(StringUtils.bSubstring3(String.valueOf(Integer.toString(printDishList.get(0)
-		// .getMaxDishCount())), 8));
-//		socketOut.write(PrinterConstant.getFd8Font());
 		socketOut.write(template.getBodyFont());
 		// 填写菜品套餐信息
 		if (parentDishName != null && !"".equals(parentDishName)) {
 			// 套餐备注换行
 			String[] dishName = { parentDishName };
-//			Integer[] dishLength = { 38 };
 			Integer[] dishLength = template.getNoteLength();
 			String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
 			parentDishNameLineFeed[0] = "全单备注：" + parentDishNameLineFeed[0];
@@ -274,7 +219,6 @@ public class NormalDishListener extends AbstractQueueListener {
 		if (bufferList != null && !bufferList.isEmpty()) {
 			for (String it : bufferList) {
 				String[] specialName = { it };
-//				Integer[] specialLength = { 38 };
 				Integer[] specialLength = template.getNoteLength();
 				String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
 				for (int j = 0; j < specialLineFeed.length; j++) {
@@ -282,46 +226,6 @@ public class NormalDishListener extends AbstractQueueListener {
 				}
 			}
 		}
-	}
-	
-	private void write(PrintData writer,Object[] msg){
-		if (msg != null && msg.length != 0) {
-			for (int i = 0; i < msg.length; i++) {
-				writer.write(msg[i].toString());
-				writer.write("\r\n");
-			}
-		}
-	}
-	
-	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
-		Object[] res = null;
-		
-		List<PrintDish> list = object.getpDish();
-
-		for (PrintDish it : list) {
-			// 校验名称
-			String dishName = it.getDishName() == null ? "" : it.getDishName();
-			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
-			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
-			String taste = it.getTaste() != null && !it.getTaste().isEmpty()? "(" + it.getTaste().trim()+")":"";
-			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()? "(" + it.getSperequire().trim()+")":"";
-			dishName += taste+Sperequire;
-			logger.error("------------------------","");
-			logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + it.getDishName(),"");
-			
-			if (2 == it.getDishtype()) {
-				dishName = "（套）"+dishName;
-			}
-
-			String[] name = { dishName, dishNum, dishUnit };
-			Integer[] len = { num1, num2, num3 };
-
-			String[] temp = StringUtils.getLineFeedText(name, len);
-
-			res = ArrayUtils.addAll(res, temp);
-		}
-
-		return res;
 	}
 
 }

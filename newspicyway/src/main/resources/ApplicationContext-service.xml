@@ -8,6 +8,9 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
        default-init-method="init" default-destroy-method="cleanUp">
+    <!--重写HandlerMapping，处理dataserver中URL路劲参数为空格和类似'////'的问题-->
+    <bean class="com.candao.www.dataserver.util.MyHandlerMapping">
+    </bean>
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.candao.www.dataserver.mapper"/>
         <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>

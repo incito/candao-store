@@ -2,6 +2,7 @@ package com.candao.www.dataserver.service.msghandler.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.communication.factory.LockFactory;
+import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.constants.MsgType;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
@@ -20,6 +21,7 @@ import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.PropertyUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
+import com.candao.www.utils.TsThread;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,15 +62,16 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
          /*   SyncMsg syncMsg = new SyncMsg(msgType, msg);
             msgProcessMapper.saveTSyncMsg(syncMsg);
             MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);*/
-            int msgId = (int) System.currentTimeMillis();
-            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
-            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
-            if (MsgType.MSG_1002.getValue().equals(msgType)) {
-                String tableNo = businessService.getTableNoByOrderId(msg);
-                if (StringUtils.isNotBlank(tableNo)) {
-                    dishService.deletePosOperation(tableNo);
-                }
-            }
+            new TsThread(Constant.TS_URL+msgType + "/" + msg).start();
+//            int msgId = (int) System.currentTimeMillis();
+//            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
+//            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
+//            if (MsgType.MSG_1002.getValue().equals(msgType)) {
+//                String tableNo = businessService.getTableNoByOrderId(msg);
+//                if (StringUtils.isNotBlank(tableNo)) {
+//                    dishService.deletePosOperation(tableNo);
+//                }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");

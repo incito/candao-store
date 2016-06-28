@@ -242,6 +242,8 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private void createListenerTemplate(){
 		//TODO
 		this.listenerTemplate.put(ListenerType.NormalListener, PrinterListenerManager.STANDARD);
+		this.listenerTemplate.put(ListenerType.MultiDishListener, PrinterListenerManager.STANDARD);
+		this.listenerTemplate.put(ListenerType.CustDishListener, PrinterListenerManager.STANDARD);
 	}
 	
 	/**
