@@ -376,7 +376,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public String getServerTableInfo(String tableNo, String userId) {
         ResponseData responseData = new ResponseData();
-        String orderId = tableMapper.getOrderIdByTableNo(tableNo);
+        String orderId = tableMapper.selectOrderIdOfStatusN5(tableNo);
         dishService.updateCj(orderId, userId);
         if (null == orderId || "".equals(orderId)) {
             responseData.setData("0");
@@ -389,6 +389,10 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public String getOrder(String tableNo, String userId) {
+        String orderIdExist = tableMapper.getOrderIdByTableNo(tableNo);
+        if(null==orderIdExist||orderIdExist.trim().isEmpty()){
+            return "{\"Data\":\"0\",\"Info\":\"餐桌不存在或已被删除。\"}";
+        }
         //获取单头信息
         String tableJson = getServerTableInfo2(tableNo, userId);
         //获取单体信息
