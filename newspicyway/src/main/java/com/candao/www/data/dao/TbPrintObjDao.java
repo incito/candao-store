@@ -64,4 +64,6 @@ public interface TbPrintObjDao {
 		
 		public int updateByOrderno(Map<String, Object> paramMap);
 
+		public <T, K, V> List<T> findDishBycolumn(Map<K, V> params);
+
 }

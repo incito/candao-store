@@ -739,6 +739,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  printObj.setCustomerPrinterPort(tPrinterManager.getPort());
 				  //added by caicai
 				  printObj.setPrintName(tPrinterManager.getPrintername());
+				  printObj.setPrinterid(tPrinterManager.getPrinterid());
 					
 				  new Thread(new PrintCustThread(printObj)).run();
 //				  executor.execute(new PrintCustThread(printObj));
@@ -931,6 +932,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					printObj.setpDish(pdList);
 					//added by caicai
 					printObj.setPrintName(tbPrinter.getPrintername());
+					printObj.setPrinterid(tbPrinter.getPrinterid());
 					
 					logger.error("------------------------,菜品数量"+pdList.size(),"");
 					for (PrintDish printDish : pdList) {
@@ -1085,6 +1087,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							  printObj.setCustomerPrinterPort((String)tbPrinter.get("port"));
 							  //added by caicai
 							  printObj.setPrintName((String) tbPrinter.get("printername"));
+							  printObj.setPrinterid((String)tbPrinter.get("printerid"));
 							  
 							  List<PrintDish> list  = new ArrayList<>();
 							  list.add(pdish);
@@ -1256,6 +1259,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 									  printObj.setCustomerPrinterPort(pm.getPort());
 									  //added by caicai
 									  printObj.setPrintName(pm.getPrintername());
+									  printObj.setPrinterid(pm.getPrinterid());
 									  
 									  new Thread(new PrintMutiThread(printObj)).run();
 									  

@@ -87,6 +87,16 @@
 								</select>
 							</div>
 						</div>
+						<div class="form-group" id="print-font">
+							<label class="col-xs-5 control-label"><span class="required-span">*</span>字体大小：</label>
+							<div class="col-xs-7">
+								<select class="form-control" id="fontSize" name="fontZise">
+									<option value="1">标准</option>
+									<option value="2">小字体</option>
+									<option value="3">大字体</option>
+								</select>
+							</div>
+						</div>
 						<!--已选择内容的样式-->
 					 	<div class="form-group" id="print-area">
 							<label class="col-xs-5 control-label "><span class="required-span">*</span>打印区域：</label>

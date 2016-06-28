@@ -348,9 +348,10 @@
 		  ,a.printtype
 		  ,a.dishId,a.relatedishid,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
 		 a.printnum,a.primarykey,a.parentkey,a.ispot,a.superkey
-		from t_printdish a ,t_dish b
-		where	  a.dishId = b.dishid
-				and  printobjid=#{printobjid}
+		from t_printdish a 
+		left join t_dish_dishtype b on a.dishid = b.dishid
+		where	 
+			printobjid=#{printobjid}
 			 
 		     <if test="dishid != null ">
 			  and 	a.dishid =#{dishid,jdbcType=VARCHAR}
@@ -386,6 +387,7 @@
 			 <if test="superkey != null ">
 			  and 	a.superkey  =#{superkey,jdbcType=VARCHAR}
 			</if>
+			group by a.printdishid
 			order by (b.columnid) asc
 	 </select>
 	 
