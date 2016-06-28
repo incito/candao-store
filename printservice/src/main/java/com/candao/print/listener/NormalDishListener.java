@@ -151,11 +151,7 @@ public class NormalDishListener extends AbstractQueueListener {
 		
 		Object[] tail = template.getTailMsg(object);
 		for (int i = 0; i < tail.length; i++) {
-			if (i == 0) {
-				writer.write(tail[i].toString());
-			} else {
-				writer.write("\r\n" + tail[i].toString());
-			}
+			writer.write(tail[i].toString() + "\r\n");
 		}
 		writer.flush();
 		
