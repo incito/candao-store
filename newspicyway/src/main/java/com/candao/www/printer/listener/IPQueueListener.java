@@ -39,7 +39,7 @@ public class IPQueueListener implements ApplicationContextAware{
             return;
         }
         
-        ListenerTemplate listenerTemplate = printerListenerManager.getListenerTemplate(listenerType);
+        ListenerTemplate listenerTemplate = printerListenerManager.getListenerTemplate(obj.getPrinterid(), listenerType);
         PrintData data = null;
         try {
            data = dst.receiveMessage(obj,listenerTemplate);

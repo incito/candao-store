@@ -13,16 +13,19 @@ import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.listener.template.ListenerTemplate;
+import com.candao.print.listener.template.impl.SimpleNormalDishTemplateImpl.Template;
 
 public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 	
 	private Log logger = LogFactory.getLog(SimpleMultiDishTemplateImpl.class.getName());
 	//模板大小
 	private Integer type;
+	private Template template;
 
 	@Override
 	public void setType(Integer type) {
 		this.type = type;
+		this.template = new Template(type);
 	}
 
 	@Override
@@ -53,14 +56,28 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public byte[] getBodyFont() {
-		// TODO
-		return PrinterConstant.VerticalFont();
+		byte[] rs = null;
+		switch (type) {
+		case 1:
+			rs = PrinterConstant.VerticalFont();
+			break;
+		case 2:
+			rs = PrinterConstant.getClear_font();
+			break;
+		case 3:
+			rs = PrinterConstant.getFdDoubleFont();
+			break;
+		default:
+			rs = PrinterConstant.VerticalFont();
+			break;
+		}
+		return rs;
 	}
 
 	@Override
 	public String[] getTableMsg(PrintObj obj) throws Exception {
 		String[] tableName = { obj.getTableNo() };
-		Integer[] tableLength = { 36 };
+		Integer[] tableLength = { template.getTableLength() };
 		String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 		trim(table);
 		return table;
@@ -68,14 +85,14 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public Object[] getBodyMsg(PrintObj obj) throws Exception {
-		
-		return this.getPrintText(obj, 24, 7, 8);
+		Integer[] bodyLength = template.getBodyLength();
+		return this.getPrintText(obj, bodyLength[0], bodyLength[1], bodyLength[2]);
 	}
 
 	@Override
 	public Object[] getTailMsg(PrintObj obj) throws Exception {
 		String[] names = this.checkTealMsg(obj);
-		Integer[] lengths = {4,26,8};
+		Integer[] lengths = template.getTailLength();
 		String[] temp = StringUtils.getLineFeedText(names, lengths);
 		if (temp!= null && temp.length != 0) {
 			for (int i = 0; i < temp.length; i++) {
@@ -87,7 +104,7 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public Integer[] getNoteLength() {
-		return new Integer[]{38};
+		return new Integer[]{template.getNoteLength()};
 	}
 
 	@Override
@@ -115,36 +132,6 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 		return new String[]{abbrName,ordersq,timestamp};
 	}
 	
-//	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
-//		Object[] res = null;
-//		List<PrintDish> list = object.getpDish();
-//		
-//		for (PrintDish it : list) {
-//			// 校验名称
-//			String dishName = it.getDishName() == null ? "" : it.getDishName();
-//			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
-//			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
-//			String taste = it.getTaste() != null && !it.getTaste().isEmpty()? "(" + it.getTaste().trim()+")":"";
-//			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()? "(" + it.getSperequire().trim()+")":"";
-//			dishName += taste+Sperequire;
-//			logger.error("------------------------");
-//			logger.error("订单号："+object.getOrderNo()+"*打印菜品：" + it.getDishName());
-//			
-//			if (2 == it.getDishtype()) {
-//				dishName = "（套）"+dishName;
-//			}
-//			
-//			String[] name = { dishName, dishNum, dishUnit };
-//			Integer[] len = { num1, num2, num3 };
-//			
-//			String[] temp = StringUtils.getLineFeedText(name, len);
-//			
-//			res = ArrayUtils.addAll(res, temp);
-//		}
-//		
-//		return res;
-//	}
-	
 	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
 		Object[] res = null;
 		
@@ -170,4 +157,52 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 		return res;
 	}
 
+	class Template{
+		private int tableLength;
+		private int noteLength;
+		private Integer[] bodyLength;
+		private Integer[] tailLength;
+		
+		public Template(int size) {
+			switch (size) {
+			case 1:
+				this.tableLength = 36;
+				this.noteLength = 38;
+				this.bodyLength = new Integer[]{24,7,8};
+				this.tailLength = new Integer[]{4,26,8};
+				break;
+			case 2:
+				this.tableLength = 36;
+				this.noteLength = 38;
+				this.bodyLength = new Integer[]{24,7,8};
+				this.tailLength = new Integer[]{4,26,8};
+				break;
+			case 3:
+				this.tableLength = 18;
+				this.noteLength = 19;
+				this.bodyLength = new Integer[]{11,3,3};
+				this.tailLength = new Integer[]{4,7,8};
+				break;
+			default:
+				break;
+			}
+		}
+		
+		public Integer getTableLength(){
+			return this.tableLength;
+		}
+		
+		public Integer getNoteLength(){
+			return this.noteLength;
+		}
+		
+		public Integer[] getBodyLength(){
+			return this.bodyLength;
+		}
+		
+		public Integer[] getTailLength(){
+			return this.tailLength;
+		}
+		
+	}
 }

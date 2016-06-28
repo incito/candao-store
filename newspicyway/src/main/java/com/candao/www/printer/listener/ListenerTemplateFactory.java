@@ -22,13 +22,14 @@ public class ListenerTemplateFactory {
 //	private Class<?> tClass;
 
 	public synchronized static ListenerTemplate getTemplate(ListenerType listenerType , Integer type){
-		String templateKey = listenerType.toString().trim().concat(SIMPLESUFFIX);
+		String beanName = listenerType.toString().trim().concat(SIMPLESUFFIX);
+		String templateKey = beanName.concat(type.toString());
 		ListenerTemplate template = null;
 		if (!cacheTemplatePool.containsKey(templateKey)){
 //			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 //			this.tClass = classLoader.loadClass(templateKey);
 			try {
-				template = (ListenerTemplate) SpringContext.getBean(templateKey);				
+				template = (ListenerTemplate) SpringContext.getBean(beanName);				
 			} catch (BeansException e) {
 				e.printStackTrace();
 				log.error("找不到实现类", e);

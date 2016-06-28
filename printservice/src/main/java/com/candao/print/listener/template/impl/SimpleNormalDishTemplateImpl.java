@@ -17,12 +17,15 @@ import com.candao.print.listener.template.ListenerTemplate;
 public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 	
 	private Log logger = LogFactory.getLog(SimpleNormalDishTemplateImpl.class.getName());
+	
+	private Template template;
 	//模板大小
 	private Integer type;
 
 	@Override
 	public void setType(Integer type) {
 		this.type = type;
+		template = new Template(type);
 	}
 
 	@Override
@@ -53,14 +56,28 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public byte[] getBodyFont() {
-		// TODO
-		return PrinterConstant.VerticalFont();
+		byte[] rs = null;
+		switch (type) {
+		case 1:
+			rs = PrinterConstant.VerticalFont();
+			break;
+		case 2:
+			rs = PrinterConstant.getClear_font();
+			break;	
+		case 3:
+			rs = PrinterConstant.getFdDoubleFont();
+			break;
+		default:
+			rs = PrinterConstant.VerticalFont();
+			break;
+		}
+		return rs;
 	}
 
 	@Override
 	public String[] getTableMsg(PrintObj obj) throws Exception {
 		String[] tableName = { obj.getTableNo() };
-		Integer[] tableLength = { 36 };
+		Integer[] tableLength = { template.getTableLength() };
 		String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 		trim(table);
 		return table;
@@ -68,14 +85,14 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public Object[] getBodyMsg(PrintObj obj) throws Exception {
-		
-		return this.getPrintText(obj, 24, 7, 8);
+		Integer[] bodyLength = template.getBodyLength();
+		return this.getPrintText(obj, bodyLength[0], bodyLength[1], bodyLength[2]);
 	}
 
 	@Override
 	public Object[] getTailMsg(PrintObj obj) throws Exception {
 		String[] names = this.checkTealMsg(obj);
-		Integer[] lengths = {4,26,8};
+		Integer[] lengths = template.getTailLength();
 		String[] temp = StringUtils.getLineFeedText(names, lengths);
 		if (temp!= null && temp.length != 0) {
 			for (int i = 0; i < temp.length; i++) {
@@ -87,7 +104,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public Integer[] getNoteLength() {
-		return new Integer[]{38};
+		return new Integer[]{template.getNoteLength()};
 	}
 
 	@Override
@@ -143,6 +160,57 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 		}
 		
 		return res;
+	}
+	
+	class Template{
+		private int tableLength;
+		private int noteLength;
+		private Integer[] bodyLength;
+		private Integer[] tailLength;
+//		private int NoteLength;
+//		private int NoteLength;
+		
+		public Template(int size) {
+			switch (size) {
+			case 1:
+				this.tableLength = 36;
+				this.noteLength = 38;
+				this.bodyLength = new Integer[]{24,7,8};
+				this.tailLength = new Integer[]{4,26,8};
+				break;
+			case 2:
+				this.tableLength = 36;
+				this.noteLength = 38;
+				this.bodyLength = new Integer[]{24,7,8};
+				this.tailLength = new Integer[]{4,26,8};
+				break;
+			case 3:
+				this.tableLength = 18;
+				this.noteLength = 19;
+				this.bodyLength = new Integer[]{11,3,3};
+				this.tailLength = new Integer[]{4,7,8};
+				break;
+			default:
+				break;
+			}
+		}
+		
+		public Integer getTableLength(){
+			return this.tableLength;
+		}
+		
+		public Integer getNoteLength(){
+			return this.noteLength;
+		}
+		
+		public Integer[] getBodyLength(){
+			return this.bodyLength;
+		}
+		
+		public Integer[] getTailLength(){
+			return this.tailLength;
+		}
+		
 	}
 
 }

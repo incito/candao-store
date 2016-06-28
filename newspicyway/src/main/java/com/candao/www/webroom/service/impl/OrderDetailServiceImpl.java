@@ -174,7 +174,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
 				 sperequire.append(t.getFreeauthorize());
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-				 sperequire.append(t.getFreeauthorize());
+				 sperequire.append(t.getFreereason());
 				 t.setSperequire(sperequire.toString());
 				 
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
@@ -291,7 +291,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	     */
  @Override 
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class) 
- public Map<String, Object> setOrderDetailList(Order orders,ToperationLog toperationLog) {
+ public synchronized Map<String, Object> setOrderDetailList(Order orders,ToperationLog toperationLog) {
 	 	
 	  DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 	  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
@@ -739,6 +739,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  printObj.setCustomerPrinterPort(tPrinterManager.getPort());
 				  //added by caicai
 				  printObj.setPrintName(tPrinterManager.getPrintername());
+				  printObj.setPrinterid(tPrinterManager.getPrinterid());
 					
 				  new Thread(new PrintCustThread(printObj)).run();
 //				  executor.execute(new PrintCustThread(printObj));
@@ -931,6 +932,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					printObj.setpDish(pdList);
 					//added by caicai
 					printObj.setPrintName(tbPrinter.getPrintername());
+					printObj.setPrinterid(tbPrinter.getPrinterid());
 					
 					logger.error("------------------------,菜品数量"+pdList.size(),"");
 					for (PrintDish printDish : pdList) {
@@ -1085,6 +1087,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							  printObj.setCustomerPrinterPort((String)tbPrinter.get("port"));
 							  //added by caicai
 							  printObj.setPrintName((String) tbPrinter.get("printername"));
+							  printObj.setPrinterid((String)tbPrinter.get("printerid"));
 							  
 							  List<PrintDish> list  = new ArrayList<>();
 							  list.add(pdish);
@@ -1256,6 +1259,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 									  printObj.setCustomerPrinterPort(pm.getPort());
 									  //added by caicai
 									  printObj.setPrintName(pm.getPrintername());
+									  printObj.setPrinterid(pm.getPrinterid());
 									  
 									  new Thread(new PrintMutiThread(printObj)).run();
 									  

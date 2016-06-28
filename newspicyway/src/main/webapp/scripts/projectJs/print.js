@@ -801,6 +801,9 @@ function editPrintBox(e){
 			printerBillChange(result.printertype);
 			$("#ipAddress").val(result.ipaddress);
 			$("#port").val(result.port);
+			//使用printerNo标记字体大小
+			var fontSize = result.printerNo;
+			$("#fontSize").val(fontSize == null || fontSize == "" ? 1 : fontSize);
 			if($("#print-bill").val()==1||$("#print-bill").val()==2){
 			$.each( result.areaslistTag, function(i,item){
 				areaidListStatus0.push(item.areaid);
@@ -847,6 +850,15 @@ function editPrintBox(e){
 				});
 				showAllSelectStoreDivGroup();
 			}
+			$("#printArea-add-dialog input[type='checkbox']").each(function(){
+				var me = $(this);
+				if(me.prop("checked") === true) {
+					me.prop({"checked":false})
+				}
+			});
+			$.each(findTableids, function(key,obj) {
+				$("#table_"+obj).click();
+			});
 			if(!jQuery.isEmptyObject(findTableids)){
 //				$("#print-area-add").html(getAreaslistTag.join(","));
 				$("#print-area-add").text("已选中"+findTableids.length + "个餐台");
@@ -880,7 +892,8 @@ function clickFormAddPrintConfig(){
 			printername:$("#printConfig-name").val(),
 			printertype:$("#print-bill").val(),
 			ipaddress:$("#ipAddress").val(),
-			port:$("#port").val()
+			port:$("#port").val(),
+			printerNo:$("#fontSize").val()
 		},
 		
 		success : function(result) {
@@ -1096,6 +1109,7 @@ function initPrinter(){
 	$("#printConfig-name").val("");
 	$("#ipAddress").val("");
 	$("#port").val("");
+	$("#fontSize").val("1");
 	$("#printConfig-name").removeClass("error");
 	$("#ipAddress").removeClass("error");
 	$("#port").removeClass("error");
@@ -1151,15 +1165,18 @@ function deletePrinter(){
 function printerBillChange(text){
 	
 	if(text =='1'){
+		$("#print-font").removeClass("hidden");
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").removeClass("hidden");
 		$("#print-groupdishes").removeClass("hidden");
 	}else if(text ==='2')
 	{
+		$("#print-font").removeClass("hidden");
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
 	}else{
+		$("#print-font").addClass("hidden");
 		$("#print-area").addClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
