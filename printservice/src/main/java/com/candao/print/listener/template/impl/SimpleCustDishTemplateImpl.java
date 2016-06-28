@@ -188,7 +188,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 			case 3:
 				this.tableLength = 18;
 				this.noteLength = 19;
-				this.bodyLength = new Integer[]{11,3,3};
+				this.bodyLength = new Integer[]{11,3,4};
 				this.tailLength = new Integer[]{4,7,8};
 				break;
 			default:
