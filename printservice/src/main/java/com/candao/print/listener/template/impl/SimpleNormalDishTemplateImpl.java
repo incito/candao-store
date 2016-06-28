@@ -176,19 +176,19 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 				this.tableLength = 36;
 				this.noteLength = 38;
 				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{4,26,8};
+				this.tailLength = new Integer[]{8,22,8};
 				break;
 			case 2:
 				this.tableLength = 36;
 				this.noteLength = 38;
 				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{4,26,8};
+				this.tailLength = new Integer[]{8,22,8};
 				break;
 			case 3:
 				this.tableLength = 18;
 				this.noteLength = 19;
-				this.bodyLength = new Integer[]{11,3,3};
-				this.tailLength = new Integer[]{4,7,8};
+				this.bodyLength = new Integer[]{11,3,4};
+				this.tailLength = new Integer[]{4,6,8};
 				break;
 			default:
 				break;

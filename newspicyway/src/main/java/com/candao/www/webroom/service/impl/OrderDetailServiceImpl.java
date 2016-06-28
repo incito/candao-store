@@ -419,6 +419,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							object.setUserName(printObj.getUserName());
 							object.setTableArea(printObj.getTableArea());
 							object.setTableNo(printObj.getTableNo());
+							object.setPrinterid(printer.getPrinterid());
+							object.setPrintName(printObj.getPrintName());
+							
 							List<PrintDish> printDishList = new ArrayList<>();
 							
 							Map<String, Object> fishMap = new HashMap<String, Object>();
@@ -660,7 +663,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 							IPList.add(tbPrinter.getIpaddress());
 						}
 						printObj.setCustomerPrinterIp(pm.getIpaddress());
-						printObj.setCustomerPrinterPort(pm.getPort());;
+						printObj.setCustomerPrinterPort(pm.getPort());
+						printObj.setPrinterid(pm.getPrinterid());
 						
 						new Thread(new PrintDishSetThread(printObj)).run();
 					}
@@ -692,7 +696,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			  map0.put("printobjid", printObj.getId());
 			  map0.put("printnum", 0);
 		  
-	          List<PrintDish> listall = tbPrintObjDao.findDish(map0);
+	          List<PrintDish> listall = tbPrintObjDao.findDishBycolumn(map0);
 //	          List<PrintDish> listall=new ArrayList<PrintDish>();
 //	          if(listPrint!=null&&listPrint.size()>0){
 //	        	  for(PrintDish printDish:listPrint){
@@ -960,6 +964,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 						printObj.setCustomerPrinterPort((String) tbPrinter.get("port"));
 						//added by caicai
 						printObj.setPrintName((String) tbPrinter.get("printername"));
+						printObj.setPrinterid((String) tbPrinter.get("printerid"));
 						
 						List<PrintDish> list = new ArrayList<>();
 						list.add(pd);
@@ -1002,10 +1007,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	 * @param pd
 	 */
 	private void formatDishNum(PrintDish pd) {
-//		String num = pd.getDishNum();
-//		if (!"".equals(num) && num.endsWith(".0")) {
-//			pd.setDishNum(num.substring(0, num.lastIndexOf(".")));
-//		}
+		String num = pd.getDishNum();
+		if (!"".equals(num) && num.endsWith(".0")) {
+			pd.setDishNum(num.substring(0, num.lastIndexOf(".")));
+		}
 	}
 
 	/**
@@ -1284,6 +1289,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 										  printObj.setCustomerPrinterPort((String)tbPrinterMap.get("port"));
 										  //added by caicai
 										  printObj.setPrintName((String)tbPrinterMap.get("printername"));
+										  printObj.setPrinterid((String)tbPrinterMap.get("printerid"));
 										  
 										  new Thread(new PrintMutiThread(printObj)).run();
 //										  executor.execute(new PrintMutiThread(printObj));
@@ -1682,6 +1688,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 					 if(ipaddress!=null){
 						  printObj.setCustomerPrinterIp(ipaddress.toString());
 						  printObj.setCustomerPrinterPort(port.toString());
+						  printObj.setPrinterid((String) tbPrinter.get("printerid"));
 					 }
 				  }
 			  }
@@ -1838,12 +1845,19 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	private void urgeAndCallDish(PrintObj printObj, Map<String, Object> map0,String flag) {
 		List<PrintDish>  pdList = tbPrintObjDao.findDishByPrimaryKey(map0);
 		 if(pdList != null){
-			 for(PrintDish pf : pdList){
-				  pf.setAbbrname(printObj.getAbbrbillName());
-				  if(!"".equals(pf.getDishNum())&&pf.getDishNum().endsWith(".0")){
-					  pf.setDishNum(pf.getDishNum().substring(0, pf.getDishNum().lastIndexOf(".")));
-				  }
-			  }
+			for (PrintDish pf : pdList) {
+				try {
+					pf.initData();
+				} catch (Exception e) {
+					log.error("------------------菜品解析失败！-------------");
+					log.error("菜品忌口信息解析失败！ :" + pf.getDishName(), e);
+					e.printStackTrace();
+				}
+				pf.setAbbrname(printObj.getAbbrbillName());
+				if (!"".equals(pf.getDishNum()) && pf.getDishNum().endsWith(".0")) {
+					pf.setDishNum(pf.getDishNum().substring(0, pf.getDishNum().lastIndexOf(".")));
+				}
+			}
 			 printObj.setList(pdList);
 			 printObj.setOrderseq(pdList.get(0).getOrderseq() );
 			 List<TbPrinterManager> printers = getPrinter(printObj.getTableid(),pdList.get(0).getDishId(),"1");
@@ -1851,6 +1865,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				for(TbPrinterManager printer : printers){
 					printObj.setCustomerPrinterIp(printer.getIpaddress());
 					printObj.setCustomerPrinterPort(printer.getPort());
+					printObj.setPrintName(printer.getPrintername());
+					printObj.setPrinterid(printer.getPrinterid());
 //					executor.execute(new PrintMutiThread(printObj));
 					new Thread(new PrintMutiThread(printObj)).run();
 //					executor.execute(new PrintMutiThread(printObj));
