@@ -1,7 +1,8 @@
 /**
- * 
+ *
  */
 package com.candao.www.webroom.controller;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,208 +31,251 @@ import com.candao.www.webroom.service.OtherCouponService;
 
 
 //*
+
 /**
  * 小费
- *  @author 
- *  @serialData 
+ *
+ * @author
+ * @serialData
  */
 @Controller
 @RequestMapping("/tip")
 //@RequestMapping("/printer2")
 public class TipController {
-  @Autowired
-  private com.candao.www.webroom.service.impl.TipService  tipService;
-  @Autowired
-	private ItemDetailService itemDetailService;
-  private LoggerHelper logger = LoggerFactory.getLogger(TipController.class);
-  /**
-	 * 小费设置
-	 * @param params
-	 * @return
-	 * @author lizongren
-	 */
-	@RequestMapping("/tipSet")
-	@ResponseBody
-	public ModelAndView TipSet(@RequestBody String json) {
-		logger.debug("start method saveAreaManager");
-		ModelAndView mav = new ModelAndView();
-		try {
-			Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
-			String branchid = PropertiesUtils.getValue("current_branch_id");
-			map.put("branchid", branchid);
+    @Autowired
+    private com.candao.www.webroom.service.impl.TipService tipService;
+    @Autowired
+    private ItemDetailService itemDetailService;
+    private LoggerHelper logger = LoggerFactory.getLogger(TipController.class);
+
+    /**
+     * 小费设置
+     *
+     * @param params
+     * @return
+     * @author lizongren
+     */
+    @RequestMapping("/tipSet")
+    @ResponseBody
+    public ModelAndView TipSet(@RequestBody String json) {
+        logger.debug("start method saveAreaManager");
+        ModelAndView mav = new ModelAndView();
+        try {
+            Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+            String branchid = PropertiesUtils.getValue("current_branch_id");
+            map.put("branchid", branchid);
 //			解决并台时订单号重复的问题
-			tipService.TipDelete(map);
-			tipService.TipSet(map);
-			mav.addObject("code","1");
-			mav.addObject("msg","操作成功!");
-		} catch (Exception e) {
-			mav.addObject("code","0");
-			mav.addObject("msg","操作失败!");
-			e.printStackTrace();
-		}
-		return mav;
-	}
-	
-	/**
-	 * 修改小费金额
-	 * @param params
-	 * @return
-	 * @author lizongren
-	 */
-	@RequestMapping("/tipUpdate")
-	@ResponseBody
-	public ModelAndView TipUpdate(@RequestBody String json) {
-		ModelAndView mav = new ModelAndView();
-		try {
-			Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
-			String branchid = PropertiesUtils.getValue("current_branch_id");
-			map.put("branchid", branchid);
-			String receivables = (String)map.get("receivables");
-			if((Integer.valueOf(receivables))>0){
-				tipService.TipUpdate(map);
-			}else{
-				tipService.TipDelete(map);
-			}
-			
-			mav.addObject("code","1");
-			mav.addObject("msg","修改成功!");
+            tipService.TipDelete(map);
+            tipService.TipSet(map);
+            mav.addObject("code", "1");
+            mav.addObject("msg", "操作成功!");
+        } catch (Exception e) {
+            mav.addObject("code", "0");
+            mav.addObject("msg", "操作失败!");
+            e.printStackTrace();
+        }
+        return mav;
+    }
+
+    /**
+     * 修改小费金额
+     *
+     * @param params
+     * @return
+     * @author lizongren
+     */
+    @RequestMapping("/tipUpdate")
+    @ResponseBody
+    public ModelAndView TipUpdate(@RequestBody String json) {
+        ModelAndView mav = new ModelAndView();
+        try {
+            Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+            String branchid = PropertiesUtils.getValue("current_branch_id");
+            map.put("branchid", branchid);
+            String receivables = (String) map.get("receivables");
+            if ((Integer.valueOf(receivables)) > 0) {
+                tipService.TipUpdate(map);
+            } else {
+                tipService.TipDelete(map);
+            }
+
+            mav.addObject("code", "1");
+            mav.addObject("msg", "修改成功!");
 //			mav.addObject("resultList",resultList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mav.addObject("code","0");
-			mav.addObject("msg","修改失败!");
-		}
-		return mav;
-	}
-	 
-	/**
-	 * 换pad拉取小费数据
-	 * @param params
-	 * @return
-	 * @author lizongren
-	 */
-	@RequestMapping("/tipLoadData")
-	@ResponseBody
-	public ModelAndView TipLoadData(@RequestBody String json) {
-		ModelAndView mav = new ModelAndView();
-		try {
-			Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
-			String branchid = PropertiesUtils.getValue("current_branch_id");
-			map.put("branchid", branchid);
-			
-			List<Map<String, Object>> result=tipService.TipLoadData(map);
-			if(result.size()>0){
-				
-				mav.addObject("data",result);
-			}else{
+        } catch (Exception e) {
+            e.printStackTrace();
+            mav.addObject("code", "0");
+            mav.addObject("msg", "修改失败!");
+        }
+        return mav;
+    }
+
+    /**
+     * 换pad拉取小费数据
+     *
+     * @param params
+     * @return
+     * @author lizongren
+     */
+    @RequestMapping("/tipLoadData")
+    @ResponseBody
+    public ModelAndView TipLoadData(@RequestBody String json) {
+        ModelAndView mav = new ModelAndView();
+        try {
+            Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+            String branchid = PropertiesUtils.getValue("current_branch_id");
+            map.put("branchid", branchid);
+
+            List<Map<String, Object>> result = tipService.TipLoadData(map);
+            if (result.size() > 0) {
+
+                mav.addObject("data", result);
+            } else {
 //				没有查询到小费记录的时候返回服务员姓名
-				 result=tipService.TipFindNamebyorderid(map);
-				 mav.addObject("data",result);
-			}
-			mav.addObject("code","1");
-			mav.addObject("msg","拉取成功!");
+                result = tipService.TipFindNamebyorderid(map);
+                mav.addObject("data", result);
+            }
+            mav.addObject("code", "1");
+            mav.addObject("msg", "拉取成功!");
 //			mav.addObject("resultList",resultList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mav.addObject("code","0");
-			mav.addObject("msg","拉取失败!");
-		}
-		return mav;
-	}
-	
-	/**
-	 * 小费结算
-	 * @param params
-	 * @return
-	 * @author lizongren
-	 */
-	@RequestMapping(value = "/tipBilling", method = RequestMethod.POST)
+        } catch (Exception e) {
+            e.printStackTrace();
+            mav.addObject("code", "0");
+            mav.addObject("msg", "拉取失败!");
+        }
+        return mav;
+    }
+
+    /**
+     * 小费结算
+     *
+     * @param params
+     * @return
+     * @author lizongren
+     */
+    @RequestMapping(value = "/tipBilling", method = RequestMethod.POST)
 //	@RequestMapping("/find")
-	@ResponseBody
-	public ModelAndView TipBilling(@RequestBody String json) {
-		ModelAndView mav = new ModelAndView();
+    @ResponseBody
+    public ModelAndView TipBilling(@RequestBody String json) {
+        ModelAndView mav = new ModelAndView();
 //		Map<String, Object> params = new HashMap<String, Object>();
-		try {
-			Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
-			String branchid = PropertiesUtils.getValue("current_branch_id");
-			map.put("branchid", branchid);
+        try {
+            Map<String, Object> map = JacksonJsonMapper.jsonToObject(json, Map.class);
+            String branchid = PropertiesUtils.getValue("current_branch_id");
+            map.put("branchid", branchid);
 //			map.put("orderid", orderid);
 //			map.put("paid", paid);
-			tipService.TipBilling(map);
-			mav.addObject("code","1");
-			mav.addObject("msg","结算成功!");
+            tipService.TipBilling(map);
+            mav.addObject("code", "1");
+            mav.addObject("msg", "结算成功!");
 //			mav.addObject("resultList",resultList);
-		} catch (Exception e) {
+        } catch (Exception e) {
 
-			mav.addObject("code","0");
-			mav.addObject("msg","结算失败!");
-		}
-		return mav;
-	}
-	
-	/**
-	 * 查询门店服务员小费list
-	 * @param params
-	 * @return
-	 * @author lizongren
-	 */
-	@RequestMapping("/tipList")
+            mav.addObject("code", "0");
+            mav.addObject("msg", "结算失败!");
+        }
+        return mav;
+    }
+
+    /**
+     * 查询门店服务员小费list
+     *
+     * @param params
+     * @return
+     * @author lizongren
+     */
+    @RequestMapping("/tipList")
 //	@RequestMapping("/find")
-	@ResponseBody
-	
-	public Map<String, Object> TipList(String flag){
-		Map<String, Object> timeMap = getTime(flag);
-		Map<String, Object> resultMap = new HashMap<>();
-		try {
-			List<Map<String, Object>> result = tipService.TipList(timeMap);
-			resultMap.put("result", 0);
-			resultMap.put("msg","获取数据成功");
-			resultMap.put("data",result);
-			resultMap.put("time", timeMap);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), "");
-			resultMap.put("result", 1);
-			resultMap.put("msg","获取数据失败");
-			resultMap.put("data","");
-			resultMap.put("time", timeMap);
-			e.printStackTrace();
-		}
-		return resultMap;
-	}
-	
-	/**
-	 * 获取开始结束时间
-	 * @param falg
-	 * @return
-	 */
-	private Map<String, Object> getTime(String falg){
-		Map<String, Object> map = new HashMap<>();
-		String startTime = null;
-		String endTime = null;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		endTime = df.format(new Date());
-		
-		if(falg.equals("1")){  //今日
-			startTime = DateUtils.today() + " 00:00:00";
-		}else if(falg.equals("2")){  //本周
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-			Calendar c = Calendar.getInstance();
-			int day = c.get(Calendar.DAY_OF_WEEK) - 1;
-			if (day == 0){
-				day = 7;
-			}
-			c.add(Calendar.DATE, -day + 1);
-			startTime = sdf.format(c.getTime());
-		}else if(falg.equals("3")){  //本月
-			startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
-		}else if(falg.equals("4")){   //上月
-			startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
-			endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";
-		}
-		map.put("startTime",startTime);
-		map.put("endTime", endTime);
-		return map;
-	}
+    @ResponseBody
+
+    public Map<String, Object> TipList(String flag) {
+        Map<String, Object> timeMap = getTime(flag);
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            List<Map<String, Object>> result = tipService.TipList(timeMap);
+            resultMap.put("result", 0);
+            resultMap.put("msg", "获取数据成功");
+            resultMap.put("data", result);
+            resultMap.put("time", timeMap);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), "");
+            resultMap.put("result", 1);
+            resultMap.put("msg", "获取数据失败");
+            resultMap.put("data", "");
+            resultMap.put("time", timeMap);
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
+    /**
+     * 查询门店服务员小费list
+     *
+     * @return
+     * @author lizongren
+     */
+    @RequestMapping("/tipListByTime")
+//	@RequestMapping("/find")
+    @ResponseBody
+
+    public Map<String, Object> TipListByTime(String beginTime, String endTime) {
+        Map<String, Object> timeMap = new HashMap<>();
+        timeMap.put("startTime", beginTime);
+        timeMap.put("endTime", endTime);
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            int tipMoney = 0;
+            Map<String, Object> result = tipService.TipListByTime(timeMap);
+            if (result != null && result.containsKey("tipMoney") && !"".equals(result.get("tipMoney"))) {
+                tipMoney = Integer.valueOf(result.get("tipMoney") + "");
+            }
+            resultMap.put("result", 0);
+            resultMap.put("msg", "获取数据成功");
+            resultMap.put("tipMoney", tipMoney);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), "");
+            resultMap.put("result", 1);
+            resultMap.put("msg", "获取数据失败");
+            resultMap.put("data", "");
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
+    /**
+     * 获取开始结束时间
+     *
+     * @param falg
+     * @return
+     */
+    private Map<String, Object> getTime(String falg) {
+        Map<String, Object> map = new HashMap<>();
+        String startTime = null;
+        String endTime = null;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        endTime = df.format(new Date());
+
+        if (falg.equals("1")) {  //今日
+            startTime = DateUtils.today() + " 00:00:00";
+        } else if (falg.equals("2")) {  //本周
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+            Calendar c = Calendar.getInstance();
+            int day = c.get(Calendar.DAY_OF_WEEK) - 1;
+            if (day == 0) {
+                day = 7;
+            }
+            c.add(Calendar.DATE, -day + 1);
+            startTime = sdf.format(c.getTime());
+        } else if (falg.equals("3")) {  //本月
+            startTime = DateUtils.monthOfFirstDay() + " 00:00:00";
+        } else if (falg.equals("4")) {   //上月
+            startTime = DateUtils.beforeMonthOfFirstDay() + " 00:00:00";
+            endTime = DateUtils.beforeMonthOfLastDay() + " 23:59:59";
+        }
+        map.put("startTime", startTime);
+        map.put("endTime", endTime);
+        return map;
+    }
 //	/**
 //	 * 结算
 //	 * @param params
@@ -287,5 +331,5 @@ public class TipController {
 //		
 //		regiterBillService.createMainExcel(request, response, list, params);
 //	}
-	
+
 }
