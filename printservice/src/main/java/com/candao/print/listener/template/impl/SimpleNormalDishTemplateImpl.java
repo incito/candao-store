@@ -165,6 +165,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 	class Template{
 		private int tableLength;
 		private int noteLength;
+		private int speTableLength;
 		private Integer[] bodyLength;
 		private Integer[] tailLength;
 //		private int NoteLength;
@@ -175,20 +176,23 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 			case 1:
 				this.tableLength = 36;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{8,22,8};
+				this.speTableLength = 40;
+				this.bodyLength = new Integer[]{25,8,8};
+				this.tailLength = new Integer[]{9,23,8};
 				break;
 			case 2:
 				this.tableLength = 36;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{8,22,8};
+				this.speTableLength = 40;
+				this.bodyLength = new Integer[]{25,8,8};
+				this.tailLength = new Integer[]{9,23,8};
 				break;
 			case 3:
 				this.tableLength = 18;
 				this.noteLength = 19;
-				this.bodyLength = new Integer[]{11,3,4};
-				this.tailLength = new Integer[]{4,6,8};
+				this.speTableLength = 20;
+				this.bodyLength = new Integer[]{12,5,4};
+				this.tailLength = new Integer[]{5,7,8};
 				break;
 			default:
 				break;
@@ -211,6 +215,35 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 			return this.tailLength;
 		}
 		
+		public Integer getSpeTableLength(){
+			return this.speTableLength;
+		}
+		
+	}
+
+	@Override
+	public String[] getSpecTableMsg(PrintObj obj) throws Exception {
+		PrintDish printDish = obj.getpDish().get(0);
+		String special = printDish.getSperequire();
+		String[] arraySpec = special.split(",");
+		String subMsg = "";
+		String subTableMsg = "桌号：";
+		for (String spec : arraySpec) {
+			if (!spec.contains("[")) {
+				continue;
+			} else {
+				subMsg = spec.substring(1, spec.length() - 1);
+				break;
+			}
+		}
+		String prefixMsg = " (" + subMsg.split("-")[0] + "台送)";
+		subMsg = subMsg.split("-")[1];
+
+		String[] tableName = { subTableMsg + subMsg + prefixMsg };
+		Integer[] tableLength = { template.getSpeTableLength() };
+		String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+		
+		return table;
 	}
 
 }

@@ -112,7 +112,7 @@ public class DishSetListener extends AbstractQueueListener {
 				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
 			}
 			
-			Object[] text = getPrintText(object, 24, 7, 8);
+			Object[] text = getPrintText(object, 25, 8, 8);
 
 			for (int i = 0; i < text.length; i++) {
 				writer.write(text[i].toString()+"\r\n");

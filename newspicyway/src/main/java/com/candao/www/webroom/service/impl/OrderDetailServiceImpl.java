@@ -695,18 +695,52 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	    	  Map<String, Object> map0 = new HashMap<String, Object>();
 			  map0.put("printobjid", printObj.getId());
 			  map0.put("printnum", 0);
-		  
-	          List<PrintDish> listall = tbPrintObjDao.findDishBycolumn(map0);
-//	          List<PrintDish> listall=new ArrayList<PrintDish>();
-//	          if(listPrint!=null&&listPrint.size()>0){
-//	        	  for(PrintDish printDish:listPrint){
-//	        		  //客用单不打印餐具
-//	        		  if(!"DISHES_98".equals(printDish.getDishId())){
-//	        			  listall.add(printDish);
-//	        		  }
-//	        	  }
-//	          }
-//			  Collections.sort(listPrint);
+			  map0.put("dishtype", 0);
+			  List<PrintDish> listall = new ArrayList<>();
+			  //单品
+	          List<PrintDish> sigleList = tbPrintObjDao.findDishBycolumn(map0);
+	          //餐具
+	          PrintDish dishes = null;
+	          if(sigleList!=null&&sigleList.size()>0){
+	        	  for(PrintDish printDish:sigleList){
+	        		  //客用单不打印餐具
+	        		  if(!"DISHES_98".equals(printDish.getDishId())){
+	        			  listall.add(printDish);
+	        		  } else {
+	        			  dishes = printDish;
+	        		  }
+	        	  }
+	          }
+	          //组合菜
+	          Map<String, Object> map1 = new HashMap<String, Object>();
+	          map1.put("printobjid", printObj.getId());
+	          map1.put("printnum", 0);
+	          map1.put("dishtype", 2);
+	  		 // 查询所有套餐
+	  		 List<PrintDish> temp = tbPrintObjDao.findDishGroupBySuperKey(map1);
+	  		for (PrintDish pd : temp) {
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("printobjid", printObj.getId());
+				params.put("superkey", pd.getSuperkey());
+				params.put("dishtype", "2");
+				List<PrintDish> dishsetlists = tbPrintObjDao.findDish(params);
+				listall.addAll(dishsetlists);
+	  		}
+	  		//鱼锅
+	  		map1.put("dishtype", 1);
+	  		List<PrintDish> temp1 = tbPrintObjDao.findDishGroupBySuperKey(map1);
+	  		for (PrintDish pd : temp1) {
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("printobjid", printObj.getId());
+				params.put("superkey", pd.getSuperkey());
+				params.put("dishtype", "1");
+				List<PrintDish> dishsetlists = tbPrintObjDao.findDish(params);
+				listall.addAll(dishsetlists);
+	  		}
+	  		 if (dishes != null) {
+				listall.add(dishes);
+			}
+	  		 
 	          if (listall != null && !listall.isEmpty()) {
 	  			for (PrintDish it : listall) {
 	  				try {
@@ -750,7 +784,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			     } 
 			  }
 			  
-			  
+			  map0.clear();
+			  map0.put("printobjid", printObj.getId());
+			  map0.put("printnum", 0);
 			  tbPrintObjDao.updateDishCall(map0);
 		}
 		

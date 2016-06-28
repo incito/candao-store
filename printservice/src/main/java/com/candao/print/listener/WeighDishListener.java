@@ -95,7 +95,7 @@ public class WeighDishListener extends AbstractQueueListener{
 				it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
 			}
 
-			Object[] text = getPrintText(object, 22, 9, 8);
+			Object[] text = getPrintText(object, 23, 10, 8);
 
 			for (int i = 0; i < text.length; i++) {
 				writer.write(text[i].toString()+"\r\n");

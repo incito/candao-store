@@ -290,7 +290,7 @@
 		 ,a.maxDishCount
 		 ,a.dishUnit
 		  ,a.printtype
-		  ,a.dishId,a.relatedishid,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
+		  ,a.dishId,a.relatedishid,a.printipaddress,a.printport,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
 		 a.printnum,a.primarykey,a.parentkey,a.ispot,a.superkey
 		from t_printdish a 
 		where	  printobjid=#{printobjid}
@@ -346,7 +346,7 @@
 		 ,a.maxDishCount
 		 ,a.dishUnit
 		  ,a.printtype
-		  ,a.dishId,a.relatedishid,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
+		  ,a.dishId,a.relatedishid,a.printipaddress,a.printport,a.orderseq,a.dishtype,a.printerId,a.islatecooke,a.ismaster,
 		 a.printnum,a.primarykey,a.parentkey,a.ispot,a.superkey
 		from t_printdish a 
 		left join t_dish_dishtype b on a.dishid = b.dishid

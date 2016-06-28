@@ -27,4 +27,6 @@ public interface ListenerTemplate {
 	public Integer[] getNoteLength();
 	
 	public Object[] getPrinterPortMsg(PrintObj obj) throws Exception;
+	
+	public String[] getSpecTableMsg(PrintObj obj) throws Exception;
 }

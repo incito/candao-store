@@ -168,20 +168,20 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 			case 1:
 				this.tableLength = 36;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{8,22,8};
+				this.bodyLength = new Integer[]{25,8,8};
+				this.tailLength = new Integer[]{9,23,8};
 				break;
 			case 2:
 				this.tableLength = 36;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{8,22,8};
+				this.bodyLength = new Integer[]{25,8,8};
+				this.tailLength = new Integer[]{9,23,8};
 				break;
 			case 3:
 				this.tableLength = 18;
 				this.noteLength = 19;
-				this.bodyLength = new Integer[]{11,3,4};
-				this.tailLength = new Integer[]{4,6,8};
+				this.bodyLength = new Integer[]{12,5,4};
+				this.tailLength = new Integer[]{5,7,8};
 				break;
 			default:
 				break;
@@ -204,5 +204,11 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 			return this.tailLength;
 		}
 		
+	}
+
+	@Override
+	public String[] getSpecTableMsg(PrintObj obj) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
