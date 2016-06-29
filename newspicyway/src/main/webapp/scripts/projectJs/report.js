@@ -1249,9 +1249,10 @@ function initFreeTb(result, isFirst){
 			$("#free_dish_data tbody").html(more);
 		}
 		$.each(result, function(i, item) {
+			console.info(item.accreditWaiter);
 			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title
-				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter
-				+ '</td><td>' + item.accreditWaiter + '</td><td onclick="showReckon(\''+item.orderid+'\')">'
+				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + (item.waiter === undefined ? '' : item.waiter)
+				+ '</td><td>' + (item.accreditWaiter === undefined ? '' : item.accreditWaiter) + '</td><td onclick="showReckon(\''+item.orderid+'\')">'
 				+ item.presentReason
 				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
 				+ '</td></tr>';
