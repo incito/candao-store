@@ -979,6 +979,7 @@ public class PadInterfaceController {
 		map.put("defaultsort", Integer.parseInt(defaultsort));
 		String jsonString  = "";
 		try {
+			map.put("tabletypefilter", "2");//过滤掉餐台类型为外卖的餐台
 			List<Map<String, Object>> list = tableService.find(map);
 			return JacksonJsonMapper.objectToJson(list);
 

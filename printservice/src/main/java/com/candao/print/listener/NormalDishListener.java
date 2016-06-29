@@ -91,23 +91,8 @@ public class NormalDishListener extends AbstractQueueListener {
 		// String giftMsg = "(礼)-";
 
 		if (!org.springframework.util.StringUtils.isEmpty(special) && special.contains("[")) {
-			String[] arraySpec = special.split(",");
-			String subMsg = "";
-			String subTableMsg = "  桌号：";
-			for (String spec : arraySpec) {
-				if (!spec.contains("[")) {
-					continue;
-				} else {
-					subMsg = spec.substring(1, spec.length() - 1);
-					break;
-				}
-			}
-			String prefixMsg = " (" + subMsg.split("-")[0] + "台送)";
-			subMsg = subMsg.split("-")[1];
-
-			String[] tableName = { subTableMsg + subMsg + prefixMsg };
-			Integer[] tableLength = { 15 };
-			String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+			
+			String[] table = template.getSpecTableMsg(object);
 			if (table != null) {
 				for (int i = 0; i < table.length; i++) {
 					writer.write(table[i] + "\r\n");
@@ -166,11 +151,7 @@ public class NormalDishListener extends AbstractQueueListener {
 		
 		Object[] tail = template.getTailMsg(object);
 		for (int i = 0; i < tail.length; i++) {
-			if (i == 0) {
-				writer.write(tail[i].toString());
-			} else {
-				writer.write("\r\n" + tail[i].toString());
-			}
+			writer.write(tail[i].toString() + "\r\n");
 		}
 		writer.flush();
 		

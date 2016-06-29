@@ -357,7 +357,7 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 			for (int j = 0; j < dst.size(); j++) {
 				List<String> strBuffer = dst.get(j);
 				String text = (i + 1 > strBuffer.size() ? StringUtils.getStr(length[j].intValue()) : strBuffer.get(i));
-				buffer.append(text).append(" ");
+				buffer.append(text)/*.append(" ")*/;
 			}
 			res[i] = buffer.toString();
 		}

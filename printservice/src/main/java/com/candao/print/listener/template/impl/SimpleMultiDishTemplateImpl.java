@@ -125,7 +125,7 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 	}
 
 	private String[] checkTealMsg(PrintObj obj){
-		PrintDish printDish = obj.getpDish().get(0);
+		PrintDish printDish = obj.getList().get(0);
 		String abbrName = printDish.getAbbrname() == null?"":printDish.getAbbrname();
 		String ordersq = obj.getOrderseq() == 0 ? "": "第"+obj.getOrderseq()+"张";
 		String timestamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -166,22 +166,22 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 		public Template(int size) {
 			switch (size) {
 			case 1:
-				this.tableLength = 36;
+				this.tableLength = 40;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{4,26,8};
+				this.bodyLength = new Integer[]{25,8,8};
+				this.tailLength = new Integer[]{9,24,8};
 				break;
 			case 2:
-				this.tableLength = 36;
+				this.tableLength = 40;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{24,7,8};
-				this.tailLength = new Integer[]{4,26,8};
+				this.bodyLength = new Integer[]{25,8,8};
+				this.tailLength = new Integer[]{9,24,8};
 				break;
 			case 3:
-				this.tableLength = 18;
+				this.tableLength = 20;
 				this.noteLength = 19;
-				this.bodyLength = new Integer[]{11,3,3};
-				this.tailLength = new Integer[]{4,7,8};
+				this.bodyLength = new Integer[]{12,5,4};
+				this.tailLength = new Integer[]{5,8,8};
 				break;
 			default:
 				break;
@@ -204,5 +204,11 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 			return this.tailLength;
 		}
 		
+	}
+
+	@Override
+	public String[] getSpecTableMsg(PrintObj obj) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

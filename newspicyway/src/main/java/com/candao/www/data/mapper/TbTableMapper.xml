@@ -266,6 +266,9 @@
 	      <if test="status != null and status != ''">
 	        and a.status=#{status}
 	     </if>
+	     <if test="tabletypefilter!=null and tabletypefilter !=''">
+	     	and a.tabletype &lt;&gt; #{tabletypefilter}
+	     </if>
 	     
 	   </where>
 	    GROUP BY

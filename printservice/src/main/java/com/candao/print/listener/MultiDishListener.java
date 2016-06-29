@@ -33,9 +33,12 @@ public class MultiDishListener extends AbstractQueueListener {
 		// 居中
 		socketOut.write(template.setAlignCenter());
 		// 单号
-		writer.write(StringUtils.bSubstring2(billName, billName.length()));
+		writer.write(StringUtils.bSubstring2(billName, billName.length())+"\r\n");
 		writer.flush();//
-		// 居中
+		// 档口名称
+		Object[] portName = template.getPrinterPortMsg(object);
+		this.write(writer, portName);
+		// 居左
 		socketOut.write(template.setAlignLeft());
 		socketOut.write(template.setClearfont());
 		writer.write("==========================================\r\n");
@@ -144,7 +147,7 @@ public class MultiDishListener extends AbstractQueueListener {
 		}
 
 		// 全单备注
-		String totalSpecial = object.getpDish().get(0).getGlobalsperequire();
+		String totalSpecial = object.getList().get(0).getGlobalsperequire();
 		List<String> bufferList = new ArrayList<>();
 		if (totalSpecial != null && !totalSpecial.isEmpty()) {
 			bufferList.add(totalSpecial);

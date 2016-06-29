@@ -276,7 +276,9 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	public ListenerTemplate getListenerTemplate(String printerid, ListenerType listenerType) {
 		try {
 			lock.readLock().lock();
-
+			if (printerid == null || printerid.isEmpty()) {
+				return null;
+			}
 			if (!this.listenerTemplate.containsKey(printerid)) {
 				log.error("------------  找不到打印模板！" + printerid);
 				return null;
