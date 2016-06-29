@@ -1,5 +1,6 @@
 package com.candao.www.data.dao.impl;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.candao.common.dao.DaoSupport;
+import com.candao.common.exception.SysException;
 import com.candao.www.data.dao.BranchDataSynDao;
 import com.candao.www.webroom.model.SynSqlObject;
 
@@ -78,6 +80,12 @@ public class BranchDataSynDaoImpl implements BranchDataSynDao{
 	@Override
 	public String getSynSql(String tableName,String sqlCondition) {
 		 return daoSupport.getSynSql(tableName,sqlCondition);
+		
+	}
+	
+	@Override
+	public List<Map<String,String>> getSynData(String tableName,String sqlCondition) throws SysException {
+		 return daoSupport.getSynData(tableName,sqlCondition);
 		
 	}
 
