@@ -1272,7 +1272,7 @@ CREATE TABLE `t_order_detail` (
   `fishcode` varchar(50) DEFAULT NULL COMMENT '使用鱼券',
   `dishtype` int(11) DEFAULT '0' COMMENT '0 单品 1 火锅 2 套餐',
   `status` int(11) DEFAULT '0',
-  `dishunit` varchar(50) DEFAULT NULL,
+  `dishunit` varchar(100) DEFAULT NULL,
   `payamount` decimal(10,2) DEFAULT NULL,
   `predisamount` decimal(10,2) DEFAULT NULL,
   `couponid` varchar(50) DEFAULT NULL,
