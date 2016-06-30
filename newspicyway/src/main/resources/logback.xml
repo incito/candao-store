@@ -21,7 +21,7 @@
  
     <root level="info">  
     	<appender-ref ref="candao"/>
-    	<appender-ref ref="STDOUT"/>
+    	<!--<appender-ref ref="STDOUT"/>-->
   	</root>  
  
 	<logger name="dao" level="DEBUG"/>
