@@ -6,7 +6,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.tools.GrapeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,7 +46,11 @@ public class PrinterManagerController {
 	private DishService dishService;
 	@Autowired
 	private DishTypeService dishTypeService;
+	
+	private Log log = LogFactory.getLog(PrinterManagerController.class.getName());
 
+	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
+	
 	@RequestMapping("/page")
 	@ResponseBody
 	public ModelAndView page(@RequestParam Map<String, Object> params, int page, int rows) {
@@ -127,21 +136,24 @@ public class PrinterManagerController {
 				b = printerManagerService.update(tbPrinterManager);
 			}
 		} catch (Exception e) {
+			log.error("-----------------打印机状态更新失败！", e);
 			e.printStackTrace();
 		}
 		//added by caicai
 		//更新mq监听队列
-		new Thread(new Runnable() {
+		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					PrinterListenerManager printerListener = (PrinterListenerManager) SpringContext.getBean(PrinterListenerManager.class);
-					printerListener.updateListenerTemplate();					
+					PrinterListenerManager printerListener = (PrinterListenerManager) SpringContext
+							.getBean(PrinterListenerManager.class);
+					printerListener.updateListenerTemplate();
 				} catch (Exception e) {
+					log.error("----------------------------------");
+					log.error("打印机模板字体更新失败！", e);
 					e.printStackTrace();
 				}
 			}
-		}).start();
-		
+		});
 		// TODO: 2016/6/17 刷新监听器有可能造成线程阻塞 ，弃用
 //		printerListener.updateListener();
 		

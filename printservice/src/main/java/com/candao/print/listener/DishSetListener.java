@@ -1,6 +1,7 @@
 package com.candao.print.listener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,6 +148,13 @@ public class DishSetListener extends AbstractQueueListener {
 				}
 			}
 
+			// 全单备注
+			String totalSpecial = printDishList.get(0).getGlobalsperequire();
+			List<String> bufferList = new ArrayList<>();
+			if (totalSpecial != null && !totalSpecial.isEmpty()) {
+				bufferList.add(totalSpecial);
+			}
+			
 			String special = "";
 			special = StringUtils.bSubstring2(printDishList.get(0)
 					.getSperequire()==null?"":printDishList.get(0)
@@ -166,27 +174,34 @@ public class DishSetListener extends AbstractQueueListener {
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
 			socketOut.write(PrinterConstant.getFd8Font());
+			
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {
 				//套餐备注换行
 				String[] dishName = {parentDishName};
 				Integer[] dishLength = {38};
 				String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
-				parentDishNameLineFeed[0] = "备注："+parentDishNameLineFeed[0];
+				parentDishNameLineFeed[0] = "全单备注："+parentDishNameLineFeed[0];
 				for (int j = 0; j < parentDishNameLineFeed.length; j++) {
 					writer.write( parentDishNameLineFeed[j] + "\r\n");					
 				}
 			} else {
-				if (special != null && !"".equals(special))
-					special = "备注：" + special;
+				if (bufferList != null && !bufferList.isEmpty()) {
+					String temp = bufferList.get(0);
+					bufferList.set(0, "全单备注:" + temp);
+				}
 			}
-		
-			//忌口信息
-			String[] specialName = {special};
-			Integer[] specialLength = {38};
-			String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
-			for (int j = 0; j < specialLineFeed.length; j++) {
-				writer.write( specialLineFeed[j] + "\r\n");		
+			
+			// 忌口信息
+			if (bufferList != null && !bufferList.isEmpty()) {
+				for (String it : bufferList) {
+					String[] specialName = { it };
+					Integer[] specialLength = {38};
+					String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
+					for (int j = 0; j < specialLineFeed.length; j++) {
+						writer.write(specialLineFeed[j] + "\r\n");
+					}
+				}
 			}
 		}
 	@Override
@@ -203,6 +218,10 @@ public class DishSetListener extends AbstractQueueListener {
 			String dishName = it.getDishName() == null ? "" : it.getDishName();
 			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
 			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+			String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")" : "";
+			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()
+					? "(" + it.getSperequire().trim() + ")" : "";
+			dishName += taste + Sperequire;
 
 			String[] name = { dishName, dishNum, dishUnit };
 			Integer[] len = { num1, num2, num3 };
