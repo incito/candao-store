@@ -1,8 +1,15 @@
+SET NAMES 'utf8';
+
+--
+-- Alter table "t_order_detail"
+--
+ALTER TABLE t_order_detail
+  CHANGE COLUMN dishunit dishunit varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ;
+
 --
 -- Definition for procedure p_orderdish
 --
 
-SET NAMES 'utf8';
 DELIMITER $$
 DROP PROCEDURE IF EXISTS `p_orderdish`$$
 CREATE PROCEDURE `p_orderdish`(IN i_orderid varchar(50), IN i_printobjid int, INOUT o_code varchar(50), INOUT o_msg varchar(300))
