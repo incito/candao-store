@@ -31,7 +31,7 @@
         ON d.orderid = a.orderid
         LEFT JOIN t_dish e
         ON d.dishid = e.dishid
-        WHERE d.pricetype=1 AND a.orderstatus=3
+        WHERE d.pricetype=1 AND a.orderstatus=3  AND ((d.ordertype=2 AND ismaster=1) OR d.ordertype&lt;&gt;2 )
         AND a.begintime BETWEEN #{beginTime} and #{endTime}
         <if test="shiftid!=-1">
             AND a.shiftid=#{shiftid}
