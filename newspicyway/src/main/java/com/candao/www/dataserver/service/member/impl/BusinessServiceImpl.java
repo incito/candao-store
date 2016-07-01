@@ -107,7 +107,7 @@ public class BusinessServiceImpl implements BusinessService {
         if ("1".equals(checkResult.get("Data"))) {
             return checkOpen;
         }
-        Date today = WorkDateUtil.getWorkDate1();
+        Date today = new Date();
         OpenLog log = new OpenLog();
         log.setIpaddress(ip);
         log.setInsertTime(new Date());
