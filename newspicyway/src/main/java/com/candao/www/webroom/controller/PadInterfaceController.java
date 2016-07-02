@@ -936,8 +936,10 @@ public class PadInterfaceController {
 
 				TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 				if(tbOpenBizLog == null){
-					jsonString = Constant.FAILUREMSG;
-					return jsonString;
+					Map<String, String> mapRet = new HashMap<String, String>();
+					mapRet.put("result", "3");
+					logger.error("未开业，不能登录");
+					return JacksonJsonMapper.objectToJson(mapRet);
 				}
 				String pwd = dataDictionaryService.find("SECRETKEY");
 //				String pwd = dataDictionaryService.find("PASSWORD");
@@ -1712,9 +1714,10 @@ public class PadInterfaceController {
 
 			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 			if(tbOpenBizLog == null){
-				logger.info("操作失败");
-				jsonString = Constant.FAILUREMSG;
-				return jsonString;
+				Map<String, String> mapRet = new HashMap<String, String>();
+				mapRet.put("result", "3");
+				logger.error("未开业，不能登录");
+				return JacksonJsonMapper.objectToJson(mapRet);
 			}
 
 			String pwd = dataDictionaryService.find("SECRETKEY");

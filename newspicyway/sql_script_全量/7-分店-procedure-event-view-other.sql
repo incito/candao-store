@@ -481,7 +481,6 @@ loop_label:
   END IF;
 
   #最后集中对套餐处理一下
-  -- CALL p_xxxxxxxx
   CALL p_cal_dishset_price();
 
   #没有使用到优惠的菜品，实收就是订单价格
@@ -490,6 +489,55 @@ loop_label:
     debitamount = orderprice * dishnum
   WHERE
     debitamount IS NULL;
+
+  #把四舍五入的零头调完美
+  SELECT ifnull(sum(t.payamount) - v_xz_amount, 0)
+  INTO
+    @amount1
+  FROM
+    t_settlement_detail t
+  WHERE
+    t.orderid = i_orderid
+    AND t.payway IN (0, 1, 5, 8, 13, 17, 18);
+
+  SELECT ifnull(sum(t.debitamount), 0)
+  INTO
+    @amount2
+  FROM
+    t_temp_order_detail t
+  WHERE
+    t.dishtype = 2
+    AND t.primarykey = t.superkey;
+
+  SELECT ifnull(sum(t.debitamount), 0)
+  INTO
+    @amount3
+  FROM
+    t_temp_order_detail t;
+
+  SET @amount4 = @amount1 - (@amount3 - @amount2);
+
+  IF @amount4 != 0 THEN
+    SELECT primarykey
+    INTO
+      @key
+    FROM
+      t_temp_order_detail t
+    WHERE
+      t.dishtype IN (0, 1)
+      OR (t.dishtype = 2
+      AND t.primarykey = t.superkey)
+    ORDER BY
+      t.debitamount DESC
+    LIMIT
+      1;
+
+    UPDATE t_temp_order_detail
+    SET
+      debitamount = debitamount + @amount4
+    WHERE
+      primarykey = @key;
+  END IF;
 
   #将中间表中的结果更新到正式表中
   UPDATE t_order_detail a, t_temp_order_detail b
