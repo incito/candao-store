@@ -72,6 +72,7 @@
 					<th>微信商户ID</th>
 					<th>微信应用ID（APPID）</th>
 					<th>微信应用秘钥（APPSECRET）</th>
+					<th>状态</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -94,6 +95,163 @@
 			</div>
 		</div>
 	</div>
+	<style>
+
+		.personal-img {height:130px!important;}
+
+		.uploadImg {
+		    width: 130px;
+	    	height: 130px;
+	    	border: 1px solid #e6e6e6;
+		}
+		.btn-upload {
+		    position: absolute;
+		    filter: alpha(opacity = 0);
+		    opacity: 0;
+
+		      width: 60px;
+		    height: 28px;
+		    left:15px;
+		    top:0;
+		    cursor: pointer;
+		}
+		.img-op {
+			padding:5px 0;
+			background:rgba(0,0,0,0.6);
+			position:absolute;
+			top:102px;
+			padding:5px 2px;
+			left:15px;
+			width:130px;
+		}
+		.img-op a {
+			color:#fff;
+		}
+		.personal-img.img-default .img-op {
+			filter: alpha(opacity = 0);
+    		opacity: 0;
+		}
+		.personal-img.img-default .btn-upload {
+		    top: -100px;
+		    left: 0;
+		    position: absolute;
+		    filter: alpha(opacity = 0);
+		    opacity: 0;
+		    cursor: pointer;
+		       width: 130px;
+		    height: 130px;
+		}
+		.switch {
+  margin: 0 auto;
+  position: relative;
+}
+.switch label {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: block;
+}
+.switch input {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 100;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+/* DEMO 3 */
+.switch.demo3 {
+  width: 60px;
+  height: 20px;
+}
+.switch.demo3 label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #a5a39d;
+  border-radius: 40px;
+  box-shadow:
+      inset 0 3px 8px 1px rgba(0,0,0,0.2),
+      0 1px 0 rgba(255,255,255,0.5);
+}
+.switch.demo3 label:after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -8px; right: -8px; bottom: -8px; left: -8px;
+  border-radius: inherit;
+}
+.switch.demo3 label:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -18px; right: -18px; bottom: -18px; left: -18px;
+  border-radius: inherit;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+.switch.demo3 label i {
+  display: block;
+  height: 100%;
+  width: 35%;
+  border-radius: inherit;
+  background: silver;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  background: #b2ac9e;
+  background: -moz-linear-gradient(#f7f2f6, #b2ac9e);
+  background: -ms-linear-gradient(#f7f2f6, #b2ac9e);
+  background: -o-linear-gradient(#f7f2f6, #b2ac9e);
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#f7f2f6), to(#b2ac9e));
+  background: -webkit-linear-gradient(#f7f2f6, #b2ac9e);
+  background: linear-gradient(#f7f2f6, #b2ac9e);
+  box-shadow:
+      inset 0 1px 0 white,
+      0 0 8px rgba(0,0,0,0.3),
+      0 5px 5px rgba(0,0,0,0.2);
+}
+.switch.demo3 label i:after {
+  content: "";
+  position: absolute;
+  left: 25%;
+  top: 25%;
+  width: 50%;
+  height: 50%;
+  background: #d2cbc3;
+  background: -moz-linear-gradient(#cbc7bc, #d2cbc3);
+  background: -ms-linear-gradient(#cbc7bc, #d2cbc3);
+  background: -o-linear-gradient(#cbc7bc, #d2cbc3);
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#cbc7bc), to(#d2cbc3));
+  background: -webkit-linear-gradient(#cbc7bc, #d2cbc3);
+  background: linear-gradient(#cbc7bc, #d2cbc3);
+  border-radius: inherit;
+}
+.switch.demo3 label i:before {
+  content: attr(data-off);
+  font-style: normal;
+  color: #fff;
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  margin-top: -8px;
+  right: -30px;
+}
+.switch.demo3 input:checked ~ label {
+  background: #9abb82;
+}
+.switch.demo3 input:checked ~ label i {
+  right: -1%;
+}
+.switch.demo3 input:checked ~ label i:before {
+  content: attr(data-on);
+  left: -90px;
+  color: #fff;
+}
+	</style>
 	<!--点击按钮弹出添加界面 -->
 	<div class="modal fade payment-dialog in " id="payment-add"
 		data-backdrop="static">
@@ -131,13 +289,38 @@
 									</div>
 								</div>
 								<div class="form-group">
+									<label class="col-xs-3 control-label "><span class="required-span">*</span>收款账户类型：</label>
+									<div class="col-xs-8">
+										<div class="radio-box">
+											<span><input type="radio" name="weixintype" checked onchange="weixintypeChange(2)" class="mr5 weixintype" id="weixintype2" value="2" >微信商户</span>
+	                    					<span class="ml20"><input type="radio" name="weixintype" onchange="weixintypeChange(1)" class="mr5 weixintype" id="weixintype1" value="1" >微信个人账户</span>
+                    					</div>
+									</div>
+								</div>
+								<div class="form-group personal-img img-default" style="display:none;">
+									<label class="col-xs-3 control-label "><span
+										class="required-span">*</span>个人账户二维码：</label>
+									<div class="col-xs-8 f-pr">
+										<img src="../images/upload-img.png" class="uploadImg">
+										<div class="img-op f-dn" style="display:block;">
+											<a href="javascript:void(0);" class="f-fl J-rUpload">重新上传</a>
+											<a href="javascript:void(0);" onclick="delImg(this)" class="f-fr J-btn-del">删除</a>
+											<input type="file" onchange="showImg(this)" size="1" class="btn-upload J-btn-upload" id="qrcode" name="qrcode" accept="image/*">
+										</div>
+										<div class="f-cb"></div>
+										<span class="c-red tips f-dn">不能为空</span>
+									</div>
+								</div>
+
+								<div class="busness" style="display:none;">
+									<div class="form-group">
 									<label class="col-xs-3 control-label "><span
 										class="required-span">*</span>微信商户ID：</label>
 									<div class="col-xs-8">
 										<input type="text" name="partner" id="partner" maxlength="50"
-											placeholder="最多50个字符" value="" class="form-control required" />
+												placeholder="最多50个字符" oninput="if(value.length>50)value=value.slice(0,50)" value="" class="form-control required" />
+											<span class="c-red tips f-dn">不能为空</span>
 									</div>
-
 								</div>
 								<div class="form-group">
 									<label class="col-xs-3 control-label "><span
@@ -145,7 +328,8 @@
 										style="text-align: center;"><br />(APPID)</span>：</label>
 									<div class="col-xs-8">
 										<input type="text" name="appid" id="appid" maxlength="50"
-											placeholder="最多50个字符" value="" class="form-control required" />
+												placeholder="最多50个字符" oninput="if(value.length>50)value=value.slice(0,50)" value="" class="form-control required" />
+												<span class="c-red tips f-dn">不能为空</span>
 									</div>
 
 								</div>
@@ -154,8 +338,21 @@
 										class="required-span">*</span>微信应用秘钥：<br />(APPSECRET)</label>
 									<div class="col-xs-8">
 										<input type="text" name="appsecret" id="appsecret"
-											maxlength="50" placeholder="最多50个字符" value=""
+												maxlength="50" oninput="if(value.length>50)value=value.slice(0,50)" placeholder="最多50个字符" value=""
 											class="form-control required" />
+											<span class="c-red tips f-dn">不能为空</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-xs-3 control-label "><span
+										class="required-span">*</span>启用状态：</label>
+									<div class="col-xs-8">
+											<div class="radio-box">
+												<span><input type="radio" name="status" checked class="mr5" id="status1" value="1" >启用</span>
+		                    					<span class="ml20"><input type="radio" name="status" class="mr5" id="status0" value="0" >禁用</span>
+	                    					</div>
 									</div>
 								</div>
 								<div class="btn-operate" id="add-btn">
@@ -290,6 +487,5 @@ function refreshBranchRole(){
 		$("#edit-btn").find(".btn-division").hide();
 	}
 }
-
 </script>
 </html>
