@@ -1,6 +1,9 @@
 package com.candao.www.webroom.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,6 +42,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
@@ -79,9 +84,11 @@ import com.candao.www.timedtask.BranchDataSyn;
 import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
+import com.candao.www.webroom.model.BasePadResponse;
 import com.candao.www.webroom.model.LoginInfo;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.model.Order;
+import com.candao.www.webroom.model.PadConfig;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.model.SqlData;
 import com.candao.www.webroom.model.Table;
@@ -103,6 +110,7 @@ import com.candao.www.webroom.service.OpenBizService;
 import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
+import com.candao.www.webroom.service.PadConfigService;
 import com.candao.www.webroom.service.PicturesService;
 import com.candao.www.webroom.service.PreferentialActivityService;
 import com.candao.www.webroom.service.TableService;
@@ -2609,6 +2617,274 @@ public class PadInterfaceController {
 	//end
 	
 	
+	//conifg
+	/**
+	 * 保存修改配置信息
+	 * @param padConfig
+	 * @return
+	 */
+	@RequestMapping("/saveorupdate")
+	@ResponseBody
+	public String saveorupdate(PadConfig padConfig){
+		int result=padConfigService.saveorupdate(padConfig);
+		Map<String, Object> map=new HashMap<>();
+		if(result==0){
+			map.put("code", 1);
+			map.put("msg", "操作失败");
+		}else{
+			map.put("code", 0);
+		}
+		return JacksonJsonMapper.objectToJson(map);
+	}
+		
+	private String getValue(String str){
+		if(str==null || str.length()<=0||"".equals(str)){
+			return null;
+		}
+		return str;
+	}
+	
+	/**
+	 * 删除文件
+	 * @param request
+	 * @param seatImagename
+	 * @param fileurl0
+	 * @param fileurl1
+	 * @return
+	 */
+	@RequestMapping("/deletefile")
+	@ResponseBody
+	public String deletefile(HttpServletRequest request,String seatImagename0,String seatImagename1,String fileurl0,String fileurl1){
+		Map<String, Object> map=new HashMap<>();
+		fileurl0=getValue(fileurl0);
+		fileurl1=getValue(fileurl1);
+		seatImagename0=getValue(seatImagename0);
+		seatImagename1=getValue(seatImagename1);
+		String imagenames="";
+		String imageurls="";
+		if(fileurl0!=null && fileurl1==null){
+			imagenames=seatImagename0;
+			imageurls=fileurl0;
+		}
+		if(fileurl0==null && fileurl1!=null){
+			imagenames=seatImagename1;
+			imageurls=fileurl1;
+		}
+		if(fileurl0!=null && fileurl1!=null){
+			imagenames=seatImagename0+";"+seatImagename1;
+			imageurls=fileurl0+";"+fileurl1;
+		}
+	    PadConfig config=new PadConfig();
+	    config.setSeatimagenames(imagenames);
+    	config.setSeatimageurls(imageurls); 
+        int result=padConfigService.saveorupdate(config);
+		if(result==0){
+			map.put("code", 1);
+			map.put("msg", "操作失败");
+		}else{
+			map.put("code", 0);
+		}
+		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	/**
+	 * 座位图上传
+	 * 必须有file对象才会进入该方法
+	 * @param seatImagefiles
+	 * @param padConfig
+	 * @return
+	 */
+	@RequestMapping("/importfile")
+	@ResponseBody
+	public String importfile(HttpServletRequest request,String[] seatImagename,String fileurl0,String fileurl1){
+		fileurl0=getValue(fileurl0);
+		fileurl1=getValue(fileurl1);
+		String realpath=request.getSession().getServletContext().getRealPath("");
+		System.out.println(realpath);
+		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
+		List<CommonsMultipartFile> seatImagefiles=new ArrayList<>();
+		if(fileMap.get("seatImgIpt0") != null){
+			MultipartFile file  = fileMap.get("seatImgIpt0");
+			seatImagefiles.add((CommonsMultipartFile) file);
+			fileurl0=null;
+		}
+		if(fileMap.get("seatImgIpt1") != null){
+			MultipartFile file  =  fileMap.get("seatImgIpt1");
+			seatImagefiles.add((CommonsMultipartFile) file);
+			fileurl1=null;
+		}
+		if(fileurl0==null && fileurl1==null){
+			return filetwonewFile(seatImagefiles, realpath, seatImagename);//上传2个新文件
+		}
+		
+		Map<String, Object> map=new HashMap<>();
+		PadConfig padConfig= padConfigService.getconfiginfos();
+		String names=padConfig.getSeatimagenames();
+		if(fileurl0!=null && fileurl1==null){//文件0为旧文件，file1为新文件
+						String newfilename=seatImagefiles.get(0).getOriginalFilename();
+			        	if(newfilename.indexOf(".")!=-1){
+			        		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
+			        				+	newfilename.substring(newfilename.indexOf("."));
+			        	}
+						int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
+						if(result==0){//成功
+							PadConfig config=new PadConfig();
+							config.setSeatimagenames(names.split(";")[0]+";"+seatImagename[0]);
+			            	config.setSeatimageurls(fileurl0+";"+"upload"+File.separator+newfilename); 
+			            	padConfigService.saveorupdate(config);
+			            	map.put("code", 0);
+			            	return JacksonJsonMapper.objectToJson(map);
+						}else{
+							map.put("code", 1);
+							map.put("msg", "上传文件失败");
+							return JacksonJsonMapper.objectToJson(map);
+						}
+		}
+		
+		if(fileurl0==null && fileurl1!=null){//文件0为新文件，file1为旧文件
+			String newfilename=seatImagefiles.get(0).getOriginalFilename();
+        	if(newfilename.indexOf(".")!=-1){
+        		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
+        				+	newfilename.substring(newfilename.indexOf("."));
+        	}
+			int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
+			if(result==0){//成功
+				PadConfig config=new PadConfig();
+				config.setSeatimagenames(seatImagename[0]+";"+names.split(";")[0]);
+            	config.setSeatimageurls("upload"+File.separator+newfilename+";"+fileurl1); 
+            	padConfigService.saveorupdate(config);
+            	map.put("code", 0);
+            	return JacksonJsonMapper.objectToJson(map);
+			}else{
+				map.put("code", 1);
+				map.put("msg", "上传文件失败");
+				return JacksonJsonMapper.objectToJson(map);
+			}
+}
+		
+		map.put("code", 0);
+		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	
+	
+	private  String  filetwonewFile(List<CommonsMultipartFile> seatImagefiles,String realpath,String[] seatImagename){
+		String seatimagenames="";
+		String seatimageurls="";
+		int temp=0;
+		Map<String, Object> map=new HashMap<>();
+		for(CommonsMultipartFile commonsMultipartFile:seatImagefiles){  
+	            if(!commonsMultipartFile.isEmpty()){  
+	            	String newfilename=commonsMultipartFile.getOriginalFilename();
+	            	if(newfilename.indexOf(".")!=-1){
+	            		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
+	            				+	newfilename.substring(newfilename.indexOf("."));
+	            	}
+	            	String imagelocation=realpath+File.separator+"upload"+File.separator+ newfilename;
+	            	  File file = new File(imagelocation);  
+	        		  if(!file.getParentFile().exists()){
+	        			  file.getParentFile().mkdirs();
+	        		  }
+	        		  //文件上传
+	        		  fileupload(commonsMultipartFile, imagelocation);
+	        		  seatimagenames=seatimagenames+seatImagename[temp++]+";";
+	        		  seatimageurls=seatimageurls+"upload"+File.separator+newfilename+";";
+	            }
+	            
+	            PadConfig config=new PadConfig();
+	            if(seatimagenames.length()>1&&seatimageurls.length()>1 ){
+	            	config.setSeatimagenames(seatimagenames.substring(0, seatimagenames.length()-1));
+	            	config.setSeatimageurls(seatimageurls.substring(0, seatimageurls.length()-1)); 
+	            	int result=padConfigService.saveorupdate(config);
+	        	
+	        		if(result==0){
+	        			map.put("code", 1);
+	        			map.put("msg", "操作失败");
+	        		}else{
+	        			map.put("code", 0);
+	        		}
+	            }
+		 }
+		return JacksonJsonMapper.objectToJson(map);
+		
+	}
+	
+	
+	
+	/**
+	 * 0成功  1失败
+	 * @param commonsMultipartFile
+	 * @param imagelocation
+	 * @return
+	 */
+	private int fileupload(CommonsMultipartFile commonsMultipartFile,String imagelocation){
+		   try {  
+               //拿到输出流，同时重命名上传的文件  
+               FileOutputStream os = new FileOutputStream(imagelocation);  
+               //拿到上传文件的输入流  
+               FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();  
+                 
+               //以写字节的方式写文件  
+               int b = 0;  
+               while((b=in.read()) != -1){  
+                   os.write(b);  
+               }  
+               os.flush();  
+               os.close();  
+               in.close();  
+               //保存成功
+           } catch (Exception e) {  
+               e.printStackTrace();  
+               return 1;
+           }  
+		   
+		   return 0;
+	} 
+	
+	
+	/**
+	 * web获取所有可配置项
+	 */
+	@RequestMapping("/getconfiginfos")
+	@ResponseBody
+	public String getconfiginfos(){
+		PadConfig padConfig= padConfigService.getconfiginfos();
+		Map<String, Object> map=new HashMap<>();
+		if(padConfig==null){
+			map.put("code", 1);
+			map.put("msg", "门店没有配置相关信息");
+		}else{
+			map.put("code", 0);
+			map.put("data", padConfig);
+		}
+		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	/**
+	 * pad获取配置信息
+	 * @return
+	 */
+	@RequestMapping("/padconfiginfos")
+	@ResponseBody
+	public String padconfiginfos(){
+		BasePadResponse<PadConfig> basePadResponse=new BasePadResponse();
+		PadConfig padConfig= padConfigService.getconfiginfos();
+		if(padConfig==null){
+			basePadResponse.setCode(1);
+			basePadResponse.setMsg("门店没有配置相关信息");
+		}else{
+			basePadResponse.setCode(0);
+			basePadResponse.setMsg("");
+			basePadResponse.setData(padConfig);
+		}
+		return JacksonJsonMapper.objectToJson(basePadResponse);
+	}
+	
+	
+	
+	//end config
+	
 	/**
 	 * 消息中心查询信息
 	 * @param json
@@ -2736,10 +3012,13 @@ public class PadInterfaceController {
 	private TbBranchDao tbBranchDao;
 	@Autowired
 	private SystemServiceImpl systemServiceImpl;
+	@Autowired
+	private PadConfigService padConfigService;
 	
 	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 	
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
+	
 	
 	
 }
