@@ -106,4 +106,15 @@
 		</if>
 		</where>
 	</select>
+	
+	<select id="getTtemplateDishUnitByStatus" parameterType="map" resultType="com.candao.www.data.model.TtemplateDishUnit">
+		SELECT id, dishid, menuid, dishname, dishintroduction, unit, price, vipprice,status,recommend,sort
+		FROM t_template_dishunit
+		WHERE status = #{status};
+	</select>
+	
+	<update id="updateStatus" parameterType="map">
+		UPDATE t_template_dishunit SET `status` = 1 WHERE dishid in(${dishIds});
+	</update>
+	
 </mapper>

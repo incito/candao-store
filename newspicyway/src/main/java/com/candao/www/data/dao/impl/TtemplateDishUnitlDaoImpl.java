@@ -58,4 +58,18 @@ public class TtemplateDishUnitlDaoImpl implements TtemplateDishUnitlDao {
 		return daoSupport.find(PREFIX+".getTtemplatefishpotUnitByparams", params);
 	}
 
+	@Override
+	public List<TtemplateDishUnit> getTtemplateDishUnitByStatus() {
+		Map<String, Object> params = new HashMap<>();
+		params.put("status", "1");	//估清
+		return daoSupport.find(PREFIX+".getTtemplateDishUnitByStatus", params);
+	}
+
+	@Override
+	public boolean updateStatus(String dishIds) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("dishIds", dishIds);
+		return daoSupport.update(PREFIX+".updateStatus", map) > 0;
+	}
+
 }

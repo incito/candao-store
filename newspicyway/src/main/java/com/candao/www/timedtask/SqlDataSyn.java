@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.BranchDataSynDao;
 import com.candao.www.data.dao.TSynSqlMapper;
 import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.data.dao.TtemplateDishUnitlDao;
+import com.candao.www.data.model.TtemplateDishUnit;
 import com.candao.www.webroom.model.SynSqlObject;
 import com.candao.www.webroom.service.BranchProducerService;
 import com.candao.www.webroom.service.BranchShopService;
@@ -54,17 +57,32 @@ public class SqlDataSyn   {
 	    @Autowired
      TSynSqlMapper  tSynSqlMapper;
     
+	 @Autowired
+	 private TtemplateDishUnitlDao ttemplateDishUnitlDao;
    
    public void sqlDataSyn(){
 	   
 	   synchronized(this){
 		   int count = tSynSqlMapper.copyDataFromTemp();
 		   if(count > 0){
+//			       备份已经估清的菜品
+			   List<TtemplateDishUnit> dishUnits = ttemplateDishUnitlDao.getTtemplateDishUnitByStatus();
+			   
 			   Map<String, Object> mapParam = new HashMap<String, Object>();
 		       mapParam.put("id", null);
 		       mapParam.put("result", null);
 		       tSynSqlMapper.synData(mapParam);
-//		       tSynSqlMapper.deleteDataTemp();
+
+//		                  把已经估清的菜品重新估清
+		       StringBuilder dishBuilder = new StringBuilder();
+		       for(TtemplateDishUnit dishUnit : dishUnits){
+		        	String dishid = dishUnit.getDishid();
+		        	dishBuilder.append("'").append(dishid).append("'").append(",");
+		       }
+		       if(dishBuilder.length() > 0){
+		    	   String dishIds = dishBuilder.substring(0, dishBuilder.length()-1);
+		    	   ttemplateDishUnitlDao.updateStatus(dishIds);
+		       }
 		   }
 	   }
    }

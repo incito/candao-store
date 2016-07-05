@@ -3,6 +3,8 @@ package com.candao.www.webroom.service.impl;
 import com.candao.common.utils.HttpUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.data.dao.TtemplateDishUnitlDao;
+import com.candao.www.data.model.TtemplateDishUnit;
 import com.candao.www.spring.SpringContext;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
@@ -38,6 +40,11 @@ public class SyncService {
 
   public static final Logger logger = Logger.getLogger(SyncService.class);
 
+  @Autowired
+  private TtemplateDishUnitlDao ttemplateDishUnitlDao;
+  
+  private final String COOKBOOK = "cookbook";
+  
   /**
    * 同步云端数据
    *
@@ -63,7 +70,26 @@ public class SyncService {
       resp = JacksonJsonMapper.jsonToObject(result, Map.class);
       if ("200".equals(String.valueOf(resp.get("statusCode")))) {
         try {
+        	
+//        type为cookbook时，备份已估清的菜品
+          List<TtemplateDishUnit> dishUnits = new ArrayList<>();
+          if(COOKBOOK.equals(type)){
+    		  dishUnits = ttemplateDishUnitlDao.getTtemplateDishUnitByStatus();
+          }
+      	  
+//        同步数据
           save((Map<String, List<Map<String, Object>>>) resp.get("data"));
+          
+//        把已经估清的菜品重新估清
+          StringBuilder dishBuilder = new StringBuilder();
+          for(TtemplateDishUnit dishUnit : dishUnits){
+        	  String dishid = dishUnit.getDishid();
+        	  dishBuilder.append("'").append(dishid).append("'").append(",");
+          }
+          if(dishBuilder.length() > 0){
+        	  String dishIds = dishBuilder.substring(0, dishBuilder.length()-1);
+        	  ttemplateDishUnitlDao.updateStatus(dishIds);
+          }
         } catch (Exception e) {
           logger.error("数据入库失败\n" + result, e);
           resp.put("statusCode", "500");
@@ -80,7 +106,8 @@ public class SyncService {
 
     return resp;
   }
-
+  
+  
   /**
    * 保存数据
    *
