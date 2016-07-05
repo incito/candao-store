@@ -2008,12 +2008,21 @@ function getWaiterAssessData(){
 						+ '<td>'+item.shouldamount+'</td>'
 						+ '<td>'+item.paidinamount+'</td>'
 						+ '<td>'+item.shouldpre+'</td>'
-						+ '<td>'+item.paidinpre+'</td></tr>';
+						+ '<td>'+item.paidinpre+'</td>'
+
+						+ '<td>'+item.xjamount+'</td>'
+						+ '<td>'+item.yhkamount+'</td>'
+						+ '<td>'+item.mlamount+'</td>'
+						+ '<td>'+item.hykxfamount+'</td>'
+						+ '<td>'+item.hyjfxfamount+'</td>'
+						+ '<td>'+item.gz2amount+'</td>'
+						+ '<td>'+item.wxzfamount+'</td>'
+						+ '<td>'+item.zfbzfamount+'</td></tr>';
 				});
 				$("#waiter-assess-tb tbody").html(htm);
 				initDatatableConfig();
 			}else{
-				htm += '<tr><td colspan="8">无数据</td></tr>';
+				htm += '<tr><td colspan="16">无数据</td></tr>';
 				$("#waiter-assess-tb tbody").html(htm);
 			}
 		}else{
@@ -2027,6 +2036,7 @@ function showWaiterSecPage(userid){
 	getWaiterDetails();
 }
 function getWaiterDetails(){
+	$("#waiterassess-details-tb tbody").html('');
 	$.get(global_Path+"/waiter/shiftorders.json", {
 		beginTime: beginTime,
 		endTime: endTime,
@@ -2042,7 +2052,15 @@ function getWaiterDetails(){
 						+ '<td>'+item.tableids+'</td>'
 						+ '<td>'+item.custnum+'</td>'
 						+ '<td>'+item.shouldamount+'</td>'
-						+ '<td>'+item.paidinamount+'</td></tr>';
+						+ '<td>'+item.paidinamount+'</td>'
+						+ '<td>'+item.xjamount+'</td>'
+						+ '<td>'+item.yhkamount+'</td>'
+						+ '<td>'+item.mlamount+'</td>'
+						+ '<td>'+item.hykxfamount+'</td>'
+						+ '<td>'+item.hyjfxfamount+'</td>'
+						+ '<td>'+item.gz2amount+'</td>'
+						+ '<td>'+item.wxzfamount+'</td>'
+						+ '<td>'+item.zfbzfamount+'</td></tr>';
 				});
 			}else{
 				htm = '<tr><td colspan="5">无数据</td></tr>';
