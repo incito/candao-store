@@ -21,6 +21,15 @@ public interface MsgForwardService {
     String broadCastMsg(String userId, String msgType, String msg);
 
     /**
+     * 消息推送接口
+     *
+     * @param msgType MSG命令ID（发送方和接收方协定：比如1002为通知PAD已结算）
+     * @param msg     消息内容 （内容发送方和接收方自协定）
+     * @return
+     */
+    String broadCastMsg4Netty(String msgType, String msg);
+
+    /**
      * @param client
      * @param msgId
      * @return

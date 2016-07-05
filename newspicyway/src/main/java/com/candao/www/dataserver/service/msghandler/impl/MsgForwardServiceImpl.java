@@ -59,24 +59,35 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         LOGGER.info("#### broadCastMsg userId={},msgType={},msg={}###", userId, msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-         /*   SyncMsg syncMsg = new SyncMsg(msgType, msg);
-            msgProcessMapper.saveTSyncMsg(syncMsg);
-            MsgData msgData = new MsgData(syncMsg.getId(), Integer.valueOf(msgType), msg);*/
-            new TsThread(Constant.TS_URL+msgType + "/" + msg).run();
-//            int msgId = (int) System.currentTimeMillis();
-//            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
-//            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
-//            if (MsgType.MSG_1002.getValue().equals(msgType)) {
-//                String tableNo = businessService.getTableNoByOrderId(msg);
-//                if (StringUtils.isNotBlank(tableNo)) {
-//                    dishService.deletePosOperation(tableNo);
-//                }
-//            }
+            new TsThread(Constant.TS_URL + msgType + "/" + msg).run();
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
             LOGGER.error("#### broadCastMsg userId={},msgType={},msg={},error={}###", userId, msgType, msg, e);
+        }
+        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
+    }
+
+    @Override
+    public String broadCastMsg4Netty(String msgType, String msg) {
+        LOGGER.info("#### broadCastMsgForNetty msgType={},msg={}###", msgType, msg);
+        ResponseData responseData = new ResponseData();
+        try {
+            int msgId = (int) System.currentTimeMillis();
+            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
+            if (MsgType.MSG_1002.getValue().equals(msgType)) {
+                String tableNo = businessService.getTableNoByOrderId(msg);
+                if (StringUtils.isNotBlank(tableNo)) {
+                    dishService.deletePosOperation(tableNo);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseData.setData("0");
+            responseData.setData("发送广播消息异常");
+            LOGGER.error("#### broadCastMsgForNetty msgType={},msg={},error={}###", msgType, msg, e);
         }
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
