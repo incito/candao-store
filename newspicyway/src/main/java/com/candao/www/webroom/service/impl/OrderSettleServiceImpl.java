@@ -17,6 +17,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.StringUtils;
 
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -490,13 +491,25 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 updateOrder.setOrderid(orderId);
 	 updateOrder.setOrderstatus(0);
 	 orderService.update(updateOrder);
-//	 
-//	 //桌子空閒 0 空闲	 1 就餐	 3 预定	 4 已结账
-	 TbTable tbTable = new TbTable();
-	 tbTable.setStatus(1);
-	 tbTable.setOrderid(orderId);
 	 
-	 tableService.updateSettleStatus(tbTable);
+	 //外卖不更改状态
+//	 //桌子空閒 0 空闲	 1 就餐	 3 预定	 4 已结账
+		TbTable tbTable = new TbTable();
+		Map<String, Object> order = orderService.findOrderById(orderId);
+		TbTable table = tableService.findById((String) order.get("currenttableid"));
+		// 判断餐台类型
+		// 外卖，咖啡外卖不更改餐台状态
+		String tableType = table.getTabletype();
+		tableType = tableType == null ? "" : tableType;
+		if (StringUtils.isEmpty(tableType) || (!Constant.TABLETYPE.TAKEOUT.equals(tableType)
+				&& !Constant.TABLETYPE.TAKEOUT_COFFEE.equals(tableType))) {
+			tbTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
+		} else {
+			tbTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
+		}
+		tbTable.setOrderid(orderId);
+
+		tableService.updateSettleStatus(tbTable);
 	 //AUTO事物处理
 	 //微信扫码支付反结算调用
 	 if(isweixin>0){//是微信扫码结算的

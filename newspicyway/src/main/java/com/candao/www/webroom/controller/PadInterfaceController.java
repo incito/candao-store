@@ -868,7 +868,7 @@ public class PadInterfaceController {
 
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(settlementStrInfo);
-		record.setPadpath("settleorder");
+		record.setPadpath("checkout");
 		jsonRecordService.insertJsonRecord(record);
 
 		SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);

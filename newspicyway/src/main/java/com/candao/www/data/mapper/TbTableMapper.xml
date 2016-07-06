@@ -141,12 +141,14 @@
 	    tableid=#{tableid} 
 	</update>
 	<delete id="delete" parameterType="map">
-	   delete from t_table
+	   update t_table
+	   set status = 5, modifytime = now()
 	   where 
 	    tableid=#{id} 
 	</delete>
 	<delete id="deleteTablesByAreaid" parameterType="map">
-	   delete from t_table
+	   update t_table
+	   set status = 5, modifytime = now()
 	   where 
 	    areaid=#{areaid} 
 	</delete>
