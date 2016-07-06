@@ -233,6 +233,17 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
+    
+    @ResponseBody
+    @RequestMapping(value = "/GetOrderByOrderid/{orderid}/{userId}", produces = {"application/text;charset=UTF-8"})
+    public String getOrderByOrderId(@PathVariable String orderid, @PathVariable String userId) {
+        logger.info("###REQUEST### BusinessController GetOrder tableNo={} userId={}", orderid, userId);
+        String result = businessService.getOrderByOrderID(orderid, userId);
+        result = "{\"result\":[\"" + result + "\"]}";
+        logger.info("###RESPONSE### BusinessController GetOrder response={}", result);
+        result = StringUtil.string2Unicode(result);
+        return result;
+    }
 
     @ResponseBody
     @RequestMapping(value = "/GetServerTableInfo/{tableNo}/{userId}", produces = {"application/text;charset=UTF-8"})

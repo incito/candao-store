@@ -20,4 +20,6 @@ public interface OrderSettleService {
  	public String calDebitAmount(String orderId);
  	public void updatePadData(String attach);
  	public Map<String, Object> selectorderinfos(String orderid);
+ 	//咖啡模式结账
+	public String saveOrder(SettlementInfo settlementInfo);
 }

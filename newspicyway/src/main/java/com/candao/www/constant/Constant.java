@@ -137,6 +137,19 @@ public class Constant {
 		public  static final int  DELETE_STATUS = 5;
 	}
 	
+	public class TABLETYPE {
+		
+		public  static final String  NORMAL = "0";
+		
+		public  static final String  PRIVATEROOM = "1";
+		
+		public  static final String  TAKEOUT = "2";
+		
+		public  static final String  TAKEOUT_COFFEE = "3";
+		
+		public  static final String  COFFEETABLE = "4";
+	}
+	
 	public class  PRINTTYPE {
 		
 	    public  static  final int URGE_DISH = 0;

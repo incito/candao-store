@@ -48,6 +48,7 @@ public class TbTableDaoImpl implements TbTableDao {
 	public <T, K, V> List<T> find(Map<K, V> params) {
 		return dao.find(PREFIX + ".find", params);
 	}
+	
 
 	@Override
 	public int insert(TbTable tbTable) {

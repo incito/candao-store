@@ -191,4 +191,9 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	public int selectIsPayWeixin(Map<String, String> dataMap) {
 		return dao.get(PREFIX + ".selectIsPayWeixin", dataMap);
 	}
+
+	@Override
+	public Map<String, Object> fingHistory(Map<String, Object> param) {
+		return dao.get(PREFIX + ".fingHistory", param);
+	}
 }

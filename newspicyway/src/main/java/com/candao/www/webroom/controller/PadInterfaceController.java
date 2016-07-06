@@ -379,6 +379,66 @@ public class PadInterfaceController {
 		logger.error("saveOrderInfoList-end:"+result,"");
 		return result;
 	}
+	
+	/**
+	 * 咖啡餐台，虚拟外卖餐台下单接口
+	 * 隔离订单和餐台的关联关系
+	 * @param jsonString
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/placeOrder")
+	public String placeOrder(@RequestBody String jsonString) {
+		logger.error("saveOrderInfoList-start:" + jsonString, "");
+		long start = System.currentTimeMillis();
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(jsonString);
+		record.setPadpath("placeOrder");
+		jsonRecordService.insertJsonRecord(record);
+		Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
+		logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+				"");
+		ToperationLog toperationLog = new ToperationLog();
+		toperationLog.setId(IdentifierUtils.getId().generate().toString());
+		toperationLog.setTableno(order.getCurrenttableid());
+		toperationLog.setOperationtype(Constant.operationType.SAVEORDERINFOLIST);
+		toperationLog.setSequence(order.getSequence());
+
+		String childrenOrderid = null;
+		//判断是否是咖啡模式加菜
+		try {
+			childrenOrderid = orderService.createChildOrderid(order.getOrderid());
+		} catch (Exception e) {
+			logger.error("咖啡模式加菜失败！创建子订单失败", e);
+			e.printStackTrace();
+		}
+		order.setOrderid(childrenOrderid);
+		
+		Map<String, String> mapDetail = new HashMap<String, String>();
+		mapDetail.put("orderid", order.getOrderid());
+		List<Map<String, String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
+
+		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
+		String result = "";
+		Map<String, Object> res = orderDetailService.placeOrder(order, toperationLog);
+		try {
+			String type = "12";
+			if ((orderDetileList != null && orderDetileList.size() > 0)
+					|| (orderDetileTempList != null && orderDetileTempList.size() > 0)) {
+				type = "13";
+			}
+			executor.execute(new PadThread(order.getCurrenttableid(), type));
+		} catch (Exception ex) {
+			logger.error("--->", ex);
+			ex.printStackTrace();
+		}
+		logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+				"");
+		logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
+		result = JacksonJsonMapper.objectToJson(res);
+		logger.error("saveOrderInfoList-end:" + result, "");
+		return result;
+	}
 
 	/**
 	 * 	PAD 催菜接口
@@ -799,6 +859,39 @@ public class PadInterfaceController {
 	}
 	
 	/**
+	 * 咖啡模式结账
+	 * @return
+	 */
+	@RequestMapping("/checkout")
+	@ResponseBody
+	public String checkout(@RequestBody String settlementStrInfo) {
+
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(settlementStrInfo);
+		record.setPadpath("settleorder");
+		jsonRecordService.insertJsonRecord(record);
+
+		SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
+		String result = orderSettleService.saveOrder(settlementInfo);
+
+		final String orderid = settlementInfo.getOrderNo();
+		// 修改投诉表信息
+		new Thread(new Runnable() {
+			public void run() {
+				callWaiterService.updateCallStatus(orderid);
+			}
+		}).start();
+
+		if ("0".equals(result)) {
+			logger.info("结算成功，调用进销存接口");
+			return psicallback(settlementInfo, 0);
+		} else {
+			logger.error("结算失败，result :" + result);
+			return Constant.FAILUREMSG;
+		}
+	}
+	
+	/**
 	 * 处理实收字段的问题 ，pos 端调用
 	 * @param orderId
 	 * @return
@@ -989,13 +1082,39 @@ public class PadInterfaceController {
 		map.put("defaultsort", Integer.parseInt(defaultsort));
 		String jsonString  = "";
 		try {
-			map.put("tabletypefilter", "2");//过滤掉餐台类型为外卖的餐台
+			int[] tabletypefilter = {2,3,4};
+			map.put("tabletypefilter", tabletypefilter);//过滤掉餐台类型为外卖,咖啡的餐台
 			List<Map<String, Object>> list = tableService.find(map);
 			return JacksonJsonMapper.objectToJson(list);
-
 		} catch (Exception e) {
 			jsonString = "";
 			logger.error("查询所有桌台异常！", e);
+		}
+		return jsonString;
+	}
+	
+	/**
+	 * 根据餐台类型查询餐台
+	 * @return
+	 */
+	@RequestMapping("getTableByType")
+	@ResponseBody
+	public String getTableByType(@RequestBody String json){
+		Map<String, Object>  map=new HashMap<>();
+		com.alibaba.fastjson.JSONObject obj = JSON.parseObject(json);
+		String defaultsort="0";//默认
+		if(null!=Constant.DEFAULT_TABLE_SORT){
+			defaultsort=Constant.DEFAULT_TABLE_SORT;
+		}
+		map.put("defaultsort", Integer.parseInt(defaultsort));
+		String jsonString  = "";
+		try {
+			map.put("tabletype", obj.getJSONArray("tableType").toArray());
+			List<Map<String, Object>> list = tableService.find(map);
+			return JacksonJsonMapper.objectToJson(list);
+		} catch (Exception e) {
+			jsonString = "";
+			logger.error("根据类型查询桌台异常！", e);
 		}
 		return jsonString;
 	}

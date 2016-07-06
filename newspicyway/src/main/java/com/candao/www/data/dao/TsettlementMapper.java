@@ -89,4 +89,6 @@ public interface TsettlementMapper {
 		
 		public int selectIsPayWeixin(Map<String, String> dataMap);
 		
+		public Map<String, Object> fingHistory(Map<String, Object> param);
+		
 }

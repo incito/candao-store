@@ -593,7 +593,7 @@ function getPersonNumTag(){
 			});
 }
 function getTabletypeTag(){
-	var result = [{'tabletype':'0','tabletypename':'散台'},{'tabletype':'1','tabletypename':'包间'},{'tabletype':'2','tabletypename':'外卖'}];
+	var result = [{'tabletype':'0','tabletypename':'散台'},{'tabletype':'1','tabletypename':'包间'},{'tabletype':'2','tabletypename':'外卖'},{'tabletype':'3','tabletypename':'咖啡外卖'},{'tabletype':'4','tabletypename':'咖啡台'}];
 	
 	
 			$.each(result, function(i,val){  
