@@ -109,7 +109,7 @@ public class WaiterShiftImpl implements WaiterShiftService {
             BigDecimal paidinamount = orderPayMountMap.containsKey(orderid) ? orderPayMountMap.get(orderid) : new BigDecimal(0);
 
             BigDecimal inflated = orderInflatedMap.containsKey(orderid) ? orderInflatedMap.get(orderid) : new BigDecimal(0);
-            BigDecimal xj = orderinfo.containsKey("xj") && !StringUtils.isBlank(String.valueOf(orderinfo.get("xj"))) && !String.valueOf(orderinfo.get("xf")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("xj"))) : new BigDecimal(0);
+            BigDecimal xj = orderinfo.containsKey("xj") && !StringUtils.isBlank(String.valueOf(orderinfo.get("xj"))) && !String.valueOf(orderinfo.get("xj")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("xj"))) : new BigDecimal(0);
             BigDecimal yhk = orderinfo.containsKey("yhk") && !StringUtils.isBlank(String.valueOf(orderinfo.get("yhk"))) && !String.valueOf(orderinfo.get("yhk")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("yhk"))) : new BigDecimal(0);
             BigDecimal ml = orderinfo.containsKey("ml") && !StringUtils.isBlank(String.valueOf(orderinfo.get("ml"))) && !String.valueOf(orderinfo.get("ml")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("ml"))) : new BigDecimal(0);
             BigDecimal hykxf = orderinfo.containsKey("hykxf") && !StringUtils.isBlank(String.valueOf(orderinfo.get("hykxf"))) && !String.valueOf(orderinfo.get("hykxf")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("hykxf"))) : new BigDecimal(0);
@@ -260,7 +260,7 @@ public class WaiterShiftImpl implements WaiterShiftService {
             BigDecimal paidinamount = orderPayMountMap.containsKey(orderid) ? orderPayMountMap.get(orderid) : new BigDecimal(0);
 
             BigDecimal inflated = orderInflatedMap.containsKey(orderid) ? orderInflatedMap.get(orderid) : new BigDecimal(0);
-            BigDecimal xj = orderinfo.containsKey("xj") && !StringUtils.isBlank(String.valueOf(orderinfo.get("xj"))) && !String.valueOf(orderinfo.get("xf")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("xj"))) : new BigDecimal(0);
+            BigDecimal xj = orderinfo.containsKey("xj") && !StringUtils.isBlank(String.valueOf(orderinfo.get("xj"))) && !String.valueOf(orderinfo.get("xj")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("xj"))) : new BigDecimal(0);
             BigDecimal yhk = orderinfo.containsKey("yhk") && !StringUtils.isBlank(String.valueOf(orderinfo.get("yhk"))) && !String.valueOf(orderinfo.get("yhk")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("yhk"))) : new BigDecimal(0);
             BigDecimal ml = orderinfo.containsKey("ml") && !StringUtils.isBlank(String.valueOf(orderinfo.get("ml"))) && !String.valueOf(orderinfo.get("ml")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("ml"))) : new BigDecimal(0);
             BigDecimal hykxf = orderinfo.containsKey("hykxf") && !StringUtils.isBlank(String.valueOf(orderinfo.get("hykxf"))) && !String.valueOf(orderinfo.get("hykxf")).equals("null") ? new BigDecimal(String.valueOf(orderinfo.get("hykxf"))) : new BigDecimal(0);
