@@ -130,10 +130,10 @@ public class TRethinkSettlementDaoImpl implements TRethinkSettlementDao {
 	 * @param orderid
 	 * @return
 	 */
-	public Map<String,Object> queryMoLing(String orderid){
+	public List<Map<String,Object>> queryMoLing(String orderid){
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("orderid", orderid);
-		return daoSupport.get(PREFIX + ".queryMoLing", params);
+		return daoSupport.find(PREFIX + ".queryMoLing", params);
 	}
 	
 	/**
