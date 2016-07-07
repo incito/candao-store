@@ -1829,11 +1829,6 @@ label_main:
       FROM t_order T
       WHERE T.orderid = v_orderid;
 
-      UPDATE t_table
-      SET status = '1',
-          orderid = v_orderid
-      WHERE tableid = V_TABLEID;
-
       UPDATE t_order
       SET orderstatus = '0'
       WHERE orderid = v_orderid;

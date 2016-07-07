@@ -141,12 +141,14 @@
 	    tableid=#{tableid} 
 	</update>
 	<delete id="delete" parameterType="map">
-	   delete from t_table
+	   update t_table
+	   set status = 5, modifytime = now()
 	   where 
 	    tableid=#{id} 
 	</delete>
 	<delete id="deleteTablesByAreaid" parameterType="map">
-	   delete from t_table
+	   update t_table
+	   set status = 5, modifytime = now()
 	   where 
 	    areaid=#{areaid} 
 	</delete>
@@ -249,7 +251,11 @@
 	        and a.personNum=#{personNum}
 	     </if>
 	     <if test="tabletype != null and tabletype != ''">
-	        and a.tabletype=#{tabletype}
+	        and a.tabletype in
+	        <foreach item="item" index="index" collection="tabletype" open="("  
+            separator="," close=")">  
+            #{item}  
+       		</foreach>
 	     </if>
 	     <if test="areaid != null and areaid != ''">
 	        and a.areaid=#{areaid}
@@ -267,8 +273,13 @@
 	        and a.status=#{status}
 	     </if>
 	     <if test="tabletypefilter!=null and tabletypefilter !=''">
-	     	and a.tabletype &lt;&gt; #{tabletypefilter}
+	     	and a.tabletype not in 
+	     	<foreach item="item" index="index" collection="tabletypefilter" open="("  
+            separator="," close=")">  
+            #{item}  
+       		</foreach> 
 	     </if>
+	     
 	     
 	   </where>
 	    GROUP BY

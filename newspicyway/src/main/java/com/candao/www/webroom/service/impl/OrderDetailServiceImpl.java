@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,12 @@ import com.candao.print.service.NormalDishProducerService;
 import com.candao.print.service.PrinterService;
 import com.candao.print.service.StatentMentProducerService;
 import com.candao.www.constant.Constant;
+import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.data.dao.ToperationLogDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.Torder;
@@ -122,14 +125,19 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	   tbTable.setStatus(0);
 	   tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null?"":tableMap.get("orderid")));
 	   tableService.updateCleanStatus(tbTable);
-	   
-	   if(tableMap.get("orderid") != null){
-		   Torder torder = new Torder();
-		   torder.setOrderid(String.valueOf(tableMap.get("orderid")));
-	       torder.setOrderstatus(2);
-	       torder.setEndtime(new Date());
-		   torderMapper.update(torder);
-	   }
+	   //咖啡模式和外卖会手动清台，订单不置为2
+		if (tableMap.get("orderid") != null) {
+			String tableType = tableMap.get("tabletype") == null ? ""
+					: String.valueOf(tableMap.get("tabletype")).trim();
+			if (!TABLETYPE.COFFEETABLE.equals(tableType) && !TABLETYPE.TAKEOUT_COFFEE.equals(tableType)
+					&& !TABLETYPE.TAKEOUT.equals(tableType)) {
+				Torder torder = new Torder();
+				torder.setOrderid(String.valueOf(tableMap.get("orderid")));
+				torder.setOrderstatus(2);
+				torder.setEndtime(new Date());
+				torderMapper.update(torder);
+			}
+		}
 	   
 	  //结账之后把操作的数据删掉
 	  Map<String,Object> delmap=new HashMap<String,Object>();
@@ -387,6 +395,108 @@ public class OrderDetailServiceImpl implements OrderDetailService{
  			res.put("data", data);
  			return res;
  		}
+ 	
+ 	/**
+ 	 * 咖啡模式下单
+ 	 * 1 下单不打单 2不操作餐台(外卖，咖啡外卖)
+ 	 */
+ 	@Override
+	public Map<String, Object> placeOrder(Order orders, ToperationLog toperationLog) {
+
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+		try {
+			if (StringUtils.isEmpty(orders.getOrderid())) {
+				log.info("-----------------------");
+				log.info("下单失败，参数失败，没有订单id");
+				return getResult("3", "参数错误，没有订单id", "");
+			}
+			// 判断是否重复下单
+			if (isRepetitionOrder(orders.getRows())) {
+				log.info("-->重复下单");
+				return getResult("0", "下单成功", "");
+			}
+			// 从传过来的数据中，获取订单详情的所有信息
+			List<TorderDetail> listall = getallTorderDetail(orders);
+			if (listall == null || listall.size() == 0) {
+				log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
+				return getResult("3", "订单中没有菜品", "");
+			}
+			//判断订单状态
+			Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
+			//通过餐台判断订单状态
+			String tableNo = orders.getCurrenttableid();
+			TbTable table = tableService.findByTableNo(tableNo);
+			if (table == null) {
+				log.error("-->t_table表中该table为空，tableNo为："+tableNo);
+				return getResult("3","查询不到该餐台","");
+			}
+			if (table.getTabletype() == null) {
+				log.error("-->t_table表中该tabletype为空，tableNo为："+tableNo);
+				return getResult("3","查询不到该餐台","");
+			}
+			if (Constant.TABLETYPE.COFFEETABLE.equals(table.getTabletype())) {
+				
+			} else if(TABLETYPE.TAKEOUT.equals(table.getTabletype()) || TABLETYPE.TAKEOUT_COFFEE.equals(table.getTabletype())) {
+				if (!"0".equals(String.valueOf(mapStatus.get("orderstatus") == null ? "" : mapStatus.get("orderstatus")))) {
+					log.error("-->orderId为：" + orders.getOrderid());
+					return getResult("3", "查询不到该订单", "");
+				}
+			} else {
+				log.error("-->orderId为：" + orders.getOrderid());
+				return getResult("3", "查询不到该订单", "");
+			}
+			if (!"0".equals(String.valueOf(mapStatus.get("orderstatus") == null ? "" : mapStatus.get("orderstatus")))) {
+				log.error("-->orderId为：" + orders.getOrderid());
+				return getResult("3", "查询不到该订单", "");
+			}
+			
+			// 先删除临时表,防止事物异常造成临时表里面存在数据
+			torderDetailMapper.deleteTemp(orders.getOrderid());
+			// 调用存储过程插入订单详情的临时表
+			int success = torderDetailMapper.insertTempOnce(listall);
+			if (success < 1) {
+				log.error("-->插入订单临时表t_order_detail_temp出错，参数" + JSONObject.fromObject(listall).toString());
+				transactionManager.rollback(status);
+				return getResult("3", "服务器异常", "");
+			}
+
+			// //执行存储过程，将订单详情临时表中的数据插入到t_order_detail
+			//
+			String result = "1";
+			String msg = "1";
+			Map<String, Object> mapParam = new HashMap<String, Object>();
+			mapParam.put("orderid", orders.getOrderid());
+			mapParam.put("result", result);
+			mapParam.put("msg", msg);
+			torderMapper.setOrderDish(mapParam);
+			result = String.valueOf(mapParam.get("result"));
+
+			if (!"0".equals(result)) {
+				log.error("-->result为：" + 1);
+				transactionManager.rollback(status);
+				return getResult(result, String.valueOf(mapParam.get("msg")), "");
+			}
+			// 操作成功了，插入操作日记
+			// 修改为用dao层的日志引用，防止手动事物嵌套引起异常
+			int saveresult = toperationLogDao.save(toperationLog);
+			if (saveresult > 0) {
+				transactionManager.commit(status);
+				log.info(orders.getOrderid() + "下单成功");
+				return getResult("0", "下单成功", "");
+			}
+			transactionManager.rollback(status);
+			return getResult("3", "服务器异常", "");
+		} catch (Exception ex) {
+			log.error("-->", ex);
+			ex.printStackTrace();
+			transactionManager.rollback(status);
+			return getResult("3", "服务器异常 ", "");
+		}
+
+	}
+ 		
 		/**
 		 * 打印订单中的需要称重的数据，打印称重单
 		 * @author shen
@@ -1363,6 +1473,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			   log.error("-->参数urgeDish为空");
 			   return Constant.FAILUREMSG;
 		   }
+		   //是否打印单据
+		   boolean isPrint = true;
 		    Map<String, Object> params=new HashMap<String, Object>();
 			params.put("tableNo", urgeDish.getCurrenttableid());
 			List<Map<String, Object>> tableList=tableService.find(params);
@@ -1371,6 +1483,19 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			}else{
 				log.error("-->tableList为空，参数tableNo为"+urgeDish.getCurrenttableid());
 				return Constant.FAILUREMSG;
+			}
+			//咖啡模式，外卖模式反结算以后才打印打印退菜单
+			String tableType = (String) tableList.get(0).get("tabletype");
+			tableType = tableType == null ? "" : tableType.trim();
+			if (!StringUtils.isEmpty(tableType)) {
+				if(TABLETYPE.COFFEETABLE.equals(tableType) || TABLETYPE.TAKEOUT.equals(tableType) || TABLETYPE.TAKEOUT_COFFEE.equals(tableType)){
+					Map<String, Object> param = new HashMap<>();
+					param.put("orderid", urgeDish.getOrderNo());
+					Map<String, Object> res = settlementMapper.fingHistory(param);
+					if (MapUtils.isEmpty(res)) {
+						isPrint = false;						
+					}
+				}
 			}
 			  String orderId = urgeDish.getOrderNo();
 			  String discardUserId = urgeDish.getDiscardUserId();
@@ -1426,7 +1551,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
             				  map0.put("discardNum",urgeDish.getDishNum());
             				  map0.put("primarykey", urgeDish.getPrimarykey());
             				  map0.put("discardReason", discardReason);
-            				  printSingleDish(map0,printObj,1,null);
+            				  if (isPrint) {
+            					  printSingleDish(map0,printObj,1,null);								
+							}
             				  
             				  
             				  PrintDish pd = new PrintDish();
@@ -1440,7 +1567,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 								  map0.put("printobjid", printObj.getId());
 								  map0.put("primarykey",urgeDish.getPrimarykey());
 								  map0.put("discardReason", discardReason);
-								  printMutilDish(map0,printObj,1,null);
+								  if (isPrint) {
+									  printMutilDish(map0,printObj,1,null);									
+								}
 								  
 								  PrintDish pd = new PrintDish();
 	            				  pd.setPrintobjid( printObj.getId());
@@ -1452,7 +1581,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 									  map0.put("printobjid", printObj.getId());
 									  map0.put("primarykey",orderDetail.getParentkey());
 									  map0.put("discardReason", discardReason);
-									  printMutilDish(map0,printObj,1,null);
+									  if (isPrint) {										
+										  printMutilDish(map0,printObj,1,null);
+									}
 									  
 									  PrintDish pd = new PrintDish();
 		            				  pd.setPrintobjid( printObj.getId());
@@ -1466,7 +1597,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			            				  map0.put("discardNum",urgeDish.getDishNum());
 			            				  map0.put("primarykey", urgeDish.getPrimarykey());
 			            				  map0.put("discardReason", discardReason);
-			            				  printSingleDish(map0,printObj,1,null);
+			            				  if (isPrint) {
+			            					  printSingleDish(map0,printObj,1,null);											
+										}
 			            				  
 			            				  PrintDish pd = new PrintDish();
 			            				  pd.setPrintobjid( printObj.getId());
@@ -1490,7 +1623,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				            				  map0.put("discardNum",urgeDish.getDishNum());
 				            				  map0.put("primarykey", urgeDish.getPrimarykey());
 				            				  map0.put("discardReason", discardReason);
-				            				  printSingleDish(map0,printObj,1,null);
+				            				  if (isPrint) {
+				            					  printSingleDish(map0,printObj,1,null);												
+											}
 				            				  
 				            				  PrintDish pd = new PrintDish();
 				            				  pd.setPrintobjid( printObj.getId());
@@ -1501,7 +1636,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 											  map0.put("printobjid", printObj.getId());
 											  map0.put("primarykey",orderDetail.getParentkey());
 											  map0.put("discardReason", discardReason);
-											  printMutilDish(map0,printObj,1,null);
+											  if (isPrint) {												
+												  printMutilDish(map0,printObj,1,null);
+											}
 											  
 											  PrintDish pd = new PrintDish();
 				            				  pd.setPrintobjid( printObj.getId());
@@ -1523,7 +1660,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	             				  map0.put("childdishtype","0" );
 	             				  map0.put("parentkey",urgeDish.getPrimarykey());
 	             				  map0.put("discardReason", discardReason);
-	             				  printSingleDish(map0,printObj,1,null);
+	             				  if (isPrint) {
+	             					  printSingleDish(map0,printObj,1,null);									
+								}
 	             				  
 	             				  //套餐中的鱼锅
 	            				  map0 = new HashMap<String, Object>();
@@ -1533,7 +1672,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	            				  map0.put("ismaster","1" );
 	            				  map0.put("discardReason", discardReason);
 	            				  map0.put("parentkey",urgeDish.getPrimarykey());
-	            				  printMutilDish(map0,printObj,1,null);
+	            				  if (isPrint) {
+	            					  printMutilDish(map0,printObj,1,null);									
+								}
 	            				  
 	            				  
 	            				  Map<String, Object> paramsDish = new HashMap<String, Object>();
@@ -1570,7 +1711,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("printobjid", printObj.getId());
 				  map0.put("dishtype", "0");
 				  map0.put("discardReason", discardReason);
-				  printSingleDish(map0,printObj,1,null);
+				  if (isPrint) {
+					  printSingleDish(map0,printObj,1,null);					
+				}
 				  
 			  //打印火锅
 				  map0   = new HashMap<String, Object>();
@@ -1578,7 +1721,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("dishtype", "1");
 				  map0.put("ismaster","1" );
 				  map0.put("discardReason", discardReason);
-				  printMutilDish(map0,printObj,1,null);
+				  if (isPrint) {
+					  printMutilDish(map0,printObj,1,null);					
+				}
 				  
 				//打印套餐   套餐中的单品
 				  map0 = new HashMap<String, Object>();
@@ -1586,7 +1731,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("dishtype", "2");
 				  map0.put("childdishtype","0" );
 				  map0.put("discardReason", discardReason);
-				  printSingleDish(map0,printObj,1,null);
+				  if (isPrint) {
+					  printSingleDish(map0,printObj,1,null);					
+				}
 				
 				  //打印套餐   套餐中的火锅
 				  map0 = new HashMap<String, Object>();
@@ -1595,7 +1742,9 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				  map0.put("childdishtype","1" );
 				  map0.put("ismaster","1" );
 				  map0.put("discardReason", discardReason);
-				  printMutilDish(map0,printObj,1,null);
+				  if (isPrint) {					
+					  printMutilDish(map0,printObj,1,null);
+				}
  
 				  torderDetailMapper.insertDiscardDishOnce(orderId);
 				  TorderDetail orderDetail = new TorderDetail();
@@ -1952,6 +2101,22 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		return torderDetailMapper.getItemSellDetail(timeMap);
 	}
 	
+	/**
+	 * 结账后打印
+	 * 
+	 * @param order
+	 * @param flag
+	 */
+	public void afterprint(String orderid) {
+		int flag = 0;// 
+		Map<String, Object> mapParam1 = new HashMap<String, Object>();
+		mapParam1.put("orderid", orderid);
+		List<TorderDetail> detailList = torderDetailMapper.find(mapParam1);
+		TbTable table = tableService.findTableByOrder(orderid);
+		printOrderList(orderid, table.getTableid(), flag);
+		printweigth(detailList, orderid);
+	}
+	
 public class PrintThread  implements Runnable{
 		   
 		   PrintObj printObj ;
@@ -2099,5 +2264,8 @@ public class WeigthThread  implements Runnable{
 	private DishSetProducerService dishSetService;
 
 	@Autowired
-	StatentMentProducerService statentMentProducerService;  
+	StatentMentProducerService statentMentProducerService;
+	
+	@Autowired
+	TsettlementMapper settlementMapper;
 }
