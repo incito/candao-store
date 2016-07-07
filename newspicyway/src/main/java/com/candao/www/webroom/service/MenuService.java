@@ -130,4 +130,12 @@ public interface MenuService {
 	 */
 	public Map<String,Object> getHeatDishList(Map<String,Object> params);
 	public Tmenu getMenuNameById(String menuid);
+
+
+	/**
+	 * 通知其他设备菜品状态改变（估清、取消估清）
+	 * @param dishId 菜品ID
+	 * @param code  操作代码 1估清，2取消估清
+     */
+	public void  notifyDishStatus(String dishId,short code);
 }

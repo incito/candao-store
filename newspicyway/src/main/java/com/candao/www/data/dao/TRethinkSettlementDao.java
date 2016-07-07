@@ -101,7 +101,7 @@ public interface TRethinkSettlementDao {
 	 * @param orderid
 	 * @return
 	 */
-	public Map<String,Object> queryMoLing(String orderid);
+	public List<Map<String,Object>> queryMoLing(String orderid);
 	
 	/**
 	 * 查询应收

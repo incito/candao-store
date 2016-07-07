@@ -93,6 +93,24 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     }
 
     @Override
+    public void broadCastMsg4Netty(String msgId, Object msgData,boolean isSingle) {
+        String msg="";
+        if(null!=msgData){
+            msg=JSON.toJSONString(msgData);
+        }
+        LOGGER.info("#### broadCastMsgForNetty msgId={},msg={}###", msgId, msg);
+        ResponseData responseData = new ResponseData();
+        try {
+            broadCastMsgDevices(deviceObjectService.getAllDevice(),msg, msgId, isSingle);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseData.setData("0");
+            responseData.setData("发送广播消息异常");
+            LOGGER.error("#### broadCastMsgForNetty###",  e);
+        }
+    }
+
+    @Override
     @Transactional
     public String broadCastOk(String client, String msgId) {
         LOGGER.info("###broadCastOk client={},msgId={}###", client, msgId);
