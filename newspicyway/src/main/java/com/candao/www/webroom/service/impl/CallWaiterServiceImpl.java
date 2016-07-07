@@ -180,100 +180,69 @@ public class CallWaiterServiceImpl implements CallWaiterService {
     }
 
     /**
-     * 查找最近桌子的服务员的编号
-     *
+     * 获取在线服务员ID
+     * @param retableList
+     * @param tableno
      * @return
      */
     @Override
-    public String findrelateUserid(List<Map<String, Object>> retableList, String tableno) {
-        String useridStr = "";
-        int tablenoint = parInt(tableno);
-        if (tablenoint <= 0) {
-            return useridStr;
-        }
-        //没有查询到同一区域的桌子信息
-        if (retableList == null || retableList.size() <= 0) {
-            return useridStr;
-        }
-        //遍历获取所有的桌子的订单信息
-        Set<String> tableiddSet = new HashSet<String>();
-
-        //桌子id与桌子编号的对应关系
-        Map<String, Integer> tableidInfoMap = new HashMap<String, Integer>();
-        for (Map<String, Object> map : retableList) {
-            if (map == null || !map.containsKey("tableid") || !map.containsKey("tableNo")) {
-                continue;
-            }
-            String tableid = String.valueOf(map.get("tableid"));
-            if (StringUtils.isBlank(tableid)) {
-                continue;
-            }
-            String tableNo = String.valueOf(map.get("tableNo"));
-            if (StringUtils.isBlank(tableNo)) {
-                continue;
-            }
-            if (parInt(tableNo) <= 0) {
-                continue;
-            }
-            tableiddSet.add(tableid);
-            tableidInfoMap.put(tableid, parInt(tableNo));
-        }
-
-        if (tableiddSet.size() <= 0) {
-            return useridStr;
-        }
-        //查询所有的订单信息
-        Map<String, Object> ordermap = new HashMap<String, Object>();
-        ordermap.put("ids", new ArrayList<String>(tableiddSet));
-        List<Torder> orderList = torderMapper.findontimeOrdersByTableids(ordermap);
-        //获取所有登录的手环信息
-        Map<String, Object> instrumentmap = new HashMap<String, Object>();
-        instrumentmap.put("status", "0");
-        List<TbUserInstrument> listuser = tbUserInstrumentDao.findByParams(instrumentmap);
-        if (orderList == null || orderList.size() <= 0) {
-            return useridStr;
-        }
-        if (listuser == null || listuser.size() <= 0) {
-            return useridStr;
-        }
-        //遍历所有登录手环的服务员信息，将服务员编号放入集合中
-        Set<String> onlineUserSet = new HashSet<String>();
-        for (TbUserInstrument instrment : listuser) {
-            if (instrment == null) {
-                continue;
-            }
-            String userid = instrment.getUserid();
-            if (StringUtils.isBlank(userid)) {
-                continue;
-            }
-            onlineUserSet.add(userid);
-        }
-        int absolutetableno = 10000;
-        //遍历所有的订单信息，获取桌号信息，并通过绝对值的大小判断是否是最近的桌号
-        for (Torder order : orderList) {
-            if (order == null || StringUtils.isBlank(order.getCurrenttableid()) || StringUtils.isBlank(order.getUserid())) {
-                continue;
-            }
-            //桌号是否可以转换成数字，不能转换成数字的桌号，暂时不在排序范围之内
-            int temptableno = tableidInfoMap.containsKey(order.getCurrenttableid()) ? tableidInfoMap.get(order.getCurrenttableid()) : 0;
-            if (temptableno <= 0) {
-                continue;
-            }
-            //判断当前订单的服务员的手环是否在线
-            String tempuserid = order.getUserid();
-            if (!onlineUserSet.contains(tempuserid)) {
-                continue;
-            }
-            //取与已知桌绝对值最小并且手环在线的服务员的编号进行推送消息
-            int temp = Math.abs(temptableno - tablenoint);
-            if (temp < absolutetableno) {
-                absolutetableno = temp;
-                useridStr = tempuserid;
-            }
-
-        }
-        return useridStr;
-
+    public String findrelateUserid(List<Map<String, Object>> retableList, String tableno) { 
+    	String useridStr = "";
+//	  	没有查询到同一区域已开台的桌子信息
+	    if (retableList == null || retableList.size() <= 0) {
+	        return useridStr;
+	    }
+	    
+//	  	遍历获取所有的已经开台桌子的订单信息
+	    Set<String> tableiddSet = new HashSet<String>();	//所有已开台的桌台ID
+	    for (Map<String, Object> map : retableList) {
+	        if (map == null || !map.containsKey("tableid") || !map.containsKey("tableNo")) {
+	            continue;
+	        }
+	        String tableid = String.valueOf(map.get("tableid"));
+	        tableiddSet.add(tableid);
+	    }
+	    
+//	  	查询所有已开台桌台的订单信息
+	    Map<String, Object> ordermap = new HashMap<String, Object>();
+	    ordermap.put("ids", new ArrayList<String>(tableiddSet));
+	    List<Torder> orderList = torderMapper.findontimeOrdersByTableids(ordermap);
+	    if (orderList == null || orderList.size() <= 0) {
+	        return useridStr;
+	    }
+	    
+//	  	获取所有登录的手环信息
+	    Map<String, Object> instrumentmap = new HashMap<String, Object>();
+	    instrumentmap.put("status", "0");
+	    List<TbUserInstrument> listuser = tbUserInstrumentDao.findByParams(instrumentmap);
+	    if (listuser == null || listuser.size() <= 0) {
+	        return useridStr;
+	    }
+	    
+//	  	遍历所有登录手环的服务员信息，将服务员编号放入集合中
+	    Set<String> onlineUserSet = new HashSet<String>();
+	    for (TbUserInstrument instrment : listuser) {
+	        String userid = instrment.getUserid();
+	        if (StringUtils.isBlank(userid)) {
+	            continue;
+	        }
+	        onlineUserSet.add(userid);
+	    }
+	    
+//	  	遍历所有的订单信息，获取桌号信息，并通过绝对值的大小判断是否是最近的桌号
+	    for (Torder order : orderList) {
+	        if (order == null || StringUtils.isBlank(order.getCurrenttableid()) || StringUtils.isBlank(order.getUserid())) {
+	            continue;
+	        }
+	        //判断当前订单的服务员的手环是否在线
+	        String tempuserid = order.getUserid();
+	        if (!onlineUserSet.contains(tempuserid)) {
+	            continue;
+	        }
+	        useridStr = tempuserid;
+	        break;
+	    }
+	    return useridStr;
     }
 
     private TbMessage getSaveInfo(JSONObject data, int outtime) {

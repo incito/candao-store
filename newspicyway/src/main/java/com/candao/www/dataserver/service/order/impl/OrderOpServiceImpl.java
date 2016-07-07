@@ -242,6 +242,10 @@ public class OrderOpServiceImpl implements OrderOpService {
             if (!"0".equals(tableStatus)) {
                 return "{\"Data\":\"0\",\"Info\":\"帐单当前桌号还未结帐!\"}";
             }
+            //结账才能反结
+            if (!"3".equals(orderStatus)) {
+				return "{\"Data\":\"0\",\"Info\":\"该账单还未结账!\"}";
+			}
             if ("1".equals(isClear)) {
                 return "{\"Data\":\"0\",\"Info\":\"帐单已经生成了清机单!\"}";
             }

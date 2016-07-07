@@ -17,6 +17,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.StringUtils;
 
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -37,6 +38,7 @@ import com.candao.www.utils.HttpRequestor;
 import com.candao.www.webroom.model.SettlementDetail;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.DishService;
+import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.OrderDetailSettleService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
@@ -89,6 +91,9 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	private TRethinkSettlementDao tRethinkSettlementDao;
 	@Autowired
 	 DataSourceTransactionManager transactionManager ;
+	
+	@Autowired
+	private OrderDetailService orderdetailservice;
 
  	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
@@ -300,6 +305,136 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 logger.info("结算成功！");
 	  return "0";
 	}
+ 	
+ 	/**
+ 	 * 咖啡模式结账
+ 	 * 去除清台，增加打印
+ 	 */
+ 	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public String saveOrder(SettlementInfo settlementInfo) {
+		// TODO Auto-generated method stub
+		// 1.根據訂單 查詢金額
+		// 2.減去會員優惠，折扣 等信息
+		// 3.計算總額 減去所對應的優惠
+
+		String orderId = settlementInfo.getOrderNo();
+
+		Map<String, String> mapRet = new HashMap<String, String>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("orderid", orderId);
+		List<Map<String, Object>> resultMap = tableService.find(map);
+
+		if (resultMap == null || resultMap.size() == 0) {
+			logger.error("结算失败！查找餐桌失败 ,订单id:" + orderId);
+			mapRet.put("result", "2");
+			return JacksonJsonMapper.objectToJson(mapRet);
+		}
+
+		ArrayList<TsettlementDetail> listInsert = new ArrayList<TsettlementDetail>();
+
+		Tsettlement record = new Tsettlement();
+
+		record.setOrderid(settlementInfo.getOrderNo());
+		record.setUserid(settlementInfo.getUserName());
+		String settleId = IdentifierUtils.getId().generate().toString();
+		record.setStatus(0);
+		record.setSettledid(settleId);
+
+		TbOpenBizLog bizLog = tbOpenBizLogDao.findOpenBizDate();
+		if (bizLog == null) {
+			logger.error("结算失败！未找到开业记录");
+			return "1";
+		}
+
+		BigDecimal cashAmount = new BigDecimal(0.00);
+		BigDecimal bankAmount = new BigDecimal(0.00);
+		BigDecimal memberAmount = new BigDecimal(0.00);
+		BigDecimal discountAmount = new BigDecimal(0.00);
+		BigDecimal debitAmount = new BigDecimal(0.00);
+		BigDecimal freeAmount = new BigDecimal(0.00);
+
+		for (SettlementDetail detail : settlementInfo.getPayDetail()) {
+
+			TsettlementDetail recordDetail = new TsettlementDetail();
+			recordDetail.setSdetailid(IdentifierUtils.getId().generate().toString());
+
+			recordDetail.setSettleid(settleId);
+			recordDetail.setOrderid(orderId);
+			recordDetail.setIncometype(Constant.INCOMETYPE.NORMALINCOME);
+			recordDetail.setMembercardno(detail.getMemerberCardNo());
+			recordDetail.setBankcardno(detail.getBankCardNo());
+			recordDetail.setPayamount(detail.getPayAmount());
+
+			recordDetail.setCouponnum(detail.getCouponnum());
+			recordDetail.setCouponid(detail.getCouponid());
+			recordDetail.setCoupondetailid(detail.getCoupondetailid());
+
+			if (detail.getPayWay() != null || !"".equals(detail.getPayWay())) {
+				int payway = Integer.parseInt(detail.getPayWay());
+				recordDetail.setPayway(payway);
+			}
+
+			if (String.valueOf(Constant.PAYWAY.PAYWAY_CASH).equals(detail.getPayWay())) {
+				cashAmount.add(detail.getPayAmount());
+			}
+			if (String.valueOf(Constant.PAYWAY.PAYWAY_BANK_CARD).equals(detail.getPayWay())) {
+				bankAmount.add(detail.getPayAmount());
+			}
+			if (String.valueOf(Constant.PAYWAY.PAYWAY_MEMBER_CARD).equals(detail.getPayWay())) {
+				memberAmount.add(detail.getPayAmount());
+			}
+			if (String.valueOf(Constant.PAYWAY.PAYWAY_COUPON_CARD).equals(detail.getPayWay())) {
+				memberAmount.add(detail.getPayAmount());
+			}
+			if (String.valueOf(Constant.PAYWAY.PAYWAY_DISCOUNT).equals(detail.getPayWay())) {
+				discountAmount.add(detail.getPayAmount());
+			}
+			if (String.valueOf(Constant.PAYWAY.DEBITE_ACCOUNT).equals(detail.getPayWay())) {
+				recordDetail.setDebitParterner(detail.getDebitParterner());
+				debitAmount.add(detail.getPayAmount());
+			}
+
+			if (String.valueOf(Constant.PAYWAY.PAYWAY_FREE).equals(detail.getPayWay())) {
+				recordDetail.setPayamount(detail.getPayAmount());
+				recordDetail.setPayway(Constant.PAYWAY.PAYWAY_FREE);
+				freeAmount.add(detail.getPayAmount());
+			}
+			listInsert.add(recordDetail);
+		}
+
+		record.setBankamount(bankAmount);
+		record.setCashamount(cashAmount);
+		record.setMemeberamount(memberAmount);
+		record.setCreditamount(bankAmount.add(cashAmount).add(memberAmount));
+		record.setIncomeType(Constant.INCOMETYPE.NORMALINCOME);
+		record.setOpendate(bizLog.getOpendate());
+		// 挂账
+		record.setDebitamount(debitAmount);
+
+		settlementMapper.insert(record);
+		tsettlementDetailMapper.insertOnce(listInsert);
+
+		Torder updateOrder = new Torder();
+		updateOrder.setOrderid(orderId);
+		updateOrder.setOrderstatus(3);
+		updateOrder.setEndtime(new Date());
+		orderService.update(updateOrder);
+
+		// 更新菜品的数量
+		dishService.updateDishNum(orderId);
+		// 结账之后把操作的数据删掉
+		Map<String, Object> delmap = new HashMap<String, Object>();
+		delmap.put("orderid", orderId);
+		toperationLogService.deleteToperationLog(delmap);
+		
+		//最后一步打印
+		orderdetailservice.afterprint(orderId);
+
+		logger.info("结算成功！");
+		return "0";
+	}
+ 	
+ 	
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
@@ -356,13 +491,25 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	 updateOrder.setOrderid(orderId);
 	 updateOrder.setOrderstatus(0);
 	 orderService.update(updateOrder);
-//	 
-//	 //桌子空閒 0 空闲	 1 就餐	 3 预定	 4 已结账
-	 TbTable tbTable = new TbTable();
-	 tbTable.setStatus(1);
-	 tbTable.setOrderid(orderId);
 	 
-	 tableService.updateSettleStatus(tbTable);
+	 //外卖不更改状态
+//	 //桌子空閒 0 空闲	 1 就餐	 3 预定	 4 已结账
+		TbTable tbTable = new TbTable();
+		Map<String, Object> order = orderService.findOrderById(orderId);
+		TbTable table = tableService.findById((String) order.get("currenttableid"));
+		// 判断餐台类型
+		// 外卖，咖啡外卖不更改餐台状态
+		String tableType = table.getTabletype();
+		tableType = tableType == null ? "" : tableType;
+		if (StringUtils.isEmpty(tableType) || (!Constant.TABLETYPE.TAKEOUT.equals(tableType)
+				&& !Constant.TABLETYPE.TAKEOUT_COFFEE.equals(tableType))) {
+			tbTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
+		} else {
+			tbTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
+		}
+		tbTable.setOrderid(orderId);
+
+		tableService.updateSettleStatus(tbTable);
 	 //AUTO事物处理
 	 //微信扫码支付反结算调用
 	 if(isweixin>0){//是微信扫码结算的

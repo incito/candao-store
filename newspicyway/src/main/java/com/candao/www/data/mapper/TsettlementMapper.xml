@@ -29,6 +29,12 @@
     where orderid = #{orderid,jdbcType=VARCHAR}
   </select>
   
+  <select id="fingHistory" resultType="java.util.Map" parameterType="java.util.Map">
+  	select settledId ,debitamount,orderid,userid,status,feeamount,reason,rebacktime,again_settle_nums,authorizer_name
+  	from t_settlement_history
+  	where orderid = #{orderid,jdbcType=VARCHAR} limit 1
+  </select>
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />

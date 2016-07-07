@@ -60,6 +60,6 @@ public interface OrderService {
 	public String startOrderwaiter(Torder order);
 
 	public String updateOrderwaiter(Torder order);
-
-    
+	//咖啡模式加菜
+	public String createChildOrderid(String tableNo) throws Exception;
 }

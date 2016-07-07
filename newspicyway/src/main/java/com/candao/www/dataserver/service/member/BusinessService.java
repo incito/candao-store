@@ -121,8 +121,12 @@ public interface BusinessService {
     String getOrder(String tableNo, String userId);
 
     String getServerTableInfo2(String tableNo, String userId);
+    
+    String getServerTableInfo3(String orderId, String userId);
 
     String getServerTableList2(String orderId, String userId);
+    
+    String getOrderByOrderID(String orderid, String userId);
 
     /**
      * 关台

@@ -60,7 +60,7 @@
         select * from t_order_rule  where   orderid=#{orderId}
     </select>
     <select id="getAllOrderInfo2" resultType="java.util.HashMap">
-        SELECT a.*,c.tableName,e.areaNo,e.areaname,f.fullname,g.payamount,womanNum+mannum AS pnum,CASE WHEN a.fulldiscountrate>0
+        SELECT a.*,c.tableName,c.tabletype,e.areaNo,e.areaname,f.fullname,g.payamount,womanNum+mannum AS pnum,CASE WHEN a.fulldiscountrate>0
         THEN h.couponname ELSE '' END AS couponname3 FROM t_order a
         INNER JOIN t_table c ON(a.currenttableid=c.tableid)
         LEFT JOIN t_tablearea e ON(e.areaid=c.areaid)

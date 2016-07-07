@@ -400,6 +400,29 @@ public class BusinessServiceImpl implements BusinessService {
         String tableListJson = getServerTableList2(orderId, userId);
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
     }
+    
+    @Override
+    public String getOrderByOrderID(String orderid, String userId){
+        //获取单头信息
+        String tableJson = getServerTableInfo3(orderid, userId);
+        //获取单体信息
+        String tableListJson = getServerTableList2(orderid, userId);
+        return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
+    };
+    
+    @Override
+    public String getServerTableInfo3(String orderId, String userId){
+        //还原会员价
+        memberService.revertMemberPrice(userId, orderId);
+        dishService.updateCj(orderId, userId);
+        if (StringUtil.isEmpty(orderId)) {
+            return "{\"Data\":\"0\"}";
+        }
+        orderOpService.pCaleTableAmount(userId, orderId);
+        List<Map<String, Object>> tableOrder = orderMapper.selectTableOrder(orderId);
+
+        return "{\"Data\":" + JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
+    };
 
     @Override
     public String getServerTableInfo2(String tableNo, String userId) {

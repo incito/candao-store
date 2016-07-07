@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
@@ -280,13 +281,21 @@ public class OrderServiceImpl implements OrderService{
 		order.setOrderNum(maxOrderNum);
 		torderMapper.insert(order);
 		
-	
 		TbTable tTable = new TbTable();
 		tTable.setTableid(tableId);
 		tTable.setOrderid(orderId);
-		
-		tTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
-		tableService.updateStatus(tTable);
+		//判断餐台类型
+		//外卖，咖啡外卖不更改餐台状态
+		String tableType = (String)resultMap.get(0).get("tabletype");
+		tableType = tableType == null ? "":tableType;
+			if (StringUtils.isEmpty(tableType) || (! Constant.TABLETYPE.TAKEOUT.equals(tableType)
+					&& ! Constant.TABLETYPE.TAKEOUT_COFFEE.equals(tableType))) {
+				
+				tTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
+			} else {
+				tTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
+			}
+			tableService.updateStatus(tTable);
 		
 		//设定用户排序数量限定
 //	    String user_order_num = PropertiesUtils.getValue("user_order_num");
@@ -1077,4 +1086,68 @@ public class OrderServiceImpl implements OrderService{
 		return Constant.FAILUREMSG;
 	}
 	   
+	@Override
+	public String createChildOrderid(String orderid) throws Exception {
+		synchronized (this) {
+			// 查询主订单
+			Map<Object, Object> masterOrder = torderMapper.findOne(orderid);
+			if (masterOrder == null || masterOrder.isEmpty()) {
+				throw new Exception("查询订单失败，订单不存在！订单号：" + orderid);
+			}
+			String currenttableid = (String) masterOrder.get("currenttableid");
+			TbTable table = tableService.findById(currenttableid);
+			//判断是正常加菜还是咖啡模式加菜
+			String orderstatus = String.valueOf(masterOrder.get("orderstatus")).trim();
+			switch (orderstatus) {
+			case "0":
+				return orderid;
+			case "3":
+				if (table.getStatus() != 1) {
+					throw new Exception("餐台状态异常,不能加菜！订单号：" + orderid);
+				}
+				break;
+			default:
+				throw new Exception("订单状态异常！订单号：" + orderid);
+			}
+			String masterOrderid = orderid;
+			// 生成子订单号
+			int number = 1;
+			int index = orderid.indexOf("-");
+			if (index > 0) {
+				masterOrderid = orderid.substring(0, index);
+				number = Integer.parseInt(orderid.substring(index+1))+1;
+			}
+			String newOrderid = masterOrderid + "-" + number;
+
+			// 创建子订单
+			Torder order = new Torder();
+			order.setTableids((String) masterOrder.get("tableids"));
+			order.setOrderid(newOrderid);
+			order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
+			order.setChildNum((Integer) masterOrder.get("childNum"));
+			order.setCurrenttableid(currenttableid);
+			order.setCustnum((Integer) masterOrder.get("custnum"));
+			order.setManNum((Integer) masterOrder.get("mannum"));
+			order.setSpecialrequied((String) masterOrder.get("specialrequied"));
+			order.setUserid((String) masterOrder.get("userid"));
+			order.setWomanNum((Integer) masterOrder.get("womanNum"));
+			order.setBranchid(Integer.parseInt(PropertiesUtils.getValue("current_branch_id")));
+			order.setShiftid((int) masterOrder.get("shiftid"));
+			order.setAgeperiod((String) masterOrder.get("ageperiod"));
+			order.setMeid((String) masterOrder.get("meid"));
+			torderMapper.insert(order);
+			
+			//更新餐台当前订单
+			TbTable tTable = new TbTable();
+			tTable.setTableid(currenttableid);
+			tTable.setOrderid(newOrderid);
+			tTable.setStatus(1);
+			tableService.updateStatus(tTable);
+
+			// 更新服务员订单数量
+			User tbUser = userService.findMaxOrderNum();
+			userService.updateUserOrderNum(order.getUserid(), tbUser.getOrderNum());
+			return newOrderid;
+		}
+	}
 }
