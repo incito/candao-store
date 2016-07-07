@@ -349,5 +349,11 @@ public class Constant {
 		public static final short GOOD=2;//良好
 		public static final short NOT_REACHABLE=3;//连接断开
 	}
-	 
+	/**
+	 * 离线消息中消息的业务ID
+	 */
+	public class MSG_ID{
+		public static final  String GUQING="1";//估清
+		public static final  String QXGUQING="2";//取消估清
+	}
 }
