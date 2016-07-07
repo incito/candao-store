@@ -321,7 +321,9 @@ public class TableServiceImpl implements TableService {
 			 * 开台ABC三个餐台，现在用A并C餐台成功后，再用B并C餐台后A餐台的订单号不会更新
 			 */
 			//updateOrdernoForTable(sourceOrderId, targetTableId, false);
-			
+			/**
+			 * 监视人蔡华宇
+			 */
 			updateOrdernoForOrderid(sourceOrderId,targetOrderId,false);
 			
 			//判断是否需要释放餐台
