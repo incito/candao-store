@@ -186,6 +186,12 @@ public class TbTableDaoImpl implements TbTableDao {
 		
 		return dao.get(PREFIX+".menuInfoByorderidToCount", params);
 	}
+
+	@Override
+	public int updateTableByOrderId(Map<String, Object> map) {
+		
+		return dao.update(PREFIX + ".updateTableByOrderId", map);
+	}
 	
 }
 
