@@ -386,6 +386,19 @@ public class BusinessServiceImpl implements BusinessService {
             return DataServerJsonFormat.jsonFormat(orderOpService.getInfoByOrderId(orderId));
         }
     }
+    
+    @Override
+    public String getServerTableInfoByOrderId(String orderId, String userId) {
+        ResponseData responseData = new ResponseData();
+        dishService.updateCj(orderId, userId);
+        if (null == orderId || "".equals(orderId)) {
+            responseData.setData("0");
+            return JSON.toJSONString(responseData);
+        } else {
+            orderOpService.pCaleTableAmount(userId, orderId);
+            return DataServerJsonFormat.jsonFormat(orderOpService.getInfoByOrderId(orderId));
+        }
+    }
 
     @Override
     public String getOrder(String tableNo, String userId) {
