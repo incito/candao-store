@@ -745,6 +745,22 @@ public class PadInterfaceController {
 
 		return orderDetailService.cleantable(table);
 	}
+	
+	/**
+	 * 咖啡模式清台
+	 * @return
+	 */
+	@RequestMapping("/cleanTableSimply")
+	@ResponseBody
+	public String cleanTable(@RequestBody Table table,HttpServletRequest reqeust){
+
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(JacksonJsonMapper.objectToJson(table));
+		record.setPadpath("cleanTableSimply");
+		jsonRecordService.insertJsonRecord(record);
+
+		return orderDetailService.cleantableSimply(table);
+	}
 
 //	/**
 //	 * 结业 接口
