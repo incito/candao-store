@@ -86,7 +86,7 @@ public class SyncService {
      *
      * @param tables
      */
-    public void save(Map<String, List<Map<String, Object>>> tables) {
+    public void doSave(Map<String, List<Map<String, Object>>> tables) {
 
         Assert.notEmpty(tables);
 
