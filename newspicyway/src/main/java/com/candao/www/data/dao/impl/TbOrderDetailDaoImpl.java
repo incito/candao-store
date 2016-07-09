@@ -285,6 +285,13 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("targetOrderid", targetOrderid);
 		return dao.update(PREFIX + ".updateOrderDetailForMergeTable", params);
 	}
+
+	@Override
+	public int countByPrimarykey(List<TorderDetail> orderDetails) {
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("primarykeys", orderDetails);
+		return dao.get(PREFIX + ".countByPrimarykey", params);
+	}
 	
 }
  

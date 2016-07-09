@@ -1348,15 +1348,13 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		 * @return
 		 */
 		private boolean isRepetitionOrder(List<TorderDetail> orderDetails){
-			int repeteNum = 0;
-			for(TorderDetail t:orderDetails){
-				String primarykey = t.getPrimarykey();
-				TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				if(orderDetail != null && orderDetail.getOrderdetailid() != ""){
-					repeteNum++;
-				}
+			//没有提交任何菜品不能视为重复下单
+			if(orderDetails.isEmpty()){
+				return false;
 			}
-			return repeteNum == orderDetails.size() ? true : false;
+			//有菜品时再判断
+			int count = torderDetailMapper.countByPrimarykey(orderDetails);
+			return count == orderDetails.size();
 		}
 		
 	  /**
