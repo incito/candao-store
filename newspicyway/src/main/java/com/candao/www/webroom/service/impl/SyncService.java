@@ -63,7 +63,7 @@ public class SyncService {
             resp = JacksonJsonMapper.jsonToObject(result, Map.class);
             if ("200".equals(String.valueOf(resp.get("statusCode")))) {
                 try {
-                    save((Map<String, List<Map<String, Object>>>) resp.get("data"));
+                    doSave((Map<String, List<Map<String, Object>>>) resp.get("data"));
                 } catch (Exception e) {
                     logger.error("数据入库失败\n" + result, e);
                     resp.put("statusCode", "500");
