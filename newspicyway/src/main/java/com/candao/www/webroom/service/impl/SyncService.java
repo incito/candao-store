@@ -99,8 +99,6 @@ public class SyncService {
         Statement stmt = connection.createStatement()
     ) {
 
-      connection.setAutoCommit(false);
-
       // 循环处理多张表
       for (Map.Entry<String, List<Map<String, Object>>> entry : tables.entrySet()) {
         if ("t_dictionary".equalsIgnoreCase(entry.getKey()))
