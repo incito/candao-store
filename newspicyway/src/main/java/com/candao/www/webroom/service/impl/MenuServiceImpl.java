@@ -416,7 +416,7 @@ public class MenuServiceImpl implements MenuService {
 //			"dinnerware":{"id":"XXXXXX","price":"2","vipprice":"1","status":"0代表不收费，1代表收费"}
             dinnerware.put("id", listdinnerware.get(0).get("id"));
             dinnerware.put("price", listdinnerware.get(0).get("price"));
-            dinnerware.put("vipprice", listdinnerware.get(0).get("member_price"));
+            dinnerware.put("vipprice", listdinnerware.get(0).get("memberprice"));
             dinnerware.put("status", listdinnerware.get(0).get("chargesstatus"));
         }
         menu.put("dinnerware", dinnerware);
