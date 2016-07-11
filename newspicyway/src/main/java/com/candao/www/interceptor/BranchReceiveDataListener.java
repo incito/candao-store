@@ -5,7 +5,8 @@ package com.candao.www.interceptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ import com.candao.www.webroom.model.SynSqlObject;
 public class BranchReceiveDataListener {
 	
 	
-	   public static final Logger logger = Logger.getLogger(BranchReceiveDataListener.class);
+	   public static final Logger logger = LoggerFactory.getLogger(BranchReceiveDataListener.class);
 	
     @Autowired
     TSynSqlMapper  tSynSqlMapper;

@@ -58,4 +58,11 @@ public interface OrderDetailService {
 	public Map<String, Object> placeOrder(Order order,ToperationLog toperationLog );
 
 	public void   afterprint(String orderid);
+
+	/**
+	 * 咖啡模式清台
+	 * @param table
+	 * @return
+	 */
+	public String cleantableSimply(Table table);
 }

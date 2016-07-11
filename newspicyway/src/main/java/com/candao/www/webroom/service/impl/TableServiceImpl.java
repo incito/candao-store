@@ -316,7 +316,16 @@ public class TableServiceImpl implements TableService {
 
 			}
 			//更新餐台的订单号
-			updateOrdernoForTable(sourceOrderId, targetTableId, false);
+			/**
+			 * 该方法存在一个问题
+			 * 开台ABC三个餐台，现在用A并C餐台成功后，再用B并C餐台后A餐台的订单号不会更新
+			 */
+			//updateOrdernoForTable(sourceOrderId, targetTableId, false);
+			/**
+			 * 监视人蔡华宇
+			 */
+			updateOrdernoForOrderid(sourceOrderId,targetOrderId,false);
+			
 			//判断是否需要释放餐台
 			if(isCleanTarget){
 				cleanTargetTable(targetTableId);
@@ -340,6 +349,21 @@ public class TableServiceImpl implements TableService {
 		
 		return JacksonJsonMapper.objectToJson(resultmap);
 
+	}
+	/**
+	 * 更新餐台的订单号
+	 * @param sourceOrderId
+	 * @param targetOrderId
+	 * @param b
+	 */
+	private void updateOrdernoForOrderid(String sourceOrderId, String targetOrderId, boolean markUsing) {
+		Map<String, Object> map = new HashMap<>(); 
+		map.put("oldorderid", targetOrderId);
+		map.put("orderid", sourceOrderId);
+		if(markUsing){
+			map.put("status", 1);
+		}
+		tableDao.updateTableByOrderId(map);
 	}
 	/**
 	 * 更新打印表(t_printobj,t_printdish)的关系

@@ -97,6 +97,38 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	        return Constant.SUCCESSMSG;
 	}
 	
+	/**
+	 * 咖啡模式清台
+	 * 只清理餐台状态
+	 */
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class) 
+	public String cleantableSimply(Table table) {
+		String tableNo = table.getTableNo();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("tableNo", tableNo);
+		List<Map<String, Object>> resultMapList = tableService.find(map);
+		if (resultMapList == null || resultMapList.size() == 0) {
+			log.error("-->resultMapList为空(查询table为空)，参数tableNo为：" + tableNo);
+			return Constant.FAILUREMSG;
+		}
+		Map<String, Object> tableMap = resultMapList.get(0);
+		String tableId = String.valueOf(tableMap.get("tableid"));
+
+		TbTable tbTable = new TbTable();
+		tbTable.setTableid(tableId);
+		tbTable.setStatus(0);
+		tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
+		tableService.updateCleanStatus(tbTable);
+
+		//结账之后把操作的数据删掉
+		Map<String, Object> delmap = new HashMap<String, Object>();
+		delmap.put("tableno", table.getTableNo());
+		toperationLogService.deleteToperationLog(delmap);
+
+		return Constant.SUCCESSMSG;
+	}
+	
    /**
     * 清桌 ，
     */
@@ -125,19 +157,14 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	   tbTable.setStatus(0);
 	   tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null?"":tableMap.get("orderid")));
 	   tableService.updateCleanStatus(tbTable);
-	   //咖啡模式和外卖会手动清台，订单不置为2
-		if (tableMap.get("orderid") != null) {
-			String tableType = tableMap.get("tabletype") == null ? ""
-					: String.valueOf(tableMap.get("tabletype")).trim();
-			if (!TABLETYPE.COFFEETABLE.equals(tableType) && !TABLETYPE.TAKEOUT_COFFEE.equals(tableType)
-					&& !TABLETYPE.TAKEOUT.equals(tableType)) {
-				Torder torder = new Torder();
-				torder.setOrderid(String.valueOf(tableMap.get("orderid")));
-				torder.setOrderstatus(2);
-				torder.setEndtime(new Date());
-				torderMapper.update(torder);
-			}
-		}
+	   
+	   if(tableMap.get("orderid") != null){
+		   Torder torder = new Torder();
+		   torder.setOrderid(String.valueOf(tableMap.get("orderid")));
+	       torder.setOrderstatus(2);
+	       torder.setEndtime(new Date());
+		   torderMapper.update(torder);
+	   }
 	   
 	  //结账之后把操作的数据删掉
 	  Map<String,Object> delmap=new HashMap<String,Object>();

@@ -366,6 +366,18 @@
  	where tableid=#{tableid}
  </update>
  
+ <update id="updateTableByOrderId" parameterType="java.util.Map">
+ 	update t_table 
+ 	<set >
+ 		orderid = #{orderid} 
+      	<if test="status != null" >
+	 	,status = #{status}
+	 	</if>
+    </set>
+ 	where orderid=#{oldorderid}
+ </update>
+ 
+ 
   <update id="updateSettleStatus" parameterType="com.candao.www.data.model.TbTable">
 	   update t_table set status = #{status}  where    orderid =#{orderid}
  </update>

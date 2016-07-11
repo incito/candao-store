@@ -1168,7 +1168,11 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						dishids=dishids.substring(1);
 					}
 					//System.out.println("map:" + JacksonJsonMapper.objectToJson( discountDishList ));
-					amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					
+//					如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
+					if(amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1){
+						amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
+					}
 //					amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide( new BigDecimal(10))));
 					//int row=torderDetailDao.updateOrderDetailWithPreferential(discountDishList);
 					if(dishids!=null && dishids.length()>1){

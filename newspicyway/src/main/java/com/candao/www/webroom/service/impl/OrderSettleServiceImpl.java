@@ -316,7 +316,9 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		// 1.根據訂單 查詢金額
 		// 2.減去會員優惠，折扣 等信息
 		// 3.計算總額 減去所對應的優惠
-
+ 		
+ 		//判断是否需要打印
+ 		boolean isPrint = true;
 		String orderId = settlementInfo.getOrderNo();
 
 		Map<String, String> mapRet = new HashMap<String, String>();
@@ -413,6 +415,14 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 
 		settlementMapper.insert(record);
 		tsettlementDetailMapper.insertOnce(listInsert);
+		
+		//挂单结账时候不需要打印
+		Map<String, Object> order = orderService.findOrderById(orderId);
+		String payway = (String)order.get("payway");
+		String ordertype = (String)order.get("ordertype");
+		if ("3".equals(payway) && "2".equals(ordertype)) {
+			isPrint = false;
+		}
 
 		Torder updateOrder = new Torder();
 		updateOrder.setOrderid(orderId);
@@ -428,8 +438,10 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		toperationLogService.deleteToperationLog(delmap);
 		
 		//最后一步打印
-		orderdetailservice.afterprint(orderId);
-
+		if (isPrint) {
+			orderdetailservice.afterprint(orderId);			
+		}
+		
 		logger.info("结算成功！");
 		return "0";
 	}

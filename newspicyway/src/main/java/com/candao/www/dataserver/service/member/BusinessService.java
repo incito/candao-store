@@ -156,4 +156,12 @@ public interface BusinessService {
      * @return
      */
     String posrebacksettleorder(String orderId, String userId, String addr);
+
+    /**
+     * 通过orderid得到餐桌详情
+     * @param orderId
+     * @param userId
+     * @return
+     */
+	String getServerTableInfoByOrderId(String orderId, String userId);
 }

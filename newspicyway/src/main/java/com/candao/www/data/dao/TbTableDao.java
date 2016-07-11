@@ -92,6 +92,12 @@ public interface TbTableDao {
 	 * 菜单信息
 	 * */
 	public long getMenuInfoByCount(Map<String, Object> params);
+
+	/**
+	 * 更新订单号
+	 * @param map
+	 */
+	public int updateTableByOrderId(Map<String, Object> map);
 }
 
 

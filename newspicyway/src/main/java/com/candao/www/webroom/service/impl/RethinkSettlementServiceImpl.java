@@ -123,19 +123,23 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 		    dishes.add(dishMap);
 		}
 		map.put("orderid", params.get("orderid"));
-		map.put("personnum", order.get("personnum") == null ? 0 : order.get("personnum"));
-		map.put("begintime", order.get("begintime"));
-		map.put("endtime", order.get("endtime"));
-		map.put("tableno", order.get("tableno"));
-		map.put("area", order.get("area"));
-		map.put("waiter", order.get("waiter"));
-		map.put("totalconsumption", payways.get("totalconsumption"));
-		map.put("payway", payways.get("payway"));
-		map.put("payamount", payways.get("payamount"));
-		map.put("couponamount", payways.get("couponamount"));
-		map.put("giveamount", payways.get("giveamount"));
-		map.put("paidamount", payways.get("paidamount"));
-		map.put("invoiceamount", payways.get("invoiceamount"));
+		if(order != null){
+			map.put("personnum", order.get("personnum") == null ? 0 : order.get("personnum"));
+			map.put("begintime", order.get("begintime"));
+			map.put("endtime", order.get("endtime"));
+			map.put("tableno", order.get("tableno"));
+			map.put("area", order.get("area"));
+			map.put("waiter", order.get("waiter"));
+		}
+		if(payways != null){
+			map.put("totalconsumption", payways.get("totalconsumption"));
+			map.put("payway", payways.get("payway"));
+			map.put("payamount", payways.get("payamount"));
+			map.put("couponamount", payways.get("couponamount"));
+			map.put("giveamount", payways.get("giveamount"));
+			map.put("paidamount", payways.get("paidamount"));
+			map.put("invoiceamount", payways.get("invoiceamount"));
+		}
 		map.put("dishes",dishes);
 		map.put("coupons", coupons);
 		return map;
@@ -162,7 +166,7 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 	public Map<String,Object> querySettlementDetail(String orderid){
 		Map<String,Object> settlement = new HashMap<String,Object>();
 		//四舍五入/抹零
-		Map<String,Object> payways = tRethinkSettlementDao.queryMoLing(orderid);
+		List<Map<String,Object>> payways = tRethinkSettlementDao.queryMoLing(orderid);
 		//应收
 		BigDecimal yingshou = tRethinkSettlementDao.totalconsumption(orderid);
 		//套餐
@@ -180,10 +184,14 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 		settlement.put("giveamount", ratioTransform2(giveamount));
 		settlement.put("couponamount", ratioTransform2(couponamount));
 		settlement.put("invoiceamount", "0.00");
-		if(payways != null){
-			settlement.put("payway", payways.get("payway"));
-			BigDecimal payamount = (BigDecimal)payways.get("payamount");
-			settlement.put("payamount", ratioTransform2(payamount));
+		if(payways != null && payways.size() > 0){
+			for(Map<String, Object> map : payways){
+				BigDecimal payamount = (BigDecimal)map.get("payamount");
+				if(!new BigDecimal(0).equals(payamount)){
+					settlement.put("payway", map.get("payway"));
+					settlement.put("payamount", ratioTransform2(payamount));
+				}
+			}
 		}else{
 			settlement.put("payway", "7");
 			settlement.put("payamount", "0.00");

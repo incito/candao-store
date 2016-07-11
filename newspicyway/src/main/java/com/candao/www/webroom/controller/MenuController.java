@@ -197,18 +197,19 @@ public class MenuController {
 	public ModelAndView updateDishStatus(@RequestBody Map<String, Object> params) throws IOException{
 		ModelAndView mav=new ModelAndView();
 		boolean flag=menuService.updateDishStatus(params);
-		//推送接口先注释掉
 		if (flag) {
 			mav.addObject("message", "1");
-			StringBuffer str=new StringBuffer(Constant.TS_URL);
+//			StringBuffer str=new StringBuffer(Constant.TS_URL);
 			if("1".equals(String.valueOf(params.get("status")))){
-				str.append(Constant.MessageType.msg_1003+"/"+params.get("dishid"));
-				System.out.println("菜品估清推送："+str.toString());
+//				str.append(Constant.MessageType.msg_1003+"/"+params.get("dishid"));
+//				System.out.println("菜品估清推送："+str.toString());
+				menuService.notifyDishStatus(String.valueOf(params.get("dishid")), (short)1);	//1:菜品估清
 			}else{
-				str.append(Constant.MessageType.msg_1007+"/"+params.get("dishid"));
-				System.out.println("菜品取消估清推送："+str.toString());
+//				str.append(Constant.MessageType.msg_1007+"/"+params.get("dishid"));
+//				System.out.println("菜品取消估清推送："+str.toString());
+				menuService.notifyDishStatus(String.valueOf(params.get("dishid")), (short)2);	//2:取消估清
 			}
-			new Thread(new TsThread(str.toString())).run();
+//			new Thread(new TsThread(str.toString())).run();
 //			URL urlobj = new URL(str.toString());
 //			URLConnection urlconn = urlobj.openConnection();
 //			urlconn.connect();

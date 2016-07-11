@@ -17,6 +17,8 @@ import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import com.candao.www.utils.HttpUtil;
+import com.candao.www.webroom.service.impl.OrderDetailServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +64,8 @@ public class BusinessServiceImpl implements BusinessService {
     private DishService dishService;
     @Autowired
     private OrderMemberMapper orderMemberMapper;
+    @Autowired
+    private OrderDetailServiceImpl orderdetailservice;
 
     @Override
     public String getServerTableList(String userId, String orderId) {
@@ -363,6 +367,10 @@ public class BusinessServiceImpl implements BusinessService {
     public String putOrder(String tableNo, String orderId, String gzCode, String gzName, String telephone, String relaperson) {
         tableMapper.updaStatus0(tableNo);
         orderMapper.updatePutOrder(orderId, gzCode, gzName, telephone, relaperson);
+        //外卖挂单以后开启打印  咖啡模式
+        if (orderId != null) {
+        	orderdetailservice.afterprint(orderId);			
+		}
         operationLogMapper.deleteByTableNo(tableNo);
         return "{\"Data\":\"1\"}";
     }
@@ -377,6 +385,19 @@ public class BusinessServiceImpl implements BusinessService {
     public String getServerTableInfo(String tableNo, String userId) {
         ResponseData responseData = new ResponseData();
         String orderId = tableMapper.selectOrderIdOfStatusN5(tableNo);
+        dishService.updateCj(orderId, userId);
+        if (null == orderId || "".equals(orderId)) {
+            responseData.setData("0");
+            return JSON.toJSONString(responseData);
+        } else {
+            orderOpService.pCaleTableAmount(userId, orderId);
+            return DataServerJsonFormat.jsonFormat(orderOpService.getInfoByOrderId(orderId));
+        }
+    }
+    
+    @Override
+    public String getServerTableInfoByOrderId(String orderId, String userId) {
+        ResponseData responseData = new ResponseData();
         dishService.updateCj(orderId, userId);
         if (null == orderId || "".equals(orderId)) {
             responseData.setData("0");
