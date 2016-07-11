@@ -2860,7 +2860,7 @@ public class PadInterfaceController {
 						String newfilename=seatImagefiles.get(0).getOriginalFilename();
 			        	if(newfilename.indexOf(".")!=-1){
 			        		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-			        				+	newfilename.substring(newfilename.indexOf("."));
+			        				+	newfilename.substring(newfilename.indexOf(".")).toLowerCase();
 			        	}
 						int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
 						if(result==0){//成功
@@ -2881,7 +2881,7 @@ public class PadInterfaceController {
 			String newfilename=seatImagefiles.get(0).getOriginalFilename();
         	if(newfilename.indexOf(".")!=-1){
         		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-        				+	newfilename.substring(newfilename.indexOf("."));
+        				+	newfilename.substring(newfilename.indexOf(".")).toLowerCase();
         	}
 			int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
 			if(result==0){//成功
@@ -2914,7 +2914,7 @@ public class PadInterfaceController {
 	            	String newfilename=commonsMultipartFile.getOriginalFilename();
 	            	if(newfilename.indexOf(".")!=-1){
 	            		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-	            				+	newfilename.substring(newfilename.indexOf("."));
+	            				+	newfilename.substring(newfilename.indexOf(".")).toLowerCase();
 	            	}
 	            	String imagelocation=realpath+File.separator+"upload"+File.separator+ newfilename;
 	            	  File file = new File(imagelocation);  
