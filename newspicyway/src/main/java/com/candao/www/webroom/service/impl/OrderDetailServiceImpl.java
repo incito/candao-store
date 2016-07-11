@@ -341,24 +341,28 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			orders.setOrderid(table.getOrderid());
 		}else{
 			log.error("-->t_table表中该table为空，tableNo为："+tableNo);
+			transactionManager.rollback(status);
 			return getResult("3","查询不到该餐台","");
 		}
 		
 //		判断是否重复下单
 		if(isRepetitionOrder(orders.getRows())){
 			log.info("-->重复下单");
+			transactionManager.rollback(status);
 			return getResult("0","下单成功","");
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
 	    List<TorderDetail> listall = getallTorderDetail(orders);
 		if(listall == null || listall.size() == 0){
 			log.error("-->OrderDetail为空,orders.getRows()值为："+orders.getRows());
+			transactionManager.rollback(status);
 			return getResult("3","订单中没有菜品","");
 		}
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
 			  log.error("-->orderId为："+orders.getOrderid());
-				return getResult("3","查询不到该订单","");
+			  transactionManager.rollback(status);
+			  return getResult("3","查询不到该订单","");
 		  }
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
 		  mapParam1.put("orderid", orders.getOrderid());
@@ -1481,15 +1485,13 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		 * @return
 		 */
 		private boolean isRepetitionOrder(List<TorderDetail> orderDetails){
-			int repeteNum = 0;
-			for(TorderDetail t:orderDetails){
-				String primarykey = t.getPrimarykey();
-				TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				if(orderDetail != null && orderDetail.getOrderdetailid() != ""){
-					repeteNum++;
-				}
+			//没有提交任何菜品不能视为重复下单
+			if(orderDetails.isEmpty()){
+				return false;
 			}
-			return repeteNum == orderDetails.size() ? true : false;
+			//有菜品时再判断
+			int count = torderDetailMapper.countByPrimarykey(orderDetails);
+			return count == orderDetails.size();
 		}
 		
 	  /**
@@ -2291,8 +2293,5 @@ public class WeigthThread  implements Runnable{
 	private DishSetProducerService dishSetService;
 
 	@Autowired
-	StatentMentProducerService statentMentProducerService;
-	
-	@Autowired
-	TsettlementMapper settlementMapper;
+	StatentMentProducerService statentMentProducerService;  
 }

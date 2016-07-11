@@ -520,6 +520,13 @@
      and dishid = #{dishid,jdbcType=VARCHAR}
   </select>
   
+  <select id="countByPrimarykey" resultType="java.lang.Integer" parameterType="java.lang.String">
+  	select count(1) from t_order_detail where primarykey in
+  	<foreach collection="primarykeys" item="item" index="index" open="(" close=")" separator=",">
+	#{item.primarykey} 
+	</foreach>
+  </select>
+  
   <select id="find" parameterType="map" resultMap="BaseResultMap">
 	select 
     <include refid="Base_Column_List" />
