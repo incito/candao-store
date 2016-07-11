@@ -2294,4 +2294,7 @@ public class WeigthThread  implements Runnable{
 
 	@Autowired
 	StatentMentProducerService statentMentProducerService;  
+	
+	@Autowired
+	TsettlementMapper settlementMapper;
 }
