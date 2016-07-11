@@ -850,6 +850,8 @@ function editPrintBox(e){
 				});
 				showAllSelectStoreDivGroup();
 			}
+
+			//打印区域 初始化
 			$("#printArea-add-dialog input[type='checkbox']").each(function(){
 				var me = $(this);
 				if(me.prop("checked") === true) {
@@ -859,6 +861,19 @@ function editPrintBox(e){
 			$.each(findTableids, function(key,obj) {
 				$("#table_"+obj).click();
 			});
+
+			//打印菜品初始化
+			$("#printDishes-add-dialog input[type='checkbox']").each(function(){
+				var me = $(this);
+				if(me.prop("checked") === true) {
+					me.prop({"checked":false})
+				}
+			});
+			$.each(findDishids, function(key,obj) {
+				$("#dish_"+obj).click();
+			});
+
+
 			if(!jQuery.isEmptyObject(findTableids)){
 //				$("#print-area-add").html(getAreaslistTag.join(","));
 				$("#print-area-add").text("已选中"+findTableids.length + "个餐台");
