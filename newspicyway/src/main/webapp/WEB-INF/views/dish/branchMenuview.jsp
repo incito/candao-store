@@ -61,15 +61,15 @@
 					</div>
 					<div class="menu-center col-xs-5">
 						<div class="menu-type">
-							<div class="nav-dishes-prev">
-								<i class="icon-chevron-left"></i>
-							</div>
+							<%--<div class="nav-dishes-prev">--%>
+								<%--<i class="icon-chevron-left"></i>--%>
+							<%--</div>--%>
 							<ul class="nav-dishes-menu" id="nav-dishes-scroll">
 
 							</ul>
-							<div class="nav-dishes-next">
-								<i class="icon-chevron-right"></i>
-							</div>
+							<%--<div class="nav-dishes-next">--%>
+								<%--<i class="icon-chevron-right"></i>--%>
+							<%--</div>--%>
 						</div>
 						<div class="menu-detail-view" id="menu-detail-view" onmousemove="displayCoord(this, event);"></div>
 					</div>

@@ -49,13 +49,13 @@ function getDishMenuData(){
 		console.log(result);
 		if(result != null){
 			if(result.columList!=null && result.columList!=""){
-				if(result.columList.length>10){
-					$(".nav-dishes-prev").css("display", "");
-					$(".nav-dishes-next").css("display", "");
-				}else{
-					$(".nav-dishes-prev").css("display", "none");
-					$(".nav-dishes-next").css("display", "none");
-				}
+				//if(result.columList.length>10){
+				//	$(".nav-dishes-prev").css("display", "");
+				//	$(".nav-dishes-next").css("display", "");
+				//}else{
+				//	$(".nav-dishes-prev").css("display", "none");
+				//	$(".nav-dishes-next").css("display", "none");
+				//}
 				var colHtm = "";
 				$.each(result.columList, function(i, column){
 					var active = "";

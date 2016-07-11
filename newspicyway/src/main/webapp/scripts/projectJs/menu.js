@@ -131,11 +131,17 @@ $(document).ready(function(){
 	/*菜品分类*/
 	$(".menu-type").hover(function(){ 
 		var _this =$(".nav-dishes-menu"); 
-		if(_this.children().length>7){ 
+		$(this).css({
+			'overflow-x': "scroll"
+		})
+		if(_this.children().length>7){
 			_this.prev().css("visibility","visible");
 			_this.next().css("visibility","visible");
 		} 
 	},function(){
+		$(this).css({
+			'overflow-x': "hidden"
+		})
 		var _this =$(".nav-dishes-menu");
 		_this.prev().css("visibility","hidden");
 		_this.next().css("visibility","hidden");
@@ -1458,19 +1464,19 @@ function getDishDesc(detail, $obj, f){
 				}else{
 					//非 双拼锅
 					$.each(detail.fishpotlist, function(i, item){
-						desc += "<p><span>"+item.dishname+"</span>";
+						desc += "<p class='dish-name'><span>"+item.dishname+"</span>";
 						var va = item.price+"元/"+item.unit;
 						if(item.vipprice!=null && item.vipprice!=""){
 							va += "(会员价："+item.vipprice+"元/"+item.unit+")";
 						}
-						desc += "<span>"+va+"</span></p>";
+						desc += "<span class='dish-price'>"+va+"</span></p>";
 					});
 				}
 				
 			}else{
 				$.each(detail.dishunitlist, function(i, item){
 					if(i != 0){
-						desc += "<p><span>"+item.dishname+"</span>";
+						desc += "<p class='dish-name'><span>"+item.dishname+"</span>";
 						var va = item.price+"元/"+item.unit;
 						if(item.vipprice!=null && item.vipprice!=""){
 							va += "(会员价："+item.vipprice+"元/"+item.unit+")";
@@ -1478,7 +1484,7 @@ function getDishDesc(detail, $obj, f){
 						desc += "<span>"+va+"</span></p>";
 					}else{
 						//鱼锅名称
-						desc += "<p><span>"+item.dishname+"</span></p>";
+						desc += "<p class='dish-price'><span>"+item.dishname+"</span></p>";
 					}
 				});
 			}
@@ -1496,11 +1502,12 @@ function getDishDesc(detail, $obj, f){
 				if(item.vipprice != null && item.vipprice != "" && item.vipprice != undefined){
 					price += "(会员价："+item.vipprice+"元/"+unit+")";
 				}
-				if(i == 0){
-					desc += "<p><span>"+item.dishname+"</span></p>";
-					desc += "<p><span>"+price+"</span></p>";
-				}else if(i == 1){
-					desc += "<p><span>"+price+"</span></p>";
+				if(i === 0){
+					desc += "<p class='dish-name'><span>"+item.dishname+"</span></p>";
+					desc += "<p class='dish-intro'><span>"+item.dishintroduction+"</span></p>";
+					desc += "<p class='dish-price'><span>"+price+"</span></p>";
+				}else if(i === 1){
+					//desc += "<p class='dish-price'><span>"+price+"</span></p>";
 				}
 			});
 			$(dish_desc).html(desc);

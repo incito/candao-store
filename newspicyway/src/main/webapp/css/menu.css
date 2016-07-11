@@ -49,7 +49,8 @@
 	background: #fafafa;
 } 
 .menu-type{
-	height:32px;
+	height:52px;
+	overflow: hidden;
 }
 .menu-type .nav-dishes-prev{
 	margin-left:0px;
@@ -59,24 +60,25 @@
 	margin-top:8px;
 }
 .nav-dishes-menu{
-	padding:0px;
+	padding: 0px;
 	height: 32px;
-	width:95%;	
 	white-space: nowrap;
-	overflow: hidden;
-	display: inline-block;
-	font-size: 14px;
+	display: inline;
+	font-size: 15px;
 	
 }
 .nav-dishes-menu li{
-	float:left;
 	line-height:32px;
 	list-style: none;
 	text-align: center;
-	width:14.2%;/*14%*/
+	max-width:50%;/*14%*/
+	min-width: 15%;
+	padding:0 5px;
+	margin-right:5px;
 	white-space:nowrap; 
 	overflow:hidden; 
 	text-overflow:ellipsis;
+	display: inline-block;
 }
 .nav-dishes-menu li.active{
 	background:#fd7762;
@@ -141,7 +143,7 @@
 .menu-detail{
 	width:100%;
 	position: relative;
-	height:542px;
+	height:550px;
 	margin-top: 3px;
 }
 .menu-detail img{
@@ -166,15 +168,12 @@
 }
 .col-xs-6.menu-detail-box{
 	width:50%;
-	/*
-	margin-right:3px;
-	margin-bottom: 3px*/
 }
 .menu-detail-edit .row.menu-detail-box{
 /*	margin:3px 3px 3px 0px;*/
 }
 .menu-detail-view .row.menu-detail-box{
-	margin:2px 0px 2px 0px;
+	/*margin:2px 0px 2px 0px;*/
 }
 .menu-detail .col-xs-6 .row{
 	margin-top:0px;
@@ -287,14 +286,42 @@
 	margin: 0;
 }
 .menu-detail .menu-desc{
-	padding-left:5px;
+	padding:5px 10px;
 	text-align: left;
 	position: absolute;
 	bottom: 0;
+	background-color: rgba(255,255,255,0.7);
+	width: 100%;
+	padding-right:70px;
+}
+.menu-detail .menu-desc:after {
+	content:"";
+	position: absolute;
+	top:50%;
+	right: 10px;
+	background: url("../images/dish_add.png");
+	background-size: 100% 100%;
+	width: 50px;
+	height: 50px;
+	margin-top:-25px;
 }
 .menu-detail .menu-desc p{
 	margin-bottom: 0px;
 }
+.menu-detail13 .menu-desc,.menu-detail9 .menu-desc,.menu-detail10 .menu-desc,.menu-detail11 .menu-desc  {
+	background-color: transparent;
+}
+.menu-detail11 .menu-desc {
+	bottom:18px;
+}
+.menu-detail10 .menu-desc {
+	bottom:-7px;
+}
+.menu-detail13 .menu-desc  {
+	bottom:25px;
+}
+
+
 .menu-detail .menu-desc p>span{
 	text-align: left;
 	white-space:nowrap; 
@@ -302,8 +329,19 @@
 	text-overflow:ellipsis;
 	display:block;
 	height:20px;
-	width:230px
+	width:100%
 	
+}
+.menu-detail .menu-desc p.dish-price {
+	color:#b43131;
+	font-size:12px;
+}
+.menu-detail .menu-desc p.dish-name {
+	color:#000;
+}
+.menu-detail .menu-desc p.dish-intro {
+	color:#555;
+	font-size:13px;
 }
 .menu-detail-oper{	
 	width:20px;
@@ -799,7 +837,7 @@ table.menu-left-dishes {
 	text-align: center;
 	font-size:16px;
 	position: absolute;
-    margin-top: 600px;
+    margin-top: 630px;
     margin-left: 450px;/*8寸 400px*/
 	/*
 	width:415px;
