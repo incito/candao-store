@@ -26,7 +26,8 @@
 		MAX(CASE payway WHEN 18 THEN payamount ELSE 0 END )    zfbzf
 		FROM t_settlement_detail GROUP BY orderid) t ON ord.orderid = t.orderid
         where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime}  and (ordt.primarykey &lt;&gt; ordt.superkey or ordt.ordertype &lt;&gt; 2) and em.branch_id = #{branchId} and ord.branchid = #{branchId}
-        <if test="shiftid==-1">
+        and ord.orderstatus=3
+		<if test="shiftid==-1">
 	      and  ord.shiftid in (0,1)
 	    </if>
 	    <if test="shiftid!=-1">
@@ -40,7 +41,7 @@
     
     <select id="getOrderPayMount" parameterType="java.util.Map"  resultType="java.util.Map">
        select ord.orderid,sum(setd.payamount) as paidinamount from t_order ord left join t_settlement_detail setd on ord.orderid = setd.orderid where setd.payway in (0,1,5,8,13,17,18) 
-       and ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}
+       and ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}  and ord.orderstatus=3
         <if test="shiftid==-1">
 	      and  ord.shiftid in (0,1)
 	    </if>
@@ -55,7 +56,7 @@
     
     <select id="getOrderInflated" parameterType="java.util.Map"  resultType="java.util.Map">
       SELECT ord.orderid, sum(mem.Inflated) as inflated from t_order ord LEFT JOIN t_order_member mem ON ord.orderid = mem.orderid
-       where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}
+       where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}  and ord.orderstatus=3
         <if test="shiftid==-1">
 	      and  ord.shiftid in (0,1)
 	    </if>
