@@ -100,7 +100,7 @@ public class PrinterOther extends Printer {
 
                 } catch (IOException e) {
                     PrinterConnector.closeConnection(channel);
-                    logger.info("[" + getIp() + "]打印机连接异常", e);
+                    logger.info("[" + getIp() + "]打印机连接异常:"+e.getMessage());
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
                 } finally {
                     PrinterConnector.closeConnection(channel);
