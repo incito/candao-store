@@ -21,7 +21,7 @@
 		MAX(CASE payway WHEN 7 THEN payamount ELSE 0 END )    ml,
 		MAX(CASE payway WHEN 8 THEN payamount ELSE 0 END )    hykxf,
 		MAX(CASE payway WHEN 11 THEN payamount ELSE 0 END )    hyjfxf,
-		MAX(CASE payway WHEN 13 THEN payamount ELSE 0 END )    gz2,
+		(MAX(CASE payway WHEN 5 THEN payamount ELSE 0 END )  +MAX(CASE payway WHEN 13 THEN payamount ELSE 0 END ) )   gz2,
 		MAX(CASE payway WHEN 17 THEN payamount ELSE 0 END )    wxzf,
 		MAX(CASE payway WHEN 18 THEN payamount ELSE 0 END )    zfbzf
 		FROM t_settlement_detail GROUP BY orderid) t ON ord.orderid = t.orderid
