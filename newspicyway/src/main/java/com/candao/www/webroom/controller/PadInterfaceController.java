@@ -1028,13 +1028,14 @@ public class PadInterfaceController {
      */
     @RequestMapping(value = "/querytables")
     @ResponseBody
-    public String queryAllTable() {
+    public String queryAllTable(String orderid) {
         Map<String, Object> map = new HashMap<>();
         String defaultsort = "0";//默认
         if (null != Constant.DEFAULT_TABLE_SORT) {
             defaultsort = Constant.DEFAULT_TABLE_SORT;
         }
         map.put("defaultsort", Integer.parseInt(defaultsort));
+        map.put("exceptorder", orderid);//排除再外的餐台
         String jsonString = "";
         try {
             int[] tabletypefilter = {2, 3, 4};
