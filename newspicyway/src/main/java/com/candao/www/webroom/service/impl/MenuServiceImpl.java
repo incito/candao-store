@@ -666,6 +666,8 @@ public class MenuServiceImpl implements MenuService {
         Map<String, Object> msgData = new HashMap<>();
         msgData.put("dishId", dishId);
         msgData.put("oper",msgId);
-        msgForwardService.broadCastMsg4Netty(msgId, msgData, false);
+        //消息有效期 秒
+        int expireSeconds = 4 * 60 * 60;
+        msgForwardService.broadCastMsg4Netty(msgId, msgData, expireSeconds, false);
     }
 }

@@ -33,9 +33,11 @@ public interface MsgForwardService {
      *消息推送接口  不兼容原版本广播
      * @param msgId MSG命令ID（发送方和接收方协定，见msg-config.properties）
      * @param msgData 发送的数据
+     * @param expireSeconds  有效时间，单位秒
+     * @param isSingle 消息是否唯一
      * @return
      */
-    void broadCastMsg4Netty(String msgId, Object msgData,boolean isSingle);
+    void broadCastMsg4Netty(String msgId, Object msgData, int expireSeconds,boolean isSingle);
 
 
     /**
@@ -52,7 +54,7 @@ public interface MsgForwardService {
      * @param msg
      * @return
      */
-    void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType, boolean isSingle);
+    void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType,int expireSeconds,   boolean isSingle);
 
     /**
      * 批量给在线设备发送消息
