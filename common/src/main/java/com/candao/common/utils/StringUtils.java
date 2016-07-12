@@ -251,12 +251,20 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		String str = "";
 		boolean flag = false;
 		int truelength = 0;
+		int blanklength = 0;
 		if (src != null && !"".equals(src)) {
 			//计算真实长度
 			for (int i = 0; i < src.length(); i++) {
 				char c = src.charAt(i);
 				if ((c & 0xff00) != 0) {
 					truelength += 2;
+				} else if(c == 0x0a ){
+					blanklength = truelength;
+					truelength = i;
+					StringBuilder buffer = new StringBuilder(src);
+					src = buffer.deleteCharAt(i).toString();
+					flag = true;
+					break;
 				} else {
 					truelength += 1;
 				}
@@ -265,6 +273,7 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 					if (truelength == num + 1) {
 						//truelength此时标记换行点在src中的位置
 						truelength = i;
+						blanklength = 1;
 						flag = true;
 					} else {
 						//判断是否已经遍历到src末尾
@@ -282,8 +291,11 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		//2 如果换行 truelength代表换行位置，小于src长度
 		if (truelength != 0 && truelength < src.length()) {
 			str = src.substring(0, truelength);
-			if (flag)
-				str = str.concat(" ");
+			if (flag) {
+				for (int i = 0; i < num - blanklength; i++) {
+					str = str.concat(" ");
+				}
+			}
 			res.add(str);
 			//递归处理剩余字符串
 			res = subString3(src.substring(truelength), num, res);

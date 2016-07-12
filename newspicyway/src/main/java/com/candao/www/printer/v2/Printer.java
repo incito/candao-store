@@ -139,7 +139,7 @@ public class Printer {
                 } catch (IOException e) {
                     PrinterConnector.closeConnection(channel);
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
-                    logger.info("[" + ip + "]打印发生异常，尝试重连", e);
+                    logger.info("[" + ip + "]打印发生异常，尝试重连:"+e.getMessage());
                     channel = PrinterConnector.createConnection(ip, port, 2000);
                     if (null == channel) {
                         logger.info("[" + ip + "]尝试重连失败");
@@ -242,7 +242,7 @@ public class Printer {
             } catch (IOException e) {
                 PrinterConnector.closeConnection(channel);
                 PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
-                logger.info("[" + ip + "]打印机连接异常", e);
+                logger.info("[" + ip + "]打印机连接异常:"+e.getMessage());
                 //重置连接
                 channel = null;
                 if (System.currentTimeMillis() > endTime) {
@@ -301,7 +301,7 @@ public class Printer {
                 logger.info("[" + ip + "]尝试发起状态检查失败");
             }
         } catch (InterruptedException e) {
-            logger.error("[" + ip + "]尝试发起状态检查失败", e);
+            logger.error("[" + ip + "]尝试发起状态检查失败:"+e.getMessage());
         } finally {
             printLock.unlock();
         }

@@ -441,17 +441,20 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (StringUtils.isEmpty(orders.getOrderid())) {
 				log.info("-----------------------");
 				log.info("下单失败，参数失败，没有订单id");
+				transactionManager.rollback(status);
 				return getResult("3", "参数错误，没有订单id", "");
 			}
 			// 判断是否重复下单
 			if (isRepetitionOrder(orders.getRows())) {
 				log.info("-->重复下单");
+				transactionManager.rollback(status);
 				return getResult("0", "下单成功", "");
 			}
 			// 从传过来的数据中，获取订单详情的所有信息
 			List<TorderDetail> listall = getallTorderDetail(orders);
 			if (listall == null || listall.size() == 0) {
 				log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
+				transactionManager.rollback(status);
 				return getResult("3", "订单中没有菜品", "");
 			}
 			//判断订单状态
@@ -461,10 +464,12 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			TbTable table = tableService.findByTableNo(tableNo);
 			if (table == null) {
 				log.error("-->t_table表中该table为空，tableNo为："+tableNo);
+				transactionManager.rollback(status);
 				return getResult("3","查询不到该餐台","");
 			}
 			if (table.getTabletype() == null) {
 				log.error("-->t_table表中该tabletype为空，tableNo为："+tableNo);
+				transactionManager.rollback(status);
 				return getResult("3","查询不到该餐台","");
 			}
 			if (Constant.TABLETYPE.COFFEETABLE.equals(table.getTabletype())) {
@@ -472,14 +477,17 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			} else if(TABLETYPE.TAKEOUT.equals(table.getTabletype()) || TABLETYPE.TAKEOUT_COFFEE.equals(table.getTabletype())) {
 				if (!"0".equals(String.valueOf(mapStatus.get("orderstatus") == null ? "" : mapStatus.get("orderstatus")))) {
 					log.error("-->orderId为：" + orders.getOrderid());
+					transactionManager.rollback(status);
 					return getResult("3", "查询不到该订单", "");
 				}
 			} else {
 				log.error("-->orderId为：" + orders.getOrderid());
+				transactionManager.rollback(status);
 				return getResult("3", "查询不到该订单", "");
 			}
 			if (!"0".equals(String.valueOf(mapStatus.get("orderstatus") == null ? "" : mapStatus.get("orderstatus")))) {
 				log.error("-->orderId为：" + orders.getOrderid());
+				transactionManager.rollback(status);
 				return getResult("3", "查询不到该订单", "");
 			}
 			
