@@ -34,3 +34,5 @@ target
 .iml
 .gradle
 /bin
+*.iml
+*.log
