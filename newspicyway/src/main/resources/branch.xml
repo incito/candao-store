@@ -58,7 +58,7 @@
 	<mvc:annotation-driven />
 
 	<!-- 写 DataSource -->
-	<bean id="masterDataSource" class ="org.apache.commons.dbcp.BasicDataSource" >
+	<bean id="dataSource" class ="org.apache.commons.dbcp.BasicDataSource" >
 		<property name="driverClassName" value="${jdbc.driver}" />
 		<property name="url" value="${master.jdbc.url}" />
 		<property name="username" value="${master.jdbc.username}" />
@@ -76,15 +76,6 @@
 		<property name="testOnBorrow" value="${jdbc.testOnBorrow}" />
 	</bean>
 	
- 
-	<bean id="dataSource" class="com.candao.common.interceptor.DynamicDataSource">
-        <property name="targetDataSources">
-            <map></map>
-        </property>
-        <property name="defaultTargetDataSource" ref="masterDataSource" />
-    </bean>
-	
-
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations" value="classpath*:com/candao/**/mapper/*.xml" />
@@ -240,7 +231,7 @@
 	
 	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
 	<bean id="membersqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="masterDataSource" />
+		<property name="dataSource" ref="dataSource" />
 		<!-- 自动扫描mapping.xml文件 -->
 		<property name="mapperLocations" value="classpath:com/candao/www/data/mapper/MemberMapper.xml"></property>
 	</bean>
