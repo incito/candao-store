@@ -1,37 +1,24 @@
 package com.candao.www.webroom.service.impl;
 
-import java.util.*;
-import java.util.Map.Entry;
-
-import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
 import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.common.Constant;
-import com.candao.www.data.dao.ComboDishDao;
-import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.data.dao.TbTemplateDao;
-import com.candao.www.data.dao.TbasicDataDao;
-import com.candao.www.data.dao.TmenuBranchDao;
-import com.candao.www.data.dao.TmenuDao;
-import com.candao.www.data.dao.TtemplateDetailDao;
-import com.candao.www.data.dao.TtemplateDishUnitlDao;
-import com.candao.www.data.model.Tmenu;
-import com.candao.www.data.model.TmenuBranch;
-import com.candao.www.data.model.Ttemplate;
-import com.candao.www.data.model.TtemplateDetail;
-import com.candao.www.data.model.TtemplateDishUnit;
+import com.candao.www.data.dao.*;
+import com.candao.www.data.model.*;
+import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.utils.SessionUtils;
-import com.candao.www.webroom.controller.PadInterfaceController;
+import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.MenuGroup;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.MenuService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 @Service
 public class MenuServiceImpl implements MenuService {
@@ -652,22 +639,29 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void notifyDishStatus(String dishId, short code) {
+        //兼容咖啡模式 推送给dataserver广播接口
+        StringBuffer str = new StringBuffer(com.candao.www.constant.Constant.TS_URL);
         String msgId;
         switch (code) {
             case 1:
                 msgId = com.candao.www.constant.Constant.MSG_ID.GUQING;
+                str.append(com.candao.www.constant.Constant.MessageType.msg_1003);
                 break;
             case 2:
                 msgId = com.candao.www.constant.Constant.MSG_ID.QXGUQING;
+                str.append(com.candao.www.constant.Constant.MessageType.msg_1007);
                 break;
             default:
                 return;
         }
         Map<String, Object> msgData = new HashMap<>();
         msgData.put("dishId", dishId);
-        msgData.put("oper",msgId);
+        msgData.put("oper", msgId);
         //消息有效期 秒
         int expireSeconds = 4 * 60 * 60;
         msgForwardService.broadCastMsg4Netty(msgId, msgData, expireSeconds, false);
+
+        str.append("/").append(dishId);
+        new Thread(new TsThread(str.toString())).run();
     }
 }
