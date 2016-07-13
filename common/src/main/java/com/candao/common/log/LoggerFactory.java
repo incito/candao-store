@@ -2,8 +2,6 @@ package com.candao.common.log;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
  
 public class LoggerFactory {
 
@@ -18,10 +16,9 @@ public class LoggerFactory {
 		if (mapbomClass.containsKey(caller.getName()))
 			return (LoggerHelper) mapbomClass.get(caller.getName());
 		else {
-			Logger logger =  org.slf4j.LoggerFactory.getLogger(caller);
-			mapbomClass.put(caller.getName(), new LoggerHelper(logger));
-			return mapbomClass.get(caller.getName());
+			LoggerHelper loger = new LoggerHelper(caller.getName());
+			mapbomClass.put(caller.getName(), loger);
+			return loger;
 		}
 	}
-	
 }
