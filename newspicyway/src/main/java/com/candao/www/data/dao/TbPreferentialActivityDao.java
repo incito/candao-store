@@ -225,4 +225,11 @@ public interface TbPreferentialActivityDao{
   public int updateBySelective(Map param);
   
   public List<Map<String, Object>> selectSpecialActivity(Map param);
+  
+  /**
+   * 通过优惠详情表的id查询优惠明细表信息
+   * @param id
+   * @return
+   */
+  Map<String, Object> getDetailByid(String id);
 }

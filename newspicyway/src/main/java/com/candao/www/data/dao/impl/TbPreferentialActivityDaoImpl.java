@@ -274,4 +274,11 @@ public class TbPreferentialActivityDaoImpl implements TbPreferentialActivityDao 
 		return dao.find(PREFIX+".selectSpecialActivity",param);
 	}
 
+	@Override
+	public Map<String, Object> getDetailByid(String id) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("id", id);
+		return dao.get(PREFIX + ".getDetailById", param);
+	}
+
 }
