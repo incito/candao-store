@@ -157,10 +157,10 @@ public class MultiDishListener extends AbstractQueueListener {
 		// 填写菜品套餐信息
 		if (parentDishName != null && !"".equals(parentDishName)) {
 			// 套餐备注换行
-			String[] dishName = { parentDishName };
+			String[] dishName = {"全单备注：" + parentDishName };
 			Integer[] dishLength = template.getNoteLength();
 			String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
-			parentDishNameLineFeed[0] = "全单备注：" + parentDishNameLineFeed[0];
+			parentDishNameLineFeed[0] = parentDishNameLineFeed[0];
 			for (int j = 0; j < parentDishNameLineFeed.length; j++) {
 				writer.write(parentDishNameLineFeed[j] + "\r\n");
 			}

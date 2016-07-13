@@ -101,7 +101,7 @@ public class CustDishListener extends AbstractQueueListener{
 
 		for (PrintDish it : printDishList) {
 			it.setDishName(it.getDishName().replace("#", "\n"));
-			it.setDishUnit(it.getDishUnit().replace("#", "\n"));
+			it.setDishUnit(StringUtils.split3(it.getDishUnit(), "#"));
 		}
 
 		Object[] text = template.getBodyMsg(object);

@@ -211,6 +211,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
 				 sperequire.append(t.getFreereason());
 				 t.setSperequire(sperequire.toString());
+				 t.setOrderid(order.getOrderid());
 				 
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
 				 String primarykey = t.getPrimarykey();
@@ -426,6 +427,15 @@ public class OrderDetailServiceImpl implements OrderDetailService{
  			res.put("data", data);
  			return res;
  		}
+ 		
+ 		private Map<String, Object> getResult(String code ,String msg,Object data,String orderid){
+ 			Map<String, Object> res = new HashMap<>();
+ 			res.put("result", code);
+ 			res.put("msg", msg);
+ 			res.put("data", data);
+ 			res.put("orderid", orderid);
+ 			return res;
+ 		}
  	
  	/**
  	 * 咖啡模式下单
@@ -448,7 +458,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (isRepetitionOrder(orders.getRows())) {
 				log.info("-->重复下单");
 				transactionManager.rollback(status);
-				return getResult("0", "下单成功", "");
+				return getResult("0", "下单成功", "",orders.getOrderid());
 			}
 			// 从传过来的数据中，获取订单详情的所有信息
 			List<TorderDetail> listall = getallTorderDetail(orders);
@@ -498,7 +508,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (success < 1) {
 				log.error("-->插入订单临时表t_order_detail_temp出错，参数" + JSONObject.fromObject(listall).toString());
 				transactionManager.rollback(status);
-				return getResult("3", "服务器异常", "");
+				return getResult("3", "服务器异常", "",orders.getOrderid());
 			}
 
 			// //执行存储过程，将订单详情临时表中的数据插入到t_order_detail
@@ -515,7 +525,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (!"0".equals(result)) {
 				log.error("-->result为：" + 1);
 				transactionManager.rollback(status);
-				return getResult(result, String.valueOf(mapParam.get("msg")), "");
+				return getResult(result, String.valueOf(mapParam.get("msg")), "",orders.getOrderid());
 			}
 			// 操作成功了，插入操作日记
 			// 修改为用dao层的日志引用，防止手动事物嵌套引起异常
@@ -523,10 +533,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (saveresult > 0) {
 				transactionManager.commit(status);
 				log.info(orders.getOrderid() + "下单成功");
-				return getResult("0", "下单成功", "");
+				return getResult("0", "下单成功", "",orders.getOrderid());
 			}
 			transactionManager.rollback(status);
-			return getResult("3", "服务器异常", "");
+			return getResult("3", "服务器异常", "",orders.getOrderid());
 		} catch (Exception ex) {
 			log.error("-->", ex);
 			ex.printStackTrace();
