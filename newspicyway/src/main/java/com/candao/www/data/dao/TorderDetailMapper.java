@@ -76,6 +76,8 @@ public interface TorderDetailMapper {
 	public int cancelPreferentialItemInOrder(Map params);
 	
 	public TorderDetail getOrderDetailByPrimaryKey(java.lang.String primarykey);
+	
+	public int countByPrimarykey(List<TorderDetail> orderDetails);
 
 	/**
 	 * 一次插入到退单表

@@ -411,13 +411,14 @@ public class PadInterfaceController {
 		} catch (Exception e) {
 			logger.error("咖啡模式加菜失败！创建子订单失败", e);
 			e.printStackTrace();
+			return Constant.FAILUREMSG;
 		}
 		order.setOrderid(childrenOrderid);
 		
 		Map<String, String> mapDetail = new HashMap<String, String>();
 		mapDetail.put("orderid", order.getOrderid());
 		List<Map<String, String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
-
+		
 		List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
 		String result = "";
 		Map<String, Object> res = orderDetailService.placeOrder(order, toperationLog);
@@ -2860,7 +2861,7 @@ public class PadInterfaceController {
 						String newfilename=seatImagefiles.get(0).getOriginalFilename();
 			        	if(newfilename.indexOf(".")!=-1){
 			        		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-			        				+	newfilename.substring(newfilename.indexOf("."));
+			        				+	newfilename.substring(newfilename.indexOf(".")).toLowerCase();
 			        	}
 						int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
 						if(result==0){//成功
@@ -2881,7 +2882,7 @@ public class PadInterfaceController {
 			String newfilename=seatImagefiles.get(0).getOriginalFilename();
         	if(newfilename.indexOf(".")!=-1){
         		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-        				+	newfilename.substring(newfilename.indexOf("."));
+        				+	newfilename.substring(newfilename.indexOf(".")).toLowerCase();
         	}
 			int result=fileupload(seatImagefiles.get(0), realpath+File.separator+"upload"+File.separator+newfilename);
 			if(result==0){//成功
@@ -2914,7 +2915,7 @@ public class PadInterfaceController {
 	            	String newfilename=commonsMultipartFile.getOriginalFilename();
 	            	if(newfilename.indexOf(".")!=-1){
 	            		newfilename=UUID.randomUUID().toString().replaceAll("-", "")
-	            				+	newfilename.substring(newfilename.indexOf("."));
+	            				+	newfilename.substring(newfilename.indexOf(".")).toLowerCase();
 	            	}
 	            	String imagelocation=realpath+File.separator+"upload"+File.separator+ newfilename;
 	            	  File file = new File(imagelocation);  

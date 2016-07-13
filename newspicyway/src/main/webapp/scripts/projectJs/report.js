@@ -2012,9 +2012,9 @@ function getWaiterAssessData(){
 
 						+ '<td>'+item.xjamount+'</td>'
 						+ '<td>'+item.yhkamount+'</td>'
-						+ '<td>'+item.mlamount+'</td>'
+						//+ '<td>'+item.mlamount+'</td>'
 						+ '<td>'+item.hykxfamount+'</td>'
-						+ '<td>'+item.hyjfxfamount+'</td>'
+						//+ '<td>'+item.hyjfxfamount+'</td>'
 						+ '<td>'+item.gz2amount+'</td>'
 						+ '<td>'+item.wxzfamount+'</td>'
 						+ '<td>'+item.zfbzfamount+'</td></tr>';
@@ -2055,9 +2055,9 @@ function getWaiterDetails(){
 						+ '<td>'+item.paidinamount+'</td>'
 						+ '<td>'+item.xjamount+'</td>'
 						+ '<td>'+item.yhkamount+'</td>'
-						+ '<td>'+item.mlamount+'</td>'
+						//+ '<td>'+item.mlamount+'</td>'
 						+ '<td>'+item.hykxfamount+'</td>'
-						+ '<td>'+item.hyjfxfamount+'</td>'
+						//+ '<td>'+item.hyjfxfamount+'</td>'
 						+ '<td>'+item.gz2amount+'</td>'
 						+ '<td>'+item.wxzfamount+'</td>'
 						+ '<td>'+item.zfbzfamount+'</td></tr>';

@@ -100,7 +100,7 @@ public class CustDishListener extends AbstractQueueListener{
 		socketOut.write(template.getBodyFont());
 
 		for (PrintDish it : printDishList) {
-			it.setDishName(StringUtils.split3(it.getDishName(), "#"));
+			it.setDishName(it.getDishName().replace("#", "\n"));
 			it.setDishUnit(StringUtils.split3(it.getDishUnit(), "#"));
 		}
 

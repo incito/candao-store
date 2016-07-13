@@ -98,8 +98,8 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 	}
 	
 	/**
-	 * 咖啡模式清台
-	 * 只清理餐台状态
+	 * 清台接口
+	 * 包含咖啡模式清台和正常模式清台
 	 */
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class) 
@@ -114,12 +114,50 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		}
 		Map<String, Object> tableMap = resultMapList.get(0);
 		String tableId = String.valueOf(tableMap.get("tableid"));
-
-		TbTable tbTable = new TbTable();
-		tbTable.setTableid(tableId);
-		tbTable.setStatus(0);
-		tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
-		tableService.updateCleanStatus(tbTable);
+		String orderid = String.valueOf(tableMap.get("orderid"));
+		
+		if(StringUtils.isEmpty(orderid)){
+			log.error("-->订单为空(查询orderid为空)，参数tableNo为：" + tableNo);
+			return Constant.FAILUREMSG;
+		}
+		
+		Map<String, Object> order = orderService.findOrderById(orderid);
+		if (!MapUtils.isEmpty(order)) {
+			String orderstatus = (String) order.get("orderstatus");
+			orderstatus = orderstatus == null ? "" : orderstatus.trim();
+			//正常模式清台
+			if ("0".equals(orderstatus)) {
+				// 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
+				//计算菜单订单下面财大个数如果大与0 表示不能 清台
+				long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
+				if (menuNum > 0) {
+					return Constant.UPDATE_MENU;
+				}
+				
+				TbTable tbTable = new TbTable();
+				tbTable.setTableid(tableId);
+				tbTable.setStatus(0);
+				tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
+				tableService.updateCleanStatus(tbTable);
+				
+				Torder torder = new Torder();
+				torder.setOrderid(String.valueOf(tableMap.get("orderid")));
+				torder.setOrderstatus(2);
+				torder.setEndtime(new Date());
+				torderMapper.update(torder);
+				
+			} else if ("3".equals(orderstatus)) {//咖啡模式清台
+				TbTable tbTable = new TbTable();
+				tbTable.setTableid(tableId);
+				tbTable.setStatus(0);
+				tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
+				tableService.updateCleanStatus(tbTable);
+			} else {
+				return Constant.FAILUREMSG;
+			}
+		} else {
+			return Constant.FAILUREMSG;
+		}
 
 		//结账之后把操作的数据删掉
 		Map<String, Object> delmap = new HashMap<String, Object>();
@@ -211,6 +249,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 				 sperequire.append(Constant.ORDER_REMARK_SEPARATOR);
 				 sperequire.append(t.getFreereason());
 				 t.setSperequire(sperequire.toString());
+				 t.setOrderid(order.getOrderid());
 				 
 				 /*******处理网络差的情况下，下单出现多个相同的Primarykey导致退菜失败的情况*********/
 				 String primarykey = t.getPrimarykey();
@@ -341,24 +380,28 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			orders.setOrderid(table.getOrderid());
 		}else{
 			log.error("-->t_table表中该table为空，tableNo为："+tableNo);
+			transactionManager.rollback(status);
 			return getResult("3","查询不到该餐台","");
 		}
 		
 //		判断是否重复下单
 		if(isRepetitionOrder(orders.getRows())){
 			log.info("-->重复下单");
+			transactionManager.rollback(status);
 			return getResult("0","下单成功","");
 		}
 		//从传过来的数据中，获取订单详情的所有信息	
 	    List<TorderDetail> listall = getallTorderDetail(orders);
 		if(listall == null || listall.size() == 0){
 			log.error("-->OrderDetail为空,orders.getRows()值为："+orders.getRows());
+			transactionManager.rollback(status);
 			return getResult("3","订单中没有菜品","");
 		}
 		  Map<String, Object> mapStatus = torderMapper.findOne(orders.getOrderid());
 		  if(!"0".equals(String.valueOf(mapStatus.get("orderstatus")==null?"":mapStatus.get("orderstatus")))){
 			  log.error("-->orderId为："+orders.getOrderid());
-				return getResult("3","查询不到该订单","");
+			  transactionManager.rollback(status);
+			  return getResult("3","查询不到该订单","");
 		  }
 		  Map<String, Object> mapParam1 = new HashMap<String, Object>();
 		  mapParam1.put("orderid", orders.getOrderid());
@@ -422,6 +465,15 @@ public class OrderDetailServiceImpl implements OrderDetailService{
  			res.put("data", data);
  			return res;
  		}
+ 		
+ 		private Map<String, Object> getResult(String code ,String msg,Object data,String orderid){
+ 			Map<String, Object> res = new HashMap<>();
+ 			res.put("result", code);
+ 			res.put("msg", msg);
+ 			res.put("data", data);
+ 			res.put("orderid", orderid);
+ 			return res;
+ 		}
  	
  	/**
  	 * 咖啡模式下单
@@ -437,17 +489,20 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (StringUtils.isEmpty(orders.getOrderid())) {
 				log.info("-----------------------");
 				log.info("下单失败，参数失败，没有订单id");
+				transactionManager.rollback(status);
 				return getResult("3", "参数错误，没有订单id", "");
 			}
 			// 判断是否重复下单
 			if (isRepetitionOrder(orders.getRows())) {
 				log.info("-->重复下单");
-				return getResult("0", "下单成功", "");
+				transactionManager.rollback(status);
+				return getResult("0", "下单成功", "",orders.getOrderid());
 			}
 			// 从传过来的数据中，获取订单详情的所有信息
 			List<TorderDetail> listall = getallTorderDetail(orders);
 			if (listall == null || listall.size() == 0) {
 				log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
+				transactionManager.rollback(status);
 				return getResult("3", "订单中没有菜品", "");
 			}
 			//判断订单状态
@@ -457,10 +512,12 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			TbTable table = tableService.findByTableNo(tableNo);
 			if (table == null) {
 				log.error("-->t_table表中该table为空，tableNo为："+tableNo);
+				transactionManager.rollback(status);
 				return getResult("3","查询不到该餐台","");
 			}
 			if (table.getTabletype() == null) {
 				log.error("-->t_table表中该tabletype为空，tableNo为："+tableNo);
+				transactionManager.rollback(status);
 				return getResult("3","查询不到该餐台","");
 			}
 			if (Constant.TABLETYPE.COFFEETABLE.equals(table.getTabletype())) {
@@ -468,14 +525,17 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			} else if(TABLETYPE.TAKEOUT.equals(table.getTabletype()) || TABLETYPE.TAKEOUT_COFFEE.equals(table.getTabletype())) {
 				if (!"0".equals(String.valueOf(mapStatus.get("orderstatus") == null ? "" : mapStatus.get("orderstatus")))) {
 					log.error("-->orderId为：" + orders.getOrderid());
+					transactionManager.rollback(status);
 					return getResult("3", "查询不到该订单", "");
 				}
 			} else {
 				log.error("-->orderId为：" + orders.getOrderid());
+				transactionManager.rollback(status);
 				return getResult("3", "查询不到该订单", "");
 			}
 			if (!"0".equals(String.valueOf(mapStatus.get("orderstatus") == null ? "" : mapStatus.get("orderstatus")))) {
 				log.error("-->orderId为：" + orders.getOrderid());
+				transactionManager.rollback(status);
 				return getResult("3", "查询不到该订单", "");
 			}
 			
@@ -486,7 +546,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (success < 1) {
 				log.error("-->插入订单临时表t_order_detail_temp出错，参数" + JSONObject.fromObject(listall).toString());
 				transactionManager.rollback(status);
-				return getResult("3", "服务器异常", "");
+				return getResult("3", "服务器异常", "",orders.getOrderid());
 			}
 
 			// //执行存储过程，将订单详情临时表中的数据插入到t_order_detail
@@ -503,7 +563,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (!"0".equals(result)) {
 				log.error("-->result为：" + 1);
 				transactionManager.rollback(status);
-				return getResult(result, String.valueOf(mapParam.get("msg")), "");
+				return getResult(result, String.valueOf(mapParam.get("msg")), "",orders.getOrderid());
 			}
 			// 操作成功了，插入操作日记
 			// 修改为用dao层的日志引用，防止手动事物嵌套引起异常
@@ -511,10 +571,10 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 			if (saveresult > 0) {
 				transactionManager.commit(status);
 				log.info(orders.getOrderid() + "下单成功");
-				return getResult("0", "下单成功", "");
+				return getResult("0", "下单成功", "",orders.getOrderid());
 			}
 			transactionManager.rollback(status);
-			return getResult("3", "服务器异常", "");
+			return getResult("3", "服务器异常", "",orders.getOrderid());
 		} catch (Exception ex) {
 			log.error("-->", ex);
 			ex.printStackTrace();
@@ -1481,15 +1541,13 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		 * @return
 		 */
 		private boolean isRepetitionOrder(List<TorderDetail> orderDetails){
-			int repeteNum = 0;
-			for(TorderDetail t:orderDetails){
-				String primarykey = t.getPrimarykey();
-				TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(primarykey);
-				if(orderDetail != null && orderDetail.getOrderdetailid() != ""){
-					repeteNum++;
-				}
+			//没有提交任何菜品不能视为重复下单
+			if(orderDetails.isEmpty()){
+				return false;
 			}
-			return repeteNum == orderDetails.size() ? true : false;
+			//有菜品时再判断
+			int count = torderDetailMapper.countByPrimarykey(orderDetails);
+			return count == orderDetails.size();
 		}
 		
 	  /**
@@ -2291,7 +2349,7 @@ public class WeigthThread  implements Runnable{
 	private DishSetProducerService dishSetService;
 
 	@Autowired
-	StatentMentProducerService statentMentProducerService;
+	StatentMentProducerService statentMentProducerService;  
 	
 	@Autowired
 	TsettlementMapper settlementMapper;

@@ -28,7 +28,7 @@ class PrinterConnector {
             socket.connect(new InetSocketAddress(host, port), timeout);//建立连接5秒超时
             return socket;
         } catch (IOException e) {
-            logger.error("创建连接失败[" + host + ":" + port + "]", e);
+            logger.error("创建连接失败[" + host + ":" + port + "]:"+e.getMessage());
         }
         return null;
     }
@@ -40,7 +40,7 @@ class PrinterConnector {
         try {
             socket.close();
         } catch (IOException e) {
-            logger.error("打印机连接关闭失败",e);
+            logger.error("打印机连接关闭失败:"+e.getMessage());
         }
     }
 }
