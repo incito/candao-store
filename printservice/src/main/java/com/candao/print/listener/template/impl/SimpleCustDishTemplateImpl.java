@@ -13,7 +13,6 @@ import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.listener.template.ListenerTemplate;
-import com.candao.print.listener.template.impl.SimpleMultiDishTemplateImpl.Template;
 
 public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 	
@@ -139,20 +138,37 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		for (PrintDish it : list) {
 			// 校验名称
 			String dishName = it.getDishName() == null ? "" : it.getDishName();
+			String [] dishNames = org.springframework.util.StringUtils.split(dishName, "#");
+			
 			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
 			String dishPrice = it.getDishPrice() == null ? "" : it.getDishPrice().toString();
-			String dishUnit = it.getDishUnit() == null ? "" : "(" + it.getDishUnit() + ")";
+			
+			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+			String [] dishUnits = org.springframework.util.StringUtils.split(dishUnit, "#");
+			
 			String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")" : "";
 			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()
 					? "(" + it.getSperequire().trim() + ")" : "";
+
+			taste += taste + Sperequire;
+			
 			// 判断是否赠菜
 			if(it.getPrintport()!=null && !it.getPrintport().isEmpty()){
 				if ("1".equals(it.getPrintport().trim())) {
-					dishName += "(赠)";
-				}				
+					taste += "(赠)";
+				}
+			}
+//			dishName += taste + Sperequire + dishUnit;
+			
+			if (dishUnits == null) {
+				dishUnits = new String[]{dishUnit,""};
 			}
 
-			dishName += taste + Sperequire + dishUnit;
+			if (dishNames != null) {
+				dishName = dishNames[0] + taste + "(" + dishUnits[0] + ")" + "\n" + dishNames[1] + taste + "(" + dishUnits[1] + ")" ;
+			} else {
+				dishName = dishName + taste + "(" + dishUnits[0] + ")";
+			}
 
 			String[] name = { dishName, dishNum, dishPrice };
 			Integer[] len = { num1, num2, num3 };

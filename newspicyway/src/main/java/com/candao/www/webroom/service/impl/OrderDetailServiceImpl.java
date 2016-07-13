@@ -123,7 +123,7 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		
 		Map<String, Object> order = orderService.findOrderById(orderid);
 		if (!MapUtils.isEmpty(order)) {
-			String orderstatus = (String) order.get("orderstatus");
+			String orderstatus = String.valueOf(order.get("orderstatus"));
 			orderstatus = orderstatus == null ? "" : orderstatus.trim();
 			//正常模式清台
 			if ("0".equals(orderstatus)) {

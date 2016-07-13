@@ -136,8 +136,9 @@ public class DishSetListener extends AbstractQueueListener {
 			List<String> buffer = new LinkedList<>();
 			for (PrintDish it : printDishList) {
 				if(it.getParentDishName() != null && !"".equals(it.getParentDishName())){
-					if(!buffer.contains(it.getParentDishName()))
-						buffer.add(it.getParentDishName());
+					String parentName = StringUtils.split2(it.getParentDishName(), "#");
+					if(!buffer.contains(parentName))
+						buffer.add(parentName);
 				}
 			}
 			for (int i = 0; i < buffer.size(); i++) {
