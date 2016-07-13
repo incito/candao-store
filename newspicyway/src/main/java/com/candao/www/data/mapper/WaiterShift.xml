@@ -22,7 +22,7 @@
 		MAX(CASE payway WHEN 8 THEN payamount ELSE 0 END )    hykxf,
 		MAX(CASE payway WHEN 11 THEN payamount ELSE 0 END )    hyjfxf,
 		(MAX(CASE payway WHEN 5 THEN payamount ELSE 0 END )  +MAX(CASE payway WHEN 13 THEN payamount ELSE 0 END ) )   gz2,
-		MAX(CASE payway WHEN 17 THEN payamount ELSE 0 END )    wxzf,
+		(MAX(CASE payway WHEN 17 THEN payamount ELSE 0 END ) +MAX(CASE payway WHEN 30 THEN payamount ELSE 0 END ))    wxzf,
 		MAX(CASE payway WHEN 18 THEN payamount ELSE 0 END )    zfbzf
 		FROM t_settlement_detail GROUP BY orderid) t ON ord.orderid = t.orderid
         where ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime}  and (ordt.primarykey &lt;&gt; ordt.superkey or ordt.ordertype &lt;&gt; 2) and em.branch_id = #{branchId} and ord.branchid = #{branchId}
@@ -40,7 +40,7 @@
     </select>
     
     <select id="getOrderPayMount" parameterType="java.util.Map"  resultType="java.util.Map">
-       select ord.orderid,sum(setd.payamount) as paidinamount from t_order ord left join t_settlement_detail setd on ord.orderid = setd.orderid where setd.payway in (0,1,5,8,13,17,18) 
+       select ord.orderid,sum(setd.payamount) as paidinamount from t_order ord left join t_settlement_detail setd on ord.orderid = setd.orderid where setd.payway in (0,1,5,8,13,17,18,30)
        and ord.begintime &gt;= #{beginTime} and ord.begintime &lt;= #{endTime} and ord.branchid = #{branchId}  and ord.orderstatus=3
         <if test="shiftid==-1">
 	      and  ord.shiftid in (0,1)
