@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
+import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.data.dao.TbOpenBizLogDao;
 import com.candao.www.data.dao.TdishDao;
@@ -511,10 +513,31 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			updateOrder.setOrderid(orderId);
 			updateOrder.setOrderstatus(0);
 			orderService.update(updateOrder);
-			//
+			
+			//查询账单类型
+			Map<String, Object> order = orderService.findOrderById(orderId);
+			if (MapUtils.isEmpty(order)) {
+				logger.error("反结算出现异常,查询不到账单，" + orderId);
+				this.transactionManager.rollback(status);
+				return "{\"result\":\"1\"}";
+			}
+			String currenttableid = String.valueOf(order.get("currenttableid"));
+			TbTable table =  tableService.findById(currenttableid);
+			if (table == null ) {
+				logger.error("反结算出现异常,查询不到账单相关餐台，" + orderId);
+				this.transactionManager.rollback(status);
+				return "{\"result\":\"1\"}";
+			}
+			String tabletype = table.getTabletype();
+			
 			// //桌子空閒 0 空闲 1 就餐 3 预定 4 已结账
+			//外卖和咖啡外卖自动清台
 			TbTable tbTable = new TbTable();
-			tbTable.setStatus(1);
+			if (StringUtils.isEmpty(tbTable) || (!TABLETYPE.TAKEOUT.equals(tabletype) && !TABLETYPE.TAKEOUT_COFFEE.equals(tabletype))) {
+				tbTable.setStatus(1);
+			} else {
+				tbTable.setStatus(0);
+			}
 			tbTable.setOrderid(orderId);
 
 			tableService.updateSettleStatus(tbTable);

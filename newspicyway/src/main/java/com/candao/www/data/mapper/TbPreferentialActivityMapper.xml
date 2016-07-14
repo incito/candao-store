@@ -689,8 +689,8 @@
 			</when>
 			<when test="type=='01'">
 				SELECT
-					tpa.id,
-					tpa.id as preferential,
+					tpd.id as id,
+					tpd.preferential as preferential,
 					tpa.code,
 					tpa.name,
 					tpa.name_first_letter,
@@ -708,19 +708,21 @@
 					tpa.createtime,
 					tpa.creator,
 					tpa.status
-				FROM t_p_preferential_activity tpa 
+				FROM t_p_preferential_activity tpa , t_p_preferential_detail tpd
 				<where>
 					<include refid="base_condition"></include>
 					and tpa.apply_all=1 
+					and tpa.id = tpd.preferential
 					<if test="status == 2">
-					AND (tpa.status is null or tpa.`status` != #{status})
+						AND (tpa.status is null or tpa.`status` != #{status})
 					</if>
 				</where>
+				GROUP BY preferential
 				<if test=" branchid !=null">
 					UNION
 					SELECT
-						tpa.id,
-						tpa.id as preferential,
+						tpd.id as id,
+						tpd.preferential as preferential,
 						tpa.code,
 						tpa.name,
 						tpa.name_first_letter,
@@ -738,10 +740,11 @@
 						tpa.createtime,
 						tpa.creator,
 						tpa.status
-					FROM t_p_preferential_activity tpa 
+					FROM t_p_preferential_activity tpa , t_p_preferential_detail tpd
 					<where>
 						<include refid="base_condition"></include>
 						and tpa.apply_all=0
+						and tpa.id = tpd.preferential
 						<!-- 2隐藏优惠，判断是否查询要隐藏的优惠 -->
 					<if test="status == 2">
 					AND (tpa.status is null or tpa.`status` != #{status})
@@ -750,8 +753,9 @@
 							select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
 						) 
 					</where>
+					GROUP BY preferential
 				</if>
-				 ORDER BY code 
+				ORDER BY code 
 			</when>
 			<!-- 其他优惠 -->
 			<when  test="type=='00'.toString()"> 
@@ -1127,4 +1131,12 @@
 				  select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
 			  ) 
 	</select>
+	
+	
+	<select id="getDetailById" parameterType="map" resultType="map">
+		SELECT id,preferential
+		FROM t_p_preferential_detail
+		WHERE id = #{id}
+	</select>
+	
 </mapper>

@@ -1033,7 +1033,14 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 			
 			//判断是 特价券和折扣券
 			if( Constant.CouponType.SPECIAL_TICKET.toString().equals( type ) ){ //特价
-					TbPreferentialActivity activity = this.tbPreferentialActivityDao.get(preferentialid);
+					Map<String, Object> detailMap = tbPreferentialActivityDao.getDetailByid(preferentialid);
+					if(detailMap == null){
+						result.setResult(0);
+						result.setMsg("该特价券没有包含任何菜品!");
+						return result;
+					}
+					String pid = (String) detailMap.get("preferential");
+					TbPreferentialActivity activity = this.tbPreferentialActivityDao.get(pid);
 					//获取优惠的菜品列表
 					Map<String ,BigDecimal> dishCouponAmountMap=new HashMap();
 					List< Map<String ,Object> > orderDishMapList= new ArrayList(0); //用于后面的 更新优惠价格到账单详情

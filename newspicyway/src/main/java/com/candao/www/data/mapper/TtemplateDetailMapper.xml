@@ -60,7 +60,7 @@
 	
 	
 	<select id="findTempalteDetailListPad" resultMap="findResultMap" parameterType="map" >
-	select  distinct  d.level,t.location,t.redishid,d.dishNo,d.image,u.dishname,u.dishintroduction,d.columnId,d.abbrdesc tag,d.dishtype,d.imagetitle special,u.status,u.recommend,d.weigh
+	select  distinct  d.level,t.location,t.redishid,d.dishNo,t.image,u.dishname,u.dishintroduction,d.columnId,d.abbrdesc tag,d.dishtype,d.imagetitle special,u.status,u.recommend,d.weigh
  	from t_template_detail t,t_dish d,t_template_dishunit u 
  	<where>
  	u.menuid=t.menuid and d.dishid=t.redishid and u.dishid=t.redishid
