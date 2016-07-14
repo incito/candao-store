@@ -59,7 +59,7 @@ SELECT t_dictionary.dictid AS dictid
 FROM
   t_dictionary
 WHERE
-  ((t_dictionary.itemid IN ('0', '1', '5', '8', '13', '17', '18'))
+  ((t_dictionary.itemid IN ('0', '1', '5', '8', '13', '17', '18', '30'))
   AND (t_dictionary.type = 'PAYWAY')) $$
 
 --
