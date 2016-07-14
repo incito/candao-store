@@ -244,7 +244,7 @@ $("#test").click(function(){
 			reasonArr.push(reason);
 		});
 		doPost(type, reasonArr, function(data){
-			$("#reason-list").find(".dishTasteUl").last().attr("dictid",data.RETURNDISH[data.RETURNDISH.length-1].dictid);
+			$("#reason-list").find(".dishTasteUl").last().attr("dictid",data.RETURNDISH[data.RETURNDISH.length-1] && data.RETURNDISH[data.RETURNDISH.length-1].dictid);
 			$("#saveReturn").addClass("hide");
 			$("#editReturn").removeClass("hide");
 			$("#reason-list .avoid-li").attr("disabled", true);
@@ -1397,17 +1397,17 @@ function initData(data, type){
 		});
 		
 		//一页菜谱显示
-		var   onepaytypes=data.ONEPAGETYPE;
-		$.each(onepaytypes, function(i, item){
-			var status = item.status;
-			if(status == 0){
-				$(".isFree_onepage").find("p").text("不开启");
-			}else{
-				$(".isFree_onepage").find("p").text("开启");
-			}
-			$("#dictidonepage").val(item.dictid);
-			$("input[name='onepageisFree'][value="+status+"]").prop("checked",true);
-		});
+		//var   onepaytypes=data.ONEPAGETYPE;
+		//$.each(onepaytypes, function(i, item){
+		//	var status = item.status;
+		//	if(status == 0){
+		//		$(".isFree_onepage").find("p").text("不开启");
+		//	}else{
+		//		$(".isFree_onepage").find("p").text("开启");
+		//	}
+		//	$("#dictidonepage").val(item.dictid);
+		//	$("input[name='onepageisFree'][value="+status+"]").prop("checked",true);
+		//});
 		//
 	}
 	
