@@ -110,7 +110,7 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
 	@Override
 	public Object[] getPrinterPortMsg(PrintObj obj) throws Exception {
 		String[] portName = { "(" + obj.getPrintName() + ")" };
-		Integer[] len = { 9 };
+		Integer[] len = { 21 };
 		String[] temp = StringUtils.getLineFeedText(portName, len);
 		trim(temp);
 		return temp;

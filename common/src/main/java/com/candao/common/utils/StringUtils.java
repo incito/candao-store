@@ -253,34 +253,33 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		int truelength = 0;
 		int charlength = 0;
 		if (src != null && !"".equals(src)) {
-			//计算真实长度
+			// 计算真实长度
 			for (int i = 0; i < src.length(); i++) {
 				char c = src.charAt(i);
+				charlength = i;
 				if ((c & 0xff00) != 0) {
 					truelength += 2;
-				} else if(c == 0x0a ){
-					charlength = truelength;
-					truelength = i;
+				} else if (c == 0x0a) {
 					StringBuilder buffer = new StringBuilder(src);
 					src = buffer.deleteCharAt(i).toString();
+					//单独一个换行符不换行
+					charlength = charlength - 1;
 					flag = true;
 					break;
 				} else {
 					truelength += 1;
 				}
 				if (truelength >= num) {
-					//num+1说明结尾是中文字符
+					// num+1说明结尾是中文字符
 					if (truelength == num + 1) {
-						charlength = truelength - 2;
-						//truelength此时标记换行点在src中的位置
-						truelength = i;
+						truelength = truelength - 2;
+						charlength = i - 1;
 						flag = true;
 					} else {
-						//判断是否已经遍历到src末尾
-						//如果是，说明不用换行，truelength标识真实长度
-						//如果否，truelength标识换行位置
-						charlength = num;
-						truelength = (i == src.length() - 1) ? truelength : i + 1;
+						// 判断是否已经遍历到src末尾
+						// 如果是，说明不用换行，truelength标识真实长度
+						// 如果否，truelength标识换行位置
+						truelength = num;
 					}
 					break;
 				}
@@ -288,23 +287,25 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		} else {
 			return res;
 		}
-		//1 如果不用换行，truelength代表真实长度，大于等于src长度
-		//2 如果换行 truelength代表换行位置，小于src长度
-		if (truelength != 0 && truelength < src.length()) {
-			str = src.substring(0, truelength);
-			if (flag) {
-				//补位
-				for (int i = 0; i < num - charlength; i++) {
-					str = str.concat(" ");
+		if (charlength < src.length() - 1) {
+			str = src.substring(0, charlength + 1);
+			if (!org.springframework.util.StringUtils.isEmpty(str)) {
+				if (flag) {
+					// 补位
+					for (int i = 0; i < num - truelength; i++) {
+						str = str.concat(" ");
+					}
 				}
+				res.add(str);
 			}
-			res.add(str);
-			//递归处理剩余字符串
-			res = subString3(src.substring(truelength), num, res);
+			// 递归处理剩余字符串
+			res = subString3(src.substring(charlength + 1), num, res);
 		} else {
 			str = src;
-			for (int i = 0; i < num - truelength; i++) {
-				str = str.concat(" ");
+			if (!org.springframework.util.StringUtils.isEmpty(str)) {
+				for (int i = 0; i < num - truelength; i++) {
+					str = str.concat(" ");
+				}		
 			}
 			res.add(str);
 		}

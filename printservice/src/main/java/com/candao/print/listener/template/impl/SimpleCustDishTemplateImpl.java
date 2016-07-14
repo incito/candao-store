@@ -109,7 +109,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 	@Override
 	public Object[] getPrinterPortMsg(PrintObj obj) throws Exception {
 		String[] portName = { "(" + obj.getPrintName() + ")" };
-		Integer[] len = { 9 };
+		Integer[] len = { 21 };
 		String[] temp = StringUtils.getLineFeedText(portName, len);
 		trim(temp);
 		return temp;
@@ -149,8 +149,8 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 			String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")" : "";
 			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()
 					? "(" + it.getSperequire().trim() + ")" : "";
-
-			taste += taste + Sperequire;
+			
+			taste += Sperequire;
 			
 			// 判断是否赠菜
 			if(it.getPrintport()!=null && !it.getPrintport().isEmpty()){
@@ -158,16 +158,18 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 					taste += "(赠)";
 				}
 			}
-//			dishName += taste + Sperequire + dishUnit;
 			
 			if (dishUnits == null) {
-				dishUnits = new String[]{dishUnit,""};
-			}
-
-			if (dishNames != null) {
-				dishName = dishNames[0] + taste + "(" + dishUnits[0] + ")" + "\n" + dishNames[1] + taste + "(" + dishUnits[1] + ")" ;
+				String dishUnitTemp = org.springframework.util.StringUtils.isEmpty(dishUnit) ? "" : "(" + dishUnit + ")";
+				dishUnits = new String[]{dishUnitTemp,dishUnitTemp};
 			} else {
-				dishName = dishName + taste + "(" + dishUnits[0] + ")";
+				dishUnits = new String []{"(" + dishUnits[0] + ")","(" + dishUnits[1] + ")"};
+			}
+			
+			if (dishNames != null) {
+				dishName = dishNames[0] + taste  + dishUnits[0] + "\n" + dishNames[1] + taste  + dishUnits[1] ;
+			} else {
+				dishName = dishName + taste + dishUnits[0] ;
 			}
 
 			String[] name = { dishName, dishNum, dishPrice };
