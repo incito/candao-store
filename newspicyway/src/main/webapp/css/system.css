@@ -166,12 +166,15 @@ body {
 .store-gifts-add {
 	margin-bottom:20px;
 }
+.setup_div_total input {
+	width: 300px;
+}
 .setup_div_box input.disabled {
 	border:none;
 	background: #fff!important;
     box-shadow: none;
     padding:2px 0;
-    width:auto;
+    width:600px;
     display:inline-block;
     cursor:default;
 }
@@ -385,8 +388,4 @@ body {
 	overflow:hidden;
 	text-overflow:ellipsis;
     white-space: nowrap;
-}
-
-.setup_div_total .form-control {
-	width: 300px!important;
 }
