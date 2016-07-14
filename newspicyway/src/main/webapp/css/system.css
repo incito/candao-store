@@ -386,3 +386,7 @@ body {
 	text-overflow:ellipsis;
     white-space: nowrap;
 }
+
+.setup_div_total .form-control {
+	width: 300px!important;
+}
