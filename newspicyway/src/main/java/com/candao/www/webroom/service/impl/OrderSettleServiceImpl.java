@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
+import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.data.dao.TbOpenBizLogDao;
 import com.candao.www.data.dao.TdishDao;
@@ -460,94 +462,118 @@ public class OrderSettleServiceImpl implements OrderSettleService{
  	
 	@Override
 	public String rebackSettleOrder(SettlementInfo settlementInfo) {
+
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-		  def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); 
-		  TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
 		// TODO Auto-generated method stub
-		//1.根據訂單 查詢金額  
-		//2.減去會員優惠，折扣 等信息
+		// 1.根據訂單 查詢金額
+		// 2.減去會員優惠，折扣 等信息
+		try {
+			// 3.計算總額 減去所對應的優惠
+			String orderId = settlementInfo.getOrderNo();
 
-		//3.計算總額  減去所對應的優惠
-		String orderId = settlementInfo.getOrderNo();
-		
-		 //start先查询是不是微信扫码支付
-		 Map<String, String> dataMap = new HashMap<String, String>();
-		 dataMap.put("orderno", orderId);
-		 dataMap.put("payway", Constant.PAYWAY.PAYWAY_WEIXIN);
-		 int isweixin=settlementMapper.selectIsPayWeixin(dataMap);
-		 //end
-		//查询反结算次数
-		String againSettleNums = settlementMapper.queryAgainSettleNums(orderId);
-		if(againSettleNums == null || againSettleNums.equals("0")){
-			//插入反结算 主记录，先判断是否有会员消费虚增
-			Double inflated = settlementMapper.getMemberInflated(orderId);  
-			settlementMapper.insertSettlementHistory(orderId,settlementInfo.getReason(),1,settlementInfo.getUserName(),inflated);
-		}else{
-			//如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
-			int nums = Integer.parseInt(againSettleNums)+1;
-			settlementMapper.updateSettlementHistory(orderId, nums, settlementInfo.getUserName(),settlementInfo.getReason());
-	    }
-		//删除原结算信息
-		settlementMapper.delete(orderId);
-		tsettlementDetailMapper.deleteBySettleId(orderId);
-		//查询会员消费虚增
-	    BigDecimal inflated = tRethinkSettlementDao.queryMemberInflate(orderId);
-	    if(inflated != null){
-	    	settlementMapper.updateTorderMember(orderId);
-	    }
-	 
-//	 //已經結清 0 已下单 1 单桌结清 2 相关联桌号已经结清  3 内部结算 4 正在下单
-//	 Map<String, Object> mapOrder = orderService.findOrderById(orderId);
-//	 String tableid = String.valueOf(mapOrder.get("currenttableid"));
-	 Torder updateOrder = new Torder();
-	 updateOrder.setOrderid(orderId);
-	 updateOrder.setOrderstatus(0);
-	 orderService.update(updateOrder);
-	 
-	 //外卖不更改状态
-//	 //桌子空閒 0 空闲	 1 就餐	 3 预定	 4 已结账
-		TbTable tbTable = new TbTable();
-		Map<String, Object> order = orderService.findOrderById(orderId);
-		TbTable table = tableService.findById((String) order.get("currenttableid"));
-		// 判断餐台类型
-		// 外卖，咖啡外卖不更改餐台状态
-		String tableType = table.getTabletype();
-		tableType = tableType == null ? "" : tableType;
-		if (StringUtils.isEmpty(tableType) || (!Constant.TABLETYPE.TAKEOUT.equals(tableType)
-				&& !Constant.TABLETYPE.TAKEOUT_COFFEE.equals(tableType))) {
-			tbTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
-		} else {
-			tbTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
-		}
-		tbTable.setOrderid(orderId);
+			// start先查询是不是微信扫码支付
+			Map<String, String> dataMap = new HashMap<String, String>();
+			dataMap.put("orderno", orderId);
+			dataMap.put("payway", Constant.PAYWAY.PAYWAY_WEIXIN);
+			int isweixin = settlementMapper.selectIsPayWeixin(dataMap);
+			// end
+			// 查询反结算次数
+			String againSettleNums = settlementMapper
+					.queryAgainSettleNums(orderId);
+			if (againSettleNums == null || againSettleNums.equals("0")) {
+				// 插入反结算 主记录，先判断是否有会员消费虚增
+				Double inflated = settlementMapper.getMemberInflated(orderId);
+				settlementMapper.insertSettlementHistory(orderId,
+						settlementInfo.getReason(), 1,
+						settlementInfo.getUserName(), inflated);
+			} else {
+				// 如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
+				int nums = Integer.parseInt(againSettleNums) + 1;
+				settlementMapper.updateSettlementHistory(orderId, nums,
+						settlementInfo.getUserName(),
+						settlementInfo.getReason());
+			}
+			// 删除原结算信息
+			settlementMapper.delete(orderId);
+			tsettlementDetailMapper.deleteBySettleId(orderId);
+			// 查询会员消费虚增
+			BigDecimal inflated = tRethinkSettlementDao
+					.queryMemberInflate(orderId);
+			if (inflated != null) {
+				settlementMapper.updateTorderMember(orderId);
+			}
 
-		tableService.updateSettleStatus(tbTable);
-	 //AUTO事物处理
-	 //微信扫码支付反结算调用
-	 if(isweixin>0){//是微信扫码结算的
-				 try {
-					 String weixinturnback="http://"+PropertiesUtils.getValue("PSI_URL")+"/newspicyway/weixin/turnback";
-					String retPSI=new HttpRequestor().doPost(weixinturnback, dataMap);
-					Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+			// //已經結清 0 已下单 1 单桌结清 2 相关联桌号已经结清 3 内部结算 4 正在下单
+			// Map<String, Object> mapOrder =
+			// orderService.findOrderById(orderId);
+			// String tableid = String.valueOf(mapOrder.get("currenttableid"));
+			Torder updateOrder = new Torder();
+			updateOrder.setOrderid(orderId);
+			updateOrder.setOrderstatus(0);
+			orderService.update(updateOrder);
+			
+			//查询账单类型
+			Map<String, Object> order = orderService.findOrderById(orderId);
+			if (MapUtils.isEmpty(order)) {
+				logger.error("反结算出现异常,查询不到账单，" + orderId);
+				this.transactionManager.rollback(status);
+				return "{\"result\":\"1\"}";
+			}
+			String currenttableid = String.valueOf(order.get("currenttableid"));
+			TbTable table =  tableService.findById(currenttableid);
+			if (table == null ) {
+				logger.error("反结算出现异常,查询不到账单相关餐台，" + orderId);
+				this.transactionManager.rollback(status);
+				return "{\"result\":\"1\"}";
+			}
+			String tabletype = table.getTabletype();
+			
+			// //桌子空閒 0 空闲 1 就餐 3 预定 4 已结账
+			//外卖和咖啡外卖自动清台
+			TbTable tbTable = new TbTable();
+			if (StringUtils.isEmpty(tbTable) || (!TABLETYPE.TAKEOUT.equals(tabletype) && !TABLETYPE.TAKEOUT_COFFEE.equals(tabletype))) {
+				tbTable.setStatus(1);
+			} else {
+				tbTable.setStatus(0);
+			}
+			tbTable.setOrderid(orderId);
+
+			tableService.updateSettleStatus(tbTable);
+			// AUTO事物处理
+			// 微信扫码支付反结算调用
+			if (isweixin > 0) {// 是微信扫码结算的
+				try {
+					String weixinturnback = "http://"
+							+ PropertiesUtils.getValue("PSI_URL")
+							+ "/newspicyway/weixin/turnback";
+					String retPSI = new HttpRequestor().doPost(weixinturnback,
+							dataMap);
+					Map<String, String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
 					System.out.println("微信扫码反结算");
-					 if(retMap == null || "1".equals(retMap.get("code"))){	
-						    transactionManager.rollback(status);  //强制回滚
-						    logger.error("反结算失败！微信反结算失败");
-							return Constant.FAILUREMSG;
-					 }
-					 transactionManager.commit(status);
-					 return "2";//微信扫码反结算成功
+					if (retMap == null || "1".equals(retMap.get("code"))) {
+						transactionManager.rollback(status); // 强制回滚
+						logger.error("反结算失败！微信反结算失败");
+						return Constant.FAILUREMSG;
+					}
+					transactionManager.commit(status);
+					return "2";// 微信扫码反结算成功
 				} catch (Exception e) {
-					logger.error("-->",e);
+					logger.error("-->", e);
 					e.printStackTrace();
 					transactionManager.rollback(status);
 					return "1";
 				}
-	 }
-	 //
-	 transactionManager.commit(status);
-	 logger.info("反结算成功 ");
-     return "0";
+			}
+			transactionManager.commit(status);
+			logger.info("反结算成功 ");
+			return "0";
+		} catch (Exception e) {
+			logger.error("反结算出现异常", e);
+			this.transactionManager.rollback(status);
+			return "{\"result\":\"1\"}";
+		}
 	}
 
 	@Override

@@ -127,7 +127,6 @@ public class SyncService {
         try {
             stmt = connection.createStatement();
 
-            connection.setAutoCommit(false);
 
             // 循环处理多张表
             for (Map.Entry<String, List<Map<String, Object>>> entry : tables.entrySet()) {
@@ -146,21 +145,22 @@ public class SyncService {
         } catch (Exception e) {
             logger.error("同步数据失败：", e);
             transactionManager.rollback(status);
+            throw new RuntimeException(e);
+        } finally {
             if (null != stmt) {
                 try {
                     stmt.close();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
             if (null != connection) {
                 try {
                     connection.close();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
-            throw new RuntimeException(e);
         }
 
     }

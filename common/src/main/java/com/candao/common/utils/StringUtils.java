@@ -251,7 +251,7 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		String str = "";
 		boolean flag = false;
 		int truelength = 0;
-		int blanklength = 0;
+		int charlength = 0;
 		if (src != null && !"".equals(src)) {
 			//计算真实长度
 			for (int i = 0; i < src.length(); i++) {
@@ -259,7 +259,7 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 				if ((c & 0xff00) != 0) {
 					truelength += 2;
 				} else if(c == 0x0a ){
-					blanklength = truelength;
+					charlength = truelength;
 					truelength = i;
 					StringBuilder buffer = new StringBuilder(src);
 					src = buffer.deleteCharAt(i).toString();
@@ -271,14 +271,15 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 				if (truelength >= num) {
 					//num+1说明结尾是中文字符
 					if (truelength == num + 1) {
+						charlength = truelength - 2;
 						//truelength此时标记换行点在src中的位置
 						truelength = i;
-						blanklength = 1;
 						flag = true;
 					} else {
 						//判断是否已经遍历到src末尾
 						//如果是，说明不用换行，truelength标识真实长度
 						//如果否，truelength标识换行位置
+						charlength = num;
 						truelength = (i == src.length() - 1) ? truelength : i + 1;
 					}
 					break;
@@ -292,7 +293,8 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		if (truelength != 0 && truelength < src.length()) {
 			str = src.substring(0, truelength);
 			if (flag) {
-				for (int i = 0; i < num - blanklength; i++) {
+				//补位
+				for (int i = 0; i < num - charlength; i++) {
 					str = str.concat(" ");
 				}
 			}

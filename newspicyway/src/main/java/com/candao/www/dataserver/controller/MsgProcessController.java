@@ -30,13 +30,13 @@ public class MsgProcessController {
 //        return StringUtil.string2Unicode(result);
     }
 
-    @RequestMapping(value = "/broadcastok/{client}/{msgId}", produces = {"application/json;charset=UTF-8"})
-    @ResponseBody
-    public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
-        String result = msgForwardService.broadCastOk(client, msgId);
-        return result;
-//        return StringUtil.string2Unicode(result);
-    }
+//    @RequestMapping(value = "/broadcastok/{client}/{msgId}", produces = {"application/json;charset=UTF-8"})
+//    @ResponseBody
+//    public String broadCastOk(@PathVariable("client") String client, @PathVariable("msgId") String msgId) {
+//        String result = msgForwardService.broadCastOk(client, msgId);
+//        return result;
+////        return StringUtil.string2Unicode(result);
+//    }
 
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}/{isSingle}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
