@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by lenovo on 2016/4/7.
  */
 public interface TellerCashMapper {
-    Date selectInsertDate(@Param("openDate") String openDate, @Param("userId") String userId, @Param("ip") String ip);
+    Map<String, Object> selectInsertDate(@Param("userId") String userId, @Param("ip") String ip);
 
     Integer selectShiftid(@Param("openDate") String openDate, @Param("userId") String userId, @Param("ip") String ip);
 
@@ -37,9 +37,9 @@ public interface TellerCashMapper {
 
     String selectRemoveMoney(@Param("endTime") String endTime);
 
-    String selectTotalMoney(@Param("openDate") String openDate, @Param("userId") String userId);
+    String selectTotalMoney(@Param("insertTime") Date insertTime, @Param("userId") String userId);
 
-    String selectIncludedTotalMoney(@Param("openDate") String openDate, @Param("userId") String userId);
+    String selectIncludedTotalMoney(@Param("insertTime") Date insertTime, @Param("userId") String userId);
 
     int updateStatus(@Param("openDate") Date openDate, @Param("ip") String ip, @Param("userId") String userId);
 
