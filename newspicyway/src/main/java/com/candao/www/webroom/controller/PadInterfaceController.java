@@ -713,7 +713,7 @@ public class PadInterfaceController {
 
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(JacksonJsonMapper.objectToJson(table));
-		record.setPadpath("mergetable");
+		record.setPadpath("mergetableMultiMode");
 		jsonRecordService.insertJsonRecord(record);
 		ToperationLog toperationLog = new ToperationLog();
 		toperationLog.setId(IdentifierUtils.getId().generate().toString());
