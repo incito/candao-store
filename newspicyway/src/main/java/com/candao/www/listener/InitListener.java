@@ -1,17 +1,12 @@
 package com.candao.www.listener;
 
-import com.candao.www.dataserver.util.NettyStreamGobbler;
-import com.candao.www.printer.v2.PrinterManager;
-import com.candao.www.timedtask.ZipUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.candao.www.printer.v2.PrinterManager;
 
 /**
  * 初始化Listener，需要放到Spring初始化listener之后

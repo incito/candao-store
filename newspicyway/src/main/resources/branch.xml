@@ -241,4 +241,7 @@
 		<property name="basePackage" value="com.candao.www.data.member" />
 		<property name="sqlSessionFactoryBeanName" value="membersqlSessionFactory"></property>
 	</bean>
+	
+	<!-- 当Spring容器启动完成后执行下面的这个Bean -->
+	<bean class="com.candao.www.spring.InitBranchId"/>
 </beans>
