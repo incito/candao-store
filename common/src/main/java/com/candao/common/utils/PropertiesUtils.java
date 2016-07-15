@@ -49,6 +49,9 @@ public class PropertiesUtils {
 		if(key.equals("current_branch_id")){
 			return branchId;
 		}
+		if(key.equals("isbranch")){	//配置文件去掉isbranch,直接返回Y
+			return "Y";
+		}
 		return piu.properties.getProperty(key, null);
 	}
 	
