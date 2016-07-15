@@ -316,6 +316,11 @@ public class WeixinController extends BaseJsonController {
 					String settlementStrInfo=JacksonJsonMapper.objectToJson(settlementStrInfoDto);
 					settleOrder(settlementStrInfo);
 					vipinterface(attchresults,settlementStrInfoDto.getUserName());
+					//added by caicai
+					//打印厨打单等
+					if (settlementStrInfoDto.isFlag()) {
+						orderDetailService.afterprint(attchresults[0]);
+					}
 					//打印结账单
 					orderDetailService.printStatement(attchresults[0]);
 					//保存到orderid和随机订单id到数据表

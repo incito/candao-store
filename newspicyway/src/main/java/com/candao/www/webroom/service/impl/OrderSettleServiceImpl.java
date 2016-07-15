@@ -594,6 +594,18 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		if(orderinfo!=null){
 			String  userName=orderinfo.get("userid").toString();
 			settlementStrInfoDto.setUserName(userName);
+			
+			//added by caicai
+			//是否打印厨打单
+			String tableNO = String.valueOf(orderinfo.get("currenttableid"));
+			TbTable table = tableService.findById(tableNO);
+			if (table != null) {
+				String type = table.getTabletype();
+				if (!StringUtils.isEmpty(type) && TABLETYPE.COFFEETABLE.equals(type)) {
+					settlementStrInfoDto.setFlag(true);
+				}
+			}
+			
 		}
 		//订单详情
 		List<PayDetail>  payDetails=   new ArrayList<>();

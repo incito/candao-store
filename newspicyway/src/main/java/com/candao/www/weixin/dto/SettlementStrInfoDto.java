@@ -18,6 +18,9 @@ public class SettlementStrInfoDto implements Serializable{
 	private String userName;
 	private String orderNo;
 	private List<PayDetail>  payDetail=new ArrayList<>();
+	//是否打印厨打单等
+	private boolean flag = false;
+	
 	public String getUserName() {
 		return userName;
 	}
@@ -35,6 +38,12 @@ public class SettlementStrInfoDto implements Serializable{
 	}
 	public void setPayDetail(List<PayDetail> payDetail) {
 		this.payDetail = payDetail;
+	}
+	public boolean isFlag() {
+		return flag;
+	}
+	public void setFlag(boolean flag) {
+		this.flag = flag;
 	}
 
 }
