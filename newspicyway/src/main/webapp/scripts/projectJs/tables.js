@@ -805,7 +805,7 @@ function save_Area(){
 			alert(errorThrown);
 		}
 	});
-}
+}
 function check_validate(){
 	var TN = $("#tableName").val();
 	$("#tableNo").val(TN);
