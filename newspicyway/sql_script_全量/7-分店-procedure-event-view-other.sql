@@ -426,6 +426,22 @@ BEGIN DECLARE v_fetch_done     NUMERIC DEFAULT 0;
     AND tsd.payway IN (6, 7, 11, 12)
     AND tsd.payamount != 0;
 
+  # 挂账多收的数据
+  INSERT INTO t_temp_settlement_detail # 挂账多收的数据
+  SELECT sdetailid
+       , orderid
+       , payamount
+       , bankcardno
+       , payway
+       , couponNum
+       , coupondetailid
+  FROM
+    t_settlement_detail tsd
+  WHERE
+    tsd.orderid = i_orderid
+    AND tsd.payway = 5
+    AND tsd.payamount < 0;
+
   #循环遍历使用的优惠券,计算每一张优惠券的减免金额
   OPEN cur_order;
 
@@ -498,6 +514,7 @@ loop_label:
     t_settlement_detail t
   WHERE
     t.orderid = i_orderid
+    AND t.payamount > 0
     AND t.payway IN (0, 1, 5, 8, 13, 17, 18);
 
   SELECT ifnull(sum(t.debitamount), 0)
@@ -526,9 +543,7 @@ loop_label:
     WHERE
       t.dishtype IN (0, 1)
       OR (t.dishtype = 2
-      AND t.primarykey = t.superkey)
-    ORDER BY
-      t.debitamount DESC
+      AND t.primarykey != t.superkey)
     LIMIT
       1;
 
