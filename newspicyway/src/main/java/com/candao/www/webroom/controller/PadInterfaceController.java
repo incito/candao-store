@@ -480,7 +480,7 @@ public class PadInterfaceController {
 	@RequestMapping("/InsertTinvoice")
 	@ResponseBody
 	public String Tinvoice(@RequestBody String jsonString){
-	  Map<String,String> map = new HashMap<String, String>();
+	  Map<String,Object> map = new HashMap<String, Object>();
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
@@ -498,10 +498,7 @@ public class PadInterfaceController {
 			tinvoice.setOrderid((String) params.get("orderid"));
 			invoiceService.insertInvoice(tinvoice);
 			
-			map.put("flag","1");
-			map.put("code","001");
-			map.put("desc","操作成功");
-			map.put("data","[]");
+			map = ReturnMap.getSuccessMap("操作成功", "[]");
 			try{
 				if(StringUtils.isNotBlank((String) params.get("orderid"))){
 					TbTable table = tableService.findTableByOrder((String) params.get("orderid"));
@@ -513,16 +510,10 @@ public class PadInterfaceController {
 				logger.error("--->",ex);
 				ex.printStackTrace();
 			}
-			
-			
-			
 		} catch (Exception e) {
 			logger.error("--->",e);
 		    e.printStackTrace();
-		    map.put("flag","0");
-		    map.put("code","000");
-		    map.put("desc","操作失败");
-		    map.put("data","[]");
+		    map = ReturnMap.getFailureMap("操作失败", "[]");
 		}
 		JSONObject object = JSONObject.fromObject(map);
 		return object.toString();
@@ -541,7 +532,6 @@ public class PadInterfaceController {
 	  List<Map<String,String>> dataMapList= new ArrayList< Map<String,String>>();
 		try {
 			Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-			
 			List<Tinvoice> TinvoiceList = invoiceService.findTinvoice(params);
 			if(TinvoiceList.size()>0){
 				for (int i = 0; i < TinvoiceList.size(); i++) {
@@ -550,17 +540,11 @@ public class PadInterfaceController {
 					 dataMapList.add(dataMap);
 				}
 			}
-			map.put("flag","1");
-			map.put("code","001");
-			map.put("desc","操作成功");
-			map.put("data",dataMapList);
+			map = ReturnMap.getSuccessMap("操作成功", dataMapList);
 		} catch (Exception e) {
 			logger.error("--->",e);
 		    e.printStackTrace();
-		    map.put("flag","0");
-		    map.put("code","000");
-		    map.put("desc","操作失败");
-		    map.put("data","[]");
+		    map = ReturnMap.getFailureMap("操作失败", "[]");
 		}
 		JSONObject object = JSONObject.fromObject(map);
 		return object.toString();
@@ -641,9 +625,9 @@ public class PadInterfaceController {
 			String a = orderDetailService.discardDishList(urgeDish,toperationLog);
 			return a ;
 		}else if(flag==1){
-			return Constant.FAILUREMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("", null));
 		}else{
-			return Constant.SUCCESSMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", null));
 		}
 	}
 
@@ -986,10 +970,10 @@ public class PadInterfaceController {
 	public String verifyuser(@RequestBody  LoginInfo  loginInfo){
 		int result = loginService.existUser(loginInfo);
 		if(result == 0){
-			return Constant.SUCCESSMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("服务员校验成功", null));
 		}else {
 			logger.error("-->用户不存在");
-			return Constant.FAILUREMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("用户不存在", null));
 		}
 	}
 
@@ -1038,50 +1022,45 @@ public class PadInterfaceController {
 	@RequestMapping(value = "/login" )
 	@ResponseBody
 	public String userLogin(@RequestBody  LoginInfo  loginInfo){
-		String jsonString  = "";
+		Map<String, Object> mapRet = new HashMap<String, Object>();
 
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(JacksonJsonMapper.objectToJson(loginInfo));
 		record.setPadpath("login");
 		jsonRecordService.insertJsonRecord(record);
-
-
+		
 		try {
 			//TODO 查询今天是否开业
 			String loginType = loginInfo.getLoginType();
 			if("0".equals(loginInfo.getLoginType())){
-
-
 				TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 				if(tbOpenBizLog == null){
-					Map<String, String> mapRet = new HashMap<String, String>();
-					mapRet.put("result", "3");
 					logger.error("未开业，不能登录");
+					mapRet = ReturnMap.getFailureMap("未开业，不能登录", null);
 					return JacksonJsonMapper.objectToJson(mapRet);
 				}
 				String pwd = dataDictionaryService.find("SECRETKEY");
-//				String pwd = dataDictionaryService.find("PASSWORD");
 				if(! pwd.equals(loginInfo.getPassword())){
-					jsonString = Constant.FAILUREMSG;
+					mapRet = ReturnMap.getFailureMap("密码错误", null);
 				}else {
 					userService.updateLoginTime(loginInfo.getUsername());
-					jsonString = Constant.SUCCESSMSG;
+					mapRet = ReturnMap.getSuccessMap("", null);
 				}
 			}else {
 				User user = loginService.authPadUser(loginInfo, 0,loginType);
 				if(user == null ){
-					jsonString = Constant.FAILUREMSG;
+					mapRet = ReturnMap.getFailureMap("没有找到该账号", null);
 				}else {
 					List<Map<String, Object>> list = tableService.find(null);
-					jsonString = wrapJson(user,list);
+					String data = wrapJson(user,list);
+					mapRet = ReturnMap.getSuccessMap("", data);
 				}
 			}
-
 		} catch (AuthException e) {
 			logger.error("--->",e);
-			jsonString = Constant.FAILUREMSG;
+			mapRet = ReturnMap.getFailureMap("获取数据失败", null);
 		}
-		return jsonString;
+		return JacksonJsonMapper.objectToJson(mapRet);
 	}
 
 	/**
@@ -1148,32 +1127,24 @@ public class PadInterfaceController {
 		record.setPadpath("queryonetable");
 		jsonRecordService.insertJsonRecord(record);
 
-
-
-		String jsonString  = "";
-//		Map<String, String> mapRet = new HashMap<String, String>();
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("tableNo", tbTable.getTableNo());
-//		map.put("status", "1");
 		try {
 			List<Map<String, Object>> list = tableService.find(map);
 			if(list == null || list.size() > 1){
-				jsonString = Constant.FAILUREMSG;
+				return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("没有找到对应的桌台", null));
 			}else {
-//					mapRet.put("result", "0");
 				Map<String, Object> retMap = list.get(0);
 				TableStatus resultTable = new TableStatus();
 				resultTable.setStatus(String.valueOf(retMap.get("status")));
 				resultTable.setResult("0");
 				resultTable.setOrderid(String.valueOf(retMap.get("orderid")));
-				jsonString = JacksonJsonMapper.objectToJson(resultTable);
+				return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", resultTable));
 			}
-
 		} catch (Exception e) {
 			logger.error("--->",e);
-			jsonString = "";
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败", null));
 		}
-		return jsonString;
 	}
 
 	/**
@@ -1211,19 +1182,17 @@ public class PadInterfaceController {
 	@RequestMapping(value = "/queryusers" )
 	@ResponseBody
 	public String queryAllUser(){
-		String jsonString  = "";
+		Map<String, Object> retMap = new HashMap<String, Object>();
 		try {
 			List<EmployeeUser> list = this.employeeUserService.findAllServiceUserForCurrentStore();
-			Map<String, Object> retMap = new HashMap<String, Object>();
-			retMap.put("result", "0");
-			retMap.put("detail", list);
+			retMap = ReturnMap.getSuccessMap("", list);
 			return JacksonJsonMapper.objectToJson(retMap);
 		} catch (Exception e) {
 			logger.error("--->",e);
 			e.printStackTrace();
-			jsonString = "";
+			retMap = ReturnMap.getFailureMap("获取数据失败", null);
 		}
-		return jsonString;
+		return JacksonJsonMapper.objectToJson(retMap);
 	}
 
 
@@ -1480,7 +1449,7 @@ public class PadInterfaceController {
 	@ResponseBody
 	public void getMenu(HttpServletRequest request,HttpServletResponse response){
 		Map<String, Object> map = menuService.getMenuData();
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		String wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", map));
 		try{
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
@@ -1490,7 +1459,6 @@ public class PadInterfaceController {
 			stream.write(wholeJsonStr.getBytes("UTF-8"));
 			stream.flush();
 			stream.close();
-
 		}catch(Exception ex){
 			logger.error("--->",ex);
 			ex.printStackTrace();
@@ -1506,7 +1474,12 @@ public class PadInterfaceController {
 	@ResponseBody
 	public void getMenuColumn(HttpServletRequest request,HttpServletResponse response){
 		Map<String, Object> map = menuService.getMenuColumn();
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		String wholeJsonStr = "";
+		if(map != null){
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", map));
+		}else{
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取菜谱分类失败", null));
+		}
 		try{
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
@@ -1532,7 +1505,12 @@ public class PadInterfaceController {
 	@ResponseBody
 	public void getMenuFishPot(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
 		List<Map<String, Object>> map = menuService.getMenuFishPot(jsonString);
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		String wholeJsonStr = "";
+		if(map == null || map.size() == 0){
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败", null));
+		}else{
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", map));
+		}
 		try{
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
@@ -1558,7 +1536,12 @@ public class PadInterfaceController {
 	@ResponseBody
 	public void getMenuCombodish(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
 		Map<String, Object> map = menuService.getMenuCombodish(jsonString);
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		String wholeJsonStr = "";
+		if(map == null){
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败", null));
+		}else{
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", map));
+		}
 		try{
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
@@ -1584,7 +1567,12 @@ public class PadInterfaceController {
 	@ResponseBody
 	public void getMenuSpfishpot(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
 		List<Map<String, Object>> map = menuService.getMenuSpfishpot(jsonString);
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		String wholeJsonStr = "";
+		if(map == null){
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败", null));
+		}else{
+			wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("", map));
+		}
 		try{
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
@@ -1594,7 +1582,6 @@ public class PadInterfaceController {
 			logger.info(wholeJsonStr);
 			stream.flush();
 			stream.close();
-			
 		}catch(Exception ex){
 			logger.error("--->",ex);
 			ex.printStackTrace();
@@ -1897,32 +1884,26 @@ public class PadInterfaceController {
 	@RequestMapping(value = "/padlogin" )
 	@ResponseBody
 	public String userPadLogin(@RequestBody  LoginInfo  loginInfo){
-		String jsonString  = "";
+		Map<String, Object> mapRet = new HashMap<String, Object>();
 		try {
-
 			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 			if(tbOpenBizLog == null){
-				Map<String, String> mapRet = new HashMap<String, String>();
-				mapRet.put("result", "3");
-				logger.error("未开业，不能登录");
+				mapRet = ReturnMap.getFailureMap("未开业，不能登录", null);
 				return JacksonJsonMapper.objectToJson(mapRet);
 			}
-
 			String pwd = dataDictionaryService.find("SECRETKEY");
 			if(! pwd.equals(loginInfo.getPassword())){
 				logger.info("密码错误");
-				jsonString = Constant.FAILUREMSG;
+				mapRet = ReturnMap.getFailureMap("密码错误", null);
 			}else {
 				logger.info("登录成功");
-//				userService.updateLoginTime(loginInfo.getUsername());
-				jsonString = Constant.SUCCESSMSG;
+				mapRet = ReturnMap.getSuccessMap("登录成功", null);
 			}
-//			 
 		} catch (Exception e) {
 			logger.error("--->",e);
-			jsonString = Constant.FAILUREMSG;
+			mapRet = ReturnMap.getFailureMap("登录失败", null);
 		}
-		return jsonString;
+		return JacksonJsonMapper.objectToJson(mapRet);
 	}
 
 	/**
@@ -2604,13 +2585,12 @@ public class PadInterfaceController {
 		}catch(Exception e){
 			logger.error("--->",e);
 			e.printStackTrace();
-			return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
+			return ReturnMap.getFailureMap("数据异常，请联系管理员", null);
 		}
 		if(maps == null || maps.size() <= 0){
-			return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
+			return ReturnMap.getFailureMap("没有查询到相应的数据", null);
 		}
-		Map<String,Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");
-		returnMap.put("data", maps);
+		Map<String,Object> returnMap = ReturnMap.getSuccessMap("查询成功",maps);
 		return returnMap;
 	}
 	
@@ -3032,11 +3012,9 @@ public class PadInterfaceController {
 		PadConfig padConfig= padConfigService.getconfiginfos();
 		Map<String, Object> map=new HashMap<>();
 		if(padConfig==null){
-			map.put("code", 1);
-			map.put("msg", "门店没有配置相关信息");
+			map = ReturnMap.getFailureMap("门店没有配置相关信息", null);
 		}else{
-			map.put("code", 0);
-			map.put("data", padConfig);
+			map = ReturnMap.getSuccessMap("", padConfig);
 		}
 		return JacksonJsonMapper.objectToJson(map);
 	}
@@ -3095,15 +3073,12 @@ public class PadInterfaceController {
 	@ResponseBody
 	public String getBranchInfo(){
 		Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
-		HashMap<String, Object> res = new HashMap<>();
+		Map<String, Object> res = new HashMap<>();
 		if(branchInfo != null && !branchInfo.isEmpty()){
-			res.put("result", 1);
-			res.put("msg", "success");
-			res.put("data", branchInfo);
+			res = ReturnMap.getSuccessMap("", branchInfo);
 			return JacksonJsonMapper.objectToJson(res);
 		}
-		res.put("result", 0);
-		res.put("msg", "查询门店信息失败");
+		res = ReturnMap.getFailureMap("查询门店信息失败", null);
 		return JacksonJsonMapper.objectToJson(res);
 	}
 	

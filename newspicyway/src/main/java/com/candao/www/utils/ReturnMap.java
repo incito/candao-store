@@ -27,4 +27,20 @@ public class ReturnMap {
 		returninfo.put("data", datalist);
     	return returninfo;
     }
+    
+    public static Map<String, Object> getSuccessMap(String msg, Object object){
+    	Map<String,Object> returninfo = new HashMap<String,Object>();
+		returninfo.put("code", "0");
+		returninfo.put("msg", msg);
+		returninfo.put("data", object);
+    	return returninfo;
+    }
+    
+    public static Map<String, Object> getFailureMap(String msg, Object object){
+    	Map<String,Object> returninfo = new HashMap<String,Object>();
+		returninfo.put("code", "1");
+		returninfo.put("msg", msg);
+		returninfo.put("data", object);
+    	return returninfo;
+    }
 }
