@@ -234,6 +234,11 @@ public class WeixinController extends BaseJsonController {
 	@RequestMapping(value = "/turnback", produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public String turnback(String orderno,HttpServletRequest request){
+		
+		return weixincallback(orderno, request);
+	}
+	
+	private String weixincallback(String orderno,HttpServletRequest request){
 		String branchid = PropertiesUtils.getValue("current_branch_id");// 当前门店id
 		Map<String, Object> map = weixinService.queryWeixinInfoBybranchid(branchid);
 		if (map != null) {
@@ -253,13 +258,13 @@ public class WeixinController extends BaseJsonController {
 				int result=refund.wechatRefund(realpath);
 				if(result==1){
 					weixinService.deletetemp(orderno);
+					loggers.info("退款成功，订单id="+orderno);
 					return JacksonJsonMapper.objectToJson(getSuccessInstance(null));
 				}
 		}
+		loggers.error("退款失败，订单id="+orderno);
 		return JacksonJsonMapper.objectToJson(getFailInstance(null, "操作失败"));
 	}
-	
-	
 
 	/**
 	 * 扫码支付回调
@@ -313,8 +318,8 @@ public class WeixinController extends BaseJsonController {
 		if(isSave==0){
 			if ("SUCCESS".equals(wpr.getResultCode())) {
 				// 支付成功
+				String[] attchresults=wpr.getAttach().split(";");
 				try{
-					String[] attchresults=wpr.getAttach().split(";");
 					//1结账和清台
 					SettlementStrInfoDto settlementStrInfoDto=new SettlementStrInfoDto();
 					orderSettleService.updatePadData(wpr.getAttach());
@@ -333,20 +338,23 @@ public class WeixinController extends BaseJsonController {
 					
 				}catch(Exception e){
 					isSuucess = "2";//支付成功，清台或者打印结账单出错
+					//退款操作
+					weixincallback(attchresults[0], request);
 				}
 				isSuucess = "0";
-				
 				loggers.info("当前订单id"+wpr.getAttach());
 				resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
 						+ "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
+				
+				sendmessage2Handler(isSuucess, wpr.getAttach());
+				sendmessage2Android2QT(isSuucess,wpr.getAttach());
 			} else {
+				loggers.error("微信支付失败");
 				isSuucess = "1";
 				resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>"
 						+ "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
 			}
 			sendmessage2Android(isSuucess,wpr.getAttach());
-			sendmessage2Android2QT(isSuucess,wpr.getAttach());
-			sendmessage2Handler(isSuucess, wpr.getAttach());
 			loggers.info("微信支付回调数据结束");
 	
 			BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
@@ -394,6 +402,9 @@ public class WeixinController extends BaseJsonController {
 													member.setSerial(vipresult.get("TraceCode").toString());
 													orderMemberService.saveOrderMember(member);
 												}
+										}else{
+											loggers.error("url=", url);
+											loggers.error("jsonObject=", jsonObject);
 										}
 							}
 				
