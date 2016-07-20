@@ -156,7 +156,7 @@ public class OrderServiceImpl implements OrderService{
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if(tbOpenBizLog == null){
 			logger.error("开台失败，开业记录为空");
-			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空", null);
+			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		
@@ -169,12 +169,12 @@ public class OrderServiceImpl implements OrderService{
 		
 		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
 			logger.error("开台失败！ 查找不到桌台");
-			mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台", null);
+			mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		if(! "0".equals(String.valueOf(resultMap.get(0).get("status")))){
 			logger.error("开台失败，桌台状态不对！0");
-			mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！", null);
+			mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		//1.预定桌子
@@ -349,7 +349,7 @@ public class OrderServiceImpl implements OrderService{
 		
 		//开台前清空当前台的操作日记
 		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());		
-		mapRet = ReturnMap.getSuccessMap("", mapRet);
+		mapRet = ReturnMap.getSuccessMap(mapRet);
 	 }
 		return JacksonJsonMapper.objectToJson(mapRet); 
 	}
@@ -373,10 +373,9 @@ public class OrderServiceImpl implements OrderService{
 	    
 		int result = torderMapper.update(order);
 		if(result > 0 ){
-			return Constant.SUCCESSMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		} 
-		
-		return Constant.FAILUREMSG;
+		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 	}
 	
 	@Override
@@ -471,7 +470,7 @@ public class OrderServiceImpl implements OrderService{
 				Map<String,Object> orderMap=torderMapper.findOne(orderid);
 				if(orderMap!=null){
 					if("3".equals(String.valueOf(orderMap.get("orderstatus")))){
-						mapRet = ReturnMap.getFailureMap("该桌已结账", null);
+						mapRet = ReturnMap.getFailureMap("该桌已结账");
 						return mapRet; 
 					}
 					if("0".equals(String.valueOf(orderMap.get("orderstatus")))){
@@ -515,17 +514,17 @@ public class OrderServiceImpl implements OrderService{
 						toperationLogService.deleteToperationLogByTableNo(String.valueOf(params.get("tableNo")));	
 						return ReturnMap.getSuccessMap("获取数据成功", data);
 					}
-					return ReturnMap.getFailureMap("订单已取消", null);
+					return ReturnMap.getFailureMap("订单已取消");
 				}else{
-					return ReturnMap.getFailureMap("订单不存在", null);
+					return ReturnMap.getFailureMap("订单不存在");
 				}
 			}else{
-				return ReturnMap.getFailureMap("桌台未绑定订单", null);
+				return ReturnMap.getFailureMap("桌台未绑定订单");
 			}
 		}
 		else{
 			//没找到这个桌号
-			return ReturnMap.getFailureMap("未找到这个桌号", null);
+			return ReturnMap.getFailureMap("未找到这个桌号");
 		}
 	}
 
@@ -649,18 +648,21 @@ public class OrderServiceImpl implements OrderService{
 					params.put("printobjid", printObj.getId());
 					flag=flag&&tbPrintObjDao.updateDishWeight(params)>0;
 				}
-				if(flag){				
-					mapRet.put("result", "0");
+				if(flag){
+					/*mapRet.put("result", "0");
 					mapRet.put("desc", "更新成功");
-					mapRet.put("orderid", orderid);
+					mapRet.put("orderid", orderid);*/
+					mapRet = ReturnMap.getSuccessMap("更新成功", orderid);
 				}else{
-					mapRet.put("result", "2");
-					mapRet.put("desc", "未找到相应的菜品");
+					/*mapRet.put("result", "2");
+					mapRet.put("desc", "未找到相应的菜品");*/
+					mapRet = ReturnMap.getFailureMap("未找到相应的菜品");
 				}
 			}
 		}else{
-			mapRet.put("result", "1");
-			mapRet.put("desc", "订单为空");
+			/*mapRet.put("result", "1");
+			mapRet.put("desc", "订单为空");*/
+			mapRet = ReturnMap.getFailureMap("订单为空");
 		}
 		return mapRet; 
 	}

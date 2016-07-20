@@ -69,7 +69,7 @@ public class SocialController {
 			JSONArray data = JSONArray.fromObject(tableInfo);
 			map = ReturnMap.getSuccessMap("查询桌台信息成功", data);
 		} catch (Exception e) {
-			map = ReturnMap.getFailureMap("查询桌台信息失败", null);
+			map = ReturnMap.getFailureMap("查询桌台信息失败");
 			e.printStackTrace();
 		}
 		return JSONObject.fromObject(map);
@@ -93,7 +93,7 @@ public class SocialController {
 			map = ReturnMap.getSuccessMap("查询礼物列表成功", data);
 		} catch (Exception e) {
 			logger.error("查询礼物列表失败");
-			map = ReturnMap.getFailureMap("查询礼物列表失败", null);
+			map = ReturnMap.getFailureMap("查询礼物列表失败");
 			e.printStackTrace();
 		}
 		return JSONObject.fromObject(map);

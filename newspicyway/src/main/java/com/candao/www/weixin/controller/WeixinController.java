@@ -214,9 +214,9 @@ public class WeixinController extends BaseJsonController {
 		int result=weixinService.getweixinstatus(weixinStatus.getBranchid());
 		if(result>0){
 			System.out.println(renderSuccessJSONString(SUCCESSCODE,null));
-			return ReturnMap.getSuccessMap("", null);
+			return ReturnMap.getSuccessMap();
 		}
-		return ReturnMap.getFailureMap("门店没有配置微信相关信息", null);
+		return ReturnMap.getFailureMap("门店没有配置微信相关信息");
 	}
 	
 	

@@ -568,7 +568,7 @@ public class MenuServiceImpl implements MenuService {
             map = ReturnMap.getSuccessMap("获取数据成功", list);
         } else {
             logger.info("没有数据");
-            map = ReturnMap.getFailureMap("获取数据失败", null);
+            map = ReturnMap.getFailureMap("获取数据失败");
         }
         return map;
     }
