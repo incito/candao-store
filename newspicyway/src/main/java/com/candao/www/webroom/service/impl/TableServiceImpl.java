@@ -807,5 +807,9 @@ public class TableServiceImpl implements TableService {
 		return tableDao.getMenuInfoByCount(params);
 	}
 
+	@Override
+	public String generatePrintObjId() {
+		return tableDao.generatePrintObjId();
+	}
 }
 

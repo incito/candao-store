@@ -517,7 +517,7 @@ public class MenuServiceImpl implements MenuService {
      * 根据menuid,dishid获取t_template_dishunit表中的数据
      */
     @Override
-    public List<Map<String, Object>> findOneTtd(Map<String, Object> paramsTtd) {
+    public TtemplateDishUnit findOneTtd(Map<String, Object> paramsTtd) {
         // TODO Auto-generated method stub
         return ttemplateDishUnitlDao.findOneTtd(paramsTtd);
     }

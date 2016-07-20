@@ -167,6 +167,7 @@
 	   from t_table
 	   where 
 	    tableNo=#{tableNo} and status !='5'
+		limit 1
 	</select>
 
 	<select id="findOne" parameterType="map" resultMap="findResultMap">
@@ -471,4 +472,15 @@
 	   from t_table tt left join t_order tod on tod.currenttableid = tt.tableid
 	   where tod.orderid = #{orderid}
 </select>
+	<select id="generatePrintObjId" resultType="String">
+ 		SELECT tableseqno('printobjid')
+	</select>
+	<select id="getTableNoById" resultType="map" parameterType="map">
+ 		SELECT
+          tb.tableno,ta.areaname
+        FROM t_tablearea ta,
+             t_table tb
+        WHERE tb.areaid = ta.areaid
+        AND tb.tableid = #{tableId};
+	</select>
 </mapper> 

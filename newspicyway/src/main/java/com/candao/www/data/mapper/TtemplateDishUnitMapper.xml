@@ -105,6 +105,7 @@
 		        and status=#{status}
 		</if>
 		</where>
+		limit 1
 	</select>
 	
 	<select id="getTtemplateDishUnitByStatus" parameterType="map" resultType="com.candao.www.data.model.TtemplateDishUnit">
@@ -116,5 +117,13 @@
 	<update id="updateStatus" parameterType="map">
 		UPDATE t_template_dishunit SET `status` = 1 WHERE dishid in(${dishIds});
 	</update>
-	
+	<select id="findAllByDishIds" resultMap="BaseResultMap"	parameterType="map">
+		select id,dishid,menuid,dishname,dishintroduction,unit,price,vipprice ,status
+		from t_template_dishunit
+		where dishid in(
+		<foreach collection="dishIds" item="dishId" separator=",">
+			#{dishId}
+		</foreach>
+		) and menuid=#{menuId}
+	</select>
 </mapper>

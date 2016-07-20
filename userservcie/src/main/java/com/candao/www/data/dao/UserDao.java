@@ -86,7 +86,7 @@ public interface UserDao {
 	
 	public User getUserByjobNum(String id);
 	
-	
+	public String getNameByUserNumber(String jobNumber,String branchId);
 	
 	
 }

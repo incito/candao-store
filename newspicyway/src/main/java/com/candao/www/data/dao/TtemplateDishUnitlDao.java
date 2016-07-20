@@ -45,7 +45,7 @@ public interface TtemplateDishUnitlDao {
 	 * @Description: TODO
 	 */
 	public boolean updateDishStatus(Map<String,Object> params);
-	public List<Map<String, Object>> findOneTtd(Map<String, Object> paramsTtd);
+	public TtemplateDishUnit findOneTtd(Map<String, Object> paramsTtd);
 	
 	/**
 	 * 获取所有已经估清的菜品
@@ -53,4 +53,5 @@ public interface TtemplateDishUnitlDao {
 	List<TtemplateDishUnit> getTtemplateDishUnitByStatus();
 	
 	boolean updateStatus(String dishIds);
+	public List<TtemplateDishUnit> findAllByDishIds(Map<String, Object> paramsTtd);
 }

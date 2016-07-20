@@ -14,7 +14,7 @@ public interface TorderDetailMapper {
     
 	public TorderDetail get(java.lang.String id);
 	
-	public <K, V> Map<K, V> findOne(java.lang.String id);
+	public <T, K, V>T findOne(Map<K, V> params);
 	
 	public <T, K, V> List<T> find(Map<K, V> params);
 	
@@ -79,6 +79,7 @@ public interface TorderDetailMapper {
 	
 	public int countByPrimarykey(List<TorderDetail> orderDetails);
 
+	public List<TorderDetail> getByPrimarykey(List<TorderDetail> orderDetails);
 	/**
 	 * 一次插入到退单表
 	 * @author tom_zhao

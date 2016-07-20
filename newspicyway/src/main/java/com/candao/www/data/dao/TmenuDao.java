@@ -88,4 +88,10 @@ public interface TmenuDao {
 	 */
 	public List<Map<String,Object>> getBranchMenuColumn(Map<String,Object> params);
 
+	/**
+	 * 检查是否有菜谱
+	 * @return
+     */
+	public Tmenu checkMenu();
+
 }

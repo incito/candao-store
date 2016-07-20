@@ -38,9 +38,7 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	}
 	
 	@Override
-	public <K, V> Map<K, V> findOne(java.lang.String id) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("id", id);
+	public <T, K, V> T findOne(Map<K, V> params) {
 		return dao.get(PREFIX + ".findOne", params);
 	}
 
@@ -292,6 +290,12 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("primarykeys", orderDetails);
 		return dao.get(PREFIX + ".countByPrimarykey", params);
 	}
-	
+
+	@Override
+	public List<TorderDetail> getByPrimarykey(List<TorderDetail> orderDetails) {
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("primarykeys", orderDetails);
+		return dao.get(PREFIX + ".getByPrimarykey", params);
+	}
 }
  

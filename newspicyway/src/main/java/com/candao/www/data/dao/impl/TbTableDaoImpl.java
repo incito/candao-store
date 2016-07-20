@@ -192,7 +192,18 @@ public class TbTableDaoImpl implements TbTableDao {
 		
 		return dao.update(PREFIX + ".updateTableByOrderId", map);
 	}
-	
+
+	@Override
+	public String generatePrintObjId() {
+		return dao.get(PREFIX+".generatePrintObjId",null);
+	}
+
+	@Override
+	public Map<String, Object> getTableNoById(String tableId) {
+		Map<String,Object>param=new HashMap<>();
+		param.put("tableId",tableId);
+		return dao.get(PREFIX+".getTableNoById",param);
+	}
 }
 
 

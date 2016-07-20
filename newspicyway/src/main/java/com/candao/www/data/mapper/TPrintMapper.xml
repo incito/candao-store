@@ -273,7 +273,7 @@
 		 <include refid="BASE_SELECT"/>
 		from t_printobj
 		where	orderno=#{orderno}
-		       
+		limit 1
 	</select>
 	
  <select id="findDish" parameterType="map" resultType="com.candao.print.entity.PrintDish">
@@ -678,4 +678,57 @@
 	LEFT OUTER JOIN t_printer_area a on t.printerid=a.printerid
 	 where t.printertype=#{printertype} and a.tableid=#{tableid} and t.`status`=#{status}
 </select>
+
+<insert id="insertPrintDishBatch" parameterType="java.util.List" >
+	insert into t_printdish (printdishid, printobjid, dishname,
+	dishnum, dishprice, totalamount,
+	payamount, sperequire, tableNomsg,
+	maxDishCount, dishUnit, printipaddress,
+	printport, printnum, dishid,
+	printtype, orderseq, relatedishid,
+	dishtype, printerId,ordertype,parentkey,superkey,ismaster,primarykey,islatecooke)
+	values
+	<foreach collection="list" item="item" index="index" separator=",">
+	(
+		tableseqno(#{item.printdishid}), #{item.printobjid,jdbcType=VARCHAR}, #{item.dishName,jdbcType=VARCHAR},
+	#{item.dishNum,jdbcType=VARCHAR}, #{item.dishPrice,jdbcType=DECIMAL}, #{item.totalAmount,jdbcType=DECIMAL},
+	#{item.payAmount,jdbcType=DECIMAL}, #{item.sperequire,jdbcType=VARCHAR}, #{item.tableNomsg,jdbcType=VARCHAR},
+	#{item.maxDishCount,jdbcType=INTEGER}, #{item.dishUnit,jdbcType=VARCHAR}, #{item.printipaddress,jdbcType=VARCHAR},
+	#{item.printport,jdbcType=VARCHAR},0, #{item.dishId,jdbcType=VARCHAR},
+	#{item.printtype,jdbcType=VARCHAR}, #{item.orderseq,jdbcType=INTEGER}, #{item.relatedishid,jdbcType=VARCHAR},
+	#{item.dishtype,jdbcType=INTEGER}, #{item.printerId,jdbcType=VARBINARY},
+	#{item.ordertype,jdbcType=INTEGER},
+	#{item.parentkey,jdbcType=VARCHAR},
+	#{item.superkey,jdbcType=VARCHAR},
+	#{item.ismaster,jdbcType=INTEGER},
+	#{item.primarykey,jdbcType=VARCHAR},
+	#{item.islatecooke,jdbcType=INTEGER})
+	</foreach>
+</insert>
+
+<insert id="insertPrintObj" parameterType="com.candao.print.entity.PrintObj" >
+	INSERT INTO t_printobj (id,
+	printtype
+	, orderno
+	, username
+	, tableno
+	, timemsg
+	, customerprinterip
+	, customerprinterport
+	, tableArea,
+	tableid)
+
+	VALUES (
+	#{id}
+	,#{printType}
+	,#{orderNo}
+	,#{userName}
+	,#{tableNo}
+	,#{timeMsg}
+	,#{customerPrinterIp}
+	,#{customerPrinterPort}
+	,#{tableArea}
+	,#{tableid}
+	)
+</insert>
 </mapper>

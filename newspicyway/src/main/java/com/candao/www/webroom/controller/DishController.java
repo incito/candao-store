@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.candao.www.data.model.TtemplateDishUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -226,9 +227,9 @@ public class DishController extends BaseController{
 		/**
 		 * 根据menuid,dishid获取t_template_dishunit表中的数据
 		 */
-		List<Map<String,Object>> findOneTtdList = menuService.findOneTtd(paramsTtd);
+		TtemplateDishUnit findOneTtd = menuService.findOneTtd(paramsTtd);
 		//只能有一条数据
-		int statusTtd =  (int) ((Map<String,Object>)findOneTtdList.get(0)).get("status");
+		int statusTtd = findOneTtd.getStatus();
 		Tdish tdish = dishService.findById(id);
 		List<TdishUnit> tlist=dishUnitService.getUnitsBydishId(id);
 		Map<String,Object> params = new HashMap<String,Object>();

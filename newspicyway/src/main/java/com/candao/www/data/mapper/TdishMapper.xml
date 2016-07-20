@@ -533,14 +533,11 @@ from t_dish t ,t_basicdata tb where t.source=tb.id and t.status=1 and t.dishtype
 	     )
 	</update>
 	
- <select id="findAllByIds" resultMap = "BaseResultMap" parameterType="com.candao.www.data.model.Tdish">
-	   select 
-	   td.dishid ,td.ishead, 
-	   CONCAT_WS('#',tp.ipaddress,tp.port) content,
-        td.title 
-        from t_printer tp ,t_dish td
-        where tp.printerid = td.printer
-	   and td.dishid in (
+ <select id="findAllByIds" resultMap = "BaseResultMap" parameterType="java.util.ArrayList">
+   SELECT
+    td.*
+   FROM t_dish td
+   WHERE  td.dishid in (
 	    <foreach collection="ids" item="articleid" separator=",">
 	    #{articleid}
 	    </foreach>

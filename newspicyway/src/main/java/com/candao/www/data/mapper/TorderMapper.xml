@@ -308,7 +308,14 @@
 	<select id="findOne" parameterType="map" resultMap="findResultMap">
 	  select 
     <include refid="Base_Column_List" />
-    from t_order 	   where 	    orderid=#{id} 
+    from t_order 	   where 	    orderid=#{id}  limit 1
+	</select>
+    <select id="selectForUpdate" parameterType="map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_order
+        where orderid=#{orderid}
+        for update
 	</select>
 
 	<select id="find" parameterType="map" resultMap="BaseResultMap">

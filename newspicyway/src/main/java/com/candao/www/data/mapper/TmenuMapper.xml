@@ -204,4 +204,17 @@
  	where t.dishid=d.dishid and t.menuid=#{menuid} and t.dishid=#{dishid}
 	and b.id=p.columnid and p.dishid=t.dishid
   </select>
+  <select id="checkMenu" resultMap="BaseResultMap">
+        SELECT
+            tm.menuid
+        FROM
+            t_branch_info tbf,
+            t_menu_branch mb,
+            t_menu tm
+        WHERE
+            tbf.branchid = mb.branchid
+        AND mb.menuid = tm.menuid
+        AND tm. STATUS = '1'
+        ORDER BY tm.effecttime DESC LIMIT 1
+  </select>
 </mapper>

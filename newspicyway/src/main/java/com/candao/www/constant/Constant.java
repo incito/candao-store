@@ -1,9 +1,12 @@
 package com.candao.www.constant;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.spring.SpringContext;
 
 public class Constant {
 	
@@ -355,5 +358,17 @@ public class Constant {
 	public class MSG_ID{
 		public static final  String GUQING="1";//估清
 		public static final  String QXGUQING="2";//取消估清
+	}
+
+	/**
+	 * 门店配置
+	 */
+	public static class BRANCH{
+		public static String BRANCH_ID="0";
+		static {
+			TbBranchDao branchDao = (TbBranchDao) SpringContext.getBean(TbBranchDao.class);
+			Map<String, Object> branchInfo = branchDao.getBranchInfo();
+			BRANCH_ID=branchInfo.get("branchid").toString();
+		}
 	}
 }

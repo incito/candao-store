@@ -172,7 +172,7 @@ public class GiftServiceImpl implements GiftLogService{
 			int flag= judgeRepeatData(toperationLog);
 			Map<String, Object> res = null;
 			if(flag==0){
-				res =  orderDetailService.setOrderDetailList(saveorder,toperationLog);
+				res =  orderDetailService.setOrderDetailList(saveorder);
 			}
 			
 			if(res==null||!res.containsKey("result")||StringUtils.isBlank(String.valueOf(res.get("result")))||!String.valueOf(res.get("result")).equals("0")){

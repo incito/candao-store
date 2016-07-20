@@ -93,5 +93,8 @@ public class TmenuDaoImpl implements TmenuDao {
 		return daoSupport.find(PREFIX+".getMenuDishDetailById", params);
 	}
 
-
+	@Override
+	public Tmenu checkMenu() {
+		return daoSupport.get(PREFIX+".checkMenu", null);
+	}
 }

@@ -182,7 +182,13 @@ public class TbOrderDaoImpl implements TorderMapper {
 		mapParam.put("memberno", memberno);
 		return dao.update(PREFIX + ".updateMemberno", mapParam );
 	}
- 
+
+	@Override
+	public Torder lock(String orderId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("orderid", orderId);
+		return dao.get(PREFIX + ".selectForUpdate", map );
+	}
 }
 
 

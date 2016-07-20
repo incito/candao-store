@@ -47,9 +47,9 @@ public class TtemplateDishUnitlDaoImpl implements TtemplateDishUnitlDao {
 	}
 
 	@Override
-	public List<Map<String, Object>> findOneTtd(Map<String, Object> paramsTtd) {
+	public TtemplateDishUnit findOneTtd(Map<String, Object> paramsTtd) {
 		// TODO Auto-generated method stub
-		return daoSupport.find(PREFIX+".findOneTtd", paramsTtd);
+		return daoSupport.get(PREFIX+".findOneTtd", paramsTtd);
 	}
 
 	@Override
@@ -72,4 +72,8 @@ public class TtemplateDishUnitlDaoImpl implements TtemplateDishUnitlDao {
 		return daoSupport.update(PREFIX+".updateStatus", map) > 0;
 	}
 
+	@Override
+	public List<TtemplateDishUnit> findAllByDishIds(Map<String, Object> paramsTtd) {
+		return daoSupport.find(PREFIX+".findAllByDishIds", paramsTtd);
+	}
 }

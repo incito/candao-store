@@ -355,4 +355,15 @@
 	     select u.* from t_b_employee t,t_b_user u,t_branch_info b where t.job_number=#{jobnum}  and u.id=t.user_id and b.branchid=t.branch_id
   </select>
  <!-- ===================基本用户,结束======================== -->
+	<select id="getNameByUserNumber" resultType="String" parameterType="map">
+		SELECT
+        name
+      FROM t_b_user
+      WHERE id
+      IN (SELECT
+          user_id
+        FROM t_b_employee
+        WHERE job_number = #{jobNumber}
+        AND branch_id = #{branchId})
+	</select>
 </mapper>

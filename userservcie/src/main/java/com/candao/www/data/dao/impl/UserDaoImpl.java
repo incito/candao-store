@@ -113,4 +113,12 @@ public class UserDaoImpl implements UserDao{
 		params.put("jobnum", id);
 		return dao.get(PREFIX + ".getUserByjobNum", params);
 	}
+
+	@Override
+	public String getNameByUserNumber(String jobNumber,String branchId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("jobNumber", jobNumber);
+		params.put("branchId", branchId);
+		return dao.get(PREFIX + ".getNameByUserNumber", params);
+	}
 }

@@ -181,8 +181,17 @@ public class TbPrintObjDaoImpl implements TbPrintObjDao {
 	public int updateByOrderno(Map<String, Object> paramMap) {
 		return dao.update(PREFIX + ".updateByOrderno", paramMap);
 	}
-	
-	
+
+	@Override
+	public int insertPrintDishBatch(List<PrintDish> printDishs) {
+		return dao.update(PREFIX+".insertPrintDishBatch",printDishs);
+	}
+
+	@Override
+	public int insertPrintObj(PrintObj printObj) {
+		return dao.update(PREFIX+".insertPrintObj",printObj);
+	}
+
 }
 
 

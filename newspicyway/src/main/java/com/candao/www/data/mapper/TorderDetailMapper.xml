@@ -122,29 +122,47 @@
   
 <insert id="insertOnce" parameterType="java.util.ArrayList">
      
-		insert into t_order_detail (orderid, dishid, dishstatus,begintime, endtime, sperequire, dishnum,userName,orderprice,dishunit,orignalprice,pricetype,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype)
-		<foreach collection="list" item="item" index="index" separator=" union all ">
-		  select #{item.orderid,jdbcType=VARCHAR}, 
-		         #{item.dishid,jdbcType=VARCHAR}, 
-		   #{item.dishstatus,jdbcType=VARCHAR}, 
-               current_timestamp(), 
-               #{item.endtime,jdbcType=TIMESTAMP}, 
-               #{item.sperequire,jdbcType=VARCHAR}, 
-               #{item.dishnum,jdbcType=VARCHAR},
-               #{item.userName,jdbcType=VARCHAR},
-               #{item.orderprice,jdbcType=DECIMAL},
-                  #{item.dishunit,jdbcType=VARCHAR},
-                  #{item.orignalprice,jdbcType=DECIMAL},
-                  #{item.pricetype,jdbcType=VARCHAR},
-                         #{item.ordertype,jdbcType=INTEGER},
-			      #{item.parentkey,jdbcType=VARCHAR},
-			      #{item.superkey,jdbcType=VARCHAR},
-			      #{item.ismaster,jdbcType=INTEGER},
-			      #{item.primarykey,jdbcType=VARCHAR},
-			        #{item.isadddish,jdbcType=INTEGER},
-			          #{item.childdishtype,jdbcType=INTEGER}
-            from dual
-		</foreach>
+		insert into t_order_detail (orderdetailid,orderid, dishid, dishstatus,begintime, endtime, sperequire, dishnum,
+    userName,orderprice,discountrate,discountamount,fishcode,dishtype,status,dishunit,payamount,predisamount,
+    couponid,disuserid,relatedishid,islatecooke,ispot,
+    orignalprice,pricetype,ordertype,parentkey,superkey,
+    ismaster,primarykey,isadddish,childdishtype) values
+		<foreach collection="list" item="item" index="index" separator=", ">
+            (
+            UUID(),
+            #{item.orderid,jdbcType=VARCHAR},
+            #{item.dishid,jdbcType=VARCHAR},
+            #{item.dishstatus,jdbcType=VARCHAR},
+            current_timestamp(),
+            #{item.endtime,jdbcType=TIMESTAMP},
+            #{item.sperequire,jdbcType=VARCHAR},
+            #{item.dishnum,jdbcType=VARCHAR},
+            #{item.userName,jdbcType=VARCHAR},
+            #{item.orderprice,jdbcType=DECIMAL},
+            #{item.discountrate,jdbcType=VARCHAR},
+            #{item.discountamount,jdbcType=VARCHAR},
+            #{item.fishcode,jdbcType=VARCHAR},
+            #{item.dishtype,jdbcType=VARCHAR},
+            #{item.status,jdbcType=VARCHAR},
+            #{item.dishunit,jdbcType=VARCHAR},
+            #{item.payamount,jdbcType=VARCHAR},
+            #{item.predisamount,jdbcType=VARCHAR},
+            #{item.couponid,jdbcType=VARCHAR},
+            #{item.disuserid,jdbcType=VARCHAR},
+            #{item.relatedishid,jdbcType=VARCHAR},
+            #{item.printtype,jdbcType=VARCHAR},
+            #{item.ispot,jdbcType=VARCHAR},
+            #{item.orignalprice,jdbcType=DECIMAL},
+            #{item.pricetype,jdbcType=VARCHAR},
+            #{item.ordertype,jdbcType=INTEGER},
+            #{item.parentkey,jdbcType=VARCHAR},
+            #{item.superkey,jdbcType=VARCHAR},
+            #{item.ismaster,jdbcType=INTEGER},
+            #{item.primarykey,jdbcType=VARCHAR},
+            #{item.isadddish,jdbcType=INTEGER},
+            #{item.childdishtype,jdbcType=INTEGER}
+            )
+        </foreach>
 </insert>
 
 <insert id="insertTempOnce" parameterType="java.util.ArrayList">
@@ -526,7 +544,12 @@
 	#{item.primarykey} 
 	</foreach>
   </select>
-  
+    <select id="getByPrimarykey" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select primarykey  from t_order_detail where primarykey in
+        <foreach collection="primarykeys" item="item" index="index" open="(" close=")" separator=",">
+            #{item.primarykey}
+        </foreach>
+    </select>
   <select id="find" parameterType="map" resultMap="BaseResultMap">
 	select 
     <include refid="Base_Column_List" />
@@ -588,6 +611,17 @@
             </if>
 		</where>
 	</select>
+    <select id="findOne" parameterType="map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_order_detail
+        <where>
+            <if test="orderid != null and orderid != ''">
+                and orderid=#{orderid}
+            </if>
+        </where>
+        LIMIT 1
+    </select>
 	<select id="findTemp" parameterType="map" resultType="map">
 	select dishid from t_order_detail_temp
     <where>

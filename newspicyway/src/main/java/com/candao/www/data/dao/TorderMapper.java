@@ -72,4 +72,10 @@ public interface TorderMapper {
 	public void updateVipPrice(String orderId);
 	
 	public int updateMemberno(String orderid, String memberno);
+
+	/**
+	 * 锁定指定订单
+	 * @param orderId
+     */
+	public Torder lock(String orderId);
 }

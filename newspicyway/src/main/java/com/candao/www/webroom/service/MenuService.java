@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.www.data.model.Tmenu;
+import com.candao.www.data.model.TtemplateDishUnit;
 import com.candao.www.webroom.model.MenuGroup;
 
 public interface MenuService {
@@ -107,7 +108,7 @@ public interface MenuService {
 	 * @Description: TODO
 	 */
 	public boolean updateDishStatus(Map<String,Object> params);
-	public List<Map<String, Object>> findOneTtd(Map<String, Object> paramsTtd);
+	public TtemplateDishUnit findOneTtd(Map<String, Object> paramsTtd);
 	/**
 	 * 查询出所有已启用和定时启用的菜谱
 	 * @author shen

@@ -98,6 +98,13 @@ public interface TbTableDao {
 	 * @param map
 	 */
 	public int updateTableByOrderId(Map<String, Object> map);
+
+	/**
+	 * 生成printobjid
+	 * @return
+     */
+	public String generatePrintObjId();
+	public Map<String, Object> getTableNoById(String tableId);
 }
 
 
