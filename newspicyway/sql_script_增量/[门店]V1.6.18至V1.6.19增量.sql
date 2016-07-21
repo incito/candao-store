@@ -23,11 +23,11 @@ CREATE TABLE `t_b_padconfig` (
   `adtimes` varchar(10) DEFAULT NULL,
   `waiterreward` tinyint(1) DEFAULT NULL,
   `rewardmoney` varchar(10) DEFAULT NULL,
-  `youmengappkey` varchar(50) DEFAULT NULL,
-  `youmengchinnal` varchar(50) DEFAULT NULL,
-  `bigdatainterface` varchar(100) DEFAULT NULL,
-  `braceletgappkey` varchar(50) DEFAULT NULL,
-  `braceletchinnal` varchar(50) DEFAULT NULL,
+  `youmengappkey` varchar(150) DEFAULT NULL,
+  `youmengchinnal` varchar(150) DEFAULT NULL,
+  `bigdatainterface` varchar(150) DEFAULT NULL,
+  `braceletgappkey` varchar(150) DEFAULT NULL,
+  `braceletchinnal` varchar(150) DEFAULT NULL,
   `weixintype` varchar(8) DEFAULT NULL,
   `personweixinurl` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -36,4 +36,4 @@ CREATE TABLE `t_b_padconfig` (
 -- ----------------------------
 -- Records of t_b_padconfig
 -- ----------------------------
-INSERT INTO `t_b_padconfig` VALUES ('1', '0', '1', null,null, '1', '1', 'http://member.candaochina.com/member', null, '1', '1', '1', '1', '1', '1', '1', '60', '1', '5', null, null, null, null, null, 1, null);
+INSERT INTO `t_b_padconfig` VALUES ('1', '0', '1', null,null, '1', '1', 'http://member.candaochina.com', null, '1', '1', '1', '1', '1', '1', '1', '60', '1', '5', null, null, null, null, null, 1, null);
