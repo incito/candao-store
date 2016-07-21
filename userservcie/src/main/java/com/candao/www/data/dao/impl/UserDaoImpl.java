@@ -80,6 +80,14 @@ public class UserDaoImpl implements UserDao{
     params.put("password", password);
     return dao.get(PREFIX + ".login", params);
   }
+  
+  @Override
+  public User getUser(String loginName, String password) {
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("loginName", loginName);
+    params.put("password", password);
+    return dao.get(PREFIX + ".getUser", params);
+  }
 	@Override
 	public int updateLoginTime(String userId) {
 		Map<String, String> params = new HashMap<String, String>();

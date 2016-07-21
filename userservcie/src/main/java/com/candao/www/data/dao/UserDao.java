@@ -48,12 +48,20 @@ public interface UserDao {
 	int updatePassword(String account, String password);
 	
 	/**
-   * 通过账户（手机、邮箱）和密码登录
+   * 通过账户（手机、邮箱）和密码登录(排除已经删除的用户)
    * @param loginName
    * @param password
    * @return
    */
 	public User login(String loginName, String password);
+	
+	/**
+	 * 通过账户（手机、邮箱）和密码登录(不排除已经删除的用户)
+	 * @param loginName
+	 * @param password
+	 * @return
+	 */
+	public User getUser(String loginName, String password);
 	
 	/**
 	 * 根据用户ID，更新用户最后登录时间

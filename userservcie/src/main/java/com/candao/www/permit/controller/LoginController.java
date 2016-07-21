@@ -75,11 +75,9 @@ public class LoginController {
 //		 获取门店ID
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		try {
-//			用户名为空判断
 			if (username == null || username.trim().length() <= 0) {
 				throw new BusinessException("缺少账号、手机号或者邮箱！");
 			}
-			
 			User webUser = userService.login(username, password);
 			
 //			对门店管理员的判断
@@ -108,6 +106,12 @@ public class LoginController {
 			mav.addObject("message", be.getMessage());
 			mav.addObject("j_username", username);
 			mav.setViewName("loginNew");
+		} catch (Exception e){
+			e.printStackTrace();
+			mav.addObject("isSuccess", false);
+			mav.addObject("message", "服务器内部错误,请联系管理员");
+			mav.addObject("j_username", username);
+			mav.setViewName("loginNew");
 		}
 		return mav;
 	}
@@ -130,7 +134,7 @@ public class LoginController {
 			}
 		}
 		if (!isLoginOk) {
-			throw new BusinessException("该账号没有登录门店后台权限，请联系管理员");
+			throw new BusinessException("该账号没有权限登录门店后台");
 		}
 	}
 	
@@ -152,7 +156,7 @@ public class LoginController {
 				}
 			}
 			if (!isTheBranch) {
-				throw new BusinessException("该账号不是此门店的管理员,请联系管理员");
+				throw new BusinessException("登录失败，该账号不是该门店管理员");
 			}
 		}
 	}
@@ -165,10 +169,11 @@ public class LoginController {
 	 */
 	private Map<String, Function> setFunctionCode(List<Function> fnList){
 		Map<String, Function> menumap = new HashMap<>();
+		String mCode = PropertiesUtils.getValue("shop_admin_function_code"); //门店管理员code
 		for (Function f : fnList) {
-			if(f.getCode() == "020101"){//如果有门店管理员权限，则不需要其他任何权限
+			if(mCode.equals(f.getCode())){//如果有门店管理员权限，则不需要其他任何权限
 				menumap.clear();
-				menumap.put("020101", f);
+				menumap.put(mCode, f);
 				break;
 			}
 			menumap.put(f.getCode(), f);
