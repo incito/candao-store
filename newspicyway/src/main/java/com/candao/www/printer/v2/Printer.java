@@ -102,7 +102,7 @@ public class Printer {
                         doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
-                        state = PrintControl.CheckJob(3000, inputStream);
+                        state = PrintControl.CheckJob(8000, inputStream);
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
@@ -228,7 +228,7 @@ public class Printer {
                 }
                 doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
-                state = PrintControl.CheckJob(3000, inputStream);
+                state = PrintControl.CheckJob(8000, inputStream);
                 result.setCode(state);
                 PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回

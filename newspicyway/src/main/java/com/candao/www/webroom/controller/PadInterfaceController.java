@@ -278,7 +278,7 @@ public class PadInterfaceController {
      */
     @RequestMapping("/bookorderList")
     @ResponseBody
-    public String saveOrderInfoList(@RequestBody String jsonString, HttpServletRequest reqeust) {
+    public String saveOrderInfoList(@RequestBody String jsonString) {
         logger.error("saveOrderInfoList-start:" + jsonString, "");
         long start = System.currentTimeMillis();
         TJsonRecord record = new TJsonRecord();
@@ -291,6 +291,8 @@ public class PadInterfaceController {
         Map<String, String> mapDetail = new HashMap<String, String>();
         mapDetail.put("orderid", order.getOrderid());
 
+        //下单业务中会修改该字段，先获取
+        String currenttableid = order.getCurrenttableid();
         TorderDetail orderDetileList = orderDetailService.findOne(mapDetail);
         String result = "";
         Map<String, Object> res = orderDetailService.setOrderDetailList(order);
@@ -299,7 +301,7 @@ public class PadInterfaceController {
             if (orderDetileList != null) {
                 type = "13";
             }
-            executor.execute(new PadThread(order.getCurrenttableid(), type));
+            executor.execute(new PadThread(currenttableid, type));
         } catch (Exception ex) {
             logger.error("--->", ex);
             ex.printStackTrace();
@@ -331,12 +333,9 @@ public class PadInterfaceController {
         Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
         logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
-        ToperationLog toperationLog = new ToperationLog();
-        toperationLog.setId(IdentifierUtils.getId().generate().toString());
-        toperationLog.setTableno(order.getCurrenttableid());
-        toperationLog.setOperationtype(Constant.operationType.SAVEORDERINFOLIST);
-        toperationLog.setSequence(order.getSequence());
 
+        //下单业务中会修改该字段，先获取
+        String currenttableid = order.getCurrenttableid();
         String childrenOrderid = null;
         //判断是否是咖啡模式加菜
         try {
@@ -350,18 +349,16 @@ public class PadInterfaceController {
 
         Map<String, String> mapDetail = new HashMap<String, String>();
         mapDetail.put("orderid", order.getOrderid());
-        List<Map<String, String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
 
-        List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
+        TorderDetail orderDetail = orderDetailService.findOne(mapDetail);
         String result = "";
-        Map<String, Object> res = orderDetailService.placeOrder(order, toperationLog);
+        Map<String, Object> res = orderDetailService.placeOrder(order);
         try {
             String type = "12";
-            if ((orderDetileList != null && orderDetileList.size() > 0)
-                    || (orderDetileTempList != null && orderDetileTempList.size() > 0)) {
+            if (null!=orderDetail) {
                 type = "13";
             }
-            executor.execute(new PadThread(order.getCurrenttableid(), type));
+            executor.execute(new PadThread(currenttableid, type));
         } catch (Exception ex) {
             logger.error("--->", ex);
             ex.printStackTrace();

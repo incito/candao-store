@@ -372,10 +372,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class)
     public Map<String, Object> setOrderDetailList(Order orders) {
-
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(def); //获得事务状态
+        TransactionStatus status =null;
         try {
 //		object = status.createSavepoint();
             String tableNo = orders.getCurrenttableid();
@@ -385,22 +382,24 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 orders.setOrderid(table.getOrderid());
             } else {
                 log.error("-->t_table表中该table为空，tableNo为：" + tableNo);
-                transactionManager.rollback(status);
                 return getResult("3", "查询不到该餐台", "");
             }
+
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+            status = transactionManager.getTransaction(def); //获得事务状态
             //锁定订单行
             Torder orderLock = torderMapper.lock(table.getOrderid());
             //从传过来的数据中，获取订单详情的所有信息
             List<TorderDetail> listall = getallTorderDetail(orders);
             //		判断是否重复下单
-            if (listall.isEmpty() && null != orders.getRows() && !orders.getRows().isEmpty()) {
-                log.info("-->重复下单");
+            if (listall.isEmpty()) {
                 transactionManager.rollback(status);
-                return getResult("0", "下单成功", "");
-            }
-            if (listall == null || listall.isEmpty()) {
+                if (null != orders.getRows() && !orders.getRows().isEmpty()) {
+                    log.info("-->重复下单");
+                    return getResult("0", "下单成功", "");
+                }
                 log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
-                transactionManager.rollback(status);
                 return getResult("3", "订单中没有菜品", "");
             }
             if (Constant.ORDERSTATUS.ORDER_STATUS != orderLock.getOrderstatus()) {
@@ -430,7 +429,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
-            transactionManager.rollback(status);
+            if(null!=status) {
+                transactionManager.rollback(status);
+            }
             return getResult("3", "服务器异常 ", "");
         }
 
@@ -628,31 +629,30 @@ public class OrderDetailServiceImpl implements OrderDetailService {
      * 1 下单不打单 2不操作餐台(外卖，咖啡外卖)
      */
     @Override
-    public Map<String, Object> placeOrder(Order orders, ToperationLog toperationLog) {
-
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+    public Map<String, Object> placeOrder(Order orders) {
+        TransactionStatus status =null;
         try {
             if (StringUtils.isEmpty(orders.getOrderid())) {
                 log.info("-----------------------");
                 log.info("下单失败，参数失败，没有订单id");
-                transactionManager.rollback(status);
                 return getResult("3", "参数错误，没有订单id", "");
             }
+
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+            status = transactionManager.getTransaction(def); // 获得事务状态
             //锁定订单行
             Torder orderLock = torderMapper.lock(orders.getOrderid());
             // 从传过来的数据中，获取订单详情的所有信息
             List<TorderDetail> listall = getallTorderDetail(orders);
             //		判断是否重复下单
-            if (listall.isEmpty() && null != orders.getRows() && !orders.getRows().isEmpty()) {
-                log.info("-->重复下单");
+            if (listall.isEmpty()) {
                 transactionManager.rollback(status);
-                return getResult("0", "下单成功", "");
-            }
-            if (listall == null || listall.size() == 0) {
+                if (null != orders.getRows() && !orders.getRows().isEmpty()) {
+                    log.info("-->重复下单");
+                    return getResult("0", "下单成功", "");
+                }
                 log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
-                transactionManager.rollback(status);
                 return getResult("3", "订单中没有菜品", "");
             }
             //通过餐台判断订单状态
@@ -675,7 +675,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 transactionManager.rollback(status);
                 return getResult("3", "查询不到该订单", "");
             }
-           if(!TABLETYPE.TAKEOUT.equals(table.getTabletype()) &&! TABLETYPE.TAKEOUT_COFFEE.equals(table.getTabletype())) {
+            if (!Constant.TABLETYPE.COFFEETABLE.equals(table.getTabletype()) && !TABLETYPE.TAKEOUT.equals(table.getTabletype()) && !TABLETYPE.TAKEOUT_COFFEE.equals(table.getTabletype())) {
                 log.error("-->orderId为：" + orders.getOrderid());
                 transactionManager.rollback(status);
                 return getResult("3", "查询不到该订单", "");
@@ -696,7 +696,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
-            transactionManager.rollback(status);
+            if(null!=status) {
+                transactionManager.rollback(status);
+            }
             return getResult("3", "服务器异常 ", "");
         }
 
