@@ -67,9 +67,10 @@ public class SocialController {
 		try {
 			List<Map<String, Object>> tableInfo = socialService.queryTableInfo(orderid);
 			JSONArray data = JSONArray.fromObject(tableInfo);
-			map = ReturnMap.getSuccessMap("查询桌台信息成功", data);
+			map = ReturnMap.getReturnMap(1, "001", "查询桌台信息成功");
+			map.put("data", data);
 		} catch (Exception e) {
-			map = ReturnMap.getFailureMap("查询桌台信息失败");
+			map = ReturnMap.getReturnMap(0, "002", "查询桌台信息失败");
 			e.printStackTrace();
 		}
 		return JSONObject.fromObject(map);
@@ -90,10 +91,11 @@ public class SocialController {
 			List<TbGift> giftList = socialService.getGiftList();
 			JSONArray data = JSONArray.fromObject(giftList);
 			logger.info("查询礼物列表成功");
-			map = ReturnMap.getSuccessMap("查询礼物列表成功", data);
+			map = ReturnMap.getReturnMap(1, "001", "查询礼物列表成功");
+			map.put("data", data);
 		} catch (Exception e) {
 			logger.error("查询礼物列表失败");
-			map = ReturnMap.getFailureMap("查询礼物列表失败");
+			map = ReturnMap.getReturnMap(0, "002", "查询礼物列表失败");
 			e.printStackTrace();
 		}
 		return JSONObject.fromObject(map);

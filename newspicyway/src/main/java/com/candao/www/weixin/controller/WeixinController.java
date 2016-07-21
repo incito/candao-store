@@ -35,7 +35,6 @@ import com.candao.www.data.json.base.BaseJsonController;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TOrderMember;
 import com.candao.www.utils.HttpRequestor;
-import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.CallWaiterService;
@@ -214,9 +213,9 @@ public class WeixinController extends BaseJsonController {
 		int result=weixinService.getweixinstatus(weixinStatus.getBranchid());
 		if(result>0){
 			System.out.println(renderSuccessJSONString(SUCCESSCODE,null));
-			return ReturnMap.getSuccessMap();
+			return renderSuccessJSONString(SUCCESSCODE,null);
 		}
-		return ReturnMap.getFailureMap("门店没有配置微信相关信息");
+		return renderErrorJSONString(ERRORCODE, "门店没有配置微信相关信息");
 	}
 	
 	

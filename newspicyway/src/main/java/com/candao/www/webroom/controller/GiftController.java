@@ -48,36 +48,36 @@ public class GiftController {
 		try {
 			logger.debug("save sendGiftInfo  data for params : {} ", body);
 			if (StringUtils.isEmpty(body)) {
-				return ReturnMap.getFailureMap("传入参数不正确");
+				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
 			}
 			JSONObject giftInfo = JSONObject.fromObject(body);
 			if (giftInfo == null) {
-				return ReturnMap.getFailureMap("传入参数不正确");
+				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
 			}
 
 			if (!giftInfo.containsKey("giftId") || giftInfo.getString("giftId") == null|| giftInfo.getString("giftId").equals("")) {
-				return ReturnMap.getFailureMap("礼物ID");
+				return ReturnMap.getReturnMap(0, "002", "礼物ID");
 			}
 			if (!giftInfo.containsKey("giveTableNo") || giftInfo.getString("giveTableNo") == null|| giftInfo.getString("giveTableNo").equals("")) {
-				return ReturnMap.getFailureMap("缺少赠送礼物桌号");
+				return ReturnMap.getReturnMap(0, "002", "缺少赠送礼物桌号");
 			}
 			if (!giftInfo.containsKey("receiveTableNo") || giftInfo.getString("receiveTableNo") == null|| giftInfo.getString("receiveTableNo").equals("")) {
-				return ReturnMap.getFailureMap("缺少接受礼物桌号");
+				return ReturnMap.getReturnMap(0, "002", "缺少接受礼物桌号");
 			}
 			if (!giftInfo.containsKey("giftNo") || giftInfo.getString("giftNo") == null|| giftInfo.getString("giftNo").equals("")) {
-				return ReturnMap.getFailureMap("缺少礼物编号");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物编号");
 			}
 			if (!giftInfo.containsKey("giftNum") || giftInfo.getString("giftNum") == null|| giftInfo.getString("giftNum").equals("")) {
-				return ReturnMap.getFailureMap("缺少礼物数量");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物数量");
 			}
 			if (!giftInfo.containsKey("gprice") || giftInfo.getString("gprice") == null|| giftInfo.getString("gprice").equals("")) {
-				return ReturnMap.getFailureMap("缺少礼物价格");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物价格");
 			}
 			if (!giftInfo.containsKey("orderId") || giftInfo.getString("orderId") == null|| giftInfo.getString("orderId").equals("")) {
-				return ReturnMap.getFailureMap("缺少订单编号");
+				return ReturnMap.getReturnMap(0, "002", "缺少订单编号");
 			}
 			if (!giftInfo.containsKey("receiveOrderId") || giftInfo.getString("receiveOrderId") == null|| giftInfo.getString("receiveOrderId").equals("")) {
-				return ReturnMap.getFailureMap("缺少目标桌订单号");
+				return ReturnMap.getReturnMap(0, "002", "缺少目标桌订单号");
 			}
 			String receiveOrderId = giftInfo.getString("receiveOrderId");
 			
@@ -88,24 +88,24 @@ public class GiftController {
 			float gprice = parseFloat(giftInfo.getString("gprice"));
 			
 			if(gnum<=0){
-				return ReturnMap.getFailureMap("礼物数量必须大于0");
+				return ReturnMap.getReturnMap(0, "002", "礼物数量必须大于0");
 			}
 			if(gprice<0){
-				return ReturnMap.getFailureMap("礼物价格必须大于0");
+				return ReturnMap.getReturnMap(0, "002", "礼物价格必须大于0");
 			}
 			Map<String,String> giftMap = giftService.getGiftInfo(giftInfo.getString("giftId"));
 			if(giftMap==null||giftMap.size()!=8){
-				return ReturnMap.getFailureMap("没有查询到对应的礼物信息");
+				return ReturnMap.getReturnMap(0, "002", "没有查询到对应的礼物信息");
 			}
 			//判断是否屏蔽送礼
 			Map<String,String> orderMap = giftService.getOrderStatus(receiveOrderId);
 			if(orderMap!=null&&orderMap.containsKey("giftStatus")&&orderMap.get("giftStatus").equals("-1")){
-				return ReturnMap.getFailureMap("目标拒绝接受礼物");
+				return ReturnMap.getReturnMap(0, "003", "目标拒绝接受礼物");
 			}
 			//判断送礼个数
 			List<TGiftLog> reclist = giftService.getGiftLogByRecOrder(receiveOrderId);
 			if(reclist!=null&&reclist.size()>=3){
-				return ReturnMap.getFailureMap("目标桌台已经接受超过三个赠送");
+				return ReturnMap.getReturnMap(0, "004", "目标桌台已经接受超过三个赠送");
 			}
 			
 			String typeId = giftMap.get("typeId")==null?"":String.valueOf(giftMap.get("typeId"));
@@ -122,7 +122,7 @@ public class GiftController {
 			
 			log = giftService.saveGiftLogInfo(log);
 			if (log == null) {
-				return ReturnMap.getFailureMap("发起赠送失败");
+				return ReturnMap.getReturnMap(0, "002", "发起赠送失败");
 			}
 			try{
 				final String giveTableNo = isAnonymous.equals("0")?"":giftInfo.getString("giveTableNo");
@@ -146,12 +146,12 @@ public class GiftController {
 //			Map<String,String> idMap = new HashMap<String,String>();
 //			idMap.put("giftlogid", log.getId());
 //			datalist.add(idMap);
-			return ReturnMap.getSuccessMap("发起赠送成功成功",datalist);
+			return ReturnMap.getReturnMap(1, "001", "发起赠送成功成功",datalist);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("method sendGiftToAnthorTable is wrong :{}", e.getMessage());
-			return ReturnMap.getFailureMap("服务异常请联系管理员");
+			return ReturnMap.getReturnMap(0, "002", "服务异常请联系管理员");
 		}
 	}
 	
@@ -169,21 +169,21 @@ public class GiftController {
 		try {
 			logger.debug("update recviceGiftInfo  data for params : {} ", body);
 			if (StringUtils.isEmpty(body)) {
-				return ReturnMap.getFailureMap("传入参数不正确");
+				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
 			}
 			JSONObject giftInfo = JSONObject.fromObject(body);
 			if (giftInfo == null) {
-				return ReturnMap.getFailureMap("传入参数不正确");
+				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
 			}
 			System.out.println(">>>>>>>>>>>"+body);
 			if (!giftInfo.containsKey("giftlogId") || giftInfo.getString("giftlogId") == null|| giftInfo.getString("giftlogId").equals("")) {
-				return ReturnMap.getFailureMap("缺少礼物记录ID");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物记录礼物ID");
 			}
 			if (!giftInfo.containsKey("giftStatus") || giftInfo.getString("giftStatus") == null|| giftInfo.getString("giftStatus").equals("")) {
-				return ReturnMap.getFailureMap("缺少礼物记录状态");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物记录状态");
 			}
 			if (!giftInfo.containsKey("giftPriceType") || giftInfo.getString("giftPriceType") == null|| giftInfo.getString("giftPriceType").equals("")) {
-				return ReturnMap.getFailureMap("缺少礼物大小标示");
+				return ReturnMap.getReturnMap(0, "002", "缺少礼物大小标示");
 			}
 			
 			
@@ -192,25 +192,25 @@ public class GiftController {
 			String giftPriceType = giftInfo.getString("giftPriceType");
 			TGiftLog log  = giftService.getGiftLogInfo(giftLogId);
 			if (log == null) {
-				return ReturnMap.getFailureMap("没有查询到对应的送礼信息");
+				return ReturnMap.getReturnMap(0, "002", "没有查询到对应的送礼信息");
 			}
 			if(log.getGiftStatus()==null||!log.getGiftStatus().equals("1")){
-				return ReturnMap.getFailureMap("礼物已经处理");
+				return ReturnMap.getReturnMap(0, "002", "礼物已经处理");
 			}
 			String primarykey = IdentifierUtils.getId().generate().toString()+"-"+giftPriceType;
 			log.setGiftStatus(giftStatusstr);
 			int tempnum = giftService.updateGiftLogInfo(log,primarykey,reqeust);
 			
 			if(tempnum==1){
-				return ReturnMap.getFailureMap("礼物已经处理");
+				return ReturnMap.getReturnMap(0, "002", "礼物已经处理");
 			}else if(tempnum==2){
-				return ReturnMap.getFailureMap("数据信息不完整，请联系服务员");
+				return ReturnMap.getReturnMap(0, "002", "数据信息不完整，请联系服务员");
 			}else if(tempnum==3){
-				return ReturnMap.getFailureMap("账单已结账");
+				return ReturnMap.getReturnMap(0, "003", "订单已结账");
 			}else if(tempnum==4){
-				return ReturnMap.getFailureMap("没有查询到对应的送礼信息");
+				return ReturnMap.getReturnMap(0, "002", "没有查询到对应的送礼信息");
 			}else if(tempnum==5){
-				return ReturnMap.getFailureMap("系统内部错误");
+				return ReturnMap.getReturnMap(0, "002", "系统内部错误");
 			}
 			//推送消息到目的桌pad显示
 			try{
@@ -231,11 +231,12 @@ public class GiftController {
 			}catch(Exception ex){
 			    ex.printStackTrace();	
 			}
-			return ReturnMap.getSuccessMap("接受礼物接口处理成功");
+			return ReturnMap.getReturnMap(1, "001", "接受礼物接口处理成功");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("method sendGiftToAnthorTable is wrong :{}", e.getMessage());
-			return ReturnMap.getFailureMap("服务器异常，请联系管理员");
+			return ReturnMap.getReturnMap(0, "002", "服务异常请联系管理员");
 		}
 	}
 	

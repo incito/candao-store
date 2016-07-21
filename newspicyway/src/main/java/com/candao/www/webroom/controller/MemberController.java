@@ -18,7 +18,6 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.www.data.model.TOrderMember;
 import com.candao.www.data.model.Torder;
 import com.candao.www.security.controller.BaseController;
-import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.impl.CallWaiterServiceImpl;
 import com.candao.www.webroom.service.OrderMemberService;
@@ -57,10 +56,13 @@ public class MemberController extends BaseController{
 			params.put("pricetype", 0);  //设置会员价
 			orderService.setOrderMember(params);
 			
-			resultmap = ReturnMap.getSuccessMap("会员登录成功");
+			resultmap.put("Retcode", "0");
+			resultmap.put("RetInfo", "会员登录成功");
+			
 		}catch(Exception e){
 			logger.error("-->",e);
-			resultmap = ReturnMap.getFailureMap("登录失败，服务器异常，请联系管理员");
+			resultmap.put("Retcode", "1");
+			resultmap.put("RetInfo", e.getMessage());
 		}
 		return JacksonJsonMapper.objectToJson(resultmap);
 		
@@ -88,12 +90,17 @@ public class MemberController extends BaseController{
 			params.put("pricetype", 1);  //设置会员价
 			orderService.setOrderMember(params);
 			
-			resultmap = ReturnMap.getSuccessMap("会员退出成功");
+			resultmap.put("Retcode", "0");
+			resultmap.put("RetInfo", "会员退出成功");
+			
 		}catch(Exception e){
 			logger.error("-->",e);
-			resultmap = ReturnMap.getFailureMap("操作失败，服务器异常，请联系管理员");
+			resultmap.put("Retcode", "1");
+			resultmap.put("RetInfo", e.getMessage());
 		}
+		
 		return JacksonJsonMapper.objectToJson(resultmap);
+		
 	}
 	
 	

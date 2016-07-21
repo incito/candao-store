@@ -35,7 +35,6 @@ import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.service.UserService;
-import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
@@ -151,12 +150,12 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public String startOrder(Torder  tOrder){
 		
-		Map<String, Object> mapRet = new HashMap<String, Object>();
+		Map<String, String> mapRet = new HashMap<String, String>();
 		
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if(tbOpenBizLog == null){
+			mapRet.put("result", "3");
 			logger.error("开台失败，开业记录为空");
-			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		
@@ -169,12 +168,12 @@ public class OrderServiceImpl implements OrderService{
 		
 		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
 			logger.error("开台失败！ 查找不到桌台");
-			mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台");
+			mapRet.put("result", "2");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		if(! "0".equals(String.valueOf(resultMap.get(0).get("status")))){
 			logger.error("开台失败，桌台状态不对！0");
-			mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
+			mapRet.put("result", "1");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		//1.预定桌子
@@ -323,13 +322,13 @@ public class OrderServiceImpl implements OrderService{
 		TbDataDictionary locktime =datadictionaryService.findById("locktime");
 		TbDataDictionary delaytime =datadictionaryService.findById("delaytime");
 		
-		Map<String, Object> data = new HashMap<>();
-		data.put("orderid", orderId);
-		data.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
+		mapRet.put("result", "0");
+		mapRet.put("orderid", orderId);
+		mapRet.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
 		
-		data.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
-		data.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
-		data.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
+		mapRet.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
+		mapRet.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
+		mapRet.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
 		//添加日志
 //		Tworklog tworklog = new Tworklog();
 //		tworklog.setWorkid(UUID.randomUUID().toString());
@@ -349,7 +348,6 @@ public class OrderServiceImpl implements OrderService{
 		
 		//开台前清空当前台的操作日记
 		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());		
-		mapRet = ReturnMap.getSuccessMap(mapRet);
 	 }
 		return JacksonJsonMapper.objectToJson(mapRet); 
 	}
@@ -373,9 +371,10 @@ public class OrderServiceImpl implements OrderService{
 	    
 		int result = torderMapper.update(order);
 		if(result > 0 ){
-			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
+			return Constant.SUCCESSMSG;
 		} 
-		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+		
+		return Constant.FAILUREMSG;
 	}
 	
 	@Override
@@ -470,32 +469,35 @@ public class OrderServiceImpl implements OrderService{
 				Map<String,Object> orderMap=torderMapper.findOne(orderid);
 				if(orderMap!=null){
 					if("3".equals(String.valueOf(orderMap.get("orderstatus")))){
-						mapRet = ReturnMap.getFailureMap("该桌已结账");
+						mapRet.put("flag", "3");
+						mapRet.put("desc", "该桌已结账");
 						return mapRet; 
 					}
 					if("0".equals(String.valueOf(orderMap.get("orderstatus")))){
-						Map<String, Object> data = new HashMap<>();
-						data.put("currenttableid",params.get("tableNo"));
-						data.put("orderid",orderid);
-						data.put("memberno",orderMap.get("memberno"));
-						data.put("manNum",orderMap.get("manNum"));
-						data.put("womanNum",orderMap.get("womanNum"));
-						data.put("waiterNum",orderMap.get("userid"));
-						data.put("ageperiod",orderMap.get("ageperiod"));
-						data.put("begintime",orderMap.get("begintime"));
+//						t.mannum,t.childNum,t.womanNum
+						mapRet.put("flag", "1");
+						mapRet.put("desc", "获取数据成功");
+						mapRet.put("currenttableid",params.get("tableNo"));
+						mapRet.put("orderid",orderid);
+						mapRet.put("memberno",orderMap.get("memberno"));
+						mapRet.put("manNum",orderMap.get("manNum"));
+						mapRet.put("womanNum",orderMap.get("womanNum"));
+						mapRet.put("waiterNum",orderMap.get("userid"));
+						mapRet.put("ageperiod",orderMap.get("ageperiod"));
+						mapRet.put("begintime",orderMap.get("begintime"));
 						Map<String,Object> mappa=new HashMap<String,Object>();
 						mappa.put("orderid", orderid);
 						TbDataDictionary dd =datadictionaryService.findById("backpsd");
 						TbDataDictionary vipaddress =datadictionaryService.findById("vipaddress");
 						TbDataDictionary locktime =datadictionaryService.findById("locktime");
 						TbDataDictionary delaytime =datadictionaryService.findById("delaytime");
-						data.put("result", "0");
-						data.put("orderid", orderid);
-						data.put("backpsd", dd == null?"":dd.getItemid());//退菜密码
-						data.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); //雅座的VIP地址
-						data.put("locktime", locktime == null ? "" : locktime.getItemid()); //屏保锁屏时间
-						data.put("delaytime", delaytime==null?"" : delaytime.getItemid()); //屏保停留时间
-						data.put("rows", getMapData(orderid));//获取订单数据
+						mapRet.put("result", "0");
+						mapRet.put("orderid", orderid);
+						mapRet.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
+						mapRet.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
+						mapRet.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
+						mapRet.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
+						mapRet.put("rows", getMapData(orderid));//获取订单数据
 						//原订单meid不为空，推送清空
 						if(orderMap.get("meid")!=null&&params.get("meid")!=null&&!String.valueOf(orderMap.get("meid")).equals(String.valueOf(params.get("meid")))){
 							StringBuffer str=new StringBuffer(Constant.TS_URL);
@@ -508,26 +510,72 @@ public class OrderServiceImpl implements OrderService{
 							Torder order =new Torder();
 							order.setOrderid(orderid);
 							order.setMeid(String.valueOf(params.get("meid")));
+//							order.setShiftid(Integer.valueOf(String.valueOf(orderMap.get("shiftid"))));
+//							update(order);
 							torderMapper.update(order);
+							
 						}
 						//删除桌子日志
 						toperationLogService.deleteToperationLogByTableNo(String.valueOf(params.get("tableNo")));	
-						return ReturnMap.getSuccessMap("获取数据成功", data);
+						
+						return mapRet;
 					}
-					return ReturnMap.getFailureMap("订单已取消");
+					mapRet.put("flag", "2");
+					mapRet.put("desc", "订单已取消");
+					return mapRet;
 				}else{
-					return ReturnMap.getFailureMap("订单不存在");
+					mapRet.put("flag", "4");
+					mapRet.put("desc", "订单不存在");
+					return mapRet; 
 				}
+				
 			}else{
-				return ReturnMap.getFailureMap("桌台未绑定订单");
+				mapRet.put("flag", "5");
+				mapRet.put("desc", "桌台未绑定订单");
+				return mapRet; 
 			}
+			
+		
+			
 		}
 		else{
 			//没找到这个桌号
-			return ReturnMap.getFailureMap("未找到这个桌号");
+			mapRet.put("flag", "0");
+			mapRet.put("desc", "未找到这个桌号");
+			return mapRet; 
 		}
 	}
-
+//	public class TsThread extends Thread{
+//		   String  str ;
+//		   TsThread(String  str){
+//			   this.str = str;
+//		   }
+//		   @Override
+//		   public void run(){
+//			   //根据动作打印不同的小票
+//				URL urlobj;
+//				try {
+//				urlobj = new URL(str);
+//				URLConnection	urlconn = urlobj.openConnection();
+//				urlconn.connect();
+//				InputStream myin = urlconn.getInputStream();
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+//				String content = reader.readLine();
+//				JSONObject object = JSONObject.fromObject(content.trim());
+//				@SuppressWarnings("unchecked")
+//				List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
+//				if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
+//					System.out.println("清空pad推送成功");
+//				}else{
+//					System.out.println("清空pad推送失败");
+//				}
+//				} catch (IOException e) {
+//					logger.error("-->",e);
+//					System.out.println("推送异常"+e.toString());
+//					e.printStackTrace();
+//				}
+//		   }
+//	   }
 	/**
 	 * 组织菜谱数据给pad，在更换pad时使用
 	 * @author shen
@@ -648,21 +696,18 @@ public class OrderServiceImpl implements OrderService{
 					params.put("printobjid", printObj.getId());
 					flag=flag&&tbPrintObjDao.updateDishWeight(params)>0;
 				}
-				if(flag){
-					/*mapRet.put("result", "0");
+				if(flag){				
+					mapRet.put("result", "0");
 					mapRet.put("desc", "更新成功");
-					mapRet.put("orderid", orderid);*/
-					mapRet = ReturnMap.getSuccessMap("更新成功", orderid);
+					mapRet.put("orderid", orderid);
 				}else{
-					/*mapRet.put("result", "2");
-					mapRet.put("desc", "未找到相应的菜品");*/
-					mapRet = ReturnMap.getFailureMap("未找到相应的菜品");
+					mapRet.put("result", "2");
+					mapRet.put("desc", "未找到相应的菜品");
 				}
 			}
 		}else{
-			/*mapRet.put("result", "1");
-			mapRet.put("desc", "订单为空");*/
-			mapRet = ReturnMap.getFailureMap("订单为空");
+			mapRet.put("result", "1");
+			mapRet.put("desc", "订单为空");
 		}
 		return mapRet; 
 	}
