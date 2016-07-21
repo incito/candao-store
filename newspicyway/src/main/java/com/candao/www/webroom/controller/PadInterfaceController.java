@@ -713,7 +713,7 @@ public class PadInterfaceController {
 
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(JacksonJsonMapper.objectToJson(table));
-		record.setPadpath("mergetable");
+		record.setPadpath("mergetableMultiMode");
 		jsonRecordService.insertJsonRecord(record);
 		ToperationLog toperationLog = new ToperationLog();
 		toperationLog.setId(IdentifierUtils.getId().generate().toString());
@@ -1611,6 +1611,50 @@ public class PadInterfaceController {
 	public void getOrderedTableList(HttpServletRequest request,HttpServletResponse response){
 		Map<String,Object> params=new HashMap<String,Object>();
 		params.put("status", "1");
+		//排除外卖，咖啡外卖，咖啡台
+		params.put("tabletypefilter", new String[]{"2","3","4"});
+		List<Map<String, Object>> list = tableService.find(params);
+		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String,Object>();
+		//tableNum tableName contentNum
+		if(list!=null&&list.size()>0){
+			for(Map<String,Object> ma:list){
+				Map<String,Object> param=new HashMap<String,Object>();
+				param.put("tableNum", ma.get("tableNo"));
+				param.put("tableName", ma.get("tableName"));
+				param.put("contentNum", ma.get("personNum"));
+				datalist.add(param);
+			}
+		}
+		map.put("data", datalist);
+		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+		try{
+			response.reset();
+			response.setHeader("Content-Type", "application/json");
+			response.setContentType("text/json;charset=UTF-8");
+			OutputStream stream = response.getOutputStream();
+			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			stream.flush();
+			stream.close();
+
+		}catch(Exception ex){
+			logger.error("--->",ex);
+			ex.printStackTrace();
+		}
+	}
+	/**
+	 * 更换pad的时候调用，获取已经开台的桌子的信息，返回一个list
+	 * @author shen
+	 * @date:2015年5月14日下午3:25:42
+	 * @Description: TODO
+	 */
+	@RequestMapping(value="/getOrderedTableListForCoffee",method = RequestMethod.POST)
+	@ResponseBody
+	public void getOrderedTableListForCoffee(HttpServletRequest request,HttpServletResponse response){
+		Map<String,Object> params=new HashMap<String,Object>();
+		params.put("status", "1");
+		//排除外卖，咖啡外卖，咖啡台
+		params.put("tabletype", new String[]{"4"});
 		List<Map<String, Object>> list = tableService.find(params);
 		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
 		Map<String, Object> map = new HashMap<String,Object>();

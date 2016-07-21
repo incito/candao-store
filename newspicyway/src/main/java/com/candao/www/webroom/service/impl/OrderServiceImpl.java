@@ -520,18 +520,18 @@ public class OrderServiceImpl implements OrderService{
 						
 						return mapRet;
 					}
-					mapRet.put("flag", "4");
-					mapRet.put("desc", "订单为空");
+					mapRet.put("flag", "2");
+					mapRet.put("desc", "订单已取消");
 					return mapRet;
 				}else{
 					mapRet.put("flag", "4");
-					mapRet.put("desc", "订单为空");
+					mapRet.put("desc", "订单不存在");
 					return mapRet; 
 				}
 				
 			}else{
-				mapRet.put("flag", "2");
-				mapRet.put("desc", "已清机");
+				mapRet.put("flag", "5");
+				mapRet.put("desc", "桌台未绑定订单");
 				return mapRet; 
 			}
 			

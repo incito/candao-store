@@ -96,6 +96,7 @@ public class WaiterShiftController {
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            logger.debug(ex.getMessage(), ex);
         }
         return ReturnMap.getReturnMap(0, "002", "操作失败，请联系管理员");
     }
@@ -157,6 +158,7 @@ public class WaiterShiftController {
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            logger.debug(ex.getMessage(), ex);
         }
         return ReturnMap.getReturnMap(0, "002", "操作失败，请联系管理员");
     }
@@ -208,8 +210,8 @@ public class WaiterShiftController {
             params.put("beginTime", beginTime);
             params.put("endTime", endTime);
             String title = ExcelUtils.setTabTitleToBusiness(filedisplay, params);
-            String[] clounNames = {"服务员编号", "服务员姓名", "开台数", "结算人数", "应收总额", "实收总额", "应收人均", "实收人均", "现金", "银行卡", "抹零", "会员卡消费", "会员积分消费", "挂帐2", "微信支付", "支付宝支付"};
-            String[] keys = {"userid", "username", "ordernum", "custnum", "shouldamount", "paidinamount", "shouldpre", "paidinpre", "xjamount", "yhkamount", "mlamount", "hykxfamount", "hyjfxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
+            String[] clounNames = {"服务员编号", "服务员姓名", "开台数", "结算人数", "应收总额", "实收总额", "应收人均", "实收人均", "现金", "银行卡", "会员卡消费", "挂帐", "微信支付", "支付宝支付"};
+            String[] keys = {"userid", "username", "ordernum", "custnum", "shouldamount", "paidinamount", "shouldpre", "paidinpre", "xjamount", "yhkamount", "hykxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
             HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, clounNames, keys);
             OutputStream fout = response.getOutputStream();
             hssfwof.write(fout);
@@ -220,6 +222,7 @@ public class WaiterShiftController {
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            logger.debug(ex.getMessage(), ex);
         }
         return null;
     }
@@ -280,8 +283,8 @@ public class WaiterShiftController {
             params.put("beginTime", beginTime);
             params.put("endTime", endTime);
             String title = ExcelUtils.setTabTitleToBusiness(filedisplay, params);
-            String[] clounNames = {"订单号", "台号", "就餐人数", "应收", "实收", "现金", "银行卡", "抹零", "会员卡消费", "会员积分消费", "挂帐2", "微信支付", "支付宝支付"};
-            String[] keys = {"orderid", "tableids", "custnum", "shouldamount", "paidinamount", "xjamount", "yhkamount", "mlamount", "hykxfamount", "hyjfxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
+            String[] clounNames = {"订单号", "台号", "就餐人数", "应收", "实收", "现金", "银行卡", "会员卡消费", "挂帐", "微信支付", "支付宝支付"};
+            String[] keys = {"orderid", "tableids", "custnum", "shouldamount", "paidinamount", "xjamount", "yhkamount", "hykxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
             HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, clounNames, keys);
             OutputStream fout = response.getOutputStream();
             hssfwof.write(fout);
@@ -292,6 +295,7 @@ public class WaiterShiftController {
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            logger.debug(ex.getMessage(), ex);
         }
         return null;
     }

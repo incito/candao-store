@@ -115,51 +115,66 @@ public class OrderDetailServiceImpl implements OrderDetailService{
 		Map<String, Object> tableMap = resultMapList.get(0);
 		String tableId = String.valueOf(tableMap.get("tableid"));
 		String orderid = String.valueOf(tableMap.get("orderid"));
-		
-		if(StringUtils.isEmpty(orderid)){
+
+		if (StringUtils.isEmpty(orderid)) {
 			log.error("-->订单为空(查询orderid为空)，参数tableNo为：" + tableNo);
 			return Constant.FAILUREMSG;
 		}
-		
+
 		Map<String, Object> order = orderService.findOrderById(orderid);
 		if (!MapUtils.isEmpty(order)) {
 			String orderstatus = String.valueOf(order.get("orderstatus"));
 			orderstatus = orderstatus == null ? "" : orderstatus.trim();
-			//正常模式清台
-			if ("0".equals(orderstatus)) {
-				// 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
-				//计算菜单订单下面财大个数如果大与0 表示不能 清台
+			// 正常模式清台
+			switch (orderstatus) {
+			case "0": {
+				// 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong
+				// 2016-5-30
+				// 计算菜单订单下面财大个数如果大与0 表示不能 清台
 				long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
 				if (menuNum > 0) {
 					return Constant.UPDATE_MENU;
 				}
-				
+
 				TbTable tbTable = new TbTable();
 				tbTable.setTableid(tableId);
 				tbTable.setStatus(0);
-				tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
-				tableService.updateCleanStatus(tbTable);
-				
+				tbTable.setOrderid(orderid);
+				tableService.updateSettleStatus(tbTable);
+
 				Torder torder = new Torder();
 				torder.setOrderid(String.valueOf(tableMap.get("orderid")));
 				torder.setOrderstatus(2);
 				torder.setEndtime(new Date());
 				torderMapper.update(torder);
-				
-			} else if ("3".equals(orderstatus)) {//咖啡模式清台
+				break;
+			}
+			case "2": {
+				// 异常结业
 				TbTable tbTable = new TbTable();
 				tbTable.setTableid(tableId);
 				tbTable.setStatus(0);
-				tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
-				tableService.updateCleanStatus(tbTable);
-			} else {
+				tbTable.setOrderid(orderid);
+				tableService.updateSettleStatus(tbTable);
+				break;
+			}
+			case "3": {
+				// 咖啡模式清台
+				TbTable tbTable = new TbTable();
+				tbTable.setTableid(tableId);
+				tbTable.setStatus(0);
+				tbTable.setOrderid(orderid);
+				tableService.updateSettleStatus(tbTable);
+				break;
+			}
+			default:
 				return Constant.FAILUREMSG;
 			}
 		} else {
 			return Constant.FAILUREMSG;
 		}
 
-		//结账之后把操作的数据删掉
+		// 结账之后把操作的数据删掉
 		Map<String, Object> delmap = new HashMap<String, Object>();
 		delmap.put("tableno", table.getTableNo());
 		toperationLogService.deleteToperationLog(delmap);

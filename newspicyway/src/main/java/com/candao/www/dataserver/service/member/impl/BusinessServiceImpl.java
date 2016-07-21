@@ -22,6 +22,7 @@ import com.candao.www.webroom.service.impl.OrderDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -166,21 +167,28 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public String clearMachine(String userId, String userName, String ip, String posId, String authorizer) {
+        OpenLog openLog = openLogMapper.selectAll();
+        if(null==openLog){
+            return "{\"Data\":\"0\",\"Info\":\"还未开业，不能清机\"}";
+        }
+        Map<String,Object> tellerCash = tellerCashMapper.selectInsertDate( userId, ip);
+        if(null==tellerCash){
+            return "{\"Data\":\"0\",\"Info\":\"本机没有您的零找金记录，不能清机\"}";
+        }
         String classNo = getJbNo();// 结帐单号
         Date today = WorkDateUtil.getWorkDate1();
         String openDate = DateUtils.toString(today, "yyyy-MM-dd");
-        Date insertDate = tellerCashMapper.selectInsertDate(openDate, userId, ip);
-        if (null == insertDate) {
-            insertDate = new Date();
-        }
         Date now = new Date();//清机时间
+        Date insertDate= (Date) tellerCash.get("insertdate");
+
         //前班未结台数
-        String beginTime = DateUtils.toString(insertDate, "yyyy-MM-dd hh:mm:ss");
+        String beginTime = DateUtils.toString(insertDate, "yyyy-MM-dd HH:mm:ss");
         int lastNonTable = tellerCashMapper.selectLastNonTable(beginTime);
         // 前班未结押金
         int lastNonDeposit = 0;
         //备用金
-        String prettyCash = tellerCashMapper.selectCashAmount(openDate, userId, ip);
+        String prettyCash = tellerCash.get("cashamount").toString();
+        // TODO: 2016/7/14  问题：多POS下会将多个POS的都统计
         //本班开台人数
         String tBeginPeople = tellerCashMapper.selectBeginPeople(beginTime);
         //本班开台总数
@@ -221,10 +229,10 @@ public class BusinessServiceImpl implements BusinessService {
         // 应收合计
         float accountsReceivableTotal = accountsReceivableSubtotal - removeMoneyFloat;
         //合计
-        String TotalMoney = tellerCashMapper.selectTotalMoney(openDate, userId);
+        String TotalMoney = tellerCashMapper.selectTotalMoney(insertDate, userId);
         float TotalMoneyFloat = StringUtil.str2Float(TotalMoney, 0);
         //计入收入合计
-        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(openDate, userId);
+        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate, userId);
         float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
         // 不计收入合计
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;

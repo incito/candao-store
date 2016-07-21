@@ -593,7 +593,6 @@ $(document).ready(function(){
 		showSelectStoreDivGroup(findGroupDishnames);
 	});
 });
-
 /**
  * 将数组中的value转换为int
  * @param key
@@ -759,6 +758,7 @@ function showGroupDialog(obj){
 			$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
 			generalDishTitle("printGroup-add-dialog");
 			checkedBoxLength("#printGroup-add-dialog #group-count");
+			
 		});
 		
 		

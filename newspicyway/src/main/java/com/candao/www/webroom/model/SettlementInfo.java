@@ -23,6 +23,17 @@ public class SettlementInfo implements Serializable {
 	 
 	//退菜原因 
 	private String reason;
+
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
+	//是否打印厨打单等
+	private boolean flag = false;
 	
 	
 	

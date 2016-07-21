@@ -25,6 +25,8 @@ public class PropertiesUtils {
 	private Properties properties;
 	private static PropertiesUtils piu;
 
+	private static String branchId;
+	
 	/**
 	 * 初始化工具类默认属性
 	 */
@@ -34,7 +36,22 @@ public class PropertiesUtils {
 		piu.properties = this.properties;
 	}
 
+	public static void setBranchId(String branchID){
+		branchId = branchID;
+	}
+	
+	public static String getBranchId(){
+		return branchId;
+	}
+	
 	public static String getValue(String key) {
+//		add by wly,配置文件去掉current_branch_id，从数据库获取门店ID，此处是为了兼容其他配置
+		if(key.equals("current_branch_id")){
+			return branchId;
+		}
+		if(key.equals("isbranch")){	//配置文件去掉isbranch,直接返回Y
+			return "Y";
+		}
 		return piu.properties.getProperty(key, null);
 	}
 	
