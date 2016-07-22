@@ -1145,12 +1145,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         // 需要把所有的菜品配置的打印机全部打印
         // 查找菜品所有符合的打印机
         List<PrintDish> printedList = new ArrayList<>();
+       Map<String, Integer> printedmap = new HashMap<>();
         for (PrintDish pd : printObj.getList()) {
-            if (printedList.contains(pd)) {//已经合并打印了则跳过
+            /*if (printedList.contains(pd)) {//已经合并打印了则跳过
                 logger.error("------------------------", "");
                 logger.error("组合打印后忽略单品，订单号：" + printObj.getOrderNo() + "*菜品名称：" + pd.getDishName(), "");
                 continue;
-            }
+            }*/
             List<String> IPList = new ArrayList<String>();
             formatDishNum(pd);
             //查询菜品所属套餐,不包括鱼锅
@@ -1297,12 +1298,25 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
 
+                    int temp=0;//默认表示还没有打印
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
+                    
                     for (PrintDish printDish : pdList) {
+                    	Object  obj=printedmap.get(printObj.getCustomerPrinterIp()+printDish.getDishId());
+                    	if(obj!=null){
+                    		temp=1;//已经打印过
+                    		break;
+                    	}
                         logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
                     }
+                    if(temp==1){
+                    	continue;//已经打印过了
+                    }
                     new Thread(new PrintThread(printObj)).run();
-                    // executor.execute(new PrintThread(printObj));
+                    
+                    for (PrintDish printDish : pdList) {
+                    	printedmap.put(printObj.getCustomerPrinterIp()+printDish.getDishId(), 1);//已经打印的菜品
+                    }
                 }
             }
             if (refundDish == 1) {

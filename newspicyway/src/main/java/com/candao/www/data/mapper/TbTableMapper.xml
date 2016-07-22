@@ -273,6 +273,9 @@
 	      <if test="status != null and status != ''">
 	        and a.status=#{status}
 	     </if>
+	     <if test="exceptorder!=null and status!=''">
+	     	and a.orderid &lt;&gt; #{exceptorder}
+	     </if>
 	     <if test="tabletypefilter!=null and tabletypefilter !=''">
 	     	and a.tabletype not in 
 	     	<foreach item="item" index="index" collection="tabletypefilter" open="("  
