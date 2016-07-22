@@ -51,6 +51,21 @@ public class OrderOpServiceImpl implements OrderOpService {
             }
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
             List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
+            //处理时间格式
+            if(null!=orderJson){
+                for(Map<String,Object> orderMap:orderJson){
+                    Object begintime = orderMap.get("begintime");
+                    if(null!=begintime){
+                        Date begintimeDate=(Date)begintime;
+                        orderMap.put("begintime",DateUtils.toString(begintimeDate,"yyyyMMdd HH:mm:ss"));
+                    }
+                    Object endtime = orderMap.get("endtime");
+                    if(null!=endtime){
+                        Date endtimeDate=(Date)endtime;
+                        orderMap.put("endtime",DateUtils.toString(endtimeDate,"yyyyMMdd HH:mm:ss"));
+                    }
+                }
+            }
             List<Map> listJson = orderMapper.getListJson(orderId);
             List<Map> jsJson = orderMapper.getJsJson(orderId);
             responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
