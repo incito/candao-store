@@ -41,7 +41,7 @@ public class WatchServiceImpl extends DeviceServiceImpl {
             msgForwardData.setSerialNumber(serialNumber);
             msgForwardService.forwardMsg(target, JSON.toJSONString(msgForwardData));
         } catch (Exception e) {
-            LOGGER_ERROR.error("### watch checkIn msg={}  error={} ###", msg, e);
+            LOGGER_ERROR.error("### watch checkIn msg={}  error={} ###", msg, e.getCause().getStackTrace());
         }
     }
 
@@ -57,7 +57,7 @@ public class WatchServiceImpl extends DeviceServiceImpl {
             };
             resp = HttpUtil.doRestfulByHttpConnection(PropertyUtil.getProInfo("dataserver-config", "bracelet_login_url"), JSON.toJSONString(mapParam));
         } catch (Exception e) {
-            LOGGER.error("### group={},id={},userId={},error={} ###", loginData.getGroup(), loginData.getId(), loginData.getUserId(), e);
+            LOGGER.error("### group={},id={},userId={},error={} ###", loginData.getGroup(), loginData.getId(), loginData.getUserId(), e.getCause().getStackTrace());
         }
         return resp;
     }

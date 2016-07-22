@@ -49,7 +49,7 @@ public class PadChInRServiceImpl extends DeviceServiceImpl {
                 msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
             }
         } catch (Exception e) {
-            LOGGER_ERROR.error("### pad checkIn resp msg={},error={} ###", msg, e);
+            LOGGER_ERROR.error("### pad checkIn resp msg={},error={} ###", msg, e.getCause().getStackTrace());
         }
     }
 }

@@ -38,7 +38,7 @@ public class OpenCashServiceImpl implements OpenCashService {
             writer.flush();
         } catch (Exception e) {
             responseData.setData("0");
-            LOGGER_ERROR.error("###打开钱箱出错 ip={}, error={}", ip, e);
+            LOGGER_ERROR.error("###打开钱箱出错 ip={}, error={}", ip, e.getCause().getStackTrace());
             e.printStackTrace();
         } finally {
             try {
@@ -75,7 +75,7 @@ public class OpenCashServiceImpl implements OpenCashService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取清机单内容异常");
-            LOGGER.error("###getClearMachineData userId={},jsOrder={},posId={},error={}###", aUserId, jsOrder, posId, e);
+            LOGGER.error("###getClearMachineData userId={},jsOrder={},posId={},error={}###", aUserId, jsOrder, posId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }

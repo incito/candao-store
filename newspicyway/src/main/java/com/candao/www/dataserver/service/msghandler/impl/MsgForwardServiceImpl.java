@@ -61,7 +61,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsg userId={},msgType={},msg={},error={}###", userId, msgType, msg, e);
+            LOGGER.error("#### broadCastMsg userId={},msgType={},msg={},error={}###", userId, msgType, msg, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
@@ -84,7 +84,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsgForNetty msgType={},msg={},error={}###", msgType, msg, e);
+            LOGGER.error("#### broadCastMsgForNetty msgType={},msg={},error={}###", msgType, msg, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
@@ -138,7 +138,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
 
             }*/
         } catch (Exception e) {
-            LOGGER.error("###broadCastOk client={},msgId={},error={}###", client, msgId, e);
+            LOGGER.error("###broadCastOk client={},msgId={},error={}###", client, msgId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
@@ -177,7 +177,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsgOnLine msgType={},msg={},error={}###", msgType, msg, e);
+            LOGGER.error("#### broadCastMsgOnLine msgType={},msg={},error={}###", msgType, msg, e.getCause().getStackTrace());
         }
     }
 
@@ -217,7 +217,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsgGroup msgType={},msg={},error={}###", msgType, msg, e);
+            LOGGER.error("#### broadCastMsgGroup msgType={},msg={},error={}###", msgType, msg, e.getCause().getStackTrace());
         }
     }
 

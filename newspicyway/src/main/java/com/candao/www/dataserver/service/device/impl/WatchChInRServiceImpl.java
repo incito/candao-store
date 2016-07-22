@@ -48,7 +48,7 @@ public class WatchChInRServiceImpl extends DeviceServiceImpl {
                 msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
             }
         } catch (Exception e) {
-            LOGGER_ERROR.error("### watch checkIn resp msg={},error={} ###", msg, e);
+            LOGGER_ERROR.error("### watch checkIn resp msg={},error={} ###", msg, e.getCause().getStackTrace());
         }
     }
 }

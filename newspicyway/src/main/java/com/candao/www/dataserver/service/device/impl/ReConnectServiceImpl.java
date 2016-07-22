@@ -50,7 +50,7 @@ public class ReConnectServiceImpl extends DeviceServiceImpl {
                 msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
             }
         } catch (Exception e) {
-            LOGGER_ERROR.error("#### reconnect msg={},error={} ###", msg, e);
+            LOGGER_ERROR.error("#### reconnect msg={},error={} ###", msg, e.getCause().getStackTrace());
         }
     }
 }

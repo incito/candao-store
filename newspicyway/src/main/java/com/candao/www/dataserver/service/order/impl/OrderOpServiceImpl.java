@@ -59,7 +59,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询异常");
-            LOGGER.error("#### getOrderInfo aUserId={},orderId={},printType={} error={} ###", aUserId, orderId, printType, e);
+            LOGGER.error("#### getOrderInfo aUserId={},orderId={},printType={} error={} ###", aUserId, orderId, printType, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -73,7 +73,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseData.setData("0");
             responseData.setInfo("结算前计算帐单金额异常");
-            LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e);
+            LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
         }
 //        return JSON.toJSONString(responseData);
         return "1";
@@ -88,7 +88,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseData.setData("0");
             responseData.setInfo("更新外卖账单异常");
-            LOGGER.error("###wmOrder orderId={},error={}###", orderId, e);
+            LOGGER.error("###wmOrder orderId={},error={}###", orderId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseData);
     }
@@ -103,7 +103,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("更新外卖账单异常");
-            LOGGER.error("###getMemberSaleInfo userId={}, orderId={},error={}###", aUserId, orderId, e);
+            LOGGER.error("###getMemberSaleInfo userId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -123,7 +123,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             }
         } catch (Exception e) {
             responseData.setData("0");
-            LOGGER.error("###getOrderCouponList userId={}, orderId={},error={}###", aUserId, orderId, e);
+            LOGGER.error("###getOrderCouponList userId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseData);
     }
@@ -155,7 +155,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于帐单查询）异常");
-            LOGGER.error("###getAllOrderInfo2 userId={},error={}###", aUserId, e);
+            LOGGER.error("###getAllOrderInfo2 userId={},error={}###", aUserId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -171,7 +171,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于挂帐单查询）异常");
-            LOGGER.error("###getAllGZDW userId={},error={}###", aUserId, e);
+            LOGGER.error("###getAllGZDW userId={},error={}###", aUserId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -186,7 +186,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("保存结算信息异常");
-            LOGGER.error("###saveSettlement sDetailId={} orderId={} payJsonArray={} userId={} error={}###", sDetailId, orderId, payJsonArray, userId, e);
+            LOGGER.error("###saveSettlement sDetailId={} orderId={} payJsonArray={} userId={} error={}###", sDetailId, orderId, payJsonArray, userId, e.getCause().getStackTrace());
 
         }
         return JSON.toJSONString(responseJsonData);
@@ -202,7 +202,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询结算信息异常");
-            LOGGER.error("###getSettlementDetailBatch orderId={},error={}###", orderId, e);
+            LOGGER.error("###getSettlementDetailBatch orderId={},error={}###", orderId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -216,7 +216,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("删除结算信息异常");
-            LOGGER.error("###deleteDetailBatch sDetailId={},error={}###", sDetailId, e);
+            LOGGER.error("###deleteDetailBatch sDetailId={},error={}###", sDetailId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -244,8 +244,8 @@ public class OrderOpServiceImpl implements OrderOpService {
             }
             //结账才能反结
             if (!"3".equals(orderStatus)) {
-				return "{\"Data\":\"0\",\"Info\":\"该账单还未结账!\"}";
-			}
+                return "{\"Data\":\"0\",\"Info\":\"该账单还未结账!\"}";
+            }
             if ("1".equals(isClear)) {
                 return "{\"Data\":\"0\",\"Info\":\"帐单已经生成了清机单!\"}";
             }
@@ -267,7 +267,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             tableMapper.updaStatus0(tableNo);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e);
+            LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e.getCause().getStackTrace());
             responseJsonData.setData("0");
             return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
         }

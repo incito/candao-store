@@ -27,7 +27,7 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
             OfflineMsgData offLineMsgData = MsgAnalyzeTool.analyzeOffLineResp(msg);
             offlineMsgMapper.deleteById(offLineMsgData.getOffLineMsgId());
         } catch (Exception e) {
-            LOGGER_ERROR.error("### offlinemsg delete msg={},error={} ###", msg, e);
+            LOGGER_ERROR.error("### offlinemsg delete msg={},error={} ###", msg, e.getCause().getStackTrace());
         }
     }
 
