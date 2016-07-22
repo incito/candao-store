@@ -6,14 +6,16 @@ package com.candao.www.cache.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
@@ -216,33 +218,58 @@ public class HttpUtil {
      * @throws Exception 
      * */
     public static boolean downLoad(String url,String path) throws IOException{
+    	InputStream is = null;
+    	RandomAccessFile raf = null;
+    	FileLock fileLock = null;
+    	boolean flagImg = false;	//图片是否下载完整的标示
         try {
-//            url = EncodeUtil.ecode(url, "utf-8");
+        	File file = new File(path);
+        	File parent = file.getParentFile();
+        	if(!parent.exists()){
+        		parent.mkdirs();	//创建文件连续上级目录
+        	}
+        	//文件加锁，如果获取到锁证明没有线程占用
+            raf = new RandomAccessFile(file, "rw");
+			FileChannel fc = raf.getChannel();
+			fileLock = fc.tryLock();	//互斥锁
+			if(null == fileLock || !fileLock.isValid()){
+				return true;
+			}
+			//网络请求
             URL u = new URL(url);
             URLConnection conn = u.openConnection();
             conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.102 Safari/537.36");  // 模拟手机系统
             conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");//只接受text/html类型，当然也可以接受图片,pdf,*/*任意，就是tomcat/conf/web里面定义那些
             conn.connect();
             conn.setConnectTimeout(connectTimeout);// 设置链接超时时间
-            InputStream is = conn.getInputStream();
-           
-            File file = new File(path);
-            File parent = file.getParentFile();// 获取文件上级目录
-            if(!parent.exists()){// 判断目录是否存在 如果不存在自动创建目录
-                parent.mkdirs();// 创建连续的目录
-            }
-            FileOutputStream fos = new FileOutputStream(file);
+            is = conn.getInputStream();
             
             byte[] buffer = new byte[2048];
             int len = 0 ;
             while ((len = is.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
+            	raf.write(buffer, 0, len);
             }
-            is.close();
-            fos.close();
         } catch (IOException e) {
+        	//出现任何异常，表示图片未下载完，改变标示
+        	flagImg = true;
             throw e;
-        }
+        } finally {
+        	//释放锁，关闭资源
+        	if(null != fileLock){
+        		fileLock.release();
+        	}
+        	if(null != raf){
+        		raf.close();
+        	}
+        	if(null != is){
+        		is.close();
+        	}
+			//图片没下载全，删除图片
+			if(flagImg){
+				File file = new File(path);
+				file.delete();
+			}
+		}
         return true;
     }
     
