@@ -74,6 +74,7 @@ public class PrinterManagerServiceImpl implements PrinterManagerService {
 		}
 		return tbPrinterManagerDao.addPrinterTables(list);
 	}
+	
 	@Override
 	public int addPrinterDishes(List<Map<String, Object>> list) {
 		// TODO Auto-generated method stub

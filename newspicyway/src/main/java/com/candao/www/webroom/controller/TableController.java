@@ -34,6 +34,8 @@ public class TableController extends BaseController{
 	private TableService tableService;
 	@Autowired
 	private TableAreaService tableAreaService;
+	//餐桌id
+	private static int tableId = 1;
 	
 	/**
 	 * 获取所有餐桌
@@ -120,10 +122,12 @@ public class TableController extends BaseController{
 		//只是获取页面的数据
 		try {
 			if (ValidateUtils.isEmpty(id)) {// 增加
-				tbTable.setTableid(IdentifierUtils.getId().generate().toString());
+				synchronized (this) {
+					id = tableId++ + "-" + PropertiesUtils.getValue("tenant_id");
+					tbTable.setTableid(id);
+				}
 				tbTable.setStatus(0);
 				//0空闲
-				
 				b = tableService.save(tbTable);
 				map.put("tableid", tbTable.getTableid());
 			} else {// 修改
@@ -147,6 +151,10 @@ public class TableController extends BaseController{
 			}
 		}
 		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	public static void main(String args[]){
+		System.out.println(IdentifierUtils.getId().generate().toString());
 	}
 //	@RequestMapping("/save")
 //	@ResponseBody

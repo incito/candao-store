@@ -1,5 +1,6 @@
 /**
  * 发送账户服务
+
  */
 package com.candao.www.permit.service.impl;
 
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -108,6 +110,31 @@ public class SendServiceImpl implements SendService {
 		String content = this.getTemplateContent("/template/valicodeSms.template",false);
 	    content = content.replace("{valicode}", valicode);
 	    
+		param.put("p", mobile);
+		param.put("msg", content);
+		
+		String url = PropertiesUtils.getValue("sms.url");
+		HttpUtils.doPost(url, param);
+	  }
+  }
+  /**
+   * 
+   * @Description:通过短信发送信息
+   * @create: 余城序
+   * @Modification:
+   * @param mobile 手机号码
+   * @param msgUrl 模板路径
+   * void
+   * @throws IOException 
+   */
+  public void sendMessageBySms(String mobile,String msgUrl,Map<String,String> message) throws IOException{
+	  Map<String,String> param = this.getSmsParam();
+	  if(param!=null){
+		String content = this.getTemplateContent(msgUrl,false);
+	    Set<String> set = message.keySet();
+	    for(String str : set){
+	    	content.replace(str, message.get(str));
+	    }
 		param.put("p", mobile);
 		param.put("msg", content);
 		

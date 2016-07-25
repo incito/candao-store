@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +44,11 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.common.utils.StringUtils;
 import com.candao.www.data.dao.BranchDataSynDao;
 import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.permit.service.SendService;
 import com.candao.www.webroom.model.SynSqlObject;
 import com.candao.www.webroom.service.BranchProducerService;
 import com.candao.www.webroom.service.BranchShopService;
+import com.candao.www.weixin.utils.HttpOperate;
 
 /**
  * 
@@ -67,6 +72,8 @@ public class BranchDataSyn {
 
 	@Autowired
 	BranchDataSynDao branchDataSynDao;
+	@Autowired
+	private SendService sendService;
 
 	@Autowired
 	TbBranchDao branchDao;
@@ -78,12 +85,16 @@ public class BranchDataSyn {
 
 	@Autowired
 	BranchProducerService service;
-	// 保存压缩文件到磁盘的线程池
+	// 保存压缩文件到磁盘的线程池,上传失败短信发送通知现场
 	private ExecutorService singleThreadPool = Executors
 			.newSingleThreadExecutor();
 
 	// 存储压缩包的压缩包名
 	private final String SQL_FILE_NAME = "sql.gz";
+	//需要同步数据的controller
+	private final String CONTROLLER = "/dataDealController";
+	
+	public static final ThreadLocal<Map<String,Object>> TL = new ThreadLocal<Map<String,Object>>();
 
 	public boolean synBranchData() throws Exception {
 		synData();
@@ -100,9 +111,11 @@ public class BranchDataSyn {
 				String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
 				logger.info("上传方式type:"+type);
 				if(type.equals("1"))
-					synData();
-				else
+					syn();
+				else if(type.equals("2"))
 					synLocalData();
+				else
+					synData();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
@@ -150,7 +163,7 @@ public class BranchDataSyn {
 		return dto;
 	}
 	
-	public ResultDto synData() throws SysException{
+	public ResultDto synData() throws SysException, ParseException{
 		logger.info("synData-start");
 		int bizFlag = branchDataSynDao.checkBizData();
 		ResultDto dto = null;
@@ -164,13 +177,9 @@ public class BranchDataSyn {
 				// 添加同步记录
 				addSynRecord();
 				// 获取需要同步的表
-				String[] tables = getSynTables();
-				// 需要存储的对象
-				Map<String,List<Map<String,String>>> datas = getSynData(tables);
-				// 同步数据到总店
-				String result = synData(datas, branchId);
-				//结果集处理
-				dto = resultDeal(result);
+				String[] tables = getSynTablesFromMaster();
+				//执行数据上传
+				executeSyn(tables,dto,branchId);
 			} else {
 				throw new SysException(ErrorMessage.NO_BRANCH_ID, Module.LOCAL_SHOP);
 			}
@@ -182,6 +191,75 @@ public class BranchDataSyn {
 	
 	}
 	
+	//分天执行数据同步数据上传
+	private void executeSyn(String[] tables,ResultDto dto,String branchId) throws SysException, ParseException{
+			//需要处理的结果
+			String result = "";
+			// 获取开业日期 和结业日期
+			Map<String,Object> map = getDate();
+			String openDate = map.get("opendate").toString();
+			Calendar startCalendar = (Calendar)map.get("startCalendar");
+			String CompletionDate = map.get("enddate").toString();
+			//获取开业时间到结业时间这段时间的天数集合
+			List<String> list = DateUtils.getDateDayArrayByParams(openDate, CompletionDate);
+			// 需要存储的对象
+			Map<String,List<Map<String,String>>> datas = null;
+			//如果是当天结业
+			if(list.size() == 1){
+				datas = getSynData(tables,openDate,CompletionDate);
+				//同步数据到总店
+				result = synData(datas, branchId);
+				//结果集处理
+				dto = resultDeal(result);
+			//如果是跨天结业
+			}else{
+				for(int i=0;i<list.size();i++){
+					String date[] = getStartAndEndDate(startCalendar);
+					//如果是第一天
+					if(i == 0){
+						datas = getSynData(tables,openDate,date[1]);
+					//如果是最后一天
+					}else if(i == list.size() - 1){
+						datas = getSynData(tables,date[0],CompletionDate);
+					//如果是中间天数
+					}else{
+						datas = getSynData(tables,date[0],date[1]);
+					}
+					// 同步数据到总店
+					result = synData(datas, branchId);
+					//结果集处理
+					dto = resultDeal(result);
+				}
+			}
+		}
+	// 获取开业日期 和结业日期
+	private Map<String,Object> getDate() throws ParseException{
+		Map<String,Object> map = TL.get();
+		if(map == null){
+			map.putAll(branchDataSynDao.getBizDate());
+		}
+		String openDate = map.get("opendate").toString();
+		Calendar startCalendar = DateUtils.StringToCalendar(openDate);
+		map.put("startCalendar", startCalendar);
+		return map;
+	}
+		/**
+		 * 
+		 * @Description:获取每天00:00:01和23:59:59秒的时间
+		 * @create: 余城序
+		 * @Modification:
+		 * @param str 当天时间
+		 * @return String[]
+		 */
+		private String[] getStartAndEndDate(Calendar cal){
+			Date date = cal.getTime();
+			String[] str = new String[2];
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			str[0] = sdf.format(date) + "00:00:01";
+			str[1] = sdf.format(date) + "23:59:59";
+			return str;
+		}
+	
 	//门店同步数据成功后结果的处理
 	private ResultDto resultDeal(String result) throws SysException{
 		ResultDto dto = null;
@@ -192,9 +270,34 @@ public class BranchDataSyn {
 			Integer id = branchDataSynDao.getMaxId();
 			updateSynRecord(id.toString());
 		}else{
+			//云端执行失败,通知相关人员
+			singleThreadPool.execute(new Runnable() {
+				public void run() {
+					sendErrSms();
+				}
+			});
 			throw new SysException(ErrorMessage.SYNDATA_FAIL, Module.LOCAL_SHOP);
 		}
 		return dto;
+	}
+	//上传失败短信通知
+	private void sendErrSms(){
+		//云端执行失败,通知相关人员
+		String value = PropertiesUtils.getValue("UPDATA_ERR_MOBILE");
+		String[] mobiles = value.split(",");
+		Map<String,String> map;
+		Map<String, Object> branchInfo = branchDao.getBranchInfo();
+		//获取分店名称
+		String branchName = branchInfo.get("branchname").toString();
+		for(String mobile : mobiles){
+			try {
+				 map = new HashMap<String,String>();
+				 map.put("{client}", branchName);
+				sendService.sendMessageBySms(mobile, "/template/UptoDataErrSms.template",map);
+			} catch (IOException e) {
+				logger.error("短信发送失败");
+			}
+		}
 	}
 
 	public void syn() throws Exception {
@@ -380,16 +483,7 @@ public class BranchDataSyn {
 		String url = PropertiesUtils.getValue("MASTER_URL");
 
 		// 上传数据到总店
-		String result;
-		try {
-			result = HttpUtil.doPost(url, map, null, "UTF-8");
-		} catch (HttpException e) {
-			logger.error("http数据传输失败",e);
-			throw new SysException(ErrorMessage.HTTP_TRANS_ERROR, Module.LOCAL_SHOP);
-		} catch (IOException e) {
-			logger.error("服务器连接出现异常",e);
-			throw new SysException(ErrorMessage.HTTP_RESPONSE_ERROR, Module.LOCAL_SHOP);
-		}
+		String result = HttpOperate.post(url, map);
 
 		logger.info("upToData-end:" + result);
 		return result;
@@ -479,6 +573,21 @@ public class BranchDataSyn {
 
 		return tables;
 	}
+	/**
+	 * 
+	 * @Description:从云端获取需要同步的数据库表
+	 * @create: 余城序
+	 * @Modification:
+	 * @return String[]
+	 * @throws SysException 
+	 */
+	private String[] getSynTablesFromMaster() throws SysException{
+		String masterUrl = PropertiesUtils.getValue("cloud.host");
+		masterUrl = masterUrl + CONTROLLER + "/synTables.do";
+		String tables = HttpOperate.post(masterUrl,null);
+		logger.info("获取需要同步的表:" + tables);
+		return tables.split(",");
+	}
 
 	// 添加同步记录
 	private int addSynRecord() {
@@ -488,16 +597,19 @@ public class BranchDataSyn {
 		return branchDataSynDao.insertSynRecord(mapValue);
 	}
 	
-	private Map<String,List<Map<String,String>>> getSynData(String[] tables) throws SysException{
-		// 获取开业日期 和结业日期
-		Map<String, String> bizMap = branchDataSynDao.getBizDate();
-		String openDate = bizMap.get("opendate");
-		String endDate = bizMap.get("enddate");
-		
+	private Map<String,List<Map<String,String>>> getSynData(String[] tables,String startDate,String endDate) throws SysException{
 		Map<String,List<Map<String,String>>> tableMap = new HashMap<String,List<Map<String,String>>>(32);
+		List<Map<String,String>> datas = new ArrayList<Map<String,String>>();
 		for (String table : tables) {
-			List<Map<String,String>> datas = branchDataSynDao.getSynData(table,
-					SynDataTools.getConditionSql(table, openDate, endDate));
+			try{
+				datas = branchDataSynDao.getSynData(table,
+						SynDataTools.getConditionSql(table, startDate, endDate));
+			}catch(SysException e){
+				if(e.getCode().equals(ErrorMessage.SQLEXE_ERROR))
+					logger.info("数据库表不存在",e);
+				else
+					throw e;
+			}
 			tableMap.put(table, datas);
 		}
 		return tableMap;

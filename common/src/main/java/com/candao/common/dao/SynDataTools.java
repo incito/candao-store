@@ -304,12 +304,12 @@ public class SynDataTools {
 			String sufixSql = sb.toString();	   
 				  
 		   switch (tableName) {
-		  case "t_table":
-				retStr = prifixSql + " modifytime   " + sufixSql;
+		   case "t_table":
+				//retStr = prifixSql + " modifytime   " + sufixSql;
 				break;
 			case "t_tablearea":
-				retStr = prifixSql + " modifytime   " + sufixSql;
-					break;
+				//retStr = prifixSql + " modifytime   " + sufixSql;
+				break;
 			case "t_order":
 				retStr = prifixSql + " begintime   " + sufixSql;
 				break;
