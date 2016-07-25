@@ -230,7 +230,11 @@ public class GiftController {
 					@Override
 					public void run() {
 						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2102+"/");
-						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey);
+						try {
+							messageinfo.append(URLEncoder.encode(giveTableNo, "utf-8")).append("|").append(URLEncoder.encode(receiveTableNo, "utf-8")).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey);
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
 						new TsThread(messageinfo.toString()).run();
 					}
 				}).start();
