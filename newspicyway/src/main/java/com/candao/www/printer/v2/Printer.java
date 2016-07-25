@@ -351,7 +351,9 @@ public class Printer {
     protected void doCommand(OutputStream outputStream) throws IOException {
         synchronized (cmd) {
             if (!cmd.isEmpty()) {
-                logger.debug("[" + ip + "]doCommand");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[" + ip + "]doCommand");
+                }
                 outputStream.write(cmd.getCommand());
                 outputStream.flush();
                 cmd.setCommand(null);

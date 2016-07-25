@@ -19,7 +19,7 @@ public class PrinterStatusManager {
     public static final short CUTERROR = 4;
     public static final short DISCONNECT = 5;
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-    private static PrinterService printerService;
+    private static volatile PrinterService printerService;
 
     /**
      * 打印机状态监控

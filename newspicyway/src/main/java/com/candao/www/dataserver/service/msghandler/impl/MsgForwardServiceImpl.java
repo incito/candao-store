@@ -6,7 +6,6 @@ import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.constants.MsgType;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
-import com.candao.www.dataserver.entity.SyncMsg;
 import com.candao.www.dataserver.mapper.MsgProcessMapper;
 import com.candao.www.dataserver.model.*;
 import com.candao.www.dataserver.service.communication.CommunicationService;
@@ -73,7 +72,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         try {
             int msgId = (int) System.currentTimeMillis();
             MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
-            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType,0, false);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, 0, false);
             if (MsgType.MSG_1002.getValue().equals(msgType)) {
                 String tableNo = businessService.getTableNoByOrderId(msg);
                 if (StringUtils.isNotBlank(tableNo)) {
@@ -90,20 +89,20 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     }
 
     @Override
-    public void broadCastMsg4Netty(String msgId, Object msgData, int expireSeconds,boolean isSingle) {
-        String msg="";
-        if(null!=msgData){
-            msg=JSON.toJSONString(msgData);
+    public void broadCastMsg4Netty(String msgId, Object msgData, int expireSeconds, boolean isSingle) {
+        String msg = "";
+        if (null != msgData) {
+            msg = JSON.toJSONString(msgData);
         }
-        LOGGER.info("#### broadCastMsgForNetty msgId={},msg={},expireSeconds={}###", msgId, msg,expireSeconds);
+        LOGGER.info("#### broadCastMsgForNetty msgId={},msg={},expireSeconds={}###", msgId, msg, expireSeconds);
         ResponseData responseData = new ResponseData();
         try {
-            broadCastMsgDevices(deviceObjectService.getAllDevice(),msg, msgId,expireSeconds, isSingle);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), msg, msgId, expireSeconds, isSingle);
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");
             responseData.setData("发送广播消息异常");
-            LOGGER.error("#### broadCastMsgForNetty###",  e);
+            LOGGER.error("#### broadCastMsgForNetty###", e);
         }
     }
 
@@ -143,7 +142,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
     }
 
-    public void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType,int expireSeconds, boolean isSingle) {
+    public void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType, int expireSeconds, boolean isSingle) {
         Date expireDate = WorkDateUtil.getAfterSeconds(expireSeconds);
         List<OfflineMsg> offlineMsgList = new ArrayList<>();
         for (final DeviceObject deviceObject : objects) {
@@ -155,14 +154,15 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             offlineMsg.setExpireTime(expireDate);
             offlineMsgList.add(offlineMsg);
         }
-        offlineMsgService.save(offlineMsgList, isSingle);
+        if (expireSeconds > 0) {
+            offlineMsgService.save(offlineMsgList, isSingle);
+        }
         for (final OfflineMsg offlineMsg : offlineMsgList) {
             Map<String, List<String>> target = new HashMap<>();
             target.put(offlineMsg.getDeviceGroup(), new ArrayList<String>() {{
                 add(offlineMsg.getDeviceId());
             }});
-            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+            MsgForwardData offMsgData = new MsgForwardData(offlineMsg.getId(), msgType, offlineMsg.getContent());
             communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
         }
     }
@@ -172,7 +172,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         LOGGER.info("#### broadCastMsgOnLine msgType={},msg={}###", msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-            broadCastMsgDevices(deviceObjectService.getOnLineDevice(), msg, msgType, 0,isSingle);
+            broadCastMsgDevices(deviceObjectService.getOnLineDevice(), msg, msgType, 0, isSingle);
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");
@@ -212,7 +212,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         LOGGER.info("#### broadCastMsgGroup msgType={},msg={}###", msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
-            broadCastMsgDevices(deviceObjectService.getOnLineDevice(group), msg, msgType,0, false);
+            broadCastMsgDevices(deviceObjectService.getOnLineDevice(group), msg, msgType, 0, false);
         } catch (Exception e) {
             e.printStackTrace();
             responseData.setData("0");

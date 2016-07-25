@@ -7,6 +7,7 @@ import com.candao.file.common.Constant;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
+import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.utils.SessionUtils;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.MenuGroup;
@@ -644,11 +645,11 @@ public class MenuServiceImpl implements MenuService {
         String msgId;
         switch (code) {
             case 1:
-                msgId = com.candao.www.constant.Constant.MSG_ID.GUQING;
+                msgId = MsgForwardTran.msgConfig.getProperty("MSF_ID.GUQING");
                 str.append(com.candao.www.constant.Constant.MessageType.msg_1003);
                 break;
             case 2:
-                msgId = com.candao.www.constant.Constant.MSG_ID.QXGUQING;
+                msgId = MsgForwardTran.msgConfig.getProperty("MSF_ID.QXGUQING");
                 str.append(com.candao.www.constant.Constant.MessageType.msg_1007);
                 break;
             default:
