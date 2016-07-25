@@ -6,6 +6,8 @@ import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.business.OpenCashService;
 import com.candao.www.dataserver.util.DataServerJsonFormat;
+import com.candao.www.printer.v2.Printer;
+import com.candao.www.printer.v2.PrinterManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,10 +34,12 @@ public class OpenCashServiceImpl implements OpenCashService {
         Socket socket = null;
         try {
             LOGGER.info("###打开钱箱 ip={}###", ip);
-            socket = new Socket(ip, 9100);
-            writer = new OutputStreamWriter(socket.getOutputStream());
-            writer.write(String.valueOf(buff));
-            writer.flush();
+            Printer printer = PrinterManager.getPrinter(ip);
+            if(null==printer){
+                LOGGER.error("开钱箱失败：打印机["+ip+"]不存在");
+            }else{
+                printer.openCash();
+            }
         } catch (Exception e) {
             responseData.setData("0");
             LOGGER_ERROR.error("###打开钱箱出错 ip={}, error={}", ip, e.getCause().getStackTrace());

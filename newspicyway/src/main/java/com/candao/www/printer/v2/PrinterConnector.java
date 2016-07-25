@@ -38,6 +38,7 @@ class PrinterConnector {
             return;
         }
         try {
+            logger.debug("打印机关闭连接");
             socket.close();
         } catch (IOException e) {
             logger.error("打印机连接关闭失败:"+e.getMessage());

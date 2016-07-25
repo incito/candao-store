@@ -1,5 +1,6 @@
 package com.candao.www.printer.v2;
 
+import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
 
 import java.io.IOException;
@@ -30,11 +31,13 @@ public class PrinterOther extends Printer {
                     if (null != channel && channel.isConnected()) {
                         PrinterStatusManager.stateMonitor(PrintControl.STATUS_OK, this);
                         OutputStream outputStream = channel.getOutputStream();
+                        doCommand(outputStream);
                         /*开始打印*/
                         logger.info("[" + getIp() + "]开始打印");
                         doPrint(msg, outputStream);
                         logger.info("[" + getIp() + "]打印结束");
                         result.setCode(PrintControl.STATUS_PRINT_DONE);
+                        doCommand(outputStream);
                         return result;
                     } else {
                         PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
@@ -100,7 +103,7 @@ public class PrinterOther extends Printer {
 
                 } catch (IOException e) {
                     PrinterConnector.closeConnection(channel);
-                    logger.info("[" + getIp() + "]打印机连接异常:"+e.getMessage());
+                    logger.info("[" + getIp() + "]打印机连接异常:" + e.getMessage());
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
                 } finally {
                     PrinterConnector.closeConnection(channel);
@@ -138,5 +141,40 @@ public class PrinterOther extends Printer {
         } else {
             logger.info("[" + getIp() + "]尝试发起状态检查失败");
         }
+    }
+
+    @Override
+    public void openCash() {
+        logger.info("开钱箱[" + getIp() + "]");
+        synchronized (cmd) {
+            cmd.setCommand(PrinterConstant.OPEN_CASH);
+            try {
+                if (printLock.tryLock(2, TimeUnit.SECONDS)) {
+                    Socket channel = null;
+                    try {
+                        channel = PrinterConnector.createConnection(getIp(), getPort(), 2000);
+                        if (null != channel && channel.isConnected()) {
+                            try {
+                                doCommand(channel.getOutputStream());
+                            } catch (IOException e) {
+                                logger.error("doCommand failed!", e);
+                            }
+                        }
+                    } finally {
+                        PrinterConnector.closeConnection(channel);
+                        printLock.unlock();
+                    }
+                }
+            } catch (InterruptedException e) {
+                logger.error(e);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("10.66.18.11", 9100);
+        OutputStream outputStream = socket.getOutputStream();
+        outputStream.write(PrinterConstant.OPEN_CASH);
+        outputStream.flush();
     }
 }

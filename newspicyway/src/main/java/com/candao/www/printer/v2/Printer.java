@@ -38,6 +38,10 @@ public class Printer {
     private Socket channel;
     protected Lock printLock = new ReentrantLock();
     /**
+     * 插入指令，打印过程中一旦检测该字段有值，都会优先发送给打印机执行；
+     */
+    protected Command cmd = new Command();
+    /**
      * 上次打印机状态，该状态的值见{@link PrinterStatusManager PrinterStatusManager}
      */
     private int lastState;
@@ -67,6 +71,7 @@ public class Printer {
                     if (null != channel && channel.isConnected()) {
                         OutputStream outputStream = channel.getOutputStream();
                         InputStream inputStream = channel.getInputStream();
+                        doCommand(outputStream);
                         //检查打印机状态
                         logger.info("[" + ip + "]检查打印机状态");
                         int state = PrintControl.printerIsReady(3000, outputStream, inputStream);
@@ -109,6 +114,7 @@ public class Printer {
                         if (state == PrintControl.STATUS_PRINT_DONE) {
                             logger.info("[" + ip + "]打印完成");
                             result.setCode(state);
+                            doCommand(outputStream);
                             break;
                         }
                     } else {
@@ -139,7 +145,7 @@ public class Printer {
                 } catch (IOException e) {
                     PrinterConnector.closeConnection(channel);
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
-                    logger.info("[" + ip + "]打印发生异常，尝试重连:"+e.getMessage());
+                    logger.info("[" + ip + "]打印发生异常，尝试重连:" + e.getMessage());
                     channel = PrinterConnector.createConnection(ip, port, 2000);
                     if (null == channel) {
                         logger.info("[" + ip + "]尝试重连失败");
@@ -242,7 +248,7 @@ public class Printer {
             } catch (IOException e) {
                 PrinterConnector.closeConnection(channel);
                 PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
-                logger.info("[" + ip + "]打印机连接异常:"+e.getMessage());
+                logger.info("[" + ip + "]打印机连接异常:" + e.getMessage());
                 //重置连接
                 channel = null;
                 if (System.currentTimeMillis() > endTime) {
@@ -301,9 +307,55 @@ public class Printer {
                 logger.info("[" + ip + "]尝试发起状态检查失败");
             }
         } catch (InterruptedException e) {
-            logger.error("[" + ip + "]尝试发起状态检查失败:"+e.getMessage());
+            logger.error("[" + ip + "]尝试发起状态检查失败:" + e.getMessage());
         } finally {
             printLock.unlock();
+        }
+    }
+
+    /**
+     * 开钱箱
+     */
+    public void openCash() {
+        logger.info("开钱箱[" + getIp() + "]");
+        synchronized (cmd) {
+            cmd.setCommand(PrinterConstant.OPEN_CASH);
+            try {
+                if (printLock.tryLock(2, TimeUnit.SECONDS)) {
+                    try {
+                        initChannel();
+                        /*打印机是否连接成功*/
+                        if (null != channel && channel.isConnected()) {
+                            try {
+                                doCommand(channel.getOutputStream());
+                            } catch (Exception e) {
+                                logger.error("doCommand failed!", e);
+                            }
+                        }
+                    } finally {
+                        printLock.unlock();
+                    }
+                }
+            } catch (InterruptedException e) {
+                logger.error(e);
+            }
+        }
+    }
+
+    /**
+     * 执行插入的命令
+     *
+     * @param outputStream
+     * @throws IOException
+     */
+    protected void doCommand(OutputStream outputStream) throws IOException {
+        synchronized (cmd) {
+            if (!cmd.isEmpty()) {
+                logger.debug("[" + ip + "]doCommand");
+                outputStream.write(cmd.getCommand());
+                outputStream.flush();
+                cmd.setCommand(null);
+            }
         }
     }
 
@@ -390,5 +442,21 @@ public class Printer {
 
     public void setLastState(int lastState) {
         this.lastState = lastState;
+    }
+
+    class Command {
+        private byte[] command;
+
+        public byte[] getCommand() {
+            return command;
+        }
+
+        public void setCommand(byte[] command) {
+            this.command = command;
+        }
+
+        public boolean isEmpty() {
+            return null == command || 0 == command.length;
+        }
     }
 }
