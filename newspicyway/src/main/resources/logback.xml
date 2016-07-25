@@ -1,32 +1,44 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_HOME" value="/home/cloud-user/candao" />
-	
-  <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender" >  
-  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-	   <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>   
-	   <maxHistory>30</maxHistory>  
-  </rollingPolicy>   
-  <encoder>   
-  		 <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>   
-  </encoder>   
- </appender> 
- 
- <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">  
-    <encoder>  
-      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>  
-    </encoder>  
-  </appender> 
- 
- 
-    <root level="info">  
-    	<appender-ref ref="candao"/>
-    	<!--<appender-ref ref="STDOUT"/>-->
-  	</root>  
- 
-	<logger name="dao" level="DEBUG"/>
-	
-	<logger name="org.springframework" level="debug" >
-	</logger>
-    
+    <property name="LOG_HOME" value="/home/cloud-user/candao"/>
+
+    <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="printAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/print_log/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>8</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="candao"/>
+        <!--<appender-ref ref="STDOUT"/>-->
+    </root>
+
+    <logger name="dao" level="DEBUG"/>
+    <!--打印日志输出-->
+    <logger name="com.candao.www.printer" level="INFO">
+        <appender-ref ref="printAppender"/>
+    </logger>
+    <logger name="com.candao.print" level="INFO">
+        <appender-ref ref="printAppender"/>
+    </logger>
+
 </configuration>
