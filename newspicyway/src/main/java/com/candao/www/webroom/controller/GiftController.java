@@ -1,5 +1,7 @@
 package com.candao.www.webroom.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +43,7 @@ public class GiftController {
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping("/send")
+	@RequestMapping(value="/send",produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public Map<String, Object> sendGiftToAnthorTable(@RequestBody String body) {
 		logger.debug("start method sendGiftInfo  waiter");
@@ -135,7 +137,11 @@ public class GiftController {
 					@Override
 					public void run() {
 						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2101+"/");
-						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
+						try {
+							messageinfo.append(URLEncoder.encode(giveTableNo, "utf-8")).append("|").append(URLEncoder.encode(receiveTableNo, "utf-8")).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
 						new TsThread(messageinfo.toString()).run();
 					}
 				}).start();
@@ -162,7 +168,7 @@ public class GiftController {
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping("/recvice")
+	@RequestMapping(value="/recvice",produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public Map<String, Object> recviceGiftToAnthorTable(@RequestBody String body,HttpServletRequest reqeust) {
 		logger.debug("start method recvice sendGiftInfo  waiter");
