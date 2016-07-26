@@ -512,13 +512,47 @@ $(document).ready(function(){
 		$("#printDishes-add-dialog").modal("hide");
 		showSelectStoreDiv(findDishnames,"#div-print-dishes-add");
 		if(findDishids.length>0){
-			if(oldDishIds.sort().toString() == findDishids.sort().toString()){
-				//选择的菜品没有变化
-			}else{
-				$("#print-groupdishes").removeClass("hidden");
-				clearGroup();
-				initGroupDiv();
-			}
+
+			$.post(global_Path+"/printerManager/getDishOfPrinter.json", {//getTypeAndDishMap //printerManager/getDishOfPrinter
+				dishids: JSON.stringify(findDishids)
+			}, function(json) {
+				var delGroupIdsArray = [];
+				var GroupDishIds = [];
+				if (json != null) {
+					$.each(json, function (index, item) {
+						$.each(item, function (key, obj) {
+							if (obj.length > 0) {
+								$.each(obj, function (i, dishObj) {
+									GroupDishIds.push(dishObj.dishid);
+								});
+							}
+						});
+					});
+					if(findGroupDishidMap.size() > 0) {
+						findGroupDishidMap.each(function(i,v){
+							var finded = false;
+							$.each(v,function(key,value){
+								if(GroupDishIds.indexOf(value) === -1) {
+									delGroupIdsArray.push(i);
+									finded = true;
+									return false;
+								}
+								if(finded) {
+									return false;
+								}
+							})
+						})
+					}
+					if(delGroupIdsArray.length>0) {
+						$.each(delGroupIdsArray, function(i,v){
+							findGroupDishidMap.remove(v);
+							findGroupDishnameMap.remove(v);
+						});
+						reInitGroupDiv();
+					}
+					console.info(delGroupIdsArray);
+				}
+			});
 		}else{
 			$("#print-groupdishes").addClass("hidden");
 			clearGroup();
@@ -594,7 +628,7 @@ function reInitGroupDiv(){
 	
 	var newGroups = map.keySet();
 	newGroups = keyValueToInt(newGroups);
-	groupid = newGroups[newGroups.length-1]+1;//取最后一个加1
+	groupid = newGroups[newGroups.length-1] || 0 + 1;//取最后一个加1
 	var lastDiv = $("#print-groupdishes").find(".group-div").eq(0);
 	$("#print-groupdishes").find(".group-div").eq(0).attr("groupid", groupid);
 	

@@ -2536,7 +2536,7 @@ BEGIN
   DECLARE v_count_order int;
 
 
-  
+
   SET v_current_date = DATE_FORMAT(NOW(), '%Y%m%d');
   SELECT
     LPAD(branchid, 6, '0') INTO v_branchid
@@ -2552,10 +2552,18 @@ BEGIN
       MAX(orderid) INTO v_max_order_id
     FROM t_order
     WHERE orderid LIKE '%' || CONCAT('H', DATE_FORMAT(NOW(), '%Y%m%d'), v_branchid) || '%';
+	-- 如果是子订单，需要截取
+	IF LOCATE('-', v_max_order_id) > 0 THEN
+		SELECT substring_index(v_max_order_id, '-', 1) INTO v_max_order_id FROM dual;
+		SELECT
+			RIGHT(v_max_order_id, 6) INTO v_max_order_id
+		FROM dual;
+	ELSE
+		SELECT
+			RIGHT(v_max_order_id, 6) INTO v_max_order_id
+		FROM dual;
+	END IF;
 
-    SELECT
-      RIGHT(v_max_order_id, 6) INTO v_max_order_id
-    FROM dual;
     SELECT
       v_max_order_id + 1 INTO v_order_id_seq
     FROM dual;
