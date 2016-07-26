@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -123,8 +124,7 @@ public class TableController extends BaseController{
 		try {
 			if (ValidateUtils.isEmpty(id)) {// 增加
 				synchronized (this) {
-					id = tableId++ + "-" + PropertiesUtils.getValue("tenant_id");
-					tbTable.setTableid(id);
+					tbTable.setTableid(UUID.randomUUID().toString());
 				}
 				tbTable.setStatus(0);
 				//0空闲
