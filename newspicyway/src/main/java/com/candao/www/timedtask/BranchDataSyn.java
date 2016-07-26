@@ -67,6 +67,8 @@ import com.candao.www.weixin.utils.HttpOperate;
 @Service
 public class BranchDataSyn {
 
+	private final String SUCCESSCODE="0000";
+	
 	private static final Logger logger = LoggerFactory
 			.getLogger(BranchDataSyn.class);
 
@@ -211,27 +213,54 @@ public class BranchDataSyn {
 				result = synData(datas, branchId);
 				//结果集处理
 				dto = resultDeal(result);
-			//如果是跨天结业
+				
+				excuteupdatesysdate(dto, CompletionDate);
+				//如果是跨天结业
 			}else{
 				for(int i=0;i<list.size();i++){
-					String date[] = getStartAndEndDate(startCalendar);
-					//如果是第一天
-					if(i == 0){
-						datas = getSynData(tables,openDate,date[1]);
-					//如果是最后一天
-					}else if(i == list.size() - 1){
-						datas = getSynData(tables,date[0],CompletionDate);
-					//如果是中间天数
-					}else{
-						datas = getSynData(tables,date[0],date[1]);
+					String date[] = getStartAndEndDate(list.get(i));
+					//查询出上传成功的最后一次值
+					String lastsuccessdate=branchDataSynDao.getLastSuccessDate();
+					//判断重复上传
+					if(date[1].equals(lastsuccessdate)){//已经导入过的数据直接过滤掉
+						continue;
 					}
+					
+					datas = getSynData(tables,date[0],date[1]);
 					// 同步数据到总店
 					result = synData(datas, branchId);
 					//结果集处理
 					dto = resultDeal(result);
+					
+					excuteupdatesysdate(dto, date[1]);
 				}
 			}
 		}
+	
+	/**
+	 * 上传到门店成功后执行更新数据库
+	 * endtime表示上传某天的数据到总店成功
+	 * @param dto
+	 * @param sysdate
+	 */
+	private void excuteupdatesysdate(ResultDto dto,String sysdate){
+		if(dto!=null && SUCCESSCODE.equals(dto.getCode())){//总店处理成功更新t_syn_record的endtime
+			Integer id = branchDataSynDao.getMaxId();
+			if(updateSynRecord(id.toString(),sysdate)<=0){//更新失败
+				logger.error("更新同步数据表失败"+sysdate);
+			}//已经更新的数据
+		}
+	}
+	
+	
+	
+	private int updateSynRecord(String id, String sysdate) {
+		Map<String, Object> map = new HashMap<String,Object>();
+		map.put("id", id);
+		map.put("sysdate", sysdate);
+		return branchDataSynDao.updateMaxSynRecord(map);
+	}
+
 	// 获取开业日期 和结业日期
 	private Map<String,Object> getDate() throws ParseException{
 		Map<String,Object> map = TL.get();
@@ -243,23 +272,21 @@ public class BranchDataSyn {
 		map.put("startCalendar", startCalendar);
 		return map;
 	}
+	
 		/**
-		 * 
-		 * @Description:获取每天00:00:01和23:59:59秒的时间
-		 * @create: 余城序
-		 * @Modification:
-		 * @param str 当天时间
-		 * @return String[]
+		 * 获取每天00:00:01和23:59:59秒的时间
+		 * @param date
+		 * @return
 		 */
-		private String[] getStartAndEndDate(Calendar cal){
-			Date date = cal.getTime();
+		private String[] getStartAndEndDate(String date){
 			String[] str = new String[2];
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			str[0] = sdf.format(date) + "00:00:01";
 			str[1] = sdf.format(date) + "23:59:59";
 			return str;
 		}
-	
+		
+		
 	//门店同步数据成功后结果的处理
 	private ResultDto resultDeal(String result) throws SysException{
 		ResultDto dto = null;

@@ -66,4 +66,8 @@ public interface BranchDataSynDao {
 	public void updateBizLog();
 
 	public Map<String, String> getBizDate();
+
+	public int updateMaxSynRecord(Map<String, Object> map);
+
+	public String getLastSuccessDate();
 }
