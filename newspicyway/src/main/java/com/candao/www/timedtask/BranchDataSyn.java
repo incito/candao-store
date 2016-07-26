@@ -222,7 +222,7 @@ public class BranchDataSyn {
 					//查询出上传成功的最后一次值
 					String lastsuccessdate=branchDataSynDao.getLastSuccessDate();
 					//判断重复上传
-					if(date[1].equals(lastsuccessdate)){//已经导入过的数据直接过滤掉
+					if(date[1].equals(lastsuccessdate)|| lastsuccessdate==null||"".equals(lastsuccessdate)){//已经导入过的数据直接过滤掉
 						continue;
 					}
 					
