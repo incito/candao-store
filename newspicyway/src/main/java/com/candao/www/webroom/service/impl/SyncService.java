@@ -174,7 +174,10 @@ public class SyncService {
      * @return
      */
     private String createSql(String tableName, List<Map<String, Object>> list, Connection connection) {
-        Assert.notEmpty(list);
+        //数据表为空的情况则忽略
+    	if(list == null  || list.isEmpty()){
+    		return null;
+    	}
 
         StringBuffer sbf = new StringBuffer("insert into " + tableName + "(");
 

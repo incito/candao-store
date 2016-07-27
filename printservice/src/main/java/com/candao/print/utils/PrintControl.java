@@ -320,7 +320,7 @@ public class PrintControl {
             iTimeOut = 1000;
         }
         // 定义变量并初始化
-        int iReturnValue = STATUS_PRINT_DONE; // 函数返回值
+        int iReturnValue = STATUS_PRINT_UNDONE; // 函数返回值
         long iStartTime = 0; // 计时起始时间
         long iEndTime = 0; // 计时终止时间
         // byte[] cReadBuf = new byte[100]; //接收缓冲区
@@ -422,6 +422,7 @@ public class PrintControl {
                     }
                     if (!bIsPrinting) // 打印完成
                     {
+                    	iReturnValue = STATUS_PRINT_DONE;
                         return iReturnValue;
                     }
                 }

@@ -63,5 +63,13 @@
 		select  date_format(opendate,'%Y-%m-%d %H:%i:%s') as opendate, date_format(enddate,'%Y-%m-%d %H:%i:%s') as enddate  from t_branch_biz_log
 		where branchid in (select branchid from t_branch_info )
 	</select>
-	
+	<update id="updateMaxSynRecord" parameterType="java.util.Map">
+		update t_syn_record set endtime=#{sysdate} where id=#{id}
+	</update>
+	<select id="getLastSuccessDate" resultType="string">
+			select t.endtime from t_syn_record t 
+			where t.`status`=1
+			ORDER BY t.endtime desc
+			LIMIT 0,1
+	</select>
 </mapper> 

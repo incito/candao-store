@@ -2187,9 +2187,12 @@ public class PadInterfaceController {
         //获取同步数据的传送方式
         String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
         try {
+        	//选择处理方式
             dto = selectMethod(type);
+            
         } catch (SysException e) {
             loggers.error("门店上传到总店数据失败", e);
+            if(e.getCode().equals(""))
             //异常处理机制
             dto = exceptionDeal(type);
             //使用原有代码MQ机制时出现的异常处理
@@ -2204,6 +2207,19 @@ public class PadInterfaceController {
         loggers.info("jdeSynData-end:" + dto, "");
         //return JacksonJsonMapper.objectToJson(resultMap);
         return JSON.toJSONString(dto);
+    }
+    
+    @RequestMapping("/synDataByDate.do")
+    @ResponseBody
+    public String synDataByDate(String json,String startDate,String endDate) {
+    	
+    	loggers.info("synDataByDate-start:" + json+","+startDate+","+endDate, "");
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("opendate", startDate);
+    	map.put("enddate", endDate);
+    	BranchDataSyn.TL.set(map);
+    	
+    	return jdeSynData(json);
     }
 
     //出现异常处理机制,重新执行直到成功,最多执行3次

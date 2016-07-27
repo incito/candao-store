@@ -58,4 +58,16 @@ public interface SendService {
  * @throws IOException 
    */
   void sendRetrievePwdValicodeBySms(String mobile, String valicode) throws IOException;
+  /**
+   * 
+   * @Description:通过短信发送信息
+   * @create: 余城序
+   * @Modification:
+   * @param mobile 手机号码
+   * @param msgUrl 模板路径
+   * @param message 模板信息变量
+   * void
+   * @throws IOException 
+   */
+  public void sendMessageBySms(String mobile,String msgUrl,Map<String,String> message) throws IOException;
 }

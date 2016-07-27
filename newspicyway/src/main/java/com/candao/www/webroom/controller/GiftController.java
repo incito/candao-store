@@ -1,5 +1,7 @@
 package com.candao.www.webroom.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +45,7 @@ public class GiftController {
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping("/send")
+	@RequestMapping(value="/send",produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public Map<String, Object> sendGiftToAnthorTable(@RequestBody String body) {
 		logger.debug("start method sendGiftInfo  waiter");
@@ -165,7 +167,7 @@ public class GiftController {
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping("/recvice")
+	@RequestMapping(value="/recvice",produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public Map<String, Object> recviceGiftToAnthorTable(@RequestBody String body,HttpServletRequest reqeust) {
 		logger.debug("start method recvice sendGiftInfo  waiter");

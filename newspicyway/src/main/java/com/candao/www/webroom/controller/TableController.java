@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,8 @@ public class TableController extends BaseController{
 	private TableService tableService;
 	@Autowired
 	private TableAreaService tableAreaService;
+	//餐桌id
+	private static int tableId = 1;
 	
 	/**
 	 * 获取所有餐桌
@@ -120,10 +123,11 @@ public class TableController extends BaseController{
 		//只是获取页面的数据
 		try {
 			if (ValidateUtils.isEmpty(id)) {// 增加
-				tbTable.setTableid(IdentifierUtils.getId().generate().toString());
+				synchronized (this) {
+					tbTable.setTableid(UUID.randomUUID().toString());
+				}
 				tbTable.setStatus(0);
 				//0空闲
-				
 				b = tableService.save(tbTable);
 				map.put("tableid", tbTable.getTableid());
 			} else {// 修改
@@ -147,6 +151,10 @@ public class TableController extends BaseController{
 			}
 		}
 		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	public static void main(String args[]){
+		System.out.println(IdentifierUtils.getId().generate().toString());
 	}
 //	@RequestMapping("/save")
 //	@ResponseBody
