@@ -3,11 +3,14 @@ package com.candao.www.dataserver.service.msghandler.impl;
 import com.alibaba.fastjson.JSON;
 import com.candao.communication.factory.LockFactory;
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.dataserver.constants.MsgType;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
-import com.candao.www.dataserver.mapper.MsgProcessMapper;
-import com.candao.www.dataserver.model.*;
+import com.candao.www.dataserver.model.MsgData;
+import com.candao.www.dataserver.model.MsgForwardData;
+import com.candao.www.dataserver.model.ResponseData;
+import com.candao.www.dataserver.model.ResultData;
 import com.candao.www.dataserver.service.communication.CommunicationService;
 import com.candao.www.dataserver.service.device.DeviceObjectService;
 import com.candao.www.dataserver.service.device.DeviceService;
@@ -18,6 +21,7 @@ import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.MsgHandler;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
+import com.candao.www.dataserver.service.msghandler.obj.Result;
 import com.candao.www.dataserver.util.PropertyUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import com.candao.www.utils.TsThread;
@@ -38,8 +42,6 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     @Autowired
     private CommunicationService communicationService;
     @Autowired
-    private MsgProcessMapper msgProcessMapper;
-    @Autowired
     private OfflineMsgService offlineMsgService;
     @Autowired
     private DeviceObjectService deviceObjectService;
@@ -49,6 +51,8 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     private DishService dishService;
     @Autowired
     private BusinessService businessService;
+    @Autowired
+    private TorderMapper orderMapper;
 
     @Override
     public String broadCastMsg(String userId, String msgType, String msg) {
@@ -182,32 +186,6 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     }
 
     @Override
-    public void broadCastMsgOnLine(String msgType, String msg, boolean isSingle, int expireSeconds) {
-        LOGGER.info("#### broadCastMsgOnLine msgType={},msg={},isSingle={},expireSeconds={}###", msgType, msg, isSingle, expireSeconds);
-        List<DeviceObject> deviceObjectList = deviceObjectService.getAllDevice();
-        List<OfflineMsg> offlineMsgList = new ArrayList<>();
-        for (final DeviceObject deviceObject : deviceObjectList) {
-            int single = 0;
-            if (isSingle) {
-                single = 1;
-            }
-            OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
-            offlineMsg.setExpireTime(WorkDateUtil.getAfterSeconds(expireSeconds));
-            offlineMsgList.add(offlineMsg);
-        }
-        offlineMsgService.save(offlineMsgList, isSingle);//todo 改为内存，删除消息异步
-        for (final OfflineMsg offlineMsg : offlineMsgList) {
-            Map<String, List<String>> target = new HashMap<>();
-            target.put(offlineMsg.getDeviceGroup(), new ArrayList<String>() {{
-                add(offlineMsg.getDeviceId());
-            }});
-            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
-            communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
-        }
-    }
-
-    @Override
     public void broadCastMsgGroup(String group, String msgType, String msg, boolean isSingle) {
         LOGGER.info("#### broadCastMsgGroup msgType={},msg={}###", msgType, msg);
         ResponseData responseData = new ResponseData();
@@ -219,17 +197,6 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             responseData.setData("发送广播消息异常");
             LOGGER.error("#### broadCastMsgGroup msgType={},msg={},error={}###", msgType, msg, e.getCause().getStackTrace());
         }
-    }
-
-    @Override
-    public String broadCastMsgSync(Integer id, String msg) {
-        final Device device = deviceService.getDeviceById(id);
-        Map<String, List<String>> target = new HashMap<>();
-        target.put(device.getDeviceGroup(), new ArrayList<String>() {{
-            add(device.getDeviceId());
-        }});
-        MsgForwardData msgForwardData = MsgForwardTran.getSendMsgSync(msg);
-        return sendMsgSync(target, msgForwardData);
     }
 
     @Override
@@ -251,7 +218,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
     /**
      * 发送同步消息
      */
-    private String sendMsgSync(Map<String, List<String>> targetMap, MsgForwardData msgForwardData) {
+    private Result sendMsgSync(Map<String, List<String>> targetMap, MsgForwardData msgForwardData) {
         Lock lock = LockFactory.getLock();
         Condition condition = lock.newCondition();
         String serialNumber = msgForwardData.getSerialNumber();
@@ -262,30 +229,114 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         if (awaitTimeStr != null) {
             awaitTime = Integer.valueOf(awaitTimeStr);
         }
-        ResponseData resp = new ResponseData();
+        Result result = new Result();
         try {
             lock.lock();
             communicationService.forwardMsg(targetMap, JSON.toJSONString(msgForwardData));
-            if (!mapResults.containsKey(serialNumber)) {
-                condition.await(awaitTime, TimeUnit.MILLISECONDS);
+
+            if (condition.await(awaitTime, TimeUnit.MILLISECONDS)) {
+                result.setData(mapResults.get(serialNumber));
+            } else {
+                result.setSuccess(false);
+                result.setMsg("超时");
             }
         } catch (Exception e) {
-            resp.setData("0");
-            resp.setInfo(e.getMessage());
+            result.setSuccess(false);
+            result.setMsg(e.getMessage());
             e.printStackTrace();
         } finally {
             lock.unlock();
-            if (mapResults.containsKey(serialNumber)) {
-                resp.setInfo(mapResults.get(serialNumber));
-            } else {
-                resp.setData("0");
-                resp.setInfo("超时");
-            }
             mapLocks.remove(serialNumber);
             mapConditions.remove(serialNumber);
             mapResults.remove(serialNumber);
         }
-        return JSON.toJSONString(resp);
+        return result;
+    }
+
+    @Override
+    public Result sendMsgAsyn(String imei, String msgId, Object msgData, int expireSeconds, boolean isSingle) {
+        String msg = "";
+        if (null != msgData) {
+            msg = JSON.toJSONString(msgData);
+        }
+        LOGGER.info("#### sendMsgAsyn imei={} msgId={},msg={},expireSeconds={} isSingle={}###", imei, msgId, msg, expireSeconds, isSingle);
+        try {
+            List<DeviceObject> devices = new ArrayList<>();
+            DeviceObject deivce = deviceObjectService.getDeviceByMeId(imei);
+            if (null == deivce) {
+                return new Result(false, "设备不存在");
+            }
+            devices.add(deivce);
+            broadCastMsgDevices(devices, msg, msgId, expireSeconds, isSingle);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("#### sendMsgAsyn###", e);
+            return new Result(false, "发送离线消息异常");
+        }
+        return new Result();
+    }
+
+    @Override
+    public Result sendMsgAsynWithOrderId(String orderId, String msgId, Object msgData, int expireSeconds, boolean isSingle) {
+        String msg = "";
+        if (null != msgData) {
+            msg = JSON.toJSONString(msgData);
+        }
+        LOGGER.info("#### sendMsgAsynWithOrderId orderId={} msgId={},msg={},expireSeconds={} isSingle={}###", orderId, msgId, msg, expireSeconds, isSingle);
+        try {
+            Map<Object, Object> order = orderMapper.findOne(orderId);
+            if (null == order) {
+                return new Result(false, "该订单不存在");
+            }
+            Object meid = order.get("meid");
+            if (null == meid || meid.toString().isEmpty()) {
+                return new Result(false, "该桌台没有PAD");
+            }
+            DeviceObject deivce = deviceObjectService.getDeviceByMeId(meid.toString());
+            if (null == deivce) {
+                return new Result(false, "设备不存在");
+            }
+            List<DeviceObject> devices = new ArrayList<>();
+            devices.add(deivce);
+            broadCastMsgDevices(devices, msg, msgId, expireSeconds, isSingle);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("#### sendMsgAsynWithOrderId###", e);
+            return new Result(false, "发送离线消息异常");
+        }
+        return new Result();
+    }
+
+    @Override
+    public Result sendMsgSynWithOrderId(String orderId, String msgId, Object msgData) {
+        String msg = "";
+        if (null != msgData) {
+            msg = JSON.toJSONString(msgData);
+        }
+        LOGGER.info("#### sendMsgSynWithOrderId orderId={} msgId={},msg={}###", orderId, msgId, msg);
+        try {
+            Map<Object, Object> order = orderMapper.findOne(orderId);
+            if (null == order) {
+                return new Result(false, "该订单不存在");
+            }
+            Object meid = order.get("meid");
+            if (null == meid || meid.toString().isEmpty()) {
+                return new Result(false, "该桌台没有PAD");
+            }
+            final DeviceObject device = deviceObjectService.getDeviceByMeId(meid.toString());
+            if (null == device) {
+                return new Result(false, "设备不存在");
+            }
+            Map<String, List<String>> target = new HashMap<>();
+            target.put(device.getDeviceGroup(), new ArrayList<String>() {{
+                add(device.getDeviceId());
+            }});
+            MsgForwardData msgForwardData = new MsgForwardData(msgId, msg);
+            return sendMsgSync(target, msgForwardData);
+        } catch (Exception e) {
+            LOGGER.error("#### sendMsgSynWithOrderId###", e);
+            return new Result(false, "发送同步消息异常");
+        }
     }
 
     @Override

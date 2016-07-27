@@ -50,12 +50,6 @@ public class MsgProcessController {
         msgForwardService.broadCastMsgGroup(group, msgId, msg, isSingle);
     }
 
-    @RequestMapping(value = "/broadcastmsg/{id}/{msg}/", produces = {"application/json;charset=UTF-8"})
-    @ResponseBody
-    public String broadCastMsg(@PathVariable("id") Integer id, @PathVariable("msg") String msg) {
-        return msgForwardService.broadCastMsgSync(id, msg);
-    }
-
     ////////////////////////////////////////////////////////////
     @RequestMapping(value = "/broadcastmsg1/{userId}/{msgId}/{msg}/{seconds}/{isPlus}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody

@@ -5,14 +5,12 @@ import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.business.OpenCashService;
-import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.printer.v2.Printer;
 import com.candao.www.printer.v2.PrinterManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
 import java.util.List;
@@ -35,9 +33,9 @@ public class OpenCashServiceImpl implements OpenCashService {
         try {
             LOGGER.info("###打开钱箱 ip={}###", ip);
             Printer printer = PrinterManager.getPrinter(ip);
-            if(null==printer){
-                LOGGER.error("开钱箱失败：打印机["+ip+"]不存在");
-            }else{
+            if (null == printer) {
+                LOGGER.error("开钱箱失败：打印机[" + ip + "]不存在");
+            } else {
                 printer.openCash();
             }
         } catch (Exception e) {
@@ -73,9 +71,9 @@ public class OpenCashServiceImpl implements OpenCashService {
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo, tipTotalAmount);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
             if (!orderJsonList.isEmpty()) {
-                responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJsonList, "|"));
+                responseJsonData.setOrderJson(orderJsonList);
             }
-            responseJsonData.setJsJson(DataServerJsonFormat.jsonFormat(jsJsonList, "|"));
+            responseJsonData.setJsJson(jsJsonList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取清机单内容异常");

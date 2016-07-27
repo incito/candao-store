@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Created by ytq on 2016/3/16.
@@ -37,21 +38,16 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
         final MsgForwardData msgForwardData = MsgAnalyzeTool.analyzeMsgForward(msg);
         String msgId = msgForwardData.getMsgId();
         String serialNumber = msgForwardData.getSerialNumber();
-        try {
-            if (mapLocks.containsKey(serialNumber)) {
-                mapResults.put(serialNumber, msgForwardData.getMsgData());
+            Lock lock = mapLocks.get(serialNumber);
+            if (null!=lock) {
+                lock.lock();
                 try {
-                    mapLocks.get(serialNumber).lock();
+                    mapResults.put(serialNumber, msgForwardData.getMsgData());
                     mapConditions.get(serialNumber).signal();
                 } finally {
-                    mapLocks.get(serialNumber).unlock();
+                    lock.unlock();
                 }
             }
-            removeMsgNum4Map(serialNumber);
-        } catch (Exception e) {
-            LOGGER.info("###processMsg msg={},error={}###", msg, e.getCause().getStackTrace());
-            e.printStackTrace();
-        }
         DeviceObject deviceObject = null;
         try {
             BaseData baseData = JSON.parseObject(msgForwardData.getMsgData(), BaseData.class);

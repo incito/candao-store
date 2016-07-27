@@ -16,6 +16,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.candao.www.webroom.service.*;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -37,11 +38,6 @@ import com.candao.www.data.model.TOrderMember;
 import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.SettlementInfo;
-import com.candao.www.webroom.service.CallWaiterService;
-import com.candao.www.webroom.service.JsonRecordService;
-import com.candao.www.webroom.service.OrderDetailService;
-import com.candao.www.webroom.service.OrderMemberService;
-import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.weixin.dto.SettlementStrInfoDto;
 import com.candao.www.weixin.dto.VipInfoDto;
 import com.candao.www.weixin.dto.WeixinRequestParam;
@@ -79,6 +75,8 @@ public class WeixinController extends BaseJsonController {
 	OrderDetailService   orderDetailService;
 	@Autowired
 	private OrderMemberService orderMemberService ;
+	@Autowired
+	private NotifyService notifyService;
 	
 	public static final String ERRORCODE = "1";
 
@@ -393,15 +391,14 @@ public class WeixinController extends BaseJsonController {
 	}
 	
 	/**
-	 * 消息推送
+	 * 支付结果消息推送
 	 * 
-	 * @param str
+	 * @param code
 	 */
-	private void sendmessage2Android(String str,String orderno) {
-		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2104 + "" + "/");
-		messageinfo.append(str).append("|").append(orderno);
+	private void sendmessage2Android(String code,String attach) {
+		String[] attachs = attach.split("|");
+		notifyService.notifyWXpay(attachs[1],code);
 		System.out.println("微信支付推送");
-		new TsThread(messageinfo.toString()).run();
 	}
 
 	//清台

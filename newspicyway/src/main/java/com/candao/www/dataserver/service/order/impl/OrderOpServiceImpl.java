@@ -52,25 +52,25 @@ public class OrderOpServiceImpl implements OrderOpService {
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
             List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
             //处理时间格式
-            if(null!=orderJson){
-                for(Map<String,Object> orderMap:orderJson){
+            if (null != orderJson) {
+                for (Map<String, Object> orderMap : orderJson) {
                     Object begintime = orderMap.get("begintime");
-                    if(null!=begintime){
-                        Date begintimeDate=(Date)begintime;
-                        orderMap.put("begintime",DateUtils.toString(begintimeDate,"yyyyMMdd HH:mm:ss"));
+                    if (null != begintime) {
+                        Date begintimeDate = (Date) begintime;
+                        orderMap.put("begintime", DateUtils.toString(begintimeDate, "yyyyMMdd HH:mm:ss"));
                     }
                     Object endtime = orderMap.get("endtime");
-                    if(null!=endtime){
-                        Date endtimeDate=(Date)endtime;
-                        orderMap.put("endtime",DateUtils.toString(endtimeDate,"yyyyMMdd HH:mm:ss"));
+                    if (null != endtime) {
+                        Date endtimeDate = (Date) endtime;
+                        orderMap.put("endtime", DateUtils.toString(endtimeDate, "yyyyMMdd HH:mm:ss"));
                     }
                 }
             }
             List<Map> listJson = orderMapper.getListJson(orderId);
             List<Map> jsJson = orderMapper.getJsJson(orderId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
-            responseJsonData.setListJson(DataServerJsonFormat.jsonFormat(listJson, "|"));
-            responseJsonData.setJsJson(DataServerJsonFormat.jsonFormat(jsJson, "&quot"));
+            responseJsonData.setOrderJson(orderJson);
+            responseJsonData.setListJson(listJson);
+            responseJsonData.setJsJson(jsJson);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询异常");
@@ -114,7 +114,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         try {
             LOGGER.info("###getMemberSaleInfo userId={}, orderId={}###", aUserId, orderId);
             List<Map> resultMapList = orderMapper.getMemberSaleInfo(orderId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(resultMapList, "|"));
+            responseJsonData.setOrderJson(resultMapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("更新外卖账单异常");
@@ -166,7 +166,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                     }
                 }
             }
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson));
+            responseJsonData.setOrderJson(orderJson);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于帐单查询）异常");
@@ -182,7 +182,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             LOGGER.info("###getAllGZDW userId={}###", aUserId);
             orderMapper.updateParternerPY();
             List<Map> orderJson = orderMapper.getAllGZDW();
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
+            responseJsonData.setOrderJson(orderJson);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("回当天全部帐单（用于挂帐单查询）异常");
@@ -213,7 +213,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         try {
             LOGGER.info("###getSettlementDetailBatch orderId={}###", orderId);
             List<Map> orderJson = orderMapper.getSettlementDetailBatch(orderId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
+            responseJsonData.setOrderJson(orderJson);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询结算信息异常");

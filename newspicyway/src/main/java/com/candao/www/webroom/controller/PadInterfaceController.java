@@ -76,7 +76,8 @@ public class PadInterfaceController {
 
 
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(5000));
-
+    @Autowired
+    private NotifyService notifyService;
 
     /**
      * ti
@@ -285,26 +286,17 @@ public class PadInterfaceController {
         record.setJson(jsonString);
         record.setPadpath("bookorderList");
         jsonRecordService.insertJsonRecord(record);
-        Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
+        final Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
         logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
 
         Map<String, String> mapDetail = new HashMap<String, String>();
         mapDetail.put("orderid", order.getOrderid());
 
-        //下单业务中会修改该字段，先获取
-        String currenttableid = order.getCurrenttableid();
-        TorderDetail orderDetileList = orderDetailService.findOne(mapDetail);
         String result = "";
         Map<String, Object> res = orderDetailService.setOrderDetailList(order);
-        try {
-            String type = "12";
-            if (orderDetileList != null) {
-                type = "13";
-            }
-            executor.execute(new PadThread(currenttableid, type));
-        } catch (Exception ex) {
-            logger.error("--->", ex);
-            ex.printStackTrace();
+//        POS下单通知PAD订单改变
+        if ("1".equals(order.getSource())) {
+            notifyService.notifyOrderChange(order.getOrderid());
         }
         logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
         logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
@@ -355,7 +347,7 @@ public class PadInterfaceController {
         Map<String, Object> res = orderDetailService.placeOrder(order);
         try {
             String type = "12";
-            if (null!=orderDetail) {
+            if (null != orderDetail) {
                 type = "13";
             }
             executor.execute(new PadThread(currenttableid, type));
@@ -579,6 +571,7 @@ public class PadInterfaceController {
         } else if (flag == 1) {
             return Constant.FAILUREMSG;
         } else {
+            notifyService.notifyOrderChange(urgeDish.getOrderNo());
             return Constant.SUCCESSMSG;
         }
     }
@@ -680,7 +673,12 @@ public class PadInterfaceController {
         record.setPadpath("cleantable");
         jsonRecordService.insertJsonRecord(record);
 
-        return orderDetailService.cleantable(table);
+        String cleantable = orderDetailService.cleantable(table);
+        //通知PAD清台
+        if (Constant.SUCCESSMSG.equals(cleantable)) {
+            notifyService.notifyClearTable(table.getOrderNo());
+        }
+        return cleantable;
     }
 
     /**
@@ -697,7 +695,8 @@ public class PadInterfaceController {
         record.setPadpath("cleanTableSimply");
         jsonRecordService.insertJsonRecord(record);
 
-        return orderDetailService.cleantableSimply(table);
+        String result = orderDetailService.cleantableSimply(table);
+        return result;
     }
 
 //	/**
@@ -766,7 +765,12 @@ public class PadInterfaceController {
 
         if ("0".equals(result)) {
             logger.info("结算成功，调用进销存接口");
-            return psicallback(settlementInfo, 0);
+            String psicallback = psicallback(settlementInfo, 0);
+            //通知PAD
+            if (Constant.SUCCESSMSG.equals(psicallback)) {
+                notifyService.notifySettleOrder(orderid);
+            }
+            return psicallback;
         } else {
             logger.error("结算失败，result :" + result);
             return Constant.FAILUREMSG;
@@ -1203,12 +1207,6 @@ public class PadInterfaceController {
         return "/dishtype/show";
     }
 
-    /**
-     * 退菜接口
-     */
-    public String discardDish() {
-        return "/dishtype/show";
-    }
 
     /**
      * 换台接口
@@ -1242,7 +1240,7 @@ public class PadInterfaceController {
         return 0;
 
 		/*Map<String,Object> map=new HashMap<String,Object>();
-		map.put("tableno", toperationLog.getTableno());
+        map.put("tableno", toperationLog.getTableno());
 		map.put("operationType", toperationLog.getOperationtype());
 		ToperationLog newtoperationLog=toperationLogService.findByparams(map);
 		if(newtoperationLog==null){
@@ -1350,7 +1348,7 @@ public class PadInterfaceController {
     @RequestMapping(value = "/getCooperationUnit", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView getCooperationUnit(@RequestBody String body) {
-		/*@SuppressWarnings("unchecked")
+        /*@SuppressWarnings("unchecked")
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
 		ModelAndView mav = new ModelAndView();
 		String typeid=(String) params.get("typeid"); //优惠分类
