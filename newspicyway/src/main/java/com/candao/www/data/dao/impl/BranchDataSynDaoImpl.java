@@ -113,7 +113,11 @@ public class BranchDataSynDaoImpl implements BranchDataSynDao{
 
 	@Override
 	public String getLastSuccessDate() {
-		return daoSupport.findOne(PREFIX+".getLastSuccessDate");
+		String str=daoSupport.findOne(PREFIX+".getLastSuccessDate");
+		if(str.endsWith(".0")){
+			str=str.substring(0, str.length()-2);
+		}
+		return str;
 	}
  
 }

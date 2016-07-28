@@ -11,6 +11,7 @@ import com.candao.common.enums.ErrorMessage;
 import com.candao.common.enums.Module;
 import com.candao.common.exception.SysException;
 import com.candao.common.utils.HttpUtil;
+import com.candao.common.utils.HttpUtils;
 
 /**
  * @Description: http请求的操作类
@@ -36,11 +37,9 @@ public class HttpOperate {
 		// 上传数据到总店
 		String result;
 		try {
-			result = HttpUtil.doPost(url, map, null, "UTF-8");
-		} catch (HttpException e) {
-			logger.error("http数据传输失败",e);
-			throw new SysException(ErrorMessage.HTTP_TRANS_ERROR, Module.LOCAL_SHOP);
-		} catch (IOException e) {
+			//result = HttpUtil.doPost(url, map, null, "UTF-8");
+			result= HttpUtils.doPost(url, map);
+		} catch (Exception e) {
 			logger.error("服务器连接出现异常",e);
 			throw new SysException(ErrorMessage.HTTP_RESPONSE_ERROR, Module.LOCAL_SHOP);
 		}
