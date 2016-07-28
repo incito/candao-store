@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.candao.www.webroom.service.NotifyService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,8 @@ public class GiftController {
 
 	@Autowired
 	private GiftLogService giftService;
-
+	@Autowired
+	private NotifyService notifyService;
 	private static final Logger logger = LoggerFactory.getLogger(GiftController.class);
 
 	/**
@@ -128,23 +130,19 @@ public class GiftController {
 			}
 			try{
 				final String giveTableNo = isAnonymous.equals("0")?"":giftInfo.getString("giveTableNo");
-				final String receiveTableNo = giftInfo.getString("receiveTableNo");
 				final String giftNo = giftInfo.getString("giftNo");
 				final String messageid = log.getId();
-				final String receiveOrderIdstr = receiveOrderId;
-				
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2101+"/");
-						try {
-							messageinfo.append(URLEncoder.encode(giveTableNo, "utf-8")).append("|").append(URLEncoder.encode(receiveTableNo, "utf-8")).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
-						} catch (UnsupportedEncodingException e) {
-							e.printStackTrace();
-						}
-						new TsThread(messageinfo.toString()).run();
-					}
-				}).start();
+
+
+				notifyService.notifyGiveGift(receiveOrderId,giveTableNo,giftNo,messageid);
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run() {
+//						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2101+"/");
+//						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
+//						new TsThread(messageinfo.toString()).run();
+//					}
+//				}).start();
 			}catch(Exception ex){
 				
 			}
@@ -152,6 +150,7 @@ public class GiftController {
 //			Map<String,String> idMap = new HashMap<String,String>();
 //			idMap.put("giftlogid", log.getId());
 //			datalist.add(idMap);
+			//通知邻桌PAD
 			return ReturnMap.getReturnMap(1, "001", "发起赠送成功成功",datalist);
 
 		} catch (Exception e) {
@@ -226,18 +225,16 @@ public class GiftController {
 				final String giftStatus = giftStatusstr;
 				final String orderId = log.getOrderId();
 				final String finalprimarykey = primarykey;
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2102+"/");
-						try {
-							messageinfo.append(URLEncoder.encode(giveTableNo, "utf-8")).append("|").append(URLEncoder.encode(receiveTableNo, "utf-8")).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey);
-						} catch (UnsupportedEncodingException e) {
-							e.printStackTrace();
-						}
-						new TsThread(messageinfo.toString()).run();
-					}
-				}).start();
+
+				notifyService.notifyReceiveGift(giveTableNo,orderId,receiveTableNo,giftNo,giftStatusstr,finalprimarykey);
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run() {
+//						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2102+"/");
+//						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey);
+//						new TsThread(messageinfo.toString()).run();
+//					}
+//				}).start();
 			}catch(Exception ex){
 			    ex.printStackTrace();	
 			}

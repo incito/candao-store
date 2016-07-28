@@ -1,21 +1,21 @@
 package com.candao.www.weixin.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.candao.common.page.Page;
+import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
+import com.candao.www.data.json.base.BaseJsonController;
+import com.candao.www.data.model.TJsonRecord;
+import com.candao.www.data.model.TOrderMember;
+import com.candao.www.utils.HttpRequestor;
+import com.candao.www.utils.TsThread;
+import com.candao.www.webroom.model.PadConfig;
+import com.candao.www.webroom.model.SettlementInfo;
+import com.candao.www.webroom.service.*;
+import com.candao.www.weixin.dto.*;
+import com.candao.www.weixin.service.WeixinService;
+import com.candao.www.weixin.utils.*;
+import net.sf.json.JSONObject;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -28,42 +28,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.xml.sax.InputSource;
 
-import com.candao.common.page.Page;
-import com.candao.common.utils.JacksonJsonMapper;
-import com.candao.common.utils.PropertiesUtils;
-import com.candao.www.constant.Constant;
-import com.candao.www.data.json.base.BaseJsonController;
-import com.candao.www.data.model.TJsonRecord;
-import com.candao.www.data.model.TOrderMember;
-import com.candao.www.utils.HttpRequestor;
-import com.candao.www.utils.TsThread;
-import com.candao.www.webroom.controller.PadInterfaceController;
-import com.candao.www.webroom.model.PadConfig;
-import com.candao.www.webroom.model.SettlementInfo;
-import com.candao.www.webroom.service.CallWaiterService;
-import com.candao.www.webroom.service.JsonRecordService;
-import com.candao.www.webroom.service.OrderDetailService;
-import com.candao.www.webroom.service.OrderMemberService;
-import com.candao.www.webroom.service.OrderSettleService;
-import com.candao.www.webroom.service.PadConfigService;
-import com.candao.www.weixin.dto.SettlementStrInfoDto;
-import com.candao.www.weixin.dto.VipInfoDto;
-import com.candao.www.weixin.dto.WeixinRequestParam;
-import com.candao.www.weixin.dto.WeixinStatus;
-import com.candao.www.weixin.dto.WxPayDto;
-import com.candao.www.weixin.dto.WxPayResult;
-import com.candao.www.weixin.service.WeixinService;
-import com.candao.www.weixin.utils.GetWxOrderno;
-import com.candao.www.weixin.utils.JsonPostQuest;
-import com.candao.www.weixin.utils.Refund;
-import com.candao.www.weixin.utils.RequestHandler;
-import com.candao.www.weixin.utils.TenpayUtil;
-
-import net.sf.json.JSONObject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 微信控制器
- * 
+ *
  * @author snail
  *
  */
@@ -83,10 +59,11 @@ public class WeixinController extends BaseJsonController {
 	OrderDetailService   orderDetailService;
 	@Autowired
 	private OrderMemberService orderMemberService ;
-	
 	@Autowired
 	private PadConfigService padConfigService;
-	
+	@Autowired
+	private NotifyService notifyService;
+
 	public static final String ERRORCODE = "1";
 
 	public static final String SUCCESSCODE = "0";
@@ -98,10 +75,10 @@ public class WeixinController extends BaseJsonController {
 	private static String partner = null;
 	// 这个参数partnerkey是在商户后台配置的一个32位的key,微信商户平台-账户设置-安全设置-api安全
 	private static String partnerkey = null;
-	
+
 	@RequestMapping(value = "/createurl", produces = { "application/json;charset=UTF-8" })
 	public Map<String, Object> createurl(HttpServletRequest request) {
-		
+
 		WeixinRequestParam weixinRequestParam = new WeixinRequestParam();
 		//weixinRequestParam.setInfos("125.50;100.05;100017000000;0");
 		SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -113,7 +90,7 @@ public class WeixinController extends BaseJsonController {
 		weixinRequestParam.setSpbillCreateIp("192.168.0.1");
 		weixinRequestParam.setTotalFee("0.01");
 		loggers.info(JacksonJsonMapper.objectToJson(weixinRequestParam));
-		
+
 		if (isNull(weixinRequestParam.getBody())) {
 			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
 		}
@@ -148,10 +125,10 @@ public class WeixinController extends BaseJsonController {
 		}
 		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
 	}
-	
+
 	/**
 	 * android接口 生成二维码url
-	 * 
+	 *
 	 * @param body
 	 * @param orderid
 	 * @param spbillCreateIp
@@ -167,9 +144,9 @@ public class WeixinController extends BaseJsonController {
 		String orderNo=weixinRequestParam.getOrderid();
 		weixinRequestParam.setAttach(orderNo+";"+weixinRequestParam.getInfos());
 		weixinRequestParam.setOrderid(UUID.randomUUID().toString().replaceAll("-", ""));
-		
+
 		loggers.info(JacksonJsonMapper.objectToJson(weixinRequestParam));
-		
+
 		if (isNull(weixinRequestParam.getBody())) {
 			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
 		}
@@ -205,7 +182,7 @@ public class WeixinController extends BaseJsonController {
 		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
 	}
 
-	
+
 	/**
 	 * 查询是否存在微信配置信息
 	 * @param jsonString
@@ -224,8 +201,8 @@ public class WeixinController extends BaseJsonController {
 		}
 		return renderErrorJSONString(ERRORCODE, "门店没有配置微信相关信息");
 	}
-	
-	
+
+
 	/**
 	 * 微信退款
 	 * @param orderno
@@ -234,10 +211,10 @@ public class WeixinController extends BaseJsonController {
 	@RequestMapping(value = "/turnback", produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public String turnback(String orderno,HttpServletRequest request){
-		
+
 		return weixincallback(orderno, request);
 	}
-	
+
 	private String weixincallback(String orderno,HttpServletRequest request){
 		String branchid = PropertiesUtils.getValue("current_branch_id");// 当前门店id
 		Map<String, Object> map = weixinService.queryWeixinInfoBybranchid(branchid);
@@ -250,25 +227,27 @@ public class WeixinController extends BaseJsonController {
 		Map<String, Object>  weixininfos=weixinService.selectinfos(orderno);
 		String realpath=request.getSession().getServletContext().getRealPath("");
 		if(weixininfos!=null){
-				String outorderno=getStringFromMap(weixininfos, "outorderno");
-				String totalmoney=getStringFromMap(weixininfos, "dueamount");
-				BigDecimal  decimal01=new BigDecimal(totalmoney);
-				BigDecimal  turnbackno=decimal01.multiply(new BigDecimal("100"));
-				Refund refund=new Refund(this.appid, this.appsecret, this.partner, outorderno, turnbackno.toString());
-				int result=refund.wechatRefund(realpath);
-				if(result==1){
-					weixinService.deletetemp(orderno);
-					loggers.info("退款成功，订单id="+orderno);
-					return JacksonJsonMapper.objectToJson(getSuccessInstance(null));
-				}
+			String outorderno=getStringFromMap(weixininfos, "outorderno");
+			String totalmoney=getStringFromMap(weixininfos, "dueamount");
+			BigDecimal  decimal01=new BigDecimal(totalmoney);
+			BigDecimal  turnbackno=decimal01.multiply(new BigDecimal("100"));
+			Refund refund=new Refund(this.appid, this.appsecret, this.partner, outorderno, turnbackno.toString());
+			int result=refund.wechatRefund(realpath);
+			if(result==1){
+				weixinService.deletetemp(orderno);
+				loggers.info("退款成功，订单id="+orderno);
+				return JacksonJsonMapper.objectToJson(getSuccessInstance(null));
+			}
 		}
 		loggers.error("退款失败，订单id="+orderno);
 		return JacksonJsonMapper.objectToJson(getFailInstance(null, "操作失败"));
 	}
 
+
+
 	/**
 	 * 扫码支付回调
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @throws Exception
@@ -312,7 +291,7 @@ public class WeixinController extends BaseJsonController {
 		wpr.setTransactionId(m.get("transaction_id").toString());
 		wpr.setAttach(m.get("attach").toString());
 		String isSuucess = "1";// 失败
-		
+
 		//先查询是否已经回调过了
 		int isSave=weixinService.queryIsSave(wpr.getAttach().split(";")[0]);
 		if(isSave==0){
@@ -335,7 +314,7 @@ public class WeixinController extends BaseJsonController {
 					//打印结账单
 					orderDetailService.printStatement(attchresults[0]);
 					//保存到orderid和随机订单id到数据表
-					
+
 				}catch(Exception e){
 					isSuucess = "2";//支付成功，清台或者打印结账单出错
 					//退款操作
@@ -345,7 +324,7 @@ public class WeixinController extends BaseJsonController {
 				loggers.info("当前订单id"+wpr.getAttach());
 				resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
 						+ "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
-				
+
 				sendmessage2Handler(isSuucess, wpr.getAttach());
 				sendmessage2Android2QT(isSuucess,wpr.getAttach());
 			} else {
@@ -356,7 +335,7 @@ public class WeixinController extends BaseJsonController {
 			}
 			sendmessage2Android(isSuucess,wpr.getAttach());
 			loggers.info("微信支付回调数据结束");
-	
+
 			BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
 			out.write(resXml.getBytes());
 			out.flush();
@@ -387,27 +366,27 @@ public class WeixinController extends BaseJsonController {
 				}
 				String url=config.getVipcandaourl()+"/member/deal/MemberSale.json";
 				try{
-							if(args[3].length()>2){
-										JSONObject vipresult= JsonPostQuest.httpPost(url, jsonObject);
-										if(vipresult!=null){
-												String     recode=   (String) vipresult.get("Retcode");
-												if("0".equals(recode)){
-													//成功
-													TOrderMember member=new TOrderMember();
-													member.setOrderid(args[0]);
-													member.setCardno(args[3]);
-													member.setBusiness(PropertiesUtils.getValue("current_branch_id"));
-													member.setBusinessname("上海餐道");
-													member.setUserid(username);
-													member.setSerial(vipresult.get("TraceCode").toString());
-													orderMemberService.saveOrderMember(member);
-												}
-										}else{
-											loggers.error("url=", url);
-											loggers.error("jsonObject=", jsonObject);
-										}
+					if(args[3].length()>2){
+						JSONObject vipresult= JsonPostQuest.httpPost(url, jsonObject);
+						if(vipresult!=null){
+							String     recode=   (String) vipresult.get("Retcode");
+							if("0".equals(recode)){
+								//成功
+								TOrderMember member=new TOrderMember();
+								member.setOrderid(args[0]);
+								member.setCardno(args[3]);
+								member.setBusiness(PropertiesUtils.getValue("current_branch_id"));
+								member.setBusinessname("上海餐道");
+								member.setUserid(username);
+								member.setSerial(vipresult.get("TraceCode").toString());
+								orderMemberService.saveOrderMember(member);
 							}
-				
+						}else{
+							loggers.error("url=", url);
+							loggers.error("jsonObject=", jsonObject);
+						}
+					}
+
 				}catch(Exception e){
 					loggers.error("e=", e);
 					loggers.error("url=", url);
@@ -418,28 +397,27 @@ public class WeixinController extends BaseJsonController {
 			}
 		}
 	}
-	
+
 	/**
-	 * 消息推送
-	 * 
-	 * @param str
+	 * 支付结果消息推送
+	 *
+	 * @param code
 	 */
-	private void sendmessage2Android(String str,String orderno) {
-		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2104 + "" + "/");
-		messageinfo.append(str).append("|").append(orderno);
+	private void sendmessage2Android(String code,String attach) {
+		String[] attachs = attach.split("|");
+		notifyService.notifyWXpay(attachs[1],code);
 		loggers.info("微信支付推送");
-		new TsThread(messageinfo.toString()).run();
 	}
 
 	//清台
-	
+
 	private void sendmessage2Android2QT(String str,String orderno) {
 		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_1002 + "" + "/");
 		messageinfo.append(orderno.substring(0, orderno.indexOf("|")));
 		loggers.info("清台推送");
 		new TsThread(messageinfo.toString()).run();
 	}
-	
+
 	private void sendmessage2Handler(String str,String orderno) {
 		StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2011 + "" + "/");
 		String[] handlers= orderno.split("\\|");
@@ -452,22 +430,22 @@ public class WeixinController extends BaseJsonController {
 		}
 		String areaname = null;
 		try {
-			 areaname = java.net.URLEncoder.encode(getStringFromMap(result, "areaname"),"utf-8");
+			areaname = java.net.URLEncoder.encode(getStringFromMap(result, "areaname"),"utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
+
 		messageinfo.append(getStringFromMap(result, "userid")).append("|")
-							.append(msgtype).append("|").append("0").append("|")
-							.append(areaname).append("|")
-							.append(getStringFromMap(result, "tableNo")).append("|")
-							.append(UUID.randomUUID().toString().replaceAll("-", ""));
+				.append(msgtype).append("|").append("0").append("|")
+				.append(areaname).append("|")
+				.append(getStringFromMap(result, "tableNo")).append("|")
+				.append(UUID.randomUUID().toString().replaceAll("-", ""));
 		loggers.info("手环推送成功");
 		new TsThread(messageinfo.toString()).run();
 	}
 	/**
 	 * description: 解析微信通知xml
-	 * 
+	 *
 	 * @param xml
 	 * @return
 	 */
@@ -576,7 +554,7 @@ public class WeixinController extends BaseJsonController {
 
 	/**
 	 * 元转换成分
-	 * 
+	 *
 	 * @param money
 	 * @return
 	 */
@@ -586,7 +564,7 @@ public class WeixinController extends BaseJsonController {
 		}
 		// 金额转化为分为单位
 		String currency = amount.replaceAll("\\$|\\￥|\\,", ""); // 处理包含, ￥
-																// 或者$的金额
+		// 或者$的金额
 		int index = currency.indexOf(".");
 		int length = currency.length();
 		Long amLong = 0l;
@@ -604,7 +582,7 @@ public class WeixinController extends BaseJsonController {
 
 	/**
 	 * 获取随机字符串
-	 * 
+	 *
 	 * @return
 	 */
 	private static String getNonceStr() {
@@ -622,7 +600,7 @@ public class WeixinController extends BaseJsonController {
 
 	/**
 	 * 分页查询
-	 * 
+	 *
 	 * @param page
 	 * @param rows
 	 * @param param
@@ -634,14 +612,14 @@ public class WeixinController extends BaseJsonController {
 		if(isNull(branchid)){branchid=PropertiesUtils.getValue("current_branch_id");}
 		if(isNull(branchname)){branchname=null;}
 		if(isNull(partner)){partner=null;}
-		 Map<String, Object> param=new HashMap<>();
-		 param.put("branchid", branchid);
-		 param.put("branchname", branchname);
-		 param.put("partner", partner);
-		 param.put("page", page);
-		 param.put("rows", rows);
+		Map<String, Object> param=new HashMap<>();
+		param.put("branchid", branchid);
+		param.put("branchname", branchname);
+		param.put("partner", partner);
+		param.put("page", page);
+		param.put("rows", rows);
 		Page<Map<String, Object>> pageMap = weixinService.queryinfos(param, page, rows);
-		 return JacksonJsonMapper.objectToJson(pageMap);
+		return JacksonJsonMapper.objectToJson(pageMap);
 	}
 
 	/**
@@ -670,7 +648,7 @@ public class WeixinController extends BaseJsonController {
 		return JacksonJsonMapper.objectToJson(results);
 
 	}
-	
+
 	/**
 	 * 添加微信配置信息
 	 * @param param
@@ -691,7 +669,7 @@ public class WeixinController extends BaseJsonController {
 		weixinService.addweixinInfo(param);
 		return JacksonJsonMapper.objectToJson(getSuccessInstance(null));
 	}
-	
+
 	/**
 	 * 更新微信配置信息
 	 * @param param
@@ -712,9 +690,9 @@ public class WeixinController extends BaseJsonController {
 		weixinService.updateweixinInfo(param);
 		return JacksonJsonMapper.objectToJson(getSuccessInstance(null));
 	}
-	
-	
-	
+
+
+
 	@RequestMapping("/delete")
 	@ResponseBody
 	public String delete(String id){
@@ -747,10 +725,10 @@ public class WeixinController extends BaseJsonController {
 		Map<String, Object>  result=weixinService.queryActivity(activityCode);
 		return JacksonJsonMapper.objectToJson(getSuccessInstance(result));
 	}
-	
+
 	/**
 	 * 查询用户填入信息是否有效
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("static-access")
@@ -786,13 +764,13 @@ public class WeixinController extends BaseJsonController {
 		}
 		return JacksonJsonMapper.objectToJson(getSuccessInstance(null));
 	}
-	
-	
+
+
 	/**
 	 *  结账
 	 */
 	private String settleOrder( String settlementStrInfo){
-		
+
 		TJsonRecord record = new TJsonRecord();
 		record.setJson(settlementStrInfo);
 		record.setPadpath("settleorder");
@@ -808,16 +786,16 @@ public class WeixinController extends BaseJsonController {
 				callWaiterService.updateCallStatus(orderid);
 			}
 		}).start();
-		
+
 		if("0".equals(result)){
 			return psicallback(settlementInfo,0);
 		}else {
 			return Constant.FAILUREMSG;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param settlementInfo
 	 * @param isweixin  0 not   1  yes
 	 * @return
@@ -825,31 +803,31 @@ public class WeixinController extends BaseJsonController {
 	private String psicallback(SettlementInfo settlementInfo,Integer isweixin){
 		String psishow=PropertiesUtils.getValue("PSI_SHOW");
 		if("Y".equals(psishow)){//显示进销存
-			  //调用进销存接口 返回数据给 进销存 管理
-			 String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
+			//调用进销存接口 返回数据给 进销存 管理
+			String retString = orderDetailService.getOrderDetailByOrderId(settlementInfo.getOrderNo());
 			String url="http://"+PropertiesUtils.getValue("PSI_URL") + PropertiesUtils.getValue("PSI_SUFFIX_ORDER");
 			Map<String, String> dataMap = new HashMap<String, String>();
-			 dataMap.put("data", retString);
+			dataMap.put("data", retString);
 			String retPSI = null;
 			try {
 				retPSI = new HttpRequestor().doPost(url, dataMap);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			 @SuppressWarnings("unchecked")
-			  Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
-			  if(retMap == null || "1".equals(retMap.get("code"))){		
-				  SettlementInfo info = new SettlementInfo();
-				  info.setOrderNo(settlementInfo.getOrderNo());
-				  orderSettleService.rebackSettleOrder(settlementInfo);
-				  return Constant.FAILUREMSG;
-	        }
+			@SuppressWarnings("unchecked")
+			Map<String,String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
+			if(retMap == null || "1".equals(retMap.get("code"))){
+				SettlementInfo info = new SettlementInfo();
+				info.setOrderNo(settlementInfo.getOrderNo());
+				orderSettleService.rebackSettleOrder(settlementInfo);
+				return Constant.FAILUREMSG;
+			}
 		}
-		
+
 		if(1==isweixin){
-			  return Constant.WEIXINSUCCESSMSG;
-		  }
-		     return Constant.SUCCESSMSG;
+			return Constant.WEIXINSUCCESSMSG;
+		}
+		return Constant.SUCCESSMSG;
 	}
-	
+
 }

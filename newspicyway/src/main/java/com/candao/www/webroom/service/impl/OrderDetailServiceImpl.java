@@ -144,11 +144,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             return Constant.FAILUREMSG;
         }
 
-        // 结账之后把操作的数据删掉
-        Map<String, Object> delmap = new HashMap<String, Object>();
-        delmap.put("tableno", table.getTableNo());
-        toperationLogService.deleteToperationLog(delmap);
-
         return Constant.SUCCESSMSG;
     }
 
@@ -188,11 +183,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             torder.setEndtime(new Date());
             torderMapper.update(torder);
         }
-
-        //结账之后把操作的数据删掉
-        Map<String, Object> delmap = new HashMap<String, Object>();
-        delmap.put("tableno", table.getTableNo());
-        toperationLogService.deleteToperationLog(delmap);
 
         return Constant.SUCCESSMSG;
     }

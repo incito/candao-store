@@ -20,6 +20,12 @@ public class MsgForwardData {
         this.msgData = msgData;
     }
 
+    public MsgForwardData(String msgId, String serialNumber, String msgData) {
+        this.msgId = msgId;
+        this.serialNumber = serialNumber;
+        this.msgData = msgData;
+    }
+
     public String getSerialNumber() {
         return serialNumber;
     }

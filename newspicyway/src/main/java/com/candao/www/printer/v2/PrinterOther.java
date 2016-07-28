@@ -96,9 +96,11 @@ public class PrinterOther extends Printer {
                     }
                     PrinterStatusManager.stateMonitor(PrintControl.STATUS_OK, this);
                     OutputStream outputStream = channel.getOutputStream();
+                    doCommand(outputStream);
                     logger.info("[" + getIp() + "]开始打印");
                     doPrint(msg, outputStream);
                     result.setCode(PrintControl.STATUS_PRINT_DONE);
+                    doCommand(outputStream);
                     return result;
 
                 } catch (IOException e) {

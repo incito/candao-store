@@ -62,6 +62,7 @@ public class UserFilter implements Filter {
                     && !targetURL.startsWith("/t_user/retrievePwd") && !targetURL.startsWith("/t_user/retrievePwdEmailValicode") && !targetURL.startsWith("/tenant/") && !targetURL.startsWith("/client")
                     && !targetURL.startsWith("/social") && !targetURL.startsWith("/tip") && !targetURL.startsWith("/managerWatch") && !targetURL.startsWith("/cache") && !targetURL.startsWith("/controller") && !targetURL.startsWith("/pos")
                     && !targetURL.startsWith("/daliyReports/getDayReportList") && !targetURL.startsWith("/itemDetail/getItemForList") && !targetURL.startsWith("/gisterBill/getBillCount")
+                    && !targetURL.startsWith("/padlog")
                     && !targetURL.startsWith("/preferentialAnalysisCharts/findPreferential")) {
                 if (session == null || session.getAttribute(Constant.CURRENT_USER) == null) {
                     response.reset();

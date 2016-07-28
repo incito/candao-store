@@ -1,7 +1,6 @@
 package com.candao.www.dataserver.service.dish.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.candao.common.utils.StringUtils;
 import com.candao.www.dataserver.mapper.DishMapper;
 import com.candao.www.dataserver.mapper.OperationLogMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -60,7 +59,7 @@ public class DishOpServiceImpl implements DishService {
         try {
             dishMapper.updateDishPY();
             List<Map> mapList = dishMapper.getAllWmFood();
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
+            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取全部菜品异常");
@@ -77,7 +76,7 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getCJFood userId={}###", userId);
         try {
             List<Map> mapList = dishMapper.getCJFood();
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
+            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取全部菜品异常");
@@ -92,7 +91,7 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getGroupDetail dishId={}###", dishId);
         try {
             List<Map> mapList = dishMapper.getGroupDetail(dishId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
+            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取套餐明细异常");
@@ -128,9 +127,9 @@ public class DishOpServiceImpl implements DishService {
             }
             listJson = dishMapper.getYGListJson(orderId);
             doubleJson = dishMapper.getYGDoubleJson(orderId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
-            responseJsonData.setListJson(DataServerJsonFormat.jsonFormat(listJson, "|"));
-            responseJsonData.setDoubleJson(DataServerJsonFormat.jsonFormat(doubleJson, "|"));
+            responseJsonData.setOrderJson(orderJson);
+            responseJsonData.setListJson(listJson);
+            responseJsonData.setDoubleJson(doubleJson);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("优惠自动使用接口(惠新，蓝港，辣倒兔临时方案)异常");
