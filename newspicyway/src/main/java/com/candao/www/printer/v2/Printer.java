@@ -224,6 +224,7 @@ public class Printer {
                 }
                 OutputStream outputStream = channel.getOutputStream();
                 InputStream inputStream = channel.getInputStream();
+                doCommand(outputStream);
                 logger.info("[" + ip + "]检查打印机状态");
                 int state = PrintControl.printerIsReady(2000, outputStream, inputStream);
                 PrinterStatusManager.stateMonitor(state, this);
@@ -243,6 +244,7 @@ public class Printer {
                 } else {
                     logger.info("[" + ip + "]打印不成功:" + state);
                 }
+                doCommand(outputStream);
                 return result;
 
             } catch (IOException e) {
@@ -320,24 +322,20 @@ public class Printer {
         logger.info("开钱箱[" + getIp() + "]");
         synchronized (cmd) {
             cmd.setCommand(PrinterConstant.OPEN_CASH);
-            try {
-                if (printLock.tryLock(2, TimeUnit.SECONDS)) {
-                    try {
-                        initChannel();
+            if (printLock.tryLock()) {
+                try {
+                    initChannel();
                         /*打印机是否连接成功*/
-                        if (null != channel && channel.isConnected()) {
-                            try {
-                                doCommand(channel.getOutputStream());
-                            } catch (Exception e) {
-                                logger.error("doCommand failed!", e);
-                            }
+                    if (null != channel && channel.isConnected()) {
+                        try {
+                            doCommand(channel.getOutputStream());
+                        } catch (Exception e) {
+                            logger.error("doCommand failed!", e);
                         }
-                    } finally {
-                        printLock.unlock();
                     }
+                } finally {
+                    printLock.unlock();
                 }
-            } catch (InterruptedException e) {
-                logger.error(e);
             }
         }
     }

@@ -18,11 +18,9 @@ import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import com.candao.www.utils.HttpUtil;
 import com.candao.www.webroom.service.impl.OrderDetailServiceImpl;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -168,18 +166,18 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public String clearMachine(String userId, String userName, String ip, String posId, String authorizer) {
         OpenLog openLog = openLogMapper.selectAll();
-        if(null==openLog){
+        if (null == openLog) {
             return "{\"Data\":\"0\",\"Info\":\"还未开业，不能清机\"}";
         }
-        Map<String,Object> tellerCash = tellerCashMapper.selectInsertDate( userId, ip);
-        if(null==tellerCash){
+        Map<String, Object> tellerCash = tellerCashMapper.selectInsertDate(userId, ip);
+        if (null == tellerCash) {
             return "{\"Data\":\"0\",\"Info\":\"本机没有您的零找金记录，不能清机\"}";
         }
         String classNo = getJbNo();// 结帐单号
         Date today = WorkDateUtil.getWorkDate1();
         String openDate = DateUtils.toString(today, "yyyy-MM-dd");
         Date now = new Date();//清机时间
-        Date insertDate= (Date) tellerCash.get("insertdate");
+        Date insertDate = (Date) tellerCash.get("insertdate");
 
         //前班未结台数
         String beginTime = DateUtils.toString(insertDate, "yyyy-MM-dd HH:mm:ss");
@@ -377,8 +375,8 @@ public class BusinessServiceImpl implements BusinessService {
         orderMapper.updatePutOrder(orderId, gzCode, gzName, telephone, relaperson);
         //外卖挂单以后开启打印  咖啡模式
         if (orderId != null) {
-        	orderdetailservice.afterprint(orderId);			
-		}
+            orderdetailservice.afterprint(orderId);
+        }
         operationLogMapper.deleteByTableNo(tableNo);
         return "{\"Data\":\"1\"}";
     }
@@ -402,7 +400,7 @@ public class BusinessServiceImpl implements BusinessService {
             return DataServerJsonFormat.jsonFormat(orderOpService.getInfoByOrderId(orderId));
         }
     }
-    
+
     @Override
     public String getServerTableInfoByOrderId(String orderId, String userId) {
         ResponseData responseData = new ResponseData();
@@ -419,7 +417,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public String getOrder(String tableNo, String userId) {
         String orderIdExist = tableMapper.getOrderIdByTableNo(tableNo);
-        if(null==orderIdExist||orderIdExist.trim().isEmpty()){
+        if (null == orderIdExist || orderIdExist.trim().isEmpty()) {
             return "{\"Data\":\"0\",\"Info\":\"餐桌不存在或已被删除。\"}";
         }
         //获取单头信息
@@ -429,33 +427,20 @@ public class BusinessServiceImpl implements BusinessService {
         String tableListJson = getServerTableList2(orderId, userId);
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
     }
-    
+
     @Override
-    public String getOrderByOrderID(String orderid, String userId){
+    public String getOrderByOrderID(String orderid, String userId) {
         //获取单头信息
         String tableJson = getServerTableInfo3(orderid, userId);
         //获取单体信息
         String tableListJson = getServerTableList2(orderid, userId);
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
-    };
-    
-    @Override
-    public String getServerTableInfo3(String orderId, String userId){
-        //还原会员价
-        memberService.revertMemberPrice(userId, orderId);
-        dishService.updateCj(orderId, userId);
-        if (StringUtil.isEmpty(orderId)) {
-            return "{\"Data\":\"0\"}";
-        }
-        orderOpService.pCaleTableAmount(userId, orderId);
-        List<Map<String, Object>> tableOrder = orderMapper.selectTableOrder(orderId);
+    }
 
-        return "{\"Data\":" + JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
-    };
+    ;
 
     @Override
-    public String getServerTableInfo2(String tableNo, String userId) {
-        String orderId = tableMapper.selectOrderIdOfStatusN5(tableNo);
+    public String getServerTableInfo3(String orderId, String userId) {
         //还原会员价
         memberService.revertMemberPrice(userId, orderId);
         dishService.updateCj(orderId, userId);
@@ -468,13 +453,30 @@ public class BusinessServiceImpl implements BusinessService {
         return "{\"Data\":" + JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
     }
 
+    ;
+
+    @Override
+    public String getServerTableInfo2(String tableNo, String userId) {
+        String orderId = tableMapper.selectOrderIdOfStatusN5(tableNo);
+        //还原会员价
+        memberService.revertMemberPrice(userId, orderId);
+        dishService.updateCj(orderId, userId);
+        if (StringUtil.isEmpty(orderId)) {
+            return "";
+        }
+        orderOpService.pCaleTableAmount(userId, orderId);
+        List<Map<String, Object>> tableOrder = orderMapper.selectTableOrder(orderId);
+
+        return JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero);
+    }
+
     @Override
     public String getServerTableList2(String orderId, String userId) {
         List<Map<String, Object>> orderStat = orderDetailMapper.selectStatByOrderId1(orderId);
         if (null == orderStat || orderStat.isEmpty()) {
-            return "{\"Data\":\"0\"}";
+            return "";
         }
-        return "{\"Data\":" + JSON.toJSONString(orderStat, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
+        return JSON.toJSONString(orderStat, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero);
     }
 
     @Override

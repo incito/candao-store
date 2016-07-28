@@ -24,7 +24,7 @@ public class PadForwordController {
     private static final Logger logger = LoggerFactory.getLogger(PadForwordController.class);
 
     @ResponseBody
-    @RequestMapping(value = "/QueryBalance3/{input}/{orderId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/QueryBalance3/{input}/{orderId}", produces = {"application/json;charset=UTF-8"})
     public String QueryBalance3(@PathVariable String input, @PathVariable String orderId) {
         logger.info("###REQUEST### PadForwordController QueryBalance3 input={} orderId={}", input, orderId);
         String result = getUrl("/QueryBalance3/" + input + "/" + orderId);
@@ -33,7 +33,7 @@ public class PadForwordController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/setMemberPrice2/{userId}/{orderId}/{ip}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/setMemberPrice2/{userId}/{orderId}/{ip}/", produces = {"application/json;charset=UTF-8"})
     public String setMemberPrice2(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip) {
         logger.info("###REQUEST### PadForwordController setMemberPrice2 userId={} orderId={}", userId, orderId);
         String result = getUrl("/setMemberPrice2/" + userId + "/" + orderId + "/" + ip + "/");
@@ -42,7 +42,7 @@ public class PadForwordController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/broadcastok/{client}/{msgId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/broadcastok/{client}/{msgId}", produces = {"application/json;charset=UTF-8"})
     public String broadcastok(@PathVariable String client, @PathVariable String msgId) {
         logger.info("###REQUEST### PadForwordController broadcastok client={} msgId={}", client, msgId);
         String result = getUrl("/broadcastok/" + client + "/" + msgId);
