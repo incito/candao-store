@@ -132,27 +132,46 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		return new String[]{abbrName,ordersq,timestamp};
 	}
 	
-	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {{
 		Object[] res = null;
 		List<PrintDish> list = object.getList();
 
 		for (PrintDish it : list) {
 			// 校验名称
 			String dishName = it.getDishName() == null ? "" : it.getDishName();
+			String [] dishNames = org.springframework.util.StringUtils.split(dishName, "#");
+			
 			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
 			String dishPrice = it.getDishPrice() == null ? "" : it.getDishPrice().toString();
-			String dishUnit = it.getDishUnit() == null ? "" : "(" + it.getDishUnit() + ")";
+			
+			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+			String [] dishUnits = org.springframework.util.StringUtils.split(dishUnit, "#");
+			
 			String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")" : "";
 			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()
 					? "(" + it.getSperequire().trim() + ")" : "";
+			
+			taste += Sperequire;
+			
 			// 判断是否赠菜
 			if(it.getPrintport()!=null && !it.getPrintport().isEmpty()){
 				if ("1".equals(it.getPrintport().trim())) {
-					dishName += "(赠)";
-				}				
+					taste += "(赠)";
+				}
 			}
-
-			dishName += taste + Sperequire + dishUnit;
+			
+			if (dishUnits == null) {
+				String dishUnitTemp = org.springframework.util.StringUtils.isEmpty(dishUnit) ? "" : "(" + dishUnit + ")";
+				dishUnits = new String[]{dishUnitTemp,dishUnitTemp};
+			} else {
+				dishUnits = new String []{"(" + dishUnits[0] + ")","(" + dishUnits[1] + ")"};
+			}
+			
+			if (dishNames != null) {
+				dishName = dishNames[0] + taste  + dishUnits[0] + "\n" + dishNames[1] + taste  + dishUnits[1] ;
+			} else {
+				dishName = dishName + taste + dishUnits[0] ;
+			}
 
 			String[] name = { dishName, dishNum, dishPrice };
 			Integer[] len = { num1, num2, num3 };
@@ -163,7 +182,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		}
 
 		return res;
-	}
+	}}
 
 	class Template{
 		private int tableLength;
