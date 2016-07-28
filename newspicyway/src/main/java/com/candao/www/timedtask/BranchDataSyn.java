@@ -225,13 +225,16 @@ public class BranchDataSyn {
 					//查询出上传成功的最后一次值
 					String lastsuccessdate=branchDataSynDao.getLastSuccessDate();
 					SimpleDateFormat  dateformat=new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-					//判断重复上传
-					long lastuploadtime=dateformat.parse(lastsuccessdate).getTime();
-					long start=dateformat.parse(date[0]).getTime();
-					long end=dateformat.parse(date[1]).getTime();
 					
-					if(start<lastuploadtime&& end<lastuploadtime){//已经上传过
-						continue;
+					if(lastsuccessdate==null || "".equals(lastsuccessdate)){
+						//判断重复上传
+						long lastuploadtime=dateformat.parse(lastsuccessdate).getTime();
+						long start=dateformat.parse(date[0]).getTime();
+						long end=dateformat.parse(date[1]).getTime();
+						
+						if(start<lastuploadtime&& end<lastuploadtime){//已经上传过
+							continue;
+						}
 					}
 					
 					datas = getSynData(tables,date[0],date[1]);
@@ -516,8 +519,9 @@ public class BranchDataSyn {
 		// 存放字符串校验码
 		map.put("code", MD5.md5(data));
 
-		String url = PropertiesUtils.getValue("MASTER_URL");
-
+		String masterUrl = PropertiesUtils.getValue("cloud.host");
+		String webname=PropertiesUtils.getValue("cloud.webroot");
+		String url = "http://"+masterUrl+"/"+webname+"/dataDealController/synDataFromLocal.do";
 		// 上传数据到总店
 		String result = HttpOperate.post(url, map);
 
