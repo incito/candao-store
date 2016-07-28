@@ -1878,8 +1878,14 @@ label_main:
       , tableArea,
       tableid)
 
-        VALUES (i_printobjid, '3', i_orderid, v_full_name, v_tableno, v_timemsg, v_customeraddress, v_customerport, v_tablearea, V_TABLEID);
-
+        VALUES (i_printobjid, '3', i_orderid, v_full_name, v_tableno, IFNULL(v_begintime,v_timemsg), v_customeraddress, v_customerport, v_tablearea, V_TABLEID);
+        
+	ELSE
+	
+		UPDATE t_printobj 
+		SET timemsg = IFNULL(v_begintime,v_timemsg) 
+		WHERE orderno = i_orderid;
+		
     END IF;
 
     IF done = 1 THEN
