@@ -50,11 +50,12 @@ public class BusinessController {
     @RequestMapping(value = "/GetServerTableList_2/{orderId}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getServerTableList2(@PathVariable String userId, @PathVariable String orderId) {
         logger.info("###REQUEST### BusinessController GetServerTableList_2 userId={}  orderId={}", userId, orderId);
-        String s = businessService.getServerTableList2(orderId,userId );
+        String s = businessService.getServerTableList2(orderId, userId);
         s = "{\"result\":[\"" + s + "\"]}";
         logger.info("###RESPONSE### BusinessController GetServerTableList_2 response={}", s);
         return s;
     }
+
     /**
      * 开业和是否开业接口
      *
@@ -111,8 +112,8 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/clearMachine/{userId}/{temp1}/{userName}/{temp2}/{ip}/{temp3}/{posId}/{temp4}/{authorizer}", produces = {"application/json;charset=UTF-8"})
-    public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
+    @RequestMapping(value = "/clearMachine/{userId}/{userName}/{ip}/{posId}/{authorizer}", produces = {"application/json;charset=UTF-8"})
+    public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={} authorizer={}", userId, userName, ip, posId, authorizer);
         String result = businessService.clearMachine(userId, userName, ip, posId, authorizer);
         result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
@@ -130,8 +131,8 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/clearMachine/{userId}/{temp1}/{userName}/{temp2}/{ip}/{temp3}/{posId}/{temp4}/", produces = {"application/json;charset=UTF-8"})
-    public String clearMachine1(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
+    @RequestMapping(value = "/clearMachine/{userId}/{userName}/{ip}/{posId}/", produces = {"application/json;charset=UTF-8"})
+    public String clearMachine1(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={}", userId, userName, ip, posId);
         String result = businessService.clearMachine(userId, userName, ip, posId, "");
         result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
@@ -233,7 +234,7 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/GetOrderByOrderid/{orderid}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getOrderByOrderId(@PathVariable String orderid, @PathVariable String userId) {
@@ -255,7 +256,7 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/GetServerTableInfoByOrderid/{orderId}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getServerTableInfoByOrderId(@PathVariable String orderId, @PathVariable String userId) {
@@ -266,7 +267,7 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
-    
+
 
     @ResponseBody
     @RequestMapping(value = "/accountsorder/{userId}/{orderId}/", produces = {"application/json;charset=UTF-8"})

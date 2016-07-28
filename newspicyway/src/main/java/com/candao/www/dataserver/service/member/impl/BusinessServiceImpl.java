@@ -462,7 +462,7 @@ public class BusinessServiceImpl implements BusinessService {
         memberService.revertMemberPrice(userId, orderId);
         dishService.updateCj(orderId, userId);
         if (StringUtil.isEmpty(orderId)) {
-            return "";
+            return "[]";
         }
         orderOpService.pCaleTableAmount(userId, orderId);
         List<Map<String, Object>> tableOrder = orderMapper.selectTableOrder(orderId);
@@ -474,7 +474,7 @@ public class BusinessServiceImpl implements BusinessService {
     public String getServerTableList2(String orderId, String userId) {
         List<Map<String, Object>> orderStat = orderDetailMapper.selectStatByOrderId1(orderId);
         if (null == orderStat || orderStat.isEmpty()) {
-            return "";
+            return "[]";
         }
         return JSON.toJSONString(orderStat, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero);
     }

@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.business.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.Socket;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +73,29 @@ public class OpenCashServiceImpl implements OpenCashService {
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo, tipTotalAmount);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
             if (!orderJsonList.isEmpty()) {
+                String dateFormat = "yyyyMMdd HH:mm:ss";
+                for (Map orderjson : orderJsonList) {
+                    Object priterTime = orderjson.get("priterTime");
+                    if (null != priterTime) {
+                        Date priterTimeDate = (Date) priterTime;
+                        orderjson.put("priterTime", DateUtils.toString(priterTimeDate, dateFormat));
+                    }
+                    Object workdate = orderjson.get("workdate");
+                    if (null != workdate) {
+                        Date workdateDate = (Date) workdate;
+                        orderjson.put("workdate", DateUtils.toString(workdateDate, dateFormat));
+                    }
+                    Object vIn = orderjson.get("vIn");
+                    if (null != vIn) {
+                        Date vInDate = (Date) vIn;
+                        orderjson.put("vIn", DateUtils.toString(vInDate, dateFormat));
+                    }
+                    Object vOut = orderjson.get("vOut");
+                    if (null != vOut) {
+                        Date vOutDate = (Date) vOut;
+                        orderjson.put("vOut", DateUtils.toString(vOutDate, dateFormat));
+                    }
+                }
                 responseJsonData.setOrderJson(orderJsonList);
             }
             responseJsonData.setJsJson(jsJsonList);
