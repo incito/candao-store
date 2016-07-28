@@ -181,20 +181,21 @@ public class BranchDataSyn {
 				// 获取需要同步的表
 				String[] tables = getSynTablesFromMaster();
 				//执行数据上传
-				executeSyn(tables,dto,branchId);
+				dto=executeSyn(tables,dto,branchId);
+				logger.info("synData-end:" + dto);
+				return dto;
 			} else {
 				throw new SysException(ErrorMessage.NO_BRANCH_ID, Module.LOCAL_SHOP);
 			}
 		}else{
 			throw new SysException(ErrorMessage.NO_CLOSE_SHOP, Module.LOCAL_SHOP);
 		}
-		logger.info("synData-end:" + dto);
-		return dto;
+		
 	
 	}
 	
 	//分天执行数据同步数据上传
-	private void executeSyn(String[] tables,ResultDto dto,String branchId) throws SysException, ParseException{
+	private ResultDto executeSyn(String[] tables,ResultDto dto,String branchId) throws SysException, ParseException{
 			//需要处理的结果
 			String result = "";
 			// 获取开业日期 和结业日期
@@ -215,15 +216,25 @@ public class BranchDataSyn {
 				dto = resultDeal(result);
 				
 				excuteupdatesysdate(dto, CompletionDate);
+				
+				return dto;
 				//如果是跨天结业
 			}else{
 				for(int i=0;i<list.size();i++){
 					String date[] = getStartAndEndDate(list.get(i));
 					//查询出上传成功的最后一次值
 					String lastsuccessdate=branchDataSynDao.getLastSuccessDate();
-					//判断重复上传
-					if(date[1].equals(lastsuccessdate)|| lastsuccessdate==null||"".equals(lastsuccessdate)){//已经导入过的数据直接过滤掉
-						continue;
+					SimpleDateFormat  dateformat=new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+					
+					if(lastsuccessdate==null || "".equals(lastsuccessdate)){
+						//判断重复上传
+						long lastuploadtime=dateformat.parse(lastsuccessdate).getTime();
+						long start=dateformat.parse(date[0]).getTime();
+						long end=dateformat.parse(date[1]).getTime();
+						
+						if(start<lastuploadtime&& end<lastuploadtime){//已经上传过
+							continue;
+						}
 					}
 					
 					datas = getSynData(tables,date[0],date[1]);
@@ -235,6 +246,7 @@ public class BranchDataSyn {
 					excuteupdatesysdate(dto, date[1]);
 				}
 			}
+			return dto;
 		}
 	
 	/**
@@ -265,6 +277,7 @@ public class BranchDataSyn {
 	private Map<String,Object> getDate() throws ParseException{
 		Map<String,Object> map = TL.get();
 		if(map == null){
+			map=new HashMap<>();
 			map.putAll(branchDataSynDao.getBizDate());
 		}
 		String openDate = map.get("opendate").toString();
@@ -280,9 +293,8 @@ public class BranchDataSyn {
 		 */
 		private String[] getStartAndEndDate(String date){
 			String[] str = new String[2];
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			str[0] = sdf.format(date) + "00:00:01";
-			str[1] = sdf.format(date) + "23:59:59";
+			str[0] = date + " 00:00:01";
+			str[1] = date + " 23:59:59";
 			return str;
 		}
 		
@@ -507,8 +519,9 @@ public class BranchDataSyn {
 		// 存放字符串校验码
 		map.put("code", MD5.md5(data));
 
-		String url = PropertiesUtils.getValue("MASTER_URL");
-
+		String masterUrl = PropertiesUtils.getValue("cloud.host");
+		String webname=PropertiesUtils.getValue("cloud.webroot");
+		String url = "http://"+masterUrl+"/"+webname+"/dataDealController/synDataFromLocal.do";
 		// 上传数据到总店
 		String result = HttpOperate.post(url, map);
 
@@ -610,7 +623,8 @@ public class BranchDataSyn {
 	 */
 	private String[] getSynTablesFromMaster() throws SysException{
 		String masterUrl = PropertiesUtils.getValue("cloud.host");
-		masterUrl = masterUrl + CONTROLLER + "/synTables.do";
+		String webname=PropertiesUtils.getValue("cloud.webroot");
+		masterUrl = "http://"+masterUrl +"/"+webname+ CONTROLLER + "/synTables.do";
 		String tables = HttpOperate.post(masterUrl,null);
 		logger.info("获取需要同步的表:" + tables);
 		return tables.split(",");
