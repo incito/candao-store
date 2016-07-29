@@ -108,5 +108,9 @@ public class TbDiscountTicketsDaoImpl implements TbDiscountTicketsDao {
 	  params.put("dishid", dishid);
 	  return dao.find(PREFIX + ".getDishidList", params);
   }
+  @Override
+  public List<TbNoDiscountDish> getNoDiscountDishsByDish(Map<String, Object> paramsMap) {
+    return dao.find(PREFIX + ".getNoDiscountDishsByDish", paramsMap);
+  }
 
 }

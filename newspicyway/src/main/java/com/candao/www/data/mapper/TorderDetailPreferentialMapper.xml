@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TorderDetailPreferentialDao">
+	<resultMap id="TorderDetailPreferentialID"
+		type="com.candao.www.data.model.TorderDetailPreferential">
+		<result property="id" column="id" jdbcType="VARCHAR" />
+		<result property="dishNum" column="dishNum" jdbcType="VARCHAR" />
+		<result property="orderid" column="orderid" jdbcType="VARCHAR" />
+		<result property="dishid" column="dishid" jdbcType="VARCHAR" />
+		<result property="preferential" column="preferential" jdbcType="VARCHAR" />
+		<result property="deAmount" column="deAmount" jdbcType="DECIMAL" />
+		<result property="discount" column="discount" jdbcType="DECIMAL" />
+		<result property="isCustom" column="isCustom" jdbcType="TINYINT" />
+		<result property="isGroup" column="isGroup" jdbcType="TINYINT" />
+		<result property="isUse" column="isUse" jdbcType="TINYINT" />
+		<result property="insertime" column="insertime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="base_result_map"
+		type="com.candao.www.data.model.TbPreferentialActivity">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="CHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="name_first_letter" property="nameFirstLetter"
+			jdbcType="CHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="type_name" property="typeName" jdbcType="VARCHAR" />
+		<result column="subtable_name" property="subtableName"
+			jdbcType="VARCHAR" />
+		<result column="sub_type" property="subType" jdbcType="VARCHAR" />
+		<result column="sub_type_name" property="subTypeName" jdbcType="VARCHAR" />
+		<result column="color" property="color" jdbcType="VARCHAR" />
+		<result column="starttime" property="starttime" jdbcType="TIMESTAMP" />
+		<result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="apply_all" property="applyAll" jdbcType="BOOLEAN" />
+		<result column="activity_introduction" property="activityIntroduction"
+			jdbcType="VARCHAR" />
+		<result column="use_notice" property="useNotice" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="creator" property="creator" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="associationDetailpreferInfo"
+		type="com.candao.www.data.model.TorderDetailPreferential" extends="TorderDetailPreferentialID">
+
+		<association property="activity"
+			javaType="com.candao.www.data.model.TbPreferentialActivity"
+			resultMap="base_result_map"></association>
+	</resultMap>
+
+
+	<insert id="addBatchInfo" parameterType="java.util.List">
+		INSERT INTO
+		`t_order_detail_preferential` (`id`,`orderid`,`dishid`,
+		`preferential`,`deAmount`, `discount`,`isCustom`, `isGroup`,
+		`isUse`,`dishNum` ,`insertime`)
+		VALUES
+		<foreach collection="list" item="ordDetPre" index="index"
+			separator=",">
+			(#{ordDetPre.id,jdbcType=VARCHAR},#{ordDetPre.orderid,jdbcType=VARCHAR},#{ordDetPre.dishid,jdbcType=VARCHAR},#{ordDetPre.preferential,jdbcType=VARCHAR},
+			#{ordDetPre.deAmount,jdbcType=DECIMAL},
+			#{ordDetPre.discount,jdbcType=DECIMAL},
+			#{ordDetPre.isCustom,jdbcType=DECIMAL},
+			#{ordDetPre.isGroup,jdbcType=TINYINT},#{ordDetPre.isUse,jdbcType=TINYINT},#{ordDetPre.dishNum,jdbcType=VARCHAR},#{ordDetPre.insertime,jdbcType=TIMESTAMP})
+		</foreach>
+		ON DUPLICATE KEY UPDATE deAmount =VALUES(deAmount)
+	</insert>
+
+	<insert id="addDetailPreFerInfo" parameterType="com.candao.www.data.model.TorderDetailPreferential"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		`t_order_detail_preferential` (`id`,`orderid`,`dishid`,
+		`preferential`,`deAmount`, `discount`,`isCustom`,`isGroup`, `isUse`,
+		`dishNum` ,`insertime`
+		) VALUES (#{id},
+		#{orderid,jdbcType=VARCHAR},#{dishid,jdbcType=VARCHAR},#{preferential,jdbcType=VARCHAR},
+		#{deAmount,jdbcType=DECIMAL}, #{discount,jdbcType=DECIMAL},
+		#{isCustom,jdbcType=DECIMAL},
+		#{isGroup,jdbcType=TINYINT},#{isUse,jdbcType=TINYINT},#{dishNum,jdbcType=VARCHAR},#{insertime,jdbcType=TIMESTAMP})
+		ON DUPLICATE KEY UPDATE deAmount =VALUES(deAmount)
+	</insert>
+
+	<delete id="deleteDetilPreFerInfo" parameterType="map">
+		DELETE FROM t_order_detail_preferential WHERE
+		orderid=#{orderid}
+		<if test="clear!=null and clear=='0'.tostring()">
+			and id=#{id}
+		</if>
+	</delete>
+
+	<select id="getTorderDetailPreS" parameterType="map"
+		resultType="com.candao.www.data.model.TorderDetailPreferential">
+		SELECT * FROM t_order_detail_preferential todp WHERE
+		todp.orderid=#{orderid} AND todp.isGroup=0 AND todp.isUse=1;
+	</select>
+	<select id="getTorderDetailSbyOrderid" parameterType="map"
+		resultMap="associationDetailpreferInfo">
+		SELECT todp.*,tpp.type,tpp.name,tpp.sub_type FROM
+		t_order_detail_preferential todp LEFT
+		JOIN t_p_preferential_activity
+		tpp ON todp.preferential=tpp.id
+		WHERE
+		todp.orderid=#{orderid} AND
+		todp.isUse=1 ORDER BY todp.insertime
+		ASC;
+	</select>
+</mapper>
