@@ -146,11 +146,7 @@ public class GiftController {
 			}catch(Exception ex){
 				
 			}
-			List<Map<String,String>> datalist = new ArrayList<Map<String,String>>();
-//			Map<String,String> idMap = new HashMap<String,String>();
-//			idMap.put("giftlogid", log.getId());
-//			datalist.add(idMap);
-			return ReturnMap.getSuccessMap("发起赠送成功成功",datalist);
+			return ReturnMap.getSuccessMap("发起赠送成功成功");
 
 		} catch (Exception e) {
 			e.printStackTrace();
