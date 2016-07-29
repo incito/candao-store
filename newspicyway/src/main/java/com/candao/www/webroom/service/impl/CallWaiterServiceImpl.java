@@ -20,6 +20,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.utils.DataServerUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -73,6 +74,9 @@ public class CallWaiterServiceImpl implements CallWaiterService {
 
     @Autowired
     private TbUserInstrumentDao tbUserInstrumentDao;
+
+    @Autowired
+    private MsgForwardService msgForwardService;
 
     @Override
     public int saveCallInfo(JSONObject data) {
@@ -324,7 +328,7 @@ public class CallWaiterServiceImpl implements CallWaiterService {
 
         @Override
         public void run() {
-            StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2001 + "/");
+            StringBuilder messageinfo = new StringBuilder();
             Map<String, Object> params = new HashMap<String, Object>(1);
             params.put("tableNo", finaltableno);
             List<Map<String, Object>> tableList = tableService.find(params);
@@ -352,42 +356,14 @@ public class CallWaiterServiceImpl implements CallWaiterService {
                             userid = useridstr;
                         }
                     }
-                    String areaname = null;
-                    String tableNo = null;
-                    try {
-                        areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")), "utf-8");
-                        tableNo = java.net.URLEncoder.encode(finaltableno, "utf-8");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error("-->", e);
-                        e.printStackTrace();
-                    }
+                    String areaname  = String.valueOf(tableList.get(0).get("areaname"));
                     if (!userid.equals("")) {
-                        messageinfo.append(userid + "|" + finalmsgType + "|" + finalcallStatus + "|" + areaname + "|" + tableNo + "|" + finalmessid);
                         //new TsThread(messageinfo.toString()).start();
-                        URL urlobj;
                         try {
-                            urlobj = new URL(messageinfo.toString());
-                            URLConnection urlconn = urlobj.openConnection();
-                            urlconn.connect();
-                            InputStream myin = urlconn.getInputStream();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-                            String content = reader.readLine();
-                            /**
-                             * 如果DataServer推送异常(特征值判断)，则重启Dataserver后重新推送
-                             */
-                            if (null != content && content.contains("Access violation")) {
-                                restartAndRetry();
-                            }
-                            JSONObject object = JSONObject.fromObject(content.trim());
-                            @SuppressWarnings("unchecked")
-                            List<Map<String, Object>> resultList = (List<Map<String, Object>>) object.get("result");
-                            if ("1".equals(String.valueOf(resultList.get(0).get("Data")))) {
+                            messageinfo.append(userid + "|" + finalmsgType + "|" + finalcallStatus + "|" + areaname + "|" + finaltableno + "|" + finalmessid);
+                            msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2001,messageinfo.toString());
                                 System.out.println("推送成功");
-                            } else {
-                                System.out.println("推送失败");
-                            }
-                        } catch (IOException e) {
-                            restartAndRetry();
+                        } catch (Exception e) {
                             logger.error("-->", e);
                             e.printStackTrace();
                         }
