@@ -430,8 +430,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		
 		//挂单结账时候不需要打印
 		Map<String, Object> order = orderService.findOrderById(orderId);
-		String payway = (String)order.get("payway");
-		String ordertype = (String)order.get("ordertype");
+		String payway = order.get("payway")==null?"":order.get("payway").toString();
+		String ordertype = order.get("ordertype")==null?"":order.get("ordertype").toString();
 		if ("3".equals(payway) && "2".equals(ordertype)) {
 			isPrint = false;
 		}
