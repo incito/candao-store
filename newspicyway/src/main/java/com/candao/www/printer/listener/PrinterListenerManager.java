@@ -7,6 +7,7 @@ import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.printer.v2.PrinterManager;
 
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -65,6 +66,16 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private Log log = LogFactory.getLog(PrinterListenerManager.class.getName());
 
 	private static ReadWriteLock lock = new ReentrantReadWriteLock();
+	
+	private final static String TEMPLATEPATH = "classpath:template/printerTemplate";
+	//XML模板
+	private Map<String, Object> listenerXMLTemplate = new ConcurrentHashMap<>();
+	
+	@Autowired
+	private XmlTemplateLoader xmlTemplateLoader;
+	
+	@Autowired
+	private XmlTemplateDefinitionReader xmlTemplateDefinitionReader;
 	
 	public PrinterListenerManager() {
 
@@ -252,8 +263,26 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 				listenerTemplate.put((String) it.get("printerid"), it);
 			}
 		}
+		//加载模板
+		loadXMLTemplate(TEMPLATEPATH);
 	}
 	
+	private void loadXMLTemplate(String templatepath) {
+		try {
+			xmlTemplateLoader.load(templatepath);
+		} catch (Exception e) {
+			//TODO
+			e.printStackTrace();
+		}
+		
+		this.listenerXMLTemplate.clear();
+		
+		Map<String, Object> buffer =  xmlTemplateDefinitionReader.doLoadBeanDefinitions(xmlTemplateLoader);
+		if (!MapUtils.isEmpty(buffer)) {
+			listenerXMLTemplate.putAll(buffer);
+		}
+	}
+
 	public void updateListenerTemplate() {
 		try{
 			lock.writeLock().lock();

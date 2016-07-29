@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rows class="com.candao.print.entity.PrintObj" xmlns="http://120.24.190.55/schema/rows"
+xmlns:row="http://120.24.190.55/XMLSchema-instance" 
+xmlns:foreach="http://120.24.190.55/XMLSchema-instance"
+>
+	<row description = "单号">
+		<align>ALIGN_CENTER</align>
+		<font>NORMAL</font>
+		<locations>{40}</locations>
+		<datas>billName</datas>
+		<lineFeed>no</lineFeed>
+	</row>
+	<foreach>
+		<row>
+			<font>NORMAL</font>
+			<locations></locations>
+			<datas></datas>
+		</row>
+	</foreach>
+</rows>
