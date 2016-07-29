@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.entity.Pad;
 import com.candao.www.dataserver.model.MsgForwardData;
-import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.PadCheckInRespData;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
@@ -44,8 +43,7 @@ public class PadChInRServiceImpl extends DeviceServiceImpl {
             msgForwardData.setSerialNumber(serialNumber);
             msgForwardService.forwardMsg(target, JSON.toJSONString(msgForwardData));
             for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(checkInRespData.getGroup(), checkInRespData.getId())) {
-                OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-                MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+                MsgForwardData offMsgData = new MsgForwardData(offlineMsg.getMsgType(), offlineMsg.getId(), offlineMsg.getContent());
                 msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
             }
         } catch (Exception e) {

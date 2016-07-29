@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rows class="com.candao.print.entity.PrintObj" description="settlementTemplate" xmlns="http://120.24.190.55/schema/rows"
+	xmlns:row="http://120.24.190.55/schema/row" xmlns:foreach="http://120.24.190.55/schema/foreach">
+	
+	<row:row description="单号">
+		<align description="对齐">ALIGN_CENTER</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="位置">
+			<list>
+				<value>10</value>
+			</list>
+		</locations>
+		<datas description="菜品信息">
+			<list>
+				<value>#{billName}</value>
+			</list>
+		</datas>
+	</row:row>
+</rows>

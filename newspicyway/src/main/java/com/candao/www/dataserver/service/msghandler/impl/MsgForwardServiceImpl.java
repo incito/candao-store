@@ -71,6 +71,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         LOGGER.info("#### broadCastMsgForNetty msgType={},msg={}###", msgType, msg);
         ResponseData responseData = new ResponseData();
         try {
+
             int msgId = (int) System.currentTimeMillis();
             MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
             broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
@@ -160,6 +161,10 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
                 single = 1;
             }
             OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
+            /*兼容watch的消息格式 start*/
+            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
+            offlineMsg.setContent(JSON.toJSONString(offlineMsgData));
+           /*兼容watch的消息格式 end*/
             offlineMsgList.add(offlineMsg);
         }
         offlineMsgService.save(offlineMsgList, isSingle);
@@ -169,7 +174,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
                 add(offlineMsg.getDeviceId());
             }});
             OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(offlineMsgData.getContent());
             communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
         }
     }
@@ -194,7 +199,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             target.put(offlineMsg.getDeviceGroup(), new ArrayList<String>() {{
                 add(offlineMsg.getDeviceId());
             }});
-            MsgForwardData offMsgData = new MsgForwardData(offlineMsg.getId(), msgType, offlineMsg.getContent());
+            MsgForwardData offMsgData = new MsgForwardData(msgType, offlineMsg.getId(), offlineMsg.getContent());
             communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
         }
     }

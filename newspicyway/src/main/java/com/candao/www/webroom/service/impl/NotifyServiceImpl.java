@@ -45,19 +45,14 @@ public class NotifyServiceImpl implements NotifyService {
 
     @Override
     public Result notifyClearTable(final String tableNo) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("tableNo", tableNo);
-                List<Map<String, Object>> resultMapList = tableService.find(map);
-                if (null == resultMapList || resultMapList.isEmpty()) {
-                    return;
-                }
-                msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("tableNo", tableNo);
+        List<Map<String, Object>> resultMapList = tableService.find(map);
+        if (null == resultMapList || resultMapList.isEmpty()) {
+            return null;
+        }
+        msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
 
-            }
-        });
         return null;
     }
 
@@ -101,12 +96,14 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     @Override
-    public Result notifyWXpay(final String orderId, final String payStatus) {
+    public Result notifyWXpay(final String orderId, final String payStatus, final String payAmount, final String yhAmount) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 Map<String, Object> data = new HashMap<>(1);
                 data.put("orderId", orderId);
+                data.put("payAmount", payAmount);
+                data.put("yhAmount", yhAmount);
                 data.put("payStatus", payStatus);
                 msgForwardService.sendMsgAsynWithOrderId(orderId, MsgForwardTran.msgConfig.getProperty("MSF_ID.WXPAY"), data, 4 * 60 * 60, false);
             }

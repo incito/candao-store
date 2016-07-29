@@ -77,6 +77,8 @@ public interface GiftLogDao {
 	public List<TGiftLog> getGiftLogByRecOrder(String orderid);
 	
 	public int updateOrderStatus(String orderid);
+
+	public int deleteById(String logId);
 	
 		
 }

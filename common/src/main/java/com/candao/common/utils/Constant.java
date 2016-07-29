@@ -43,7 +43,7 @@ public class Constant {
 	public enum ListenerType {
 		NormalListener("normalDishListener"), MultiDishListener("multiDishListener"), DishSetListener("dishSetListener"),
 		CustDishListener("custDishListener"), StatementDishListener("statementDishListener"), TableChangeListener("tableChangeListener"),
-		WeighDishListener("weighDishListener");
+		WeighDishListener("weighDishListener"),SettlementDishListener("settlementTemplate");
 
 		private String name;
 

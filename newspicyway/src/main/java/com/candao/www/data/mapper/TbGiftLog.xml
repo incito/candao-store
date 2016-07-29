@@ -70,4 +70,7 @@
 	<update id="updateOrderStatus" parameterType="java.lang.String">
 	    update t_order set gift_status = '-1'  where orderid = #{orderid}
 	</update>
+	<delete id="deleteById" parameterType="String">
+		delete from t_gift_log where id=#{logId}
+	</delete>
 </mapper>

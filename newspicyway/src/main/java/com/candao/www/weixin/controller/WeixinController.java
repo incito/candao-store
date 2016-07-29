@@ -8,6 +8,7 @@ import com.candao.www.data.json.base.BaseJsonController;
 import com.candao.www.data.model.TJsonRecord;
 import com.candao.www.data.model.TOrderMember;
 import com.candao.www.utils.HttpRequestor;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.PadConfig;
 import com.candao.www.webroom.model.SettlementInfo;
@@ -148,16 +149,20 @@ public class WeixinController extends BaseJsonController {
 		loggers.info(JacksonJsonMapper.objectToJson(weixinRequestParam));
 
 		if (isNull(weixinRequestParam.getBody())) {
-			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
+//			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
+			return ReturnMap.getFailureMap("商品信息不能为空");
 		}
 		if (isNull(weixinRequestParam.getAttach())) {
-			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
+//			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
+			return ReturnMap.getFailureMap("订单id不能为空");
 		}
 		if (isNull(weixinRequestParam.getSpbillCreateIp())) {
-			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
+//			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
+			return ReturnMap.getFailureMap("ip地址不能为空");
 		}
 		if (isNull(weixinRequestParam.getTotalFee())) {
-			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
+//			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
+			return ReturnMap.getFailureMap("商品总价不能为空");
 		}
 		//
 		String branchid = PropertiesUtils.getValue("current_branch_id");// 当前门店id
@@ -177,9 +182,11 @@ public class WeixinController extends BaseJsonController {
 		tpWxPay1.setAttach(weixinRequestParam.getAttach());
 		String codeurl = getCodeurl(tpWxPay1);
 		if(codeurl!=null && !"".equals(codeurl)){
-			return renderSuccessJSONString(SUCCESSCODE, codeurl);
+//			return renderSuccessJSONString(SUCCESSCODE, codeurl);
+			return ReturnMap.getSuccessMap("",codeurl);
 		}
-		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
+//		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
+		return ReturnMap.getFailureMap("生成二维码失败");
 	}
 
 
@@ -197,9 +204,9 @@ public class WeixinController extends BaseJsonController {
 		int result=weixinService.getweixinstatus(weixinStatus.getBranchid());
 		if(result>0){
 			loggers.info(JacksonJsonMapper.objectToJson(renderSuccessJSONString(SUCCESSCODE,null)));
-			return renderSuccessJSONString(SUCCESSCODE,null);
+			return ReturnMap.getSuccessMap("");
 		}
-		return renderErrorJSONString(ERRORCODE, "门店没有配置微信相关信息");
+		return ReturnMap.getFailureMap("门店没有配置微信相关信息");
 	}
 
 
@@ -404,8 +411,8 @@ public class WeixinController extends BaseJsonController {
 	 * @param code
 	 */
 	private void sendmessage2Android(String code,String attach) {
-		String[] attachs = attach.split("|");
-		notifyService.notifyWXpay(attachs[1],code);
+		String[] attachs = attach.split("[|]");
+		notifyService.notifyWXpay(attachs[0],code,attachs[1],attachs[2]);
 		loggers.info("微信支付推送");
 	}
 
@@ -723,7 +730,7 @@ public class WeixinController extends BaseJsonController {
 	public String queryActivity(){
 		String activityCode="09";
 		Map<String, Object>  result=weixinService.queryActivity(activityCode);
-		return JacksonJsonMapper.objectToJson(getSuccessInstance(result));
+		return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(result));
 	}
 
 	/**

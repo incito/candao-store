@@ -1,24 +1,17 @@
 package com.candao.www.dataserver.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.candao.www.dataserver.entity.OfflineMsg;
 import com.candao.www.dataserver.entity.Pad;
 import com.candao.www.dataserver.model.MsgForwardData;
-import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.PadLoginData;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
-import com.candao.www.utils.HttpUtil;
-import com.candao.www.utils.PropertiesUtil;
-import com.candao.www.utils.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,8 +43,7 @@ public class PadServiceImpl extends DeviceServiceImpl {
         msgForwardData.setSerialNumber(serialNumber);
         msgForwardService.forwardMsg(target, JSON.toJSONString(msgForwardData));
         for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(padLoginData.getGroup(), padLoginData.getId())) {
-            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+            MsgForwardData offMsgData = new MsgForwardData(offlineMsg.getMsgType(), offlineMsg.getId(), offlineMsg.getContent());
             msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
         }
     }
