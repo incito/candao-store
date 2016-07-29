@@ -256,7 +256,7 @@ public interface PreferentialActivityService {
     * @param disrate  默认0（手工折扣类会上传一个>0的折扣）
     * @return
     */
-   public OperPreferentialResult updateOrderDetailWithPreferential( String type , String sub_type ,String orderid , String preferentialid ,String disrate,String preferentialAmt);
+   public OperPreferentialResult updateOrderDetailWithPreferential (Map<String, Object> params);
    
    /**
     * 取消 账单使用的优惠
