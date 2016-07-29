@@ -35,6 +35,7 @@ import com.candao.www.data.model.Tworklog;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
@@ -149,12 +150,12 @@ public class TableServiceImpl implements TableService {
 //		map.put("status", "1");
 		List<Map<String, Object>> orignalMap = tableDao.find(map);
 		if(orignalMap == null || orignalMap.size() == 0 || orignalMap.size() > 1){
-			return Constant.FAILUREMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		}
 		
 		Map<String, Object> map2 =  torderMapper.findOne(String.valueOf(orignalMap.get(0).get("orderid")));
 		if(map2 == null || map2.size() == 0 || "3".equals(String.valueOf(map2.get("orderstatus")))){
-			return Constant.FAILUROPEMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		}
 		
 //		Map<String, Object> orignalMap2 =  orignalMap.get(0);
@@ -165,7 +166,7 @@ public class TableServiceImpl implements TableService {
 		map.put("status", "0");
 		List<Map<String, Object>> currentMap = tableDao.find(map);
 		if(currentMap == null || currentMap.size() == 0 || currentMap.size() > 1){
-			return Constant.FAILUREMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		}
 		
 		
@@ -179,7 +180,7 @@ public class TableServiceImpl implements TableService {
        result = String.valueOf(mapParam.get("result"));
        
        if(!"0".equals(result)){
-    	   return Constant.FAILUREMSG;
+    	   return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
        }else {
     	   if(toperationLogService.save(toperationLog)){
     		   String userId = (String)map2.get("userid");
@@ -196,9 +197,9 @@ public class TableServiceImpl implements TableService {
         	   pj.setDiscardUserId(disUser.getName());
         	   
         	   printTableChangeBill(pj,"7");
-		   		return Constant.SUCCESSMSG;
+		   	   return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		   	}else{
-		   		return Constant.FAILUREMSG;
+		   		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		   	}
 	    }
 	}
@@ -243,7 +244,7 @@ public class TableServiceImpl implements TableService {
 		List<Map<String, Object>> resultMap = tableDao.find(map);
 		if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
 			logger.error("源餐台不存在或者重复，tableNo:"+sourceTableNo+",size:" + ((resultMap == null) ? 0 : resultMap.size()));
-			return Constant.FAILUREMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("源餐台不存在或者重复"));
 		}
 		//源餐台数据
 		Map<String, Object> sourceTable = resultMap.get(0);
@@ -251,7 +252,7 @@ public class TableServiceImpl implements TableService {
 		Map<String, Object> sourceOrder = torderMapper.findOne(sourceOrderId);
 		if (sourceOrder == null || sourceOrder.size() == 0 || !"0".equals(String.valueOf(sourceOrder.get("orderstatus")))) {
 			logger.error("源餐台未开台或者账单状态异常，ordersize:" + ((sourceOrder == null) ? 0 : sourceOrder.size()) + ",orderstatus:" + String.valueOf(sourceOrder.get("orderstatus")));
-			return Constant.FAILUROPEMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("源餐台未开台或者账单状态异常"));
 		}
 		
 		Map<String, Object> map1 = new HashMap<String, Object>();
@@ -259,7 +260,7 @@ public class TableServiceImpl implements TableService {
 		List<Map<String, Object>> listTables = tableDao.find(map1);
 		if (listTables == null || listTables.size() == 0 || listTables.size() > 1) {
 			logger.error("目标餐台不存在或者重复，tableNo:" + targetTableNo + ",size:" + ((listTables == null) ? 0 : listTables.size()));
-			return Constant.FAILUREMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("目标餐台不存在或者重复"));
 		}
 		//目标餐台数据
 		Map<String, Object> targetTable = listTables.get(0);
@@ -268,7 +269,7 @@ public class TableServiceImpl implements TableService {
 		// 如果目标桌和原始桌的订单号相同，直接返回并台成功
 		if (sourceOrderId.equals(targetOrderId)) {
 			logger.error("目标餐台与源餐台是同一个账单，tableNo:" + targetTableNo);
-			return Constant.SUCCESSMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("目标餐台与源餐台是同一个账单"));
 		}
 		Map<String, Object> targetOrder = torderMapper.findOne(targetOrderId);
 		
@@ -284,7 +285,7 @@ public class TableServiceImpl implements TableService {
 		// ---------------------------------------------------------
 		// 并桌的时候查询目标桌是否开台，是否下单了 下单了，并桌的时候把下单的数据返回给pad。并桌只能并一个桌
 		Map<String, Object> resultmap = new HashMap<String, Object>();
-		resultmap.put("result", "0");
+//		resultmap.put("result", "0");
 		//目标餐台被占用
 		if (isTableUsing(targetTable)) {
 			//目标餐台还没结账
@@ -347,7 +348,7 @@ public class TableServiceImpl implements TableService {
 		//打印合并小票
 		printMergeTableTicket(mergeTable, sourceOrderId, sourceOrder);
 		
-		return JacksonJsonMapper.objectToJson(resultmap);
+		return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(resultmap));
 
 	}
 	/**
@@ -485,8 +486,8 @@ public class TableServiceImpl implements TableService {
 		TbDataDictionary vipaddress = datadictionaryService.findById("vipaddress");
 		TbDataDictionary locktime = datadictionaryService.findById("locktime");
 		TbDataDictionary delaytime = datadictionaryService.findById("delaytime");
-		resultmap.put("flag", "1");
-		resultmap.put("desc", "获取数据成功");
+		/*resultmap.put("flag", "1");
+		resultmap.put("desc", "获取数据成功");*/
 		resultmap.put("currenttableid", targetTableNo);
 		resultmap.put("orderid", targetTable.get("orderid"));
 		resultmap.put("memberno", targetOrder.get("memberno"));
@@ -495,7 +496,7 @@ public class TableServiceImpl implements TableService {
 		resultmap.put("waiterNum", targetOrder.get("userid"));
 		resultmap.put("ageperiod", targetOrder.get("ageperiod"));
 		resultmap.put("begintime", targetOrder.get("begintime"));
-		resultmap.put("result", "0");
+//		resultmap.put("result", "0");
 		resultmap.put("orderid", targetOrderId);
 		resultmap.put("backpsd", dd == null ? "" : dd.getItemid());// 退菜密码
 		resultmap.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址

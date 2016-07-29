@@ -8,6 +8,7 @@ import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.SessionUtils;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.MenuGroup;
@@ -424,19 +425,19 @@ public class MenuServiceImpl implements MenuService {
         params.put("branchid", branchid);
         List<Map<String, Object>> menuList = tmenuDao.findMenuByBrachid(params);
         Map<String, Object> menu = new HashMap<String, Object>();
+        Map<String, Object> columnMap = new HashMap<String, Object>();
         if (menuList != null && menuList.size() > 0) {
-            Map<String, Object> columnMap = new HashMap<String, Object>();
             menu = menuList.get(0);
             String menuid = String.valueOf(menu.get("menuid"));
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("menuid", menuid);
             map.put("id", 0);
             List<Map<String, Object>> columnList = tbasicDataDao.getMenuColumn(map);
-            columnMap.put("rows", columnList);
+            columnMap = ReturnMap.getSuccessMap(columnList);
             return columnMap;
         } else {
             logger.info("menuList为空");
-            return null;
+            return ReturnMap.getFailureMap("获取菜谱分类失败");
         }
     }
 
@@ -564,17 +565,13 @@ public class MenuServiceImpl implements MenuService {
         // TODO Auto-generated method stub
         Map<String, Object> map = new HashMap<String, Object>();
         List<Map<String, Object>> list = tmenuDao.getHeatDishList(params);
-        map.put("data", list);
         if (list != null && list.size() > 0) {
             logger.info("获取数据成功");
-            map.put("flag", "1");
-            map.put("code", "获取数据成功");
+            map = ReturnMap.getSuccessMap("获取数据成功", list);
         } else {
             logger.info("没有数据");
-            map.put("flag", "0");
-            map.put("code", "没有数据");
+            map = ReturnMap.getFailureMap("获取数据失败");
         }
-
         return map;
     }
 
