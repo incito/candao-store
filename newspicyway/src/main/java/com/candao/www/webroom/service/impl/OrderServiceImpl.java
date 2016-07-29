@@ -35,6 +35,7 @@ import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
@@ -150,11 +151,12 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public String startOrder(Torder  tOrder){
 		
-		Map<String, String> mapRet = new HashMap<String, String>();
+		Map<String, Object> mapRet = new HashMap<>();
 		
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if(tbOpenBizLog == null){
-			mapRet.put("result", "3");
+//			mapRet.put("result", "3");
+			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空");
 			logger.error("开台失败，开业记录为空");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
@@ -167,13 +169,14 @@ public class OrderServiceImpl implements OrderService{
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		
 		if(resultMap == null || resultMap.size() == 0 || resultMap.size() > 1){
-			logger.error("开台失败！ 查找不到桌台");
-			mapRet.put("result", "2");
+//			logger.error("开台失败！ 查找不到桌台");
+			mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		if(! "0".equals(String.valueOf(resultMap.get(0).get("status")))){
 			logger.error("开台失败，桌台状态不对！0");
-			mapRet.put("result", "1");
+//			mapRet.put("result", "1");
+			mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
 			return JacksonJsonMapper.objectToJson(mapRet); 
 		}
 		//1.预定桌子
@@ -322,13 +325,14 @@ public class OrderServiceImpl implements OrderService{
 		TbDataDictionary locktime =datadictionaryService.findById("locktime");
 		TbDataDictionary delaytime =datadictionaryService.findById("delaytime");
 		
-		mapRet.put("result", "0");
-		mapRet.put("orderid", orderId);
-		mapRet.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
+		Map<String, Object> result = new HashMap<>();
+//		result.put("result", "0");
+		result.put("orderid", orderId);
+		result.put("backpsd", dd==null?"":dd.getItemid());//退菜密码
 		
-		mapRet.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
-		mapRet.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
-		mapRet.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
+		result.put("vipaddress", vipaddress==null?"":vipaddress.getItemid()); //雅座的VIP地址
+		result.put("locktime", locktime==null?"":locktime.getItemid()); //屏保锁屏时间
+		result.put("delaytime", delaytime==null?"":delaytime.getItemid()); //屏保停留时间
 		//添加日志
 //		Tworklog tworklog = new Tworklog();
 //		tworklog.setWorkid(UUID.randomUUID().toString());
@@ -347,14 +351,15 @@ public class OrderServiceImpl implements OrderService{
 //		workLogService.saveLog(tworklog);
 		
 		//开台前清空当前台的操作日记
-		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());		
+		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());	
+		mapRet = ReturnMap.getSuccessMap(result);
 	 }
-		return JacksonJsonMapper.objectToJson(mapRet); 
+	 
+	 return JacksonJsonMapper.objectToJson(mapRet); 
 	}
 
 	@Override
 	public String updateOrder(Torder  tOrder){
-		
 		//开台前清空当前台的操作日记
 		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());		
 		Torder  order = new Torder();
@@ -371,10 +376,9 @@ public class OrderServiceImpl implements OrderService{
 	    
 		int result = torderMapper.update(order);
 		if(result > 0 ){
-			return Constant.SUCCESSMSG;
+			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		} 
-		
-		return Constant.FAILUREMSG;
+		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 	}
 	
 	@Override
@@ -469,14 +473,12 @@ public class OrderServiceImpl implements OrderService{
 				Map<String,Object> orderMap=torderMapper.findOne(orderid);
 				if(orderMap!=null){
 					if("3".equals(String.valueOf(orderMap.get("orderstatus")))){
-						mapRet.put("flag", "3");
-						mapRet.put("desc", "该桌已结账");
-						return mapRet; 
+						return ReturnMap.getFailureMap("该桌已结账");
 					}
 					if("0".equals(String.valueOf(orderMap.get("orderstatus")))){
 //						t.mannum,t.childNum,t.womanNum
-						mapRet.put("flag", "1");
-						mapRet.put("desc", "获取数据成功");
+//						mapRet.put("flag", "1");
+//						mapRet.put("desc", "获取数据成功");
 						mapRet.put("currenttableid",params.get("tableNo"));
 						mapRet.put("orderid",orderid);
 						mapRet.put("memberno",orderMap.get("memberno"));
@@ -517,32 +519,20 @@ public class OrderServiceImpl implements OrderService{
 						}
 						//删除桌子日志
 						toperationLogService.deleteToperationLogByTableNo(String.valueOf(params.get("tableNo")));	
-						
-						return mapRet;
+						return ReturnMap.getSuccessMap("获取数据成功", mapRet);
 					}
-					mapRet.put("flag", "2");
-					mapRet.put("desc", "订单已取消");
-					return mapRet;
+					return ReturnMap.getFailureMap("订单已取消");
 				}else{
-					mapRet.put("flag", "4");
-					mapRet.put("desc", "订单不存在");
-					return mapRet; 
+					return ReturnMap.getFailureMap("订单不存在");
 				}
 				
 			}else{
-				mapRet.put("flag", "5");
-				mapRet.put("desc", "桌台未绑定订单");
-				return mapRet; 
+				return ReturnMap.getFailureMap("桌台未绑定订单");
 			}
-			
-		
-			
 		}
 		else{
 			//没找到这个桌号
-			mapRet.put("flag", "0");
-			mapRet.put("desc", "未找到这个桌号");
-			return mapRet; 
+			return ReturnMap.getFailureMap("未找到这个桌号");
 		}
 	}
 //	public class TsThread extends Thread{
@@ -696,18 +686,14 @@ public class OrderServiceImpl implements OrderService{
 					params.put("printobjid", printObj.getId());
 					flag=flag&&tbPrintObjDao.updateDishWeight(params)>0;
 				}
-				if(flag){				
-					mapRet.put("result", "0");
-					mapRet.put("desc", "更新成功");
-					mapRet.put("orderid", orderid);
+				if(flag){
+					mapRet = ReturnMap.getSuccessMap("更新成功", orderid);
 				}else{
-					mapRet.put("result", "2");
-					mapRet.put("desc", "未找到相应的菜品");
+					mapRet = ReturnMap.getFailureMap("未找到相应的菜品");
 				}
 			}
 		}else{
-			mapRet.put("result", "1");
-			mapRet.put("desc", "订单为空");
+			mapRet = ReturnMap.getFailureMap("订单为空");
 		}
 		return mapRet; 
 	}

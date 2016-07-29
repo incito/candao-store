@@ -39,48 +39,48 @@ public class CallWaiterController {
 		try {
 			logger.debug("save message  data for params : {} ", body);
 			if (StringUtils.isEmpty(body)) {
-				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
+				return ReturnMap.getFailureMap("传入参数不正确");
 			}
 			JSONObject messageInfo = JSONObject.fromObject(body);
 			if (messageInfo == null) {
-				return ReturnMap.getReturnMap(0, "002", "传入参数不正确");
+				return ReturnMap.getFailureMap("传入参数不正确");
 			}
 
 			if (!messageInfo.containsKey("msgType")||messageInfo.getString("msgType")==null||messageInfo.getString("msgType").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数呼叫类型");
+				return ReturnMap.getFailureMap("缺少参数呼叫类型");
 			}
 			if (!messageInfo.containsKey("tableno")||messageInfo.getString("tableno")==null||messageInfo.getString("tableno").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数桌号");
+				return ReturnMap.getFailureMap("缺少参数桌号");
 			}
 			if (!messageInfo.containsKey("userid")||messageInfo.getString("userid")==null||messageInfo.getString("userid").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数服务员信息");
+				return ReturnMap.getFailureMap("缺少参数服务员信息");
 			}
 			if (!messageInfo.containsKey("orderid")||messageInfo.getString("orderid")==null||messageInfo.getString("orderid").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数订单信息");
+				return ReturnMap.getFailureMap("缺少参数订单信息");
 			}
 			if (!messageInfo.containsKey("deviceType")||messageInfo.getString("deviceType")==null||messageInfo.getString("deviceType").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数设备类型信息");
+				return ReturnMap.getFailureMap("缺少参数设备类型信息");
 			}
 			if (!messageInfo.containsKey("deviceNo")||messageInfo.getString("deviceNo")==null||messageInfo.getString("deviceNo").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数设备号");
+				return ReturnMap.getFailureMap("缺少参数设备号");
 			}
 			if (!messageInfo.containsKey("callStatus")||messageInfo.getString("callStatus")==null||messageInfo.getString("callStatus").equals("")) {
-				return ReturnMap.getReturnMap(0, "002", "缺少参数呼叫状态");
+				return ReturnMap.getFailureMap("缺少参数呼叫状态");
 			}
 			int num = callWaiterService.saveCallInfo(messageInfo);
 			if (num <= 0) {
-				return ReturnMap.getReturnMap(0, "002", "保存失败");
+				return ReturnMap.getFailureMap("保存失败");
 			}else if(num==99){
-				return ReturnMap.getReturnMap(0, "003", "请求类型的状态与数据库已有的状态不能继续，请联系服务员");
+				return ReturnMap.getFailureMap("请求类型的状态与数据库已有的状态不能继续，请联系服务员");
 			}else if(num==3){
-				return ReturnMap.getReturnMap(0, "002", "请求类型为投诉，传入的数据需要投诉类型信息");
+				return ReturnMap.getFailureMap("请求类型为投诉，传入的数据需要投诉类型信息");
 			}
-			return ReturnMap.getReturnMap(1, "001", "保存保存成功");
+			return ReturnMap.getSuccessMap("保存成功");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("method getDicListByType is wrong :{}", e.getMessage());
-			return ReturnMap.getReturnMap(0, "002", "服务异常请联系管理员");
+			return ReturnMap.getFailureMap("服务异常请联系管理员");
 		}
 	}
 }

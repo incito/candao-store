@@ -15,6 +15,7 @@ import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.model.Order;
 import com.candao.www.webroom.model.Table;
 import com.candao.www.webroom.model.UrgeDish;
@@ -159,13 +160,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         List<Map<String, Object>> resultMapList = tableService.find(map);
         if (resultMapList == null || resultMapList.size() == 0) {
             log.error("-->resultMapList为空(查询table为空)，参数tableNo为：" + tableNo);
-            return Constant.FAILUREMSG;
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
         }
         // 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
         //计算菜单订单下面财大个数如果大与0 表示不能 清台
         long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
         if (menuNum > 0) {
-            return Constant.UPDATE_MENU;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单下还有菜品，不能清台"));
         }
         Map<String, Object> tableMap = resultMapList.get(0);
         String tableId = String.valueOf(tableMap.get("tableid"));
@@ -183,8 +184,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             torder.setEndtime(new Date());
             torderMapper.update(torder);
         }
-
-        return Constant.SUCCESSMSG;
+        return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("清台成功"));
     }
 
     @Override
@@ -372,7 +372,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 orders.setOrderid(table.getOrderid());
             } else {
                 log.error("-->t_table表中该table为空，tableNo为：" + tableNo);
-                return getResult("3", "查询不到该餐台", "");
+                return ReturnMap.getFailureMap("查询不到该餐台");
             }
 
             DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -387,15 +387,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 transactionManager.rollback(status);
                 if (null != orders.getRows() && !orders.getRows().isEmpty()) {
                     log.info("-->重复下单");
-                    return getResult("0", "下单成功", "");
+//                    return getResult("0", "下单成功", "");
+                    return ReturnMap.getSuccessMap("下单成功");
                 }
                 log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
-                return getResult("3", "订单中没有菜品", "");
+//                return getResult("3", "订单中没有菜品", "");
+                return ReturnMap.getFailureMap("订单中没有菜品");
             }
             if (Constant.ORDERSTATUS.ORDER_STATUS != orderLock.getOrderstatus()) {
                 log.error("-->orderId为：" + orders.getOrderid());
                 transactionManager.rollback(status);
-                return getResult("3", "查询不到该订单", "");
+//                return getResult("3", "查询不到该订单", "");
+                return ReturnMap.getFailureMap("查询不到该订单");
             }
             orders.setUserid(orderLock.getUserid());
             Map<String, Object> mapParam1 = new HashMap<String, Object>();
@@ -408,21 +411,24 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             if (!"0".equals(code)) {
                 log.error("-->result为：" + 1);
                 transactionManager.rollback(status);
-                return getResult(code, result.get("msg"), "");
+//                return getResult(code, result.get("msg"), "");
+                return ReturnMap.getFailureMap(result.get("msg"));
             }
             int flag = null == detailList ? 0 : 1;
             printOrderList(orders.getOrderid(), table.getTableid(), flag);
             printweigth(listall, orders.getOrderid());
             transactionManager.commit(status);
             log.info(orders.getOrderid() + "下单成功");
-            return getResult("0", "下单成功", "");
+//            return getResult("0", "下单成功", "");
+            return ReturnMap.getSuccessMap("下单成功");
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
             if(null!=status) {
                 transactionManager.rollback(status);
             }
-            return getResult("3", "服务器异常 ", "");
+//            return getResult("3", "服务器异常 ", "");
+            return ReturnMap.getFailureMap("服务器异常");
         }
 
     }
@@ -468,7 +474,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         for (TorderDetail orderDetail : orderDetails) {
             Tdish existsDish = isExistsDish(dishs, orderDetail.getDishid());
             if (null == existsDish) {
-                result.put("code", "2");
+                result.put("code", "1");
                 result.put("msg", "菜谱更新中");
                 return result;
             }
@@ -1695,7 +1701,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public String discardDishList(UrgeDish urgeDish, ToperationLog toperationLog) {
         if (urgeDish == null) {
             log.error("-->参数urgeDish为空");
-            return Constant.FAILUREMSG;
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数错误"));
         }
         //是否打印单据
         boolean isPrint = true;
@@ -1706,7 +1712,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             urgeDish.setOrderNo(String.valueOf(tableList.get(0).get("orderid")));
         } else {
             log.error("-->tableList为空，参数tableNo为" + urgeDish.getCurrenttableid());
-            return Constant.FAILUREMSG;
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("没有找到桌台"));
         }
         //咖啡模式，外卖模式反结算以后才打印打印退菜单
         String tableType = (String) tableList.get(0).get("tabletype");
@@ -1731,7 +1737,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Map<String, Object> mapStatus = torderMapper.findOne(orderId);
         if (!"0".equals(String.valueOf(mapStatus.get("orderstatus")))) {
             log.error("-->订单状态为:" + mapStatus.get("orderstatus") + "-->订单Id为：" + orderId);
-            return Constant.FAILUREMSG;
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态不正确"));
         }
         String actionType = urgeDish.getActionType();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -1756,7 +1762,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             TorderDetail orderDetail = torderDetailMapper.getOrderDetailByPrimaryKey(urgeDish.getPrimarykey());
             if (orderDetail == null) {
                 log.error("-->orderDetail为空，参数Primarykey值为：" + urgeDish.getPrimarykey());
-                return Constant.FAILUREMSG;
+                return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单数据有误"));
             }
             if (orderDetail != null) {
                 detailNum = new BigDecimal(orderDetail.getDishnum());
@@ -1987,10 +1993,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         }
         if (toperationLogService.save(toperationLog)) {
-            return Constant.SUCCESSMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         } else {
             log.error("-->插入t_operation_log数据出错。参数toperationLog值为：" + toperationLog.getId());
-            return Constant.FAILUREMSG;
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败"));
         }
     }
 
@@ -2115,7 +2121,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public String urgeDishList(UrgeDish urgeDish) {
         if (urgeDish == null) {
-            return Constant.FAILUREMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数有误"));
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
@@ -2127,7 +2133,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         Map<String, Object> mapStatus = torderMapper.findOne(orderNo);
         if (!"0".equals(String.valueOf(mapStatus.get("orderstatus")))) {
-            return Constant.FAILUREMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态有误"));
         }
 
         String actionType = urgeDish.getActionType();
@@ -2141,14 +2147,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             commonDishList(urgeDish, "0", "1");
 
         }
-        return Constant.SUCCESSMSG;
+        return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
     }
 
 
     @Override
     public String cookiedishList(UrgeDish urgeDish) {
         if (urgeDish == null) {
-            return Constant.FAILUREMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数有误"));
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
@@ -2160,7 +2166,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         Map<String, Object> mapStatus = torderMapper.findOne(orderNo);
         if (!"0".equals(String.valueOf(mapStatus.get("orderstatus")))) {
-            return Constant.FAILUREMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态不正确"));
         }
 
         String actionType = urgeDish.getActionType();
@@ -2174,7 +2180,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             commonDishList(urgeDish, "1", "1");
             //update t_printdish status
         }
-        return Constant.SUCCESSMSG;
+        return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
     }
 
     /**
