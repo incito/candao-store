@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 	TorderMapper  torderMapper;
 	@Autowired
 	private MessageInstrumentService messageInstrumentService;
+	@Autowired
+	private MsgForwardService msgForwardService;
 	@Override
 	public boolean save(TbUserInstrument tbUserInstrument) {
 		return tbUserInstrumentDao.insert(tbUserInstrument)>0;
@@ -64,7 +67,7 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 				map1.put("userid", userid);
 				List<TbUserInstrument> listuser=tbUserInstrumentDao.findByParams(map1);
 				String tbMessageInstrumentid = IdentifierUtils.getId().generate().toString();
-				StringBuilder message=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2001+"/");
+				StringBuilder message=new StringBuilder();
 				if(listuser!=null&&listuser.size()>0){
 					//服务员还在线
 					//服务员编号|消息类型|区号|台号|消息id
@@ -77,15 +80,9 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 					List<Map<String, Object>> retableList=tableService.find(map);
 					userid=findrelateUserid(retableList);
 				}
-				String areaname = null;
-				try {
-					 areaname = java.net.URLEncoder.encode(String.valueOf(tableList.get(0).get("areaname")),"utf-8");
-				} catch (UnsupportedEncodingException e) {
-					logger.error("-->",e);
-					e.printStackTrace();
-				}
+				String areaname =String.valueOf(tableList.get(0).get("areaname"));
 				message.append(userid+"|"+String.valueOf(params.get("msg_type"))+"|"+areaname+"|"+(String) params.get("tableno")+"|"+tbMessageInstrumentid);
-				new Thread(new TsThread(message.toString())).run();
+				msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2001,message.toString());
 				TbMessageInstrument tbMessageInstrument = new TbMessageInstrument();
 				
 				tbMessageInstrument.setId(tbMessageInstrumentid);

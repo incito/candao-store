@@ -640,17 +640,13 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void notifyDishStatus(String dishId, short code) {
-        //兼容咖啡模式 推送给dataserver广播接口
-        StringBuffer str = new StringBuffer(com.candao.www.constant.Constant.TS_URL);
         String msgId;
         switch (code) {
             case 1:
                 msgId = MsgForwardTran.msgConfig.getProperty("MSF_ID.GUQING");
-                str.append(com.candao.www.constant.Constant.MessageType.msg_1003);
                 break;
             case 2:
                 msgId = MsgForwardTran.msgConfig.getProperty("MSF_ID.QXGUQING");
-                str.append(com.candao.www.constant.Constant.MessageType.msg_1007);
                 break;
             default:
                 return;
@@ -660,8 +656,5 @@ public class MenuServiceImpl implements MenuService {
         //消息有效期 秒
         int expireSeconds = 4 * 60 * 60;
         msgForwardService.broadCastMsg4Netty(msgId, msgData, expireSeconds, false);
-
-        str.append("/").append(dishId);
-        new Thread(new TsThread(str.toString())).run();
     }
 }
