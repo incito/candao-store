@@ -653,10 +653,6 @@ public class PadInterfaceController {
         jsonRecordService.insertJsonRecord(record);
 
         String cleantable = orderDetailService.cleantable(table);
-        //通知PAD清台
-        if (cleantable.contains("清台成功")) {
-            notifyService.notifyClearTable(table.getOrderNo());
-        }
         return cleantable;
     }
 

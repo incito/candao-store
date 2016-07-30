@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -30,7 +33,7 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
     private DeviceObjectService deviceObjectService;
     @Autowired
     private OfflineMsgMapper offlineMsgMapper;
-    private Executor msgExecutor= new ThreadPoolExecutor(0,2,30, TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>());
+    private Executor msgExecutor = new ThreadPoolExecutor(0, 2, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
     @Override
     public void processMsg(String msg) {
@@ -38,32 +41,34 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
         final MsgForwardData msgForwardData = MsgAnalyzeTool.analyzeMsgForward(msg);
         String msgId = msgForwardData.getMsgId();
         String serialNumber = msgForwardData.getSerialNumber();
-            Lock lock = mapLocks.get(serialNumber);
-            if (null!=lock) {
-                lock.lock();
-                try {
-                    mapResults.put(serialNumber, msgForwardData.getMsgData());
-                    mapConditions.get(serialNumber).signal();
-                } finally {
-                    lock.unlock();
-                }
+        Lock lock = mapLocks.get(serialNumber);
+        if (null != lock) {
+            lock.lock();
+            try {
+                mapResults.put(serialNumber, msgForwardData.getMsgData());
+                mapConditions.get(serialNumber).signal();
+            } finally {
+                lock.unlock();
             }
+        }
         DeviceObject deviceObject = null;
         try {
             BaseData baseData = JSON.parseObject(msgForwardData.getMsgData(), BaseData.class);
-            deviceObject = deviceObjectService.getByGroupAndId(baseData.getGroup(), baseData.getId());
+            if (null != baseData) {
+                deviceObject = deviceObjectService.getByGroupAndId(baseData.getGroup(), baseData.getId());
+            }
         } catch (Exception e) {
             LOGGER.error("###processMsg msg={},error={}###", msg, e.getCause().getStackTrace());
             e.printStackTrace();
         }
+        //清除离线消息记录
+        msgExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                offlineMsgMapper.deleteById(msgForwardData.getSerialNumber());
+            }
+        });
         if (this.msgHandlerMap.containsKey(msgId)) {
-            //清除离线消息记录
-            msgExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    offlineMsgMapper.deleteById(msgForwardData.getSerialNumber());
-                }
-            });
             for (MsgHandler msgHandler : this.msgHandlerMap.get(msgId)) {
                 msgHandler.handler(deviceObject, serialNumber, msgForwardData.getMsgData());
             }

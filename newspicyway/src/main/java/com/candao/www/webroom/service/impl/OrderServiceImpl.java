@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.webroom.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +40,6 @@ import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
-import com.candao.www.webroom.service.CouponsService;
-import com.candao.www.webroom.service.DataDictionaryService;
-import com.candao.www.webroom.service.DishUnitService;
-import com.candao.www.webroom.service.OpenBizService;
-import com.candao.www.webroom.service.OrderService;
-import com.candao.www.webroom.service.TableService;
-import com.candao.www.webroom.service.ToperationLogService;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -92,6 +86,8 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Autowired
 	OpenBizService  openBizService;
+	@Autowired
+	private NotifyService notifyService;
 
 	@Override
 	public int saveOrder(Torder order) {
@@ -502,10 +498,11 @@ public class OrderServiceImpl implements OrderService{
 						mapRet.put("rows", getMapData(orderid));//获取订单数据
 						//原订单meid不为空，推送清空
 						if(orderMap.get("meid")!=null&&params.get("meid")!=null&&!String.valueOf(orderMap.get("meid")).equals(String.valueOf(params.get("meid")))){
-							StringBuffer str=new StringBuffer(Constant.TS_URL);
-							str.append(Constant.MessageType.msg_1005+"/"+String.valueOf(orderMap.get("meid")));
-							System.out.println(str.toString());
-							new Thread(new TsThread(str.toString())).run();
+//							StringBuffer str=new StringBuffer(Constant.TS_URL);
+//							str.append(Constant.MessageType.msg_1005+"/"+String.valueOf(orderMap.get("meid")));
+//							System.out.println(str.toString());
+//							new Thread(new TsThread(str.toString())).run();
+							notifyService.notifyClearTable(params.get("tableNo").toString());
 						}
 						//当前pad的meid不为空，更新meid
 						if(params.get("meid")!=null){

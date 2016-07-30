@@ -52,7 +52,7 @@ public interface GiftLogService {
 	 *
 	 * @return
 	 */
-	public int updateGiftLogInfo(TGiftLog giftLog,String primarykey,HttpServletRequest reqeust);
+	public int updateGiftLogInfo(TGiftLog giftLog,String primarykey);
 	/**
 	 * 
 	 * 获取礼物信息
@@ -81,6 +81,7 @@ public interface GiftLogService {
 	 * @return
 	 */
 	public int updateOrderStatus(String orderid);
-	
+
+	public int deleteById(String logId);
 		
 }

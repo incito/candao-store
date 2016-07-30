@@ -80,7 +80,7 @@ public class GiftServiceImpl implements GiftLogService{
 	}
 
 	@Override
-	public int updateGiftLogInfo(TGiftLog giftLog,String primarykey,HttpServletRequest reqeust) {
+	public int updateGiftLogInfo(TGiftLog giftLog,String primarykey) {
 		int returnnum = 0;
 		if(giftLog==null){
 			return 4;
@@ -175,7 +175,7 @@ public class GiftServiceImpl implements GiftLogService{
 				res =  orderDetailService.setOrderDetailList(saveorder);
 			}
 			
-			if(res==null||!res.containsKey("result")||StringUtils.isBlank(String.valueOf(res.get("result")))||!String.valueOf(res.get("result")).equals("0")){
+			if(res==null||!res.containsKey("code")||StringUtils.isBlank(String.valueOf(res.get("code")))||!String.valueOf(res.get("code")).equals("0")){
 				returnnum = 3;
 				return returnnum;
 			}
@@ -241,5 +241,10 @@ public class GiftServiceImpl implements GiftLogService{
 	@Override
 	public int updateOrderStatus(String orderid) {
 		return giftDao.updateOrderStatus(orderid);
+	}
+
+	@Override
+	public int deleteById(String logId) {
+		return giftDao.deleteById(logId);
 	}
 }

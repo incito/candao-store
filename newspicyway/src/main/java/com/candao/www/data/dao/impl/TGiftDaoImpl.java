@@ -118,4 +118,11 @@ public class TGiftDaoImpl implements GiftLogDao {
 		paramMap.put("orderid", orderid);
 		return daoSupport.update(PREFIX + ".updateOrderStatus", paramMap);
 	}
+
+	@Override
+	public int deleteById(String logId) {
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("logId", logId);
+		return daoSupport.delete(PREFIX + ".deleteById", paramMap);
+	}
 }

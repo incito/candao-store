@@ -7,6 +7,7 @@ import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,19 +46,14 @@ public class NotifyServiceImpl implements NotifyService {
 
     @Override
     public Result notifyClearTable(final String tableNo) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("tableNo", tableNo);
-                List<Map<String, Object>> resultMapList = tableService.find(map);
-                if (null == resultMapList || resultMapList.isEmpty()) {
-                    return;
-                }
-                msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("tableNo", tableNo);
+        List<Map<String, Object>> resultMapList = tableService.find(map);
+        if (null == resultMapList || resultMapList.isEmpty()) {
+            return null;
+        }
+        msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
 
-            }
-        });
         return null;
     }
 
