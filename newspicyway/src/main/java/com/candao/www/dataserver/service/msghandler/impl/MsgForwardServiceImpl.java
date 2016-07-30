@@ -161,6 +161,10 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
                 single = 1;
             }
             OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
+            /*兼容watch的消息格式 start*/
+            OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
+            offlineMsg.setContent(JSON.toJSONString(offlineMsgData));
+           /*兼容watch的消息格式 end*/
             offlineMsgList.add(offlineMsg);
         }
         offlineMsgService.save(offlineMsgList, isSingle);
@@ -170,7 +174,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
                 add(offlineMsg.getDeviceId());
             }});
             OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+            MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(offlineMsgData.getContent());
             communicationService.forwardMsg(target, JSON.toJSONString(offMsgData));
         }
     }
