@@ -324,8 +324,8 @@ public class WeixinController extends BaseJsonController {
 
 				}catch(Exception e){
 					isSuucess = "2";//支付成功，清台或者打印结账单出错
-					//退款操作
-					weixincallback(attchresults[0], request);
+					//退款操作暂时注释
+					//weixincallback(attchresults[0], request);
 				}
 				isSuucess = "0";
 				loggers.info("当前订单id"+wpr.getAttach());
