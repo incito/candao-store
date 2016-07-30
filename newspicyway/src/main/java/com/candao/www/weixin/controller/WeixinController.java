@@ -183,7 +183,7 @@ public class WeixinController extends BaseJsonController {
 		String codeurl = getCodeurl(tpWxPay1);
 		if(codeurl!=null && !"".equals(codeurl)){
 //			return renderSuccessJSONString(SUCCESSCODE, codeurl);
-			return ReturnMap.getSuccessMap(codeurl);
+			return ReturnMap.getSuccessMap("",codeurl);
 		}
 //		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
 		return ReturnMap.getFailureMap("生成二维码失败");
