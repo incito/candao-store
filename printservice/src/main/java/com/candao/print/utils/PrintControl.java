@@ -351,6 +351,15 @@ public class PrintControl {
             inputStream.read(cReadBuf);
             logger.info("发送内容后检查打印机状态，回执内容：[" + new String(cReadBuf) + "]");
             iReadLen = cReadBuf.length;
+            
+            if (iReadLen <= 0) {
+                return STATUS_OFFLINE;
+            }
+
+            if (iReadLen % 4 != 0) {
+                return STATUS_ABNORMAL;
+            }
+            
 //            iReadValue = ReadDeviceStatus(cReadBuf);
             
             // for (ii = 0; ii < 100; ii++)
