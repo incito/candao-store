@@ -59,7 +59,9 @@ public interface NotifyService {
      *
      * @param orderId
      * @param payStatus
+     * @param payAmount
+     * @param yhAmount
      * @return
      */
-    Result notifyWXpay(String orderId, String payStatus);
+    Result notifyWXpay(String orderId, String payStatus, String payAmount, String yhAmount);
 }
