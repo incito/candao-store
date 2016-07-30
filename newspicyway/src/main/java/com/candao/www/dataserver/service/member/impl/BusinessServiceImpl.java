@@ -130,8 +130,6 @@ public class BusinessServiceImpl implements BusinessService {
             return "{\"Data\":\"0\",\"workdate\":\"\",\"Info\":缺少参数\"\"}";
         }
 
-        //截取出preferential参数中的有效数据
-        preferential = preferential.substring(4, preferential.length() - 2);//原始数据什么样？
         if (preferential.length() < 10) {
             orderRuleMapper.deleteByOrderId(orderId);
             return "{\"Data\":\"1\"}";

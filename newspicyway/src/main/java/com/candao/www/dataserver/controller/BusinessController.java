@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -91,8 +92,8 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/saveOrderPreferential/{userId}/{ip}/{orderId}/{preferential}/", produces = {"application/json;charset=UTF-8"})
-    public String saveOrderPreferential(@PathVariable String userId, @PathVariable String ip, @PathVariable String orderId, @PathVariable String preferential) {
+    @RequestMapping(value = "/saveOrderPreferential/{userId}/{ip}/{orderId}/", produces = {"application/json;charset=UTF-8"})
+    public String saveOrderPreferential(@PathVariable String userId, @PathVariable String ip, @PathVariable String orderId, @RequestBody String preferential) {
         logger.info("###REQUEST### BusinessController saveOrderPreferential userId={} ip={} orderId={} preferential={}", userId, ip, orderId, preferential);
         String result = businessService.saveOrderPreferential(userId, orderId, preferential);
         result = "{\"result\":[\"" + result + "\"]}";
