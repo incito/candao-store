@@ -1,11 +1,13 @@
 package com.candao.print.utils;
 
-import com.candao.print.entity.PrinterConstant;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.candao.print.entity.PrinterConstant;
 
 /**
  * 打印控制类
@@ -13,6 +15,8 @@ import java.util.Arrays;
  * @author 004
  */
 public class PrintControl {
+	
+    private static Log logger = LogFactory.getLog(PrintControl.class.getName());
 
     /**
      * 正常
@@ -109,6 +113,7 @@ public class PrintControl {
             byte[] cReadBuf = new byte[inputStream.available()];
             inputStream.read(cReadBuf);
             iState = ReadDeviceStatus(cReadBuf);
+            logger.info("打印前检查打印机状态，回执内容：[" + new String(cReadBuf) + "]，转换后的状态码：" + iState);
             switch (iState) {
                 case STATUS_OFFLINE: {
                     iReadNum++;
@@ -344,9 +349,19 @@ public class PrintControl {
 
             byte[] cReadBuf = new byte[inputStream.available()];
             inputStream.read(cReadBuf);
+            logger.info("发送内容后检查打印机状态，回执内容：[" + new String(cReadBuf) + "]");
             iReadLen = cReadBuf.length;
-            iReadValue = ReadDeviceStatus(cReadBuf);
+            
+            if (iReadLen <= 0) {
+                return STATUS_OFFLINE;
+            }
 
+            if (iReadLen % 4 != 0) {
+                return STATUS_ABNORMAL;
+            }
+            
+//            iReadValue = ReadDeviceStatus(cReadBuf);
+            
             // for (ii = 0; ii < 100; ii++)
             // {
             // cReadBuf[ii] = 0;
@@ -357,13 +372,13 @@ public class PrintControl {
             // iReadValue = ByReadASBStatus(iDevNum, p, 100, ref iReadLen);
             // }
 
-            if ((iReadValue == 0) && (iReadLen > 0)) {
-                // Chinese note: 检查返回数据长度是否合法
-                if (iReadLen % 4 != 0) {
-                    iReturnValue = STATUS_ABNORMAL;
-                    return iReturnValue;
-                }
-            }
+//            if ((iReadValue == 0) && (iReadLen > 0)) {
+//                // Chinese note: 检查返回数据长度是否合法
+//                if (iReadLen % 4 != 0) {
+//                    iReturnValue = STATUS_ABNORMAL;
+//                    return iReturnValue;
+//                }
+//            }
 
             for (ii = 0; ii < (iReadLen / 4); ii++) {
                 // Parse status
@@ -410,6 +425,7 @@ public class PrintControl {
                 // Chinese note:启动打印状态
                 if (bIsPrinting) {
                     bIsPrintingStart = true;
+                    logger.info("[开始打印]");
                 }
 
                 // Printer is printing status
@@ -422,6 +438,7 @@ public class PrintControl {
                     }
                     if (!bIsPrinting) // 打印完成
                     {
+                        logger.info("[打印完成]");
                     	iReturnValue = STATUS_PRINT_DONE;
                         return iReturnValue;
                     }

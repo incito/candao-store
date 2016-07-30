@@ -47,6 +47,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -1329,21 +1330,74 @@ public class PadInterfaceController {
     @RequestMapping(value = "/usePreferentialItem", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView usePreferentialItem(@RequestBody String body) {
-        ModelAndView mav = new ModelAndView();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-        String orderid = (String) params.get("orderid");  //账单号
-        String preferentialid = (String) params.get("preferentialid"); //优惠活动id
-        String disrate = (String) params.get("disrate"); // 手工折扣类会上传一个>0的折扣
-        String type = (String) params.get("type");
-        String subtype = (String) params.get("sub_type");
-        String preferentialAmt = (String) params.get("preferentialAmt");
-        OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(type, subtype, orderid,
-                preferentialid, disrate, preferentialAmt);
-
-        mav.addObject(result);
-        return mav;
+		ModelAndView mav = new ModelAndView();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
+		mav.addObject(result);
+		return mav;
     }
+    
+	/**
+	 * 删除使用优惠（根据订单号以及消费的ID删除使用优惠）
+	 * 
+	 * @param body
+	 *            传入参数
+	 * @return
+	 */
+	@RequestMapping(value = "delPreferentialItem", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView delPreferentialItem(@RequestBody String body) {
+		ModelAndView mav = new ModelAndView();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		Map<String, String> result = torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+		mav.addObject(result);
+		return mav;
+	}
+
+	@RequestMapping(value = "getDetailPreferentialList", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getDetailPreferentialList(@RequestBody String body) {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		// 获取所有订单数据
+		List<TorderDetailPreferential> allDetailPre = torderDetailPreferentialService.getTorderDetailSbyOrderid(params);
+		// 清空订单对应得优惠券
+		BigDecimal preferentialAmt = new BigDecimal("0");
+
+		Map<String, Object> setMap = new HashMap<>();
+		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
+		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
+			setMap.clear();
+			setMap.put("orderid", (String) params.get("orderid"));
+			setMap.put("preferentialid", branchDataSyn.getPreferential());
+			setMap.put("disrate", branchDataSyn.getDiscount().toString());
+			setMap.put("type", branchDataSyn.getActivity().getType());
+			setMap.put("subtype", branchDataSyn.getActivity().getSubType());
+			setMap.put("preferentialNum", "1");
+			setMap.put("preferentialAmt",preferentialAmt.toString());
+			setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
+			setMap.put("updateId", branchDataSyn.getId());
+			if (branchDataSyn.getIsCustom() == 1) {
+				setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
+			}
+
+			OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
+			// 就算每次优免总额
+			for (TorderDetailPreferential dep : result.getDetailPreferentials()) {
+				 preferentialAmt=preferentialAmt.add(dep.getDeAmount());
+				detailPreferentials.add(dep);
+			}
+		}
+		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
+		operPreferentialResult.setAmount(preferentialAmt);
+		operPreferentialResult.setDetailPreferentials(detailPreferentials);
+		operPreferentialResult.setResult(1);
+		mav.addObject(operPreferentialResult);
+		
+		return mav;
+	}
 
     /**
      * 取消账单使用的优惠
@@ -1547,7 +1601,7 @@ public class PadInterfaceController {
             }
             map = ReturnMap.getSuccessMap(datalist);
         }else{
-        	map = ReturnMap.getFailureMap("没有获取到数据");
+        	map = ReturnMap.getSuccessMap("没有获取到数据");	//pad端需要状态为成功
         }
         String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
         try {
@@ -1725,39 +1779,35 @@ public class PadInterfaceController {
      * "msg": "密码错误、没有开台权限"
      * }
      */
-    @RequestMapping(value = "/login.json")
-    @ResponseBody
-    public String loginJson(@RequestBody String body) {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        try {
-            Map<String, String> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-            String username = params.get("username");
-            String password = params.get("password");
-            String loginType = params.get("loginType");
-            Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
-            if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String date = sDateFormat.format(new java.util.Date());
-                resultMap.put("result", 0);
-                resultMap.put("msg", "验证成功");
-                resultMap.put("loginTime", date);
-                resultMap.put("fullname", String.valueOf(userMap.get("name")));
-            } else {
-                //userService.updateLoginTime(account);
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String date = sDateFormat.format(new java.util.Date());
-                resultMap.put("result", 1);
-                resultMap.put("loginTime", date);
-                resultMap.put("msg", String.valueOf(userMap.get("msg")));
-            }
-
-        } catch (Exception e) {
-            logger.error("--->", e);
-            resultMap.put("result", 1);
-            resultMap.put("msg", e.getMessage());
-        }
-        return JacksonJsonMapper.objectToJson(resultMap);
-    }
+    @RequestMapping(value = "/login.json" )
+	@ResponseBody
+	public String loginJson(@RequestBody String body){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			Map<String, String> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+			String username = params.get("username");
+			String password = params.get("password");
+			String loginType = params.get("loginType");
+			Map<String,Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password,loginType);
+			Map<String, Object> map = new HashMap<>();
+			if(Boolean.valueOf(String.valueOf(userMap.get("success")))){
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String date = sDateFormat.format(new java.util.Date());
+				map.put("loginTime",date);
+				map.put("fullname",String.valueOf(userMap.get("name")));
+				resultMap = ReturnMap.getSuccessMap("验证成功", map);
+			}else {
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String date = sDateFormat.format(new java.util.Date());
+				map.put("loginTime", date);
+				resultMap = ReturnMap.getFailureMap(String.valueOf(userMap.get("msg")),map);
+			}
+		} catch (Exception e) {
+			logger.error("--->",e);
+			resultMap = ReturnMap.getFailureMap("服务器内部错误，请联系管理员");
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
+	}
 
     /**
      * 获取员工权限列表
@@ -3150,6 +3200,8 @@ public class PadInterfaceController {
     private SystemServiceImpl systemServiceImpl;
     @Autowired
     private PadConfigService padConfigService;
+	@Autowired
+	private TorderDetailPreferentialService torderDetailPreferentialService;
 
     private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 

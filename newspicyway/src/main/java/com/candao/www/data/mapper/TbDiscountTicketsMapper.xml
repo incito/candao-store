@@ -6,14 +6,16 @@
 		<result column="preferential" property="preferential" jdbcType="VARCHAR" />
 		<result column="discount" property="discount" jdbcType="DECIMAL" />
 	</resultMap>
-	<resultMap id="find_result_map" type="java.util.HashMap" extends="base_result_map"></resultMap>
-	
+	<resultMap id="find_result_map" type="java.util.HashMap"
+		extends="base_result_map"></resultMap>
+
 	<sql id="base_column_list">
 		SELECT
 		tdt.id,
 		tdt.preferential,
 		tdt.discount
-		FROM t_p_preferential_detail tdt
+		FROM
+		t_p_preferential_detail tdt
 	</sql>
 	<sql id="base_condition">
 		<if test="id != null">
@@ -26,12 +28,12 @@
 			AND tdt.discount = #{discount}
 		</if>
 	</sql>
-	
+
 	<select id="get" resultMap="base_result_map" parameterType="java.lang.String">
 		<include refid="base_column_list" />
 		WHERE id = #{id,jdbcType=VARCHAR}
 	</select>
-	
+
 	<select id="find" resultMap="base_result_map" parameterType="map">
 		<include refid="base_column_list" />
 		<where>
@@ -40,54 +42,79 @@
 	</select>
 
 	<delete id="delete" parameterType="map">
-		DELETE FROM t_p_preferential_detail
+		DELETE FROM
+		t_p_preferential_detail
 		WHERE
 		id=#{id}
 	</delete>
-	
+
 	<insert id="insert" parameterType="com.candao.www.data.model.TbDiscountTickets">
-		INSERT INTO t_p_preferential_detail
+		INSERT INTO
+		t_p_preferential_detail
 		(id, preferential, discount)
-		VALUES (#{id,jdbcType=VARCHAR}, #{preferential,jdbcType=VARCHAR}, #{discount,jdbcType=DECIMAL})
+		VALUES
+		(#{id,jdbcType=VARCHAR}, #{preferential,jdbcType=VARCHAR},
+		#{discount,jdbcType=DECIMAL})
 	</insert>
-	
+
 	<update id="updateBySelective" parameterType="com.candao.www.data.model.TbDiscountTickets">
 		UPDATE t_p_preferential_detail
-		SET discount = #{discount,jdbcType=DECIMAL}
+		SET discount =
+		#{discount,jdbcType=DECIMAL}
 		<where>
 			<include refid="base_condition"></include>
 		</where>
 	</update>
-	
+
 	<update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TbDiscountTickets">
-		UPDATE t_p_preferential_detail
+		UPDATE
+		t_p_preferential_detail
 		SET discount = #{discount,jdbcType=DECIMAL}
 		WHERE id = #{id,jdbcType=VARCHAR}
 	</update>
-	
+
 	<insert id="batchInsertNoDiscountDishs" parameterType="java.util.List">
-		INSERT INTO t_p_no_discount_dish (id, discount_ticket, dish, dish_title, unit, unitflag, itemtype, itemdesc, item_select)
+		INSERT INTO t_p_no_discount_dish (id, discount_ticket, dish,
+		dish_title, unit, unitflag, itemtype, itemdesc, item_select)
 		VALUES
-		<foreach collection="list" item="item" index="index" separator=",">
-			(#{item.id}, #{item.discountTicket} , #{item.dish} , #{item.dish_title}, #{item.unit}, #{item.unitflag}, #{item.itemtype}, #{item.itemdesc}, #{item.item_select})
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.discountTicket} , #{item.dish} ,
+			#{item.dish_title}, #{item.unit}, #{item.unitflag}, #{item.itemtype},
+			#{item.itemdesc}, #{item.item_select})
 		</foreach>
 	</insert>
-	
+
 	<delete id="deleteNoDiscountDishsByDiscount" parameterType="map">
 		DELETE FROM t_p_no_discount_dish
 		WHERE
 		discount_ticket=#{discountTicket}
 	</delete>
-	
-	<select id="getNoDiscountDishsByDiscount" parameterType="java.lang.String" resultType="com.candao.www.data.model.TbNoDiscountDish">
-		SELECT id, discount_ticket as discountTicket, dish, dish_title, unit, unitflag, itemtype, itemdesc, item_select 
-		FROM t_p_no_discount_dish 
-		WHERE discount_ticket=#{discountId}
+
+	<select id="getNoDiscountDishsByDiscount" parameterType="java.lang.String"
+		resultType="com.candao.www.data.model.TbNoDiscountDish">
+		SELECT tpnd.* FROM t_p_no_discount_dish tpnd ,t_dish tdi
+		WHERE tdi.dishid=tpnd.dish AND tpnd.discount_ticket=#{discountId}
 	</select>
-	
-	<select id="getDishidList" parameterType="java.lang.String" resultType="com.candao.www.data.model.Tdish">
-		 select td.dishid,td.title from t_group_detail tgd,t_dish td where  tgd.dishid =#{dishid}
-         and tgd.contactdishid=td.dishid
+
+	<select id="getNoDiscountDishsByDish" parameterType="map"
+		resultType="com.candao.www.data.model.TbNoDiscountDish">
+		SELECT tpnd.* FROM t_p_no_discount_dish tpnd ,t_dish tdi
+		WHERE
+		tdi.dishid=tpnd.dish AND tpnd.discount_ticket=#{discountId} AND
+		tdi.dishid IN
+		<foreach collection="orderDetail" open="(" close=")" index="index"
+			item="orderDetailInfo" separator=",">
+			#{orderDetailInfo.dishid,jdbcType=VARCHAR}
+		</foreach>
 	</select>
-	
+
+	<select id="getDishidList" parameterType="java.lang.String"
+		resultType="com.candao.www.data.model.Tdish">
+		select td.dishid,td.title from t_group_detail tgd,t_dish td
+		where tgd.dishid
+		=#{dishid}
+		and tgd.contactdishid=td.dishid
+	</select>
+
 </mapper>
