@@ -149,16 +149,20 @@ public class WeixinController extends BaseJsonController {
 		loggers.info(JacksonJsonMapper.objectToJson(weixinRequestParam));
 
 		if (isNull(weixinRequestParam.getBody())) {
-			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
+//			return renderErrorJSONString(ERRORCODE, "商品信息不能为空");
+			return ReturnMap.getFailureMap("商品信息不能为空");
 		}
 		if (isNull(weixinRequestParam.getAttach())) {
-			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
+//			return renderErrorJSONString(ERRORCODE, "订单id不能为空");
+			return ReturnMap.getFailureMap("订单id不能为空");
 		}
 		if (isNull(weixinRequestParam.getSpbillCreateIp())) {
-			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
+//			return renderErrorJSONString(ERRORCODE, "ip地址不能为空");
+			return ReturnMap.getFailureMap("ip地址不能为空");
 		}
 		if (isNull(weixinRequestParam.getTotalFee())) {
-			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
+//			return renderErrorJSONString(ERRORCODE, "商品总价不能为空");
+			return ReturnMap.getFailureMap("商品总价不能为空");
 		}
 		//
 		String branchid = PropertiesUtils.getValue("current_branch_id");// 当前门店id
@@ -178,9 +182,11 @@ public class WeixinController extends BaseJsonController {
 		tpWxPay1.setAttach(weixinRequestParam.getAttach());
 		String codeurl = getCodeurl(tpWxPay1);
 		if(codeurl!=null && !"".equals(codeurl)){
-			return renderSuccessJSONString(SUCCESSCODE, codeurl);
+//			return renderSuccessJSONString(SUCCESSCODE, codeurl);
+			return ReturnMap.getSuccessMap(codeurl);
 		}
-		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
+//		return renderSuccessJSONString(ERRORCODE, "生成二维码失败");
+		return ReturnMap.getFailureMap("生成二维码失败");
 	}
 
 
@@ -724,7 +730,7 @@ public class WeixinController extends BaseJsonController {
 	public String queryActivity(){
 		String activityCode="09";
 		Map<String, Object>  result=weixinService.queryActivity(activityCode);
-		return JacksonJsonMapper.objectToJson(getSuccessInstance(result));
+		return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(result));
 	}
 
 	/**
