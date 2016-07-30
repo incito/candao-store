@@ -1783,39 +1783,35 @@ public class PadInterfaceController {
      * "msg": "密码错误、没有开台权限"
      * }
      */
-    @RequestMapping(value = "/login.json")
-    @ResponseBody
-    public String loginJson(@RequestBody String body) {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        try {
-            Map<String, String> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-            String username = params.get("username");
-            String password = params.get("password");
-            String loginType = params.get("loginType");
-            Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
-            if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String date = sDateFormat.format(new java.util.Date());
-                resultMap.put("result", 0);
-                resultMap.put("msg", "验证成功");
-                resultMap.put("loginTime", date);
-                resultMap.put("fullname", String.valueOf(userMap.get("name")));
-            } else {
-                //userService.updateLoginTime(account);
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String date = sDateFormat.format(new java.util.Date());
-                resultMap.put("result", 1);
-                resultMap.put("loginTime", date);
-                resultMap.put("msg", String.valueOf(userMap.get("msg")));
-            }
-
-        } catch (Exception e) {
-            logger.error("--->", e);
-            resultMap.put("result", 1);
-            resultMap.put("msg", e.getMessage());
-        }
-        return JacksonJsonMapper.objectToJson(resultMap);
-    }
+    @RequestMapping(value = "/login.json" )
+	@ResponseBody
+	public String loginJson(@RequestBody String body){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			Map<String, String> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+			String username = params.get("username");
+			String password = params.get("password");
+			String loginType = params.get("loginType");
+			Map<String,Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password,loginType);
+			Map<String, Object> map = new HashMap<>();
+			if(Boolean.valueOf(String.valueOf(userMap.get("success")))){
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String date = sDateFormat.format(new java.util.Date());
+				map.put("loginTime",date);
+				map.put("fullname",String.valueOf(userMap.get("name")));
+				resultMap = ReturnMap.getSuccessMap("验证成功", map);
+			}else {
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String date = sDateFormat.format(new java.util.Date());
+				map.put("loginTime", date);
+				resultMap = ReturnMap.getFailureMap(String.valueOf(userMap.get("msg")),map);
+			}
+		} catch (Exception e) {
+			logger.error("--->",e);
+			resultMap = ReturnMap.getFailureMap("服务器内部错误，请联系管理员");
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
+	}
 
     /**
      * 获取员工权限列表
