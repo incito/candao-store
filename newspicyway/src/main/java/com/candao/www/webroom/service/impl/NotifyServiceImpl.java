@@ -7,7 +7,6 @@ import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -97,12 +96,14 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     @Override
-    public Result notifyWXpay(final String orderId, final String payStatus) {
+    public Result notifyWXpay(final String orderId, final String payStatus, final String payAmount, final String yhAmount) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 Map<String, Object> data = new HashMap<>(1);
                 data.put("orderId", orderId);
+                data.put("payAmount", payAmount);
+                data.put("yhAmount", yhAmount);
                 data.put("payStatus", payStatus);
                 msgForwardService.sendMsgAsynWithOrderId(orderId, MsgForwardTran.msgConfig.getProperty("MSF_ID.WXPAY"), data, 4 * 60 * 60, false);
             }

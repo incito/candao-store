@@ -406,7 +406,7 @@ public class WeixinController extends BaseJsonController {
 	 */
 	private void sendmessage2Android(String code,String attach) {
 		String[] attachs = attach.split("|");
-		notifyService.notifyWXpay(attachs[1],code);
+		notifyService.notifyWXpay(attachs[1],code,attachs[2],attachs[3]);
 		loggers.info("微信支付推送");
 	}
 
