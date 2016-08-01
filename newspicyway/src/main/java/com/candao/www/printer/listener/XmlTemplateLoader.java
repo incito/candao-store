@@ -105,7 +105,7 @@ public class XmlTemplateLoader {
 
 	public void loadDocument() throws Exception {
 		//TODO 校验格式
-		DocumentBuilderFactory factory = createDocumentBuilderFactory(XmlValidationModeDetector.VALIDATION_NONE, false);
+		DocumentBuilderFactory factory = createDocumentBuilderFactory(XmlValidationModeDetector.VALIDATION_NONE, true);
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		if (!CollectionUtils.isEmpty(inputStreams)) {
 			documents = documents == null ? new ArrayList<Document>() : documents;

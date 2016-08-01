@@ -2,8 +2,11 @@ package com.candao.www.printer.listener;
 
 import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.dao.TbPrinterManagerDao;
-import com.candao.print.entity.TbPrinter;
+import com.candao.print.listener.QueueListener;
 import com.candao.print.listener.template.ListenerTemplate;
+import com.candao.www.printer.listener.namespaceHandler.SimpleNamespaceHandlerResover;
+import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
+import com.candao.www.printer.listener.template.XMLTemplateDefinition;
 import com.candao.www.printer.v2.PrinterManager;
 
 import org.apache.activemq.command.ActiveMQQueue;
@@ -26,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -52,31 +56,33 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	private String messageListeners = "";
 
 	private Runnable callback;
-	
+
 	private List<String> ipPool;
-	//监听模板对应字体
+	// 监听模板对应字体
 	private Map<String, Map<String, Object>> listenerTemplate = new ConcurrentHashMap<>();
-	//标准板式
+	// 标准板式
 	private static final Integer STANDARD = 1;
-	//大字体
+	// 大字体
 	private static final Integer LARGE = 3;
-	//小字体
+	// 小字体
 	private static final Integer SMALL = 2;
-	
+
 	private Log log = LogFactory.getLog(PrinterListenerManager.class.getName());
 
 	private static ReadWriteLock lock = new ReentrantReadWriteLock();
-	
-	private final static String TEMPLATEPATH = "classpath:template/printerTemplate";
-	//XML模板
-	private Map<String, Object> listenerXMLTemplate = new ConcurrentHashMap<>();
-	
+
+	private final static String TEMPLATEPATH = "template/printerTemplate";
+	// XML模板
+	private Map<String, XMLTemplateDefinition> listenerXMLTemplate = new ConcurrentHashMap<>();
+
 	@Autowired
 	private XmlTemplateLoader xmlTemplateLoader;
-	
+
 	@Autowired
 	private XmlTemplateDefinitionReader xmlTemplateDefinitionReader;
-	
+
+	private static final String XMLTEMPLATELISTENER = "xmlTemplateListener";
+
 	public PrinterListenerManager() {
 
 	}
@@ -119,8 +125,8 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			listeners.clear();
 		}
 	}
-	
-	private void stopListener(DefaultMessageListenerContainer container){
+
+	private void stopListener(DefaultMessageListenerContainer container) {
 		if (container != null) {
 			if (container.isRunning()) {
 				container.stop();
@@ -133,8 +139,9 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	public void start() {
 		synchronized (activeMonitor) {
 			createListeners();
-//			createConnections();
 			createListenerTemplate();
+			// 加载模板
+			loadXMLTemplate(TEMPLATEPATH);
 			callback = null;
 			running = true;
 		}
@@ -163,7 +170,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			}
 		}
 	}
-	
+
 	private DefaultMessageListenerContainerAdapter getListener(String ipaddress) {
 		Destination dst = new ActiveMQQueue(ipaddress);
 		DefaultMessageListenerContainerAdapter listener = (DefaultMessageListenerContainerAdapter) applicationContext
@@ -195,18 +202,18 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-	
+
 	/**
 	 * 更新监听队列
 	 */
-	public synchronized void updateListener(){
+	public synchronized void updateListener() {
 		Map<String, Object> params = new HashMap<>();
 		List<Map<String, Object>> printers = tbPrinterManagerDao.find(params);
 		if (ipPool == null) {
 			ipPool = new ArrayList<>();
 		}
 		ipPool.clear();
-		
+
 		List<String> buffer = new ArrayList<>();
 		if (printers != null && !printers.isEmpty()) {
 			for (Map<String, Object> it : printers) {
@@ -216,7 +223,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 					ipaddress = ips[0];
 				}
 				ipPool.add(ipaddress + ":" + it.get("port"));
-				
+
 				if (listeners.get(ipaddress) == null) {
 					DefaultMessageListenerContainerAdapter listener = getListener(ipaddress);
 					listener.trulyStart();
@@ -225,7 +232,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 				buffer.add(ipaddress);
 			}
 		}
-		
+
 		if (!CollectionUtils.isEmpty(listeners)) {
 			List<String> temp = new ArrayList<>();
 			for (String ip : listeners.keySet()) {
@@ -235,70 +242,96 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			}
 			this.clearListeners(temp);
 		}
-		
+
 		this.createConnections(ipPool);
 	}
-	
-	private void clearListeners(List<String> ipAddresss){
+
+	private void clearListeners(List<String> ipAddresss) {
 		for (String it : ipAddresss) {
 			clearListener(it);
 		}
 	}
-	
-	private void clearListener(String ipAddress){
+
+	private void clearListener(String ipAddress) {
 		if (StringUtils.isEmpty(ipAddress)) {
 			return;
 		}
-		if ( !CollectionUtils.isEmpty(listeners) && listeners.get(ipAddress) != null) {
+		if (!CollectionUtils.isEmpty(listeners) && listeners.get(ipAddress) != null) {
 			DefaultMessageListenerContainerAdapter listener = listeners.remove(ipAddress);
 			this.stopListener(listener);
 		}
 	}
-	
-	private void createListenerTemplate(){
-		//TODO
+
+	private void createListenerTemplate() {
+		// TODO
 		List<Map<String, Object>> printers = tbPrinterManagerDao.find(null);
 		if (printers != null && !printers.isEmpty()) {
 			for (Map<String, Object> it : printers) {
 				listenerTemplate.put((String) it.get("printerid"), it);
 			}
 		}
-		//加载模板
-		loadXMLTemplate(TEMPLATEPATH);
 	}
-	
+
 	private void loadXMLTemplate(String templatepath) {
 		try {
 			xmlTemplateLoader.load(templatepath);
 		} catch (Exception e) {
-			//TODO
+			// TODO
 			e.printStackTrace();
 		}
-		
-		this.listenerXMLTemplate.clear();
-		
-		Map<String, Object> buffer =  xmlTemplateDefinitionReader.doLoadBeanDefinitions(xmlTemplateLoader);
-		if (!MapUtils.isEmpty(buffer)) {
-			listenerXMLTemplate.putAll(buffer);
+		try {
+			lock.writeLock().lock();
+
+			this.listenerXMLTemplate.clear();
+
+			Map<String, XMLTemplateDefinition> buffer = null;
+			try {
+				buffer = xmlTemplateDefinitionReader.doLoadBeanDefinitions(xmlTemplateLoader, new XmlReaderContext(xmlTemplateDefinitionReader, new SimpleNamespaceHandlerResover()));
+			} catch (Exception e) {
+				log.error("打印模板解析失败！尝试重新编辑", e);
+				e.printStackTrace();
+			}
+			if (!MapUtils.isEmpty(buffer)) {
+				listenerXMLTemplate.putAll(buffer);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("加载模板失败", e);
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public XMLTemplateDefinition getTemplateDefinition(String id) {
+		try {
+			lock.readLock().tryLock(3, TimeUnit.SECONDS);
+			return listenerXMLTemplate.get(id);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			log.error(id + "获取锁失败", e);
+			return null;
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 
 	public void updateListenerTemplate() {
-		try{
+		try {
 			lock.writeLock().lock();
-			
+
 			listenerTemplate.clear();
-			createListenerTemplate();			
-		} catch (Exception e){
+			createListenerTemplate();
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("更新监听失败", e);
 		} finally {
 			lock.writeLock().unlock();
 		}
 	}
-	
+
 	/**
 	 * 根据监听类型找到对应的模板
+	 * 
 	 * @param listenerType
 	 * @return
 	 */
@@ -307,6 +340,10 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			lock.readLock().lock();
 			if (printerid == null || printerid.isEmpty()) {
 				return null;
+			}
+
+			if (isXmlTemplate(listenerType)) {
+				return getTemplateDefinition(listenerType.toString());
 			}
 			if (!this.listenerTemplate.containsKey(printerid)) {
 				log.error("------------  找不到打印模板！" + printerid);
@@ -327,5 +364,22 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 			lock.readLock().unlock();
 		}
 	}
-	
+
+	public boolean isXmlTemplate(ListenerType listenerType) {
+		if (listenerType == null) {
+			return false;
+		}
+
+		switch (listenerType) {
+		// 结账单
+		case SettlementDishListener:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	public QueueListener getXmlQueueListener(ListenerType type) {
+		return (QueueListener) applicationContext.getBean(XMLTEMPLATELISTENER);
+	}
 }
