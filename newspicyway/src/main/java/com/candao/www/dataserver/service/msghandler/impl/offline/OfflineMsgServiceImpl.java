@@ -24,6 +24,8 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
     public void handler(DeviceObject deviceObject, String serialNumber, String msg) {
         try {
             LOGGER.info("### offlinemsg delete msg={} ###", msg);
+            OfflineMsgData offLineMsgData = MsgAnalyzeTool.analyzeOffLineResp(msg);
+            offlineMsgMapper.deleteById(offLineMsgData.getOffLineMsgId());
         } catch (Exception e) {
             LOGGER_ERROR.error("### offlinemsg delete msg={},error={} ###", msg, e.getCause().getStackTrace());
         }
