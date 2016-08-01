@@ -1601,7 +1601,7 @@ public class PadInterfaceController {
             }
             map = ReturnMap.getSuccessMap(datalist);
         }else{
-        	map = ReturnMap.getSuccessMap("没有获取到数据");	//pad端需要状态为成功
+        	map = ReturnMap.getSuccessMap("没有获取到数据",datalist);	//pad端需要状态为成功
         }
         String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
         try {
