@@ -1,7 +1,10 @@
 package com.candao.print.listener;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.StringUtils;
@@ -14,6 +17,7 @@ import com.candao.print.listener.template.ListenerTemplate;
 
 @Service
 public class CustDishListener extends AbstractQueueListener{
+	private Logger logger= LoggerFactory.getLogger(CustDishListener.class);
 
 	/**
 	 * 
@@ -112,6 +116,10 @@ public class CustDishListener extends AbstractQueueListener{
 		socketOut.write(template.setAlignCenter());
 		writer.write("欢迎品尝       谢谢惠顾\r\n");
 		socketOut.write(template.setAlignLeft());
+
+		logger.info("------------------------");
+		logger.info("打印客用单，订单号：" + object.getOrderNo());
+		logger.info( "菜品明细："+ Arrays.toString(text));
 	}
 
 	public PrintData receiveMessage(PrintObj object , ListenerTemplate template) throws Exception {

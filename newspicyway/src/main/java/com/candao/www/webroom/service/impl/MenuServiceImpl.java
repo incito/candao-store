@@ -7,6 +7,7 @@ import com.candao.file.common.Constant;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
+import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.SessionUtils;
 import com.candao.www.utils.TsThread;
@@ -424,19 +425,19 @@ public class MenuServiceImpl implements MenuService {
         params.put("branchid", branchid);
         List<Map<String, Object>> menuList = tmenuDao.findMenuByBrachid(params);
         Map<String, Object> menu = new HashMap<String, Object>();
+        Map<String, Object> columnMap = new HashMap<String, Object>();
         if (menuList != null && menuList.size() > 0) {
-            Map<String, Object> columnMap = new HashMap<String, Object>();
             menu = menuList.get(0);
             String menuid = String.valueOf(menu.get("menuid"));
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("menuid", menuid);
             map.put("id", 0);
             List<Map<String, Object>> columnList = tbasicDataDao.getMenuColumn(map);
-            columnMap.put("rows", columnList);
+            columnMap = ReturnMap.getSuccessMap(columnList);
             return columnMap;
         } else {
             logger.info("menuList为空");
-            return null;
+            return ReturnMap.getFailureMap("获取菜谱分类失败");
         }
     }
 
@@ -561,6 +562,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Map<String, Object> getHeatDishList(Map<String, Object> params) {
+        // TODO Auto-generated method stub
         Map<String, Object> map = new HashMap<String, Object>();
         List<Map<String, Object>> list = tmenuDao.getHeatDishList(params);
         if (list != null && list.size() > 0) {
@@ -635,29 +637,21 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void notifyDishStatus(String dishId, short code) {
-        //兼容咖啡模式 推送给dataserver广播接口
-        StringBuffer str = new StringBuffer(com.candao.www.constant.Constant.TS_URL);
         String msgId;
         switch (code) {
             case 1:
-                msgId = com.candao.www.constant.Constant.MSG_ID.GUQING;
-                str.append(com.candao.www.constant.Constant.MessageType.msg_1003);
+                msgId = MsgForwardTran.msgConfig.getProperty("MSF_ID.GUQING");
                 break;
             case 2:
-                msgId = com.candao.www.constant.Constant.MSG_ID.QXGUQING;
-                str.append(com.candao.www.constant.Constant.MessageType.msg_1007);
+                msgId = MsgForwardTran.msgConfig.getProperty("MSF_ID.QXGUQING");
                 break;
             default:
                 return;
         }
         Map<String, Object> msgData = new HashMap<>();
         msgData.put("dishId", dishId);
-        msgData.put("oper", msgId);
         //消息有效期 秒
         int expireSeconds = 4 * 60 * 60;
         msgForwardService.broadCastMsg4Netty(msgId, msgData, expireSeconds, false);
-
-        str.append("/").append(dishId);
-        new Thread(new TsThread(str.toString())).run();
     }
 }

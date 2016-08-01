@@ -22,10 +22,6 @@ public class DeviceObject extends Device {
 
     }
 
-    private String sendMsgSync(String msg) {
-        return this.msgForwardService.broadCastMsgSync(getId(), msg);
-    }
-
     private void sendMsg(String msg) {
         this.msgForwardService.broadCastMsg(getId(), msg);
     }

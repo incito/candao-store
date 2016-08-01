@@ -1,11 +1,14 @@
 package com.candao.www.webroom.service.impl;
 
-import com.candao.common.utils.HttpUtils;
-import com.candao.common.utils.JacksonJsonMapper;
-import com.candao.common.utils.PropertiesUtils;
-import com.candao.www.data.dao.TtemplateDishUnitlDao;
-import com.candao.www.data.model.TtemplateDishUnit;
-import com.candao.www.spring.SpringContext;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +22,12 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.candao.common.utils.HttpUtils;
+import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.data.dao.TtemplateDishUnitlDao;
+import com.candao.www.data.model.TtemplateDishUnit;
+import com.candao.www.spring.SpringContext;
 
 /**
  * 门店与总店数据同步功能
@@ -71,25 +72,27 @@ public class SyncService {
             resp = JacksonJsonMapper.jsonToObject(result, Map.class);
             if ("200".equals(String.valueOf(resp.get("statusCode")))) {
                 try {
-
-//        type为cookbook时，备份已估清的菜品
+//        			type为cookbook时，备份已估清的菜品
                     List<TtemplateDishUnit> dishUnits = new ArrayList<>();
                     if (COOKBOOK.equals(type)) {
                         dishUnits = ttemplateDishUnitlDao.getTtemplateDishUnitByStatus();
+                        logger.info("---->手动同步，备份已经估清的菜品："+dishUnits.size()+"份");
                     }
 
-//        同步数据
+//         			同步数据
                     doSave((Map<String, List<Map<String, Object>>>) resp.get("data"));
 
-//        把已经估清的菜品重新估清
+//        			把已经估清的菜品重新估清
                     StringBuilder dishBuilder = new StringBuilder();
                     for (TtemplateDishUnit dishUnit : dishUnits) {
                         String dishid = dishUnit.getDishid();
                         dishBuilder.append("'").append(dishid).append("'").append(",");
+                        logger.info("---->手动同步，组装需要重新估清的菜品："+dishUnit.getDishname());
                     }
                     if (dishBuilder.length() > 0) {
                         String dishIds = dishBuilder.substring(0, dishBuilder.length() - 1);
                         ttemplateDishUnitlDao.updateStatus(dishIds);
+                        logger.info("---->手动同步，重新估清菜品成功");
                     }
                 } catch (Exception e) {
                     logger.error("数据入库失败\n" + result, e);
@@ -174,7 +177,10 @@ public class SyncService {
      * @return
      */
     private String createSql(String tableName, List<Map<String, Object>> list, Connection connection) {
-        Assert.notEmpty(list);
+        //数据表为空的情况则忽略
+    	if(list == null  || list.isEmpty()){
+    		return null;
+    	}
 
         StringBuffer sbf = new StringBuffer("insert into " + tableName + "(");
 

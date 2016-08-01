@@ -61,7 +61,7 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
                 BeanUtilEx.copyProperties(deviceObject, device);
             } catch (Exception e) {
                 e.printStackTrace();
-                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e);
+                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e.getCause().getStackTrace());
             }
             deviceObjectList.add(deviceObject);
         }
@@ -94,7 +94,7 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
                 BeanUtilEx.copyProperties(deviceObject, device);
             } catch (Exception e) {
                 e.printStackTrace();
-                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e);
+                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e.getCause().getStackTrace());
             }
         }
         return deviceObject;
@@ -109,7 +109,7 @@ public class DeviceObjectServiceImpl implements DeviceObjectService {
                 BeanUtilEx.copyProperties(deviceObject, device);
             } catch (Exception e) {
                 e.printStackTrace();
-                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e);
+                LOGGER.error("### copyDeviceToDeviceObject error={} ###", e.getCause().getStackTrace());
             }
         }
         return deviceObject;

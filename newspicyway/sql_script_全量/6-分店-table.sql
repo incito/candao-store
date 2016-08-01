@@ -2556,6 +2556,9 @@ CREATE TABLE `t_b_weixin` (
   `appid` varchar(50) NOT NULL,
   `partner` varchar(50) NOT NULL,
   `appsecret` varchar(50) NOT NULL,
+  `weixintype` int(11) DEFAULT NULL,
+  `personweixinurl` varchar(100) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2633,6 +2636,53 @@ CREATE TABLE `t_offline_msg` (
   KEY `group_id` (`device_group`,`device_id`),
   KEY `expire_time` (`expire_time`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `t_b_padconfig`;
+CREATE TABLE `t_b_padconfig` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `padloginpass` varchar(20) DEFAULT NULL,
+  `social` tinyint(1) DEFAULT NULL,
+  `seatimageurls` varchar(500) DEFAULT NULL,
+  `seatimagenames` varchar(100) DEFAULT NULL,
+  `vipstatus` tinyint(1) DEFAULT NULL,
+  `viptype` varchar(8) DEFAULT NULL,
+  `vipcandaourl` varchar(50) DEFAULT NULL,
+  `vipotherurl` varchar(50) DEFAULT NULL,
+  `clickimagedish` tinyint(1) DEFAULT NULL,
+  `onepage` tinyint(1) DEFAULT NULL,
+  `newplayer` tinyint(1) DEFAULT NULL,
+  `chinaEnglish` tinyint(1) DEFAULT NULL,
+  `indexad` tinyint(1) DEFAULT NULL,
+  `invoice` tinyint(1) DEFAULT NULL,
+  `hidecarttotal` tinyint(1) DEFAULT NULL,
+  `adtimes` varchar(10) DEFAULT NULL,
+  `waiterreward` tinyint(1) DEFAULT NULL,
+  `rewardmoney` varchar(10) DEFAULT NULL,
+  `youmengappkey` varchar(150) DEFAULT NULL,
+  `youmengchinnal` varchar(150) DEFAULT NULL,
+  `bigdatainterface` varchar(150) DEFAULT NULL,
+  `braceletgappkey` varchar(150) DEFAULT NULL,
+  `braceletchinnal` varchar(150) DEFAULT NULL,
+  `weixintype` varchar(8) DEFAULT NULL,
+  `personweixinurl` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `t_order_detail_preferential`;
+CREATE TABLE `t_order_detail_preferential` (
+  `id` varchar(50) NOT NULL COMMENT 'UUID主键由门店后台生成',
+  `orderid` varchar(50) NOT NULL COMMENT '订单号',
+  `dishid` varchar(50) DEFAULT NULL COMMENT '菜品编号',
+  `dishNum` varchar(20) NOT NULL COMMENT '菜品数量',
+  `preferential` varchar(50) NOT NULL COMMENT '优惠表主键',
+  `deAmount` decimal(30,7) DEFAULT '1.0000000' COMMENT '使用优惠卷张数',
+  `discount` decimal(6,4) DEFAULT '0.0000' COMMENT '折扣信息',
+  `isCustom` tinyint(1) DEFAULT '0' COMMENT '是否是自己设定',
+  `isGroup` tinyint(1) DEFAULT '0' COMMENT '是否是全局使用优惠',
+  `isUse` tinyint(1) DEFAULT '1' COMMENT '当前菜单对应的优惠卷是否使用中（1使用0菜品被删除）',
+  `insertime` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '当前插入时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- 
 -- Enable foreign keys
 -- 

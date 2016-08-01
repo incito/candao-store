@@ -544,7 +544,7 @@
 	#{item.primarykey} 
 	</foreach>
   </select>
-    <select id="getByPrimarykey" resultType="java.lang.Integer" parameterType="java.lang.String">
+    <select id="getByPrimarykey" resultMap="BaseResultMap" parameterType="java.lang.String">
         select primarykey  from t_order_detail where primarykey in
         <foreach collection="primarykeys" item="item" index="index" open="(" close=")" separator=",">
             #{item.primarykey}

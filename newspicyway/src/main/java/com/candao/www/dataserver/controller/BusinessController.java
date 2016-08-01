@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,7 +31,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/GetServerTableList/{orderId}/{userId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetServerTableList/{orderId}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getServerTableList(@PathVariable String userId, @PathVariable String orderId) {
         logger.info("###REQUEST### BusinessController GetServerTableList userId={}  orderId={}", userId, orderId);
         String s = businessService.getServerTableList(userId, orderId);
@@ -47,14 +48,15 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/GetServerTableList_2/{orderId}/{userId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetServerTableList_2/{orderId}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getServerTableList2(@PathVariable String userId, @PathVariable String orderId) {
         logger.info("###REQUEST### BusinessController GetServerTableList_2 userId={}  orderId={}", userId, orderId);
-        String s = businessService.getServerTableList2(orderId,userId );
+        String s = businessService.getServerTableList2(orderId, userId);
         s = "{\"result\":[\"" + s + "\"]}";
         logger.info("###RESPONSE### BusinessController GetServerTableList_2 response={}", s);
         return s;
     }
+
     /**
      * 开业和是否开业接口
      *
@@ -65,7 +67,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/OpenUp/{userId}/{userPwd}/{ip}/{callType}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/OpenUp/{userId}/{userPwd}/{ip}/{callType}/", produces = {"application/json;charset=UTF-8"})
     public String openUp(@PathVariable String userId, @PathVariable String userPwd, @PathVariable String ip, @PathVariable Integer callType) {
         logger.info("###REQUEST### BusinessController OpenUp userId={}  userPwd={} ip={} callType={}", userId, userPwd, ip, callType);
         String result;
@@ -90,8 +92,8 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/saveOrderPreferential/{userId}/{ip}/{orderId}/{preferential}/", produces = {"application/text;charset=UTF-8"})
-    public String saveOrderPreferential(@PathVariable String userId, @PathVariable String ip, @PathVariable String orderId, @PathVariable String preferential) {
+    @RequestMapping(value = "/saveOrderPreferential/{userId}/{ip}/{orderId}/", produces = {"application/json;charset=UTF-8"})
+    public String saveOrderPreferential(@PathVariable String userId, @PathVariable String ip, @PathVariable String orderId, @RequestBody String preferential) {
         logger.info("###REQUEST### BusinessController saveOrderPreferential userId={} ip={} orderId={} preferential={}", userId, ip, orderId, preferential);
         String result = businessService.saveOrderPreferential(userId, orderId, preferential);
         result = "{\"result\":[\"" + result + "\"]}";
@@ -111,8 +113,8 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/clearMachine/{userId}/{temp1}/{userName}/{temp2}/{ip}/{temp3}/{posId}/{temp4}/{authorizer}", produces = {"application/text;charset=UTF-8"})
-    public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
+    @RequestMapping(value = "/clearMachine/{userId}/{userName}/{ip}/{posId}/{authorizer}", produces = {"application/json;charset=UTF-8"})
+    public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={} authorizer={}", userId, userName, ip, posId, authorizer);
         String result = businessService.clearMachine(userId, userName, ip, posId, authorizer);
         result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
@@ -130,8 +132,8 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/clearMachine/{userId}/{temp1}/{userName}/{temp2}/{ip}/{temp3}/{posId}/{temp4}/", produces = {"application/text;charset=UTF-8"})
-    public String clearMachine1(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String temp1, @PathVariable String temp2, @PathVariable String temp3, @PathVariable String temp4) {
+    @RequestMapping(value = "/clearMachine/{userId}/{userName}/{ip}/{posId}/", produces = {"application/json;charset=UTF-8"})
+    public String clearMachine1(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={}", userId, userName, ip, posId);
         String result = businessService.clearMachine(userId, userName, ip, posId, "");
         result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
@@ -147,7 +149,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/endWork/{userId}/{ip}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/endWork/{userId}/{ip}/", produces = {"application/json;charset=UTF-8"})
     public String endWork(@PathVariable String userId, @PathVariable String ip) {
         logger.info("###REQUEST### BusinessController endWork userId={} userName={} ip={} posId={} authorizer={}", userId, ip);
         String result = businessService.endWork(userId, ip);
@@ -167,7 +169,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/InputTellerCash/{userId}/{ip}/{cachAmount}/{callType}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/InputTellerCash/{userId}/{ip}/{cachAmount}/{callType}/", produces = {"application/json;charset=UTF-8"})
     public String inputTellerCash(@PathVariable String userId, @PathVariable String ip, @PathVariable Float cachAmount, @PathVariable Integer callType) {
         logger.info("###REQUEST### BusinessController InputTellerCash userId={} ip={} cachAmount={} callType={}", userId, ip, cachAmount, callType);
         String result;
@@ -194,7 +196,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/putOrder/{tableNo}/{orderId}/{gzCode}/{gzName}/{gzTele}/{gzUser}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/putOrder/{tableNo}/{orderId}/{gzCode}/{gzName}/{gzTele}/{gzUser}/", produces = {"application/json;charset=UTF-8"})
     public String putOrder(@PathVariable String tableNo, @PathVariable String orderId, @PathVariable String gzCode, @PathVariable String gzName, @PathVariable String gzTele, @PathVariable String gzUser) {
         logger.info("###REQUEST### BusinessController putOrder tableNo={} orderId={} gzCode={} gzName={} gzTele={} gzUser={}", tableNo, orderId, gzCode, gzName, gzTele, gzUser);
         String result = businessService.putOrder(tableNo, orderId, gzCode, gzName, gzTele, gzUser);
@@ -213,7 +215,7 @@ public class BusinessController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/getOrderSequence/{tableNo}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/getOrderSequence/{tableNo}/", produces = {"application/json;charset=UTF-8"})
     public String getOrderSequence(@PathVariable String tableNo) {
         logger.info("###REQUEST### BusinessController getOrderSequence tableNo={}", tableNo);
         String result = businessService.getOrderSequence(tableNo);
@@ -224,7 +226,7 @@ public class BusinessController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/GetOrder/{tableNo}/{userId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetOrder/{tableNo}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getOrder(@PathVariable String tableNo, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController GetOrder tableNo={} userId={}", tableNo, userId);
         String result = businessService.getOrder(tableNo, userId);
@@ -233,9 +235,9 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
-    
+
     @ResponseBody
-    @RequestMapping(value = "/GetOrderByOrderid/{orderid}/{userId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetOrderByOrderid/{orderid}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getOrderByOrderId(@PathVariable String orderid, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController GetOrder tableNo={} userId={}", orderid, userId);
         String result = businessService.getOrderByOrderID(orderid, userId);
@@ -246,7 +248,7 @@ public class BusinessController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/GetServerTableInfo/{tableNo}/{userId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetServerTableInfo/{tableNo}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getServerTableInfo(@PathVariable String tableNo, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController getServerTableInfo tableNo={} userId={}", tableNo, userId);
         String result = businessService.getServerTableInfo(tableNo, userId);
@@ -255,9 +257,9 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
-    
+
     @ResponseBody
-    @RequestMapping(value = "/GetServerTableInfoByOrderid/{orderId}/{userId}", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/GetServerTableInfoByOrderid/{orderId}/{userId}", produces = {"application/json;charset=UTF-8"})
     public String getServerTableInfoByOrderId(@PathVariable String orderId, @PathVariable String userId) {
         logger.info("###REQUEST### BusinessController getServerTableInfo orderid={} userId={}", orderId, userId);
         String result = businessService.getServerTableInfoByOrderId(orderId, userId);
@@ -266,10 +268,10 @@ public class BusinessController {
         result = StringUtil.string2Unicode(result);
         return result;
     }
-    
+
 
     @ResponseBody
-    @RequestMapping(value = "/accountsorder/{userId}/{orderId}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/accountsorder/{userId}/{orderId}/", produces = {"application/json;charset=UTF-8"})
     public String accountsOrder(@PathVariable String userId, @PathVariable String orderId) {
         logger.info("###REQUEST### BusinessController accountsorder userId={} orderId={}", userId, orderId);
         String result = businessService.accountsOrder(userId, orderId);
@@ -279,7 +281,7 @@ public class BusinessController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/posrebacksettleorder/{orderId}/{userId}/{addr}/", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/posrebacksettleorder/{orderId}/{userId}/{addr}/", produces = {"application/json;charset=UTF-8"})
     public String posrebackSettleOrder(@PathVariable String userId, @PathVariable String orderId, @PathVariable String addr) {
         logger.info("###REQUEST### BusinessController posrebacksettleorder userId={} orderId={} addr={}", userId, orderId, addr);
         String result = businessService.posrebacksettleorder(orderId, userId, addr);

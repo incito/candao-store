@@ -295,7 +295,7 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	public List<TorderDetail> getByPrimarykey(List<TorderDetail> orderDetails) {
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("primarykeys", orderDetails);
-		return dao.get(PREFIX + ".getByPrimarykey", params);
+		return dao.find(PREFIX + ".getByPrimarykey", params);
 	}
 }
  

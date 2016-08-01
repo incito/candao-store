@@ -197,7 +197,7 @@ public class TableServiceImpl implements TableService {
         	   pj.setDiscardUserId(disUser.getName());
         	   
         	   printTableChangeBill(pj,"7");
-        	   return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
+		   	   return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		   	}else{
 		   		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		   	}
@@ -244,7 +244,7 @@ public class TableServiceImpl implements TableService {
 		List<Map<String, Object>> resultMap = tableDao.find(map);
 		if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
 			logger.error("源餐台不存在或者重复，tableNo:"+sourceTableNo+",size:" + ((resultMap == null) ? 0 : resultMap.size()));
-			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("并台失败，源餐台不存在或者重复"));
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("源餐台不存在或者重复"));
 		}
 		//源餐台数据
 		Map<String, Object> sourceTable = resultMap.get(0);
@@ -252,7 +252,7 @@ public class TableServiceImpl implements TableService {
 		Map<String, Object> sourceOrder = torderMapper.findOne(sourceOrderId);
 		if (sourceOrder == null || sourceOrder.size() == 0 || !"0".equals(String.valueOf(sourceOrder.get("orderstatus")))) {
 			logger.error("源餐台未开台或者账单状态异常，ordersize:" + ((sourceOrder == null) ? 0 : sourceOrder.size()) + ",orderstatus:" + String.valueOf(sourceOrder.get("orderstatus")));
-			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("并台失败，源餐台未开台或者账单状态异常"));
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("源餐台未开台或者账单状态异常"));
 		}
 		
 		Map<String, Object> map1 = new HashMap<String, Object>();
@@ -260,7 +260,7 @@ public class TableServiceImpl implements TableService {
 		List<Map<String, Object>> listTables = tableDao.find(map1);
 		if (listTables == null || listTables.size() == 0 || listTables.size() > 1) {
 			logger.error("目标餐台不存在或者重复，tableNo:" + targetTableNo + ",size:" + ((listTables == null) ? 0 : listTables.size()));
-			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("并台失败，目标餐台不存在或者重复"));
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("目标餐台不存在或者重复"));
 		}
 		//目标餐台数据
 		Map<String, Object> targetTable = listTables.get(0);
@@ -486,8 +486,8 @@ public class TableServiceImpl implements TableService {
 		TbDataDictionary vipaddress = datadictionaryService.findById("vipaddress");
 		TbDataDictionary locktime = datadictionaryService.findById("locktime");
 		TbDataDictionary delaytime = datadictionaryService.findById("delaytime");
-//		resultmap.put("flag", "1");
-//		resultmap.put("desc", "获取数据成功");
+		/*resultmap.put("flag", "1");
+		resultmap.put("desc", "获取数据成功");*/
 		resultmap.put("currenttableid", targetTableNo);
 		resultmap.put("orderid", targetTable.get("orderid"));
 		resultmap.put("memberno", targetOrder.get("memberno"));
@@ -496,7 +496,7 @@ public class TableServiceImpl implements TableService {
 		resultmap.put("waiterNum", targetOrder.get("userid"));
 		resultmap.put("ageperiod", targetOrder.get("ageperiod"));
 		resultmap.put("begintime", targetOrder.get("begintime"));
-		resultmap.put("result", "0");
+//		resultmap.put("result", "0");
 		resultmap.put("orderid", targetOrderId);
 		resultmap.put("backpsd", dd == null ? "" : dd.getItemid());// 退菜密码
 		resultmap.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址

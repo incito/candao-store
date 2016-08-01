@@ -9,7 +9,7 @@ import java.util.Properties;
  * Created by ytq on 2016/3/24.
  */
 public class MsgForwardTran {
-    private static Properties msgConfig = SpringContextUtils.getBean("msgConfig");
+    public static Properties msgConfig = SpringContextUtils.getBean("msgConfig");
 
     public static MsgForwardData getWatchCheckInConfirm(String msg) {
         String msgId = msgConfig.getProperty("MSG_ID.WATCH_CHECK_IN.CONFIRM");

@@ -46,19 +46,19 @@ public class CommunicationController {
         return mav;
     }
 
-    @RequestMapping(value = "/on", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/on", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String on(String ip, Integer port) {
         return JSON.toJSONString(communicationService.on(ip, port));
     }
 
-    @RequestMapping(value = "/off", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/off", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String off() {
         return JSON.toJSONString(communicationService.off());
     }
 
-    @RequestMapping(value = "/isOnline", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/isOnline", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String isOnline(String targetType, String targetId) {
         return JSON.toJSONString(communicationService.isOnline(targetType, targetId));
@@ -70,7 +70,7 @@ public class CommunicationController {
         return communicationService.queryTerminals(msg).getData() + "";
     }
 
-    @RequestMapping(value = "/forward", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/forward", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public void forward(String add, String msg) {
         Map<String, List<String>> target = new HashMap<String, List<String>>();
@@ -90,7 +90,7 @@ public class CommunicationController {
         communicationService.forwardMsg(target, msg);
     }
 
-    @RequestMapping(value = "/forwardSync", produces = {"application/text;charset=UTF-8"})
+    @RequestMapping(value = "/forwardSync", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String forwardSync(String add, String msg) {
         Map<String, List<String>> target = new HashMap<String, List<String>>();

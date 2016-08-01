@@ -26,6 +26,10 @@ public class PrinterConstant {
      * 走纸一行
      */
     public static final byte LINE = 10;
+    /**
+     * 开钱箱
+     */
+    public static final byte[] OPEN_CASH={27, 112, 0, 100, 100};
 
     public static byte[] getClear_font() {
 

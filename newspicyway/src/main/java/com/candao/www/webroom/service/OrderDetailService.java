@@ -56,7 +56,7 @@ public interface OrderDetailService {
 	 */
 	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) throws Exception;
 
-	public Map<String, Object> placeOrder(Order order,ToperationLog toperationLog );
+	public Map<String, Object> placeOrder(Order order);
 
 	public void   afterprint(String orderid);
 

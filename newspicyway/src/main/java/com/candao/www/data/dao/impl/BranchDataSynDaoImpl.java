@@ -105,5 +105,19 @@ public class BranchDataSynDaoImpl implements BranchDataSynDao{
 	public Map<String, String> getBizDate(){
 		return daoSupport.findOne(PREFIX+".getBizDate", null);
 	}
+
+	@Override
+	public int updateMaxSynRecord(Map<String, Object> map) {
+		 	return daoSupport.update(PREFIX+".updateMaxSynRecord", map);
+	}
+
+	@Override
+	public String getLastSuccessDate() {
+		String str=daoSupport.findOne(PREFIX+".getLastSuccessDate");
+		if(str!=null &&!"".equals(str) && str.endsWith(".0")){
+			str=str.substring(0, str.length()-2);
+		}
+		return str;
+	}
  
 }

@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User login(String loginName, String password) {
-		User loginUser = userDao.login(loginName, password);
+		User loginUser = userDao.getUser(loginName, password);
 		if (loginUser == null) {
 			throw new BusinessException("账号/邮箱/手机号或者密码错误");
 		}

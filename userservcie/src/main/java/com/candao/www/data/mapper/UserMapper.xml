@@ -331,6 +331,16 @@
     </where>
   </select>
   
+    <select id="getUser" parameterType="map" resultType="com.candao.www.data.model.User">
+	  	SELECT  <include refid="base_user_column_list" />
+	    FROM t_b_user bu
+	    <where>
+	    	bu.password = #{password}
+	     	AND (
+	     		bu.account = #{loginName} OR bu.email = #{loginName} OR bu.mobile = #{loginName} or bu.name =#{loginName}
+	     	)
+	    </where>
+	</select>
   
   <select id="findMaxOrderNum" parameterType="map" resultMap="userMap">
 	     select max(ifnull(order_num,0)) ordernum  from t_b_user
@@ -351,8 +361,7 @@
 	     SELECT tbb.business_name name FROM t_b_business tbb
   </select>
   <select id="getUserByjobNum" parameterType="map"  resultType="com.candao.www.data.model.User">
-<!-- 	     select u.* from t_b_employee t,t_b_user u where t.job_number=#{jobnum} and u.id=t.user_id -->
-	     select u.* from t_b_employee t,t_b_user u,t_branch_info b where t.job_number=#{jobnum}  and u.id=t.user_id and b.branchid=t.branch_id
+     select u.* from t_b_employee t,t_b_user u,t_branch_info b where t.job_number=#{jobnum}  and u.id=t.user_id and b.branchid=t.branch_id
   </select>
  <!-- ===================基本用户,结束======================== -->
 	<select id="getNameByUserNumber" resultType="String" parameterType="map">

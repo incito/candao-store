@@ -42,6 +42,7 @@ public interface TbDiscountTicketsDao {
    * @return
    */
   public int deleteNoDiscountDishsByDiscount(String discountId);
+  public List<TbNoDiscountDish> getNoDiscountDishsByDish(Map<String, Object> paramsMap) ;
   
   /**
    * 根据优惠删除不参加折扣菜品

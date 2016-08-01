@@ -67,10 +67,10 @@ public class TipController {
 //			解决并台时订单号重复的问题
             tipService.TipDelete(map);
             tipService.TipSet(map);
-            mav.addObject("code", "1");
+            mav.addObject("code", "0");
             mav.addObject("msg", "操作成功!");
         } catch (Exception e) {
-            mav.addObject("code", "0");
+            mav.addObject("code", "1");
             mav.addObject("msg", "操作失败!");
             e.printStackTrace();
         }
@@ -99,12 +99,12 @@ public class TipController {
                 tipService.TipDelete(map);
             }
 
-            mav.addObject("code", "1");
+            mav.addObject("code", "0");
             mav.addObject("msg", "修改成功!");
 //			mav.addObject("resultList",resultList);
         } catch (Exception e) {
             e.printStackTrace();
-            mav.addObject("code", "0");
+            mav.addObject("code", "1");
             mav.addObject("msg", "修改失败!");
         }
         return mav;
@@ -135,12 +135,12 @@ public class TipController {
                 result = tipService.TipFindNamebyorderid(map);
                 mav.addObject("data", result);
             }
-            mav.addObject("code", "1");
+            mav.addObject("code", "0");
             mav.addObject("msg", "拉取成功!");
 //			mav.addObject("resultList",resultList);
         } catch (Exception e) {
             e.printStackTrace();
-            mav.addObject("code", "0");
+            mav.addObject("code", "1");
             mav.addObject("msg", "拉取失败!");
         }
         return mav;
@@ -166,12 +166,12 @@ public class TipController {
 //			map.put("orderid", orderid);
 //			map.put("paid", paid);
             tipService.TipBilling(map);
-            mav.addObject("code", "1");
+            mav.addObject("code", "0");
             mav.addObject("msg", "结算成功!");
 //			mav.addObject("resultList",resultList);
         } catch (Exception e) {
 
-            mav.addObject("code", "0");
+            mav.addObject("code", "1");
             mav.addObject("msg", "结算失败!");
         }
         return mav;

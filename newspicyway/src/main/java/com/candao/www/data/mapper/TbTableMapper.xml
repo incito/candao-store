@@ -49,9 +49,9 @@
 
 	<insert id="insert" parameterType="com.candao.www.data.model.TbTable">
 	    
-	       <selectKey resultType="String" keyProperty="tableid" order="BEFORE" >
+	     <!--   <selectKey resultType="String" keyProperty="tableid" order="BEFORE" >
                SELECT cast(tableseqno('tableid')   as char)
-         </selectKey>
+         </selectKey> -->
          
 		insert into t_table (
 	  	tableid,
@@ -272,6 +272,9 @@
 	     </if>
 	      <if test="status != null and status != ''">
 	        and a.status=#{status}
+	     </if>
+	     <if test="exceptorder!=null and status!=''">
+	     	and a.orderid &lt;&gt; #{exceptorder}
 	     </if>
 	     <if test="tabletypefilter!=null and tabletypefilter !=''">
 	     	and a.tabletype not in 

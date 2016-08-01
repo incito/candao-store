@@ -3,14 +3,11 @@ package com.candao.www.dataserver.service.device.impl;
 import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
-import com.candao.www.dataserver.entity.Watch;
 import com.candao.www.dataserver.model.MsgForwardData;
-import com.candao.www.dataserver.model.OfflineMsgData;
 import com.candao.www.dataserver.model.ReConnectData;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import com.candao.www.dataserver.service.msghandler.MsgProcessService;
 import com.candao.www.dataserver.service.msghandler.OfflineMsgService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.util.MsgAnalyzeTool;
@@ -45,12 +42,11 @@ public class ReConnectServiceImpl extends DeviceServiceImpl {
             msgForwardData.setSerialNumber(serialNumber);
             msgForwardService.forwardMsg(target, JSON.toJSONString(msgForwardData));
             for (OfflineMsg offlineMsg : offlineMsgService.getByGroupAndId(reConnectData.getGroup(), reConnectData.getId())) {
-                OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
-                MsgForwardData offMsgData = MsgForwardTran.getOffLineSend(JSON.toJSONString(offlineMsgData));
+                MsgForwardData offMsgData = new MsgForwardData(offlineMsg.getMsgType(), offlineMsg.getId(), offlineMsg.getContent());
                 msgForwardService.forwardMsg(target, JSON.toJSONString(offMsgData));
             }
         } catch (Exception e) {
-            LOGGER_ERROR.error("#### reconnect msg={},error={} ###", msg, e);
+            LOGGER_ERROR.error("#### reconnect msg={},error={} ###", msg, e.getCause().getStackTrace());
         }
     }
 }

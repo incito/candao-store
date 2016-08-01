@@ -45,6 +45,7 @@
 	<div class="ky-container">
 		<div class="ky-content  content-iframe">
 			<div class="report-title">
+				<span>赠菜数据明细表</span> 
 				<a href="Javascript:exportFreeDishxls()"><img
 					src="../images/download.png" alt="" /></a>
 			</div>

@@ -1,18 +1,20 @@
 package com.candao.www.dataserver.service.business.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.common.utils.DateUtils;
 import com.candao.www.dataserver.mapper.NodeClassMapper;
 import com.candao.www.dataserver.model.ResponseData;
 import com.candao.www.dataserver.model.ResponseJsonData;
 import com.candao.www.dataserver.service.business.OpenCashService;
-import com.candao.www.dataserver.util.DataServerJsonFormat;
+import com.candao.www.printer.v2.Printer;
+import com.candao.www.printer.v2.PrinterManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +34,15 @@ public class OpenCashServiceImpl implements OpenCashService {
         Socket socket = null;
         try {
             LOGGER.info("###打开钱箱 ip={}###", ip);
-            socket = new Socket(ip, 9100);
-            writer = new OutputStreamWriter(socket.getOutputStream());
-            writer.write(String.valueOf(buff));
-            writer.flush();
+            Printer printer = PrinterManager.getPrinter(ip);
+            if (null == printer) {
+                LOGGER.error("开钱箱失败：打印机[" + ip + "]不存在");
+            } else {
+                printer.openCash();
+            }
         } catch (Exception e) {
             responseData.setData("0");
-            LOGGER_ERROR.error("###打开钱箱出错 ip={}, error={}", ip, e);
+            LOGGER_ERROR.error("###打开钱箱出错 ip={}, error={}", ip, e.getCause().getStackTrace());
             e.printStackTrace();
         } finally {
             try {
@@ -69,13 +73,36 @@ public class OpenCashServiceImpl implements OpenCashService {
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo, tipTotalAmount);
             List<Map> jsJsonList = nodeClassMapper.getJsListJsonByNo(classNo);
             if (!orderJsonList.isEmpty()) {
-                responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJsonList, "|"));
+                String dateFormat = "yyyyMMdd HH:mm:ss";
+                for (Map orderjson : orderJsonList) {
+                    Object priterTime = orderjson.get("priterTime");
+                    if (null != priterTime) {
+                        Date priterTimeDate = (Date) priterTime;
+                        orderjson.put("priterTime", DateUtils.toString(priterTimeDate, dateFormat));
+                    }
+                    Object workdate = orderjson.get("workdate");
+                    if (null != workdate) {
+                        Date workdateDate = (Date) workdate;
+                        orderjson.put("workdate", DateUtils.toString(workdateDate, dateFormat));
+                    }
+                    Object vIn = orderjson.get("vIn");
+                    if (null != vIn) {
+                        Date vInDate = (Date) vIn;
+                        orderjson.put("vIn", DateUtils.toString(vInDate, dateFormat));
+                    }
+                    Object vOut = orderjson.get("vOut");
+                    if (null != vOut) {
+                        Date vOutDate = (Date) vOut;
+                        orderjson.put("vOut", DateUtils.toString(vOutDate, dateFormat));
+                    }
+                }
+                responseJsonData.setOrderJson(orderJsonList);
             }
-            responseJsonData.setJsJson(DataServerJsonFormat.jsonFormat(jsJsonList, "|"));
+            responseJsonData.setJsJson(jsJsonList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取清机单内容异常");
-            LOGGER.error("###getClearMachineData userId={},jsOrder={},posId={},error={}###", aUserId, jsOrder, posId, e);
+            LOGGER.error("###getClearMachineData userId={},jsOrder={},posId={},error={}###", aUserId, jsOrder, posId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }

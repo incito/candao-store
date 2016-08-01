@@ -16,7 +16,7 @@ import com.candao.print.listener.template.ListenerTemplate;
 
 public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 	
-	private Log logger = LogFactory.getLog(SimpleNormalDishTemplateImpl.class.getName());
+	public final Log logger = LogFactory.getLog(getClass().getName());
 	
 	private Template template;
 	//模板大小
@@ -72,6 +72,18 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate{
 			break;
 		}
 		return rs;
+	}
+	
+	public byte[] getBIGFONT(){
+		return PrinterConstant.getFdDoubleFont();
+	}
+	
+	public byte[] getNORMALFONT(){
+		return PrinterConstant.VerticalFont();
+	}
+	
+	public byte[] getSMALLFONT(){
+		return PrinterConstant.getClear_font();
 	}
 
 	@Override

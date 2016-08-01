@@ -31,6 +31,8 @@ public class Order implements java.io.Serializable{
 	private int operationType;//（1：下单;2 :退菜 3：并台  4换台） 
 	
 	private String sequence;//顺序
+
+	private String source="1" ;//下单来源 1:POS  2:PAD
 	
 
 
@@ -137,4 +139,11 @@ public class Order implements java.io.Serializable{
 		this.rows = rows;
 	}
 
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
 }

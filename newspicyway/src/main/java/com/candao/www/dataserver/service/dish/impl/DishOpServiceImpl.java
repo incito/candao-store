@@ -1,7 +1,6 @@
 package com.candao.www.dataserver.service.dish.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.candao.common.utils.StringUtils;
 import com.candao.www.dataserver.mapper.DishMapper;
 import com.candao.www.dataserver.mapper.OperationLogMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -48,7 +47,7 @@ public class DishOpServiceImpl implements DishService {
         } catch (Exception e) {
             responseData.setData("0");
             responseData.setInfo("获取菜品状态异常");
-            LOGGER.error("###getFoodStatus dishId={},dishUnit={},error={}###", dishId, dishUnit, e);
+            LOGGER.error("###getFoodStatus dishId={},dishUnit={},error={}###", dishId, dishUnit, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseData);
     }
@@ -60,11 +59,11 @@ public class DishOpServiceImpl implements DishService {
         try {
             dishMapper.updateDishPY();
             List<Map> mapList = dishMapper.getAllWmFood();
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
+            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取全部菜品异常");
-            LOGGER.error("###getAllWmFood userId={},error={}###", userId, e);
+            LOGGER.error("###getAllWmFood userId={},error={}###", userId, e.getCause().getStackTrace());
         }
         String s = JSON.toJSONString(responseJsonData);
         LOGGER.info("###getAllWmFood ###RESPONSE### result={}", s);
@@ -77,11 +76,11 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getCJFood userId={}###", userId);
         try {
             List<Map> mapList = dishMapper.getCJFood();
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
+            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取全部菜品异常");
-            LOGGER.error("###getCJFood userId={},error={}###", userId, e);
+            LOGGER.error("###getCJFood userId={},error={}###", userId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -92,11 +91,11 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getGroupDetail dishId={}###", dishId);
         try {
             List<Map> mapList = dishMapper.getGroupDetail(dishId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(mapList, "|"));
+            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("获取套餐明细异常");
-            LOGGER.error("###getGroupDetail dishId={},error={}###", dishId, e);
+            LOGGER.error("###getGroupDetail dishId={},error={}###", dishId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -128,13 +127,13 @@ public class DishOpServiceImpl implements DishService {
             }
             listJson = dishMapper.getYGListJson(orderId);
             doubleJson = dishMapper.getYGDoubleJson(orderId);
-            responseJsonData.setOrderJson(DataServerJsonFormat.jsonFormat(orderJson, "|"));
-            responseJsonData.setListJson(DataServerJsonFormat.jsonFormat(listJson, "|"));
-            responseJsonData.setDoubleJson(DataServerJsonFormat.jsonFormat(doubleJson, "|"));
+            responseJsonData.setOrderJson(orderJson);
+            responseJsonData.setListJson(listJson);
+            responseJsonData.setDoubleJson(doubleJson);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("优惠自动使用接口(惠新，蓝港，辣倒兔临时方案)异常");
-            LOGGER.error("###getFavorable  userId={},orderId={},error={}###", userId, orderId, e);
+            LOGGER.error("###getFavorable  userId={},orderId={},error={}###", userId, orderId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
     }
@@ -175,7 +174,7 @@ public class DishOpServiceImpl implements DishService {
         } catch (Exception e) {
             responseData.setData("0");
             responseData.setInfo("获取退菜dish列表,如果选择的是套餐明细，不能退，如果选择的是鱼锅，退整个锅，如果选择的是锅内明细，退鱼，不能只退锅,异常");
-            LOGGER.error("###getBackDishInfo orderId={} dishId={} dishUnit={} tableNo={} error={}###", orderId, dishId, dishUnit, tableNo, e);
+            LOGGER.error("###getBackDishInfo orderId={} dishId={} dishUnit={} tableNo={} error={}###", orderId, dishId, dishUnit, tableNo, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseData);
     }
@@ -213,7 +212,7 @@ public class DishOpServiceImpl implements DishService {
             }
             orderOpService.pCaleTableAmount(userId, orderId);
         } catch (Exception e) {
-            LOGGER.error("###updateCj orderId={} userId={} error={}###", orderId, userId, e);
+            LOGGER.error("###updateCj orderId={} userId={} error={}###", orderId, userId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseData);
     }

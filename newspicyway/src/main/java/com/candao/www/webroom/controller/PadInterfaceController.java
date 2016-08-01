@@ -47,6 +47,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -76,7 +77,8 @@ public class PadInterfaceController {
 
 
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(5000));
-
+    @Autowired
+    private NotifyService notifyService;
 
     /**
      * ti
@@ -236,12 +238,10 @@ public class PadInterfaceController {
     @RequestMapping("/updateorder")
     @ResponseBody
     public String updateorder(@RequestBody Torder order) {
-
         TJsonRecord record = new TJsonRecord();
         record.setJson(JacksonJsonMapper.objectToJson(order));
         record.setPadpath("updateorder");
         jsonRecordService.insertJsonRecord(record);
-
         return orderService.updateOrder(order);
     }
 
@@ -278,31 +278,24 @@ public class PadInterfaceController {
      */
     @RequestMapping("/bookorderList")
     @ResponseBody
-    public String saveOrderInfoList(@RequestBody String jsonString, HttpServletRequest reqeust) {
+    public String saveOrderInfoList(@RequestBody String jsonString) {
         logger.error("saveOrderInfoList-start:" + jsonString, "");
         long start = System.currentTimeMillis();
         TJsonRecord record = new TJsonRecord();
         record.setJson(jsonString);
         record.setPadpath("bookorderList");
         jsonRecordService.insertJsonRecord(record);
-        Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
+        final Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
         logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
 
         Map<String, String> mapDetail = new HashMap<String, String>();
         mapDetail.put("orderid", order.getOrderid());
 
-        TorderDetail orderDetileList = orderDetailService.findOne(mapDetail);
         String result = "";
         Map<String, Object> res = orderDetailService.setOrderDetailList(order);
-        try {
-            String type = "12";
-            if (orderDetileList != null) {
-                type = "13";
-            }
-            executor.execute(new PadThread(order.getCurrenttableid(), type));
-        } catch (Exception ex) {
-            logger.error("--->", ex);
-            ex.printStackTrace();
+//        POS下单通知PAD订单改变
+        if ("1".equals(order.getSource())) {
+            notifyService.notifyOrderChange(order.getOrderid());
         }
         logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
         logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
@@ -331,12 +324,9 @@ public class PadInterfaceController {
         Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
         logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
-        ToperationLog toperationLog = new ToperationLog();
-        toperationLog.setId(IdentifierUtils.getId().generate().toString());
-        toperationLog.setTableno(order.getCurrenttableid());
-        toperationLog.setOperationtype(Constant.operationType.SAVEORDERINFOLIST);
-        toperationLog.setSequence(order.getSequence());
 
+        //下单业务中会修改该字段，先获取
+        String currenttableid = order.getCurrenttableid();
         String childrenOrderid = null;
         //判断是否是咖啡模式加菜
         try {
@@ -350,18 +340,16 @@ public class PadInterfaceController {
 
         Map<String, String> mapDetail = new HashMap<String, String>();
         mapDetail.put("orderid", order.getOrderid());
-        List<Map<String, String>> orderDetileTempList = orderDetailService.findTemp(mapDetail);
 
-        List<TorderDetail> orderDetileList = orderDetailService.find(mapDetail);
+        TorderDetail orderDetail = orderDetailService.findOne(mapDetail);
         String result = "";
-        Map<String, Object> res = orderDetailService.placeOrder(order, toperationLog);
+        Map<String, Object> res = orderDetailService.placeOrder(order);
         try {
             String type = "12";
-            if ((orderDetileList != null && orderDetileList.size() > 0)
-                    || (orderDetileTempList != null && orderDetileTempList.size() > 0)) {
+            if (null != orderDetail) {
                 type = "13";
             }
-            executor.execute(new PadThread(order.getCurrenttableid(), type));
+            executor.execute(new PadThread(currenttableid, type));
         } catch (Exception ex) {
             logger.error("--->", ex);
             ex.printStackTrace();
@@ -399,12 +387,10 @@ public class PadInterfaceController {
     @RequestMapping("/cookiedish")
     @ResponseBody
     public String cookiedish(@RequestBody UrgeDish urgeDish, HttpServletRequest reqeust) {
-
         TJsonRecord record = new TJsonRecord();
         record.setJson(JacksonJsonMapper.objectToJson(urgeDish));
         record.setPadpath("cookiedish");
         jsonRecordService.insertJsonRecord(record);
-
         return orderDetailService.cookiedishList(urgeDish);
     }
 
@@ -414,55 +400,46 @@ public class PadInterfaceController {
      * @author zhao
      */
     @RequestMapping("/InsertTinvoice")
-    @ResponseBody
-    public String Tinvoice(@RequestBody String jsonString) {
-        Map<String, String> map = new HashMap<String, String>();
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-            String cardno = (String) params.get("memberNo");  //会员卡号
-            String tableno = (String) params.get("tableno");  //桌号
-            String device_no = (String) params.get("deviceId");  //设备编号
-            String invoice_title = (String) params.get("invoiceTitle");//发票的名称
+	@ResponseBody
+	public String Tinvoice(@RequestBody String jsonString){
+	  Map<String,Object> map = new HashMap<String, Object>();
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+			String cardno= (String) params.get("memberNo");  //会员卡号
+			String tableno= (String) params.get("tableno");  //桌号
+			String device_no= (String) params.get("deviceId");  //设备编号
+			String invoice_title= (String) params.get("invoiceTitle");//发票的名称
 
-            Tinvoice tinvoice = new Tinvoice();
-            //节省 空间 和 去除 使用 - 符号的一些问题
-            tinvoice.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-            tinvoice.setCardno(cardno);
-            tinvoice.setDevice_no(device_no);
-            tinvoice.setInvoice_title(invoice_title);
-            tinvoice.setOrderid((String) params.get("orderid"));
-            invoiceService.insertInvoice(tinvoice);
-
-            map.put("flag", "1");
-            map.put("code", "001");
-            map.put("desc", "操作成功");
-            map.put("data", "[]");
-            try {
-                if (StringUtils.isNotBlank((String) params.get("orderid"))) {
-                    TbTable table = tableService.findTableByOrder((String) params.get("orderid"));
-                    if (table != null && StringUtils.isNotBlank(table.getTableNo())) {
-                        executor.execute(new PadThread(table.getTableNo(), "11"));
-                    }
-                }
-            } catch (Exception ex) {
-                logger.error("--->", ex);
-                ex.printStackTrace();
-            }
-
-
-        } catch (Exception e) {
-            logger.error("--->", e);
-            e.printStackTrace();
-            map.put("flag", "0");
-            map.put("code", "000");
-            map.put("desc", "操作失败");
-            map.put("data", "[]");
-        }
-        JSONObject object = JSONObject.fromObject(map);
-        return object.toString();
-
-    }
+			Tinvoice tinvoice = new Tinvoice();
+			//节省 空间 和 去除 使用 - 符号的一些问题
+			tinvoice.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+			tinvoice.setCardno(cardno);
+			tinvoice.setDevice_no(device_no);
+			tinvoice.setInvoice_title(invoice_title);
+			tinvoice.setOrderid((String) params.get("orderid"));
+			invoiceService.insertInvoice(tinvoice);
+			
+			map = ReturnMap.getSuccessMap("操作成功");
+			try{
+				if(StringUtils.isNotBlank((String) params.get("orderid"))){
+					TbTable table = tableService.findTableByOrder((String) params.get("orderid"));
+					if(table!=null&&StringUtils.isNotBlank(table.getTableNo())){
+						executor.execute(new PadThread(table.getTableNo(),"11"));
+					}
+				}
+			}catch(Exception ex){
+				logger.error("--->",ex);
+				ex.printStackTrace();
+			}
+		} catch (Exception e) {
+			logger.error("--->",e);
+		    e.printStackTrace();
+		    map = ReturnMap.getFailureMap("操作失败，服务器内部错误");
+		}
+		JSONObject object = JSONObject.fromObject(map);
+		return object.toString();
+	}
 
     /**
      * PAD根据会员号查询发票信息
@@ -470,38 +447,31 @@ public class PadInterfaceController {
      * @author zhao
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping("/FindTinvoice")
-    @ResponseBody
-    public String FindTinvoice(@RequestBody String jsonString) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        List<Map<String, String>> dataMapList = new ArrayList<Map<String, String>>();
-        try {
-            Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-
-            List<Tinvoice> TinvoiceList = invoiceService.findTinvoice(params);
-            if (TinvoiceList.size() > 0) {
-                for (int i = 0; i < TinvoiceList.size(); i++) {
-                    Map<String, String> dataMap = new HashMap<String, String>();
-                    dataMap.put("invoiceTitle", TinvoiceList.get(i).getInvoice_title());
-                    dataMapList.add(dataMap);
-                }
-            }
-            map.put("flag", "1");
-            map.put("code", "001");
-            map.put("desc", "操作成功");
-            map.put("data", dataMapList);
-        } catch (Exception e) {
-            logger.error("--->", e);
-            e.printStackTrace();
-            map.put("flag", "0");
-            map.put("code", "000");
-            map.put("desc", "操作失败");
-            map.put("data", "[]");
-        }
-        JSONObject object = JSONObject.fromObject(map);
-        return object.toString();
-
-    }
+	@RequestMapping("/FindTinvoice")
+	@ResponseBody
+	public String FindTinvoice(@RequestBody String jsonString){
+	  Map<String,Object> map = new HashMap<String, Object>();
+	  List<Map<String,String>> dataMapList= new ArrayList< Map<String,String>>();
+		try {
+			Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+			
+			List<Tinvoice> TinvoiceList = invoiceService.findTinvoice(params);
+			if(TinvoiceList.size()>0){
+				for (int i = 0; i < TinvoiceList.size(); i++) {
+					 Map<String,String> dataMap = new HashMap<String, String>();
+					 dataMap.put("invoiceTitle",TinvoiceList.get(i).getInvoice_title());
+					 dataMapList.add(dataMap);
+				}
+			}
+			map = ReturnMap.getSuccessMap("操作成功",dataMapList);
+		} catch (Exception e) {
+			logger.error("--->",e);
+		    e.printStackTrace();
+		    map = ReturnMap.getFailureMap("操作失败,服务器内部错误");
+		}
+		JSONObject object = JSONObject.fromObject(map);
+		return object.toString();
+	}
 
 
     /**
@@ -580,9 +550,10 @@ public class PadInterfaceController {
             String a = orderDetailService.discardDishList(urgeDish, toperationLog);
             return a;
         } else if (flag == 1) {
-            return Constant.FAILUREMSG;
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
         } else {
-            return Constant.SUCCESSMSG;
+            notifyService.notifyOrderChange(urgeDish.getOrderNo());
+            return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         }
     }
 
@@ -609,9 +580,9 @@ public class PadInterfaceController {
         if (flag == 0) {
             return tableService.switchTable(table, toperationLog);
         } else if (flag == 1) {
-            return Constant.FAILUREMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
         } else {
-            return Constant.SUCCESSMSG;
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         }
 
 
@@ -662,12 +633,11 @@ public class PadInterfaceController {
         try {
             return tableService.mergetableMultiMode(table, toperationLog);
         } catch (Exception e) {
-            logger.error("并台失败：" + e.getMessage(), e);
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("msg", e.getMessage());
-            map.put("result", "1");
-            JSONObject object = JSONObject.fromObject(map);
-            return object.toString();
+        	logger.error("并台失败：" + e.getMessage(), e);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map = ReturnMap.getFailureMap(e.getMessage());
+			JSONObject object = JSONObject.fromObject(map);
+			return object.toString();
         }
     }
 
@@ -683,7 +653,8 @@ public class PadInterfaceController {
         record.setPadpath("cleantable");
         jsonRecordService.insertJsonRecord(record);
 
-        return orderDetailService.cleantable(table);
+        String cleantable = orderDetailService.cleantable(table);
+        return cleantable;
     }
 
     /**
@@ -700,7 +671,8 @@ public class PadInterfaceController {
         record.setPadpath("cleanTableSimply");
         jsonRecordService.insertJsonRecord(record);
 
-        return orderDetailService.cleantableSimply(table);
+        String result = orderDetailService.cleantableSimply(table);
+        return result;
     }
 
 //	/**
@@ -769,7 +741,12 @@ public class PadInterfaceController {
 
         if ("0".equals(result)) {
             logger.info("结算成功，调用进销存接口");
-            return psicallback(settlementInfo, 0);
+            String psicallback = psicallback(settlementInfo, 0);
+            //通知PAD
+            if (Constant.SUCCESSMSG.equals(psicallback)) {
+                notifyService.notifySettleOrder(orderid);
+            }
+            return psicallback;
         } else {
             logger.error("结算失败，result :" + result);
             return Constant.FAILUREMSG;
@@ -924,16 +901,16 @@ public class PadInterfaceController {
      */
 
     @RequestMapping("/verifyuser")
-    @ResponseBody
-    public String verifyuser(@RequestBody LoginInfo loginInfo) {
-        int result = loginService.existUser(loginInfo);
-        if (result == 0) {
-            return Constant.SUCCESSMSG;
-        } else {
-            logger.error("-->用户不存在");
-            return Constant.FAILUREMSG;
-        }
-    }
+	@ResponseBody
+	public String verifyuser(@RequestBody  LoginInfo  loginInfo){
+		int result = loginService.existUser(loginInfo);
+		if(result == 0){
+			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
+		}else {
+			logger.error("-->用户不存在");
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("用户不存在"));
+		}
+	}
 
 
     /**
@@ -986,41 +963,33 @@ public class PadInterfaceController {
         record.setPadpath("login");
         jsonRecordService.insertJsonRecord(record);
 
-
         try {
             //TODO 查询今天是否开业
             String loginType = loginInfo.getLoginType();
             if ("0".equals(loginInfo.getLoginType())) {
-
-
                 TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
                 if (tbOpenBizLog == null) {
-                    Map<String, String> mapRet = new HashMap<String, String>();
-                    mapRet.put("result", "3");
-                    logger.error("未开业，不能登录");
-                    return JacksonJsonMapper.objectToJson(mapRet);
+                    return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("未开业，不能登录"));
                 }
                 String pwd = dataDictionaryService.find("SECRETKEY");
-//				String pwd = dataDictionaryService.find("PASSWORD");
                 if (!pwd.equals(loginInfo.getPassword())) {
-                    jsonString = Constant.FAILUREMSG;
+                	jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("密码错误"));
                 } else {
                     userService.updateLoginTime(loginInfo.getUsername());
-                    jsonString = Constant.SUCCESSMSG;
+                    jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
                 }
             } else {
                 User user = loginService.authPadUser(loginInfo, 0, loginType);
                 if (user == null) {
-                    jsonString = Constant.FAILUREMSG;
+                	jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("没找到该用户"));
                 } else {
                     List<Map<String, Object>> list = tableService.find(null);
                     jsonString = wrapJson(user, list);
                 }
             }
-
         } catch (AuthException e) {
             logger.error("--->", e);
-            jsonString = Constant.FAILUREMSG;
+            jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("服务器内部错误，请联系管理员"));
         }
         return jsonString;
     }
@@ -1031,22 +1000,23 @@ public class PadInterfaceController {
      */
     @RequestMapping(value = "/querytables")
     @ResponseBody
-    public String queryAllTable() {
+    public String queryAllTable(String orderid) {
         Map<String, Object> map = new HashMap<>();
         String defaultsort = "0";//默认
         if (null != Constant.DEFAULT_TABLE_SORT) {
             defaultsort = Constant.DEFAULT_TABLE_SORT;
         }
         map.put("defaultsort", Integer.parseInt(defaultsort));
+        map.put("exceptorder", orderid);//排除再外的餐台
         String jsonString = "";
         try {
             int[] tabletypefilter = {2, 3, 4};
             map.put("tabletypefilter", tabletypefilter);//过滤掉餐台类型为外卖,咖啡的餐台
             List<Map<String, Object>> list = tableService.find(map);
-            return JacksonJsonMapper.objectToJson(list);
+            return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(list));
         } catch (Exception e) {
-            jsonString = "";
-            logger.error("查询所有桌台异常！", e);
+        	jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("查询所有桌台异常"));
+			logger.error("查询所有桌台异常！", e);
         }
         return jsonString;
     }
@@ -1081,41 +1051,40 @@ public class PadInterfaceController {
     /**
      * 根据桌号查询桌子使用情况
      */
-    @RequestMapping(value = "/queryonetable")
-    @ResponseBody
-    public String queryOneTable(@RequestBody Table tbTable) {
+    @RequestMapping(value = "/queryonetable" )
+	@ResponseBody
+	public String queryOneTable(@RequestBody Table  tbTable){
 
-        TJsonRecord record = new TJsonRecord();
-        record.setJson(JacksonJsonMapper.objectToJson(tbTable));
-        record.setPadpath("queryonetable");
-        jsonRecordService.insertJsonRecord(record);
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(JacksonJsonMapper.objectToJson(tbTable));
+		record.setPadpath("queryonetable");
+		jsonRecordService.insertJsonRecord(record);
 
-
-        String jsonString = "";
+		String jsonString  = "";
 //		Map<String, String> mapRet = new HashMap<String, String>();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("tableNo", tbTable.getTableNo());
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("tableNo", tbTable.getTableNo());
 //		map.put("status", "1");
-        try {
-            List<Map<String, Object>> list = tableService.find(map);
-            if (list == null || list.size() > 1) {
-                jsonString = Constant.FAILUREMSG;
-            } else {
+		try {
+			List<Map<String, Object>> list = tableService.find(map);
+			if(list == null || list.size() > 1){
+				jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败"));
+			}else {
 //					mapRet.put("result", "0");
-                Map<String, Object> retMap = list.get(0);
-                TableStatus resultTable = new TableStatus();
-                resultTable.setStatus(String.valueOf(retMap.get("status")));
-                resultTable.setResult("0");
-                resultTable.setOrderid(String.valueOf(retMap.get("orderid")));
-                jsonString = JacksonJsonMapper.objectToJson(resultTable);
-            }
+				Map<String, Object> retMap = list.get(0);
+				TableStatus resultTable = new TableStatus();
+				resultTable.setStatus(String.valueOf(retMap.get("status")));
+				resultTable.setResult("0");
+				resultTable.setOrderid(String.valueOf(retMap.get("orderid")));
+				jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(resultTable));
+			}
 
-        } catch (Exception e) {
-            logger.error("--->", e);
-            jsonString = "";
-        }
-        return jsonString;
-    }
+		} catch (Exception e) {
+			logger.error("--->",e);
+			jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("操作失败，服务器内部错误"));
+		}
+		return jsonString;
+	}
 
     /**
      * 查询年龄段数据字典
@@ -1148,23 +1117,22 @@ public class PadInterfaceController {
     /**
      * 返回所有的数据
      */
-    @RequestMapping(value = "/queryusers")
-    @ResponseBody
-    public String queryAllUser() {
-        String jsonString = "";
-        try {
-            List<EmployeeUser> list = this.employeeUserService.findAllServiceUserForCurrentStore();
-            Map<String, Object> retMap = new HashMap<String, Object>();
-            retMap.put("result", "0");
-            retMap.put("detail", list);
-            return JacksonJsonMapper.objectToJson(retMap);
-        } catch (Exception e) {
-            logger.error("--->", e);
-            e.printStackTrace();
-            jsonString = "";
-        }
-        return jsonString;
-    }
+    @RequestMapping(value = "/queryusers" )
+	@ResponseBody
+	public String queryAllUser(){
+		String jsonString  = "";
+		try {
+			List<EmployeeUser> list = this.employeeUserService.findAllServiceUserForCurrentStore();
+			Map<String, Object> retMap = new HashMap<String, Object>();
+			retMap = ReturnMap.getSuccessMap(list);
+			return JacksonJsonMapper.objectToJson(retMap);
+		} catch (Exception e) {
+			logger.error("--->",e);
+			e.printStackTrace();
+			jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("操作失败，服务器内部错误"));
+		}
+		return jsonString;
+	}
 
 
     /**
@@ -1205,12 +1173,6 @@ public class PadInterfaceController {
         return "/dishtype/show";
     }
 
-    /**
-     * 退菜接口
-     */
-    public String discardDish() {
-        return "/dishtype/show";
-    }
 
     /**
      * 换台接口
@@ -1220,18 +1182,15 @@ public class PadInterfaceController {
         return "/dishtype/show";
     }
 
-    private String wrapJson(User user, List<Map<String, Object>> list) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("result", "0");
-        if (user != null) {
-            map.put("fullname", user.getName() + "(" + user.getAccount() + ")");
-        }
-        map.put("loginTime", DateFormat.getDateTimeInstance().format(new Date()));
-
-        map.put("tables", list);
-        return JacksonJsonMapper.objectToJson(map);
-
-    }
+    private String wrapJson(User user, List<Map<String, Object>> list){
+		Map<String, Object> map = new HashMap<String, Object>();
+		if(user != null){
+			map.put("fullname", user.getName() +"("+ user.getAccount()+")");
+		}
+		map.put("loginTime", DateFormat.getDateTimeInstance().format(new Date()));
+		map.put("tables", list);
+		return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(map));
+	}
 
     /**
      * 下单和退菜的  重复下单的判断
@@ -1244,7 +1203,7 @@ public class PadInterfaceController {
         return 0;
 
 		/*Map<String,Object> map=new HashMap<String,Object>();
-		map.put("tableno", toperationLog.getTableno());
+        map.put("tableno", toperationLog.getTableno());
 		map.put("operationType", toperationLog.getOperationtype());
 		ToperationLog newtoperationLog=toperationLogService.findByparams(map);
 		if(newtoperationLog==null){
@@ -1352,7 +1311,7 @@ public class PadInterfaceController {
     @RequestMapping(value = "/getCooperationUnit", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView getCooperationUnit(@RequestBody String body) {
-		/*@SuppressWarnings("unchecked")
+        /*@SuppressWarnings("unchecked")
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
 		ModelAndView mav = new ModelAndView();
 		String typeid=(String) params.get("typeid"); //优惠分类
@@ -1371,21 +1330,74 @@ public class PadInterfaceController {
     @RequestMapping(value = "/usePreferentialItem", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView usePreferentialItem(@RequestBody String body) {
-        ModelAndView mav = new ModelAndView();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-        String orderid = (String) params.get("orderid");  //账单号
-        String preferentialid = (String) params.get("preferentialid"); //优惠活动id
-        String disrate = (String) params.get("disrate"); // 手工折扣类会上传一个>0的折扣
-        String type = (String) params.get("type");
-        String subtype = (String) params.get("sub_type");
-        String preferentialAmt = (String) params.get("preferentialAmt");
-        OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(type, subtype, orderid,
-                preferentialid, disrate, preferentialAmt);
-
-        mav.addObject(result);
-        return mav;
+		ModelAndView mav = new ModelAndView();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
+		mav.addObject(result);
+		return mav;
     }
+    
+	/**
+	 * 删除使用优惠（根据订单号以及消费的ID删除使用优惠）
+	 * 
+	 * @param body
+	 *            传入参数
+	 * @return
+	 */
+	@RequestMapping(value = "delPreferentialItem", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView delPreferentialItem(@RequestBody String body) {
+		ModelAndView mav = new ModelAndView();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		Map<String, String> result = torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+		mav.addObject(result);
+		return mav;
+	}
+
+	@RequestMapping(value = "getDetailPreferentialList", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView getDetailPreferentialList(@RequestBody String body) {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		// 获取所有订单数据
+		List<TorderDetailPreferential> allDetailPre = torderDetailPreferentialService.getTorderDetailSbyOrderid(params);
+		// 清空订单对应得优惠券
+		BigDecimal preferentialAmt = new BigDecimal("0");
+
+		Map<String, Object> setMap = new HashMap<>();
+		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
+		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
+			setMap.clear();
+			setMap.put("orderid", (String) params.get("orderid"));
+			setMap.put("preferentialid", branchDataSyn.getPreferential());
+			setMap.put("disrate", branchDataSyn.getDiscount().toString());
+			setMap.put("type", branchDataSyn.getActivity().getType());
+			setMap.put("subtype", branchDataSyn.getActivity().getSubType());
+			setMap.put("preferentialNum", "1");
+			setMap.put("preferentialAmt",preferentialAmt.toString());
+			setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
+			setMap.put("updateId", branchDataSyn.getId());
+			if (branchDataSyn.getIsCustom() == 1) {
+				setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
+			}
+
+			OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
+			// 就算每次优免总额
+			for (TorderDetailPreferential dep : result.getDetailPreferentials()) {
+				 preferentialAmt=preferentialAmt.add(dep.getDeAmount());
+				detailPreferentials.add(dep);
+			}
+		}
+		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
+		operPreferentialResult.setAmount(preferentialAmt);
+		operPreferentialResult.setDetailPreferentials(detailPreferentials);
+		operPreferentialResult.setResult(1);
+		mav.addObject(operPreferentialResult);
+		
+		return mav;
+	}
 
     /**
      * 取消账单使用的优惠
@@ -1422,7 +1434,7 @@ public class PadInterfaceController {
     @ResponseBody
     public void getMenu(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = menuService.getMenuData();
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+        String wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(map));
         try {
             response.reset();
             response.setHeader("Content-Type", "application/json");
@@ -1474,26 +1486,31 @@ public class PadInterfaceController {
      * @date:2015年5月6日下午11:54:28
      * @Description: TODO
      */
-    @RequestMapping(value = "/getMenuFishPot", method = RequestMethod.POST)
-    @ResponseBody
-    public void getMenuFishPot(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
-        List<Map<String, Object>> map = menuService.getMenuFishPot(jsonString);
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
-        try {
-            response.reset();
-            response.setHeader("Content-Type", "application/json");
-            response.setContentType("text/json;charset=UTF-8");
-            OutputStream stream = response.getOutputStream();
-            logger.info(wholeJsonStr);
-            stream.write(wholeJsonStr.getBytes("UTF-8"));
-            stream.flush();
-            stream.close();
-
-        } catch (Exception ex) {
-            logger.error("--->", ex);
-            ex.printStackTrace();
+    @RequestMapping(value="/getMenuFishPot",method = RequestMethod.POST)
+	@ResponseBody
+	public void getMenuFishPot(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
+		List<Map<String, Object>> map = menuService.getMenuFishPot(jsonString);
+		String wholeJsonStr = "";
+        if(map != null && map.size() > 0){
+        	wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(map));
+        }else{
+        	wholeJsonStr = JacksonJsonMapper.objectToJson("获取数据失败");
         }
-    }
+		try{
+			response.reset();
+			response.setHeader("Content-Type", "application/json");
+			response.setContentType("text/json;charset=UTF-8");
+			OutputStream stream = response.getOutputStream();
+			logger.info(wholeJsonStr);
+			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			stream.flush();
+			stream.close();
+
+		}catch(Exception ex){
+			logger.error("--->",ex);
+			ex.printStackTrace();
+		}
+	}
 
     /**
      * 获取菜谱中套餐的数据
@@ -1506,7 +1523,7 @@ public class PadInterfaceController {
     @ResponseBody
     public void getMenuCombodish(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = menuService.getMenuCombodish(jsonString);
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+        String wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(map));
         try {
             response.reset();
             response.setHeader("Content-Type", "application/json");
@@ -1530,26 +1547,31 @@ public class PadInterfaceController {
      * @date:2015年5月7日上午10:26:56
      * @Description: TODO
      */
-    @RequestMapping(value = "/getMenuSpfishpot", method = RequestMethod.POST)
-    @ResponseBody
-    public void getMenuSpfishpot(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
-        List<Map<String, Object>> map = menuService.getMenuSpfishpot(jsonString);
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
-        try {
-            response.reset();
-            response.setHeader("Content-Type", "application/json");
-            response.setContentType("text/json;charset=UTF-8");
-            OutputStream stream = response.getOutputStream();
-            stream.write(wholeJsonStr.getBytes("UTF-8"));
-            logger.info(wholeJsonStr);
-            stream.flush();
-            stream.close();
-
-        } catch (Exception ex) {
-            logger.error("--->", ex);
-            ex.printStackTrace();
+    @RequestMapping(value="/getMenuSpfishpot",method = RequestMethod.POST)
+	@ResponseBody
+	public void getMenuSpfishpot(@RequestBody String jsonString,HttpServletRequest request,HttpServletResponse response){
+		List<Map<String, Object>> map = menuService.getMenuSpfishpot(jsonString);
+		String wholeJsonStr = "";
+        if(map != null && map.size() > 0){
+        	wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(map));
+        }else{
+        	wholeJsonStr = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败"));
         }
-    }
+		try{
+			response.reset();
+			response.setHeader("Content-Type", "application/json");
+			response.setContentType("text/json;charset=UTF-8");
+			OutputStream stream = response.getOutputStream();
+			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			logger.info(wholeJsonStr);
+			stream.flush();
+			stream.close();
+			
+		}catch(Exception ex){
+			logger.error("--->",ex);
+			ex.printStackTrace();
+		}
+	}
 
     /**
      * 更换pad的时候调用，获取已经开台的桌子的信息，返回一个list
@@ -1577,8 +1599,10 @@ public class PadInterfaceController {
                 param.put("contentNum", ma.get("personNum"));
                 datalist.add(param);
             }
+            map = ReturnMap.getSuccessMap(datalist);
+        }else{
+        	map = ReturnMap.getSuccessMap("没有获取到数据",datalist);	//pad端需要状态为成功
         }
-        map.put("data", datalist);
         String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
         try {
             response.reset();
@@ -1712,7 +1736,7 @@ public class PadInterfaceController {
     public void updateDishWeight(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
         Map<String, Object> map = orderService.updateDishWeight(params);
-        if (map.get("result").equals("0")) {
+        if (map.get("code").equals("0")) {
             String orderid = (String) map.get("orderid");
             //发送广播通知
             StringBuilder messageinfo = new StringBuilder(Constant.TS_URL + Constant.MessageType.msg_2201 + "/" + orderid);
@@ -1729,7 +1753,6 @@ public class PadInterfaceController {
             stream.write(wholeJsonStr.getBytes("UTF-8"));
             stream.flush();
             stream.close();
-
         } catch (Exception ex) {
             logger.error("更新菜品重量失败！", ex);
             ex.printStackTrace();
@@ -1756,39 +1779,35 @@ public class PadInterfaceController {
      * "msg": "密码错误、没有开台权限"
      * }
      */
-    @RequestMapping(value = "/login.json")
-    @ResponseBody
-    public String loginJson(@RequestBody String body) {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        try {
-            Map<String, String> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-            String username = params.get("username");
-            String password = params.get("password");
-            String loginType = params.get("loginType");
-            Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
-            if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String date = sDateFormat.format(new java.util.Date());
-                resultMap.put("result", 0);
-                resultMap.put("msg", "验证成功");
-                resultMap.put("loginTime", date);
-                resultMap.put("fullname", String.valueOf(userMap.get("name")));
-            } else {
-                //userService.updateLoginTime(account);
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String date = sDateFormat.format(new java.util.Date());
-                resultMap.put("result", 1);
-                resultMap.put("loginTime", date);
-                resultMap.put("msg", String.valueOf(userMap.get("msg")));
-            }
-
-        } catch (Exception e) {
-            logger.error("--->", e);
-            resultMap.put("result", 1);
-            resultMap.put("msg", e.getMessage());
-        }
-        return JacksonJsonMapper.objectToJson(resultMap);
-    }
+    @RequestMapping(value = "/login.json" )
+	@ResponseBody
+	public String loginJson(@RequestBody String body){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			Map<String, String> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+			String username = params.get("username");
+			String password = params.get("password");
+			String loginType = params.get("loginType");
+			Map<String,Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password,loginType);
+			Map<String, Object> map = new HashMap<>();
+			if(Boolean.valueOf(String.valueOf(userMap.get("success")))){
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String date = sDateFormat.format(new java.util.Date());
+				map.put("loginTime",date);
+				map.put("fullname",String.valueOf(userMap.get("name")));
+				resultMap = ReturnMap.getSuccessMap("验证成功", map);
+			}else {
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String date = sDateFormat.format(new java.util.Date());
+				map.put("loginTime", date);
+				resultMap = ReturnMap.getFailureMap(String.valueOf(userMap.get("msg")),map);
+			}
+		} catch (Exception e) {
+			logger.error("--->",e);
+			resultMap = ReturnMap.getFailureMap("服务器内部错误，请联系管理员");
+		}
+		return JacksonJsonMapper.objectToJson(resultMap);
+	}
 
     /**
      * 获取员工权限列表
@@ -1855,36 +1874,32 @@ public class PadInterfaceController {
      * 登录接口，验证成功后 返回信息需要有PAD IP和房号绑定状态，并且房号是否是在用餐状态
      * 0 成功 1 失败
      */
-    @RequestMapping(value = "/padlogin")
-    @ResponseBody
-    public String userPadLogin(@RequestBody LoginInfo loginInfo) {
-        String jsonString = "";
-        try {
+    @RequestMapping(value = "/padlogin" )
+	@ResponseBody
+	public String userPadLogin(@RequestBody  LoginInfo  loginInfo){
+		Map<String, Object> mapRet = new HashMap<String, Object>();
+		try {
+			TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+			if(tbOpenBizLog == null){
+				logger.error("未开业，不能登录");
+				mapRet = ReturnMap.getFailureMap("未开业，不能登录");
+				return JacksonJsonMapper.objectToJson(mapRet);
+			}
 
-            TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
-            if (tbOpenBizLog == null) {
-                Map<String, String> mapRet = new HashMap<String, String>();
-                mapRet.put("result", "3");
-                logger.error("未开业，不能登录");
-                return JacksonJsonMapper.objectToJson(mapRet);
-            }
-
-            String pwd = dataDictionaryService.find("SECRETKEY");
-            if (!pwd.equals(loginInfo.getPassword())) {
-                logger.info("密码错误");
-                jsonString = Constant.FAILUREMSG;
-            } else {
-                logger.info("登录成功");
-//				userService.updateLoginTime(loginInfo.getUsername());
-                jsonString = Constant.SUCCESSMSG;
-            }
-//
-        } catch (Exception e) {
-            logger.error("--->", e);
-            jsonString = Constant.FAILUREMSG;
-        }
-        return jsonString;
-    }
+			String pwd = dataDictionaryService.find("SECRETKEY");
+			if(! pwd.equals(loginInfo.getPassword())){
+				logger.info("密码错误");
+				mapRet = ReturnMap.getFailureMap("密码错误");
+			}else {
+				logger.info("登录成功");
+				mapRet = ReturnMap.getSuccessMap("登录成功");
+			}
+		} catch (Exception e) {
+			logger.error("--->",e);
+			mapRet = ReturnMap.getFailureMap("操作失败，服务器内部错误");
+		}
+		return JacksonJsonMapper.objectToJson(mapRet);
+	}
 
     /**
      * 系统设置接口
@@ -2191,9 +2206,12 @@ public class PadInterfaceController {
         //获取同步数据的传送方式
         String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
         try {
+        	//选择处理方式
             dto = selectMethod(type);
+            
         } catch (SysException e) {
             loggers.error("门店上传到总店数据失败", e);
+            if(e.getCode().equals(""))
             //异常处理机制
             dto = exceptionDeal(type);
             //使用原有代码MQ机制时出现的异常处理
@@ -2208,6 +2226,19 @@ public class PadInterfaceController {
         loggers.info("jdeSynData-end:" + dto, "");
         //return JacksonJsonMapper.objectToJson(resultMap);
         return JSON.toJSONString(dto);
+    }
+    
+    @RequestMapping("/synDataByDate.do")
+    @ResponseBody
+    public String synDataByDate(String json,String startDate,String endDate) {
+    	
+    	loggers.info("synDataByDate-start:" + json+","+startDate+","+endDate, "");
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("opendate", startDate);
+    	map.put("enddate", endDate);
+    	BranchDataSyn.TL.set(map);
+    	
+    	return jdeSynData(json);
     }
 
     //出现异常处理机制,重新执行直到成功,最多执行3次
@@ -2573,14 +2604,12 @@ public class PadInterfaceController {
         } catch (Exception e) {
             logger.error("--->", e);
             e.printStackTrace();
-            return ReturnMap.getReturnMap(0, "003", "数据异常，请联系管理员");
+            return ReturnMap.getFailureMap("数据异常，请联系管理员");
         }
         if (maps == null || maps.size() <= 0) {
-            return ReturnMap.getReturnMap(0, "002", "没有查询到相应的数据");
+            return ReturnMap.getFailureMap("没有查询到相应的数据");
         }
-        Map<String, Object> returnMap = ReturnMap.getReturnMap(1, "001", "查询成功");
-        returnMap.put("data", maps);
-        return returnMap;
+        return ReturnMap.getSuccessMap("查询成功", maps);
     }
 
 
@@ -3007,16 +3036,14 @@ public class PadInterfaceController {
      * web获取所有可配置项
      */
     @RequestMapping("/getconfiginfos")
-    @ResponseBody
-    public String getconfiginfos() {
+	@ResponseBody
+	public String getconfiginfos() {
         PadConfig padConfig = padConfigService.getconfiginfos();
         Map<String, Object> map = new HashMap<>();
         if (padConfig == null) {
-            map.put("code", 1);
-            map.put("msg", "门店没有配置相关信息");
+            map = ReturnMap.getFailureMap("门店没有配置相关信息");
         } else {
-            map.put("code", 0);
-            map.put("data", padConfig);
+            map = ReturnMap.getSuccessMap(padConfig);
         }
         return JacksonJsonMapper.objectToJson(map);
     }
@@ -3077,15 +3104,12 @@ public class PadInterfaceController {
     @ResponseBody
     public String getBranchInfo() {
         Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
-        HashMap<String, Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
         if (branchInfo != null && !branchInfo.isEmpty()) {
-            res.put("result", 1);
-            res.put("msg", "success");
-            res.put("data", branchInfo);
+            res = ReturnMap.getSuccessMap(branchInfo);
             return JacksonJsonMapper.objectToJson(res);
         }
-        res.put("result", 0);
-        res.put("msg", "查询门店信息失败");
+        res = ReturnMap.getFailureMap("查询门店信息失败");
         return JacksonJsonMapper.objectToJson(res);
     }
 
@@ -3176,6 +3200,8 @@ public class PadInterfaceController {
     private SystemServiceImpl systemServiceImpl;
     @Autowired
     private PadConfigService padConfigService;
+	@Autowired
+	private TorderDetailPreferentialService torderDetailPreferentialService;
 
     private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 

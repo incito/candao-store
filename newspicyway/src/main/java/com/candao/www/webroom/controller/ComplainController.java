@@ -51,13 +51,13 @@ public class ComplainController {
 			String type ="COMPLAINT";
 			List<Map<String,String>> list = systemService.getDicListByTypeForClient(type);
 			if(list==null||list.size()<=0){
-				return ReturnMap.getFailureMap("没有查询到相应的数据", null);
+				return ReturnMap.getFailureMap("没有查询到相应的数据");
 			}
 			Map<String,Object> returnMap = ReturnMap.getSuccessMap("查询成功", list);
 			return returnMap;
 		} catch (Exception e) {
 			logger.error("method getDicListByType is wrong :{}",e.getMessage());
-			return ReturnMap.getFailureMap("数据异常，请联系管理员", null);
+			return ReturnMap.getFailureMap("数据异常，请联系管理员");
 		}
 	}
 	
@@ -76,14 +76,14 @@ public class ComplainController {
 			List<Map<String,String>> list = systemService.getTimeValueByTypeForClient(type);
 			if(list==null||list.size()<=0){
 				logger.info("没有查询到相应的数据");
-				return ReturnMap.getFailureMap("没有查询到相应的数据", null);
+				return ReturnMap.getFailureMap("没有查询到相应的数据");
 			}
 			Map<String,Object> returnMap = ReturnMap.getSuccessMap("查询成功",list);
 			return returnMap;
 			
 		} catch (Exception e) {
 			logger.error("method getTimeSet is wrong :{}",e.getMessage());
-			return ReturnMap.getFailureMap("数据异常，请联系管理员", null);
+			return ReturnMap.getFailureMap("数据异常，请联系管理员");
 		}
 	}
 	

@@ -2,6 +2,7 @@ package com.candao.www.dataserver.service.msghandler;
 
 import com.candao.www.dataserver.model.MsgForwardData;
 import com.candao.www.dataserver.service.device.obj.DeviceObject;
+import com.candao.www.dataserver.service.msghandler.obj.Result;
 
 import java.util.List;
 import java.util.Map;
@@ -65,28 +66,12 @@ public interface MsgForwardService {
     void broadCastMsgOnLine(String msgType, String msg, boolean isSingle);
 
     /**
-     * 批量给在线设备发送消息,指定的过期时间后删除
-     * expireSeconds消息持久化周期
-     *
-     * @param msg
-     */
-    void broadCastMsgOnLine(String msgType, String msg, boolean isSingle, int expireSeconds);
-
-    /**
      * 批量给指定设备组发送消息
      *
      * @param msg
      * @return
      */
     void broadCastMsgGroup(String group, String msgType, String msg, boolean isSingle);
-
-    /**
-     * 给指定设备发送同步消息
-     *
-     * @param id 设备id
-     * @return
-     */
-    String broadCastMsgSync(Integer id, String msg);
 
     /**
      * 给指定设备发送异步消息
@@ -104,4 +89,34 @@ public interface MsgForwardService {
      */
 
     void forwardMsg(Map<String, List<String>> targetMap, String msg);
+
+    /**
+     * 给指定IMEI的设备发送异步信息
+     * @param imei
+     * @param msgId
+     * @param msgData
+     * @param expireSeconds
+     * @param isSingle
+     */
+    Result sendMsgAsyn(String imei, String msgId, Object msgData, int expireSeconds, boolean isSingle);
+
+    /**
+     * 给指定订单所属的设备发送异步消息
+     * @param orderId
+     * @param msgId
+     * @param msgData
+     * @param expireSeconds
+     * @param isSingle
+     * @return
+     */
+    Result sendMsgAsynWithOrderId(String orderId, String msgId, Object msgData, int expireSeconds, boolean isSingle);
+
+    /**
+     * 给指定订单所属的设备发送同步消息
+     * @param orderId
+     * @param msgId
+     * @param msgData
+     * @return
+     */
+    Result sendMsgSynWithOrderId(String orderId, String msgId, Object msgData);
 }

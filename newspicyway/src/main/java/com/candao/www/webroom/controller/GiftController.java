@@ -1,5 +1,7 @@
 package com.candao.www.webroom.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.candao.www.dataserver.service.msghandler.obj.Result;
+import com.candao.www.webroom.service.NotifyService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +35,8 @@ public class GiftController {
 
 	@Autowired
 	private GiftLogService giftService;
-
+	@Autowired
+	private NotifyService notifyService;
 	private static final Logger logger = LoggerFactory.getLogger(GiftController.class);
 
 	/**
@@ -41,7 +46,7 @@ public class GiftController {
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping("/send")
+	@RequestMapping(value="/send",produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public Map<String, Object> sendGiftToAnthorTable(@RequestBody String body) {
 		logger.debug("start method sendGiftInfo  waiter");
@@ -126,27 +131,27 @@ public class GiftController {
 			}
 			try{
 				final String giveTableNo = isAnonymous.equals("0")?"":giftInfo.getString("giveTableNo");
-				final String receiveTableNo = giftInfo.getString("receiveTableNo");
 				final String giftNo = giftInfo.getString("giftNo");
 				final String messageid = log.getId();
-				final String receiveOrderIdstr = receiveOrderId;
-				
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2101+"/");
-						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
-						new TsThread(messageinfo.toString()).run();
-					}
-				}).start();
+
+
+				Result result = notifyService.notifyGiveGift(receiveOrderId, giveTableNo, giftNo, messageid);
+				if(!result.isSuccess()){
+					giftService.deleteById(messageid);
+					return ReturnMap.getFailureMap("赠送失败："+result.getMsg());
+				}
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run() {
+//						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2101+"/");
+//						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(messageid).append("|").append(receiveOrderIdstr);
+//						new TsThread(messageinfo.toString()).run();
+//					}
+//				}).start();
 			}catch(Exception ex){
 				
 			}
-			List<Map<String,String>> datalist = new ArrayList<Map<String,String>>();
-//			Map<String,String> idMap = new HashMap<String,String>();
-//			idMap.put("giftlogid", log.getId());
-//			datalist.add(idMap);
-			return ReturnMap.getSuccessMap("发起赠送成功成功",datalist);
+			return ReturnMap.getSuccessMap("发起赠送成功成功");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -162,7 +167,7 @@ public class GiftController {
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping("/recvice")
+	@RequestMapping(value="/recvice",produces = { "application/json;charset=UTF-8" })
 	@ResponseBody
 	public Map<String, Object> recviceGiftToAnthorTable(@RequestBody String body,HttpServletRequest reqeust) {
 		logger.debug("start method recvice sendGiftInfo  waiter");
@@ -199,8 +204,23 @@ public class GiftController {
 			}
 			String primarykey = IdentifierUtils.getId().generate().toString()+"-"+giftPriceType;
 			log.setGiftStatus(giftStatusstr);
-			int tempnum = giftService.updateGiftLogInfo(log,primarykey,reqeust);
-			
+			//推送消息到目的桌pad显示
+			try{
+				final String giveTableNo = String.valueOf(log.getGiveTableNo());
+				final String receiveTableNo = String.valueOf(log.getReceiveTableNo());
+				final String giftNo = log.getGiftNo();
+				final String orderId = log.getOrderId();
+				final String finalprimarykey = primarykey;
+
+				Result result = notifyService.notifyReceiveGift(giveTableNo, orderId, receiveTableNo, giftNo, giftStatusstr, finalprimarykey);
+				if(!result.isSuccess()){
+					return ReturnMap.getFailureMap("处理失败："+result.getMsg());
+				}
+			}catch(Exception ex){
+				return ReturnMap.getFailureMap("系统发生异常");
+			}
+			int tempnum = giftService.updateGiftLogInfo(log,primarykey);
+
 			if(tempnum==1){
 				return ReturnMap.getFailureMap("礼物已经处理");
 			}else if(tempnum==2){
@@ -212,26 +232,8 @@ public class GiftController {
 			}else if(tempnum==5){
 				return ReturnMap.getFailureMap("系统内部错误");
 			}
-			//推送消息到目的桌pad显示
-			try{
-				final String giveTableNo = String.valueOf(log.getGiveTableNo());
-				final String receiveTableNo = String.valueOf(log.getReceiveTableNo());
-				final String giftNo = log.getGiftNo();
-				final String giftStatus = giftStatusstr;
-				final String orderId = log.getOrderId();
-				final String finalprimarykey = primarykey;
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						StringBuilder messageinfo=new StringBuilder(Constant.TS_URL+Constant.MessageType.msg_2102+"/");
-						messageinfo.append(giveTableNo).append("|").append(receiveTableNo).append("|").append(giftNo).append("|").append(giftStatus).append("|").append(orderId).append("|").append(finalprimarykey);
-						new TsThread(messageinfo.toString()).run();
-					}
-				}).start();
-			}catch(Exception ex){
-			    ex.printStackTrace();	
-			}
 			return ReturnMap.getSuccessMap("接受礼物接口处理成功");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("method sendGiftToAnthorTable is wrong :{}", e.getMessage());
