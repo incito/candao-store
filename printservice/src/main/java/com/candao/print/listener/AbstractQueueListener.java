@@ -1,6 +1,5 @@
 package com.candao.print.listener;
 
-import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.listener.template.ListenerTemplate;

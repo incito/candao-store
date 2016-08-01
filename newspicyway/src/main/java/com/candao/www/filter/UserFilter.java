@@ -63,7 +63,8 @@ public class UserFilter implements Filter {
                     && !targetURL.startsWith("/social") && !targetURL.startsWith("/tip") && !targetURL.startsWith("/managerWatch") && !targetURL.startsWith("/cache") && !targetURL.startsWith("/controller") && !targetURL.startsWith("/pos")
                     && !targetURL.startsWith("/daliyReports/getDayReportList") && !targetURL.startsWith("/itemDetail/getItemForList") && !targetURL.startsWith("/gisterBill/getBillCount")
                     && !targetURL.startsWith("/padlog")
-                    && !targetURL.startsWith("/preferentialAnalysisCharts/findPreferential")) {
+                    && !targetURL.startsWith("/preferentialAnalysisCharts/findPreferential") && !targetURL.startsWith("/print4POS")) {
+
                 if (session == null || session.getAttribute(Constant.CURRENT_USER) == null) {
                     response.reset();
                     response.setContentType("text/html; charset=utf-8"); // 设置编码格式要在创建PrintWriter对象之前.不然不能生效
