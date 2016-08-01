@@ -74,7 +74,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
 
             int msgId = (int) System.currentTimeMillis();
             MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
-            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), msgType, false);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), false);
             if (MsgType.MSG_1002.getValue().equals(msgType)) {
                 String tableNo = businessService.getTableNoByOrderId(msg);
                 if (StringUtils.isNotBlank(tableNo)) {
@@ -153,14 +153,14 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
      * @param isSingle
      */
     @Deprecated
-    private void broadCastMsgDevices(List<DeviceObject> objects, String msg, String msgType, boolean isSingle) {
+    private void broadCastMsgDevices(List<DeviceObject> objects, String msg, boolean isSingle) {
         List<OfflineMsg> offlineMsgList = new ArrayList<>();
         for (final DeviceObject deviceObject : objects) {
             int single = 0;
             if (isSingle) {
                 single = 1;
             }
-            OfflineMsg offlineMsg = new OfflineMsg(msgType, msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
+            OfflineMsg offlineMsg = new OfflineMsg(MsgForwardTran.msgConfig.getProperty("MSG_ID.OFFLINE.SEND"), msg, deviceObject.getDeviceGroup(), deviceObject.getDeviceId(), single);
             /*兼容watch的消息格式 start*/
             OfflineMsgData offlineMsgData = new OfflineMsgData(offlineMsg.getId(), offlineMsg.getContent());
             offlineMsg.setContent(JSON.toJSONString(offlineMsgData));
