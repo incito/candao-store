@@ -40,6 +40,7 @@ import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.WorkLogService;
@@ -84,6 +85,9 @@ public class TableServiceImpl implements TableService {
 	
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	private NotifyService notifyService;
     
 	@Override
 	public Page<Map<String, Object>> grid(Map<String, Object> params, int current, int pagesize) {
@@ -307,13 +311,13 @@ public class TableServiceImpl implements TableService {
 				torderDetailMapper.updateOrderDetailDiscard(sourceOrderId, targetOrderId);
 				//TODO 
 				updatePrintTableRelation(sourceOrder, sourceTable, sourceOrderId, targetOrderId);
+				// 通知目标餐台的PAD，必须在删除订单主表数据前调用
+				notifyService.notifyClearTable(targetTableNo);
 				// 删除订单主表
 				if (torderMapper.deleteByPrimaryKey(targetOrderId) < 1) {
 					logger.error("删除目标餐台账单失败");
 					throw new Exception("删除目标餐台账单失败");
 				}
-				// 通知目标餐台的PAD
-				notifyTargetPad(targetOrder);
 
 			}
 			//更新餐台的订单号
