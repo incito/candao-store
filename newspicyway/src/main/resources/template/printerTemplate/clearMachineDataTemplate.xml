@@ -338,6 +338,25 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>25</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>本班消费金额</value>
+					<value>#{it.tipTotalAmount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
 	<!-- 分割线 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
@@ -353,10 +372,6 @@
 			</list>
 		</datas>
 	</row:row>
-	
-	
-	
-	<!-- <!-- <!--  --> --> -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="品项">
@@ -371,7 +386,7 @@
 			<datas description="品项">
 				<list>
 					<value>应收小计</value>
-					<value>#{it.tRFoodMoney}</value>
+					<value>#{it.accountsReceivableSubtotal}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -405,7 +420,7 @@
 			<datas description="品项">
 				<list>
 					<value>抹零金额</value>
-					<value>#{it.tRFoodMoney}</value>
+					<value>#{it.removeMoney}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -424,7 +439,7 @@
 			<datas description="品项">
 				<list>
 					<value>定额优惠金额</value>
-					<value>#{it.tRFoodMoney}</value>
+					<value>#{it.ratedPreferenceMoney}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -457,10 +472,117 @@
 			</locations>
 			<datas description="品项">
 				<list>
-					<value>应收金额</value>
+					<value>应收合计</value>
 					<value>#{it.tRFoodMoney}</value>
 				</list>
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<!-- 分割线 -->
+	<row:row description="分割线">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="分割线">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="分割线">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.jSJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>25</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>#{it.itemDesc}</value>
+					<value>#{it.payamount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<!-- 分割线 -->
+	<row:row description="分割线">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="分割线">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="分割线">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>25</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>计入收入合计</value>
+					<value>#{it.includedMoneyTotal}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>25</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>不计入收入合计</value>
+					<value>#{it.noIncludedMoneyTotal}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>25</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>合计</value>
+					<value>#{it.TotalMoney}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	
 </rows>

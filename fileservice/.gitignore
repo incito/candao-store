@@ -1,6 +1,5 @@
 /WebRoot
 *.pydevproject
-.project
 .metadata
 bin/**
 tmp/**

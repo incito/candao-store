@@ -2,7 +2,6 @@
 <rows class="com.candao.print.entity.PrintObj" description="billDetailTemplate"
 	xmlns="http://120.24.190.55/schema/rows" xmlns:row="http://120.24.190.55/schema/row"
 	xmlns:foreach="http://120.24.190.55/schema/foreach">
-
 	<row:row description="分店名">
 		<align description="对齐">ALIGN_CENTER</align>
 		<font description="字体大小">SMALL</font>
@@ -13,26 +12,10 @@
 		</locations>
 		<datas description="分店名">
 			<list>
-				<value>#{obj.settlementInfo4Pos.branchName}</value>
+				<value>营业明细表</value>
 			</list>
 		</datas>
 	</row:row>
-
-	<row:row description="单据号">
-		<align description="对齐">ALIGN_CENTER</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="位置">
-			<list>
-				<value>6</value>
-			</list>
-		</locations>
-		<datas description="账单类型">
-			<list>
-				<value>结账单</value>
-			</list>
-		</datas>
-	</row:row>
-
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
@@ -40,18 +23,138 @@
 			<font description="字体大小">SMALL</font>
 			<locations description="位置">
 				<list>
-					<value>10</value>
-					<value>30</value>
+					<value>15</value>
+					<value>25</value>
 				</list>
 			</locations>
 			<datas description="账单号">
 				<list>
-					<value>结账单号：</value>
-					<value>#{it.orderid}</value>
+					<value>打印日期：</value>
+					<value>#{it.}</value>
 				</list>
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="单号">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>15</value>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="账单号">
+				<list>
+					<value>操作员：</value>
+					<value>#{it.}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="单号">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>15</value>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="账单号">
+				<list>
+					<value>开始日期：</value>
+					<value>#{it.}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="单号">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>15</value>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="账单号">
+				<list>
+					<value>结束日期：</value>
+					<value>#{it.}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="单号">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>15</value>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="账单号">
+				<list>
+					<value>开台数：</value>
+					<value>#{it.}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>20</value>
+				<value>20</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>品项</value>
+				<value>金额</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="餐台">
@@ -59,81 +162,77 @@
 			<font description="字体大小">SMALL</font>
 			<locations description="位置">
 				<list>
-					<value>5</value>
-					<value>15</value>
-					<value>5</value>
-					<value>15</value>
+					<value>20</value>
+					<value>20</value>
 				</list>
 			</locations>
 			<datas description="账单类型">
 				<list>
-					<value>厅:</value>
-					<value>#{it.areaname}</value>
-					<value>客位:</value>
-					<value>#{it.tableName}</value>
+					<value>#{it.}</value>
+					<value>#{it.}</value>
 				</list>
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>20</value>
+				<value>20</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>优惠方式</value>
+				<value>金额</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="服务员">
+		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
 			<locations description="位置">
 				<list>
-					<value>5</value>
-					<value>15</value>
-					<value>5</value>
-					<value>15</value>
+					<value>20</value>
+					<value>20</value>
 				</list>
 			</locations>
 			<datas description="账单类型">
 				<list>
-					<value>人数:</value>
-					<value>#{it.custnum}</value>
-					<value>服务员:</value>
-					<value>#{it.fullName}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="开始时间">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="开始时间">
-				<list>
-					<value>10</value>
-					<value>30</value>
-				</list>
-			</locations>
-			<datas description="开始时间">
-				<list>
-					<value>开始时间:</value>
-					<value>#{it.begintime}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="结束时间">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="借宿时间">
-				<list>
-					<value>10</value>
-					<value>20</value>
-					<value>10</value>
-				</list>
-			</locations>
-			<datas description="结束时间">
-				<list>
-					<value>结束时间:</value>
-					<value>#{it.endtime}</value>
-					<value>#{it.printcount}</value>
+					<value>#{it.}</value>
+					<value>#{it.}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -154,167 +253,97 @@
 	</row:row>
 	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
+		<font description="字体大小">SMALL</font>
 		<locations description="借宿时间">
 			<list>
 				<value>20</value>
-				<value>5</value>
-				<value>5</value>
-				<value>10</value>
+				<value>20</value>
 			</list>
 		</locations>
 		<datas description="结束时间">
 			<list>
-				<value>品项</value>
-				<value>数量</value>
-				<value>单价</value>
-				<value>小计</value>
+				<value>结算方式</value>
+				<value>金额</value>
 			</list>
 		</datas>
 	</row:row>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.listJson}">
-		<row:row description="品项">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">NORMAL</font>
-			<locations description="品项">
-				<list>
-					<value>20</value>
-					<value>5</value>
-					<value>5</value>
-					<value>10</value>
-				</list>
-			</locations>
-			<datas description="品项">
-				<list>
-					<value>#{it.title}</value>
-					<value>#{it.dishnum}</value>
-					<value>#{it.orderprice}</value>
-					<value>#{it.payamount}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
-	<row:row description="品项">
+	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
-		<locations description="品项">
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
 			<list>
 				<value>40</value>
 			</list>
 		</locations>
-		<datas description="品项">
+		<datas description="结束时间">
 			<list>
 				<value>---------------------------------------</value>
 			</list>
 		</datas>
 	</row:row>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.jSJson}">
-		<row:row description="结算方式">
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">NORMAL</font>
-			<locations description="结算方式">
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
 				<list>
-					<value>10</value>
-					<value>10</value>
+					<value>20</value>
 					<value>20</value>
 				</list>
 			</locations>
-			<datas description="数据">
+			<datas description="账单类型">
 				<list>
-					<value>#{it.itemDesc}</value>
-					<value>#{it.payamount}</value>
-					<value>#{it.bankcardno}</value>
+					<value>#{it.}</value>
+					<value>#{it.}</value>
 				</list>
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
-	<row:row description="结算备注">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
-		<locations description="结算备注">
-			<list>
-				<value>20</value>
-			</list>
-		</locations>
-		<datas description="结算备注">
-			<list>
-				<value>结算备注：</value>
-			</list>
-		</datas>
-	</row:row>
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
-	<row:row description="电话">
+	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="电话">
+		<locations description="借宿时间">
 			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>40</value>
 			</list>
 		</locations>
-		<datas description="电话">
+		<datas description="结束时间">
 			<list>
-				<value>电话：</value>
-				<value>#{obj.tel}</value>
+				<value>---------------------------------------</value>
 			</list>
 		</datas>
 	</row:row>
-	<row:row description="地址">
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="餐台">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>20</value>
+					<value>20</value>
+				</list>
+			</locations>
+			<datas description="账单类型">
+				<list>
+					<value>#{it.}</value>
+					<value>#{it.}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="地址">
+		<locations description="借宿时间">
 			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>40</value>
 			</list>
 		</locations>
-		<datas description="地址">
+		<datas description="结束时间">
 			<list>
-				<value>地址：</value>
-				<value>#{obj.address}</value>
+				<value>---------------------------------------</value>
 			</list>
 		</datas>
 	</row:row>

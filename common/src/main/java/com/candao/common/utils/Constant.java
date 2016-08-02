@@ -45,7 +45,8 @@ public class Constant {
 		CustDishListener("custDishListener"), StatementDishListener("statementDishListener"), TableChangeListener("tableChangeListener"),
 		WeighDishListener("weighDishListener"),SettlementDishListener("settlementTemplate"),ClearMachineDataTemplate("clearMachineDataTemplate")
 		,ItemSellDetailTemplate("itemSellDetailTemplate"),MemberSaleInfoTemplate("memberSaleInfoTemplate"),BillDetailTemplate("billDetailTemplate")
-		,StoreCardToNewPosTemplate("storeCardToNewPosTemplate"),TipListTemplate("tipListTemplate"),PreSettlementTemplate("preSettlementTemplate");
+		,StoreCardToNewPosTemplate("storeCardToNewPosTemplate"),TipListTemplate("tipListTemplate"),PreSettlementTemplate("preSettlementTemplate")
+		,InvoiceTemplate("invoiceTemplate");
 
 		private String name;
 
