@@ -1,8 +1,10 @@
 package com.candao.www.printer.listener.template;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.CollectionUtils;
 
@@ -57,7 +59,9 @@ public class XMLTemplateDefinition extends SimpleNormalDishTemplateImpl implemen
 		getRow().clear();
 		for (XmlNameSpaceHandler it : handlers) {
 			try {
-				List<Row> rows = it.parse(obj);
+				Map<String, Object> params = new HashMap<>();
+				params.put(XmlReaderContext.DEFAULTVARIABLESNAME, obj);
+				List<Row> rows = it.parse(params);
 				getRow().addAll(rows);
 			} catch (Exception e) {
 				logger.error("解析数据出错", e);

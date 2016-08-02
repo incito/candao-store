@@ -30,6 +30,10 @@ public class XmlReaderContext {
 	
 	public static final String PLACEHOLDER_SUBFIX = "}";
 	
+	public static final String DEFAULTVARIABLESNAME = "obj";
+	
+	public static final String PROPERTYSEPERATOR = ".";
+	
 	public XmlReaderContext(XmlTemplateDefinitionReader reader ,NamespaceHandlerResolver resolver ){
 		this.reader = reader;
 		this.namespaceHandlerResover = resolver;

@@ -34,7 +34,7 @@ public class SimpleNamespaceHandlerResover implements NamespaceHandlerResolver {
 	}
 
 	@Override
-	public XmlNameSpaceHandler resolve(String namespaceUri) throws Exception {
+	public XmlNameSpaceHandler resolve(String namespaceUri, boolean flush) throws Exception {
 		{
 			Map<String, Object> handlerMappings = getHandlerMappings();
 			Object handlerOrClassName = handlerMappings.get(namespaceUri);
@@ -52,7 +52,9 @@ public class SimpleNamespaceHandlerResover implements NamespaceHandlerResolver {
 					XmlNameSpaceHandler namespaceHandler = (XmlNameSpaceHandler) BeanUtils
 							.instantiateClass(handlerClass);
 					namespaceHandler.init();
-					handlerMappings.put(namespaceUri, namespaceHandler);
+					if (!flush) {
+						handlerMappings.put(namespaceUri, namespaceHandler);
+					}
 					return namespaceHandler;
 				} catch (ClassNotFoundException ex) {
 					throw new Exception("找不到" + namespaceUri);

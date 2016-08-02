@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rows class="com.candao.print.entity.PrintObj" description="settlementTemplate"
+<rows class="com.candao.print.entity.PrintObj" description="clearMachineDataTemplate"
 	xmlns="http://120.24.190.55/schema/rows" xmlns:row="http://120.24.190.55/schema/row"
 	xmlns:foreach="http://120.24.190.55/schema/foreach">
 
@@ -84,8 +84,8 @@
 				<list>
 					<value>5</value>
 					<value>15</value>
-					<value>7</value>
-					<value>13</value>
+					<value>5</value>
+					<value>15</value>
 				</list>
 			</locations>
 			<datas description="账单类型">
@@ -154,7 +154,7 @@
 	</row:row>
 	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">NORMAL</font>
 		<locations description="借宿时间">
 			<list>
 				<value>20</value>
@@ -197,7 +197,7 @@
 	</foreach:foreach>
 	<row:row description="品项">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">NORMAL</font>
 		<locations description="品项">
 			<list>
 				<value>40</value>
@@ -213,7 +213,7 @@
 		value="#{obj.settlementInfo4Pos.jSJson}">
 		<row:row description="结算方式">
 			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
+			<font description="字体大小">NORMAL</font>
 			<locations description="结算方式">
 				<list>
 					<value>10</value>
@@ -232,7 +232,7 @@
 	</foreach:foreach>
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">NORMAL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -246,7 +246,7 @@
 	</row:row>
 	<row:row description="结算备注">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">NORMAL</font>
 		<locations description="结算备注">
 			<list>
 				<value>20</value>
@@ -260,7 +260,7 @@
 	</row:row>
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">NORMAL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -274,7 +274,7 @@
 	</row:row>
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">NORMAL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -298,7 +298,7 @@
 		<datas description="电话">
 			<list>
 				<value>电话：</value>
-				<value>#{obj.settlementInfo4Pos.tel}</value>
+				<value>#{obj.tel}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -314,7 +314,7 @@
 		<datas description="地址">
 			<list>
 				<value>地址：</value>
-				<value>#{obj.settlementInfo4Pos.address}</value>
+				<value>#{obj.address}</value>
 			</list>
 		</datas>
 	</row:row>

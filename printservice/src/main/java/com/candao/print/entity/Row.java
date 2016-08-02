@@ -2,7 +2,7 @@ package com.candao.print.entity;
 
 import com.candao.common.utils.StringUtils;
 
-public class Row {
+public class Row implements Cloneable{
 	// 对齐方式
 	private String align;
 	// 字体
@@ -62,6 +62,12 @@ public class Row {
 //			
 //		}
 		return res;
+	}
+	
+	@Override
+	public Row clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return (Row)super.clone();
 	}
 
 }

@@ -1,10 +1,12 @@
 package com.candao.www.printer.listener.namespaceHandler.impl;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +20,7 @@ import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.Row;
 import com.candao.www.printer.listener.namespaceHandler.XmlNameSpaceHandler;
 import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
+import com.candao.www.utils.CloneUtil;
 
 public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 
@@ -38,19 +41,25 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 	private Field[] fields;
 
 	public Row row;
+	
+	public Row data;
 
 	private ListNamespaceHandler listNamespaceHandler;
 
-	private static final String ROW = "row";
+	public static final String ROW = "row";
+	
+	public static final String ROW_TAG_NAME = "row:row";
 
 	private final Log log = LogFactory.getLog(getClass());
+
+	private final static int CLONE_LEVER = -1;
 
 	public final static String NON_PRIMITIVE_ARRAY = "[Ljava.lang.Integer;";
 
 	/**
 	 * 默认解析row元素
 	 */
-	public void init() throws Exception {
+	public void parseRow() throws Exception {
 		// TODO lineFeed解析
 		if (element == null || element.getNodeType() != Node.ELEMENT_NODE) {
 			return;
@@ -84,16 +93,20 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 					Field field = this.getClass().getField(ROW).getType().getDeclaredField(ele.getNodeName().trim());
 					if (field != null) {
 						field.setAccessible(true);
-						value = resolveType(field,value);
+						value = resolveType(field, value);
 						field.set(this.row, value);
 					}
 				}
 			}
 		}
 	}
+
+	public void setRowDefine(Row row){
+		this.row = row;
+	}
 	
-	protected Object resolveType(Field field, Object value){
-		//TODO
+	protected Object resolveType(Field field, Object value) {
+		// TODO
 		if (field == null || value == null) {
 			return value;
 		}
@@ -113,36 +126,32 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		return value;
 	}
 
-	@Override
-	public List<Row> parse(PrintObj obj) throws Exception {
-		if (obj == null) {
+	public List<Row> parseRow(Map<String, Object> obj) throws Exception {
+		if (MapUtils.isEmpty(obj)) {
 			return null;
 		}
 		doParsePlaceHolder(obj);
 		doParseConstant(obj);
 		List<Row> rows = new ArrayList<>();
-		rows.add(getRow());
+		rows.add(getData());
 		return rows;
 	}
 
-	protected void doParseConstant(PrintObj obj) {
+	protected void doParseConstant(Object obj) {
 		// TODO
 	}
 
-	private Row getRow() {
+	private Row getRowDefine() {
 		if (row == null) {
 			row = new Row();
-			// row.setAlign(align);
-			// row.setDatas(datas);
-			// Integer[] buffer = new Integer[locations.length];
-			// for (int i = 0; i < locations.length; i++) {
-			// buffer[i] = Integer.valueOf(locations[i]);
-			// }
-			// row.setLocations(buffer);
-			// row.setFont(font);
-			// row.setLineFeed(lineFeed);
 		}
 		return row;
+	}
+	private Row getData() throws Exception {
+		if (data == null) {
+			data = (Row) CloneUtil.clone(getRowDefine(), CLONE_LEVER);
+		}
+		return data;
 	}
 
 	/**
@@ -151,7 +160,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 	 * @param obj
 	 * @throws Exception
 	 */
-	protected void doParsePlaceHolder(PrintObj obj) throws Exception {
+	protected void doParsePlaceHolder(Map<String, Object> obj) throws Exception {
 		// TODO统一解析
 		doParseDatas(obj);
 	}
@@ -162,32 +171,51 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 	 * @param obj
 	 * @throws Exception
 	 */
-	protected void doParseDatas(PrintObj obj) throws Exception {
+	protected void doParseDatas(Map<String, Object> obj) throws Exception {
 		if (row == null || ArrayUtils.isEmpty(row.getDatas())) {
 			return;
 		}
-		String[] data = row.getDatas();
-		String[] buffer = new String[data.length];
+		data = (Row) CloneUtil.clone(getRowDefine(), CLONE_LEVER);
+		String[] data = this.data.getDatas();
+		String[] buffer = new String[0];
+		int newLength = 0;
 		for (int i = 0; i < data.length; i++) {
-			data[i] = data[i].trim();
-			// 判断是否变量
-			if (!data[i].startsWith(XmlReaderContext.PLACEHOLDER_PREFIX)
-					&& !data[i].endsWith(XmlReaderContext.PLACEHOLDER_SUBFIX)) {
-				buffer[i] = data[i];
-				continue;
+			if (!StringUtils.isEmpty(data[i])) {
+				data[i] = data[i].trim();
+				buffer = Arrays.copyOf(buffer, ++newLength);
+				// 判断是否变量
+				if (!data[i].startsWith(XmlReaderContext.PLACEHOLDER_PREFIX)
+						&& !data[i].endsWith(XmlReaderContext.PLACEHOLDER_SUBFIX)) {
+					buffer[newLength - 1] = data[i];
+					continue;
+				}
+				data[i] = StringUtils.delete(StringUtils.delete(data[i], XmlReaderContext.PLACEHOLDER_PREFIX),
+						XmlReaderContext.PLACEHOLDER_SUBFIX);
+				// 根据占位符取值
+				String[] pros = StringUtils.delimitedListToStringArray(data[i], XmlReaderContext.PROPERTYSEPERATOR);
+				if (ArrayUtils.isEmpty(pros)) {
+					return;
+				}
+				Object temp = obj.get(pros[0]);
+				temp = getDesiredFieldValue(temp, pros, 1);
+				buffer[newLength - 1] = String.valueOf(temp);
 			}
-			// 根据占位符取值
-			String[] pros = StringUtils.delimitedListToStringArray(data[i], ".");
-			Object temp = obj;
-			for (int j = 0; j < pros.length; j++) {
-				Field fields;
-				fields = temp.getClass().getDeclaredField(pros[j]);
-				fields.setAccessible(true);
-				temp = fields.get(temp);
-			}
-			buffer[i] = String.valueOf(temp);
 		}
-		this.row.setDatas(buffer);
+		this.data.setDatas(buffer);
+	}
+
+	protected Object getDesiredFieldValue(Object obj, String[] pros, int fromindex) throws Exception {
+		if (obj == null || ArrayUtils.isEmpty(pros)) {
+			return null;
+		}
+		Object temp = obj;
+		for (int j = fromindex; j < pros.length; j++) {
+			Field fields;
+			fields = temp.getClass().getDeclaredField(pros[j]);
+			fields.setAccessible(true);
+			temp = fields.get(temp);
+		}
+		return temp;
 	}
 
 	protected Field[] getFields() {

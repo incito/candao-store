@@ -1,6 +1,7 @@
 package com.candao.www.printer.listener.namespaceHandler.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,7 +42,7 @@ public class ListNamespaceHandler implements XmlNameSpaceHandler {
 	}
 
 	@Override
-	public List<Row> parse(PrintObj obj) {
+	public List<Row> parse(Map<String, Object> obj) {
 		return null;
 	}
 

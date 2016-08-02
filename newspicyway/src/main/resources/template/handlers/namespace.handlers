@@ -1,1 +1,2 @@
 http\://120.24.190.55/schema/row=com.candao.www.printer.listener.namespaceHandler.impl.RowNameSpaceHandler
+http\://120.24.190.55/schema/foreach=com.candao.www.printer.listener.namespaceHandler.impl.ForeachNameSpaceHandler

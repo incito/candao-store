@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rows class="com.candao.print.entity.PrintObj" description="settlementTemplate"
+<rows class="com.candao.print.entity.PrintObj" description="preSettlementTemplate"
 	xmlns="http://120.24.190.55/schema/rows" xmlns:row="http://120.24.190.55/schema/row"
 	xmlns:foreach="http://120.24.190.55/schema/foreach">
-
+	<!-- 分店名 -->
 	<row:row description="分店名">
 		<align description="对齐">ALIGN_CENTER</align>
 		<font description="字体大小">SMALL</font>
@@ -17,7 +17,7 @@
 			</list>
 		</datas>
 	</row:row>
-
+	<!-- 单据类型 -->
 	<row:row description="单据号">
 		<align description="对齐">ALIGN_CENTER</align>
 		<font description="字体大小">SMALL</font>
@@ -32,7 +32,7 @@
 			</list>
 		</datas>
 	</row:row>
-
+	<!-- 账单号-->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
@@ -52,6 +52,7 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<!-- 餐桌 -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="餐台">
@@ -65,7 +66,7 @@
 					<value>15</value>
 				</list>
 			</locations>
-			<datas description="账单类型">
+			<datas description="餐台">
 				<list>
 					<value>厅:</value>
 					<value>#{it.areaname}</value>
@@ -75,6 +76,7 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<!-- 人数 -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="服务员">
@@ -98,18 +100,19 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<!-- 账单时间 -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="开始时间">
+		<row:row description="账单时间 ">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
-			<locations description="开始时间">
+			<locations description="账单时间 ">
 				<list>
 					<value>10</value>
 					<value>30</value>
 				</list>
 			</locations>
-			<datas description="开始时间">
+			<datas description="账单时间 ">
 				<list>
 					<value>开始时间:</value>
 					<value>#{it.begintime}</value>
@@ -117,6 +120,7 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	<!-- 账单时间 -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="结束时间">
@@ -126,36 +130,42 @@
 				<list>
 					<value>10</value>
 					<value>20</value>
-					<value>10</value>
+					<value>2</value>
+					<value>4</value>
+					<value>6</value>
 				</list>
 			</locations>
 			<datas description="结束时间">
 				<list>
 					<value>结束时间:</value>
 					<value>#{it.endtime}</value>
+					<value>第</value>
 					<value>#{it.printcount}</value>
+					<value>次打印</value>
 				</list>
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<row:row description="结束时间">
+	<!-- 分隔符-->
+	<row:row description="分隔符">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="借宿时间">
+		<locations description="分隔符">
 			<list>
 				<value>40</value>
 			</list>
 		</locations>
-		<datas description="结束时间">
+		<datas description="分隔符">
 			<list>
 				<value>---------------------------------------</value>
 			</list>
 		</datas>
 	</row:row>
-	<row:row description="结束时间">
+	<!-- 品项 -->
+	<row:row description="品项">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="借宿时间">
+		<locations description="品项">
 			<list>
 				<value>20</value>
 				<value>5</value>
@@ -163,7 +173,7 @@
 				<value>10</value>
 			</list>
 		</locations>
-		<datas description="结束时间">
+		<datas description="品项">
 			<list>
 				<value>品项</value>
 				<value>数量</value>
@@ -172,6 +182,7 @@
 			</list>
 		</datas>
 	</row:row>
+	<!-- 品项 -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.listJson}">
 		<row:row description="品项">
@@ -195,55 +206,22 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<row:row description="品项">
+	<!-- 分隔符-->
+	<row:row description="分隔符">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="品项">
+		<locations description="分隔符">
 			<list>
 				<value>40</value>
 			</list>
 		</locations>
-		<datas description="品项">
+		<datas description="分隔符">
 			<list>
 				<value>---------------------------------------</value>
 			</list>
 		</datas>
 	</row:row>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.jSJson}">
-		<row:row description="结算方式">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="结算方式">
-				<list>
-					<value>10</value>
-					<value>10</value>
-					<value>20</value>
-				</list>
-			</locations>
-			<datas description="数据">
-				<list>
-					<value>#{it.itemDesc}</value>
-					<value>#{it.payamount}</value>
-					<value>#{it.bankcardno}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
+	<!-- 结算备注 -->
 	<row:row description="结算备注">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -258,6 +236,7 @@
 			</list>
 		</datas>
 	</row:row>
+	<!-- 分隔符-->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -272,20 +251,7 @@
 			</list>
 		</datas>
 	</row:row>
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
+	<!-- 电话 -->
 	<row:row description="电话">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -302,6 +268,7 @@
 			</list>
 		</datas>
 	</row:row>
+	<!-- 地址 -->
 	<row:row description="地址">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>

@@ -71,19 +71,19 @@ public class XmlTemplateDefinitionReader {
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (isDefaultNamespace(ele)) {
-						parseDefaultElement(ele ,define);
+						parseDefaultElement(ele, define);
 					} else {
-						parseCustomElement(ele , define);
+						parseCustomElement(ele, define);
 					}
 				}
 			}
 		} else {
-			parseCustomElement(root ,define);
+			parseCustomElement(root, define);
 		}
 		return define;
 	}
-	
-	private void parseRootAttr(Attr attr,XMLTemplateDefinition define){
+
+	private void parseRootAttr(Attr attr, XMLTemplateDefinition define) {
 		if (attr == null) {
 			return;
 		}
@@ -103,9 +103,9 @@ public class XmlTemplateDefinitionReader {
 		}
 	}
 
-	public void parseCustomElement(Element ele ,XMLTemplateDefinition define) throws Exception {
+	public void parseCustomElement(Element ele, XMLTemplateDefinition define) throws Exception {
 		String namespaceUri = getNamespaceURI(ele);
-		XmlNameSpaceHandler handler = this.xmlReaderContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+		XmlNameSpaceHandler handler = this.xmlReaderContext.getNamespaceHandlerResolver().resolve(namespaceUri, true);
 		if (handler == null) {
 			log.error("找不到模板解析类！" + namespaceUri);
 			return;
@@ -114,7 +114,7 @@ public class XmlTemplateDefinitionReader {
 		define.registry(handler);
 	}
 
-	public void parseDefaultElement(Element element ,XMLTemplateDefinition define) {
+	public void parseDefaultElement(Element element, XMLTemplateDefinition define) {
 		if (element == null) {
 			return;
 		}

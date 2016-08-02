@@ -78,24 +78,44 @@ public class IPQueueListener implements ApplicationContextAware {
 		return dst;
 	}
 
-	private void print(Object[] src, PrintObj obj) throws Exception {
+	private void print(final Object[] src, final PrintObj obj) throws Exception {
 		// TODO
 		// System.out.println("2333333333333333333333333333333");
 		// System.out.println(JacksonJsonMapper.objectToJson(src));
-		String ipAddress = obj.getCustomerPrinterIp();
-		String backupAddress = "";
-		if (ipAddress.contains(",")) {
-			String[] ips = ipAddress.split(",");
-			ipAddress = ips[0];
-			backupAddress = ips.length > 1 ? ips[1] : backupAddress;
-		}
-		Printer printer = PrinterManager.getPrinter(ipAddress);
-		if (printer == null) {
-			log.error("-----------------------");
-			log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
-			return;
-		}
-		printer.print(src, backupAddress);
+		Runnable  a = new Runnable() {
+			public void run() {
+				String ipAddress = obj.getCustomerPrinterIp();
+				String backupAddress = "";
+				if (ipAddress.contains(",")) {
+					String[] ips = ipAddress.split(",");
+					ipAddress = ips[0];
+					backupAddress = ips.length > 1 ? ips[1] : backupAddress;
+				}
+				Printer printer = PrinterManager.getPrinter(ipAddress);
+				if (printer == null) {
+					log.error("-----------------------");
+					log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
+					return;
+				}
+				printer.print(src, backupAddress);
+			}
+		};
+		Thread b = new Thread(a);
+		b.start();
+//		String ipAddress = obj.getCustomerPrinterIp();
+//		String backupAddress = "";
+//		if (ipAddress.contains(",")) {
+//			String[] ips = ipAddress.split(",");
+//			ipAddress = ips[0];
+//			backupAddress = ips.length > 1 ? ips[1] : backupAddress;
+//		}
+//		Printer printer = PrinterManager.getPrinter(ipAddress);
+//		if (printer == null) {
+//			log.error("-----------------------");
+//			log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
+//			return;
+//		}
+//		printer.print(src, backupAddress);
 	}
 
 	@Override

@@ -1,10 +1,10 @@
 package com.candao.www.printer.listener.namespaceHandler;
 
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
-import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.Row;
 
 public interface XmlNameSpaceHandler {
@@ -27,6 +27,6 @@ public interface XmlNameSpaceHandler {
 	 * @param obj
 	 * @throws Exception 
 	 */
-	public List<Row> parse(PrintObj obj) throws Exception;
+	public List<Row> parse(Map<String, Object> obj) throws Exception;
 
 }
