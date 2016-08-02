@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.print.entity.ResultInfo4Pos;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,8 +159,7 @@ public class Print4POSController {
 			e.printStackTrace();
 			log.error("", e);
 		}
-		List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-		settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+		ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
 		return getResponseMsg("", "", true);
 	}
 
@@ -181,8 +181,7 @@ public class Print4POSController {
 			e.printStackTrace();
 			log.error("", e);
 		}
-		List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-		settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+		ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
 		return new HashMap<>();
 	}
 
