@@ -396,6 +396,9 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 		// 结账单
 		case PreSettlementTemplate:
 			return true;
+		// 结账单
+		case InvoiceTemplate:
+			return true;
 		default:
 			return false;
 		}

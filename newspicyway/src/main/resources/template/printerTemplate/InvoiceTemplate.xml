@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rows class="com.candao.print.entity.PrintObj" description="invoiceTemplate"
+	xmlns="http://120.24.190.55/schema/rows" xmlns:row="http://120.24.190.55/schema/row"
+	xmlns:foreach="http://120.24.190.55/schema/foreach">
+	<!-- 分店名 -->
+	<row:row description="分店名">
+		<align description="对齐">ALIGN_CENTER</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="位置">
+			<list>
+				<value>6</value>
+			</list>
+		</locations>
+		<datas description="分店名">
+			<list>
+				<value>开发票</value>
+			</list>
+		</datas>
+	</row:row>
+	<!-- 单据类型 -->
+	<row:row description="单据号">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="位置">
+			<list>
+				<value>8</value>
+				<value>25</value>
+			</list>
+		</locations>
+		<datas description="账单类型">
+			<list>
+				<value>桌号：</value>
+				<value>#{obj.invoice.tableno}</value>
+			</list>
+		</datas>
+	</row:row>
+	<!-- 单据类型 -->
+	<row:row description="单据号">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="位置">
+			<list>
+				<value>10</value>
+				<value>25</value>
+			</list>
+		</locations>
+		<datas description="账单类型">
+			<list>
+				<value>账单号：</value>
+				<value>#{obj.invoice.orderid}</value>
+			</list>
+		</datas>
+	</row:row>
+	
+	<!-- 单据类型 -->
+	<row:row description="单据号">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="位置">
+			<list>
+				<value>10</value>
+				<value>25</value>
+			</list>
+		</locations>
+		<datas description="账单类型">
+			<list>
+				<value>发票金额：</value>
+				<value>#{obj.invoice.payamount}</value>
+			</list>
+		</datas>
+	</row:row>
+	
+	<!-- 单据类型 -->
+	<row:row description="单据号">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">NORMAL</font>
+		<locations description="位置">
+			<list>
+				<value>10</value>
+				<value>25</value>
+			</list>
+		</locations>
+		<datas description="账单类型">
+			<list>
+				<value>发票抬头：</value>
+				<value>#{obj.invoice.title}</value>
+			</list>
+		</datas>
+	</row:row>
+</rows>
