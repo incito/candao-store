@@ -3,6 +3,7 @@ package com.candao.print.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,7 +96,6 @@ public class PrintControl {
         long iStartTime = 0;
         long iEndTime = 0;
         int iState = -1;
-        int iReadNum = 0;
 
         if (iTimeOut < 1000) {
             iTimeOut = 1000;
@@ -113,20 +113,16 @@ public class PrintControl {
             byte[] cReadBuf = new byte[inputStream.available()];
             inputStream.read(cReadBuf);
             iState = ReadDeviceStatus(cReadBuf);
-            logger.info("打印前检查打印机状态，回执内容：[" + new String(cReadBuf) + "]，转换后的状态码：" + iState);
             switch (iState) {
                 case STATUS_OFFLINE: {
-                    iReadNum++;
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
                     }
-                    if (iReadNum > 5) {
-                        return iState;
-                    } else {
-                        continue;
-                    }
+                    
+                    iStartTime = GetTickCount();
+                    continue;
                 }
                 case STATUS_ABNORMAL:
                 case STATUS_OK:
@@ -138,6 +134,7 @@ public class PrintControl {
                     // Clearing stop printing status data bit (1B 41)
                     // Chinese note:清除禁止打印状态
                     if (ClearStopPrint(socketOut) == OPERATION_ERROR) {
+                    	logger.error("[清除禁止打印状态]出错");
                         return STATUS_OFFLINE;
                     }
 
@@ -147,6 +144,7 @@ public class PrintControl {
                     // Clearing stop printing end status data bit (10 06 07 08 04)
                     // Chinese note:清除已完成清除禁止打印状态标志
                     if (ClearStopPrintEnd(socketOut) == OPERATION_ERROR) {
+                    	logger.error("[清除已完成清除禁止打印状态标志]出错");
                         return STATUS_OFFLINE;
                     }
 
@@ -156,6 +154,7 @@ public class PrintControl {
                     // Reset printer status(10 06 07 08 08)
                     // Chinese note:复位打印机状态
                     if (ResetDevStatus(socketOut) == OPERATION_ERROR) {
+                    	logger.error("[复位打印机状态]出错");
                         return STATUS_OFFLINE;
                     }
 
@@ -164,12 +163,14 @@ public class PrintControl {
                 case STATUS_PRINTING:
                     return STATUS_OK;
                 default:
+                	logger.error("打印机状态异常");
                     return STATUS_ABNORMAL;
             }
         }
 
         // Time out
         if (iStartTime >= iEndTime) {
+        	logger.error("获取状态超时");
             return iState;
         }
 
@@ -349,106 +350,88 @@ public class PrintControl {
 
             byte[] cReadBuf = new byte[inputStream.available()];
             inputStream.read(cReadBuf);
-            logger.info("发送内容后检查打印机状态，回执内容：[" + new String(cReadBuf) + "]");
             iReadLen = cReadBuf.length;
             
-            if (iReadLen <= 0) {
-                return STATUS_OFFLINE;
-            }
+			if (iReadLen > 0) {
+				
+				if (iReadLen % 4 != 0) {
+					logger.error("打印机返回的状态码错误，不能解析[" + getResultValue(cReadBuf) + "]");
+					return STATUS_ABNORMAL;
+				}
 
-            if (iReadLen % 4 != 0) {
-                return STATUS_ABNORMAL;
-            }
-            
-//            iReadValue = ReadDeviceStatus(cReadBuf);
-            
-            // for (ii = 0; ii < 100; ii++)
-            // {
-            // cReadBuf[ii] = 0;
-            // }
-            //
-            // fixed (byte* p = cReadBuf)
-            // {
-            // iReadValue = ByReadASBStatus(iDevNum, p, 100, ref iReadLen);
-            // }
+				for (ii = 0; ii < (iReadLen / 4); ii++) {
+					// Parse status
+					// Chinese note:解析具体状态
+					if ((cReadBuf[0 + (ii * 4)] & 0x10) == 0x01) {
+						bIsAbnormal = true;
+					} else {
+						bIsAbnormal = false;
+					}
 
-//            if ((iReadValue == 0) && (iReadLen > 0)) {
-//                // Chinese note: 检查返回数据长度是否合法
-//                if (iReadLen % 4 != 0) {
-//                    iReturnValue = STATUS_ABNORMAL;
-//                    return iReturnValue;
-//                }
-//            }
+					if ((cReadBuf[2 + (ii * 4)] & 0x40) == 0x00) {
+						bIsPrinting = false;
+					} else {
+						bIsPrinting = true;
+					}
 
-            for (ii = 0; ii < (iReadLen / 4); ii++) {
-                // Parse status
-                // Chinese note:解析具体状态
-                if ((cReadBuf[0 + (ii * 4)] & 0x10) == 0x01) {
-                    bIsAbnormal = true;
-                } else {
-                    bIsAbnormal = false;
-                }
+					if ((cReadBuf[3 + (ii * 4)] & 0x40) == 0x00) {
+						bIsStopPrint = false;
+					} else {
+						bIsStopPrint = true;
+					}
 
-                if ((cReadBuf[2 + (ii * 4)] & 0x40) == 0x00) {
-                    bIsPrinting = false;
-                } else {
-                    bIsPrinting = true;
-                }
+					if ((cReadBuf[2 + (ii * 4)] & 0x20) == 0x00) {
+						bIsPrintUndone = false;
+					} else {
+						bIsPrintUndone = true;
+					}
 
-                if ((cReadBuf[3 + (ii * 4)] & 0x40) == 0x00) {
-                    bIsStopPrint = false;
-                } else {
-                    bIsStopPrint = true;
-                }
+					// Printer status is abnormal
+					// Chinese note:状态是否异常
+					if (bIsAbnormal) {
+						logger.error("打印机状态异常");
+						iReturnValue = STATUS_ABNORMAL;
+						return iReturnValue;
+					}
 
-                if ((cReadBuf[2 + (ii * 4)] & 0x20) == 0x00) {
-                    bIsPrintUndone = false;
-                } else {
-                    bIsPrintUndone = true;
-                }
+					// Printer is stopped printing status
+					// Chinese note:是否出现禁止打印状态
+					if (bIsStopPrint) {
+						logger.error("打印机禁止打印");
+						iReturnValue = STATUS_STOPPRINT;
+						return iReturnValue;
+					}
 
-                // Printer status is abnormal
-                // Chinese note:状态是否异常
-                if (bIsAbnormal) {
-                    iReturnValue = STATUS_ABNORMAL;
-                    return iReturnValue;
-                }
+					// Printer is start printing status
+					// Chinese note:启动打印状态
+					if (bIsPrinting) {
+						logger.info("[开始打印]");
+						bIsPrintingStart = true;
+					}
 
-                // Printer is stopped printing status
-                // Chinese note:是否出现禁止打印状态
-                if (bIsStopPrint) {
-                    iReturnValue = STATUS_STOPPRINT;
-                    return iReturnValue;
-                }
-
-                // Printer is start printing status
-                // Chinese note:启动打印状态
-                if (bIsPrinting) {
-                    bIsPrintingStart = true;
-                    logger.info("[开始打印]");
-                }
-
-                // Printer is printing status
-                // Chinese note:正在打印状态是否结束
-                if (bIsPrintingStart) {
-                    if (bIsPrintUndone) // 非正常完成
-                    {
-                        iReturnValue = STATUS_PRINT_UNDONE;
-                        return iReturnValue;
-                    }
-                    if (!bIsPrinting) // 打印完成
-                    {
-                        logger.info("[打印完成]");
-                    	iReturnValue = STATUS_PRINT_DONE;
-                        return iReturnValue;
-                    }
-                }
-            }
+					// Printer is printing status
+					// Chinese note:正在打印状态是否结束
+					if (bIsPrintingStart) {
+						if (bIsPrintUndone) // 非正常完成
+						{
+							logger.error("[打印机未完成]");
+							iReturnValue = STATUS_PRINT_UNDONE;
+							return iReturnValue;
+						}
+						if (!bIsPrinting) // 打印完成
+						{
+							logger.info("[打印完成]");
+							iReturnValue = STATUS_PRINT_DONE;
+							return iReturnValue;
+						}
+					}
+				}
+			}
 
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
             iStartTime = GetTickCount();
         }
@@ -456,6 +439,7 @@ public class PrintControl {
         // Checking timeout
         // Chinese note:超时判断
         if (iStartTime >= iEndTime) {
+        	logger.error("打印机超时");
             iReturnValue = STATUS_DEVTIMEOUT;
         }
         return iReturnValue;
@@ -478,7 +462,8 @@ public class PrintControl {
 
         cTempBuf[0] = 0x1b;
         cTempBuf[1] = 0x41;
-
+        
+        logger.error("[清除禁止打印状态]");
         if (ByWritePort(cTempBuf, 2, iWriteLen, socketOut) != 0) {
             return OPERATION_ERROR;
         }
@@ -509,6 +494,7 @@ public class PrintControl {
         cTempBuf[3] = 0x08;
         cTempBuf[4] = 0x08;
 
+        logger.error("[复位打印机状态]");
         if (ByWritePort(cTempBuf, 5, iWriteLen, socketOut) != 0) {
             return OPERATION_ERROR;
         }
@@ -539,6 +525,7 @@ public class PrintControl {
         cTempBuf[3] = 0x08;
         cTempBuf[4] = 0x04;
 
+        logger.error("[清除已完成清除禁止打印状态标志]");
         if (ByWritePort(cTempBuf, 5, iWriteLen, socketOut) != 0) {
             return OPERATION_ERROR;
         }
@@ -554,7 +541,7 @@ public class PrintControl {
         try {
             socketOut.write(cTempBuf);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return 0;
     }
@@ -562,4 +549,19 @@ public class PrintControl {
     private static long GetTickCount() {
         return System.currentTimeMillis();
     }
+    
+    private static String getResultValue(byte[] rs){
+    	String rs_str = "";
+    	for (byte b : rs) {
+    		rs_str += Integer.toBinaryString(b) + " ";
+    	}
+    	return rs_str;
+    }
+    
+    public static void main(String[] args) throws UnsupportedEncodingException {
+		byte[] a = new byte[]{01,02,03};
+		System.out.println(getResultValue(a));
+		
+				System.out.println((0 % 4) + "*" + (0 % 4 != 0));
+	}
 }
