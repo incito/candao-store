@@ -1,6 +1,13 @@
 package com.candao.print.entity;
 
-public class SettlementInfo {
+import java.io.Serializable;
+
+public class SettlementInfo implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 746505783693986036L;
 
 	private String name;
 	

@@ -221,7 +221,7 @@ public class Constant {
 		public static final String NOWDISHNAME_ABBR  = "(即)";
 		
 		public static final String CALL_ABBR  = "(起菜)";
-		
+
 		public static final String ADDDISHNAME = "加单   客用";
 		
 		public static final String ADDDISHNAME_ABBR  = "(加)";
@@ -229,6 +229,8 @@ public class Constant {
 		public static final String WELCOMEMSG = "WELCOME";
 		
 		public static final String NORMALCUSTDISHNAME = "点单    客用单  ";
+
+		public static final String POSCUSTDISHNAME = "点单    客用单(重印)";
 		
 		public static final String CUSTNORMALDISHNAME = "厨打单";
 		

@@ -126,14 +126,18 @@
 				<list>
 					<value>10</value>
 					<value>20</value>
-					<value>10</value>
+					<value>3</value>
+					<value>5</value>
+					<value>8</value>
 				</list>
 			</locations>
 			<datas description="结束时间">
 				<list>
 					<value>结束时间:</value>
 					<value>#{it.endtime}</value>
+					<value>第</value>
 					<value>#{it.printcount}</value>
+					<value>次打印</value>
 				</list>
 			</datas>
 		</row:row>
@@ -157,9 +161,9 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="借宿时间">
 			<list>
-				<value>20</value>
+				<value>15</value>
 				<value>5</value>
-				<value>5</value>
+				<value>10</value>
 				<value>10</value>
 			</list>
 		</locations>
@@ -179,9 +183,9 @@
 			<font description="字体大小">NORMAL</font>
 			<locations description="品项">
 				<list>
-					<value>20</value>
+					<value>15</value>
 					<value>5</value>
-					<value>5</value>
+					<value>10</value>
 					<value>10</value>
 				</list>
 			</locations>
@@ -206,6 +210,24 @@
 		<datas description="品项">
 			<list>
 				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="结算方式">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="结算方式">
+			<list>
+				<value>10</value>
+				<value>10</value>
+				<value>20</value>
+			</list>
+		</locations>
+		<datas description="数据">
+			<list>
+				<value>结算方式</value>
+				<value>金额</value>
+				<value>备注</value>
 			</list>
 		</datas>
 	</row:row>
@@ -258,6 +280,41 @@
 			</list>
 		</datas>
 	</row:row>
+	<!-- 分割线 -->
+	<row:row description="分割线">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="分割线">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="分割线">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
+	<!-- 结算备注 -->
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.settlementInfos}">
+		<row:row description="结算备注">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="结算备注">
+				<list>
+					<value>15</value>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="数据">
+				<list>
+					<value>#{it.name}</value>
+					<value>#{it.value}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>

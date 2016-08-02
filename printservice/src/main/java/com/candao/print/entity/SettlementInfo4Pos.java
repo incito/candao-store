@@ -124,7 +124,7 @@ public class SettlementInfo4Pos implements Serializable {
 				it.setDishnum(dishnum + dishunit);
 			}
 		}
-		//结算信息初始化
+		// 结算信息初始化
 		if (!CollectionUtils.isEmpty(this.orderJson)) {
 			settlementInfos = new ArrayList<>();
 			OrderInfo4Pos orderinfo = orderJson.get(0);
@@ -140,14 +140,12 @@ public class SettlementInfo4Pos implements Serializable {
 				}
 				break;
 			}
-
 			case 2: {
 				if (!StringUtils.isEmpty(orderinfo.getPayamount())) {
 					settlementInfos.add(getSettlementInfo("抹零", orderinfo.getPayamount()));
 				}
 				break;
 			}
-
 			default:
 				break;
 
@@ -161,8 +159,7 @@ public class SettlementInfo4Pos implements Serializable {
 			}
 			settlementInfos.add(getSettlementInfo("实收：", ssamount));
 		}
-		
-		
+
 	}
 
 	private SettlementInfo getSettlementInfo(String name, String value) {
