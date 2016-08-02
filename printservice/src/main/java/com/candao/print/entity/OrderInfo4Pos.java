@@ -9,6 +9,24 @@ public class OrderInfo4Pos implements Serializable {
      */
     private static final long serialVersionUID = -4969358105127908050L;
 
+    private String inflated;
+    private String business;
+    private String businessname;
+    private String cardno;
+    private String coupons;
+    private String couponsbalance;
+    private String netvalue;
+    private String operatetype;
+    private String ordertime;
+    private String psexpansivity;
+    private String score;
+    private String scorebalance;
+    private String serial;
+    private String stored;
+    private String storedbalance;
+    private String terminal;
+    private String valid;
+
     private String totalMoney;
     private String accountsReceivableTotal;
     private String authorizer;
@@ -853,5 +871,141 @@ public class OrderInfo4Pos implements Serializable {
 
     public void setvOut(String vOut) {
         this.vOut = vOut;
+    }
+
+    public String getInflated() {
+        return inflated;
+    }
+
+    public void setInflated(String inflated) {
+        this.inflated = inflated;
+    }
+
+    public String getBusiness() {
+        return business;
+    }
+
+    public void setBusiness(String business) {
+        this.business = business;
+    }
+
+    public String getBusinessname() {
+        return businessname;
+    }
+
+    public void setBusinessname(String businessname) {
+        this.businessname = businessname;
+    }
+
+    public String getCardno() {
+        return cardno;
+    }
+
+    public void setCardno(String cardno) {
+        this.cardno = cardno;
+    }
+
+    public String getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(String coupons) {
+        this.coupons = coupons;
+    }
+
+    public String getCouponsbalance() {
+        return couponsbalance;
+    }
+
+    public void setCouponsbalance(String couponsbalance) {
+        this.couponsbalance = couponsbalance;
+    }
+
+    public String getNetvalue() {
+        return netvalue;
+    }
+
+    public void setNetvalue(String netvalue) {
+        this.netvalue = netvalue;
+    }
+
+    public String getOperatetype() {
+        return operatetype;
+    }
+
+    public void setOperatetype(String operatetype) {
+        this.operatetype = operatetype;
+    }
+
+    public String getOrdertime() {
+        return ordertime;
+    }
+
+    public void setOrdertime(String ordertime) {
+        this.ordertime = ordertime;
+    }
+
+    public String getPsexpansivity() {
+        return psexpansivity;
+    }
+
+    public void setPsexpansivity(String psexpansivity) {
+        this.psexpansivity = psexpansivity;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String getScorebalance() {
+        return scorebalance;
+    }
+
+    public void setScorebalance(String scorebalance) {
+        this.scorebalance = scorebalance;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+
+    public String getStored() {
+        return stored;
+    }
+
+    public void setStored(String stored) {
+        this.stored = stored;
+    }
+
+    public String getStoredbalance() {
+        return storedbalance;
+    }
+
+    public void setStoredbalance(String storedbalance) {
+        this.storedbalance = storedbalance;
+    }
+
+    public String getTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(String terminal) {
+        this.terminal = terminal;
+    }
+
+    public String getValid() {
+        return valid;
+    }
+
+    public void setValid(String valid) {
+        this.valid = valid;
     }
 }
