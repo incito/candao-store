@@ -14,9 +14,11 @@ import org.springframework.util.StringUtils;
 
 import com.candao.common.utils.Constant;
 import com.candao.print.dao.TbPrinterManagerDao;
+import com.candao.print.entity.OrderInfo4Pos;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.Print4POSService;
 
 @Service
@@ -24,16 +26,22 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 	public static final String SETTLEMENT = "2";
 
+	public static final String PRESETTLEMENT = "1";
+
+	public static final String CUSTTEMPLATE = "3";
+
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,
 			new ArrayBlockingQueue<Runnable>(5000));
 	@Autowired
 	private Print4POSProcedure print4POSProcedure;
-
 	@Autowired
 	TbPrinterManagerDao tbPrinterManagerDao;
-
 	@Autowired
 	private TbBranchDao tbBranchDao;
+	@Autowired
+	private DataDictionaryService dataDictionaryService;
+	@Autowired
+	private OrderDetailServiceImpl orderDetail;
 
 	@Override
 	public void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception {
@@ -41,20 +49,41 @@ public class Print4POSServiceImpl implements Print4POSService {
 			return;
 		}
 		PrintObj obj = new PrintObj();
+		// 三种类型类型单据
+		switch (printType.trim()) {
+		case SETTLEMENT:
+			obj.setListenerType(Constant.ListenerType.SettlementDishListener);
+			break;
+		case PRESETTLEMENT:
+			obj.setListenerType(Constant.ListenerType.PreSettlementTemplate);
+			break;
+		case CUSTTEMPLATE: {
+			SettlementInfo4Pos settlement = settlementInfos.get(0);
+			if (!CollectionUtils.isEmpty(settlement.getOrderJson())) {
+				OrderInfo4Pos orderinfo = settlement.getOrderJson().get(0);
+				orderDetail.printCust(orderinfo.getOrderid(), true);
+			}
+			return;
+		}
+		default:
+			return;
+		}
 		Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
+		Map<String, Object> param = new HashMap<>();
+		param.clear();
+		param.put("type", "ACCURACY");
+		List<Map<String, Object>> resultmap = dataDictionaryService.findByParams(param);
+		if (!CollectionUtils.isEmpty(resultmap)) {
+			for (SettlementInfo4Pos it : settlementInfos) {
+				it.init(Integer.parseInt(String.valueOf(resultmap.get(0).get("itemid"))));
+			}
+		}
 		SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
 		settlementInfo4Pos.setBranchName(String.valueOf(branchInfo.get("branchname")));
 		settlementInfo4Pos.setTel(String.valueOf(branchInfo.get("managertel")));
 		settlementInfo4Pos.setAddress(String.valueOf(branchInfo.get("branchaddress")));
 		obj.setSettlementInfo4Pos(settlementInfo4Pos);
-		switch (printType) {
-		case SETTLEMENT:
-			obj.setListenerType(Constant.ListenerType.SettlementDishListener);
-			break;
 
-		default:
-			break;
-		}
 		// TODO
 		Map<String, Object> params = new HashMap<>();
 		params.put("printertype", "10");

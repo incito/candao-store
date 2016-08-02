@@ -286,7 +286,8 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 
 			Map<String, XMLTemplateDefinition> buffer = null;
 			try {
-				buffer = xmlTemplateDefinitionReader.doLoadBeanDefinitions(xmlTemplateLoader, new XmlReaderContext(xmlTemplateDefinitionReader, new SimpleNamespaceHandlerResover()));
+				buffer = xmlTemplateDefinitionReader.doLoadBeanDefinitions(xmlTemplateLoader,
+						new XmlReaderContext(xmlTemplateDefinitionReader, new SimpleNamespaceHandlerResover()));
 			} catch (Exception e) {
 				log.error("打印模板解析失败！尝试重新编辑", e);
 				e.printStackTrace();
@@ -373,6 +374,27 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 		switch (listenerType) {
 		// 结账单
 		case SettlementDishListener:
+			return true;
+		// 结账单
+		case ClearMachineDataTemplate:
+			return true;
+		// 结账单
+		case ItemSellDetailTemplate:
+			return true;
+		// 结账单
+		case MemberSaleInfoTemplate:
+			return true;
+		// 结账单
+		case BillDetailTemplate:
+			return true;
+		// 结账单
+		case StoreCardToNewPosTemplate:
+			return true;
+		// 结账单
+		case TipListTemplate:
+			return true;
+		// 结账单
+		case PreSettlementTemplate:
 			return true;
 		default:
 			return false;

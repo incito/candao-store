@@ -32,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -760,6 +761,30 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
         }
     }
+
+    /**
+	 * 单独打印客用单
+	 * 
+	 * @param orderid
+	 * @param isRepeat
+	 *            是否标记为重印客用单
+	 */
+	public void printCust(String orderid, boolean isRepeat) throws Exception {
+		Assert.hasText(orderid);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("orderno", orderid);
+		PrintObj printObj = tbPrintObjDao.find(map);
+
+		if (isRepeat) {
+			printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
+			printObj.setBillName(Constant.DISHBILLNAME.POSCUSTDISHNAME);
+		} else {
+			printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
+			printObj.setBillName(Constant.DISHBILLNAME.NORMALCUSTDISHNAME);
+		}
+		printCustDish(printObj);
+	}
 
     /**
      * flag 0 初次下菜单 1 加菜单
