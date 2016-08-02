@@ -30,6 +30,10 @@ public class PrinterConstant {
      * 开钱箱
      */
     public static final byte[] OPEN_CASH={27, 112, 0, 100, 100};
+    /**
+     * 蜂鸣一声
+     */
+    public static final byte[] BEL={0x1b,0x07,0x1b,0x07};
 
     public static byte[] getClear_font() {
 

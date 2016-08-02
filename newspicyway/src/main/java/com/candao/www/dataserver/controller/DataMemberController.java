@@ -35,7 +35,7 @@ public class DataMemberController {
     public String setMemberPrice(@PathVariable String userId, @PathVariable String orderId, @PathVariable String ip, @PathVariable String memberNo) {
         logger.info("###REQUEST### MemberController setMemberPrice userId={}  orderId={} ip={} memberNo={}", userId, orderId, ip, memberNo);
         String result = memberService.setMemberPrice(userId, orderId, memberNo);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### MemberController setMemberPrice response={}", result);
         return result;
     }

@@ -2,541 +2,856 @@ package com.candao.print.entity;
 
 import java.io.Serializable;
 
-public class OrderInfo4Pos implements Serializable{
+public class OrderInfo4Pos implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4969358105127908050L;
-	
-	private String ageperiod;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4969358105127908050L;
 
-	private String areaNo;
+    private String totalMoney;
+    private String accountsReceivableTotal;
+    private String authorizer;
+    private String classNo;
+    private String drinks;
+    private String drinksSmokeNoodle;
+    private String id;
+    private String includedMoneyTotal;
+    private String ipaddress;
+    private String itemMoney;
+    private String lastNonDeposit;
+    private String lastNonTable;
+    private String lowConsComp;
+    private String noIncludedMoneyTotal;
+    private String operatorID;
+    private String operatorName;
+    private String posID;
+    private String preferenceMoney;
+    private String prettyCash;
+    private String priterTime;
+    private String ratedPreferenceMoney;
+    private String roomMoney;
+    private String serviceMoney;
+    private String tBeginPeople;
+    private String tClosingPeople;
+    private String tBeginTableTotal;
+    private String tClosingTable;
+    private String tNonClosingDeposit;
+    private String tNonClosingMoney;
+    private String tNonClosingTable;
+    private String tPresentedMoney;
+    private String tableware;
+    private String todayTurnover;
+    private String vIn;
+    private String vOut;
 
-	private String areaname;
+    private String ageperiod;
 
-	private String befprintcount;
-	
-	private String begintime;
-	
-	private String branchid;
+    private String areaNo;
 
-	private String childNum;
+    private String areaname;
 
-	private String closeshiftid;
+    private String befprintcount;
 
-	private String couponname;
+    private String begintime;
 
-	private String couponname3;
+    private String branchid;
 
-	private String currenttableid;
+    private String childNum;
 
-	private String custnum;
+    private String closeshiftid;
 
-	private String discountamount;
+    private String couponname;
 
-	private String disuserid;
+    private String couponname3;
 
-	private String dueamount;
+    private String currenttableid;
 
-	private String endtime;
+    private String custnum;
 
-	private String freeamount;
+    private String discountamount;
 
-	private String fullName;
+    private String disuserid;
 
-	private String fulldiscountrate;
+    private String dueamount;
 
-	private String gift_status;
+    private String endtime;
 
-	private String gzamount;
+    private String freeamount;
 
-	private String gzcode;
+    private String fullName;
 
-	private String gzname;
+    private String fulldiscountrate;
 
-	private String gztele;
+    private String gift_status;
 
-	private String gzuser;
+    private String gzamount;
 
-	private String invoice_id;
+    private String gzcode;
 
-	private String mannum;
+    private String gzname;
 
-	private String meid;
+    private String gztele;
 
-	private String memberno;
+    private String gzuser;
 
-	private String orderid;
+    private String invoice_id;
 
-	private String orderseq;
+    private String mannum;
 
-	private String orderstatus;
+    private String meid;
 
-	private String ordertype;
+    private String memberno;
 
-	private String partnername;
+    private String orderid;
 
-	private String payamount;
+    private String orderseq;
 
-	private String payamount2;
+    private String orderstatus;
 
-	private String payway;
+    private String ordertype;
 
-	private String pnum;
+    private String partnername;
 
-	private String printcount;
+    private String payamount;
 
-	private String relateorderid;
+    private String payamount2;
 
-	private String shiftid;
+    private String payway;
 
-	private String specialrequied;
+    private String pnum;
 
-	private String ssamount;
+    private String printcount;
 
-	private String tableName;
+    private String relateorderid;
 
-	private String tableids;
+    private String shiftid;
 
-	private String tipAmount;
+    private String specialrequied;
 
-	private String tipPaid;
+    private String ssamount;
 
-	private String userid;
+    private String tableName;
 
-	private String wipeamount;
+    private String tableids;
 
-	private String womanNum;
+    private String tipAmount;
 
-	private String workdate;
+    private String tipPaid;
 
-	private String ymamount;
+    private String userid;
 
-	private String zdAmount;
+    private String wipeamount;
 
-	public String getAgeperiod() {
-		return ageperiod;
-	}
+    private String womanNum;
 
-	public void setAgeperiod(String ageperiod) {
-		this.ageperiod = ageperiod;
-	}
+    private String workdate;
 
-	public String getAreaNo() {
-		return areaNo;
-	}
+    private String ymamount;
 
-	public void setAreaNo(String areaNo) {
-		this.areaNo = areaNo;
-	}
+    private String zdAmount;
 
-	public String getAreaname() {
-		return areaname;
-	}
+    public String getAgeperiod() {
+        return ageperiod;
+    }
 
-	public void setAreaname(String areaname) {
-		this.areaname = areaname;
-	}
+    public void setAgeperiod(String ageperiod) {
+        this.ageperiod = ageperiod;
+    }
 
-	public String getBefprintcount() {
-		return befprintcount;
-	}
+    public String getAreaNo() {
+        return areaNo;
+    }
 
-	public void setBefprintcount(String befprintcount) {
-		this.befprintcount = befprintcount;
-	}
+    public void setAreaNo(String areaNo) {
+        this.areaNo = areaNo;
+    }
 
-	public String getBegintime() {
-		return begintime;
-	}
+    public String getAreaname() {
+        return areaname;
+    }
 
-	public void setBegintime(String begintime) {
-		this.begintime = begintime;
-	}
+    public void setAreaname(String areaname) {
+        this.areaname = areaname;
+    }
 
-	public String getBranchid() {
-		return branchid;
-	}
+    public String getBefprintcount() {
+        return befprintcount;
+    }
 
-	public void setBranchid(String branchid) {
-		this.branchid = branchid;
-	}
+    public void setBefprintcount(String befprintcount) {
+        this.befprintcount = befprintcount;
+    }
 
-	public String getChildNum() {
-		return childNum;
-	}
+    public String getBegintime() {
+        return begintime;
+    }
 
-	public void setChildNum(String childNum) {
-		this.childNum = childNum;
-	}
+    public void setBegintime(String begintime) {
+        this.begintime = begintime;
+    }
 
-	public String getCloseshiftid() {
-		return closeshiftid;
-	}
+    public String getBranchid() {
+        return branchid;
+    }
 
-	public void setCloseshiftid(String closeshiftid) {
-		this.closeshiftid = closeshiftid;
-	}
+    public void setBranchid(String branchid) {
+        this.branchid = branchid;
+    }
 
-	public String getCouponname() {
-		return couponname;
-	}
+    public String getChildNum() {
+        return childNum;
+    }
 
-	public void setCouponname(String couponname) {
-		this.couponname = couponname;
-	}
+    public void setChildNum(String childNum) {
+        this.childNum = childNum;
+    }
 
-	public String getCouponname3() {
-		return couponname3;
-	}
+    public String getCloseshiftid() {
+        return closeshiftid;
+    }
 
-	public void setCouponname3(String couponname3) {
-		this.couponname3 = couponname3;
-	}
+    public void setCloseshiftid(String closeshiftid) {
+        this.closeshiftid = closeshiftid;
+    }
 
-	public String getCurrenttableid() {
-		return currenttableid;
-	}
+    public String getCouponname() {
+        return couponname;
+    }
 
-	public void setCurrenttableid(String currenttableid) {
-		this.currenttableid = currenttableid;
-	}
+    public void setCouponname(String couponname) {
+        this.couponname = couponname;
+    }
 
-	public String getCustnum() {
-		return custnum;
-	}
+    public String getCouponname3() {
+        return couponname3;
+    }
 
-	public void setCustnum(String custnum) {
-		this.custnum = custnum;
-	}
+    public void setCouponname3(String couponname3) {
+        this.couponname3 = couponname3;
+    }
 
-	public String getDiscountamount() {
-		return discountamount;
-	}
+    public String getCurrenttableid() {
+        return currenttableid;
+    }
 
-	public void setDiscountamount(String discountamount) {
-		this.discountamount = discountamount;
-	}
+    public void setCurrenttableid(String currenttableid) {
+        this.currenttableid = currenttableid;
+    }
 
-	public String getDisuserid() {
-		return disuserid;
-	}
+    public String getCustnum() {
+        return custnum;
+    }
 
-	public void setDisuserid(String disuserid) {
-		this.disuserid = disuserid;
-	}
+    public void setCustnum(String custnum) {
+        this.custnum = custnum;
+    }
 
-	public String getDueamount() {
-		return dueamount;
-	}
+    public String getDiscountamount() {
+        return discountamount;
+    }
 
-	public void setDueamount(String dueamount) {
-		this.dueamount = dueamount;
-	}
+    public void setDiscountamount(String discountamount) {
+        this.discountamount = discountamount;
+    }
 
-	public String getEndtime() {
-		return endtime;
-	}
+    public String getDisuserid() {
+        return disuserid;
+    }
 
-	public void setEndtime(String endtime) {
-		this.endtime = endtime;
-	}
+    public void setDisuserid(String disuserid) {
+        this.disuserid = disuserid;
+    }
 
-	public String getFreeamount() {
-		return freeamount;
-	}
+    public String getDueamount() {
+        return dueamount;
+    }
 
-	public void setFreeamount(String freeamount) {
-		this.freeamount = freeamount;
-	}
+    public void setDueamount(String dueamount) {
+        this.dueamount = dueamount;
+    }
 
-	public String getFullName() {
-		return fullName;
-	}
+    public String getEndtime() {
+        return endtime;
+    }
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+    public void setEndtime(String endtime) {
+        this.endtime = endtime;
+    }
 
-	public String getFulldiscountrate() {
-		return fulldiscountrate;
-	}
+    public String getFreeamount() {
+        return freeamount;
+    }
 
-	public void setFulldiscountrate(String fulldiscountrate) {
-		this.fulldiscountrate = fulldiscountrate;
-	}
+    public void setFreeamount(String freeamount) {
+        this.freeamount = freeamount;
+    }
 
-	public String getGift_status() {
-		return gift_status;
-	}
+    public String getFullName() {
+        return fullName;
+    }
 
-	public void setGift_status(String gift_status) {
-		this.gift_status = gift_status;
-	}
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-	public String getGzamount() {
-		return gzamount;
-	}
+    public String getFulldiscountrate() {
+        return fulldiscountrate;
+    }
 
-	public void setGzamount(String gzamount) {
-		this.gzamount = gzamount;
-	}
+    public void setFulldiscountrate(String fulldiscountrate) {
+        this.fulldiscountrate = fulldiscountrate;
+    }
 
-	public String getGzcode() {
-		return gzcode;
-	}
+    public String getGift_status() {
+        return gift_status;
+    }
 
-	public void setGzcode(String gzcode) {
-		this.gzcode = gzcode;
-	}
+    public void setGift_status(String gift_status) {
+        this.gift_status = gift_status;
+    }
 
-	public String getGzname() {
-		return gzname;
-	}
+    public String getGzamount() {
+        return gzamount;
+    }
 
-	public void setGzname(String gzname) {
-		this.gzname = gzname;
-	}
+    public void setGzamount(String gzamount) {
+        this.gzamount = gzamount;
+    }
 
-	public String getGztele() {
-		return gztele;
-	}
+    public String getGzcode() {
+        return gzcode;
+    }
 
-	public void setGztele(String gztele) {
-		this.gztele = gztele;
-	}
+    public void setGzcode(String gzcode) {
+        this.gzcode = gzcode;
+    }
 
-	public String getGzuser() {
-		return gzuser;
-	}
+    public String getGzname() {
+        return gzname;
+    }
 
-	public void setGzuser(String gzuser) {
-		this.gzuser = gzuser;
-	}
+    public void setGzname(String gzname) {
+        this.gzname = gzname;
+    }
 
-	public String getInvoice_id() {
-		return invoice_id;
-	}
+    public String getGztele() {
+        return gztele;
+    }
 
-	public void setInvoice_id(String invoice_id) {
-		this.invoice_id = invoice_id;
-	}
+    public void setGztele(String gztele) {
+        this.gztele = gztele;
+    }
 
-	public String getMannum() {
-		return mannum;
-	}
+    public String getGzuser() {
+        return gzuser;
+    }
 
-	public void setMannum(String mannum) {
-		this.mannum = mannum;
-	}
+    public void setGzuser(String gzuser) {
+        this.gzuser = gzuser;
+    }
 
-	public String getMeid() {
-		return meid;
-	}
+    public String getInvoice_id() {
+        return invoice_id;
+    }
 
-	public void setMeid(String meid) {
-		this.meid = meid;
-	}
+    public void setInvoice_id(String invoice_id) {
+        this.invoice_id = invoice_id;
+    }
 
-	public String getMemberno() {
-		return memberno;
-	}
+    public String getMannum() {
+        return mannum;
+    }
 
-	public void setMemberno(String memberno) {
-		this.memberno = memberno;
-	}
+    public void setMannum(String mannum) {
+        this.mannum = mannum;
+    }
 
-	public String getOrderid() {
-		return orderid;
-	}
+    public String getMeid() {
+        return meid;
+    }
 
-	public void setOrderid(String orderid) {
-		this.orderid = orderid;
-	}
+    public void setMeid(String meid) {
+        this.meid = meid;
+    }
 
-	public String getOrderseq() {
-		return orderseq;
-	}
+    public String getMemberno() {
+        return memberno;
+    }
 
-	public void setOrderseq(String orderseq) {
-		this.orderseq = orderseq;
-	}
+    public void setMemberno(String memberno) {
+        this.memberno = memberno;
+    }
 
-	public String getOrderstatus() {
-		return orderstatus;
-	}
+    public String getOrderid() {
+        return orderid;
+    }
 
-	public void setOrderstatus(String orderstatus) {
-		this.orderstatus = orderstatus;
-	}
+    public void setOrderid(String orderid) {
+        this.orderid = orderid;
+    }
 
-	public String getOrdertype() {
-		return ordertype;
-	}
+    public String getOrderseq() {
+        return orderseq;
+    }
 
-	public void setOrdertype(String ordertype) {
-		this.ordertype = ordertype;
-	}
+    public void setOrderseq(String orderseq) {
+        this.orderseq = orderseq;
+    }
 
-	public String getPartnername() {
-		return partnername;
-	}
+    public String getOrderstatus() {
+        return orderstatus;
+    }
 
-	public void setPartnername(String partnername) {
-		this.partnername = partnername;
-	}
+    public void setOrderstatus(String orderstatus) {
+        this.orderstatus = orderstatus;
+    }
 
-	public String getPayamount() {
-		return payamount;
-	}
+    public String getOrdertype() {
+        return ordertype;
+    }
 
-	public void setPayamount(String payamount) {
-		this.payamount = payamount;
-	}
+    public void setOrdertype(String ordertype) {
+        this.ordertype = ordertype;
+    }
 
-	public String getPayamount2() {
-		return payamount2;
-	}
+    public String getPartnername() {
+        return partnername;
+    }
 
-	public void setPayamount2(String payamount2) {
-		this.payamount2 = payamount2;
-	}
+    public void setPartnername(String partnername) {
+        this.partnername = partnername;
+    }
 
-	public String getPayway() {
-		return payway;
-	}
+    public String getPayamount() {
+        return payamount;
+    }
 
-	public void setPayway(String payway) {
-		this.payway = payway;
-	}
+    public void setPayamount(String payamount) {
+        this.payamount = payamount;
+    }
 
-	public String getPnum() {
-		return pnum;
-	}
+    public String getPayamount2() {
+        return payamount2;
+    }
 
-	public void setPnum(String pnum) {
-		this.pnum = pnum;
-	}
+    public void setPayamount2(String payamount2) {
+        this.payamount2 = payamount2;
+    }
 
-	public String getPrintcount() {
-		return printcount;
-	}
+    public String getPayway() {
+        return payway;
+    }
 
-	public void setPrintcount(String printcount) {
-		this.printcount = printcount;
-	}
+    public void setPayway(String payway) {
+        this.payway = payway;
+    }
 
-	public String getRelateorderid() {
-		return relateorderid;
-	}
+    public String getPnum() {
+        return pnum;
+    }
 
-	public void setRelateorderid(String relateorderid) {
-		this.relateorderid = relateorderid;
-	}
+    public void setPnum(String pnum) {
+        this.pnum = pnum;
+    }
 
-	public String getShiftid() {
-		return shiftid;
-	}
+    public String getPrintcount() {
+        return printcount;
+    }
 
-	public void setShiftid(String shiftid) {
-		this.shiftid = shiftid;
-	}
+    public void setPrintcount(String printcount) {
+        this.printcount = printcount;
+    }
 
-	public String getSpecialrequied() {
-		return specialrequied;
-	}
+    public String getRelateorderid() {
+        return relateorderid;
+    }
 
-	public void setSpecialrequied(String specialrequied) {
-		this.specialrequied = specialrequied;
-	}
+    public void setRelateorderid(String relateorderid) {
+        this.relateorderid = relateorderid;
+    }
 
-	public String getSsamount() {
-		return ssamount;
-	}
+    public String getShiftid() {
+        return shiftid;
+    }
 
-	public void setSsamount(String ssamount) {
-		this.ssamount = ssamount;
-	}
+    public void setShiftid(String shiftid) {
+        this.shiftid = shiftid;
+    }
 
-	public String getTableName() {
-		return tableName;
-	}
+    public String getSpecialrequied() {
+        return specialrequied;
+    }
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
+    public void setSpecialrequied(String specialrequied) {
+        this.specialrequied = specialrequied;
+    }
 
-	public String getTableids() {
-		return tableids;
-	}
+    public String getSsamount() {
+        return ssamount;
+    }
 
-	public void setTableids(String tableids) {
-		this.tableids = tableids;
-	}
+    public void setSsamount(String ssamount) {
+        this.ssamount = ssamount;
+    }
 
-	public String getTipAmount() {
-		return tipAmount;
-	}
+    public String getTableName() {
+        return tableName;
+    }
 
-	public void setTipAmount(String tipAmount) {
-		this.tipAmount = tipAmount;
-	}
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
 
-	public String getTipPaid() {
-		return tipPaid;
-	}
+    public String getTableids() {
+        return tableids;
+    }
 
-	public void setTipPaid(String tipPaid) {
-		this.tipPaid = tipPaid;
-	}
+    public void setTableids(String tableids) {
+        this.tableids = tableids;
+    }
 
-	public String getUserid() {
-		return userid;
-	}
+    public String getTipAmount() {
+        return tipAmount;
+    }
 
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
+    public void setTipAmount(String tipAmount) {
+        this.tipAmount = tipAmount;
+    }
 
-	public String getWipeamount() {
-		return wipeamount;
-	}
+    public String getTipPaid() {
+        return tipPaid;
+    }
 
-	public void setWipeamount(String wipeamount) {
-		this.wipeamount = wipeamount;
-	}
+    public void setTipPaid(String tipPaid) {
+        this.tipPaid = tipPaid;
+    }
 
-	public String getWomanNum() {
-		return womanNum;
-	}
+    public String getUserid() {
+        return userid;
+    }
 
-	public void setWomanNum(String womanNum) {
-		this.womanNum = womanNum;
-	}
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
 
-	public String getWorkdate() {
-		return workdate;
-	}
+    public String getWipeamount() {
+        return wipeamount;
+    }
 
-	public void setWorkdate(String workdate) {
-		this.workdate = workdate;
-	}
+    public void setWipeamount(String wipeamount) {
+        this.wipeamount = wipeamount;
+    }
 
-	public String getYmamount() {
-		return ymamount;
-	}
+    public String getWomanNum() {
+        return womanNum;
+    }
 
-	public void setYmamount(String ymamount) {
-		this.ymamount = ymamount;
-	}
+    public void setWomanNum(String womanNum) {
+        this.womanNum = womanNum;
+    }
 
-	public String getZdAmount() {
-		return zdAmount;
-	}
+    public String getWorkdate() {
+        return workdate;
+    }
 
-	public void setZdAmount(String zdAmount) {
-		this.zdAmount = zdAmount;
-	}
+    public void setWorkdate(String workdate) {
+        this.workdate = workdate;
+    }
 
+    public String getYmamount() {
+        return ymamount;
+    }
+
+    public void setYmamount(String ymamount) {
+        this.ymamount = ymamount;
+    }
+
+    public String getZdAmount() {
+        return zdAmount;
+    }
+
+    public void setZdAmount(String zdAmount) {
+        this.zdAmount = zdAmount;
+    }
+
+    public String getTotalMoney() {
+        return totalMoney;
+    }
+
+    public void setTotalMoney(String totalMoney) {
+        this.totalMoney = totalMoney;
+    }
+
+    public String getAccountsReceivableTotal() {
+        return accountsReceivableTotal;
+    }
+
+    public void setAccountsReceivableTotal(String accountsReceivableTotal) {
+        this.accountsReceivableTotal = accountsReceivableTotal;
+    }
+
+    public String getAuthorizer() {
+        return authorizer;
+    }
+
+    public void setAuthorizer(String authorizer) {
+        this.authorizer = authorizer;
+    }
+
+    public String getClassNo() {
+        return classNo;
+    }
+
+    public void setClassNo(String classNo) {
+        this.classNo = classNo;
+    }
+
+    public String getDrinks() {
+        return drinks;
+    }
+
+    public void setDrinks(String drinks) {
+        this.drinks = drinks;
+    }
+
+    public String getDrinksSmokeNoodle() {
+        return drinksSmokeNoodle;
+    }
+
+    public void setDrinksSmokeNoodle(String drinksSmokeNoodle) {
+        this.drinksSmokeNoodle = drinksSmokeNoodle;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getIncludedMoneyTotal() {
+        return includedMoneyTotal;
+    }
+
+    public void setIncludedMoneyTotal(String includedMoneyTotal) {
+        this.includedMoneyTotal = includedMoneyTotal;
+    }
+
+    public String getIpaddress() {
+        return ipaddress;
+    }
+
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
+    }
+
+    public String getItemMoney() {
+        return itemMoney;
+    }
+
+    public void setItemMoney(String itemMoney) {
+        this.itemMoney = itemMoney;
+    }
+
+    public String getLastNonDeposit() {
+        return lastNonDeposit;
+    }
+
+    public void setLastNonDeposit(String lastNonDeposit) {
+        this.lastNonDeposit = lastNonDeposit;
+    }
+
+    public String getLastNonTable() {
+        return lastNonTable;
+    }
+
+    public void setLastNonTable(String lastNonTable) {
+        this.lastNonTable = lastNonTable;
+    }
+
+    public String getLowConsComp() {
+        return lowConsComp;
+    }
+
+    public void setLowConsComp(String lowConsComp) {
+        this.lowConsComp = lowConsComp;
+    }
+
+    public String getNoIncludedMoneyTotal() {
+        return noIncludedMoneyTotal;
+    }
+
+    public void setNoIncludedMoneyTotal(String noIncludedMoneyTotal) {
+        this.noIncludedMoneyTotal = noIncludedMoneyTotal;
+    }
+
+    public String getOperatorID() {
+        return operatorID;
+    }
+
+    public void setOperatorID(String operatorID) {
+        this.operatorID = operatorID;
+    }
+
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
+
+    public String getPosID() {
+        return posID;
+    }
+
+    public void setPosID(String posID) {
+        this.posID = posID;
+    }
+
+    public String getPreferenceMoney() {
+        return preferenceMoney;
+    }
+
+    public void setPreferenceMoney(String preferenceMoney) {
+        this.preferenceMoney = preferenceMoney;
+    }
+
+    public String getPrettyCash() {
+        return prettyCash;
+    }
+
+    public void setPrettyCash(String prettyCash) {
+        this.prettyCash = prettyCash;
+    }
+
+    public String getPriterTime() {
+        return priterTime;
+    }
+
+    public void setPriterTime(String priterTime) {
+        this.priterTime = priterTime;
+    }
+
+    public String getRatedPreferenceMoney() {
+        return ratedPreferenceMoney;
+    }
+
+    public void setRatedPreferenceMoney(String ratedPreferenceMoney) {
+        this.ratedPreferenceMoney = ratedPreferenceMoney;
+    }
+
+    public String getRoomMoney() {
+        return roomMoney;
+    }
+
+    public void setRoomMoney(String roomMoney) {
+        this.roomMoney = roomMoney;
+    }
+
+    public String getServiceMoney() {
+        return serviceMoney;
+    }
+
+    public void setServiceMoney(String serviceMoney) {
+        this.serviceMoney = serviceMoney;
+    }
+
+    public String gettBeginPeople() {
+        return tBeginPeople;
+    }
+
+    public void settBeginPeople(String tBeginPeople) {
+        this.tBeginPeople = tBeginPeople;
+    }
+
+    public String gettClosingPeople() {
+        return tClosingPeople;
+    }
+
+    public void settClosingPeople(String tClosingPeople) {
+        this.tClosingPeople = tClosingPeople;
+    }
+
+    public String gettBeginTableTotal() {
+        return tBeginTableTotal;
+    }
+
+    public void settBeginTableTotal(String tBeginTableTotal) {
+        this.tBeginTableTotal = tBeginTableTotal;
+    }
+
+    public String gettClosingTable() {
+        return tClosingTable;
+    }
+
+    public void settClosingTable(String tClosingTable) {
+        this.tClosingTable = tClosingTable;
+    }
+
+    public String gettNonClosingDeposit() {
+        return tNonClosingDeposit;
+    }
+
+    public void settNonClosingDeposit(String tNonClosingDeposit) {
+        this.tNonClosingDeposit = tNonClosingDeposit;
+    }
+
+    public String gettNonClosingMoney() {
+        return tNonClosingMoney;
+    }
+
+    public void settNonClosingMoney(String tNonClosingMoney) {
+        this.tNonClosingMoney = tNonClosingMoney;
+    }
+
+    public String gettNonClosingTable() {
+        return tNonClosingTable;
+    }
+
+    public void settNonClosingTable(String tNonClosingTable) {
+        this.tNonClosingTable = tNonClosingTable;
+    }
+
+    public String gettPresentedMoney() {
+        return tPresentedMoney;
+    }
+
+    public void settPresentedMoney(String tPresentedMoney) {
+        this.tPresentedMoney = tPresentedMoney;
+    }
+
+    public String getTableware() {
+        return tableware;
+    }
+
+    public void setTableware(String tableware) {
+        this.tableware = tableware;
+    }
+
+    public String getTodayTurnover() {
+        return todayTurnover;
+    }
+
+    public void setTodayTurnover(String todayTurnover) {
+        this.todayTurnover = todayTurnover;
+    }
+
+    public String getvIn() {
+        return vIn;
+    }
+
+    public void setvIn(String vIn) {
+        this.vIn = vIn;
+    }
+
+    public String getvOut() {
+        return vOut;
+    }
+
+    public void setvOut(String vOut) {
+        this.vOut = vOut;
+    }
 }

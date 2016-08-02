@@ -136,7 +136,7 @@ public class BusinessController {
     public String clearMachine1(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={}", userId, userName, ip, posId);
         String result = businessService.clearMachine(userId, userName, ip, posId, "");
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### BusinessController clearMachine response={}", result);
         return result;
     }

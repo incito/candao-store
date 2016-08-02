@@ -243,7 +243,7 @@ public class Print4POSController {
 		}
 		method = obj.getClass().getMethod(name, insts);
 		res = method.invoke(obj, args);
-		res = StringUtil.unicodeTOUtf8(String.valueOf(res));
+//		res = StringUtil.unicodeTOUtf8(String.valueOf(res));
 		return res.toString();
 	}
 
