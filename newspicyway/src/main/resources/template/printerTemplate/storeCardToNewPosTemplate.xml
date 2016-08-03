@@ -30,14 +30,12 @@
 		<datas description="账单类型">
 			<list>
 				<value>---</value>
-				<value>#{obj.orderinfo.type}</value>
+				<value>#{obj.storeCard.type}</value>
 				<value>---</value>
 			</list>
 		</datas>
 	</row:row>
 
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -50,13 +48,10 @@
 			<datas description="账单号">
 				<list>
 					<value>卡号：</value>
-					<value>#{it.cardno}</value>
+					<value>#{obj.storeCard.cardno}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -73,9 +68,6 @@
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -88,13 +80,10 @@
 			<datas description="账单号">
 				<list>
 					<value>交易门店：</value>
-					<value>#{it.branchName}</value>
+					<value>#{obj.storeCard.storeName}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -107,13 +96,10 @@
 			<datas description="账单号">
 				<list>
 					<value>凭证号：</value>
-					<value>#{it.edtpzh}</value>
+					<value>#{obj.storeCard.pzh}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -126,13 +112,10 @@
 			<datas description="账单号">
 				<list>
 					<value>交易日期：</value>
-					<value>#{it.terminal}</value>
+					<value>#{obj.storeCard.date}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -145,13 +128,10 @@
 			<datas description="账单号">
 				<list>
 					<value>交易时间：</value>
-					<value>#{it.terminal}</value>
+					<value>#{obj.storeCard.time}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -164,13 +144,10 @@
 			<datas description="账单号">
 				<list>
 					<value>交易后储值：</value>
-					<value>#{it.terminal}</value>
+					<value>#{obj.storeCard.storedAmount}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -183,13 +160,10 @@
 			<datas description="账单号">
 				<list>
 					<value>交易后积分：</value>
-					<value>#{it.terminal}</value>
+					<value>#{obj.storeCard.storedPoint}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -202,11 +176,10 @@
 			<datas description="账单号">
 				<list>
 					<value>储值充值：</value>
-					<value>#{it.terminal}</value>
+					<value>#{obj.storeCard.storedBalance}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
 	<row:row description="单号">
 		<align description="对齐">ALIGN_CENTER</align>
 		<font description="字体大小">SMALL</font>

@@ -207,7 +207,7 @@
 			<datas description="账单号">
 				<list>
 					<value>MIS流水号：</value>
-					<value>#{it.terminal}</value>
+					<value>#{it.serial}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -226,7 +226,7 @@
 			<datas description="账单号">
 				<list>
 					<value>本次积分增减：</value>
-					<value>#{it.terminal}</value>
+					<value>#{it.score}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -245,7 +245,7 @@
 			<datas description="账单号">
 				<list>
 					<value>本次储值消费：</value>
-					<value>#{it.terminal}</value>
+					<value>#{it.stored}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -264,7 +264,7 @@
 			<datas description="账单号">
 				<list>
 					<value>本次券消费：</value>
-					<value>#{it.terminal}</value>
+					<value>#{it.coupons}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -283,7 +283,7 @@
 			<datas description="账单号">
 				<list>
 					<value>当前积分余额：</value>
-					<value>#{it.terminal}</value>
+					<value>#{it.scorebalance}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -302,7 +302,7 @@
 			<datas description="账单号">
 				<list>
 					<value>当前储值余额：</value>
-					<value>#{it.terminal}</value>
+					<value>#{it.storedbalance}</value>
 				</list>
 			</datas>
 		</row:row>
