@@ -686,7 +686,9 @@
 	maxDishCount, dishUnit, printipaddress,
 	printport, printnum, dishid,
 	printtype, orderseq, relatedishid,
-	dishtype, printerId,ordertype,parentkey,superkey,ismaster,primarykey,islatecooke)
+	dishtype, printerId,ordertype,parentkey,superkey,ismaster,primarykey,islatecooke,isadddish,
+	childdishtype,
+	ispot)
 	values
 	<foreach collection="list" item="item" index="index" separator=",">
 	(
@@ -702,7 +704,10 @@
 	#{item.superkey,jdbcType=VARCHAR},
 	#{item.ismaster,jdbcType=INTEGER},
 	#{item.primarykey,jdbcType=VARCHAR},
-	#{item.islatecooke,jdbcType=INTEGER})
+	#{item.islatecooke,jdbcType=INTEGER}),
+	#{item.isadddish,jdbcType=INTEGER}),
+	#{item.childdishtype,jdbcType=INTEGER}),
+	#{item.ispot,jdbcType=INTEGER}),
 	</foreach>
 </insert>
 

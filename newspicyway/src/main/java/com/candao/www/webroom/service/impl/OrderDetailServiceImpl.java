@@ -167,7 +167,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         //计算菜单订单下面财大个数如果大与0 表示不能 清台
         long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
         if (menuNum > 0) {
-        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单下还有菜品，不能清台"));
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单下还有菜品，不能清台"));
         }
         Map<String, Object> tableMap = resultMapList.get(0);
         String tableId = String.valueOf(tableMap.get("tableid"));
@@ -363,7 +363,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
 // @Transactional( propagation=Propagation.REQUIRED,rollbackFor=java.net.ConnectException.class)
     public Map<String, Object> setOrderDetailList(Order orders) {
-        TransactionStatus status =null;
+        TransactionStatus status = null;
         try {
 //		object = status.createSavepoint();
             String tableNo = orders.getCurrenttableid();
@@ -425,7 +425,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
-            if(null!=status) {
+            if (null != status) {
                 transactionManager.rollback(status);
             }
 //            return getResult("3", "服务器异常 ", "");
@@ -627,7 +627,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
      */
     @Override
     public Map<String, Object> placeOrder(Order orders) {
-        TransactionStatus status =null;
+        TransactionStatus status = null;
         try {
             if (StringUtils.isEmpty(orders.getOrderid())) {
                 log.info("-----------------------");
@@ -693,7 +693,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
-            if(null!=status) {
+            if (null != status) {
                 transactionManager.rollback(status);
             }
             return getResult("3", "服务器异常 ", "");
@@ -763,28 +763,27 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     /**
-	 * 单独打印客用单
-	 * 
-	 * @param orderid
-	 * @param isRepeat
-	 *            是否标记为重印客用单
-	 */
-	public void printCust(String orderid, boolean isRepeat) throws Exception {
-		Assert.hasText(orderid);
+     * 单独打印客用单
+     *
+     * @param orderid
+     * @param isRepeat 是否标记为重印客用单
+     */
+    public void printCust(String orderid, boolean isRepeat) throws Exception {
+        Assert.hasText(orderid);
 
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("orderno", orderid);
-		PrintObj printObj = tbPrintObjDao.find(map);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("orderno", orderid);
+        PrintObj printObj = tbPrintObjDao.find(map);
 
-		if (isRepeat) {
-			printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
-			printObj.setBillName(Constant.DISHBILLNAME.POSCUSTDISHNAME);
-		} else {
-			printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
-			printObj.setBillName(Constant.DISHBILLNAME.NORMALCUSTDISHNAME);
-		}
-		printCustDish(printObj);
-	}
+        if (isRepeat) {
+            printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
+            printObj.setBillName(Constant.DISHBILLNAME.POSCUSTDISHNAME);
+        } else {
+            printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
+            printObj.setBillName(Constant.DISHBILLNAME.NORMALCUSTDISHNAME);
+        }
+        printCustDish(printObj);
+    }
 
     /**
      * flag 0 初次下菜单 1 加菜单
@@ -1166,7 +1165,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         // 需要把所有的菜品配置的打印机全部打印
         // 查找菜品所有符合的打印机
         List<PrintDish> printedList = new ArrayList<>();
-       Map<String, Integer> printedmap = new HashMap<>();
+        Map<String, Integer> printedmap = new HashMap<>();
         for (PrintDish pd : printObj.getList()) {
             /*if (printedList.contains(pd)) {//已经合并打印了则跳过
                 logger.error("------------------------", "");
@@ -1319,24 +1318,24 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
 
-                    int temp=0;//默认表示还没有打印
+                    int temp = 0;//默认表示还没有打印
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
-                    
+
                     for (PrintDish printDish : pdList) {
-                    	Object  obj=printedmap.get(printObj.getCustomerPrinterIp()+printDish.getDishId());
-                    	if(obj!=null){
-                    		temp=1;//已经打印过
-                    		break;
-                    	}
+                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId());
+                        if (obj != null) {
+                            temp = 1;//已经打印过
+                            break;
+                        }
                         logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
                     }
-                    if(temp==1){
-                    	continue;//已经打印过了
+                    if (temp == 1) {
+                        continue;//已经打印过了
                     }
                     new Thread(new PrintThread(printObj)).run();
-                    
+
                     for (PrintDish printDish : pdList) {
-                    	printedmap.put(printObj.getCustomerPrinterIp()+printDish.getDishId(), 1);//已经打印的菜品
+                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId(), 1);//已经打印的菜品
                     }
                 }
             }
@@ -2018,7 +2017,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         }
         if (toperationLogService.save(toperationLog)) {
-        	return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
+            return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         } else {
             log.error("-->插入t_operation_log数据出错。参数toperationLog值为：" + toperationLog.getId());
             return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("获取数据失败"));
@@ -2146,7 +2145,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public String urgeDishList(UrgeDish urgeDish) {
         if (urgeDish == null) {
-        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数有误"));
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数有误"));
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
@@ -2158,7 +2157,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         Map<String, Object> mapStatus = torderMapper.findOne(orderNo);
         if (!"0".equals(String.valueOf(mapStatus.get("orderstatus")))) {
-        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态有误"));
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态有误"));
         }
 
         String actionType = urgeDish.getActionType();
@@ -2179,7 +2178,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public String cookiedishList(UrgeDish urgeDish) {
         if (urgeDish == null) {
-        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数有误"));
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("参数有误"));
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
@@ -2191,7 +2190,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         Map<String, Object> mapStatus = torderMapper.findOne(orderNo);
         if (!"0".equals(String.valueOf(mapStatus.get("orderstatus")))) {
-        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态不正确"));
+            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态不正确"));
         }
 
         String actionType = urgeDish.getActionType();
