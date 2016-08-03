@@ -3,6 +3,7 @@ package com.candao.www.dataserver.service.member.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.candao.common.utils.DateUtils;
+import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.entity.OpenLog;
 import com.candao.www.dataserver.entity.OrderRule;
@@ -29,7 +30,7 @@ import java.util.*;
  */
 @Service
 public class BusinessServiceImpl implements BusinessService {
-
+	 private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BusinessServiceImpl.class);
 
     @Autowired
     private OrderDetailMapper orderDetailMapper;
@@ -323,7 +324,9 @@ public class BusinessServiceImpl implements BusinessService {
             return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"还有未结帐外卖帐单，不能结业！\"}";
         }
         HashMap<String, Object> param = new HashMap<>();
+        logger.info("调用procEndWork");
         openLogMapper.procEndWork(param);
+        logger.info("调用procEndWork返回值："+JacksonJsonMapper.objectToJson(param));
         long endfinish = (long) param.get("endfinish");
         if (endfinish != 1) {
             return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"存储过程执行失败!\"}";
