@@ -3,6 +3,7 @@ package com.candao.www.webroom.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.candao.print.entity.ResultInfo4Pos;
+import com.candao.print.entity.ResultTip4Pos;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.www.dataserver.controller.OrderInterfaceController;
 import com.candao.www.dataserver.controller.StoreInterfaceController;
@@ -176,7 +177,7 @@ public class Print4POSController {
             e.printStackTrace();
             log.error("", e);
         }
-        ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
+        ResultTip4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
         return new HashMap<>();
     }
 
