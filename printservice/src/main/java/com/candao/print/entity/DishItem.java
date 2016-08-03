@@ -7,6 +7,7 @@ public class DishItem {
     private String dishName;
     private String totlePrice;
     private String dishCount;
+    private String index;
 
     public String getDishName() {
         return dishName;
@@ -31,4 +32,12 @@ public class DishItem {
     public void setDishCount(String dishCount) {
         this.dishCount = dishCount;
     }
+
+	public String getIndex() {
+		return index;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
+	}
 }

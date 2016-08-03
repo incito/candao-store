@@ -7,6 +7,7 @@ public class TipItem {
     private String waiterName;
     private String serviceCount;
     private String tipMoney;
+    private String index;
 
     public String getWaiterName() {
         return waiterName;
@@ -31,4 +32,12 @@ public class TipItem {
     public void setTipMoney(String tipMoney) {
         this.tipMoney = tipMoney;
     }
+
+	public String getIndex() {
+		return index;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
+	}
 }

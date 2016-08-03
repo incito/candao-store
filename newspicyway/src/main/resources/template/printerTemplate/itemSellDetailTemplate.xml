@@ -29,9 +29,9 @@
 		</locations>
 		<datas description="账单类型">
 			<list>
-				<value>#{obj.item.startTime}</value>
+				<value>#{obj.item.time.startTime}</value>
 				<value>至</value>
-				<value>#{obj.item.endTime}</value>
+				<value>#{obj.item.time.endTime}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -64,7 +64,7 @@
 		<datas description="账单号">
 			<list>
 				<value>门店编号：</value>
-				<value>#{obj.item.branname}</value>
+				<value>#{obj.item.branchname}</value>
 				<value>打印时间：</value>
 				<value>#{obj.item.datetime}</value>
 			</list>
@@ -167,7 +167,7 @@
 		<datas description="开始时间">
 			<list>
 				<value>合计：</value>
-				<value>#{obj.item.startTime}</value>
+				<value>#{obj.item.total}</value>
 			</list>
 		</datas>
 	</row:row>

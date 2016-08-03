@@ -8,8 +8,35 @@ public class ResultInfo4Pos implements Serializable {
     private TimeInfo time;
     private String mag;
     private List<DishItem> data;
+    private String branchname;
+    private String datetime;
+    private String total;
 
-    public String getResut() {
+    public String getBranname() {
+		return branchname;
+	}
+
+	public void setBranname(String branname) {
+		this.branchname = branname;
+	}
+
+	public String getDatetime() {
+		return datetime;
+	}
+
+	public void setDatetime(String datetime) {
+		this.datetime = datetime;
+	}
+
+	public String getTotal() {
+		return total;
+	}
+
+	public void setTotal(String total) {
+		this.total = total;
+	}
+
+	public String getResut() {
         return resut;
     }
 

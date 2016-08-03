@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.candao.print.entity.PrintObj;
 
 @Service
-public class Print4POSProcedure implements Runnable{
+public class Print4POSProcedure implements Runnable {
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
@@ -17,7 +17,7 @@ public class Print4POSProcedure implements Runnable{
 
 	private PrintObj obj;
 
-	public void setSource(PrintObj obj){
+	public void setSource(PrintObj obj) {
 		this.obj = obj;
 	}
 
@@ -27,12 +27,12 @@ public class Print4POSProcedure implements Runnable{
 			return;
 		}
 
-		// String ipAddress = obj.getCustomerPrinterIp();
-		// if (ipAddress.contains(",")) {
-		// String[] ips = ipAddress.split(",");
-		// ipAddress = ips[0];
-		// }
-		PrintCommon.setPhysicalName("10.66.18.3");
+		String ipAddress = obj.getCustomerPrinterIp();
+		if (ipAddress.contains(",")) {
+			String[] ips = ipAddress.split(",");
+			ipAddress = ips[0];
+		}
+		PrintCommon.setPhysicalName(ipAddress);
 
 		jmsTemplate.convertAndSend(PrintCommon, obj);
 	}

@@ -74,6 +74,10 @@ public class PrintObj implements Serializable,Cloneable {
     private String printerid;
     
     private SettlementInfo4Pos settlementInfo4Pos;
+    
+    private ResultInfo4Pos item;
+    
+    private ResultTip4Pos tip;
 	
 	
 	public String getPrintName() {
@@ -314,5 +318,21 @@ public class PrintObj implements Serializable,Cloneable {
 
 	public void setSettlementInfo4Pos(SettlementInfo4Pos settlementInfo4Pos) {
 		this.settlementInfo4Pos = settlementInfo4Pos;
+	}
+
+	public ResultInfo4Pos getItem() {
+		return item;
+	}
+
+	public void setItem(ResultInfo4Pos resultInfo4Pos) {
+		this.item = resultInfo4Pos;
+	}
+
+	public ResultTip4Pos getTip() {
+		return tip;
+	}
+
+	public void setTip(ResultTip4Pos resultTip4Pos) {
+		this.tip = resultTip4Pos;
 	}
 }

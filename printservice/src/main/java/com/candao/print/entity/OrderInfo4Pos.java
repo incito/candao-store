@@ -8,6 +8,8 @@ public class OrderInfo4Pos implements Serializable {
      *
      */
     private static final long serialVersionUID = -4969358105127908050L;
+    //会员消费类型
+    private String type;
 
     private String inflated;
     private String business;
@@ -1008,4 +1010,12 @@ public class OrderInfo4Pos implements Serializable {
     public void setValid(String valid) {
         this.valid = valid;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

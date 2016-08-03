@@ -3,6 +3,7 @@ package com.candao.www.webroom.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.candao.print.entity.ResultInfo4Pos;
+import com.candao.print.entity.ResultTip4Pos;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.www.dataserver.controller.OrderInterfaceController;
 import com.candao.www.dataserver.controller.StoreInterfaceController;
@@ -92,6 +93,14 @@ public class Print4POSController {
         boolean flag = true;
         List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
         settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+        try {
+        	print4posService.printClearMachine(settlementInfos);
+		} catch (Exception e) {
+            flag = false;
+            log.error("", e);
+            e.printStackTrace();
+        }
+        
         return getResponseMsg("", "", flag);
     }
 
@@ -110,6 +119,15 @@ public class Print4POSController {
         boolean flag = true;
         List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
         settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+        try {
+        	print4posService.printMemberSaleInfo(settlementInfos);
+		} catch (Exception e) {
+            flag = false;
+            log.error("", e);
+            e.printStackTrace();
+        }
+        
+        
         return getResponseMsg("", "", flag);
     }
 
@@ -155,8 +173,16 @@ public class Print4POSController {
             e.printStackTrace();
             log.error("", e);
         }
+        boolean sucess = true;
         ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
-        return getResponseMsg("", "", true);
+        try {
+			print4posService.printItemSellDetail(resultInfo4Pos);
+		} catch (Exception e) {
+			sucess = false;
+            log.error("", e);
+            e.printStackTrace();
+		}
+        return getResponseMsg("", "", sucess);
     }
 
     /**
@@ -167,7 +193,7 @@ public class Print4POSController {
      */
     @RequestMapping("/tipList")
     @ResponseBody
-    public Map<String, Object> TipList(String flag) {
+    public String TipList(String flag) {
         // TODO
         String res = null;
         try {
@@ -176,8 +202,16 @@ public class Print4POSController {
             e.printStackTrace();
             log.error("", e);
         }
-        ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
-        return new HashMap<>();
+        ResultTip4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
+        boolean sucess = true;
+        try {
+			print4posService.printTip(resultInfo4Pos);
+		} catch (Exception e) {
+			sucess = false;
+            log.error("", e);
+            e.printStackTrace();
+		}
+        return getResponseMsg("", "", sucess);
     }
 
     /**
