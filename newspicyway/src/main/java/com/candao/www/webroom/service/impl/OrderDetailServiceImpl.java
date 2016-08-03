@@ -457,7 +457,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Tmenu tmenu = menuDao.checkMenu();
         if (null == tmenu) {
             result.put("code", "1");
-            result.put("msg", "菜谱更新中");
+            result.put("msg", "找不到可用的菜谱");
             return result;
         }
 
@@ -476,7 +476,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             Tdish existsDish = isExistsDish(dishs, orderDetail.getDishid());
             if (null == existsDish) {
                 result.put("code", "1");
-                result.put("msg", "菜谱更新中");
+                result.put("msg", "部分菜品找不到");
                 return result;
             }
             //生成PrintDish
@@ -563,6 +563,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             printObj.setTableArea(areaName);
             printObj.setTableid(order.getCurrenttableid());
             tbPrintObjDao.insertPrintObj(printObj);
+        } else {
+            tbPrintObjDao.updateTimemsg(DateUtils.dateToString(new Date()), printobjId);
         }
         result.put("code", "0");
         result.put("msg", "下单成功");

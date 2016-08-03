@@ -294,7 +294,7 @@ public class PadInterfaceController {
         String result = "";
         Map<String, Object> res = orderDetailService.setOrderDetailList(order);
 //        POS下单通知PAD订单改变
-        if ("1".equals(order.getSource())) {
+        if ("2".equals(order.getSource())) {
             notifyService.notifyOrderChange(order.getOrderid());
         }
         logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
