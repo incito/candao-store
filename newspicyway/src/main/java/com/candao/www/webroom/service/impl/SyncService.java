@@ -76,7 +76,7 @@ public class SyncService {
                     List<TtemplateDishUnit> dishUnits = new ArrayList<>();
                     if (COOKBOOK.equals(type)) {
                         dishUnits = ttemplateDishUnitlDao.getTtemplateDishUnitByStatus();
-                        logger.info("---->手动同步，备份已经估清的菜品："+dishUnits.size()+"份");
+                        logger.info("---->手动同步，备份当前菜谱已经估清的菜品："+dishUnits.size()+"份");
                     }
 
 //         			同步数据
