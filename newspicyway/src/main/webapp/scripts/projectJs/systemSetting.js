@@ -946,7 +946,7 @@ function initComplaint(){
  */
 function initResponsetime(){
 	$.get(global_Path + "/clientcomplain/getTimeSet.json", function(result) {
-		if(result.code == "001"){
+		if(result.code == "0"){
 			var data = result.data;
 			initData(data, 8);
 		}
