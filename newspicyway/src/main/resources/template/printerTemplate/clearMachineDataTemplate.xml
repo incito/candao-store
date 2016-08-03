@@ -351,7 +351,7 @@
 			</locations>
 			<datas description="品项">
 				<list>
-					<value>本班消费金额</value>
+					<value>本班小费金额</value>
 					<value>#{it.tipTotalAmount}</value>
 				</list>
 			</datas>
@@ -360,7 +360,7 @@
 	<!-- 分割线 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
+		<font description="字体大小">SMALL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -394,7 +394,7 @@
 	<!-- 分割线 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
+		<font description="字体大小">SMALL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -447,7 +447,7 @@
 	<!-- 分割线 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
+		<font description="字体大小">SMALL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -481,7 +481,7 @@
 	<!-- 分割线 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
+		<font description="字体大小">SMALL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -515,7 +515,7 @@
 	<!-- 分割线 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">NORMAL</font>
+		<font description="字体大小">SMALL</font>
 		<locations description="分割线">
 			<list>
 				<value>40</value>
@@ -579,7 +579,7 @@
 			<datas description="品项">
 				<list>
 					<value>合计</value>
-					<value>#{it.TotalMoney}</value>
+					<value>#{it.totalMoney}</value>
 				</list>
 			</datas>
 		</row:row>

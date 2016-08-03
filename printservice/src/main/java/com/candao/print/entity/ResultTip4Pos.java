@@ -4,15 +4,35 @@ import java.io.Serializable;
 import java.util.List;
 
 public class ResultTip4Pos implements Serializable {
-    private String resut;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3175108487245523968L;
+	private String result;
     private TimeInfo time;
-    private String mag;
+    private String msg;
     private List<TipItem> data;
     private String branchname;
     private String datetime;
     private String total;
 
-    public String getBranchname() {
+    public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	public String getBranchname() {
 		return branchname;
 	}
 
@@ -36,28 +56,12 @@ public class ResultTip4Pos implements Serializable {
 		this.total = total;
 	}
 
-	public String getResut() {
-        return resut;
-    }
-
-    public void setResut(String resut) {
-        this.resut = resut;
-    }
-
     public TimeInfo getTime() {
         return time;
     }
 
     public void setTime(TimeInfo time) {
         this.time = time;
-    }
-
-    public String getMag() {
-        return mag;
-    }
-
-    public void setMag(String mag) {
-        this.mag = mag;
     }
 
     public List<TipItem> getData() {

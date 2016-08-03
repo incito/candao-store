@@ -30,7 +30,7 @@
 		<datas description="账单类型">
 			<list>
 				<value>---</value>
-				<value>#{obj.storeCard.type}</value>
+				<value>#{obj.posData.type}</value>
 				<value>---</value>
 			</list>
 		</datas>
@@ -48,7 +48,7 @@
 			<datas description="账单号">
 				<list>
 					<value>卡号：</value>
-					<value>#{obj.storeCard.cardno}</value>
+					<value>#{obj.posData.cardno}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -80,7 +80,7 @@
 			<datas description="账单号">
 				<list>
 					<value>交易门店：</value>
-					<value>#{obj.storeCard.storeName}</value>
+					<value>#{obj.posData.storeName}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -96,7 +96,7 @@
 			<datas description="账单号">
 				<list>
 					<value>凭证号：</value>
-					<value>#{obj.storeCard.pzh}</value>
+					<value>#{obj.posData.pzh}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -112,7 +112,7 @@
 			<datas description="账单号">
 				<list>
 					<value>交易日期：</value>
-					<value>#{obj.storeCard.date}</value>
+					<value>#{obj.posData.date}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -128,7 +128,7 @@
 			<datas description="账单号">
 				<list>
 					<value>交易时间：</value>
-					<value>#{obj.storeCard.time}</value>
+					<value>#{obj.posData.time}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -144,7 +144,7 @@
 			<datas description="账单号">
 				<list>
 					<value>交易后储值：</value>
-					<value>#{obj.storeCard.storedAmount}</value>
+					<value>#{obj.posData.storedAmount}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -160,7 +160,7 @@
 			<datas description="账单号">
 				<list>
 					<value>交易后积分：</value>
-					<value>#{obj.storeCard.storedPoint}</value>
+					<value>#{obj.posData.storedPoint}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -176,7 +176,7 @@
 			<datas description="账单号">
 				<list>
 					<value>储值充值：</value>
-					<value>#{obj.storeCard.storedBalance}</value>
+					<value>#{obj.posData.storedBalance}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -186,7 +186,7 @@
 		<locations description="位置">
 			<list>
 				<value>10</value>
-				<value>20</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="账单号">

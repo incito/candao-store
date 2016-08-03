@@ -2,11 +2,13 @@ package com.candao.www.webroom.service.impl;
 
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.candao.print.entity.PrintObj;
 
+@Scope(value="prototype")
 @Service
 public class Print4POSProcedure implements Runnable {
 

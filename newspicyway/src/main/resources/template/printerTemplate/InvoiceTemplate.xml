@@ -30,7 +30,7 @@
 		<datas description="账单类型">
 			<list>
 				<value>桌号：</value>
-				<value>#{obj.invoice.tableno}</value>
+				<value>#{obj.posData.tableno}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -47,7 +47,7 @@
 		<datas description="账单类型">
 			<list>
 				<value>账单号：</value>
-				<value>#{obj.invoice.orderid}</value>
+				<value>#{obj.posData.orderid}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -65,7 +65,7 @@
 		<datas description="账单类型">
 			<list>
 				<value>发票金额：</value>
-				<value>#{obj.invoice.payamount}</value>
+				<value>#{obj.posData.amount}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -83,7 +83,7 @@
 		<datas description="账单类型">
 			<list>
 				<value>发票抬头：</value>
-				<value>#{obj.invoice.title}</value>
+				<value>#{obj.posData.title}</value>
 			</list>
 		</datas>
 	</row:row>

@@ -18,24 +18,27 @@
 		</datas>
 	</row:row>
 
-	<row:row description="单据号">
-		<align description="对齐">ALIGN_CENTER</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="位置">
-			<list>
-				<value>3</value>
-				<value>6</value>
-				<value>3</value>
-			</list>
-		</locations>
-		<datas description="账单类型">
-			<list>
-				<value>---</value>
-				<value>#{obj.orderinfo.type}</value>
-				<value>---</value>
-			</list>
-		</datas>
-	</row:row>
+	<foreach:foreach item="it"
+		value="#{obj.settlementInfo4Pos.orderJson}">
+		<row:row description="单据号">
+			<align description="对齐">ALIGN_CENTER</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>3</value>
+					<value>6</value>
+					<value>3</value>
+				</list>
+			</locations>
+			<datas description="账单类型">
+				<list>
+					<value>---</value>
+					<value>#{it.type}</value>
+					<value>---</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
 
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
@@ -207,7 +210,7 @@
 			<datas description="账单号">
 				<list>
 					<value>MIS流水号：</value>
-					<value>#{it.serial}</value>
+					<value>#{it.orderid}</value>
 				</list>
 			</datas>
 		</row:row>
@@ -314,7 +317,7 @@
 		<locations description="位置">
 			<list>
 				<value>10</value>
-				<value>20</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="账单号">

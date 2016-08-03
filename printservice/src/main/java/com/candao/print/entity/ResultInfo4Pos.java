@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 public class ResultInfo4Pos implements Serializable {
-    private String resut;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3871597911587089090L;
+	private String resut;
     private TimeInfo time;
     private String mag;
     private List<DishItem> data;

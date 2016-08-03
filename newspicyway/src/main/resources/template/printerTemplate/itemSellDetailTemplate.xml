@@ -22,9 +22,9 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="位置">
 			<list>
-				<value>15</value>
-				<value>5</value>
-				<value>15</value>
+				<value>19</value>
+				<value>2</value>
+				<value>19</value>
 			</list>
 		</locations>
 		<datas description="账单类型">
@@ -55,16 +55,28 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="位置">
 			<list>
-				<value>6</value>
 				<value>10</value>
-				<value>6</value>
-				<value>15</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="账单号">
 			<list>
 				<value>门店编号：</value>
 				<value>#{obj.item.branchname}</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="单号">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="位置">
+			<list>
+				<value>10</value>
+				<value>30</value>
+			</list>
+		</locations>
+		<datas description="账单号">
+			<list>
 				<value>打印时间：</value>
 				<value>#{obj.item.datetime}</value>
 			</list>
@@ -90,14 +102,14 @@
 		<locations description="位置">
 			<list>
 				<value>5</value>
-				<value>15</value>
-				<value>5</value>
-				<value>15</value>
+				<value>18</value>
+				<value>7</value>
+				<value>10</value>
 			</list>
 		</locations>
 		<datas description="账单类型">
 			<list>
-				<value>序号:</value>
+				<value>序号</value>
 				<value>品项</value>
 				<value>数量</value>
 				<value>金额</value>
@@ -118,28 +130,27 @@
 			</list>
 		</datas>
 	</row:row>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.item}">
-	<row:row description="服务员">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="位置">
-			<list>
-				<value>5</value>
-				<value>15</value>
-				<value>5</value>
-				<value>15</value>
-			</list>
-		</locations>
-		<datas description="账单类型">
-			<list>
-				<value>#{it.index}</value>
-				<value>#{it.dishName}</value>
-				<value>#{it.dishCount}</value>
-				<value>#{it.totlePrice}</value>
-			</list>
-		</datas>
-	</row:row>
+	<foreach:foreach item="it" value="#{obj.item.data}">
+		<row:row description="服务员">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>5</value>
+					<value>18</value>
+					<value>7</value>
+					<value>10</value>
+				</list>
+			</locations>
+			<datas description="账单类型">
+				<list>
+					<value>#{it.index}</value>
+					<value>#{it.dishName}</value>
+					<value>#{it.dishCount}</value>
+					<value>#{it.totlePrice}</value>
+				</list>
+			</datas>
+		</row:row>
 	</foreach:foreach>
 	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>

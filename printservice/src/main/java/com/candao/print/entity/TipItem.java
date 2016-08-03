@@ -1,10 +1,16 @@
 package com.candao.print.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by liaoy on 2016/8/3.
  */
-public class TipItem {
-    private String waiterName;
+public class TipItem implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3694744087281332296L;
+	private String waiterName;
     private String serviceCount;
     private String tipMoney;
     private String index;
