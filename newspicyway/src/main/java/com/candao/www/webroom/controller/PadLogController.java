@@ -44,7 +44,7 @@ public class PadLogController extends BaseController{
   	    MultipartFile file = files.get(i);
   	    if (!file.isEmpty()) {
           String fileName = file.getOriginalFilename();
-          String dataDir = new Date().toLocaleString().substring(0, 9) ;// 按天生成目录
+          String dataDir = new Date().toLocaleString().replaceAll(" .*", "");// 按天生成目录
           File logfile = new File(LOG_HOME + dataDir + "/" + fileName);//文件名与pad日志文件名一致
           File fileDir = logfile.getParentFile();
           if(!fileDir.exists()){// 如果目录不存在 就创建目录
