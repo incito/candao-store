@@ -17,8 +17,6 @@
 			</list>
 		</datas>
 	</row:row>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单据号">
 			<align description="对齐">ALIGN_CENTER</align>
 			<font description="字体大小">SMALL</font>
@@ -31,13 +29,12 @@
 			</locations>
 			<datas description="账单类型">
 				<list>
-					<value>#{}</value>
-					<value>#{}</value>
-					<value>#{}</value>
+					<value>#{obj.tip.startTime}</value>
+					<value>至</value>
+					<value>#{obj.tip.endTime}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
 	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -52,8 +49,6 @@
 			</list>
 		</datas>
 	</row:row>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -68,13 +63,12 @@
 			<datas description="账单号">
 				<list>
 					<value>门店编号：</value>
-					<value>#{it.}</value>
+					<value>#{obj.tip.branchname}</value>
 					<value>当前时间</value>
-					<value>#{it.}</value>
+					<value>#{obj.tip.datetime}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
 	<row:row description="结束时间">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -110,7 +104,7 @@
 		</datas>
 	</row:row>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
+		value="#{obj.settlementInfo4Pos.tip}">
 		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -124,16 +118,14 @@
 			</locations>
 			<datas description="账单类型">
 				<list>
-					<value>#{}</value>
-					<value>#{}</value>
-					<value>#{}</value>
-					<value>#{}</value>
+					<value>#{it.index}</value>
+					<value>#{it.waiterName}</value>
+					<value>#{it.serviceCount}</value>
+					<value>#{it.tipMoney}</value>
 				</list>
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -146,9 +138,8 @@
 			<datas description="账单类型">
 				<list>
 					<value>合计:</value>
-					<value>#{it.}</value>
+					<value>#{obj.tip.}</value>
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
 </rows>
