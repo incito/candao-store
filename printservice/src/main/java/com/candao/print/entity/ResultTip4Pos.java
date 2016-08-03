@@ -37,7 +37,7 @@ public class ResultTip4Pos implements Serializable {
         return data;
     }
 
-    public void setData(List<DishItem> data) {
+    public void setData(List<TipItem> data) {
         this.data = data;
     }
 }
