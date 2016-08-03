@@ -386,7 +386,6 @@
   </dependencies>
   <modules>
   	<module>common</module>
-  	<module>fileservice</module>
   	<module>userservcie</module>
   	<module>printservice</module>
   	<module>newspicyway</module>
