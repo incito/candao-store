@@ -27,17 +27,7 @@
         </dependency>
         <dependency>
             <groupId>com.candao</groupId>
-            <artifactId>pinyin4j</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.candao</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.candao</groupId>
-            <artifactId>fileservice</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

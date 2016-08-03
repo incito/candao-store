@@ -294,7 +294,7 @@ public class PadInterfaceController {
         String result = "";
         Map<String, Object> res = orderDetailService.setOrderDetailList(order);
 //        POS下单通知PAD订单改变
-        if ("1".equals(order.getSource())) {
+        if ("2".equals(order.getSource())) {
             notifyService.notifyOrderChange(order.getOrderid());
         }
         logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
@@ -334,7 +334,7 @@ public class PadInterfaceController {
         } catch (Exception e) {
             logger.error("咖啡模式加菜失败！创建子订单失败", e);
             e.printStackTrace();
-            return Constant.FAILUREMSG;
+            return JSON.toJSONString(ReturnMap.getFailureMap("咖啡模式加菜失败！创建子订单失败"));
         }
         order.setOrderid(childrenOrderid);
 
