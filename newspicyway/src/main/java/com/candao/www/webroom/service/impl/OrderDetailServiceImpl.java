@@ -606,23 +606,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         return null;
     }
 
-    private Map<String, Object> getResult(String code, String msg, Object data) {
-        Map<String, Object> res = new HashMap<>();
-        res.put("result", code);
-        res.put("msg", msg);
-        res.put("data", data);
-        return res;
-    }
-
-    private Map<String, Object> getResult(String code, String msg, Object data, String orderid) {
-        Map<String, Object> res = new HashMap<>();
-        res.put("result", code);
-        res.put("msg", msg);
-        res.put("data", data);
-        res.put("orderid", orderid);
-        return res;
-    }
-
     /**
      * 咖啡模式下单
      * 1 下单不打单 2不操作餐台(外卖，咖啡外卖)
@@ -634,7 +617,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             if (StringUtils.isEmpty(orders.getOrderid())) {
                 log.info("-----------------------");
                 log.info("下单失败，参数失败，没有订单id");
-                return getResult("3", "参数错误，没有订单id", "");
+                return ReturnMap.getFailureMap("参数错误，没有订单id");
             }
 
             DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -649,10 +632,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 transactionManager.rollback(status);
                 if (null != orders.getRows() && !orders.getRows().isEmpty()) {
                     log.info("-->重复下单");
-                    return getResult("0", "下单成功", "");
+                    return ReturnMap.getSuccessMap("下单成功");
                 }
                 log.error("-->OrderDetail为空,orders.getRows()值为：" + orders.getRows());
-                return getResult("3", "订单中没有菜品", "");
+                return ReturnMap.getFailureMap("订单中没有菜品");
             }
             //通过餐台判断订单状态
             String tableNo = orders.getCurrenttableid();
@@ -661,23 +644,23 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             if (table == null) {
                 log.error("-->t_table表中该table为空，tableNo为：" + tableNo);
                 transactionManager.rollback(status);
-                return getResult("3", "查询不到该餐台", "");
+                return ReturnMap.getFailureMap("查询不到该餐台");
             }
             if (table.getTabletype() == null) {
                 log.error("-->t_table表中该tabletype为空，tableNo为：" + tableNo);
                 transactionManager.rollback(status);
-                return getResult("3", "查询不到该餐台", "");
+                return ReturnMap.getFailureMap("查询不到该餐台");
             }
 
             if (Constant.ORDERSTATUS.ORDER_STATUS != orderLock.getOrderstatus()) {
                 log.error("-->orderId为：" + orders.getOrderid());
                 transactionManager.rollback(status);
-                return getResult("3", "查询不到该订单", "");
+                return ReturnMap.getFailureMap("查询不到该订单");
             }
             if (!Constant.TABLETYPE.COFFEETABLE.equals(table.getTabletype()) && !TABLETYPE.TAKEOUT.equals(table.getTabletype()) && !TABLETYPE.TAKEOUT_COFFEE.equals(table.getTabletype())) {
                 log.error("-->orderId为：" + orders.getOrderid());
                 transactionManager.rollback(status);
-                return getResult("3", "查询不到该订单", "");
+                return ReturnMap.getFailureMap("查询不到该订单");
             }
             orders.setUserid(orderLock.getUserid());
 
@@ -687,18 +670,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             if (!"0".equals(code)) {
                 log.error("-->result为：" + 1);
                 transactionManager.rollback(status);
-                return getResult(code, result.get("msg"), "", orders.getOrderid());
+                return ReturnMap.getFailureMap(result.get("msg"), orders.getOrderid());
             }
             transactionManager.commit(status);
             log.info(orders.getOrderid() + "下单成功");
-            return getResult("0", "下单成功", "", orders.getOrderid());
+            return ReturnMap.getSuccessMap("下单成功", orders.getOrderid());
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
             if (null != status) {
                 transactionManager.rollback(status);
             }
-            return getResult("3", "服务器异常 ", "");
+            return ReturnMap.getFailureMap("服务器异常");
         }
 
     }
