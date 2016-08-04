@@ -5,4 +5,8 @@ package com.candao.www.dataserver.mapper;
  */
 public interface CaleTableAmountMapper {
     void pCaleTableAmount(String orderId);
+    
+    int updateOrderDetailPayAmount(String orderId); 
+    
+    int updateOrderDueAmount(String orderId); 
 }

@@ -35,6 +35,7 @@ import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.User;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
@@ -88,6 +89,8 @@ public class OrderServiceImpl implements OrderService{
 	OpenBizService  openBizService;
 	@Autowired
 	private NotifyService notifyService;
+	@Autowired
+    private OrderOpService orderOpService;
 
 	@Override
 	public int saveOrder(Torder order) {
@@ -677,6 +680,8 @@ public class OrderServiceImpl implements OrderService{
 				params.put("orderid", orderid);
 				//更新t_order_detail
 				flag=flag&&torderDetailMapper.updateDishWeight(params)>0;
+				//重新计算应收金额
+		        orderOpService.calcOrderAmount(orderid);
 				//更新t_printDish
 				params.put("orderno",orderid);
 				PrintObj printObj=tbPrintObjDao.find(params);

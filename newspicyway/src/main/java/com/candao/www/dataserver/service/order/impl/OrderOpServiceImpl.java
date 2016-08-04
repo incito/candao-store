@@ -82,19 +82,32 @@ public class OrderOpServiceImpl implements OrderOpService {
     @Override
     public String pCaleTableAmount(String aUserId, String orderId) {
         LOGGER.info("###pCaleTableAmount aUserId={}, orderId={}###", aUserId, orderId);
-        ResponseData responseData = new ResponseData();
-        try {
-            caleTableAmountMapper.pCaleTableAmount(orderId);
-        } catch (Exception e) {
-            responseData.setData("0");
-            responseData.setInfo("结算前计算帐单金额异常");
-            LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
-        }
+//        ResponseData responseData = new ResponseData();
+//        try {
+//            caleTableAmountMapper.pCaleTableAmount(orderId);
+//        } catch (Exception e) {
+//            responseData.setData("0");
+//            responseData.setInfo("结算前计算帐单金额异常");
+//            LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
+//        }
 //        return JSON.toJSONString(responseData);
-        return "1";
+        
+        //计算账单应收，不再调用存储过程
+        return calcOrderAmount(orderId);
     }
-
+    
     @Override
+	public String calcOrderAmount(String orderId) {
+    	caleTableAmountMapper.updateOrderDetailPayAmount(orderId);
+        int updated = caleTableAmountMapper.updateOrderDueAmount(orderId);
+        if(updated == 1){
+        	return "1";
+        }else{
+        	return "0";
+        }
+	}
+
+	@Override
     public String wmOrder(String orderId) {
         LOGGER.info("###wmOrder orderId={}###", orderId);
         ResponseData responseData = new ResponseData();

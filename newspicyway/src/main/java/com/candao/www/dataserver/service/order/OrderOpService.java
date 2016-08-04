@@ -14,6 +14,13 @@ public interface OrderOpService {
 
     //结算前计算帐单金额
     String pCaleTableAmount(String aUserId, String orderId);
+    
+    /**
+     * 计算订单应收金额
+     * @param orderId 订单号
+     * @return 1：成功，0：失败
+     */
+    String calcOrderAmount(String orderId);
 
     //标记帐单为外卖帐单
     String wmOrder(String orderId);

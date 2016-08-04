@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.www.data.model.TOrderMember;
 import com.candao.www.data.model.Torder;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.security.controller.BaseController;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.service.OrderService;
@@ -34,7 +35,9 @@ public class MemberController extends BaseController{
 	
 	@Autowired
 	private OrderMemberService orderMemberService ;
-	
+
+    @Autowired
+    private OrderOpService orderOpService;
 	
 	@RequestMapping("/MemberLogin")
 	@ResponseBody
@@ -56,6 +59,9 @@ public class MemberController extends BaseController{
 			params.put("orderid", orderid);
 			params.put("pricetype", 0);  //设置会员价
 			orderService.setOrderMember(params);
+
+	        //重新计算应收金额
+	        orderOpService.calcOrderAmount(orderid);
 			
 			resultmap = ReturnMap.getSuccessMap("会员登录成功");
 		}catch(Exception e){
@@ -87,7 +93,10 @@ public class MemberController extends BaseController{
 			params.put("orderid", orderid);
 			params.put("pricetype", 1);  //设置会员价
 			orderService.setOrderMember(params);
-			
+
+	        //重新计算应收金额
+	        orderOpService.calcOrderAmount(orderid);
+	        
 			resultmap = ReturnMap.getSuccessMap("会员退出成功");
 		}catch(Exception e){
 			logger.error("-->",e);
