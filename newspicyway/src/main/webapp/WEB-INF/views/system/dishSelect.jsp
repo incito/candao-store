@@ -230,11 +230,14 @@
 								return false;
 							}
 						});
-						if(!hasSelected){
+						if (!hasSelected) {
 							selectedDishs.push(d);
 						}
 					});
-				};
+				} else {
+					alert('互动礼物至少选择一个');
+					return false;
+				}
 
 				//显示在系统设置页面中
 				saveSelectedGifts(selectedDishs);

@@ -865,7 +865,7 @@
 	function saveGifts(selectedDishs){
 		$.post(global_Path+"/social/saveGift", {data: JSON.stringify(selectedDishs)}, function(result){
 			console.log(result);
-			if(result.flag == 1){
+			if(result.code == '001'){
 				saveGiftsToPage(selectedDishs);
 			}else{
 
