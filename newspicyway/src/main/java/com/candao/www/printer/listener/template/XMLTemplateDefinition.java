@@ -11,15 +11,14 @@ import org.springframework.util.CollectionUtils;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.Row;
 import com.candao.print.listener.template.impl.SimpleNormalDishTemplateImpl;
+import com.candao.www.printer.listener.XmlReaderContext;
 import com.candao.www.printer.listener.namespaceHandler.XmlNameSpaceHandler;
-import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
 
 public class XMLTemplateDefinition extends SimpleNormalDishTemplateImpl implements TemplateDefinition {
 
 	private String id;
 
 	private String classpath;
-	
 
 	private List<XmlNameSpaceHandler> handlers;
 	

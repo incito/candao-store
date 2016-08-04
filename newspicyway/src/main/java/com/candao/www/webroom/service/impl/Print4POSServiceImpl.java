@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -19,6 +20,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.candao.common.utils.Constant;
 import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.DishItem;
@@ -295,34 +298,84 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void printBusinessDetail(String... params) throws Exception {
+	public void printBusinessDetail(Map<String, Object> map, String... params) throws Exception {
 		Assert.noNullElements(params, "参数错误！");
 		Assert.state(params.length == 5, "前面接口错误");
 
 		Map<String, Object> posData = new HashMap<>();
+
+		Map<String, List<Map<String, Object>>> itemList = JSON.parseObject(params[0], Map.class);
+
+		Map<String, List<Map<String, Object>>> preferList = JSON.parseObject(params[1], Map.class);
+
+		Map<String, List<Map<String, Object>>> billCountList = JSON.parseObject(params[3], Map.class);
+
+		Map<String, List<Map<String, Object>>> dayReportList = JSON.parseObject(params[2], Map.class);
+
+		Map<String, Object> tipList = JSON.parseObject(params[4], Map.class);
+
+		if (!MapUtils.isEmpty(billCountList)) {
+			billCountList.get("resultList");
+		}
+		// 品项
+		posData.put("item", itemList.get("result"));
+		// 券
+		posData.put("prefer", preferList.get("CouponsReptList"));
+		// 明细
+		posData.put("billCount", billCountList.get("resultList"));
+		// 营业报表
+		posData.put("dayReport", dayReportList.get("reportlist").get(0));
+		// POS人员确认写死
+		List<Map<String, Object>> fixedPreferList = generatePreferList(dayReportList.get("reportlist").get(0));
+		posData.put("fixedPrefer", fixedPreferList);
+		List<Map<String, Object>> fixedSettlementList = generateSettlementList(dayReportList.get("reportlist").get(0));
+		posData.put("fixedSettlemen", fixedSettlementList);
+
+		// 消费金额
+		posData.put("tip", tipList.get("tipMoney"));
 		
-		List<Map<String, Object>> itemList = JSON.parseObject(params[0], List.class);
-		
-		List<Map<String, Object>> preferList = JSON.parseObject(params[1], List.class);
-		
-		
-		
-		
-//		for (int i = 0; i < params.length; i++) {
-//			Map<String, Object> temp = JSON.parseObject(params[i], Map.class);
-//			posData.putAll(temp);
-//		}
-		
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		map.put("date", sdf.format(date));
+		// POS传参
+		posData.put("params", map);
+
 		Assert.notEmpty(posData);
-		
+
 		PrintObj obj = new PrintObj();
 		obj.setPosData(posData);
 		obj.setListenerType(Constant.ListenerType.BillDetailTemplate);
-
 		// TODO
 		Map<String, Object> param = new HashMap<>();
 		param.put("printertype", "10");
 		sendToPrint(param, obj);
-		
+	}
+
+	private List<Map<String, Object>> generatePreferList(Map<String, Object> map) {
+		Assert.notEmpty(map, "固定优惠不能为空");
+		List<Map<String, Object>> res = new LinkedList<>();
+		String[] name = {"优免","会员积分消费","会员券消费","折扣优惠","抹零","赠送金额","四舍五入","会员储值消费虚增"}; 
+		String[] valueName = {"bastfree","integralconsum","meberTicket","discountmoney","malingincom","give","handervalue","mebervalueadd"};
+		for (int i = 0; i < name.length; i++) {
+			Map<String, Object> temp = new HashMap<>();
+			temp.put("name", name[i]);
+			temp.put("value",map.get(valueName[i]));
+			res.add(temp);
+		}
+		return res;
+	}
+	
+	private List<Map<String, Object>> generateSettlementList(Map<String, Object> map) {
+		Assert.notEmpty(map, "固定结算信息不能为空");
+		List<Map<String, Object>> res = new LinkedList<>();
+		String[] name = {"现金","挂账","微信","支付宝","刷卡-工行","刷卡-他行","会员储值消费净值"}; 
+		String[] valueName = {"money","card","weixin","zhifubao","icbc","otherbank","merbervaluenet"};
+		for (int i = 0; i < name.length; i++) {
+			Map<String, Object> temp = new HashMap<>();
+			temp.put("name", name[i]);
+			temp.put("value", map.get(valueName[i]));
+			res.add(temp);
+		}
+		return res;
 	}
 }

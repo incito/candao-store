@@ -104,7 +104,7 @@ public class XmlTemplateLoader {
 	}
 
 	public void loadDocument() throws Exception {
-		//TODO 校验格式
+		// TODO 校验格式
 		DocumentBuilderFactory factory = createDocumentBuilderFactory(XmlValidationModeDetector.VALIDATION_NONE, true);
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		if (!CollectionUtils.isEmpty(inputStreams)) {
@@ -124,11 +124,9 @@ public class XmlTemplateLoader {
 		if (validationMode != XmlValidationModeDetector.VALIDATION_NONE) {
 			factory.setValidating(true);
 		}
-
 		if (validationMode == XmlValidationModeDetector.VALIDATION_XSD) {
 			factory.setNamespaceAware(true);
 		}
-
 		return factory;
 	}
 
