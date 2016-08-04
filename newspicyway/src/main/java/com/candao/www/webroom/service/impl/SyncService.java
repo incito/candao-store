@@ -206,7 +206,9 @@ public class SyncService {
                     } else if (value instanceof Number) {
                         sbf.append(value).append(",");
                     } else {
-                        sbf.append("'").append(value).append("',");
+                        // 增加单引号转义
+                        String vstr = value.toString().replaceAll("'", "\'");
+                        sbf.append("'").append(vstr).append("',");
                     }
                 }
                 sbf.delete(sbf.length() - 1, sbf.length()).append("),");
