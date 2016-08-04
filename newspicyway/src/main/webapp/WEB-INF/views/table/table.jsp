@@ -138,7 +138,8 @@
 										  <input type="text" name="minprice" id="minprice"   aria-describedby="basic-addon1"      maxlength="8" onkeyup="oneDecimal(this,2,8,99999.99);"  class="form-control "></input>
 										   <span class="input-group-addon">元</span>
 
-									</div>		
+									</div>
+									<font color="red" id="minConsu_tip" class="error">必须大于0</font>
 								</div>
 							</div>
 							<div class="form-group disabled-input counter-input-select">
@@ -148,7 +149,8 @@
 										  <input type="text" name="fixprice" id="fixprice"    aria-describedby="basic-addon1"    maxlength="8" onkeyup="oneDecimal(this,2,8,99999.99);"  class="form-control "></input>
 										   <span class="input-group-addon">元</span>
 
-									</div>					
+									</div>
+									<font color="red" id="fixConsu_tip" class="error">必须大于0</font>
 								</div>
 							</div>
 					

@@ -259,7 +259,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<div class="modal-title">
-						<span>新增</span> <img
+						<span>查看</span> <img
 							src="<%=request.getContextPath()%>/images/close.png"
 							class="img-close" data-dismiss="modal" />
 					</div>

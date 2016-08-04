@@ -59,7 +59,18 @@ $(document).ready(function(){
 						$("#tableName").focus();
 						$("#tableName").addClass("error");
 						vcheck = false;
-					} 
+					}
+
+					if($("#minp").is(":checked") && ($('#minprice').val() === '0' ||  $('#minprice').val() === '')) {
+						vcheck = false;
+						$('#minConsu_tip').text('必须大于0');
+					}
+
+					if($("#fixp").is(":checked") && ($('#fixprice').val() === '0' ||  $('#fixprice').val() === '')) {
+						vcheck = false;
+						$('#fixConsu_tip').text('必须大于0');
+					}
+
 					
 					if (vcheck) {
 						if(check_validate()){
@@ -700,6 +711,8 @@ function init_object(){
 	$("#tableid").val("");
 	$("#tableName_tip").text("");
 	$("#personNum_tip").text("");
+	$('#minConsu_tip').text("");
+	$('#fixConsu_tip').text("");
 	$("#tabletype").val("");
 	$("#tableName").val("");
 	$("#personNum").val("");
@@ -775,7 +788,8 @@ function editArea(id){
 	$.ajax({
 		type : "post",
 		async : false,
-		url : global_Path+"/tableArea/findById/"+str+".json",			dataType : "json",
+		url : global_Path+"/tableArea/findById/"+str+".json",
+			dataType : "json",
 		success : function(result) {
 			$("#areaidB").val(result.areaid);					
 			$("#areanameB").val(result.areaname);		
@@ -903,6 +917,7 @@ function checkit(isChecked,id){
 		 $("."+id+"CheckboxSpan").css({"color": "#282828"});
 	 }
 	 else{
+		 $("#"+id+"rice").val('');
 		 $("#"+id+"rice").attr("disabled","disabled");
 		 $("#"+id+"rice").next("span").css({"color": "#CECECE"});
 		 $("."+id+"CheckboxSpan").css({"color": " #CECECE"});

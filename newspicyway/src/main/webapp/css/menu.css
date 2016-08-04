@@ -587,7 +587,7 @@
 	padding-top:3%;/*7寸：5%*/
 	position: absolute;
 	background:#45423f;
-	z-index:9999;
+	z-index:999;
 	top:45%;
 	text-align: center;
 	opacity: 0.8;
@@ -599,7 +599,7 @@
 	padding-top:3%;/*7寸：5%*/
 	position: absolute;
 	background:#45423f;
-	z-index:9999;
+	z-index:999;
 	top:45%;
 	left: 93.2%;/*7寸：92.4%*/
 	text-align: center;

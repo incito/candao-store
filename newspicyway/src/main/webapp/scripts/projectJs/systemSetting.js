@@ -957,7 +957,7 @@ function initResponsetime(){
  */
 function getAllGifts(){
 	$.get(global_Path + "/social/getGiftList.json", function(result){
-		if(result.flag == 1){
+		if(result.code == '0'){
 			var data = result.data;
 			if(data!=null && data.length>0){
 				showAllGifts(data);
