@@ -1101,6 +1101,7 @@
 		t_p_preferential_activity tpa,t_p_preferential_detail tpd where tpa.id
 		= tpd.preferential
 		and tpa.apply_all = 1
+		and tpa.status&lt;&gt;1
 		and tpa.type='08'
 		and
 		tpd.can_credit = 1
