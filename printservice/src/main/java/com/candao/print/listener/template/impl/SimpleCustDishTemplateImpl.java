@@ -109,7 +109,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 	@Override
 	public Object[] getPrinterPortMsg(PrintObj obj) throws Exception {
 		String[] portName = { "(" + obj.getPrintName() + ")" };
-		Integer[] len = { 21 };
+		Integer[] len = { 9 };
 		String[] temp = StringUtils.getLineFeedText(portName, len);
 		trim(temp);
 		return temp;
@@ -131,7 +131,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		return new String[]{abbrName,ordersq,timestamp};
 	}
 	
-	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {{
 		Object[] res = null;
 		List<PrintDish> list = object.getList();
 
@@ -181,7 +181,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		}
 
 		return res;
-	}
+	}}
 
 	class Template{
 		private int tableLength;
