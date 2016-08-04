@@ -10,7 +10,6 @@ import com.candao.www.dataserver.controller.StoreInterfaceController;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.webroom.service.Print4POSService;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,8 +56,6 @@ public class Print4POSController {
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final static String RESULT = "result";
-	@Autowired
-	private ItemDetailController iteminfo;
 	@Autowired
 	private PreferentialAnalysisChartsController prefertialinfo;
 	@Autowired
@@ -129,21 +126,6 @@ public class Print4POSController {
 		return getResponseMsg("", "", flag);
 	}
 
-	/**
-	 * 会员接口
-	 *
-	 * @param aUserId
-	 * @param orderId
-	 * @return
-	 */
-	@RequestMapping(value = "/StoreCardToNewPos", produces = { "application/json;charset=UTF-8" })
-	@ResponseBody
-	public String StoreCardToNewPos(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId) {
-		// TODO 会员接口，需要联调
-		boolean flag = true;
-		return getResponseMsg("", "", flag);
-	}
-
 	private String parseDSJson(String src) {
 		if (StringUtil.isEmpty(src)) {
 			return null;
@@ -160,7 +142,7 @@ public class Print4POSController {
 	 *
 	 * @return
 	 */
-	@RequestMapping("/getItemSellDetail.json")
+	@RequestMapping("/getItemSellDetail")
 	@ResponseBody
 	public String getItemSellDetail(String flag) {
 		// TODO
@@ -209,7 +191,7 @@ public class Print4POSController {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping("/printInvoice.json")
+	@RequestMapping("/printInvoice")
 	@ResponseBody
 	public String printInvoice(@RequestBody String param) {
 		boolean sucess = true;
@@ -234,7 +216,7 @@ public class Print4POSController {
 	 * @param params
 	 * @return
 	 */
-	@RequestMapping("/StoreCardToNewPos.json")
+	@RequestMapping("/StoreCardToNewPos")
 	@ResponseBody
 	public String StoreCardToNewPos(@RequestBody String param) {
 		boolean sucess = true;

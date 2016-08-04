@@ -206,14 +206,10 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 			} else if (temp.getClass().isArray()) {
 				throw new Exception("不能解析数组");
 			} else {
-				try {
-					Field fields;
-					fields = temp.getClass().getDeclaredField(pros[j]);
-					fields.setAccessible(true);
-					temp = fields.get(temp);
-				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
-				}
+				Field fields;
+				fields = temp.getClass().getDeclaredField(pros[j]);
+				fields.setAccessible(true);
+				temp = fields.get(temp);
 			}
 		}
 		return temp;

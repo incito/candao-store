@@ -1191,7 +1191,7 @@ function initPrinter(){
 	
 }
 function getPrintBillTag(){
-	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},{'value':'3','printBillName':'预结单'},{'value':'4','printBillName':'结账单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'}];
+	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},{'value':'3','printBillName':'预结单'},{'value':'4','printBillName':'结账单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'},{'value':'10','printBillName':'POS单据'}];
 	
 	
 			$.each(result, function(i,val){  
