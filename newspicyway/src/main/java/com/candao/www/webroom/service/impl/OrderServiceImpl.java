@@ -678,7 +678,9 @@ public class OrderServiceImpl implements OrderService{
 				//更新t_order_detail
 				flag=flag&&torderDetailMapper.updateDishWeight(params)>0;
 				//更新t_printDish
+				params.put("orderno",orderid);
 				PrintObj printObj=tbPrintObjDao.find(params);
+				params.remove("orderno");
 				if(printObj!=null){
 					params.put("printobjid", printObj.getId());
 					flag=flag&&tbPrintObjDao.updateDishWeight(params)>0;
