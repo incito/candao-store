@@ -63,7 +63,7 @@ public class SqlDataSyn   {
 		   if(count > 0){
 //			       备份已经估清的菜品
 			   List<TtemplateDishUnit> dishUnits = ttemplateDishUnitlDao.getTtemplateDishUnitByStatus();
-			   logger.info("---->自动同步，备份已经估清的菜品:"+dishUnits.size()+"份");
+			   logger.info("---->自动同步，备份当前菜谱已经估清的菜品:"+dishUnits.size()+"份");
 			   
 			   Map<String, Object> mapParam = new HashMap<String, Object>();
 		       mapParam.put("id", null);

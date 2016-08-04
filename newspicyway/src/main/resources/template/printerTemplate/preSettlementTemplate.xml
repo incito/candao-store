@@ -28,7 +28,7 @@
 		</locations>
 		<datas description="账单类型">
 			<list>
-				<value>结账单</value>
+				<value>预结单</value>
 			</list>
 		</datas>
 	</row:row>

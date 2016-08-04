@@ -78,6 +78,8 @@ public class PrintObj implements Serializable,Cloneable {
     private ResultInfo4Pos item;
     
     private ResultTip4Pos tip;
+    
+    private Map<String, Object> posData;
 	
 	
 	public String getPrintName() {
@@ -334,5 +336,13 @@ public class PrintObj implements Serializable,Cloneable {
 
 	public void setTip(ResultTip4Pos resultTip4Pos) {
 		this.tip = resultTip4Pos;
+	}
+
+	public Map<String, Object> getPosData() {
+		return posData;
+	}
+
+	public void setPosData(Map<String, Object> posData) {
+		this.posData = posData;
 	}
 }

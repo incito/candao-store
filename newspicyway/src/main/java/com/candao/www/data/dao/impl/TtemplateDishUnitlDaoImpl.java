@@ -58,6 +58,9 @@ public class TtemplateDishUnitlDaoImpl implements TtemplateDishUnitlDao {
 		return daoSupport.find(PREFIX+".getTtemplatefishpotUnitByparams", params);
 	}
 
+	/**
+	 * 查询当前菜谱中已经估清的菜品
+	 */
 	@Override
 	public List<TtemplateDishUnit> getTtemplateDishUnitByStatus() {
 		Map<String, Object> params = new HashMap<>();

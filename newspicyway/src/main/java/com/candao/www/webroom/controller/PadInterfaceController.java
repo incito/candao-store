@@ -334,7 +334,7 @@ public class PadInterfaceController {
         } catch (Exception e) {
             logger.error("咖啡模式加菜失败！创建子订单失败", e);
             e.printStackTrace();
-            return Constant.FAILUREMSG;
+            return JSON.toJSONString(ReturnMap.getFailureMap("咖啡模式加菜失败！创建子订单失败"));
         }
         order.setOrderid(childrenOrderid);
 

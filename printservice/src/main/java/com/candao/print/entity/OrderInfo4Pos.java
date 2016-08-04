@@ -2,7 +2,7 @@ package com.candao.print.entity;
 
 import java.io.Serializable;
 
-public class OrderInfo4Pos implements Serializable {
+public class OrderInfo4Pos implements Serializable,Cloneable{
 
     /**
      *
@@ -28,6 +28,7 @@ public class OrderInfo4Pos implements Serializable {
     private String storedbalance;
     private String terminal;
     private String valid;
+    private String batchno;
 
     private String totalMoney;
     private String accountsReceivableTotal;
@@ -64,6 +65,10 @@ public class OrderInfo4Pos implements Serializable {
     private String todayTurnover;
     private String vIn;
     private String vOut;
+    
+    private String tRFoodMoney;
+    
+    private String tipTotalAmount;
 
     private String ageperiod;
 
@@ -164,12 +169,16 @@ public class OrderInfo4Pos implements Serializable {
     private String wipeamount;
 
     private String womanNum;
-
+    
+    private String removeMoney;
+    
     private String workdate;
 
     private String ymamount;
 
     private String zdAmount;
+    
+    private String accountsReceivableSubtotal;
 
     public String getAgeperiod() {
         return ageperiod;
@@ -779,67 +788,67 @@ public class OrderInfo4Pos implements Serializable {
         this.serviceMoney = serviceMoney;
     }
 
-    public String gettBeginPeople() {
+    public String getTBeginPeople() {
         return tBeginPeople;
     }
 
-    public void settBeginPeople(String tBeginPeople) {
+    public void setTBeginPeople(String tBeginPeople) {
         this.tBeginPeople = tBeginPeople;
     }
 
-    public String gettClosingPeople() {
+    public String getTClosingPeople() {
         return tClosingPeople;
     }
 
-    public void settClosingPeople(String tClosingPeople) {
+    public void setTClosingPeople(String tClosingPeople) {
         this.tClosingPeople = tClosingPeople;
     }
 
-    public String gettBeginTableTotal() {
+    public String getTBeginTableTotal() {
         return tBeginTableTotal;
     }
 
-    public void settBeginTableTotal(String tBeginTableTotal) {
+    public void setTBeginTableTotal(String tBeginTableTotal) {
         this.tBeginTableTotal = tBeginTableTotal;
     }
 
-    public String gettClosingTable() {
+    public String getTClosingTable() {
         return tClosingTable;
     }
 
-    public void settClosingTable(String tClosingTable) {
+    public void setTClosingTable(String tClosingTable) {
         this.tClosingTable = tClosingTable;
     }
 
-    public String gettNonClosingDeposit() {
+    public String getTNonClosingDeposit() {
         return tNonClosingDeposit;
     }
 
-    public void settNonClosingDeposit(String tNonClosingDeposit) {
+    public void setTNonClosingDeposit(String tNonClosingDeposit) {
         this.tNonClosingDeposit = tNonClosingDeposit;
     }
 
-    public String gettNonClosingMoney() {
+    public String getTNonClosingMoney() {
         return tNonClosingMoney;
     }
 
-    public void settNonClosingMoney(String tNonClosingMoney) {
+    public void setTNonClosingMoney(String tNonClosingMoney) {
         this.tNonClosingMoney = tNonClosingMoney;
     }
 
-    public String gettNonClosingTable() {
+    public String getTNonClosingTable() {
         return tNonClosingTable;
     }
 
-    public void settNonClosingTable(String tNonClosingTable) {
+    public void setTNonClosingTable(String tNonClosingTable) {
         this.tNonClosingTable = tNonClosingTable;
     }
 
-    public String gettPresentedMoney() {
+    public String getTPresentedMoney() {
         return tPresentedMoney;
     }
 
-    public void settPresentedMoney(String tPresentedMoney) {
+    public void setTPresentedMoney(String tPresentedMoney) {
         this.tPresentedMoney = tPresentedMoney;
     }
 
@@ -859,19 +868,19 @@ public class OrderInfo4Pos implements Serializable {
         this.todayTurnover = todayTurnover;
     }
 
-    public String getvIn() {
+    public String getVIn() {
         return vIn;
     }
 
-    public void setvIn(String vIn) {
+    public void setVIn(String vIn) {
         this.vIn = vIn;
     }
 
-    public String getvOut() {
+    public String getVOut() {
         return vOut;
     }
 
-    public void setvOut(String vOut) {
+    public void setVOut(String vOut) {
         this.vOut = vOut;
     }
 
@@ -1017,5 +1026,50 @@ public class OrderInfo4Pos implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getTRFoodMoney() {
+		return tRFoodMoney;
+	}
+
+	public void setTRFoodMoney(String tRFoodMoney) {
+		this.tRFoodMoney = tRFoodMoney;
+	}
+
+	public String getTipTotalAmount() {
+		return tipTotalAmount;
+	}
+
+	public void setTipTotalAmount(String tipTotalAmount) {
+		this.tipTotalAmount = tipTotalAmount;
+	}
+
+	public String getAccountsReceivableSubtotal() {
+		return accountsReceivableSubtotal;
+	}
+
+	public void setAccountsReceivableSubtotal(String accountsReceivableSubtotal) {
+		this.accountsReceivableSubtotal = accountsReceivableSubtotal;
+	}
+
+	public String getRemoveMoney() {
+		return removeMoney;
+	}
+
+	public void setRemoveMoney(String removeMoney) {
+		this.removeMoney = removeMoney;
+	}
+
+	public String getBatchno() {
+		return batchno;
+	}
+
+	public void setBatchno(String batchno) {
+		this.batchno = batchno;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

@@ -30,7 +30,7 @@ import java.util.*;
  */
 @Service
 public class BusinessServiceImpl implements BusinessService {
-	 private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BusinessServiceImpl.class);
+    private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BusinessServiceImpl.class);
 
     @Autowired
     private OrderDetailMapper orderDetailMapper;
@@ -326,7 +326,7 @@ public class BusinessServiceImpl implements BusinessService {
         HashMap<String, Object> param = new HashMap<>();
         logger.info("调用procEndWork");
         openLogMapper.procEndWork(param);
-        logger.info("调用procEndWork返回值："+JacksonJsonMapper.objectToJson(param));
+        logger.info("调用procEndWork返回值：" + JacksonJsonMapper.objectToJson(param));
         long endfinish = (long) param.get("endfinish");
         if (endfinish != 1) {
             return "{\"Data\":\"0\",\"workdate\":\"" + workDateStr + "\",\"Info\":\"存储过程执行失败!\"}";
@@ -446,12 +446,12 @@ public class BusinessServiceImpl implements BusinessService {
         memberService.revertMemberPrice(userId, orderId);
         dishService.updateCj(orderId, userId);
         if (StringUtil.isEmpty(orderId)) {
-            return "{\"Data\":\"0\"}";
+            return "[]";
         }
         orderOpService.pCaleTableAmount(userId, orderId);
         List<Map<String, Object>> tableOrder = orderMapper.selectTableOrder(orderId);
 
-        return "{\"Data\":" + JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero) + "}";
+        return JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero);
     }
 
     ;

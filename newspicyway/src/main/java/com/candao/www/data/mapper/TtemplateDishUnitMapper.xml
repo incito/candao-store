@@ -111,7 +111,8 @@
 	<select id="getTtemplateDishUnitByStatus" parameterType="map" resultType="com.candao.www.data.model.TtemplateDishUnit">
 		SELECT id, dishid, menuid, dishname, dishintroduction, unit, price, vipprice,status,recommend,sort
 		FROM t_template_dishunit
-		WHERE status = #{status};
+		WHERE status = #{status}
+		AND menuid = (select menuid from v_currmenu)
 	</select>
 	
 	<update id="updateStatus" parameterType="map">

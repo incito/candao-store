@@ -3,6 +3,7 @@ package com.candao.www.printer.listener.namespaceHandler.impl;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import com.candao.print.entity.Row;
 import com.candao.www.printer.listener.namespaceHandler.XmlNameSpaceHandler;
 import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
 import com.candao.www.utils.CloneUtil;
+
+import groovyjarjarasm.asm.commons.Method;
 
 public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 
@@ -41,13 +44,13 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 	private Field[] fields;
 
 	public Row row;
-	
+
 	public Row data;
 
 	private ListNamespaceHandler listNamespaceHandler;
 
 	public static final String ROW = "row";
-	
+
 	public static final String ROW_TAG_NAME = "row:row";
 
 	private final Log log = LogFactory.getLog(getClass());
@@ -101,10 +104,10 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		}
 	}
 
-	public void setRowDefine(Row row){
+	public void setRowDefine(Row row) {
 		this.row = row;
 	}
-	
+
 	protected Object resolveType(Field field, Object value) {
 		// TODO
 		if (field == null || value == null) {
@@ -147,6 +150,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		}
 		return row;
 	}
+
 	private Row getData() throws Exception {
 		if (data == null) {
 			data = (Row) CloneUtil.clone(getRowDefine(), CLONE_LEVER);
@@ -210,10 +214,22 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		}
 		Object temp = obj;
 		for (int j = fromindex; j < pros.length; j++) {
-			Field fields;
-			fields = temp.getClass().getDeclaredField(pros[j]);
-			fields.setAccessible(true);
-			temp = fields.get(temp);
+			if (Map.class.isAssignableFrom(temp.getClass())) {
+				temp = ((Map)temp).get(pros[j]);
+			} else if (Collection.class.isAssignableFrom(temp.getClass())) {
+				throw new Exception("不能解析集合");
+			} else if (temp.getClass().isArray()) {
+				throw new Exception("不能解析数组");
+			} else {
+				try {
+					Field fields;
+					fields = temp.getClass().getDeclaredField(pros[j]);
+					fields.setAccessible(true);
+					temp = fields.get(temp);
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return temp;
 	}

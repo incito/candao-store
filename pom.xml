@@ -372,19 +372,22 @@
 			<version>20141113</version>
 		</dependency>
 
-<dependency>
-	<groupId>org.apache.activemq</groupId>
-	<artifactId>activemq-pool</artifactId>
-	<version>5.11.1</version>
-</dependency>
-
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-pool</artifactId>
+			<version>5.11.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.belerweb</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>2.5.0</version>
+		</dependency>
   </dependencies>
   <modules>
   	<module>common</module>
-  	<module>fileservice</module>
   	<module>userservcie</module>
   	<module>printservice</module>
   	<module>newspicyway</module>
-    <module>pinyin4j</module>
   </modules>
 </project>

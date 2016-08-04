@@ -11,11 +11,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.Constant;
 import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.DishItem;
@@ -26,8 +29,15 @@ import com.candao.print.entity.ResultTip4Pos;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.print.entity.TipItem;
 import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.data.model.TbTable;
+import com.candao.www.data.model.Tinvoice;
+import com.candao.www.spring.SpringContext;
+import com.candao.www.utils.CloneUtil;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.InvoiceService;
+import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.Print4POSService;
+import com.candao.www.webroom.service.TableService;
 
 @Service
 public class Print4POSServiceImpl implements Print4POSService {
@@ -44,8 +54,8 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,
 			new ArrayBlockingQueue<Runnable>(5000));
-	@Autowired
-	private Print4POSProcedure print4POSProcedure;
+
+	// private Print4POSProcedure print4POSProcedure;
 	@Autowired
 	TbPrinterManagerDao tbPrinterManagerDao;
 	@Autowired
@@ -54,6 +64,12 @@ public class Print4POSServiceImpl implements Print4POSService {
 	private DataDictionaryService dataDictionaryService;
 	@Autowired
 	private OrderDetailServiceImpl orderDetail;
+	@Autowired
+	private InvoiceService invoiceinfo;
+	@Autowired
+	private OrderService orderService;
+	@Autowired
+	private TableService tableService;
 
 	@Override
 	public void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception {
@@ -109,6 +125,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 		}
 		PrintObj obj = new PrintObj();
 		obj.setSettlementInfo4Pos(settlementInfos.get(0));
+		obj.setListenerType(Constant.ListenerType.ClearMachineDataTemplate);
 
 		// TODO
 		Map<String, Object> params = new HashMap<>();
@@ -117,15 +134,18 @@ public class Print4POSServiceImpl implements Print4POSService {
 	}
 
 	@Override
-	public void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos) {
+	public void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos) throws Exception {
 		if (CollectionUtils.isEmpty(settlementInfos)) {
 			return;
 		}
 		String[] types = { MEMBERSALEINFO_CUST, MEMBERSALEINFO_STORE };
-		PrintObj obj = new PrintObj();
-		SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
 		for (int i = 0; i < types.length; i++) {
-			settlementInfo4Pos.getOrderJson().get(0).setType(types[i]);
+			PrintObj obj = new PrintObj();
+			obj.setListenerType(Constant.ListenerType.MemberSaleInfoTemplate);
+			SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
+			OrderInfo4Pos temp = (OrderInfo4Pos) settlementInfo4Pos.getOrderJson().get(0).clone();
+			temp.setType(types[i]);
+			settlementInfo4Pos.getOrderJson().set(0, temp);
 			obj.setSettlementInfo4Pos(settlementInfo4Pos);
 			Map<String, Object> params = new HashMap<>();
 			params.put("printertype", "10");
@@ -146,6 +166,8 @@ public class Print4POSServiceImpl implements Print4POSService {
 			Map<String, Object> map = res.get(i);
 			obj.setPrinterid(String.valueOf(map.get("printerid")));
 			obj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress")));
+			Print4POSProcedure print4POSProcedure = (Print4POSProcedure) SpringContext
+					.getBean(Print4POSProcedure.class);
 			print4POSProcedure.setSource(obj);
 			executor.execute(print4POSProcedure);
 		}
@@ -174,10 +196,11 @@ public class Print4POSServiceImpl implements Print4POSService {
 			}
 		}
 		resultInfo4Pos.setTotal(total);
-		
+
 		PrintObj obj = new PrintObj();
 		obj.setItem(resultInfo4Pos);
-		
+		obj.setListenerType(Constant.ListenerType.ItemSellDetailTemplate);
+
 		// TODO
 		Map<String, Object> params = new HashMap<>();
 		params.put("printertype", "10");
@@ -213,13 +236,93 @@ public class Print4POSServiceImpl implements Print4POSService {
 			}
 		}
 		resultInfo4Pos.setTotal(total);
-		
+
 		PrintObj obj = new PrintObj();
 		obj.setTip(resultInfo4Pos);
-		
+		obj.setListenerType(Constant.ListenerType.TipListTemplate);
+
 		// TODO
 		Map<String, Object> params = new HashMap<>();
 		params.put("printertype", "10");
 		sendToPrint(params, obj);
+	}
+
+	@Override
+	public void printInvoice(Map<String, Object> map) throws Exception {
+		Assert.notEmpty(map);
+		if (!map.containsKey("orderid")) {
+			throw new Exception("参数错误");
+		}
+		List<Tinvoice> inList = invoiceinfo.findInvoiceByOrderid(map);
+		Assert.notEmpty(inList);
+		Map<String, Object> order = orderService.findOrderById(String.valueOf(map.get("orderid")));
+		Assert.notEmpty(order, "找不到该订单");
+		TbTable table = tableService.findById(String.valueOf(order.get("currenttableid")));
+
+		Map<String, Object> posData = new HashMap<>();
+		posData.put("tableno", table.getTableNo());
+		posData.put("orderid", order.get("orderid"));
+		posData.put("title", inList.get(0).getInvoice_title());
+		posData.put("amount", map.get("amount"));
+
+		PrintObj obj = new PrintObj();
+		obj.setPosData(posData);
+		obj.setListenerType(Constant.ListenerType.InvoiceTemplate);
+
+		// TODO
+		Map<String, Object> params = new HashMap<>();
+		params.put("printertype", "10");
+		sendToPrint(params, obj);
+	}
+
+	@Override
+	public void printStoredCard(Map<String, Object> map) throws Exception {
+		Assert.notEmpty(map);
+
+		String[] types = { MEMBERSALEINFO_CUST, MEMBERSALEINFO_STORE };
+		for (int i = 0; i < types.length; i++) {
+			PrintObj obj = new PrintObj();
+			obj.setListenerType(Constant.ListenerType.StoreCardToNewPosTemplate);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> temp = (Map<String, Object>) CloneUtil.clone(map, -1);
+			temp.put("type", types[i]);
+			obj.setPosData(temp);
+			Map<String, Object> params = new HashMap<>();
+			params.put("printertype", "10");
+			sendToPrint(params, obj);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void printBusinessDetail(String... params) throws Exception {
+		Assert.noNullElements(params, "参数错误！");
+		Assert.state(params.length == 5, "前面接口错误");
+
+		Map<String, Object> posData = new HashMap<>();
+		
+		List<Map<String, Object>> itemList = JSON.parseObject(params[0], List.class);
+		
+		List<Map<String, Object>> preferList = JSON.parseObject(params[1], List.class);
+		
+		
+		
+		
+//		for (int i = 0; i < params.length; i++) {
+//			Map<String, Object> temp = JSON.parseObject(params[i], Map.class);
+//			posData.putAll(temp);
+//		}
+		
+		Assert.notEmpty(posData);
+		
+		PrintObj obj = new PrintObj();
+		obj.setPosData(posData);
+		obj.setListenerType(Constant.ListenerType.BillDetailTemplate);
+
+		// TODO
+		Map<String, Object> param = new HashMap<>();
+		param.put("printertype", "10");
+		sendToPrint(param, obj);
+		
 	}
 }

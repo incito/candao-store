@@ -66,18 +66,19 @@ public class StringUtil {
 	}
 
 	public static String unicodeTOUtf8(String src) {
-		StringBuilder res = new StringBuilder();
-		if (src.contains("\\u")) {
-			String[] bb = StringUtils.delimitedListToStringArray(src, "\\u");
-			bb = (String[]) ArrayUtils.remove(bb, 0);
-			for (int i = 0; i < bb.length; i++) {
-				char a = (char) Integer.parseInt(bb[i], 16);
-				res.append(new Character(a).toString());
-			}
-		}
+//		StringBuilder res = new StringBuilder();
+//		if (src.contains("\\u")) {
+//			String[] bb = StringUtils.delimitedListToStringArray(src, "\\u");
+//			bb = (String[]) ArrayUtils.remove(bb, 0);
+//			for (int i = 0; i < bb.length; i++) {
+//				char a = (char) Integer.parseInt(bb[i], 16);
+//				res.append(new Character(a).toString());
+//			}
+//		}
 		// ...
-		String temp = res.toString();
-		temp = StringUtils.replace(temp, "|", "\"");
+//		String temp = res.toString();
+		String temp;
+		temp = StringUtils.replace(src, "|", "\"");
 		temp = StringUtils.replace(temp, "\"{", "{");
 		temp = StringUtils.replace(temp, "}\"", "}");
 		return StringUtils.replace(temp, "&quot", "\"");
