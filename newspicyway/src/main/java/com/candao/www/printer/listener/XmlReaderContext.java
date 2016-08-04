@@ -1,6 +1,6 @@
-package com.candao.www.printer.listener.namespaceHandler;
+package com.candao.www.printer.listener;
 
-import com.candao.www.printer.listener.XmlTemplateDefinitionReader;
+import com.candao.www.printer.listener.namespaceHandler.NamespaceHandlerResolver;
 
 public class XmlReaderContext {
 

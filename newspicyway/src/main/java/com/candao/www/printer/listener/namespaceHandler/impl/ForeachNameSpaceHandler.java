@@ -14,7 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.candao.print.entity.Row;
-import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
+import com.candao.www.printer.listener.XmlReaderContext;
 
 public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 
@@ -63,7 +63,7 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 		}
 		List<Row> rows = new ArrayList<>();
 		for (Row row : getRows()) {
-			//更换模板
+			// 更换模板
 			super.setRowDefine(row);
 			if (value.contains(XmlReaderContext.PROPERTYSEPERATOR)) {
 				String valueCopy = new String(value.getBytes());
