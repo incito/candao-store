@@ -69,6 +69,7 @@
 	        and dishid=#{dishid}
 	</if>
 	</where>
+	ORDER BY price asc
 	</select>
 	<update id="updateDishStatus" parameterType="map">
 	update t_template_dishunit set `status`=#{status} where menuid=#{menuid} and dishid=#{dishid}
