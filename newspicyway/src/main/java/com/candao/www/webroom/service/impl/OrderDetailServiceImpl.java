@@ -1412,7 +1412,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
                     for (PrintDish printDish : pdList) {
                         Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId());
-                        if (obj != null) {
+                        String abbrname=printDish.getAbbrname()==null?"":printDish.getAbbrname();
+                        if (obj != null && !abbrname.contains("退")) {//退菜单除外
                             temp = 1;//已经打印过
                             break;
                         }
