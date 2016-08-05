@@ -204,6 +204,13 @@ public class TbTableDaoImpl implements TbTableDao {
 		param.put("tableId",tableId);
 		return dao.get(PREFIX+".getTableNoById",param);
 	}
+
+	@Override
+	public Map<String, Object> getByOrderId(String orderId) {
+		Map<String,Object>param=new HashMap<>();
+		param.put("orderId",orderId);
+		return dao.get(PREFIX+".getByOrderId",param);
+	}
 }
 
 

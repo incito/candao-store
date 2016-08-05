@@ -816,5 +816,10 @@ public class TableServiceImpl implements TableService {
 	public String generatePrintObjId() {
 		return tableDao.generatePrintObjId();
 	}
+
+	@Override
+	public Map<String, Object> getByOrderId(String orderId) {
+		return tableDao.getByOrderId(orderId);
+	}
 }
 
