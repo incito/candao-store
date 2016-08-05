@@ -57,9 +57,26 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 			TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, "",
 					(String) paraMap.get("preferentialid"), amount, String.valueOf(orderDetailList.size()), 1, 1,
 					discount, 0);
+			//设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) preMap.get("name"));
 			torder.setActivity(activity);
+			//设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
+			torder.setToalFreeAmount(amount);
+		 String billAmout=	(String) preMap.get("bill_amount");
+		 if(billAmout!=null){
+			 BigDecimal bigDecimal= new BigDecimal(billAmout);
+			 //出去硬编码方式999999
+			 if(bigDecimal.doubleValue()<90000){
+				 torder.setToalDebitAmount(amount);
+				 torder.setToalFreeAmount(bigDecimal.subtract(amount));
+			 }else{
+				 torder.setToalDebitAmount(amount);
+			 }
+		 }else{
+			 torder.setToalFreeAmount(amount);
+		 }
+
 			detailPreferentials.add(torder);
 		}
 		result.put("detailPreferentials", detailPreferentials);

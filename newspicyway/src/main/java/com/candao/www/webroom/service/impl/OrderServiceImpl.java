@@ -114,6 +114,7 @@ public class OrderServiceImpl implements OrderService {
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	private OrderMapper orderMapper;
+
 	@Override
 	public int saveOrder(Torder order) {
 		// TODO Auto-generated method stub
@@ -1186,7 +1187,9 @@ public class OrderServiceImpl implements OrderService {
 			if (!params.containsKey("clean")) {
 				mapRet.put("rows", getMapData(orderid));// 获取订单数据
 			}
-
+			// 或POS使用数据订单信息
+			mapRet.put("userOrderInfo", findOrderByInfo(orderid));
+			//优惠信息
 			params.put("branchid", branchid);
 			params.put("id", orderid);
 			Map<String, Object> preMap = new HashMap<>();
@@ -1198,7 +1201,24 @@ public class OrderServiceImpl implements OrderService {
 
 		return ReturnMap.getSuccessMap(mapRet);
 	}
-
+    private Map<String, Object> findOrderByInfo(String orderid){
+		// orderInvoiceTitle 发票抬头
+		// orderStatus; 订单状态
+		// tableStatus 餐桌状态
+		// customerNumber 多少人
+    	Map<String, Object>  outresultMap =new HashMap<>();
+		List<Map<String, Object>> resultMapList =torderDetailMapper.findOrderByInfo(orderid);
+		if(resultMapList!=null&&!resultMapList.isEmpty()){
+			Map<String, Object> resultMap=resultMapList.get(0);
+			outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
+			outresultMap.put("orderStatus", resultMap.get("orderstatus"));
+			outresultMap.put("tableStatus", resultMap.get("status"));
+			outresultMap.put("customerNumber", resultMap.get("custnum"));
+			outresultMap.put("memberno", resultMap.get("memberno"));
+		}
+		outresultMap.put("orderid", orderid);
+		return outresultMap;
+    }
 	/**
 	 * 计算优惠信息
 	 * 
@@ -1214,12 +1234,12 @@ public class OrderServiceImpl implements OrderService {
 		Map<String, Object> setMap = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
-		//新辣道特殊新编码处理
+		// 新辣道特殊新编码处理
 		String tenant_id = PropertiesUtils.getValue("tenant_id");
-		if(tenant_id.equals("100011")){
-			if (allDetailPre == null||allDetailPre.isEmpty()) {
+		if (tenant_id.equals("100011")) {
+			if (allDetailPre == null || allDetailPre.isEmpty()) {
 				autoPre(orderid, preferentialAmt, detailPreferentials);
-			}else{
+			} else {
 				boolean falg = false;
 				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
 					if (branchDataSyn.getIsCustom() == 2) {
@@ -1230,7 +1250,7 @@ public class OrderServiceImpl implements OrderService {
 					autoPre(orderid, preferentialAmt, detailPreferentials);
 				}
 			}
-		
+
 		}
 
 		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
@@ -1269,6 +1289,7 @@ public class OrderServiceImpl implements OrderService {
 		setMap.put("orderid", orderid);
 		setMap.put("type", "03");
 		setMap.put("isCustom", "2");
+		setMap.put("resultAmount", "0");
 		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
 		// 就算每次优免总额
 		for (TorderDetailPreferential dep : operResult.getDetailPreferentials()) {

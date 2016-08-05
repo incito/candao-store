@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
@@ -28,11 +29,13 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
-			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,TdishDao tdishDao) {
+			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
+			TdishDao tdishDao) {
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String type = (String) paraMap.get("type");
-
+		Map tempMap = this.discountInfo(preferentialid, PropertiesUtils.getValue("current_branch_id"),
+				tbPreferentialActivityDao);
 		TbPreferentialActivity activity = tbPreferentialActivityDao.get(preferentialid);
 		/** 当前订单使用优惠记录 **/
 		Map<String, Double> preferInfoMap = new HashMap<>();
@@ -95,10 +98,15 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 			if (null != preInfo && null != menuCash && menuCash.compareTo(preInfo) > 0) {
 				// // 将此菜品添加到 orderDishMapList，用于后续金额的更新
 				amount = amount.add(menuCash.subtract(preInfo));
-				 String updateId=paraMap.containsKey("updateId")?(String)paraMap.get("updateId"):IDUtil.getID();
-				detailPreferentials
-						.add(new TorderDetailPreferential(updateId, orderid, preferenceDetail.getDish(),
-								preferenceDetail.getPreferential(), amount, "1", 0, 1, new BigDecimal(0), 0));
+				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+				TorderDetailPreferential detailPreferential = new TorderDetailPreferential(updateId, orderid,
+						preferenceDetail.getDish(), preferenceDetail.getPreferential(), amount, "1", 0, 1,
+						new BigDecimal(0), 0);
+				// 设置优惠名称
+				detailPreferential.setActivity(activity);
+				//设置挡墙优惠券的优免金额(特价属于优免)
+				detailPreferential.setToalFreeAmount(amount);
+				detailPreferentials.add(detailPreferential);
 				// 一个菜品只能使用一张卷 ，如果多个菜品需要使用多张优惠卷
 				if (Constant.CouponType.SPECIAL_TICKET.toString().equals(type)) {
 					dishCouponAmountMap.remove(d.getDishid());

@@ -40,19 +40,22 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		// 1:双拼锅 0：单品
 		List<TorderDetail> doublePots = new ArrayList<>();
 		List<TorderDetail> singleDishs = new ArrayList<>();
+		//记录菜品个数
+//		Map<String ,Long> menuDishNum=new HashMap<>();
 		for (Map<String, Object> detailMap : orderDetailList) {
 			String dishLevel = (String) detailMap.get("level");
 			String unitName = (String) detailMap.get("dishunit");
+			String dishId=(String) detailMap.get("dishid");
 			TorderDetail torderDetail = null;
 			if (dishLevel != null && dishLevel.equals("1")) {
 				torderDetail = new TorderDetail();
-				torderDetail.setDishid((String) detailMap.get("dishid"));
+				torderDetail.setDishid(dishId);
 				torderDetail.setOrderprice((BigDecimal) detailMap.get("orderprice"));
 				torderDetail.setDishnum((String) detailMap.get("dishnum"));
 				doublePots.add(torderDetail);
 			} else if (unitName != null && unitName.equals("扎")) {
 				torderDetail = new TorderDetail();
-				torderDetail.setDishid((String) detailMap.get("dishid"));
+				torderDetail.setDishid(dishId);
 				torderDetail.setOrderprice((BigDecimal) detailMap.get("orderprice"));
 				torderDetail.setDishnum((String) detailMap.get("dishnum"));
 				singleDishs.add(torderDetail);
@@ -126,14 +129,19 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			String preferentialid = (String) res.get("preferential");
 			for (String keyset : orderDetailMap.keySet()) {
 				if (dishIDColumindMap.containsKey(keyset)) {
+					//获取菜单价格
 					amount = amount.add(orderDetailMap.get(keyset));
-					TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, keyset,
-							preferentialid, orderDetailMap.get(keyset), String.valueOf("1"), 0, 1, new BigDecimal(1),
-							2);
-					TbPreferentialActivity activity = new TbPreferentialActivity();
-					activity.setName((String) res.get("name"));
-					torder.setActivity(activity);
-					detailPreferentials.add(torder);
+					//是否大于0
+					if(orderDetailMap.get(keyset).doubleValue()>0){
+						TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, keyset,
+								preferentialid, orderDetailMap.get(keyset), String.valueOf("1"), 0, 1, new BigDecimal(1),
+								2);
+						TbPreferentialActivity activity = new TbPreferentialActivity();
+						activity.setName((String) res.get("name"));
+						torder.setActivity(activity);
+						detailPreferentials.add(torder);
+					}
+				
 				}
 			}
 		}

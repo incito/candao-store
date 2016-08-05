@@ -1084,8 +1084,19 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
-					//总的优惠金额=本次优惠+以往优惠
+					//获取总的挂账，以及优免
+					String inputDebitAmount=(String)params.get("toalDebitAmount");
+					String inputFreeAmount=(String)params.get("toalFreeAmount");
+					BigDecimal toalDebitAmount =new BigDecimal(inputDebitAmount==null?"0":inputDebitAmount);
+					BigDecimal toalFreeAmount=new BigDecimal(inputFreeAmount==null?"0":inputDebitAmount);
+					for(TorderDetailPreferential detailPreferential:detailPreferentials){
+						toalDebitAmount.add(detailPreferential.getToalDebitAmount());
+						toalFreeAmount.add(detailPreferential.getToalFreeAmount());
+					}
 					
+					result.setToalDebitAmount(toalDebitAmount);
+					result.setToalFreeAmount(toalFreeAmount);
+					//总的优惠金额=本次优惠+以往优惠
 					result.setDetailPreferentials(detailPreferentials);
 					// 是否计算收入金额
 					if (!params.containsKey("resultAmount")) {

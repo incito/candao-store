@@ -61,10 +61,8 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 
 		if (payAmount.doubleValue() <= 0) {
 			preferentialResult.setPayamount(new BigDecimal("0"));
-			preferentialResult.setFreeamount(payAmount.abs());
 		} else {
 			preferentialResult.setPayamount(payAmount);
-			preferentialResult.setFreeamount(new BigDecimal("0"));
 		}
 
 	}
