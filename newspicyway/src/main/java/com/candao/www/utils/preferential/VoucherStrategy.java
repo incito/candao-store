@@ -20,6 +20,7 @@ import com.candao.www.dataserver.util.IDUtil;
 /**
  * 
  * @author Candao 优惠卷使用策略
+ * 代金卷团购卷使用策略
  */
 public class VoucherStrategy extends CalPreferentialStrategy {
 
@@ -37,7 +38,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
 		String activityID = (String) paraMap.get("preferentialid");
 		String branchid = PropertiesUtils.getValue("current_branch_id");
-		String disrate = (String) paraMap.get("disrate");
+		String disrate = String.valueOf(paraMap.get("disrate"));
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
 		Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao,tbPreferentialActivityDao);
 		if (cashGratis != null) {

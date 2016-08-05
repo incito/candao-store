@@ -51,8 +51,10 @@ public enum StrategyFactory {
 		if (resAmountList != null && !resAmountList.isEmpty()) {
 			Map<String, Object> resAmountMap = resAmountList.get(0);
 			BigDecimal tipAmount = new BigDecimal(String.valueOf(resAmountMap.get("tipAmount")));// 小费
-			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));
-			preferentialResult.setMenuAmount(dueamount.add(tipAmount));
+			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));//订单（菜品）总价
+			//全单总价包含菜品+小费
+			BigDecimal menuAmount=dueamount.add(tipAmount);
+			preferentialResult.setMenuAmount(menuAmount);
 			preferentialResult.setTipAmount(tipAmount);
 			amountInterface.calAmount(dataDictionaryService, preferentialResult);
 		}

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
@@ -33,7 +32,6 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String type = (String) paraMap.get("type");
-		String branchid = PropertiesUtils.getValue("current_branch_id");
 
 		TbPreferentialActivity activity = tbPreferentialActivityDao.get(preferentialid);
 		/** 当前订单使用优惠记录 **/
@@ -49,12 +47,11 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 
 		}
 
-		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		Map<String, String> detail_params = new HashMap<>();
-		detail_params.put("preferential", activity.getId());
-		detail_params.put("branchid", branchid);
-		List<Map<String, Object>> detailList = tbPreferentialActivityDao.findPreferentialDetail(detail_params);
+		detail_params.put("preferentialId", activity.getId());
+		List<Map<String, Object>> detailList = tbPreferentialActivityDao.findPreferentialDetailList(detail_params);
 
+		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		// 获取可以优惠的菜品列表
 		Map<String, TbPreferenceDetail> dishCouponAmountMap = new HashMap<>();
 		for (Map<String, Object> d : detailList) {

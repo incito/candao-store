@@ -1214,17 +1214,23 @@ public class OrderServiceImpl implements OrderService {
 		Map<String, Object> setMap = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
-		if (allDetailPre == null) {
-			autoPre(orderid, preferentialAmt, detailPreferentials);
-		}
-		boolean falg = false;
-		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
-			if (branchDataSyn.getIsCustom() == 2) {
-				falg = true;
+		//新辣道特殊新编码处理
+		String tenant_id = PropertiesUtils.getValue("tenant_id");
+		if(tenant_id.equals("100011")){
+			if (allDetailPre == null||allDetailPre.isEmpty()) {
+				autoPre(orderid, preferentialAmt, detailPreferentials);
+			}else{
+				boolean falg = false;
+				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
+					if (branchDataSyn.getIsCustom() == 2) {
+						falg = true;
+					}
+				}
+				if (!falg) {
+					autoPre(orderid, preferentialAmt, detailPreferentials);
+				}
 			}
-		}
-		if (!falg) {
-			autoPre(orderid, preferentialAmt, detailPreferentials);
+		
 		}
 
 		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
@@ -1261,7 +1267,8 @@ public class OrderServiceImpl implements OrderService {
 			List<TorderDetailPreferential> detailPreferentials) {
 		Map<String, Object> setMap = new HashMap<>();
 		setMap.put("orderid", orderid);
-		setMap.put("type", "Auto");
+		setMap.put("type", "03");
+		setMap.put("isCustom", "2");
 		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
 		// 就算每次优免总额
 		for (TorderDetailPreferential dep : operResult.getDetailPreferentials()) {

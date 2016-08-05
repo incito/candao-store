@@ -51,7 +51,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		String orderid = (String) params.get("orderid"); // 账单号
 		String isCustom = String.valueOf( params.get("isCustom"));
-		String preferentialAmout = String.valueOf( params.get("preferentialAmout"));
+		String preferentialAmout=params.containsKey("preferentialAmout")?String.valueOf( params.get("preferentialAmout")):"0";
 		BigDecimal amout = new BigDecimal(preferentialAmout);
 		if (isCustom.equals("1") && amout.doubleValue() > 0) {
 			// 获取当前账单的 菜品列表

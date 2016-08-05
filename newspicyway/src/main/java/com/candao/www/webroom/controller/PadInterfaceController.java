@@ -1653,7 +1653,7 @@ public class PadInterfaceController {
 	@ResponseBody
 	public void getOrderInfo(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-		Map<String, Object> map = orderService.switchPadOrderInfo(params);
+		Map<String, Object> map = orderService.calGetOrderInfo(params);
 		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
 		try {
 			response.reset();

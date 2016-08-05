@@ -1084,10 +1084,13 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
-					result.setAmount((BigDecimal) resultMap.get("amount"));
+					//总的优惠金额=本次优惠+以往优惠
+					
 					result.setDetailPreferentials(detailPreferentials);
 					// 是否计算收入金额
 					if (!params.containsKey("resultAmount")) {
+						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
+						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
 						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService, result, orderMapper);
 					}
 

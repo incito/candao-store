@@ -44,22 +44,29 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 
 	private void calAmount(RoundingMode branchid, OperPreferentialResult preferentialResult,
 			List<Map<String, Object>> listFind) {
+		BigDecimal payAmount = new BigDecimal("0");
 		if (listFind == null || listFind.size() <= 0) {
-			preferentialResult
-					.setPayamount(preferentialResult.getMenuAmount().subtract(preferentialResult.getAmount()));
-			preferentialResult.setFreeamount(new BigDecimal("0"));
-			return;
+			// 支付价格菜单价-优惠价
+			payAmount = preferentialResult.getMenuAmount().subtract(preferentialResult.getAmount());
+		} else {
+			// 0：分 1角 2元
+			int itemId = Integer.valueOf((String) listFind.get(1).get("itemid"));
+			int scale = itemId == 0 ? 2 : itemId == 1 ? 1 : 0;
+			// 当前菜单多少钱
+			BigDecimal menuItem = preferentialResult.getMenuAmount();
+			// 当前优惠有多少钱
+			BigDecimal amount = preferentialResult.getAmount();
+			payAmount = (menuItem.subtract(amount)).divide(new BigDecimal("1"), scale, branchid);
 		}
-		// 0：分 1角 2元
-		int itemId = Integer.valueOf((String) listFind.get(1).get("itemid"));
-		int scale = itemId == 0 ? 2 : itemId == 1 ? 1 : 0;
-		// 当前菜单多少钱
-		BigDecimal menuItem = preferentialResult.getMenuAmount();
-		// 当前优免有多少钱
-		BigDecimal amount = preferentialResult.getAmount();
 
-		preferentialResult.setPayamount((menuItem.subtract(amount)).divide(new BigDecimal("1"), scale, branchid));
-		preferentialResult.setFreeamount(new BigDecimal("0"));
+		if (payAmount.doubleValue() <= 0) {
+			preferentialResult.setPayamount(new BigDecimal("0"));
+			preferentialResult.setFreeamount(payAmount.abs());
+		} else {
+			preferentialResult.setPayamount(payAmount);
+			preferentialResult.setFreeamount(new BigDecimal("0"));
+		}
+
 	}
 
 }

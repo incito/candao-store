@@ -33,7 +33,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
-		String disrate = (String) paraMap.get("disrate");
+		String disrate = String.valueOf(paraMap.get("disrate"));
 		String giveDish = (String) paraMap.get("dishid");
 		int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
@@ -79,17 +79,23 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		 * disrate不为空为折扣优免 preferentialAmout 不为空为现金优惠 giveDish 不为空为优惠卷信息
 		 */
 		String preferentialAmout = (String) paraMap.get("preferentialAmout");
-		if (!StringUtils.isEmpty(disrate.trim())&&StringUtils.isEmpty(preferentialAmout.trim())&&StringUtils.isEmpty(giveDish)) {
+		if (!StringUtils.isEmpty(disrate.trim())&&new BigDecimal(preferentialAmout).doubleValue()<=0 &&StringUtils.isEmpty(giveDish)) {
 			BigDecimal decimalDisrate = new BigDecimal(disrate);
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-			amount = amountCount.divide(decimalDisrate);
+			
+			// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
 			// 手工输入折扣优免
-			TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
-					preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
-			TbPreferentialActivity activity = new TbPreferentialActivity();
-			activity.setName((String) tempMap.get("name"));
-			addPreferential.setActivity(activity);
-			detailPreferentials.add(addPreferential);
+			if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1){
+				amount = amountCount.subtract(bd)
+						.multiply(new BigDecimal("1").subtract(decimalDisrate.divide(new BigDecimal(10))));
+				TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
+						preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name"));
+				addPreferential.setActivity(activity);
+				detailPreferentials.add(addPreferential);
+			}
+
 		} else if (!StringUtils.isEmpty(preferentialAmout.trim())&&StringUtils.isEmpty(giveDish)&&StringUtils.isEmpty(disrate.trim())) {
 			// 手工输入现金优免
 			BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);

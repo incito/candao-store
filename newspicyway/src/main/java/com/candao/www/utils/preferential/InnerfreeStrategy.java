@@ -71,15 +71,18 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 		if (discount != null && discount.doubleValue() > 0) {
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 
-			// 折扣计算方式
-			amount = amountCount.subtract(bd)
-					.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
-			addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, amount,
-					String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
-			TbPreferentialActivity activity = new TbPreferentialActivity();
-			activity.setName((String) tempMap.get("name"));
-			addPreferential.setActivity(activity);
-			detailPreferentials.add(addPreferential);
+			if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1){
+				// 折扣计算方式
+				amount = amountCount.subtract(bd)
+						.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
+				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, amount,
+						String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name"));
+				addPreferential.setActivity(activity);
+				detailPreferentials.add(addPreferential);
+			}
+	
 		} else if (caseAmount != null && caseAmount.doubleValue() > 0) {
 			// 现金减免方式
 			//获取优惠卷个数(如果POS选择多张优惠卷，后台会在数据库写入多个数据，所以要拆分优惠卷)
