@@ -304,7 +304,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public String endWork(String userId, String ip) {
+    public String endWork() {
         Date workDate = WorkDateUtil.getWorkDate1();
         // 检查是否已经有清机，如果该员工已经清机提示
         // 还有未清机
@@ -438,7 +438,6 @@ public class BusinessServiceImpl implements BusinessService {
         return "{\"Data\":\"1\",\"Info\":\"\",\"OrderJson\":" + tableJson + ",\"JSJson\":" + tableListJson + "}";
     }
 
-    ;
 
     @Override
     public String getServerTableInfo3(String orderId, String userId) {
@@ -453,8 +452,6 @@ public class BusinessServiceImpl implements BusinessService {
 
         return JSON.toJSONString(tableOrder, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero);
     }
-
-    ;
 
     @Override
     public String getServerTableInfo2(String tableNo, String userId) {

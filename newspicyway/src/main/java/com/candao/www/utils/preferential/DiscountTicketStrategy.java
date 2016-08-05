@@ -13,6 +13,7 @@ import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.model.TbNoDiscountDish;
+import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
@@ -108,9 +109,14 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			amount = amountCount.subtract(bd)
 					.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
 			//是重新计算优惠还是，新加优惠
+		
 		   String updateId=paraMap.containsKey("updateId")?(String)paraMap.get("updateId"):IDUtil.getID();
 			 TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid,
 						amount, String.valueOf(tempDishNum), 1, 1, discount, 0);
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name"));
+				addPreferential.setActivity(activity);
+			 
 			 List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 			 detailPreferentials.add(addPreferential);
 			result.put("detailPreferentials",detailPreferentials);

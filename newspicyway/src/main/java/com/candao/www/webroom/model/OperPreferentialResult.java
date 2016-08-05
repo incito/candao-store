@@ -18,35 +18,31 @@ import com.candao.www.data.model.TorderDetailPreferential;
 public class OperPreferentialResult {
 
 	/**
-	 * 操作结果 1-成功 0-失败
-	 */
-	private int result = 0;
-
-	/**
-	 * 结果信息。如果失败，存放失败的信息
-	 */
-	private String msg = "";
-	/**
-	 * 金额
+	 * 金额优惠总金额
 	 */
 	private BigDecimal amount = new BigDecimal(0);
+	/**
+	 *菜品总价 
+	 **/
+	private  BigDecimal menuAmount=new BigDecimal(0);
+	/**
+	 * 支付金额
+	 */
+	private BigDecimal payamount=new BigDecimal(0);
+	/***
+	 * 小费金额
+	 * */
+	private BigDecimal tipAmount =new BigDecimal(0);
+	
+	/***
+	 * 优免金额
+	 * */
+	private BigDecimal freeamount =new BigDecimal(0);
+	/**
+	 * 优惠账号
+	 */
+	private String memberno="";
 	private List<TorderDetailPreferential> detailPreferentials =new ArrayList<>();
-
-	public int getResult() {
-		return result;
-	}
-
-	public void setResult(int result) {
-		this.result = result;
-	}
-
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
 
 	public BigDecimal getAmount() {
 		amount.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -63,6 +59,46 @@ public class OperPreferentialResult {
 
 	public void setDetailPreferentials(List<TorderDetailPreferential> detailPreferentials) {
 		this.detailPreferentials = detailPreferentials;
+	}
+
+	public BigDecimal getPayamount() {
+		return payamount;
+	}
+
+	public void setPayamount(BigDecimal payamount) {
+		this.payamount = payamount;
+	}
+
+	public BigDecimal getFreeamount() {
+		return freeamount;
+	}
+
+	public void setFreeamount(BigDecimal freeamount) {
+		this.freeamount = freeamount;
+	}
+
+	public BigDecimal getMenuAmount() {
+		return menuAmount;
+	}
+
+	public void setMenuAmount(BigDecimal menuAmount) {
+		this.menuAmount = menuAmount;
+	}
+
+	public BigDecimal getTipAmount() {
+		return tipAmount;
+	}
+
+	public void setTipAmount(BigDecimal tipAmount) {
+		this.tipAmount = tipAmount;
+	}
+
+	public String getMemberno() {
+		return memberno;
+	}
+
+	public void setMemberno(String memberno) {
+		this.memberno = memberno;
 	}
 
 }

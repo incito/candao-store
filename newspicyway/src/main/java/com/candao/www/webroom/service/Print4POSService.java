@@ -21,9 +21,8 @@ public interface Print4POSService {
 
 	void printInvoice(Map<String, Object> map) throws Exception;
 
-	void printStoredCard(Map<String, Object> map)throws Exception;
+	void printStoredCard(Map<String, Object> map) throws Exception;
 
-	void printBusinessDetail(String...params) throws Exception;
+	void printBusinessDetail(Map<String, Object> map, String... params) throws Exception;
 
-	
 }

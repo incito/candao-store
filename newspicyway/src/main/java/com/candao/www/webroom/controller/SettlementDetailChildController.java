@@ -8,21 +8,20 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.service.ItemDetailService;
 import com.candao.www.webroom.service.SettlementDetailChildService;
 import com.candao.www.webroom.service.impl.ExportSettlDetChildService;
+
+import net.sf.json.JSONObject;
 
 /**
  * 结算方式明细表子表
@@ -50,8 +49,9 @@ public class SettlementDetailChildController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/getSettDetChildList",method = RequestMethod.POST)
-	public JSONObject getSettDetChildList(HttpServletRequest request){
+	@RequestMapping(value="/getSettDetChildList")
+	@ResponseBody
+	public String getSettDetChildList(HttpServletRequest request){
 		Map<String,Object> params = new HashMap<String,Object>();
 		String branchId = request.getParameter("branchId");
 		String payWay = request.getParameter("payWay");
@@ -75,14 +75,13 @@ public class SettlementDetailChildController {
 		Map<String,Object> map = new HashMap<String,Object>();
 	    try{
 	    	List<Map<String,Object>> list = settlementDetailChildService.querySettDetailList(params);
-	    	JSONArray data = JSONArray.fromObject(list);
 	    	map = ReturnMap.getReturnMap(1, "001", "查询结算明细子表成功");
-	    	map.put("data", data);
+	    	map.put("data", list);
 	    }catch(Exception e){
 	    	map = ReturnMap.getReturnMap(0, "002", "查询结算明细子表失败");
 	    	e.printStackTrace();
 	    }
-	    return JSONObject.fromObject(map);
+	    return JacksonJsonMapper.objectToJson(map);
 	}
 	
 	/**

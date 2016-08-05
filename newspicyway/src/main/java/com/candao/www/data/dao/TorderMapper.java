@@ -18,7 +18,7 @@ public interface TorderMapper {
   	public Torder get(java.lang.String id);
   	
   	public <K, V> Map<K, V> findOne(java.lang.String id);
-  	
+  	public <K, V> Map<K, V> findOneOrderInfo(Map<K, V> params);
   	public <T, K, V> List<T> find(Map<K, V> params);
   	
   	public int insert(Torder torder);

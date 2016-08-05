@@ -1,560 +1,591 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.candao.www.data.dao.TorderDetailMapper" >
+<mapper namespace="com.candao.www.data.dao.TorderDetailMapper">
 	<resultMap id="BaseResultMap" type="com.candao.www.data.model.TorderDetail">
-	<id column="orderdetailid" property="orderdetailid" jdbcType="VARCHAR" />
-    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
-    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
-    <result column="dishstatus" property="dishstatus" jdbcType="VARCHAR" />
-    <result column="begintime" property="begintime" jdbcType="TIMESTAMP" />
-    <result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
-    <result column="sperequire" property="sperequire" jdbcType="VARCHAR" />
-    <result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
-    <result column="userName" property="userName" jdbcType="VARCHAR" />
-    <result column="orderprice" property="orderprice" jdbcType="DECIMAL" />
-    <result column="discountrate" property="discountrate" jdbcType="DECIMAL" />
-    <result column="discountamount" property="discountamount" jdbcType="DECIMAL" />
-    <result column="fishcode" property="fishcode" jdbcType="VARCHAR" />
-    <result column="dishtype" property="dishtype" jdbcType="INTEGER" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="dishunit" property="dishunit" jdbcType="VARCHAR" />
-    <result column="payamount" property="payamount" jdbcType="DECIMAL" />
-    <result column="predisamount" property="predisamount" jdbcType="DECIMAL" />
-    <result column="couponid" property="couponid" jdbcType="VARCHAR" />
-    <result column="disuserid" property="disuserid" jdbcType="VARCHAR" />
-    <result column="orignalprice" property="orignalprice" jdbcType="DECIMAL" />
-    <result column="pricetype" property="pricetype" jdbcType="VARCHAR" />
-    <result column="orderseq" property="orderseq" jdbcType="INTEGER" />
-    <result column="relatedishid" property="relatedishid" jdbcType="VARCHAR" />
-    <result column="ordertype" property="ordertype" jdbcType="INTEGER" />
-    <result column="parentkey" property="parentkey" jdbcType="VARCHAR" />
-    <result column="superkey" property="superkey" jdbcType="VARCHAR" />
-    <result column="ismaster" property="ismaster" jdbcType="INTEGER" />
-    <result column="primarykey" property="primarykey" jdbcType="VARCHAR" />
-    <result column="islatecooke" property="islatecooke" jdbcType="INTEGER" />
-    <result column="isadddish" property="isadddish" jdbcType="INTEGER" />
-    <result column="childdishtype" property="childdishtype" jdbcType="INTEGER" />
-    <result column="ispot" property="ispot" jdbcType="INTEGER" />
-    <result column="discardUserId" property="discardUserId" jdbcType="VARCHAR" />
-    
+		<id column="orderdetailid" property="orderdetailid" jdbcType="VARCHAR" />
+		<result column="orderid" property="orderid" jdbcType="VARCHAR" />
+		<result column="dishid" property="dishid" jdbcType="VARCHAR" />
+		<result column="dishstatus" property="dishstatus" jdbcType="VARCHAR" />
+		<result column="begintime" property="begintime" jdbcType="TIMESTAMP" />
+		<result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="sperequire" property="sperequire" jdbcType="VARCHAR" />
+		<result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
+		<result column="userName" property="userName" jdbcType="VARCHAR" />
+		<result column="orderprice" property="orderprice" jdbcType="DECIMAL" />
+		<result column="discountrate" property="discountrate" jdbcType="DECIMAL" />
+		<result column="discountamount" property="discountamount"
+			jdbcType="DECIMAL" />
+		<result column="fishcode" property="fishcode" jdbcType="VARCHAR" />
+		<result column="dishtype" property="dishtype" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="dishunit" property="dishunit" jdbcType="VARCHAR" />
+		<result column="payamount" property="payamount" jdbcType="DECIMAL" />
+		<result column="predisamount" property="predisamount" jdbcType="DECIMAL" />
+		<result column="couponid" property="couponid" jdbcType="VARCHAR" />
+		<result column="disuserid" property="disuserid" jdbcType="VARCHAR" />
+		<result column="orignalprice" property="orignalprice" jdbcType="DECIMAL" />
+		<result column="pricetype" property="pricetype" jdbcType="VARCHAR" />
+		<result column="orderseq" property="orderseq" jdbcType="INTEGER" />
+		<result column="relatedishid" property="relatedishid" jdbcType="VARCHAR" />
+		<result column="ordertype" property="ordertype" jdbcType="INTEGER" />
+		<result column="parentkey" property="parentkey" jdbcType="VARCHAR" />
+		<result column="superkey" property="superkey" jdbcType="VARCHAR" />
+		<result column="ismaster" property="ismaster" jdbcType="INTEGER" />
+		<result column="primarykey" property="primarykey" jdbcType="VARCHAR" />
+		<result column="islatecooke" property="islatecooke" jdbcType="INTEGER" />
+		<result column="isadddish" property="isadddish" jdbcType="INTEGER" />
+		<result column="childdishtype" property="childdishtype"
+			jdbcType="INTEGER" />
+		<result column="ispot" property="ispot" jdbcType="INTEGER" />
+		<result column="discardUserId" property="discardUserId"
+			jdbcType="VARCHAR" />
+
 	</resultMap>
-	
+
 	<resultMap id="BaseResultMapSimple" type="com.candao.www.data.model.TorderDetailSimple">
-	    <result column="dishid" property="dishid" jdbcType="VARCHAR" />
-	    <result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
-	    <result column="dishunit" property="dishunit" jdbcType="VARCHAR" />
+		<result column="dishid" property="dishid" jdbcType="VARCHAR" />
+		<result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
+		<result column="dishunit" property="dishunit" jdbcType="VARCHAR" />
 	</resultMap>
- 
-   <resultMap id="findResultMap" type="java.util.HashMap" extends="BaseResultMap"></resultMap>
-  
-   <sql id="Base_Column_List" >
-    orderdetailid, orderid, dishid, dishstatus, begintime, endtime, sperequire, dishnum, 
-    userName, orderprice, discountrate, discountamount, fishcode, dishtype, status, dishunit, 
-    payamount, predisamount, couponid, disuserid, orignalprice, pricetype, orderseq, 
-    relatedishid, ordertype, parentkey, superkey, ismaster, primarykey, islatecooke, 
-    isadddish, childdishtype, ispot 
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from t_order_detail
-    where orderid = #{orderid,jdbcType=VARCHAR}
-  </select> 
-  
-  <select id="getMaxByDishId" resultType="java.lang.Integer" parameterType="java.util.Map" >
-    select count(1) from t_order_detail t 
-   where t.begintime > (select  opendate from t_open_log )
-    and t.dishid =  #{dishid,jdbcType=VARCHAR}
-  </select> 
-  
-  
-  
-  <delete id="delete" parameterType="java.lang.String" >
-    delete from t_order_detail
-   where orderid = #{orderid,jdbcType=VARCHAR}
-  </delete>
-  
-  <insert id="insert" parameterType="com.candao.www.data.model.TorderDetail" >
-     insert into t_order_detail (orderid, dishid, dishstatus, 
-      begintime, endtime, sperequire, 
-      dishnum,userName,orderprice,dishunit,orignalprice,pricetype,dishtype,relatedishid,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype)
-    values (
-    #{orderid,jdbcType=VARCHAR}, #{dishid,jdbcType=VARCHAR}, #{dishstatus,jdbcType=VARCHAR}, 
-      current_timestamp(), #{endtime,jdbcType=TIMESTAMP}, #{sperequire,jdbcType=VARCHAR}, 
-      #{dishnum,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR},#{orderprice,jdbcType=DECIMAL},
-      #{dishunit,jdbcType=VARCHAR},#{orderprice,jdbcType=DECIMAL},#{pricetype,jdbcType=VARCHAR},
-      #{dishtype,jdbcType=INTEGER},
-      #{relatedishid,jdbcType=VARCHAR},
-       #{ordertype,jdbcType=INTEGER},
-      #{parentkey,jdbcType=VARCHAR},
-      #{superkey,jdbcType=VARCHAR},
-      #{ismaster,jdbcType=INTEGER},
-      #{primarykey,jdbcType=VARCHAR},
-        #{isadddish,jdbcType=INTEGER},
-        #{childdishtype,jdbcType=INTEGER}
-      )
-  </insert>
-  
-    <insert id="insertDiscardDish" parameterType="com.candao.www.data.model.TorderDetail" >
-     insert into t_order_detail_discard (orderid, dishid, dishstatus, 
-      begintime, endtime, sperequire, 
-      dishnum,userName,orderprice,dishunit,orignalprice,pricetype,dishtype,relatedishid,orderdetailid,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype,discarduserid,discardreason)
-    values (
-    #{orderid,jdbcType=VARCHAR}, #{dishid,jdbcType=VARCHAR}, #{dishstatus,jdbcType=VARCHAR}, 
-      current_timestamp(), #{endtime,jdbcType=TIMESTAMP}, #{sperequire,jdbcType=VARCHAR}, 
-      #{dishnum,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR},#{orderprice,jdbcType=DECIMAL},
-      #{dishunit,jdbcType=VARCHAR},#{orignalprice,jdbcType=DECIMAL},#{pricetype,jdbcType=VARCHAR},
-       #{dishtype,jdbcType=INTEGER},
-        #{relatedishid,jdbcType=VARCHAR},
-         #{orderdetailid,jdbcType=VARCHAR},
-       #{ordertype,jdbcType=INTEGER},
-      #{parentkey,jdbcType=VARCHAR},
-      #{superkey,jdbcType=VARCHAR},
-      #{ismaster,jdbcType=INTEGER},
-      #{primarykey,jdbcType=VARCHAR},
-        #{isadddish,jdbcType=INTEGER},
-         #{childdishtype,jdbcType=INTEGER},
-         #{discardUserId,jdbcType=VARCHAR},
-      #{discardReason,jdbcType=VARCHAR}
-      )
-  </insert>
-  
-  
-<insert id="insertOnce" parameterType="java.util.ArrayList">
-     
-		insert into t_order_detail (orderdetailid,orderid, dishid, dishstatus,begintime, endtime, sperequire, dishnum,
-    userName,orderprice,discountrate,discountamount,fishcode,dishtype,status,dishunit,payamount,predisamount,
-    couponid,disuserid,relatedishid,islatecooke,ispot,
-    orignalprice,pricetype,ordertype,parentkey,superkey,
-    ismaster,primarykey,isadddish,childdishtype) values
-		<foreach collection="list" item="item" index="index" separator=", ">
-            (
-            UUID(),
-            #{item.orderid,jdbcType=VARCHAR},
-            #{item.dishid,jdbcType=VARCHAR},
-            #{item.dishstatus,jdbcType=VARCHAR},
-            current_timestamp(),
-            #{item.endtime,jdbcType=TIMESTAMP},
-            #{item.sperequire,jdbcType=VARCHAR},
-            #{item.dishnum,jdbcType=VARCHAR},
-            #{item.userName,jdbcType=VARCHAR},
-            #{item.orderprice,jdbcType=DECIMAL},
-            #{item.discountrate,jdbcType=VARCHAR},
-            #{item.discountamount,jdbcType=VARCHAR},
-            #{item.fishcode,jdbcType=VARCHAR},
-            #{item.dishtype,jdbcType=VARCHAR},
-            #{item.status,jdbcType=VARCHAR},
-            #{item.dishunit,jdbcType=VARCHAR},
-            #{item.payamount,jdbcType=VARCHAR},
-            #{item.predisamount,jdbcType=VARCHAR},
-            #{item.couponid,jdbcType=VARCHAR},
-            #{item.disuserid,jdbcType=VARCHAR},
-            #{item.relatedishid,jdbcType=VARCHAR},
-            #{item.printtype,jdbcType=VARCHAR},
-            #{item.ispot,jdbcType=VARCHAR},
-            #{item.orignalprice,jdbcType=DECIMAL},
-            #{item.pricetype,jdbcType=VARCHAR},
-            #{item.ordertype,jdbcType=INTEGER},
-            #{item.parentkey,jdbcType=VARCHAR},
-            #{item.superkey,jdbcType=VARCHAR},
-            #{item.ismaster,jdbcType=INTEGER},
-            #{item.primarykey,jdbcType=VARCHAR},
-            #{item.isadddish,jdbcType=INTEGER},
-            #{item.childdishtype,jdbcType=INTEGER}
-            )
-        </foreach>
-</insert>
 
-<insert id="insertTempOnce" parameterType="java.util.ArrayList">
-     
-		insert into t_order_detail_temp (orderid, dishid, dishstatus,begintime, endtime, sperequire, dishnum,userName,orderprice,dishunit,orignalprice,pricetype,printtype,orderseq,relatedishid,dishtype,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype,ispot)
-		<foreach collection="list" item="item" index="index" separator=" union all ">
-		  select #{item.orderid,jdbcType=VARCHAR}, 
-		         #{item.dishid,jdbcType=VARCHAR}, 
-		         #{item.dishstatus,jdbcType=VARCHAR}, 
-               current_timestamp(), 
-               #{item.endtime,jdbcType=TIMESTAMP}, 
-               #{item.sperequire,jdbcType=VARCHAR}, 
-               #{item.dishnum,jdbcType=VARCHAR},
-               #{item.userName,jdbcType=VARCHAR},
-               #{item.orderprice,jdbcType=DECIMAL},
-                  #{item.dishunit,jdbcType=VARCHAR},
-               #{item.orignalprice,jdbcType=DECIMAL},
-                  #{item.pricetype,jdbcType=VARCHAR},
-                    #{item.printtype,jdbcType=VARCHAR},
-                    #{item.orderseq,jdbcType=INTEGER},
-                 #{item.relatedishid,jdbcType=VARCHAR},
-                 #{item.dishtype,jdbcType=INTEGER},
-                  #{item.ordertype,jdbcType=INTEGER},
-			      #{item.parentkey,jdbcType=VARCHAR},
-			      #{item.superkey,jdbcType=VARCHAR},
-			      #{item.ismaster,jdbcType=INTEGER},
-			      #{item.primarykey,jdbcType=VARCHAR},
-			         #{item.isadddish,jdbcType=INTEGER},
-			          #{item.childdishtype,jdbcType=INTEGER},
-			          #{item.ispot,jdbcType=INTEGER}
-			          
-            from dual
+	<resultMap id="findResultMap" type="java.util.HashMap"
+		extends="BaseResultMap"></resultMap>
+
+	<sql id="Base_Column_List">
+		orderdetailid, orderid, dishid, dishstatus, begintime, endtime, sperequire, dishnum,
+		userName, orderprice, discountrate, discountamount, fishcode,
+		dishtype, status, dishunit,
+		payamount, predisamount, couponid, disuserid, orignalprice, pricetype, orderseq,
+		relatedishid, ordertype, parentkey, superkey, ismaster, primarykey,
+		islatecooke,
+		isadddish, childdishtype, ispot
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_detail
+		where orderid = #{orderid,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getMaxByDishId" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1) from t_order_detail t
+		where t.begintime > (select opendate from t_open_log )
+		and t.dishid = #{dishid,jdbcType=VARCHAR}
+	</select>
+
+
+
+	<delete id="delete" parameterType="java.lang.String">
+		delete from t_order_detail
+		where orderid = #{orderid,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TorderDetail">
+		insert into t_order_detail (orderid, dishid, dishstatus,
+		begintime, endtime, sperequire,
+		dishnum,userName,orderprice,dishunit,orignalprice,pricetype,dishtype,relatedishid,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype)
+		values (
+		#{orderid,jdbcType=VARCHAR}, #{dishid,jdbcType=VARCHAR}, #{dishstatus,jdbcType=VARCHAR},
+		current_timestamp(), #{endtime,jdbcType=TIMESTAMP},
+		#{sperequire,jdbcType=VARCHAR},
+		#{dishnum,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR},#{orderprice,jdbcType=DECIMAL},
+		#{dishunit,jdbcType=VARCHAR},#{orderprice,jdbcType=DECIMAL},#{pricetype,jdbcType=VARCHAR},
+		#{dishtype,jdbcType=INTEGER},
+		#{relatedishid,jdbcType=VARCHAR},
+		#{ordertype,jdbcType=INTEGER},
+		#{parentkey,jdbcType=VARCHAR},
+		#{superkey,jdbcType=VARCHAR},
+		#{ismaster,jdbcType=INTEGER},
+		#{primarykey,jdbcType=VARCHAR},
+		#{isadddish,jdbcType=INTEGER},
+		#{childdishtype,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<insert id="insertDiscardDish" parameterType="com.candao.www.data.model.TorderDetail">
+		insert into t_order_detail_discard (orderid, dishid, dishstatus,
+		begintime, endtime, sperequire,
+		dishnum,userName,orderprice,dishunit,orignalprice,pricetype,dishtype,relatedishid,orderdetailid,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype,discarduserid,discardreason)
+		values (
+		#{orderid,jdbcType=VARCHAR}, #{dishid,jdbcType=VARCHAR}, #{dishstatus,jdbcType=VARCHAR},
+		current_timestamp(), #{endtime,jdbcType=TIMESTAMP},
+		#{sperequire,jdbcType=VARCHAR},
+		#{dishnum,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR},#{orderprice,jdbcType=DECIMAL},
+		#{dishunit,jdbcType=VARCHAR},#{orignalprice,jdbcType=DECIMAL},#{pricetype,jdbcType=VARCHAR},
+		#{dishtype,jdbcType=INTEGER},
+		#{relatedishid,jdbcType=VARCHAR},
+		#{orderdetailid,jdbcType=VARCHAR},
+		#{ordertype,jdbcType=INTEGER},
+		#{parentkey,jdbcType=VARCHAR},
+		#{superkey,jdbcType=VARCHAR},
+		#{ismaster,jdbcType=INTEGER},
+		#{primarykey,jdbcType=VARCHAR},
+		#{isadddish,jdbcType=INTEGER},
+		#{childdishtype,jdbcType=INTEGER},
+		#{discardUserId,jdbcType=VARCHAR},
+		#{discardReason,jdbcType=VARCHAR}
+		)
+	</insert>
+
+
+	<insert id="insertOnce" parameterType="java.util.ArrayList">
+
+		insert into t_order_detail (orderdetailid,orderid, dishid,
+		dishstatus,begintime, endtime, sperequire, dishnum,
+		userName,orderprice,discountrate,discountamount,fishcode,dishtype,status,dishunit,payamount,predisamount,
+		couponid,disuserid,relatedishid,islatecooke,ispot,
+		orignalprice,pricetype,ordertype,parentkey,superkey,
+		ismaster,primarykey,isadddish,childdishtype) values
+		<foreach collection="list" item="item" index="index"
+			separator=", ">
+			(
+			UUID(),
+			#{item.orderid,jdbcType=VARCHAR},
+			#{item.dishid,jdbcType=VARCHAR},
+			#{item.dishstatus,jdbcType=VARCHAR},
+			current_timestamp(),
+			#{item.endtime,jdbcType=TIMESTAMP},
+			#{item.sperequire,jdbcType=VARCHAR},
+			#{item.dishnum,jdbcType=VARCHAR},
+			#{item.userName,jdbcType=VARCHAR},
+			#{item.orderprice,jdbcType=DECIMAL},
+			#{item.discountrate,jdbcType=VARCHAR},
+			#{item.discountamount,jdbcType=VARCHAR},
+			#{item.fishcode,jdbcType=VARCHAR},
+			#{item.dishtype,jdbcType=VARCHAR},
+			#{item.status,jdbcType=VARCHAR},
+			#{item.dishunit,jdbcType=VARCHAR},
+			#{item.payamount,jdbcType=VARCHAR},
+			#{item.predisamount,jdbcType=VARCHAR},
+			#{item.couponid,jdbcType=VARCHAR},
+			#{item.disuserid,jdbcType=VARCHAR},
+			#{item.relatedishid,jdbcType=VARCHAR},
+			#{item.printtype,jdbcType=VARCHAR},
+			#{item.ispot,jdbcType=VARCHAR},
+			#{item.orignalprice,jdbcType=DECIMAL},
+			#{item.pricetype,jdbcType=VARCHAR},
+			#{item.ordertype,jdbcType=INTEGER},
+			#{item.parentkey,jdbcType=VARCHAR},
+			#{item.superkey,jdbcType=VARCHAR},
+			#{item.ismaster,jdbcType=INTEGER},
+			#{item.primarykey,jdbcType=VARCHAR},
+			#{item.isadddish,jdbcType=INTEGER},
+			#{item.childdishtype,jdbcType=INTEGER}
+			)
 		</foreach>
-</insert>
+	</insert>
 
-    
-  <update id="updateDiscardDish" parameterType="java.util.Map">
-		update   t_order_detail 
-		 set status = '5'
-		 where  orderid = #{orderid,jdbcType=VARCHAR} 
-		 and   dishid  in 
-		     <foreach item="item" index="index" collection="ids" 
-                         open="(" separator="," close=")">
-                        #{item,jdbcType=VARCHAR}
-           </foreach>
-</update>
+	<insert id="insertTempOnce" parameterType="java.util.ArrayList">
 
- <delete id="deleteDish" parameterType="java.util.Map">
-		 delete from   t_order_detail 
-		 <where>
-		     <if test="orderid != null ">
-			  and 	orderid =#{orderid,jdbcType=VARCHAR}
-			</if>
-		 	<if test="orderid != null ">
-			  and 	orderid =#{orderid,jdbcType=VARCHAR}
-			</if>
-		 	<if test="dishid != null ">
-			  and 	dishid =#{dishid,jdbcType=VARCHAR}
-			</if>
-		 	<if test="dishunit != null ">
-			  and 	dishunit =#{dishunit,jdbcType=VARCHAR}
-			</if>
-		 	<if test="relatedishid != null ">
-			  and 	relatedishid =#{relatedishid,jdbcType=VARCHAR}
-			</if>
-		 	<if test="dishtype != null ">
-			  and 	dishtype =#{dishtype,jdbcType=INTEGER}
-			</if>
-		 	<if test="deleteDish != null ">
-			  and 	deleteDish =#{dishtype,jdbcType=INTEGER}
-			</if>
-		   <if test="parentkey != null ">
-			  and 	parentkey =#{parentkey,jdbcType=VARCHAR}
-			</if>
-			
-		    <if test="childdishtype != null ">
-			  and 	childdishtype =#{childdishtype,jdbcType=VARCHAR}
-			</if>
-			 <if test="primarykey != null ">
-			  and 	primarykey =#{primarykey,jdbcType=VARCHAR}
-			</if>
-		    <if test="superkey != null ">
-			  and 	superkey =#{superkey,jdbcType=VARCHAR}
-			</if>
-		 
-		 </where>
-</delete>
+		insert into t_order_detail_temp (orderid, dishid,
+		dishstatus,begintime, endtime, sperequire,
+		dishnum,userName,orderprice,dishunit,orignalprice,pricetype,printtype,orderseq,relatedishid,dishtype,ordertype,parentkey,superkey,ismaster,primarykey,isadddish,childdishtype,ispot)
+		<foreach collection="list" item="item" index="index"
+			separator=" union all ">
+			select #{item.orderid,jdbcType=VARCHAR},
+			#{item.dishid,jdbcType=VARCHAR},
+			#{item.dishstatus,jdbcType=VARCHAR},
+			current_timestamp(),
+			#{item.endtime,jdbcType=TIMESTAMP},
+			#{item.sperequire,jdbcType=VARCHAR},
+			#{item.dishnum,jdbcType=VARCHAR},
+			#{item.userName,jdbcType=VARCHAR},
+			#{item.orderprice,jdbcType=DECIMAL},
+			#{item.dishunit,jdbcType=VARCHAR},
+			#{item.orignalprice,jdbcType=DECIMAL},
+			#{item.pricetype,jdbcType=VARCHAR},
+			#{item.printtype,jdbcType=VARCHAR},
+			#{item.orderseq,jdbcType=INTEGER},
+			#{item.relatedishid,jdbcType=VARCHAR},
+			#{item.dishtype,jdbcType=INTEGER},
+			#{item.ordertype,jdbcType=INTEGER},
+			#{item.parentkey,jdbcType=VARCHAR},
+			#{item.superkey,jdbcType=VARCHAR},
+			#{item.ismaster,jdbcType=INTEGER},
+			#{item.primarykey,jdbcType=VARCHAR},
+			#{item.isadddish,jdbcType=INTEGER},
+			#{item.childdishtype,jdbcType=INTEGER},
+			#{item.ispot,jdbcType=INTEGER}
 
-  <delete id="deleteDishById" parameterType="java.util.Map">
-		 delete from   t_order_detail 
-			 where orderdetailid = #{orderdetailid,jdbcType=VARCHAR}
-		 
-</delete>
-  
- <update id="updateOrderDetailDishNum" parameterType="java.util.Map">
-		update   t_order_detail 
-		 set dishnum = dishnum - #{dishNum,jdbcType=INTEGER}
-		 where  orderid = #{orderid,jdbcType=VARCHAR} 
-		 and dishunit = #{dishunit,jdbcType=VARCHAR}
-		 and   dishid  in 
-		     <foreach item="item" index="index" collection="ids" 
-                         open="(" separator="," close=")">
-                        #{item,jdbcType=VARCHAR}
-           </foreach>
-</update>
+			from dual
+		</foreach>
+	</insert>
 
 
-  <update id="update" parameterType="com.candao.www.data.model.TorderDetail" >
-    update t_order_detail
-    <set >
-       <if test="orderid != null" >
-        orderid = #{orderid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishid != null" >
-       dishid = #{dishid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishstatus != null" >
-       dishstatus =  #{dishstatus,jdbcType=VARCHAR},
-      </if>
-      <if test="begintime != null" >
-        begintime = #{begintime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endtime != null" >
-       endtime = #{endtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sperequire != null" >
-        sperequire = #{sperequire,jdbcType=VARCHAR},
-      </if>
-      <if test="dishnum != null" >
-       dishnum = #{dishnum,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null" >
-       userName =  #{userName,jdbcType=VARCHAR},
-      </if>
-       <if test="orderprice != null" >
-      orderprice =  #{orderprice,jdbcType=DECIMAL},
-      </if>
-      
-      <if test="dishunit != null" >
-      dishunit =  #{dishunit,jdbcType=VARCHAR},
-      </if>
-      <if test="orignalprice != null" >
-      orignalprice =  #{orignalprice,jdbcType=VARCHAR},
-      </if>
-     <if test="pricetype != null" >
-      pricetype =  #{pricetype,jdbcType=VARCHAR},
-      </if>
-   
-    </set>
-    where orderid = #{orderid,jdbcType=VARCHAR}
-          and dishid = #{dishid,jdbcType=VARCHAR}
-           <if test="dishunit != null" >
-            and  dishunit =  #{dishunit,jdbcType=VARCHAR}
-           </if>
-           <if test="primarykey != null" >
-            and  primarykey =  #{primarykey,jdbcType=VARCHAR}
-           </if>
-  </update>
-  <update id="updateOrderDetail" parameterType="com.candao.www.data.model.TorderDetail" >
-    update t_order_detail
-    <set >
-       <if test="orderid != null" >
-        orderid = #{orderid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishid != null" >
-       dishid = #{dishid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishstatus != null" >
-       dishstatus =  #{dishstatus,jdbcType=VARCHAR},
-      </if>
-      <if test="begintime != null" >
-        begintime = #{begintime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endtime != null" >
-       endtime = #{endtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sperequire != null" >
-        sperequire = #{sperequire,jdbcType=VARCHAR},
-      </if>
-      <if test="dishnum != null" >
-       dishnum = #{dishnum,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null" >
-       userName =  #{userName,jdbcType=VARCHAR},
-      </if>
-       <if test="orderprice != null" >
-      orderprice =  #{orderprice,jdbcType=DECIMAL},
-      </if>
-      
-      <if test="dishunit != null" >
-      dishunit =  #{dishunit,jdbcType=VARCHAR},
-      </if>
-      <if test="orignalprice != null" >
-      orignalprice =  #{orignalprice,jdbcType=VARCHAR},
-      </if>
-     <if test="pricetype != null" >
-      pricetype =  #{pricetype,jdbcType=VARCHAR},
-      </if>
-   
-    </set>
-    where orderid = #{orderid,jdbcType=VARCHAR}
-          and dishid = #{dishid,jdbcType=VARCHAR}
-          and orderprice!=0
-          and dishunit=#{dishunit,jdbcType=VARCHAR}
-  </update>
-  
-  
-   <insert id="insertSelective" parameterType="com.candao.www.data.model.TorderDetail" >
-    insert into t_order_detail
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="orderid != null" >
-        orderid,
-      </if>
-      <if test="dishid != null" >
-        dishid,
-      </if>
-      <if test="dishstatus != null" >
-        dishstatus,
-      </if>
-      <if test="begintime != null" >
-        begintime,
-      </if>
-      <if test="endtime != null" >
-        endtime,
-      </if>
-      <if test="sperequire != null" >
-        sperequire,
-      </if>
-      <if test="dishnum != null" >
-        dishnum,
-      </if>
-       <if test="userName != null" >
-        userName,
-      </if>
-        <if test="orderprice != null" >
-        orderprice,
-      </if>
-      <if test="dishunit != null" >
-        dishunit,
-      </if>
-        <if test="orignalprice != null" >
-        orignalprice,
-      </if>
-        <if test="pricetype != null" >
-        pricetype,
-      </if>
-       
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="orderid != null" >
-        #{orderid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishid != null" >
-        #{dishid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishstatus != null" >
-        #{dishstatus,jdbcType=VARCHAR},
-      </if>
-      <if test="begintime != null" >
-        #{begintime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endtime != null" >
-        #{endtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sperequire != null" >
-        #{sperequire,jdbcType=VARCHAR},
-      </if>
-      <if test="dishnum != null" >
-        #{dishnum,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null" >
-        #{userName,jdbcType=VARCHAR},
-      </if>
-       <if test="orderprice != null" >
-       #{orderprice,jdbcType=DECIMAL},
-      </if>
-      
-      <if test="dishunit != null" >
-       #{dishunit,jdbcType=VARCHAR},
-      </if>
-         <if test="orignalprice != null" >
-       #{orignalprice,jdbcType=VARCHAR},
-      </if>
-     <if test="pricetype != null" >
-         #{pricetype,jdbcType=VARCHAR},
-      </if>
-      
-          
-    </trim>
-  </insert>
-  
-  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.TorderDetail" >
-    update t_order_detail
-    <set >
-     <if test="orderid != null" >
-        #{orderid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishid != null" >
-        #{dishid,jdbcType=VARCHAR},
-      </if>
-      <if test="dishstatus != null" >
-        #{dishstatus,jdbcType=VARCHAR},
-      </if>
-      <if test="begintime != null" >
-        #{begintime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="endtime != null" >
-        #{endtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sperequire != null" >
-        #{sperequire,jdbcType=VARCHAR},
-      </if>
-      <if test="dishnum != null" >
-        #{dishnum,jdbcType=VARCHAR},
-      </if>
-      <if test="userName != null" >
-        #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="orderprice != null" >
-        #{orderprice,jdbcType=DECIMAL},
-      </if>
-      <if test="dishunit != null" >
-       #{dishunit,jdbcType=VARCHAR},
-      </if>
-       <if test="orignalprice != null" >
-       #{orignalprice,jdbcType=VARCHAR},
-      </if>
-     <if test="pricetype != null" >
-        #{pricetype,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where orderid = #{orderid,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TorderDetail" >
-    update t_order_detail
-    set 
-    orderid =  #{orderid,jdbcType=VARCHAR},
-    dishid = #{dishid,jdbcType=VARCHAR}, 
-    dishstatus = #{dishstatus,jdbcType=VARCHAR}, 
-    begintime =   #{begintime,jdbcType=TIMESTAMP}, 
-    endtime = #{endtime,jdbcType=TIMESTAMP},
-    sperequire =  #{sperequire,jdbcType=VARCHAR}, 
-    dishnum =  #{dishnum,jdbcType=VARCHAR},
-    userName =  #{userName,jdbcType=VARCHAR},
-    orderprice = #{orderprice,jdbcType=DECIMAL},
-     dishunit = #{dishunit,jdbcType=VARCHAR},
-      orignalprice =  #{orignalprice,jdbcType=VARCHAR},
-      pricetype =  #{pricetype,jdbcType=VARCHAR}
-      where orderid =   #{orderid,jdbcType=VARCHAR} 
-           and dishid = #{dishid,jdbcType=VARCHAR}
-  </update>
-  
-    <update id="updateOrderid" parameterType="java.util.Map" >
-    update t_order_detail
-    set 
-    orderid =  #{orderid,jdbcType=VARCHAR} 
-    where 
-     orderid in 	   
-	       <foreach item="item" index="index" collection="ids" 
-                         open="(" separator="," close=")">
-                        #{item}
-          </foreach>
-          
-  </update>
-  
-  
-  
-    <select id="findByOrderNoAndDishNo" resultMap="BaseResultMap" parameterType="java.util.Map" >
-    select 
-    <include refid="Base_Column_List" />
-    from t_order_detail
-    where orderid = #{orderid,jdbcType=VARCHAR}
-     and dishid = #{dishid,jdbcType=VARCHAR}
-  </select>
-  
-  <select id="countByPrimarykey" resultType="java.lang.Integer" parameterType="java.lang.String">
-  	select count(1) from t_order_detail where primarykey in
-  	<foreach collection="primarykeys" item="item" index="index" open="(" close=")" separator=",">
-	#{item.primarykey} 
-	</foreach>
-  </select>
-    <select id="getByPrimarykey" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select primarykey  from t_order_detail where primarykey in
-        <foreach collection="primarykeys" item="item" index="index" open="(" close=")" separator=",">
-            #{item.primarykey}
-        </foreach>
-    </select>
-  <select id="find" parameterType="map" resultMap="BaseResultMap">
-	select 
-    <include refid="Base_Column_List" />
-     from t_order_detail
-    <where>
+	<update id="updateDiscardDish" parameterType="java.util.Map">
+		update t_order_detail
+		set status = '5'
+		where orderid = #{orderid,jdbcType=VARCHAR}
+		and dishid in
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+	<delete id="deleteDish" parameterType="java.util.Map">
+		delete from t_order_detail
+		<where>
+			<if test="orderid != null ">
+				and orderid =#{orderid,jdbcType=VARCHAR}
+			</if>
+			<if test="orderid != null ">
+				and orderid =#{orderid,jdbcType=VARCHAR}
+			</if>
+			<if test="dishid != null ">
+				and dishid =#{dishid,jdbcType=VARCHAR}
+			</if>
+			<if test="dishunit != null ">
+				and dishunit =#{dishunit,jdbcType=VARCHAR}
+			</if>
+			<if test="relatedishid != null ">
+				and relatedishid =#{relatedishid,jdbcType=VARCHAR}
+			</if>
+			<if test="dishtype != null ">
+				and dishtype =#{dishtype,jdbcType=INTEGER}
+			</if>
+			<if test="deleteDish != null ">
+				and deleteDish =#{dishtype,jdbcType=INTEGER}
+			</if>
+			<if test="parentkey != null ">
+				and parentkey =#{parentkey,jdbcType=VARCHAR}
+			</if>
+
+			<if test="childdishtype != null ">
+				and childdishtype =#{childdishtype,jdbcType=VARCHAR}
+			</if>
+			<if test="primarykey != null ">
+				and primarykey =#{primarykey,jdbcType=VARCHAR}
+			</if>
+			<if test="superkey != null ">
+				and superkey =#{superkey,jdbcType=VARCHAR}
+			</if>
+
+		</where>
+	</delete>
+
+	<delete id="deleteDishById" parameterType="java.util.Map">
+		delete from t_order_detail
+		where orderdetailid = #{orderdetailid,jdbcType=VARCHAR}
+
+	</delete>
+
+	<update id="updateOrderDetailDishNum" parameterType="java.util.Map">
+		update t_order_detail
+		set dishnum = dishnum - #{dishNum,jdbcType=INTEGER}
+		where orderid = #{orderid,jdbcType=VARCHAR}
+		and dishunit = #{dishunit,jdbcType=VARCHAR}
+		and dishid in
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+
+	<update id="update" parameterType="com.candao.www.data.model.TorderDetail">
+		update t_order_detail
+		<set>
+			<if test="orderid != null">
+				orderid = #{orderid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishid != null">
+				dishid = #{dishid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishstatus != null">
+				dishstatus = #{dishstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="begintime != null">
+				begintime = #{begintime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				endtime = #{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sperequire != null">
+				sperequire = #{sperequire,jdbcType=VARCHAR},
+			</if>
+			<if test="dishnum != null">
+				dishnum = #{dishnum,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				userName = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderprice != null">
+				orderprice = #{orderprice,jdbcType=DECIMAL},
+			</if>
+
+			<if test="dishunit != null">
+				dishunit = #{dishunit,jdbcType=VARCHAR},
+			</if>
+			<if test="orignalprice != null">
+				orignalprice = #{orignalprice,jdbcType=VARCHAR},
+			</if>
+			<if test="pricetype != null">
+				pricetype = #{pricetype,jdbcType=VARCHAR},
+			</if>
+
+		</set>
+		where orderid = #{orderid,jdbcType=VARCHAR}
+		and dishid = #{dishid,jdbcType=VARCHAR}
+		<if test="dishunit != null">
+			and dishunit = #{dishunit,jdbcType=VARCHAR}
+		</if>
+		<if test="primarykey != null">
+			and primarykey = #{primarykey,jdbcType=VARCHAR}
+		</if>
+	</update>
+	<update id="updateOrderDetail" parameterType="com.candao.www.data.model.TorderDetail">
+		update t_order_detail
+		<set>
+			<if test="orderid != null">
+				orderid = #{orderid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishid != null">
+				dishid = #{dishid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishstatus != null">
+				dishstatus = #{dishstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="begintime != null">
+				begintime = #{begintime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				endtime = #{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sperequire != null">
+				sperequire = #{sperequire,jdbcType=VARCHAR},
+			</if>
+			<if test="dishnum != null">
+				dishnum = #{dishnum,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				userName = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderprice != null">
+				orderprice = #{orderprice,jdbcType=DECIMAL},
+			</if>
+
+			<if test="dishunit != null">
+				dishunit = #{dishunit,jdbcType=VARCHAR},
+			</if>
+			<if test="orignalprice != null">
+				orignalprice = #{orignalprice,jdbcType=VARCHAR},
+			</if>
+			<if test="pricetype != null">
+				pricetype = #{pricetype,jdbcType=VARCHAR},
+			</if>
+
+		</set>
+		where orderid = #{orderid,jdbcType=VARCHAR}
+		and dishid = #{dishid,jdbcType=VARCHAR}
+		and orderprice!=0
+		and dishunit=#{dishunit,jdbcType=VARCHAR}
+	</update>
+
+
+	<insert id="insertSelective" parameterType="com.candao.www.data.model.TorderDetail">
+		insert into t_order_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderid != null">
+				orderid,
+			</if>
+			<if test="dishid != null">
+				dishid,
+			</if>
+			<if test="dishstatus != null">
+				dishstatus,
+			</if>
+			<if test="begintime != null">
+				begintime,
+			</if>
+			<if test="endtime != null">
+				endtime,
+			</if>
+			<if test="sperequire != null">
+				sperequire,
+			</if>
+			<if test="dishnum != null">
+				dishnum,
+			</if>
+			<if test="userName != null">
+				userName,
+			</if>
+			<if test="orderprice != null">
+				orderprice,
+			</if>
+			<if test="dishunit != null">
+				dishunit,
+			</if>
+			<if test="orignalprice != null">
+				orignalprice,
+			</if>
+			<if test="pricetype != null">
+				pricetype,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderid != null">
+				#{orderid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishid != null">
+				#{dishid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishstatus != null">
+				#{dishstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="begintime != null">
+				#{begintime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				#{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sperequire != null">
+				#{sperequire,jdbcType=VARCHAR},
+			</if>
+			<if test="dishnum != null">
+				#{dishnum,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderprice != null">
+				#{orderprice,jdbcType=DECIMAL},
+			</if>
+
+			<if test="dishunit != null">
+				#{dishunit,jdbcType=VARCHAR},
+			</if>
+			<if test="orignalprice != null">
+				#{orignalprice,jdbcType=VARCHAR},
+			</if>
+			<if test="pricetype != null">
+				#{pricetype,jdbcType=VARCHAR},
+			</if>
+
+
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.TorderDetail">
+		update t_order_detail
+		<set>
+			<if test="orderid != null">
+				#{orderid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishid != null">
+				#{dishid,jdbcType=VARCHAR},
+			</if>
+			<if test="dishstatus != null">
+				#{dishstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="begintime != null">
+				#{begintime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				#{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sperequire != null">
+				#{sperequire,jdbcType=VARCHAR},
+			</if>
+			<if test="dishnum != null">
+				#{dishnum,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderprice != null">
+				#{orderprice,jdbcType=DECIMAL},
+			</if>
+			<if test="dishunit != null">
+				#{dishunit,jdbcType=VARCHAR},
+			</if>
+			<if test="orignalprice != null">
+				#{orignalprice,jdbcType=VARCHAR},
+			</if>
+			<if test="pricetype != null">
+				#{pricetype,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where orderid = #{orderid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TorderDetail">
+		update t_order_detail
+		set
+		orderid = #{orderid,jdbcType=VARCHAR},
+		dishid = #{dishid,jdbcType=VARCHAR},
+		dishstatus = #{dishstatus,jdbcType=VARCHAR},
+		begintime = #{begintime,jdbcType=TIMESTAMP},
+		endtime = #{endtime,jdbcType=TIMESTAMP},
+		sperequire = #{sperequire,jdbcType=VARCHAR},
+		dishnum = #{dishnum,jdbcType=VARCHAR},
+		userName = #{userName,jdbcType=VARCHAR},
+		orderprice = #{orderprice,jdbcType=DECIMAL},
+		dishunit = #{dishunit,jdbcType=VARCHAR},
+		orignalprice = #{orignalprice,jdbcType=VARCHAR},
+		pricetype = #{pricetype,jdbcType=VARCHAR}
+		where orderid = #{orderid,jdbcType=VARCHAR}
+		and dishid = #{dishid,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateOrderid" parameterType="java.util.Map">
+		update t_order_detail
+		set
+		orderid = #{orderid,jdbcType=VARCHAR}
+		where
+		orderid in
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+
+	</update>
+
+
+
+	<select id="findByOrderNoAndDishNo" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_detail
+		where orderid = #{orderid,jdbcType=VARCHAR}
+		and dishid = #{dishid,jdbcType=VARCHAR}
+	</select>
+
+	<select id="countByPrimarykey" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		select count(1) from t_order_detail where primarykey in
+		<foreach collection="primarykeys" item="item" index="index"
+			open="(" close=")" separator=",">
+			#{item.primarykey}
+		</foreach>
+	</select>
+	<select id="getByPrimarykey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select primarykey from t_order_detail where primarykey in
+		<foreach collection="primarykeys" item="item" index="index"
+			open="(" close=")" separator=",">
+			#{item.primarykey}
+		</foreach>
+	</select>
+
+	<select id="findorderByDish" parameterType="map" resultType="java.util.HashMap">
+		SELECT
+		tod.*, tdi.`level`
+		FROM
+		t_order_detail tod
+		LEFT JOIN t_dish tdi ON tod.dishid = tdi.dishid
+		WHERE
+		tod.orderid = #{orderid};
+
+	</select>
+	<select id="find" parameterType="map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_detail
+		<where>
 			<if test="orderid != null and orderid != ''">
 				and orderid=#{orderid}
 			</if>
@@ -582,7 +613,7 @@
 			<if test="discountrate != null and discountrate != ''">
 				and discountrate=#{discountrate}
 			</if>
-            <if test="discountamount != null and discountamount != ''">
+			<if test="discountamount != null and discountamount != ''">
 				and discountamount=#{discountamount}
 			</if>
 			<if test="fishcode != null and fishcode != ''">
@@ -591,224 +622,252 @@
 			<if test="dishtype != null and dishtype != ''">
 				and dishtype=#{dishtype}
 			</if>
-			  <if test="dishunit != null and dishunit != ''">
+			<if test="dishunit != null and dishunit != ''">
 				and dishunit=#{dishunit}
 			</if>
-			   <if test="orignalprice != null" >
-                and  orignalprice = #{orignalprice}
-            </if>
-           <if test="pricetype != null" >
-               and pricetype =  #{pricetype}
-            </if>
-           <if test="relatedishid != null" >
-               and relatedishid =  #{relatedishid}
-            </if>
-           <if test="ismaster != null" >
-               and ismaster =  #{ismaster}
-            </if>
-           <if test="parentkey != null" >
-               and parentkey =  #{parentkey}
-            </if>
+			<if test="orignalprice != null">
+				and orignalprice = #{orignalprice}
+			</if>
+			<if test="pricetype != null">
+				and pricetype = #{pricetype}
+			</if>
+			<if test="relatedishid != null">
+				and relatedishid = #{relatedishid}
+			</if>
+			<if test="ismaster != null">
+				and ismaster = #{ismaster}
+			</if>
+			<if test="parentkey != null">
+				and parentkey = #{parentkey}
+			</if>
 		</where>
 	</select>
-    <select id="findOne" parameterType="map" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from t_order_detail
-        <where>
-            <if test="orderid != null and orderid != ''">
-                and orderid=#{orderid}
-            </if>
-        </where>
-        LIMIT 1
-    </select>
+	<select id="findOne" parameterType="map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_detail
+		<where>
+			<if test="orderid != null and orderid != ''">
+				and orderid=#{orderid}
+			</if>
+		</where>
+		LIMIT 1
+	</select>
 	<select id="findTemp" parameterType="map" resultType="map">
-	select dishid from t_order_detail_temp
-    <where>
+		select dishid from t_order_detail_temp
+		<where>
 			<if test="orderid != null and orderid != ''">
 				and orderid=#{orderid}
 			</if>
 		</where>
 	</select>
 	<select id="findOrderDetailPad" parameterType="map" resultMap="findResultMap">
-	select t.orderprice,t.dishunit,t.primarykey,t.dishid,d.title dishname,t.userName,t.orderid,t.orderseq,
-	t.dishtype,t.ispot,t.dishnum,t.sperequire,t.dishstatus,t.islatecooke, t.pricetype
-	from t_order_detail t LEFT JOIN t_dish d on t.dishid=d.dishid 
-    <where>
-		<if test="orderid != null and orderid != ''">
-			and t.orderid=#{orderid}
-		</if>
-		<if test="dishid != null and dishid != ''">
-			and t.dishid=#{dishid}
-		</if>
-		<if test="dishtype != null and dishtype != ''">
-			and t.dishtype=#{dishtype}
-		</if>
-          <if test="ismaster != null" >
-              and t.ismaster =  #{ismaster}
-           </if>
-          <if test="parentkey != null" >
-              and t.parentkey =  #{parentkey}
-           </if>
-          <if test="childdishtype != null" >
-              and t.childdishtype =  #{childdishtype}
-           </if>
-	</where>
-</select>
+		select t.orderprice,t.dishunit,t.primarykey,t.dishid,d.title
+		dishname,t.userName,t.orderid,t.orderseq,
+		t.dishtype,t.ispot,t.dishnum,t.sperequire,t.dishstatus,t.islatecooke,
+		t.pricetype
+		from t_order_detail t LEFT JOIN t_dish d on t.dishid=d.dishid
+		<where>
+			<if test="orderid != null and orderid != ''">
+				and t.orderid=#{orderid}
+			</if>
+			<if test="dishid != null and dishid != ''">
+				and t.dishid=#{dishid}
+			</if>
+			<if test="dishtype != null and dishtype != ''">
+				and t.dishtype=#{dishtype}
+			</if>
+			<if test="ismaster != null">
+				and t.ismaster = #{ismaster}
+			</if>
+			<if test="parentkey != null">
+				and t.parentkey = #{parentkey}
+			</if>
+			<if test="childdishtype != null">
+				and t.childdishtype = #{childdishtype}
+			</if>
+		</where>
+	</select>
 	<!-- 对账单使用优惠 -->
 	<update id="updateOrderDetailWithPreferential" parameterType="java.util.List">
-		<if test=" null !=list and list.size >0 "> 
-			UPDATE t_order_detail  
+		<if test=" null !=list and list.size >0 ">
+			UPDATE t_order_detail
 			<trim prefix="set" suffixOverrides=",">
-<!-- 				<trim prefix="orignalprice =case" suffix="end,"> -->
-<!-- 	                 <foreach collection="list" item="item" index="index"> -->
-<!-- 	                          when ( dishid=#{item.dishid} and orderid=#{item.orderid} ) then #{item.orignalprice,jdbcType=DECIMAL} -->
-<!-- 	                 </foreach> -->
-<!--               	</trim> -->
-              	<trim prefix="couponid =case" suffix="end,">
-	                 <foreach collection="list" item="item" index="index">
-	                          when ( dishid=#{item.dishid} and orderid=#{item.orderid} )   then #{item.couponid,jdbcType=VARCHAR} 
-	                 </foreach>
-              	</trim>
+				<!-- <trim prefix="orignalprice =case" suffix="end,"> -->
+				<!-- <foreach collection="list" item="item" index="index"> -->
+				<!-- when ( dishid=#{item.dishid} and orderid=#{item.orderid} ) then 
+					#{item.orignalprice,jdbcType=DECIMAL} -->
+				<!-- </foreach> -->
+				<!-- </trim> -->
+				<trim prefix="couponid =case" suffix="end,">
+					<foreach collection="list" item="item" index="index">
+						when ( dishid=#{item.dishid} and orderid=#{item.orderid} ) then
+						#{item.couponid,jdbcType=VARCHAR}
+					</foreach>
+				</trim>
 			</trim>
-			 where 
-         	 	  orderprice>0 
-			
+			where
+			orderprice>0
+
 		</if>
 	</update>
-	
+
 	<update id="cancelPreferentialItemInOrder" parameterType="map">
-		update t_order_detail set orderprice = orignalprice,couponid=null  
-		where orderid=#{orderid} 
-		<if test=" null != preferentialid "> 
-		and couponid=#{preferentialid}
+		update t_order_detail set orderprice = orignalprice,couponid=null
+		where orderid=#{orderid}
+		<if test=" null != preferentialid ">
+			and couponid=#{preferentialid}
 		</if>
 	</update>
-	
-	<select id="getOrderDetailByPrimaryKey" parameterType="map" resultType="com.candao.www.data.model.TorderDetail">
-	    select 
-    <include refid="Base_Column_List" />
-     from t_order_detail
-     where primarykey = #{primarykey}
+
+	<select id="getOrderDetailByPrimaryKey" parameterType="map"
+		resultType="com.candao.www.data.model.TorderDetail">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_detail
+		where primarykey = #{primarykey}
 	</select>
-	
+
 	<update id="insertDiscardDishOnce" parameterType="map">
-	    
-	    insert into t_order_detail_discard select * from t_order_detail where orderid=#{orderid}  
-	       <if test="superkey != null" >
-              and  superkey =  #{superkey}
-           </if>
+
+		insert into t_order_detail_discard select * from t_order_detail where
+		orderid=#{orderid}
+		<if test="superkey != null">
+			and superkey = #{superkey}
+		</if>
 	</update>
-	
-	 <update id="insertDiscardDishSetOnce" parameterType="map">
-	    
-	    insert into t_order_detail_discard select * from t_order_detail where orderid=#{orderid}  
-	       <if test="superkey != null" >
-              and  superkey =  #{superkey}
-           </if>
+
+	<update id="insertDiscardDishSetOnce" parameterType="map">
+
+		insert into t_order_detail_discard select * from t_order_detail where
+		orderid=#{orderid}
+		<if test="superkey != null">
+			and superkey = #{superkey}
+		</if>
 	</update>
-	
-    <update id="updateDiscardUserId" parameterType="com.candao.www.data.model.TorderDetail">
-        UPDATE  t_order_detail_discard 
-		  set discarduserid = #{discardUserId},
-		      discardreason = #{discardReason}
-		  WHERE orderdetailid = #{orderdetailid}
+
+	<update id="updateDiscardUserId" parameterType="com.candao.www.data.model.TorderDetail">
+		UPDATE t_order_detail_discard
+		set discarduserid = #{discardUserId},
+		discardreason = #{discardReason}
+		WHERE orderdetailid = #{orderdetailid}
 	</update>
-	
-     <update id="updateDiscardDishSetUserId" parameterType="com.candao.www.data.model.TorderDetail">
-        UPDATE  t_order_detail_discard 
-		  set discarduserid = #{discardUserId},
-		      discardreason = #{discardReason}
-		  WHERE orderid = #{orderid} and superkey = #{superkey}
+
+	<update id="updateDiscardDishSetUserId" parameterType="com.candao.www.data.model.TorderDetail">
+		UPDATE t_order_detail_discard
+		set discarduserid = #{discardUserId},
+		discardreason = #{discardReason}
+		WHERE orderid = #{orderid} and superkey = #{superkey}
 	</update>
-	
-    
-    
-    <update id="updateDishWeight" parameterType="map">
-	    update t_order_detail set dishnum=#{dishnum} ,dishstatus='0' where dishid=#{dishid}
-	   and orderid=#{orderid} and primarykey=#{primarykey}
+
+
+
+	<update id="updateDishWeight" parameterType="map">
+		update t_order_detail set dishnum=#{dishnum} ,dishstatus='0' where
+		dishid=#{dishid}
+		and orderid=#{orderid} and primarykey=#{primarykey}
 	</update>
-	
-    <update id="updateDiscardDishUserIdOnce" parameterType="com.candao.www.data.model.TorderDetail">
-		UPDATE  t_order_detail_discard 
-		  set discarduserid = #{discardUserId}, discardreason = #{discardReason}
-		  WHERE orderdetailid IN (
-		    SELECT tod.orderdetailid FROM t_order_detail tod WHERE tod.orderid = #{orderid}
-		  )
-			
+
+	<update id="updateDiscardDishUserIdOnce" parameterType="com.candao.www.data.model.TorderDetail">
+		UPDATE
+		t_order_detail_discard
+		set discarduserid = #{discardUserId}, discardreason = #{discardReason}
+		WHERE orderdetailid IN (
+		SELECT tod.orderdetailid FROM t_order_detail tod WHERE tod.orderid =
+		#{orderid}
+		)
+
 	</update>
-    <update id="updateFishpotReason" parameterType="com.candao.www.data.model.TorderDetail">
-		UPDATE  t_order_detail_discard 
-		  set discarduserid = #{discardUserId}, discardreason = #{discardReason}
-		  WHERE primarykey = #{primarykey} or parentkey = #{primarykey}
-			
+	<update id="updateFishpotReason" parameterType="com.candao.www.data.model.TorderDetail">
+		UPDATE
+		t_order_detail_discard
+		set discarduserid = #{discardUserId}, discardreason = #{discardReason}
+		WHERE primarykey = #{primarykey} or parentkey = #{primarykey}
+
 	</update>
 	<update id="updateOrderDetailDiscard" parameterType="map">
-		UPDATE t_order_detail_discard
-                SET orderid = #{sourceOrderid}
-                WHERE orderid = #{targetOrderid};
+		UPDATE
+		t_order_detail_discard
+		SET orderid = #{sourceOrderid}
+		WHERE orderid = #{targetOrderid};
 	</update>
-    <update id="deletefishpot" parameterType="map">
-		delete from t_order_detail where primarykey = #{primarykey} or parentkey = #{primarykey}
-			
+	<update id="deletefishpot" parameterType="map">
+		delete from
+		t_order_detail where primarykey = #{primarykey} or parentkey =
+		#{primarykey}
+
 	</update>
-		<update id="insertDiscardfishpot" parameterType="map">
-	    
-	    insert into t_order_detail_discard select * from t_order_detail where primarykey = #{primarykey} or parentkey = #{primarykey}  
+	<update id="insertDiscardfishpot" parameterType="map">
+
+		insert into t_order_detail_discard select * from t_order_detail where
+		primarykey = #{primarykey} or parentkey = #{primarykey}
 	</update>
-		<update id="updateDishCall" parameterType="map">
-	    
-	    update t_order_detail set islatecooke=#{islatecooke} where primarykey = #{primarykey} or parentkey = #{primarykey} 
+	<update id="updateDishCall" parameterType="map">
+
+		update t_order_detail set islatecooke=#{islatecooke} where primarykey =
+		#{primarykey} or parentkey = #{primarykey}
 	</update>
-	
-	 <select id="getOrderDetailByOrderId" parameterType="map" resultMap="BaseResultMapSimple">
-	     select t.dishid,t.dishnum,(SELECT id from t_dish_unit u where u.dishid=t.dishid and u.unit=t.dishunit) as dishunit from t_order_detail t where t.orderid =#{orderid}
-	 </select>
-	
-	<select id="getDishesInfoByOrderId" resultType="java.util.HashMap" parameterType="map">
-		select 
+
+	<select id="getOrderDetailByOrderId" parameterType="map"
+		resultMap="BaseResultMapSimple">
+		select t.dishid,t.dishnum,(SELECT id from t_dish_unit u where
+		u.dishid=t.dishid and u.unit=t.dishunit) as dishunit from
+		t_order_detail t where t.orderid =#{orderid}
+	</select>
+
+	<select id="getDishesInfoByOrderId" resultType="java.util.HashMap"
+		parameterType="map">
+		select
 		t.dishnum,d.title,t.orderprice
 		from t_order_detail t
 		LEFT OUTER JOIN t_dish d on t.dishid=d.dishid
 		where t.orderid=#{orderid}
 		order by t.begintime desc
 	</select>
-	<select id="selectorderinfos" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select o.userid,t.tableNo,a.areaname from t_order o 
+
+	<select id="selectorderinfos" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		select o.userid,t.tableNo,a.areaname from t_order o
 		LEFT OUTER JOIN t_table t on o.tableids=t.tableid
-		LEFT OUTER JOIN t_tablearea a on t.areaid=a.areaid
+		LEFT OUTER JOIN
+		t_tablearea a on t.areaid=a.areaid
 		where o.orderid=#{orderid}
 	</select>
-	
+
 	<update id="updateOrderinfo" parameterType="map">
-		update t_order set dueamount=#{castmoney},ymamount=#{youmian},ssamount=#{paymoney} where orderid=#{orderno}
+		update t_order set
+		dueamount=#{castmoney},ymamount=#{youmian},ssamount=#{paymoney} where
+		orderid=#{orderno}
 	</update>
-	
+
 	<select id="getItemSellDetail" parameterType="map" resultType="java.util.HashMap">
-		select CONCAT(d.title,'(',od.dishunit,')') as 'dishName', SUM(od.dishnum) as 'dishCount', SUM(od.debitamount) as 'totlePrice'
-		from t_order_detail od, t_dish d 
-		where 1=1 
+		select CONCAT(d.title,'(',od.dishunit,')') as 'dishName',
+		SUM(od.dishnum) as 'dishCount', SUM(od.debitamount) as 'totlePrice'
+		from t_order_detail od, t_dish d
+		where 1=1
 		and od.dishid in (
-			select dishid from t_dish where dishtype = 0 
-		) 
-		and od.orderid in (
-			select orderid 
-			from t_order 
-			where begintime BETWEEN #{startTime} and #{endTime} 
-			and orderstatus = '3' 
+		select dishid from t_dish where dishtype = 0
 		)
-		and d.dishid = od.dishid 
-		GROUP BY od.dishid , od.dishunit 
+		and od.orderid in (
+		select orderid
+		from t_order
+		where begintime BETWEEN #{startTime} and #{endTime}
+		and orderstatus = '3'
+		)
+		and d.dishid = od.dishid
+		GROUP BY od.dishid , od.dishunit
 	</select>
 	<update id="updateOrderDetailWithPreferentialNew" parameterType="map">
-		UPDATE t_order_detail set couponid=#{preferentialid} where orderid=#{orderid} and orderprice>0  and dishid in (${dishids})
+		UPDATE t_order_detail set couponid=#{preferentialid} where
+		orderid=#{orderid} and orderprice>0 and dishid in (${dishids})
 	</update>
 	<delete id="deleteTemp" parameterType="map">
-		delete from t_order_detail_temp where orderid=#{orderid}
+		delete from
+		t_order_detail_temp where orderid=#{orderid}
 	</delete>
 	<update id="updateOrderDetailForMergeTable" parameterType="map">
 		UPDATE t_order_detail
-                SET orderid = #{sourceOrderid}
-                WHERE orderid = #{targetOrderid};
-    </update>
+		SET orderid = #{sourceOrderid}
+		WHERE orderid = #{targetOrderid};
+	</update>
 </mapper>

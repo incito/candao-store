@@ -1,10 +1,9 @@
 package com.candao.print.listener;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.StringUtils;
@@ -13,11 +12,9 @@ import com.candao.print.entity.PrintDish;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.listener.template.ListenerTemplate;
- 
 
 @Service
-public class CustDishListener extends AbstractQueueListener{
-	private Logger logger= LoggerFactory.getLogger(CustDishListener.class);
+public class CustDishListener extends AbstractQueueListener {
 
 	/**
 	 * 
@@ -27,7 +24,7 @@ public class CustDishListener extends AbstractQueueListener{
 	public String receiveMessage(String message) {
 		return null;
 	}
-	
+
 	@Override
 	protected void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer, ListenerTemplate template)
 			throws Exception {
@@ -42,9 +39,9 @@ public class CustDishListener extends AbstractQueueListener{
 		// 单号
 		writer.write(StringUtils.bSubstring2(billName, billName.length()));
 		writer.write("\r\n");
-		
-//		Object[] portName = template.getPrinterPortMsg(object);
-//		this.write(writer, portName);
+
+		// Object[] portName = template.getPrinterPortMsg(object);
+		// this.write(writer, portName);
 
 		writer.flush();
 		// 居中
@@ -81,8 +78,7 @@ public class CustDishListener extends AbstractQueueListener{
 		}
 
 		writer.write("------------------------------------------\r\n");
-
-		writer.flush();//
+		writer.flush();
 
 		// -------------------------------分割点-----------------------------------
 		socketOut.write(template.getBodyFont());
@@ -113,17 +109,65 @@ public class CustDishListener extends AbstractQueueListener{
 		socketOut.write(PrinterConstant.getClear_font());
 
 		writer.write("------------------------------------------\r\n");
-		socketOut.write(template.setAlignCenter());
-		writer.write("欢迎品尝       谢谢惠顾\r\n");
-		socketOut.write(template.setAlignLeft());
+		writer.flush();
+		
+		// 菜品套餐信息
+		String parentDishName = "";
+		List<String> buffer = new LinkedList<>();
+		for (PrintDish it : object.getpDish()) {
+			if (it.getParentDishName() != null && !"".equals(it.getParentDishName())) {
+				String parentName = StringUtils.split2(it.getParentDishName(), "#");
+				if (!buffer.contains(parentName))
+					buffer.add(parentName);
+			}
+		}
+		for (int i = 0; i < buffer.size(); i++) {
+			if (i != 0) {
+				parentDishName = parentDishName.concat("，").concat(buffer.get(i));
+			} else {
+				parentDishName = parentDishName.concat(buffer.get(i));
+			}
+		}
 
-		logger.info("------------------------");
-		logger.info("打印客用单，订单号：" + object.getOrderNo());
-		logger.info( "菜品明细："+ Arrays.toString(text));
+		// 全单备注
+		String totalSpecial = object.getpDish().get(0).getGlobalsperequire();
+		List<String> bufferList = new ArrayList<>();
+		if (totalSpecial != null && !totalSpecial.isEmpty()) {
+			bufferList.add(totalSpecial);
+		}
+		socketOut.write(template.getBodyFont());
+		// 填写菜品套餐信息
+		if (parentDishName != null && !"".equals(parentDishName)) {
+			// 套餐备注换行
+			String[] dishName = {"全单备注：" + parentDishName };
+			Integer[] dishLength = template.getNoteLength();
+			String[] parentDishNameLineFeed = StringUtils.getLineFeedText(dishName, dishLength);
+			parentDishNameLineFeed[0] = parentDishNameLineFeed[0];
+			for (int j = 0; j < parentDishNameLineFeed.length; j++) {
+				writer.write(parentDishNameLineFeed[j] + "\r\n");
+			}
+		} else {
+			if (bufferList != null && !bufferList.isEmpty()) {
+				String temp = bufferList.get(0);
+				bufferList.set(0, "全单备注:" + temp);
+			}
+		}
+
+		// 忌口信息
+		if (bufferList != null && !bufferList.isEmpty()) {
+			for (String it : bufferList) {
+				String[] specialName = { it };
+				Integer[] specialLength = template.getNoteLength();
+				String[] specialLineFeed = StringUtils.getLineFeedText(specialName, specialLength);
+				for (int j = 0; j < specialLineFeed.length; j++) {
+					writer.write(specialLineFeed[j] + "\r\n");
+				}
+			}
+		}
 	}
 
-	public PrintData receiveMessage(PrintObj object , ListenerTemplate template) throws Exception {
-		return prepareData(object,new PrintData(),template);
+	public PrintData receiveMessage(PrintObj object, ListenerTemplate template) throws Exception {
+		return prepareData(object, new PrintData(), template);
 	}
 
 }

@@ -46,11 +46,14 @@ import com.candao.www.data.model.TbPreferentialActivitySpecialStamp;
 import com.candao.www.data.model.TbPreferentialTypeDict;
 import com.candao.www.data.model.TbVoucher;
 import com.candao.www.data.model.Tbbranch;
-import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.data.model.User;
+import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
+import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.utils.SessionUtils;
+import com.candao.www.utils.preferential.CalMenuOrderAmount;
+import com.candao.www.utils.preferential.CalMenuOrderAmountInterface;
 import com.candao.www.utils.preferential.CalPreferentialStrategyInterface;
 import com.candao.www.utils.preferential.StrategyFactory;
 import com.candao.www.webroom.model.DiscountTicketsVo;
@@ -58,7 +61,9 @@ import com.candao.www.webroom.model.GrouponTicketsVO;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.model.PreferentialActivitySpecialStampVO;
 import com.candao.www.webroom.model.VoucherVo;
+import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TableService;
 
 /**
  * @author zhao
@@ -85,6 +90,13 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	private TdishDao tdishDao;
 	@Autowired
 	private TorderDetailPreferentialDao orderDetailPreferentialDao;
+	@Autowired
+	private CaleTableAmountMapper caleTableAmountMapper;
+	@Autowired
+	private DataDictionaryService dataDictionaryService;
+
+	@Autowired
+	private OrderMapper orderMapper;
 
 	/*
 	 * (non-Javadoc)
@@ -1048,26 +1060,22 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	@Override
 	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params) {
 		/** 参数解析 **/
-		String orderid = (String) params.get("orderid"); // 账单号
-		String preferentialid = (String) params.get("preferentialid"); // 优惠活动id
-		String type = (String) params.get("type");
-		params.put("preferentialNum", "0");
-		params.put("preferentialAmout", "0");
-		params.put("isCustom", "1");
-
+		String orderid = String.valueOf(params.get("orderid")); // 账单号
+		String preferentialid = String.valueOf(params.get("preferentialid")); // 优惠活动id
+		String type = String.valueOf(params.get("type"));
+		type=type.contains("0")?type:"0"+type;
+		params.put("type", type);
+		String isCustom=String.valueOf(params.get("isCustom"));
 		OperPreferentialResult result = new OperPreferentialResult();
 		try {
-			// 默认设置为1，代表成功，每次认为操作失败后，设置为0
-			result.setResult(1);
-			if (StringUtils.isBlank(orderid) || StringUtils.isBlank(preferentialid)) {
-				result.setResult(0);
-				result.setMsg("账单号或请求使用的优惠活动编号为空!");
+			if (StringUtils.isBlank(orderid)) {
 			} else {
+				if(isCustom!=null&& isCustom.equals("2")&&type.equals("03")){
+					type="Auto";
+				}
 				CalPreferentialStrategyInterface straFactory = StrategyFactory.INSTANCE.buildAnimal(type);
 				if (straFactory == null) {
 					result.setAmount(new BigDecimal(0).setScale(2, RoundingMode.HALF_UP));
-					result.setResult(0);
-					result.setMsg("无法根据指定类型的优惠券!");
 				} else {
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
 							torderDetailDao, orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
@@ -1077,8 +1085,12 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
 					result.setAmount((BigDecimal) resultMap.get("amount"));
-					result.setResult(1);
 					result.setDetailPreferentials(detailPreferentials);
+					// 是否计算收入金额
+					if (!params.containsKey("resultAmount")) {
+						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService, result, orderMapper);
+					}
+
 				}
 			}
 
@@ -1152,18 +1164,18 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	public OperPreferentialResult cancelPreferentialItemInOrder(String orderid, String preferentialid) {
 		OperPreferentialResult result = new OperPreferentialResult();
 		// 默认设置为1，代表成功，每次认为操作失败后，设置为0
-		result.setResult(1);
+		// result.setResult(1);
 
 		if (StringUtils.isBlank(orderid)) {
-			result.setResult(0);
-			result.setMsg("账单号为空!");
+			// result.setResult(0);
+			// result.setMsg("账单号为空!");
 		} else {
 			Map params = new HashMap();
 			params.put("orderid", orderid);
 			params.put("preferentialid", preferentialid);
 			int row = this.torderDetailDao.cancelPreferentialItemInOrder(params);
-			result.setResult(1);
-			result.setMsg("撤销优惠成功!");
+			// result.setResult(1);
+			// result.setMsg("撤销优惠成功!");
 			int a = 0 / 0;
 		}
 		return result;

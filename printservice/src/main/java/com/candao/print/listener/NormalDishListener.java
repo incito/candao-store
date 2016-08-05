@@ -125,7 +125,7 @@ public class NormalDishListener extends AbstractQueueListener {
 		writer.write(StringUtils.bSubstring2("单位", 2) + "\r\n");
 		writer.flush();//
 		logger.info("------------------------", "");
-		logger.info("打印菜品，订单号：" + object.getOrderNo() + "*菜品数量："
+		logger.info("[" + object.getCustomerPrinterIp() + "]打印菜品，订单号：" + object.getOrderNo() + "*菜品数量："
 				+ (object.getpDish() == null ? 0 : object.getpDish().size()), "");
 		socketOut.write(template.getBodyFont());
 		

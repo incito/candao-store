@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.Row;
 import com.candao.www.printer.listener.namespaceHandler.XmlNameSpaceHandler;
 
@@ -32,7 +31,6 @@ public class ListNamespaceHandler implements XmlNameSpaceHandler {
 					m++;
 				}
 			}
-
 		}
 	}
 

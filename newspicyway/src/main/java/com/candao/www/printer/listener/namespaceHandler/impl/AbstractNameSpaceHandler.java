@@ -17,27 +17,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.Row;
+import com.candao.www.printer.listener.XmlReaderContext;
 import com.candao.www.printer.listener.namespaceHandler.XmlNameSpaceHandler;
-import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
 import com.candao.www.utils.CloneUtil;
 
-import groovyjarjarasm.asm.commons.Method;
-
 public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
-
-	private String description;
-
-	private String align;
-
-	private String font;
-
-	private String[] locations;
-
-	private String[] datas;
-
-	private boolean lineFeed;
 
 	private Element element;
 
@@ -215,20 +200,16 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		Object temp = obj;
 		for (int j = fromindex; j < pros.length; j++) {
 			if (Map.class.isAssignableFrom(temp.getClass())) {
-				temp = ((Map)temp).get(pros[j]);
+				temp = ((Map) temp).get(pros[j]);
 			} else if (Collection.class.isAssignableFrom(temp.getClass())) {
 				throw new Exception("不能解析集合");
 			} else if (temp.getClass().isArray()) {
 				throw new Exception("不能解析数组");
 			} else {
-				try {
-					Field fields;
-					fields = temp.getClass().getDeclaredField(pros[j]);
-					fields.setAccessible(true);
-					temp = fields.get(temp);
-				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
-				}
+				Field fields;
+				fields = temp.getClass().getDeclaredField(pros[j]);
+				fields.setAccessible(true);
+				temp = fields.get(temp);
 			}
 		}
 		return temp;
@@ -251,53 +232,4 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 	public void defaultElement(Element ele) {
 		this.element = ele;
 	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getAlign() {
-		return align;
-	}
-
-	public void setAlign(String align) {
-		this.align = align;
-	}
-
-	public String getFont() {
-		return font;
-	}
-
-	public void setFont(String font) {
-		this.font = font;
-	}
-
-	public String[] getLocations() {
-		return locations;
-	}
-
-	public void setLocations(String[] locations) {
-		this.locations = locations;
-	}
-
-	public String[] getDatas() {
-		return datas;
-	}
-
-	public void setDatas(String[] datas) {
-		this.datas = datas;
-	}
-
-	public boolean isLineFeed() {
-		return lineFeed;
-	}
-
-	public void setLineFeed(boolean lineFeed) {
-		this.lineFeed = lineFeed;
-	}
-
 }

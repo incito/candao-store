@@ -57,11 +57,9 @@ public interface BusinessService {
     /**
      * 结业
      *
-     * @param userId 员工号
-     * @param ip     IP地址
      * @return
      */
-    String endWork(String userId, String ip);
+    String endWork();
 
     /**
      * 检查是否输入找零金
@@ -121,11 +119,11 @@ public interface BusinessService {
     String getOrder(String tableNo, String userId);
 
     String getServerTableInfo2(String tableNo, String userId);
-    
+
     String getServerTableInfo3(String orderId, String userId);
 
     String getServerTableList2(String orderId, String userId);
-    
+
     String getOrderByOrderID(String orderid, String userId);
 
     /**
@@ -159,9 +157,10 @@ public interface BusinessService {
 
     /**
      * 通过orderid得到餐桌详情
+     *
      * @param orderId
      * @param userId
      * @return
      */
-	String getServerTableInfoByOrderId(String orderId, String userId);
+    String getServerTableInfoByOrderId(String orderId, String userId);
 }

@@ -310,6 +310,20 @@
     <include refid="Base_Column_List" />
     from t_order 	   where 	    orderid=#{id}  limit 1
 	</select>
+	<select id="findOneOrderInfo" parameterType="map" resultMap="findResultMap">
+		SELECT
+		tor.*,
+		tbu.`name`
+		FROM
+		t_order tor
+		LEFT JOIN t_b_employee tbe ON tbe.job_number = tor.userid AND
+		tbe.branch_id=#{branchid}
+		LEFT JOIN t_b_user tbu ON tbu.id=tbe.user_id
+		WHERE
+		tor.orderid = #{id}
+		AND
+  		 tor.branchid=#{branchid}
+	</select>
     <select id="selectForUpdate" parameterType="map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />

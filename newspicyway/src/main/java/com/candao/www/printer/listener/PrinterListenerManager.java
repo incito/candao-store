@@ -5,7 +5,6 @@ import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.listener.QueueListener;
 import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.printer.listener.namespaceHandler.SimpleNamespaceHandlerResover;
-import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
 import com.candao.www.printer.listener.template.XMLTemplateDefinition;
 import com.candao.www.printer.v2.PrinterManager;
 

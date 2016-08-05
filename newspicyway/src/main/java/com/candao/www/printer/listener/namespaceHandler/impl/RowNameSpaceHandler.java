@@ -11,8 +11,6 @@ public class RowNameSpaceHandler extends AbstractNameSpaceHandler{
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -23,7 +21,6 @@ public class RowNameSpaceHandler extends AbstractNameSpaceHandler{
 
 	@Override
 	public List<Row> parse(Map<String, Object> obj) throws Exception {
-		// TODO Auto-generated method stub
 		return super.parseRow(obj);
 	}
 

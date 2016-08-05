@@ -7,4 +7,12 @@
         call p_caletableamount(#{orderId,jdbcType=VARCHAR,mode=IN})
         }
     </select>
+    
+    <update id="updateOrderDetailPayAmount" parameterType="String">
+        update t_order_detail set payamount=orderprice*dishnum where status!=5 and orderprice>0 and orderid=#{orderid};
+    </update>
+    
+    <update id="updateOrderDueAmount" parameterType="String">
+        update t_order set dueamount=(select IFNULL(sum(payamount),0) from t_order_detail where status!=5 and orderid=#{orderid}) where orderid=#{orderid};
+    </update>
 </mapper>

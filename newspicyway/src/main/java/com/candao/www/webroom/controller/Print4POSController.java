@@ -10,7 +10,7 @@ import com.candao.www.dataserver.controller.StoreInterfaceController;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.webroom.service.Print4POSService;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -56,8 +57,6 @@ public class Print4POSController {
 
 	private final static String RESULT = "result";
 	@Autowired
-	private ItemDetailController iteminfo;
-	@Autowired
 	private PreferentialAnalysisChartsController prefertialinfo;
 	@Autowired
 	private RegisterBillController registerBillinfo;
@@ -70,7 +69,7 @@ public class Print4POSController {
 		String res = null;
 		boolean flag = true;
 		try {
-			res = parse("getOrderInfo", orderInfo, aUserId, orderId, printType);
+			res = parse("getOrderInfo", orderInfo, null, aUserId, orderId, printType);
 			res = parseDSJson(res);
 			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
 			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
@@ -92,7 +91,7 @@ public class Print4POSController {
 		String res = null;
 		boolean flag = true;
 		try {
-			res = parse("getClearMachineData", storeInfo, aUserId, jsOrder, posId);
+			res = parse("getClearMachineData", storeInfo, null, aUserId, jsOrder, posId);
 			res = parseDSJson(res);
 			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
 			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
@@ -113,7 +112,7 @@ public class Print4POSController {
 		String res = null;
 		boolean flag = true;
 		try {
-			res = parse("getMemberSaleInfo", orderInfo, aUserId, orderId);
+			res = parse("getMemberSaleInfo", orderInfo, null, aUserId, orderId);
 			res = parseDSJson(res);
 			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
 			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
@@ -124,21 +123,6 @@ public class Print4POSController {
 			log.error("", e);
 		}
 
-		return getResponseMsg("", "", flag);
-	}
-
-	/**
-	 * 会员接口
-	 *
-	 * @param aUserId
-	 * @param orderId
-	 * @return
-	 */
-	@RequestMapping(value = "/StoreCardToNewPos", produces = { "application/json;charset=UTF-8" })
-	@ResponseBody
-	public String StoreCardToNewPos(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId) {
-		// TODO 会员接口，需要联调
-		boolean flag = true;
 		return getResponseMsg("", "", flag);
 	}
 
@@ -158,14 +142,14 @@ public class Print4POSController {
 	 *
 	 * @return
 	 */
-	@RequestMapping("/getItemSellDetail.json")
+	@RequestMapping("/getItemSellDetail")
 	@ResponseBody
 	public String getItemSellDetail(String flag) {
 		// TODO
 		String res = null;
 		boolean sucess = true;
 		try {
-			res = parse("getItemSellDetail", padInterface, flag);
+			res = parse("getItemSellDetail", padInterface, null, flag);
 			ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
 			print4posService.printItemSellDetail(resultInfo4Pos);
 		} catch (Exception e) {
@@ -189,7 +173,7 @@ public class Print4POSController {
 		String res = null;
 		boolean sucess = true;
 		try {
-			res = parse("TipList", tipController, flag);
+			res = parse("TipList", tipController, null, flag);
 			ResultTip4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
 			print4posService.printTip(resultInfo4Pos);
 		} catch (Exception e) {
@@ -207,7 +191,7 @@ public class Print4POSController {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping("/printInvoice.json")
+	@RequestMapping("/printInvoice")
 	@ResponseBody
 	public String printInvoice(@RequestBody String param) {
 		boolean sucess = true;
@@ -232,7 +216,7 @@ public class Print4POSController {
 	 * @param params
 	 * @return
 	 */
-	@RequestMapping("/StoreCardToNewPos.json")
+	@RequestMapping("/StoreCardToNewPos")
 	@ResponseBody
 	public String StoreCardToNewPos(@RequestBody String param) {
 		boolean sucess = true;
@@ -270,21 +254,32 @@ public class Print4POSController {
 		String dayReportList = null;
 		String billCountList = null;
 		String tipList = null;
-
+		Map<String, Object> temp = new HashMap<>();
+		temp.putAll(params);
 		try {
-			itemList = parse("getItemForList", itemDetailController, params, request);
+			// 获取营业明细（品类、金额）
+			itemList = parse("getItemForList", itemDetailController,
+					new Class<?>[] { Map.class, HttpServletRequest.class }, temp, request);
+			// 获取营业明细(团购券)
 			Map<String, Object> temp0 = new HashMap<>();
 			temp0.putAll(params);
 			temp0.put("shiftid", "-1");
 			temp0.put("bankcardno", "-1");
 			temp0.put("settlementWay", "-1");
 			temp0.put("type", "-1");
-			preferList = parse("findPreferential", prefertialinfo, temp0);
-			dayReportList = parse("getReportList", dayIncomeBillController, params);
-			billCountList = parse("BillCount", registerBillinfo, params);
-			tipList = parse("TipListByTime", itemDetailController, String.valueOf(params.get("beginTime")),
-					String.valueOf(params.get("endTime")));
-			print4posService.printBusinessDetail(itemList,preferList,dayReportList,billCountList,tipList);
+			preferList = parse("findPreferential", prefertialinfo, new Class<?>[] { Map.class }, temp0);
+			// 获取营业明细（其它）
+			dayReportList = parse("getReportList", dayIncomeBillController, new Class<?>[] { Map.class }, temp);
+			// 获取营业明细（获取挂账单位）
+			temp0.clear();
+			temp0.putAll(params);
+			temp0.put("billName", "0");
+			temp0.put("clearStatus", "0");
+			billCountList = parse("BillCount", registerBillinfo, new Class<?>[] { Map.class }, temp0);
+			// 获取小费总额
+			tipList = parse("TipListByTime", tipController, null, String.valueOf(temp.get("beginTime")),
+					String.valueOf(temp.get("endTime")));
+			print4posService.printBusinessDetail(params, itemList, preferList, dayReportList, billCountList, tipList);
 		} catch (Exception e) {
 			sucess = false;
 			e.printStackTrace();
@@ -304,26 +299,39 @@ public class Print4POSController {
 	 * @throws @throws
 	 *             Exception
 	 */
-	private String parse(String name, Object obj, Object... args) throws Exception {
+	private String parse(String name, Object obj, Class<?>[] classname, Object... args) throws Exception {
 		if (StringUtils.isEmpty(name) || obj == null) {
 			return null;
 		}
 		Object res = null;
 		Method method = null;
 		Class<?>[] insts = null;
-		if (args != null) {
-			insts = new Class<?>[args.length];
-			for (int i = 0; i < args.length; i++) {
-				insts[i] = args[i].getClass();
+		if (ArrayUtils.isEmpty(classname)) {
+			if (args != null) {
+				insts = new Class<?>[args.length];
+				for (int i = 0; i < args.length; i++) {
+					insts[i] = args[i].getClass();
+				}
 			}
+		} else {
+			insts = classname;
 		}
 		method = obj.getClass().getMethod(name, insts);
 		res = method.invoke(obj, args);
-		if (!String.class.isAssignableFrom(res.getClass())) {
-			res = JSON.toJSONString(res);
-		}
+		res = typeResolve(res);
 		res = StringUtil.unicodeTOUtf8(String.valueOf(res));
 		return res.toString();
+	}
+
+	private Object typeResolve(Object res) {
+		if (!String.class.isAssignableFrom(res.getClass())) {
+			if (res instanceof ModelAndView) {
+				res = JSON.toJSONString(((ModelAndView) res).getModel());
+			} else {
+				res = JSON.toJSONString(res);
+			}
+		}
+		return res;
 	}
 
 	private String getResponseMsg(Object data, String msg, boolean sucess) {

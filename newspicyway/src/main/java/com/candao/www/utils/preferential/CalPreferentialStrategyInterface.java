@@ -7,6 +7,8 @@ import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.webroom.model.OperPreferentialResult;
+import com.candao.www.webroom.service.DataDictionaryService;
 
 /**
  * 
@@ -17,4 +19,4 @@ public interface CalPreferentialStrategyInterface {
 	Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
 			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao);
-}
+	}

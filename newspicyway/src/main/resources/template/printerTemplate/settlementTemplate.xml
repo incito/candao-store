@@ -142,21 +142,21 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<row:row description="结束时间">
+	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="借宿时间">
+		<locations description="位置分布">
 			<list>
 				<value>40</value>
 			</list>
 		</locations>
-		<datas description="结束时间">
+		<datas description="分割线">
 			<list>
 				<value>---------------------------------------</value>
 			</list>
 		</datas>
 	</row:row>
-	<row:row description="结束时间">
+	<row:row description="品项表头">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
 		<locations description="借宿时间">
@@ -167,7 +167,7 @@
 				<value>10</value>
 			</list>
 		</locations>
-		<datas description="结束时间">
+		<datas description="品项表头">
 			<list>
 				<value>品项</value>
 				<value>数量</value>
@@ -199,15 +199,15 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<row:row description="品项">
+	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="品项">
+		<locations description="位置">
 			<list>
 				<value>40</value>
 			</list>
 		</locations>
-		<datas description="品项">
+		<datas description="数据">
 			<list>
 				<value>---------------------------------------</value>
 			</list>
@@ -284,7 +284,7 @@
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
-		<locations description="分割线">
+		<locations description="位置">
 			<list>
 				<value>40</value>
 			</list>

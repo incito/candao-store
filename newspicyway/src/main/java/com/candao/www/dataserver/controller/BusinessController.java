@@ -144,15 +144,13 @@ public class BusinessController {
     /**
      * 结业
      *
-     * @param userId 员工号
-     * @param ip     IP地址
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/endWork/{userId}/{ip}/", produces = {"application/json;charset=UTF-8"})
-    public String endWork(@PathVariable String userId, @PathVariable String ip) {
-        logger.info("###REQUEST### BusinessController endWork userId={} userName={} ip={} posId={} authorizer={}", userId, ip);
-        String result = businessService.endWork(userId, ip);
+    @RequestMapping(value = "/endWork/", produces = {"application/json;charset=UTF-8"})
+    public String endWork() {
+        logger.info("###REQUEST### BusinessController endWork");
+        String result = businessService.endWork();
         result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### BusinessController endWork response={}", result);
         result = StringUtil.string2Unicode(result);

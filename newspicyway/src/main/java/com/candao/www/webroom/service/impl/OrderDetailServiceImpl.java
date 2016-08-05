@@ -14,6 +14,7 @@ import com.candao.www.constant.Constant;
 import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.model.Order;
@@ -45,6 +46,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     //	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5000));
     private Log log = LogFactory.getLog(OrderDetailServiceImpl.class.getName());
 
+    @Autowired
+    private OrderOpService orderOpService;
+    
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String updateorderprice(Order orders) {
@@ -536,6 +540,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         tbPrintObjDao.insertPrintDishBatch(printDishs);
         torderDetailMapper.insertOnce(orderDetails);
+        //下单后立即计算应收金额
+        orderOpService.calcOrderAmount(order.getOrderid());
 
         if (null == printObj) {
             //更新桌台状态
@@ -2099,6 +2105,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             tbPrintObjDao.deleteDish(deleteMap);
 
         }
+        //退菜后重新计算应收金额
+        orderOpService.calcOrderAmount(orderId);
+        
         if (toperationLogService.save(toperationLog)) {
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         } else {

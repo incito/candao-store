@@ -50,6 +50,7 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 
 	@Override
 	public int deleteDetilPreFerInfo(Map<String, Object> params) {
+		params.put("clear", String.valueOf(params.get("clear")));
 		return daoSupport.delete(PREFIX + ".deleteDetilPreFerInfo",params);
 	}
 

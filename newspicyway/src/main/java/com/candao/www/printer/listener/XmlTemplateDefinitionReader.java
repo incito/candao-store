@@ -16,7 +16,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.candao.www.printer.listener.namespaceHandler.XmlNameSpaceHandler;
-import com.candao.www.printer.listener.namespaceHandler.XmlReaderContext;
 import com.candao.www.printer.listener.template.XMLTemplateDefinition;
 
 @Component

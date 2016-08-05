@@ -83,8 +83,8 @@
 	<delete id="deleteDetilPreFerInfo" parameterType="map">
 		DELETE FROM t_order_detail_preferential WHERE
 		orderid=#{orderid}
-		<if test="clear!=null and clear=='0'.tostring()">
-			and id=#{id}
+		<if test='clear != null and clear=="0"'>
+			and id=#{DetalPreferentiald,jdbcType=VARCHAR}
 		</if>
 	</delete>
 
