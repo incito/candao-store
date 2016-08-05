@@ -114,7 +114,7 @@ public class CustDishListener extends AbstractQueueListener {
 		// 菜品套餐信息
 		String parentDishName = "";
 		List<String> buffer = new LinkedList<>();
-		for (PrintDish it : object.getpDish()) {
+		for (PrintDish it : object.getList()) {
 			if (it.getParentDishName() != null && !"".equals(it.getParentDishName())) {
 				String parentName = StringUtils.split2(it.getParentDishName(), "#");
 				if (!buffer.contains(parentName))
@@ -130,7 +130,7 @@ public class CustDishListener extends AbstractQueueListener {
 		}
 
 		// 全单备注
-		String totalSpecial = object.getpDish().get(0).getGlobalsperequire();
+		String totalSpecial = object.getList().get(0).getGlobalsperequire();
 		List<String> bufferList = new ArrayList<>();
 		if (totalSpecial != null && !totalSpecial.isEmpty()) {
 			bufferList.add(totalSpecial);
