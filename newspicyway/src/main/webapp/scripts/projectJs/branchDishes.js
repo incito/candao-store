@@ -71,6 +71,11 @@ function getDishMenuData(){
 			if(result.listdish!=null && result.listdish!=""){
 				initDishes(result.listdish);
 			}
+
+
+			if($('#nav-dishes li').length > parseInt($('#nav-dishes').width()/111)) {
+				$(".nav-dishes-next,.nav-dishes-prev").show();
+			}
 			
 			var menu = result.menu;
 			if(menu != null && menu != ""){
