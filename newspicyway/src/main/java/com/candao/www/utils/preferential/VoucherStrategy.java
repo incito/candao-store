@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
@@ -31,14 +33,18 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		Map<String, Object> result = new HashMap<>();
 
 		String orderid = (String) paraMap.get("orderid"); // 账单号
-
-		int preferentialNum = (Integer) paraMap.get("preferentialNum");// 使用优惠张数
-		BigDecimal amount = new BigDecimal((String) paraMap.get("amount"));
-
-		Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao);
+		// 使用优惠张数
+		int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
+		String activityID = (String) paraMap.get("preferentialid");
+		String branchid = PropertiesUtils.getValue("current_branch_id");
+		String disrate = (String) paraMap.get("disrate");
+		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
+		Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao,tbPreferentialActivityDao);
 		if (cashGratis != null) {
 			return cashGratis;
 		}
+		Map preMap = discountInfo(activityID, branchid, tbPreferentialActivityDao);
+		BigDecimal amount = new BigDecimal(String.valueOf(preMap.get("amount")));
 		// 获取当前账单的 菜品列表
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", orderid);
@@ -46,10 +52,14 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
 		for (int i = 0; i < preferentialNum; i++) {
-			 String updateId=paraMap.containsKey("updateId")?(String)paraMap.get("updateId"):IDUtil.getID();
-			detailPreferentials.add(
-					new TorderDetailPreferential(updateId, orderid, "", (String) paraMap.get("preferentialid"),
-							amount, String.valueOf(orderDetailList.size()), 1, 1, new BigDecimal(1), 0));
+			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+			TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, "",
+					(String) paraMap.get("preferentialid"), amount, String.valueOf(orderDetailList.size()), 1, 1,
+					discount, 0);
+			TbPreferentialActivity activity = new TbPreferentialActivity();
+			activity.setName((String) preMap.get("name"));
+			torder.setActivity(activity);
+			detailPreferentials.add(torder);
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount.multiply(new BigDecimal(String.valueOf(preferentialNum))));

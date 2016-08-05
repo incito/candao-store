@@ -1,9 +1,15 @@
 package com.candao.www.utils.preferential;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.candao.www.constant.Constant;
+import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
+import com.candao.www.dataserver.mapper.OrderMapper;
+import com.candao.www.webroom.model.OperPreferentialResult;
+import com.candao.www.webroom.service.DataDictionaryService;
 
 /**
  * 
@@ -21,7 +27,8 @@ public enum StrategyFactory {
 		strategyMap.put(Constant.CouponType.GROUPON, new VoucherStrategy());
 		strategyMap.put(Constant.CouponType.HANDFREE, new HandfreeStategy());
 		strategyMap.put(Constant.CouponType.INNERFREE, new InnerfreeStrategy());
-		
+		strategyMap.put("Auto", new AutoCalPreFerntialStrategy());
+
 	}
 
 	private StrategyFactory() {
@@ -32,5 +39,22 @@ public enum StrategyFactory {
 			return null;
 		}
 		return (CalPreferentialStrategyInterface) strategyMap.get(type);
+	}
+
+	public void calcAmount(CaleTableAmountMapper caleTableAmountMapper, String orderid,
+			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,OrderMapper orderMapper) {
+		CalMenuOrderAmountInterface amountInterface = new CalMenuOrderAmount();
+		caleTableAmountMapper.pCaleTableAmount(orderid);
+		Map<String, Object> amountMap = new HashMap<>();
+		amountMap.put("orderid", orderid);
+		List<Map<String, Object>> resAmountList = orderMapper.selectTableOrder(orderid);
+		if (resAmountList != null && !resAmountList.isEmpty()) {
+			Map<String, Object> resAmountMap = resAmountList.get(0);
+			BigDecimal tipAmount = new BigDecimal(String.valueOf(resAmountMap.get("tipAmount")));// 小费
+			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));
+			preferentialResult.setMenuAmount(dueamount.add(tipAmount));
+			preferentialResult.setTipAmount(tipAmount);
+			amountInterface.calAmount(dataDictionaryService, preferentialResult);
+		}
 	}
 }

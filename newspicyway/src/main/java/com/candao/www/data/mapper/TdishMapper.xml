@@ -86,7 +86,7 @@ from t_dish t ,t_basicdata tb where t.source=tb.id and t.status=1 and t.dishtype
 	   )
       </if>
       <if test="columnid != null and columnid != ''" >
-        and columnId = #{columnId}
+        and td.columnId = #{columnid}
       </if>
       <if test="userid != null and userid != ''" >
         and userId = #{userId}

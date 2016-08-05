@@ -19,6 +19,7 @@ public interface OrderService {
 	public String startOrder(Torder order);
 	
 	public Map<String, Object> findOrderById(String orderId);
+	
 	/**
 	 * 获取更换pad的信息
 	 * @author shen
@@ -26,6 +27,12 @@ public interface OrderService {
 	 * @Description: TODO
 	 */
 	public Map<String, Object> switchPadOrderInfo(Map<String,Object> params);
+	/**
+	 * 获取订单信息包含菜品信息
+	 * @param params
+	 * @return
+	 */
+	public  Map<String, Object> calGetOrderInfo(Map<String,Object> params); 
 	
 	public Torder findOrderByTableId(Torder order); 
 	

@@ -17,6 +17,7 @@ public interface TorderDetailMapper {
 	public <T, K, V>T findOne(Map<K, V> params);
 	
 	public <T, K, V> List<T> find(Map<K, V> params);
+	public  <T, K, V> List<T> findorderByDish(String orderId);
 	
 	public <T, K, V> List<T> findTemp(Map<K, V> params);
 	/**

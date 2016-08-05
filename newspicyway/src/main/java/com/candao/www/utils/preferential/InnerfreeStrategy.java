@@ -12,11 +12,18 @@ import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
 
-public class InnerfreeStrategy extends CalPreferentialStrategy{
+/***
+ * 还在单位优免
+ * 
+ * @author Candao
+ *
+ */
+public class InnerfreeStrategy extends CalPreferentialStrategy {
 
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
@@ -28,12 +35,12 @@ public class InnerfreeStrategy extends CalPreferentialStrategy{
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
 		Map tempMap = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
+
+		// discount大于0为折扣优免
 		BigDecimal discount = (BigDecimal) tempMap.get("discount");
-		
-		  Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao);
-		  if(cashGratis!=null){
-			  return cashGratis;
-		  }
+		// amount大于0为现金优免
+		BigDecimal caseAmount = (BigDecimal) tempMap.get("amount");
+
 		// 定义 返回值
 		Map<String, Object> result = new HashMap<>();
 
@@ -42,9 +49,7 @@ public class InnerfreeStrategy extends CalPreferentialStrategy{
 		orderDetail_params.put("orderid", orderid);
 		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
 
-		// 最终优惠金额
-		BigDecimal amount = new BigDecimal(0);
-		// 菜品原价
+		// 当前订单总价amountCount
 		BigDecimal amountCount = new BigDecimal(0.0);
 		for (TorderDetail d : orderDetailList) {
 			// 判断价格，如果菜品价格存在null的问题，则返回错误信息
@@ -56,15 +61,41 @@ public class InnerfreeStrategy extends CalPreferentialStrategy{
 				}
 				amountCount = amountCount.add(d.getOrderprice().multiply(numOfDish));
 			}
-
 		}
+		// 使用优惠卷列表
+		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
+		TorderDetailPreferential addPreferential = null;
+		// 最终优惠金额
+		BigDecimal amount = new BigDecimal(0);
 		// 设置金额
-		amount = amountCount.subtract(bd).multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
-		 String updateId=paraMap.containsKey("updateId")?(String)paraMap.get("updateId"):IDUtil.getID();
-		 TorderDetailPreferential addPreferential =new TorderDetailPreferential(updateId, orderid, "", preferentialid,
-					amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
-		 List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-		 detailPreferentials.add(addPreferential);
+		if (discount != null && discount.doubleValue() > 0) {
+			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+
+			// 折扣计算方式
+			amount = amountCount.subtract(bd)
+					.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
+			addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, amount,
+					String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+			TbPreferentialActivity activity = new TbPreferentialActivity();
+			activity.setName((String) tempMap.get("name"));
+			addPreferential.setActivity(activity);
+			detailPreferentials.add(addPreferential);
+		} else if (caseAmount != null && caseAmount.doubleValue() > 0) {
+			// 现金减免方式
+			//获取优惠卷个数(如果POS选择多张优惠卷，后台会在数据库写入多个数据，所以要拆分优惠卷)
+			int preferentialNum=Integer.valueOf((String)paraMap.get("preferentialNum"));
+			amount=caseAmount.multiply(new BigDecimal(preferentialNum));
+			for(int i=0;i<preferentialNum;i++){
+				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, caseAmount,
+						String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name"));
+				addPreferential.setActivity(activity);
+				detailPreferentials.add(addPreferential);
+			}
+		}
+
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
 		return result;

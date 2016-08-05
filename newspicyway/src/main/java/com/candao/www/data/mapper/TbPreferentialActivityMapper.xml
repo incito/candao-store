@@ -711,8 +711,8 @@
 		tpa , t_p_preferential_detail tpd,t_dish tdi
 		<where>
 			(tpa.status is null or tpa.`status` != #{status}) and tpa.apply_all=1
-			and tpa.id = tpd.preferential 
-			 	and tdi.dishid=tpd.dish
+			and tpa.id = tpd.preferential
+			and tdi.dishid=tpd.dish
 			and tdi.dishid=tpd.dish
 			AND tpa.type = #{type}
 			<if test="status == 2">
@@ -749,56 +749,69 @@
 		ORDER BY code
 	</sql>
 	<sql id="defaultType">
-		SELECT det.id,det.preferential,	det.dish,det.dish_title,det.price,det.sequence,det.unit,det.unitflag,det.discount,
-		   det.amount,det.bill_amount,det.free_reason,det.company_name,det.company_first_letter,det.can_credit,tpa.code,
-		   tpa.name,tpa.name_first_letter,tpa.type,tpa.type_name,tpa.subtable_name,tpa.sub_type,tpa.sub_type_name,
-		   tpa.color,tpa.apply_all,tpa.activity_introduction,tpa.use_notice,tpa.starttime,tpa.endtime ,tpa.status
-			FROM t_p_preferential_detail det,t_p_preferential_activity tpa WHERE 1=1
-			AND ( `status` is null or status !='1')
-			AND (( tpa.starttime  &lt;=now() OR ISNULL(tpa.starttime)) AND (tpa.endtime &gt;=NOW() OR ISNULL(tpa.endtime)))
-				<if test=" type !=null">
-					AND tpa.type = #{type}
-				</if>
-				<if test=" type == '08'.toString()">
-					and det.free_reason not in('2')
-				</if>
-				and tpa.apply_all=1
+		SELECT det.id,det.preferential,
+		det.dish,det.dish_title,det.price,det.sequence,det.unit,det.unitflag,det.discount,
+		det.amount,det.bill_amount,det.free_reason,det.company_name,det.company_first_letter,det.can_credit,tpa.code,
+		tpa.name,tpa.name_first_letter,tpa.type,tpa.type_name,tpa.subtable_name,tpa.sub_type,tpa.sub_type_name,
+		tpa.color,tpa.apply_all,tpa.activity_introduction,tpa.use_notice,tpa.starttime,tpa.endtime
+		,tpa.status
+		FROM t_p_preferential_detail det,t_p_preferential_activity tpa WHERE 1=1
+		AND ( `status` is null or status !='1')
+		AND (( tpa.starttime &lt;=now() OR ISNULL(tpa.starttime)) AND
+		(tpa.endtime &gt;=NOW() OR ISNULL(tpa.endtime)))
+		<if test=" type !=null">
+			AND tpa.type = #{type}
+		</if>
+		<if test="name !=null">
+			AND tpa.`name` LIKE CONCAT('%',#{name},'%')
+		</if>
+		<if test=" type == '08'.toString()">
+			and det.free_reason not in('2')
+		</if>
+		and tpa.apply_all=1
 
-				<if test="preferential != null">
-					and det.preferential=#{preferential}
-				</if>
-				AND det.preferential = tpa.id
-				<if test="status == 2">
-					AND (tpa.status is null or tpa.`status` != #{status})
-				</if>
-				<if test=" branchid !=null">
-				UNION SELECT det.id,det.preferential,det.dish,det.dish_title,det.price,det.sequence,det.unit,
-					det.unitflag,det.discount,det.amount,det.bill_amount,det.free_reason,det.company_name,
-					det.company_first_letter,det.can_credit,tpa.code,tpa.name,tpa.name_first_letter,
-					tpa.type,tpa.type_name,tpa.subtable_name,tpa.sub_type,tpa.sub_type_name,tpa.color,
-					tpa.apply_all,tpa.activity_introduction,tpa.use_notice,tpa.starttime,tpa.endtime,tpa.status
-					FROM t_p_preferential_detail det,t_p_preferential_activity tpa WHERE 1=1
-					AND det.preferential =tpa.id
-					AND ( `status` is null or status !='1')
-					AND (( tpa.starttime  &lt;=now() OR ISNULL(tpa.starttime)) AND (tpa.endtime &gt;=NOW() OR ISNULL(tpa.endtime)))
-					<if test=" type !=null">
-						AND tpa.type = #{type}
-					</if>
-					<if test=" type == '08'.toString()">
-						and det.free_reason not in('2')
-					</if>
-					<if test="preferential != null">
-						and det.preferential=#{preferential}
-					</if>
-					and tpa.apply_all=0
-					<if test=" status == 2">
-						AND (tpa.status is null or tpa.`status` != #{status})
-					</if>
-					and exists (
-					select * from t_p_preferential_branch where branch=#{branchid} and preferential=tpa.id
-					)
-				</if>
-				ORDER BY preferential , sequence
+		<if test="preferential != null">
+			and det.preferential=#{preferential}
+		</if>
+		AND det.preferential = tpa.id
+		<if test="status == 2">
+			AND (tpa.status is null or tpa.`status` != #{status})
+		</if>
+		<if test=" branchid !=null">
+			UNION SELECT
+			det.id,det.preferential,det.dish,det.dish_title,det.price,det.sequence,det.unit,
+			det.unitflag,det.discount,det.amount,det.bill_amount,det.free_reason,det.company_name,
+			det.company_first_letter,det.can_credit,tpa.code,tpa.name,tpa.name_first_letter,
+			tpa.type,tpa.type_name,tpa.subtable_name,tpa.sub_type,tpa.sub_type_name,tpa.color,
+			tpa.apply_all,tpa.activity_introduction,tpa.use_notice,tpa.starttime,tpa.endtime,tpa.status
+			FROM t_p_preferential_detail det,t_p_preferential_activity tpa WHERE
+			1=1
+			AND det.preferential =tpa.id
+			AND ( `status` is null or status !='1')
+			AND (( tpa.starttime &lt;=now() OR ISNULL(tpa.starttime)) AND
+			(tpa.endtime &gt;=NOW() OR ISNULL(tpa.endtime)))
+			<if test=" type !=null">
+				AND tpa.type = #{type}
+			</if>
+			<if test="name !=null">
+				AND tpa.`name` LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test=" type == '08'.toString()">
+				and det.free_reason not in('2')
+			</if>
+			<if test="preferential != null">
+				and det.preferential=#{preferential}
+			</if>
+			and tpa.apply_all=0
+			<if test=" status == 2">
+				AND (tpa.status is null or tpa.`status` != #{status})
+			</if>
+			and exists (
+			select * from t_p_preferential_branch where branch=#{branchid} and
+			preferential=tpa.id
+			)
+		</if>
+		ORDER BY preferential , sequence
 	</sql>
 	<!-- 获取优惠列表信息。特价券与其他优惠（手工优免、内部优惠）单独处理。这里是其他优惠。其中ID，采用 detail表的ID 为主 -->
 	<!-- 获取优惠的时候，如果参数传递了 branchid (门店id)，那么需要查询 适合该门店的优惠（优惠部分门店且选择了当前门店、对所有门店有优惠） -->
@@ -999,7 +1012,7 @@
 				</if>
 			</when>
 			<otherwise>
-			  <include refid="defaultType"></include>
+				<include refid="defaultType"></include>
 			</otherwise>
 		</choose>
 
@@ -1088,7 +1101,9 @@
 		WHERE
 		preferential=#{preferential_id} order by sequence asc
 	</select>
-
+      
+     
+   
 	<update id="updatePreferenGroupon" parameterType="com.candao.www.data.model.TbGroupon">
 		update
 		t_p_preferential_detail set bill_amount=#{t.bill_amount}
@@ -1101,7 +1116,6 @@
 		t_p_preferential_activity tpa,t_p_preferential_detail tpd where tpa.id
 		= tpd.preferential
 		and tpa.apply_all = 1
-		and tpa.status&lt;&gt;1
 		and tpa.type='08'
 		and
 		tpd.can_credit = 1

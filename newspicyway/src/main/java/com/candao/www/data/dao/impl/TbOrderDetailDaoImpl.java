@@ -48,6 +48,12 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	}
 	
 	@Override
+	public  <T, K, V> List<T> findorderByDish(String orderId) {
+		Map<String, Object> params=new HashMap<>();
+		params.put("orderid", orderId);
+		return dao.find(PREFIX + ".findorderByDish", params);
+	}
+	@Override
 	public <T, K, V> List<T> findTemp(Map<K, V> params) {
 		return dao.find(PREFIX + ".findTemp", params);
 	}
@@ -297,5 +303,7 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		params.put("primarykeys", orderDetails);
 		return dao.find(PREFIX + ".getByPrimarykey", params);
 	}
+
+
 }
  
