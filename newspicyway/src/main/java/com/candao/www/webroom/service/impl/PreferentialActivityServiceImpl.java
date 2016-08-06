@@ -1063,19 +1063,20 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		String orderid = String.valueOf(params.get("orderid")); // 账单号
 		String preferentialid = String.valueOf(params.get("preferentialid")); // 优惠活动id
 		String type = String.valueOf(params.get("type"));
-		type=type.contains("0")?type:"0"+type;
+		type = type.contains("0") ? type : "0" + type;
 		params.put("type", type);
-		String isCustom=String.valueOf(params.get("isCustom"));
+		String isCustom = String.valueOf(params.get("isCustom"));
 		OperPreferentialResult result = new OperPreferentialResult();
 		try {
 			if (StringUtils.isBlank(orderid)) {
 			} else {
-				if(isCustom!=null&& isCustom.equals("2")&&type.equals("03")){
-					type="Auto";
+				if (isCustom != null && isCustom.equals("2") && type.equals("03")) {
+					type = "Auto";
 				}
 				CalPreferentialStrategyInterface straFactory = StrategyFactory.INSTANCE.buildAnimal(type);
 				if (straFactory == null) {
 					result.setAmount(new BigDecimal(0).setScale(2, RoundingMode.HALF_UP));
+					 return result;
 				} else {
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
 							torderDetailDao, orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
@@ -1084,25 +1085,26 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
-					//获取总的挂账，以及优免
-					String inputDebitAmount=(String)params.get("toalDebitAmount");
-					String inputFreeAmount=(String)params.get("toalFreeAmount");
-					BigDecimal toalDebitAmount =new BigDecimal(inputDebitAmount==null?"0":inputDebitAmount);
-					BigDecimal toalFreeAmount=new BigDecimal(inputFreeAmount==null?"0":inputDebitAmount);
-					for(TorderDetailPreferential detailPreferential:detailPreferentials){
-						toalDebitAmount.add(detailPreferential.getToalDebitAmount());
-						toalFreeAmount.add(detailPreferential.getToalFreeAmount());
+					// 获取总的挂账，以及优免
+					String inputDebitAmount = (String) params.get("toalDebitAmount");//上次挂账金额
+					String inputFreeAmount = (String) params.get("toalFreeAmount");//上次优免金额
+					BigDecimal toalDebitAmount = new BigDecimal(inputDebitAmount == null ? "0" : inputDebitAmount);
+					BigDecimal toalFreeAmount = new BigDecimal(inputFreeAmount == null ? "0" : inputDebitAmount);
+					for (TorderDetailPreferential detailPreferential : detailPreferentials) {
+						toalDebitAmount = toalDebitAmount.add(detailPreferential.getToalDebitAmount());
+						toalFreeAmount = toalFreeAmount.add(detailPreferential.getToalFreeAmount());
 					}
-					
+
 					result.setToalDebitAmount(toalDebitAmount);
 					result.setToalFreeAmount(toalFreeAmount);
-					//总的优惠金额=本次优惠+以往优惠
+					// 总的优惠金额=本次优惠+以往优惠
 					result.setDetailPreferentials(detailPreferentials);
-					// 是否计算收入金额
+					// 本次优惠是否需要计算实际收入金额金额
 					if (!params.containsKey("resultAmount")) {
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
-						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService, result, orderMapper);
+						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
+								result, orderMapper);
 					}
 
 				}

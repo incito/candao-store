@@ -2668,6 +2668,9 @@ CREATE TABLE `t_b_padconfig` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
+-- ----------------------------
+-- Table structure for t_order_detail_preferential
+-- ----------------------------
 DROP TABLE IF EXISTS `t_order_detail_preferential`;
 CREATE TABLE `t_order_detail_preferential` (
   `id` varchar(50) NOT NULL COMMENT 'UUID主键由门店后台生成',
@@ -2680,6 +2683,8 @@ CREATE TABLE `t_order_detail_preferential` (
   `isCustom` tinyint(1) DEFAULT '0' COMMENT '是否是自己设定',
   `isGroup` tinyint(1) DEFAULT '0' COMMENT '是否是全局使用优惠',
   `isUse` tinyint(1) DEFAULT '1' COMMENT '当前菜单对应的优惠卷是否使用中（1使用0菜品被删除）',
+  `toalFreeAmount` decimal(10,4) DEFAULT NULL COMMENT '优免总金额',
+  `toalDebitAmount` decimal(10,4) DEFAULT NULL COMMENT '挂账总金额',
   `insertime` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '当前插入时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

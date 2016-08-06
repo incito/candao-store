@@ -42,10 +42,6 @@ public class OperPreferentialResult {
 	 * 挂账总金额
 	 */
 	private BigDecimal toalDebitAmount = new BigDecimal(0);
-	/**
-	 * 优惠账号
-	 */
-	private String memberno = "";
 	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
 	public BigDecimal getAmount() {
@@ -87,14 +83,6 @@ public class OperPreferentialResult {
 
 	public void setTipAmount(BigDecimal tipAmount) {
 		this.tipAmount = tipAmount;
-	}
-
-	public String getMemberno() {
-		return memberno;
-	}
-
-	public void setMemberno(String memberno) {
-		this.memberno = memberno;
 	}
 
 	public BigDecimal getToalFreeAmount() {

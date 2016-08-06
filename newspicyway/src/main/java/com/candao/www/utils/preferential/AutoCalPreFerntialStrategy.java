@@ -23,6 +23,7 @@ import com.candao.www.dataserver.util.IDUtil;
  */
 public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
@@ -41,7 +42,6 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		List<TorderDetail> doublePots = new ArrayList<>();
 		List<TorderDetail> singleDishs = new ArrayList<>();
 		//记录菜品个数
-//		Map<String ,Long> menuDishNum=new HashMap<>();
 		for (Map<String, Object> detailMap : orderDetailList) {
 			String dishLevel = (String) detailMap.get("level");
 			String unitName = (String) detailMap.get("dishunit");
@@ -88,7 +88,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		params.put("name", "第二扎半价");
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+	
 		BigDecimal amount = new BigDecimal("0");
 		// 获取菜单菜品价格()
 		Map<String, BigDecimal> orderDetailMap = new HashMap<>();
@@ -128,6 +128,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			Map<String, Object> res = pres.get(0);
 			String preferentialid = (String) res.get("preferential");
 			for (String keyset : orderDetailMap.keySet()) {
+				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 				if (dishIDColumindMap.containsKey(keyset)) {
 					//获取菜单价格
 					amount = amount.add(orderDetailMap.get(keyset));
@@ -139,6 +140,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 						TbPreferentialActivity activity = new TbPreferentialActivity();
 						activity.setName((String) res.get("name"));
 						torder.setActivity(activity);
+						//设置优免金额
+						 torder.setToalFreeAmount(amount);
 						detailPreferentials.add(torder);
 					}
 				
@@ -173,6 +176,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 					 TbPreferentialActivity();
 					 activity.setName((String) res.get("name"));
 					 torder.setActivity(activity);
+						//设置优免金额
+					 torder.setToalFreeAmount(amount);
 					 detailPreferentials.add(torder);
 					amount = amount.add(tempAmount);
 				}

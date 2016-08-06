@@ -7,8 +7,6 @@ import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
-import com.candao.www.webroom.model.OperPreferentialResult;
-import com.candao.www.webroom.service.DataDictionaryService;
 
 /**
  * 
