@@ -2893,6 +2893,8 @@ public class PadInterfaceController {
 				config.setSeatimageurls(fileurl0 + ";" + "upload" + File.separator + newfilename);
 				padConfigService.saveorupdate(config);
 				map.put("code", 0);
+				map.put("fileurl0",fileurl0);
+				map.put("fileurl1","upload" + File.separator + newfilename);
 				return JacksonJsonMapper.objectToJson(map);
 			} else {
 				map.put("code", 1);
@@ -2915,6 +2917,8 @@ public class PadInterfaceController {
 				config.setSeatimageurls("upload" + File.separator + newfilename + ";" + fileurl1);
 				padConfigService.saveorupdate(config);
 				map.put("code", 0);
+				map.put("fileurl0","upload" + File.separator + newfilename);
+				map.put("fileurl1",fileurl1);
 				return JacksonJsonMapper.objectToJson(map);
 			} else {
 				map.put("code", 1);
@@ -2928,6 +2932,8 @@ public class PadInterfaceController {
 	}
 
 	private String filetwonewFile(List<CommonsMultipartFile> seatImagefiles, String realpath, String[] seatImagename) {
+		String fileurl0="";
+		String fileurl1="";
 		String seatimagenames = "";
 		String seatimageurls = "";
 		int temp = 0;
@@ -2944,10 +2950,17 @@ public class PadInterfaceController {
 				if (!file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();
 				}
+				if(temp==0){
+					fileurl0="upload" + File.separator + newfilename;
+				}else{
+					fileurl1="upload" + File.separator + newfilename;
+				}
 				// 文件上传
 				fileupload(commonsMultipartFile, imagelocation);
 				seatimagenames = seatimagenames + seatImagename[temp++] + ";";
 				seatimageurls = seatimageurls + "upload" + File.separator + newfilename + ";";
+				map.put("fileurl0",fileurl0);
+				map.put("fileurl1",fileurl1);
 			}
 
 			PadConfig config = new PadConfig();

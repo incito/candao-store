@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.candao.communication.factory.LockFactory;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.model.Torder;
 import com.candao.www.dataserver.constants.MsgType;
 import com.candao.www.dataserver.entity.Device;
 import com.candao.www.dataserver.entity.OfflineMsg;
@@ -351,6 +352,11 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             Map<Object, Object> order = orderMapper.findOne(orderId);
             if (null == order) {
                 return new Result(false, "该订单不存在");
+            }
+            //判断该订单是否已经结账
+           Object orderstatus= order.get("orderstatus");
+            if("3".equals(orderstatus.toString())||"2".equals(orderstatus.toString())){
+            	   return new Result(false, "该桌台已经结账");
             }
             Object meid = order.get("meid");
             if (null == meid || meid.toString().isEmpty()) {

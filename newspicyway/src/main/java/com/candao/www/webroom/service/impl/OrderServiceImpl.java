@@ -114,6 +114,7 @@ public class OrderServiceImpl implements OrderService {
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	private OrderMapper orderMapper;
+
 	@Override
 	public int saveOrder(Torder order) {
 		// TODO Auto-generated method stub
@@ -1186,7 +1187,9 @@ public class OrderServiceImpl implements OrderService {
 			if (!params.containsKey("clean")) {
 				mapRet.put("rows", getMapData(orderid));// 获取订单数据
 			}
-
+			// 或POS使用数据订单信息
+			mapRet.put("userOrderInfo", findOrderByInfo(orderid));
+			// 优惠信息
 			params.put("branchid", branchid);
 			params.put("id", orderid);
 			Map<String, Object> preMap = new HashMap<>();
@@ -1199,6 +1202,25 @@ public class OrderServiceImpl implements OrderService {
 		return ReturnMap.getSuccessMap(mapRet);
 	}
 
+	private Map<String, Object> findOrderByInfo(String orderid) {
+		// orderInvoiceTitle 发票抬头
+		// orderStatus; 订单状态
+		// tableStatus 餐桌状态
+		// customerNumber 多少人
+		Map<String, Object> outresultMap = new HashMap<>();
+		List<Map<String, Object>> resultMapList = torderDetailMapper.findOrderByInfo(orderid);
+		if (resultMapList != null && !resultMapList.isEmpty()) {
+			Map<String, Object> resultMap = resultMapList.get(0);
+			outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
+			outresultMap.put("orderStatus", resultMap.get("orderstatus"));
+			outresultMap.put("tableStatus", resultMap.get("status"));
+			outresultMap.put("customerNumber", resultMap.get("custnum"));
+			outresultMap.put("memberno", resultMap.get("memberno"));
+		}
+		outresultMap.put("orderid", orderid);
+		return outresultMap;
+	}
+
 	/**
 	 * 计算优惠信息
 	 * 
@@ -1209,17 +1231,19 @@ public class OrderServiceImpl implements OrderService {
 		// 获取所有订单优惠
 		List<TorderDetailPreferential> allDetailPre = torderDetailPreferentialService.getTorderDetailSbyOrderid(params);
 		// 清空订单对应得优惠券
-		BigDecimal preferentialAmt = new BigDecimal("0");
+		
 		String orderid = (String) params.get("orderid");
 		Map<String, Object> setMap = new HashMap<>();
-		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-
-		//新辣道特殊新编码处理
+//		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
+		// 如果是获取优惠列表 则由优惠所有算出结果后在同一计算优惠信息
+		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
+		
+		// 新辣道特殊新编码处理
 		String tenant_id = PropertiesUtils.getValue("tenant_id");
-		if(tenant_id.equals("100011")){
-			if (allDetailPre == null||allDetailPre.isEmpty()) {
-				autoPre(orderid, preferentialAmt, detailPreferentials);
-			}else{
+		if (tenant_id.equals("100011")) {
+			if (allDetailPre == null || allDetailPre.isEmpty()) {
+				autoPre(orderid, operPreferentialResult);
+			} else {
 				boolean falg = false;
 				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
 					if (branchDataSyn.getIsCustom() == 2) {
@@ -1227,12 +1251,13 @@ public class OrderServiceImpl implements OrderService {
 					}
 				}
 				if (!falg) {
-					autoPre(orderid, preferentialAmt, detailPreferentials);
+					autoPre(orderid, operPreferentialResult);
 				}
 			}
-		
+
 		}
 
+		//需要得到已经是有优惠的值
 		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
 			setMap.clear();
 			setMap.put("orderid", orderid);
@@ -1241,40 +1266,58 @@ public class OrderServiceImpl implements OrderService {
 			setMap.put("type", branchDataSyn.getActivity().getType());
 			setMap.put("subtype", branchDataSyn.getActivity().getSubType());
 			setMap.put("preferentialNum", "1");
-			setMap.put("preferentialAmt", preferentialAmt.toString());
+			setMap.put("preferentialAmt", operPreferentialResult.getAmount().toString());
 			setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
 			setMap.put("updateId", branchDataSyn.getId());
 			setMap.put("resultAmount", "0");
 			if (branchDataSyn.getIsCustom() == 1) {
 				setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
+			}else{
+				setMap.put("preferentialAmout", "0");
 			}
-			OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
-			// 就算每次优免总额
-			for (TorderDetailPreferential dep : result.getDetailPreferentials()) {
-				preferentialAmt = preferentialAmt.add(dep.getDeAmount());
-				detailPreferentials.add(dep);
-			}
+			calALLAmout(setMap, operPreferentialResult);
 		}
-		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
-		operPreferentialResult.setAmount(preferentialAmt);
-		operPreferentialResult.setDetailPreferentials(detailPreferentials);
+
+	
 		StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
 				operPreferentialResult, orderMapper);
 		return operPreferentialResult;
 	}
 
-	private void autoPre(String orderid, BigDecimal preferentialAmt,
-			List<TorderDetailPreferential> detailPreferentials) {
+	/**
+	 * 
+	 */
+	private void calALLAmout( Map<String, Object> setMap,OperPreferentialResult operPreferentialResult) {
+		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
+		BigDecimal preferentialAmt =operPreferentialResult.getAmount();
+		BigDecimal toalFreeAmount = operPreferentialResult.getToalFreeAmount();
+		BigDecimal toalDebitAmount =operPreferentialResult.getToalDebitAmount();
+		// 就算每次优免总额
+		for (TorderDetailPreferential dep : operResult.getDetailPreferentials()) {
+			preferentialAmt = preferentialAmt.add(dep.getDeAmount());
+			toalFreeAmount=toalFreeAmount.add(dep.getToalFreeAmount());
+			toalDebitAmount=toalDebitAmount.add(dep.getToalDebitAmount());
+		}
+		operPreferentialResult.setAmount(preferentialAmt);
+		operPreferentialResult.setToalFreeAmount(toalFreeAmount);
+		operPreferentialResult.setToalDebitAmount(toalDebitAmount);
+		 List<TorderDetailPreferential> detailPreferentials = operPreferentialResult.getDetailPreferentials();
+		if(detailPreferentials==null||detailPreferentials.isEmpty()){
+			operPreferentialResult.setDetailPreferentials(operResult.getDetailPreferentials());
+		}else{
+			detailPreferentials.addAll(operResult.getDetailPreferentials());
+			operPreferentialResult.setDetailPreferentials(detailPreferentials);
+		}
+		
+	}
+
+	private void autoPre(String orderid,OperPreferentialResult operPreferentialResult) {
 		Map<String, Object> setMap = new HashMap<>();
 		setMap.put("orderid", orderid);
 		setMap.put("type", "03");
 		setMap.put("isCustom", "2");
-		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
-		// 就算每次优免总额
-		for (TorderDetailPreferential dep : operResult.getDetailPreferentials()) {
-			preferentialAmt = preferentialAmt.add(dep.getDeAmount());
-			detailPreferentials.add(dep);
-		}
+		setMap.put("resultAmount", "0");
+		calALLAmout(setMap, operPreferentialResult);
 	}
 
 }

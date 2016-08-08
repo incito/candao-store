@@ -17,16 +17,25 @@ public class TorderDetailPreferential implements Serializable {
 	private String preferential;
 	private BigDecimal deAmount;
 	private BigDecimal discount;
-	/**0:使用优惠 1：服务员优惠 2：系统自动查找优惠**/
+	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 **/
 	private int isCustom;
 	private int isGroup;
 	private int isUse;
 	private Date insertime;
+	/***
+	 * 优免金额
+	 */
+	private BigDecimal toalFreeAmount=new BigDecimal("0");
+	/***
+	 * 挂账金额
+	 */
+	private BigDecimal toalDebitAmount=new BigDecimal("0");
 	private TbPreferentialActivity activity;
 
 	public TorderDetailPreferential() {
 
 	}
+
 	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, String dishid) {
 		this.orderid = orderid;
 		this.preferential = preferential;
@@ -49,8 +58,8 @@ public class TorderDetailPreferential implements Serializable {
 		this.isUse = isUse;
 	}
 
-	public TorderDetailPreferential(String id,String orderid, String dishid, String preferential, BigDecimal deAmount,
-			String dishNum, int isGroup, int isUse,BigDecimal discount,int isCustom) {
+	public TorderDetailPreferential(String id, String orderid, String dishid, String preferential, BigDecimal deAmount,
+			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom) {
 		this.orderid = orderid;
 		this.preferential = preferential;
 		this.dishid = dishid;
@@ -58,12 +67,11 @@ public class TorderDetailPreferential implements Serializable {
 		this.isGroup = isGroup;
 		this.isUse = isUse;
 		this.dishNum = dishNum;
-		this.discount=discount;
-		this.isCustom=isCustom;
-		this.id=id;
-		this.insertime=new Date();
+		this.discount = discount;
+		this.isCustom = isCustom;
+		this.id = id;
+		this.insertime = new Date();
 	}
-
 
 	public String getOrderid() {
 		return orderid;
@@ -144,17 +152,37 @@ public class TorderDetailPreferential implements Serializable {
 	public void setIsCustom(int isCustom) {
 		this.isCustom = isCustom;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public Date getInsertime() {
 		return insertime;
 	}
+
 	public void setInsertime(Date insertime) {
 		this.insertime = insertime;
+	}
+
+	public BigDecimal getToalFreeAmount() {
+		return toalFreeAmount;
+	}
+
+	public void setToalFreeAmount(BigDecimal toalFreeAmount) {
+		this.toalFreeAmount = toalFreeAmount;
+	}
+
+	public BigDecimal getToalDebitAmount() {
+		return toalDebitAmount;
+	}
+
+	public void setToalDebitAmount(BigDecimal toalDebitAmount) {
+		this.toalDebitAmount = toalDebitAmount;
 	}
 
 }

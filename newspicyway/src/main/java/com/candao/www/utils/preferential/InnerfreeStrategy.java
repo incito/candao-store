@@ -67,6 +67,8 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 		TorderDetailPreferential addPreferential = null;
 		// 最终优惠金额
 		BigDecimal amount = new BigDecimal(0);
+		//0不能挂账，1挂账
+		String can_credit=String.valueOf(tempMap.get("can_credit"));
 		// 设置金额
 		if (discount != null && discount.doubleValue() > 0) {
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
@@ -77,9 +79,16 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 						.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
 				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, amount,
 						String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+				//设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
 				addPreferential.setActivity(activity);
+				//是否挂账，优免
+				if(can_credit.equals("0")){
+					addPreferential.setToalDebitAmount(amount);
+				}else{
+					addPreferential.setToalFreeAmount(amount);
+				}
 				detailPreferentials.add(addPreferential);
 			}
 	
@@ -92,9 +101,17 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, caseAmount,
 						String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+				//设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
 				addPreferential.setActivity(activity);
+				//是否挂账，优免
+				//是否挂账，优免
+				if(can_credit.equals("0")){
+					addPreferential.setToalDebitAmount(amount);
+				}else{
+					addPreferential.setToalFreeAmount(amount);
+				}
 				detailPreferentials.add(addPreferential);
 			}
 		}

@@ -90,9 +90,12 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 						.multiply(new BigDecimal("1").subtract(decimalDisrate.divide(new BigDecimal(10))));
 				TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
 						preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
+				//设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
 				addPreferential.setActivity(activity);
+				//设置优免
+				addPreferential.setToalFreeAmount(amount);
 				detailPreferentials.add(addPreferential);
 			}
 
@@ -103,9 +106,12 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			amount = cashprelAmout;
 			TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
 					preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
+			//设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) tempMap.get("name"));
 			addPreferential.setActivity(activity);
+			//设置优免
+			addPreferential.setToalFreeAmount(amount);
 			detailPreferentials.add(addPreferential);
 		} else if (!StringUtils.isEmpty(giveDish)&&StringUtils.isEmpty(paraMap.get("discount"))&&StringUtils.isEmpty(paraMap.get("amount"))) {
 			// 赠菜卷，赠卷有dishID，无折扣 ，无现金优免
@@ -119,9 +125,12 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 					TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid,
 							ordetail.getDishid(), preferentialid, orderprice,
 							String.valueOf(orderDetailList.size()), 0, 1, discount, 0);
+					//设置优惠名称
 					TbPreferentialActivity activity = new TbPreferentialActivity();
 					activity.setName((String) tempMap.get("name"));
 					addPreferential.setActivity(activity);
+					//设置优免
+					addPreferential.setToalFreeAmount(amount);
 					detailPreferentials.add(addPreferential);
 				}
 			}

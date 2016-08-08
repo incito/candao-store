@@ -22,27 +22,27 @@ public class OperPreferentialResult {
 	 */
 	private BigDecimal amount = new BigDecimal(0);
 	/**
-	 *菜品总价 
+	 * 菜品总价
 	 **/
-	private  BigDecimal menuAmount=new BigDecimal(0);
+	private BigDecimal menuAmount = new BigDecimal(0);
 	/**
 	 * 支付金额
 	 */
-	private BigDecimal payamount=new BigDecimal(0);
+	private BigDecimal payamount = new BigDecimal(0);
 	/***
 	 * 小费金额
-	 * */
-	private BigDecimal tipAmount =new BigDecimal(0);
-	
-	/***
-	 * 优免金额
-	 * */
-	private BigDecimal freeamount =new BigDecimal(0);
-	/**
-	 * 优惠账号
 	 */
-	private String memberno="";
-	private List<TorderDetailPreferential> detailPreferentials =new ArrayList<>();
+	private BigDecimal tipAmount = new BigDecimal(0);
+
+	/***
+	 * 优免总金额
+	 */
+	private BigDecimal toalFreeAmount = new BigDecimal(0);
+	/***
+	 * 挂账总金额
+	 */
+	private BigDecimal toalDebitAmount = new BigDecimal(0);
+	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
 	public BigDecimal getAmount() {
 		amount.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -69,14 +69,6 @@ public class OperPreferentialResult {
 		this.payamount = payamount;
 	}
 
-	public BigDecimal getFreeamount() {
-		return freeamount;
-	}
-
-	public void setFreeamount(BigDecimal freeamount) {
-		this.freeamount = freeamount;
-	}
-
 	public BigDecimal getMenuAmount() {
 		return menuAmount;
 	}
@@ -93,12 +85,20 @@ public class OperPreferentialResult {
 		this.tipAmount = tipAmount;
 	}
 
-	public String getMemberno() {
-		return memberno;
+	public BigDecimal getToalFreeAmount() {
+		return toalFreeAmount;
 	}
 
-	public void setMemberno(String memberno) {
-		this.memberno = memberno;
+	public void setToalFreeAmount(BigDecimal toalFreeAmount) {
+		this.toalFreeAmount = toalFreeAmount;
+	}
+
+	public BigDecimal getToalDebitAmount() {
+		return toalDebitAmount;
+	}
+
+	public void setToalDebitAmount(BigDecimal toalDebitAmount) {
+		this.toalDebitAmount = toalDebitAmount;
 	}
 
 }

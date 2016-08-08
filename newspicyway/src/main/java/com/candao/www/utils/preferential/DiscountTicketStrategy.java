@@ -113,10 +113,12 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		   String updateId=paraMap.containsKey("updateId")?(String)paraMap.get("updateId"):IDUtil.getID();
 			 TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid,
 						amount, String.valueOf(tempDishNum), 1, 1, discount, 0);
+			 	//设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
 				addPreferential.setActivity(activity);
-			 
+				//设置优免金额
+				addPreferential.setToalFreeAmount(amount);
 			 List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 			 detailPreferentials.add(addPreferential);
 			result.put("detailPreferentials",detailPreferentials);
