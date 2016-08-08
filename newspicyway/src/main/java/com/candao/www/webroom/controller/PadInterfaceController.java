@@ -545,7 +545,9 @@ public class PadInterfaceController {
 		int flag = judgeRepeatData(toperationLog);
 		if (flag == 0) {
 			String a = orderDetailService.discardDishList(urgeDish, toperationLog);
-			notifyService.notifyOrderChange(urgeDish.getOrderNo());
+			if("1".equals(urgeDish.getSource())) {
+				notifyService.notifyOrderChange(urgeDish.getOrderNo());
+			}
 			return a;
 		} else if (flag == 1) {
 			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
@@ -1723,13 +1725,9 @@ public class PadInterfaceController {
 			HttpServletResponse response) {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
-		if (map.get("code").equals("0")) {
+		if (map.get("code").equals("0")&&"1".equals(params.get("source"))) {
 			String orderid = (String) map.get("orderid");
-			// 发送广播通知
-			StringBuilder messageinfo = new StringBuilder(
-					Constant.TS_URL + Constant.MessageType.msg_2201 + "/" + orderid);
-			logger.info("称重发送通知，订单号：[" + orderid + "],菜品id:[" + params.get("dishid") + "]");
-			executor.execute(new TsThread(messageinfo.toString()));
+			notifyService.notifyOrderChange(orderid);
 		}
 		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
 		logger.info("更新菜品称重结果： " + wholeJsonStr);
