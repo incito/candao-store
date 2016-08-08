@@ -1,13 +1,11 @@
 package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TorderDetailMapper;
@@ -15,9 +13,6 @@ import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
-import com.candao.www.utils.RoundingEnum;
-import com.candao.www.webroom.model.OperPreferentialResult;
-import com.candao.www.webroom.service.DataDictionaryService;
 
 /**
  * 
@@ -64,9 +59,16 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			TorderDetailPreferential detailPreferential = new TorderDetailPreferential(updateId, orderid, "",
 					(String) params.get("preferentialid"), amout, String.valueOf(orderDetailList.size()), 1, 1,
 					new BigDecimal(0), 1);
+			//设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) tempMap.get("name"));
 			detailPreferential.setActivity(activity);
+			//特殊团购卷
+			if(String.valueOf(params.get("type")).equals("05")){
+				detailPreferential.setToalDebitAmount(amout);
+			}else{
+				detailPreferential.setToalFreeAmount(amout);
+			}
 			listRest.add(detailPreferential);
 			resultMap.put("amount", amout);
 			resultMap.put("detailPreferentials", listRest);

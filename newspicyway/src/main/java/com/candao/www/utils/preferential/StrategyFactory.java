@@ -41,9 +41,20 @@ public enum StrategyFactory {
 		return (CalPreferentialStrategyInterface) strategyMap.get(type);
 	}
 
+	/**
+	 * 计算实收金额
+	 * 优免金额
+	 * 挂账金额
+	 * 小费
+	 * @param caleTableAmountMapper
+	 * @param orderid
+	 * @param dataDictionaryService
+	 * @param preferentialResult
+	 * @param orderMapper
+	 * (核心计算方式)
+	 */
 	public void calcAmount(CaleTableAmountMapper caleTableAmountMapper, String orderid,
 			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,OrderMapper orderMapper) {
-		CalMenuOrderAmountInterface amountInterface = new CalMenuOrderAmount();
 		caleTableAmountMapper.pCaleTableAmount(orderid);
 		Map<String, Object> amountMap = new HashMap<>();
 		amountMap.put("orderid", orderid);
@@ -52,11 +63,14 @@ public enum StrategyFactory {
 			Map<String, Object> resAmountMap = resAmountList.get(0);
 			BigDecimal tipAmount = new BigDecimal(String.valueOf(resAmountMap.get("tipAmount")));// 小费
 			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));//订单（菜品）总价
-			//全单总价包含菜品+小费
-			BigDecimal menuAmount=dueamount.add(tipAmount);
-			preferentialResult.setMenuAmount(menuAmount);
+			//计算实际优免金额与挂账金额
+			
+			//全单总价（不包含小费）
+			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
-			amountInterface.calAmount(dataDictionaryService, preferentialResult);
+			//计算实际收入金额
+			CalMenuOrderAmountInterface amountInterface = new CalMenuOrderAmount();
+			preferentialResult.setPayamount(amountInterface.calPayAmount(dataDictionaryService, dueamount, preferentialResult.getAmount()));
 		}
 	}
 }

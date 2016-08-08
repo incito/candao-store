@@ -19,8 +19,7 @@ import com.candao.www.dataserver.util.IDUtil;
 
 /**
  * 
- * @author Candao 优惠卷使用策略
- * 代金卷团购卷使用策略
+ * @author Candao 优惠卷使用策略 代金卷团购卷使用策略
  */
 public class VoucherStrategy extends CalPreferentialStrategy {
 
@@ -40,26 +39,50 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		String disrate = String.valueOf(paraMap.get("disrate"));
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
-		Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao,tbPreferentialActivityDao);
+		Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao, tbPreferentialActivityDao);
 		if (cashGratis != null) {
 			return cashGratis;
 		}
 		Map preMap = discountInfo(activityID, branchid, tbPreferentialActivityDao);
-		BigDecimal amount = new BigDecimal(String.valueOf(preMap.get("amount")));
 		// 获取当前账单的 菜品列表
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", orderid);
 		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-
+		BigDecimal amount = new BigDecimal(String.valueOf(preMap.get("amount")));
 		for (int i = 0; i < preferentialNum; i++) {
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 			TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, "",
 					(String) paraMap.get("preferentialid"), amount, String.valueOf(orderDetailList.size()), 1, 1,
 					discount, 0);
+			// 设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) preMap.get("name"));
 			torder.setActivity(activity);
+
+			// 如果为团购卷
+			if (String.valueOf(paraMap.get("type")).equals("05")) {
+				// 是团购又是手动输入的
+				String preferentialAmout = (String) paraMap.get("preferentialAmout");
+				BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
+				if (cashprelAmout.doubleValue()>0) {
+					torder.setToalDebitAmount(cashprelAmout);
+					torder.setDeAmount(cashprelAmout);
+					amount = cashprelAmout;
+				} else {
+					String billAmoutStri = preMap.get("bill_amount").toString();
+					BigDecimal billAmout = new BigDecimal(billAmoutStri);
+					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
+					torder.setToalFreeAmount(billAmout.subtract(amount));
+					torder.setToalDebitAmount(amount);
+					amount = billAmout;
+					torder.setDeAmount(billAmout);
+				}
+			} else {
+				// 代金卷
+				torder.setDeAmount(amount);
+			}
+
 			detailPreferentials.add(torder);
 		}
 		result.put("detailPreferentials", detailPreferentials);

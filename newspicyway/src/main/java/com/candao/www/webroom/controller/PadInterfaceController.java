@@ -80,6 +80,9 @@ public class PadInterfaceController {
 			new ArrayBlockingQueue<Runnable>(5000));
 	@Autowired
 	private NotifyService notifyService;
+	
+	//屏蔽礼物
+	private final String NO_GIFT="0";
 
 	/**
 	 * ti 菜品分类接口，全部页菜品数据获取
@@ -188,10 +191,12 @@ public class PadInterfaceController {
 		JSONObject returnobject = JSONObject.fromObject(returnStr);
 
 		if (!StringUtils.isBlank(order.getIsShield()) && order.getIsShield().equals("0")
-				&& returnobject.containsKey("result") && !StringUtils.isBlank(returnobject.getString("result"))
-				&& returnobject.getString("result").equals("0")) {
+				&& returnobject.containsKey("code") && !StringUtils.isBlank(returnobject.getString("code"))
+				&& returnobject.getString("code").equals("0")) {
 			try {
-				String orderid = returnobject.containsKey("orderid") ? returnobject.getString("orderid") : "";
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map=returnobject.getJSONObject("data");
+ 				String orderid = map.get("orderid")==null?"":map.get("orderid").toString();
 				if (!StringUtils.isBlank(orderid)) {
 					giftService.updateOrderStatus(orderid);
 				}

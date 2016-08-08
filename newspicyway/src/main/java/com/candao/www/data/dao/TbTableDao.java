@@ -105,6 +105,7 @@ public interface TbTableDao {
      */
 	public String generatePrintObjId();
 	public Map<String, Object> getTableNoById(String tableId);
+	public Map<String, Object> getByOrderId(String orderId);
 }
 
 

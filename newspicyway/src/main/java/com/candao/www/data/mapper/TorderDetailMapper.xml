@@ -840,6 +840,16 @@
 		orderid=#{orderno}
 	</update>
 
+   <select id="findOrderByInfo" parameterType="map" resultType="java.util.HashMap">
+	   SELECT
+		 tor.memberno,tor.orderstatus,tor.custnum,tab.`status`,tinv.invoice_title
+	FROM
+		t_order tor
+	LEFT JOIN t_table tab ON tab.orderid = tor.orderid
+	LEFT JOIN t_invoice tinv ON tinv.orderid = tor.orderid
+	WHERE tor.orderid =#{orderid};
+   </select>
+
 	<select id="getItemSellDetail" parameterType="map" resultType="java.util.HashMap">
 		select CONCAT(d.title,'(',od.dishunit,')') as 'dishName',
 		SUM(od.dishnum) as 'dishCount', SUM(od.debitamount) as 'totlePrice'

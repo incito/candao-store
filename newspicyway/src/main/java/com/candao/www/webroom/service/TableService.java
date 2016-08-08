@@ -121,4 +121,5 @@ public interface TableService {
     public long getMenuInfoByCount(Map<String, Object> map);
 
     public String generatePrintObjId();
+    public Map<String, Object> getByOrderId(String orderId);
 }

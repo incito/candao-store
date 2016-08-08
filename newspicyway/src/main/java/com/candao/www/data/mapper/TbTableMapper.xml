@@ -486,4 +486,14 @@
         WHERE tb.areaid = ta.areaid
         AND tb.tableid = #{tableId};
 	</select>
+	<select id="getByOrderId" parameterType="map" resultType="map">
+		select
+		(select userid from t_order where orderid=#{orderId}) as userid,
+		(select areaname from t_tablearea where areaid=t.areaid) as areaname,
+		<include refid="Base_Column_List"/>
+		from t_table t
+		where
+		orderid=#{orderId} and status !='5'
+		limit 1
+	</select>
 </mapper> 

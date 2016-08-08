@@ -1,12 +1,15 @@
 package com.candao.www.webroom.service.impl;
 
+import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.service.msghandler.obj.Result;
+import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +38,20 @@ public class NotifyServiceImpl implements NotifyService {
         executor.execute(new Runnable() {
             @Override
             public void run() {
+                //通知pad
                 Map<String, Object> data = new HashMap<>(1);
                 data.put("orderId", orderId);
                 msgForwardService.sendMsgAsynWithOrderId(orderId, MsgForwardTran.msgConfig.getProperty("MSF_ID.SETTLE"), data, 4 * 60 * 60, false);
+
+                //广播给手环
+                Map<String, Object> table = tableService.getByOrderId(orderId);
+                String tableNo = StringUtils.isEmpty(table.get("tableno")) ? "" : table.get("tableno").toString();
+                String userId = StringUtils.isEmpty(table.get("userid")) ? "" : table.get("tableno").toString();
+                String msg = userId + "|" + tableNo + "|" + orderId;
+                msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2002, msg);
+                String areaName = StringUtils.isEmpty(table.get("areaname")) ? "" : table.get("areaname").toString();
+                msg = userId + "|17|0|" + areaName + "|" + tableNo + "|" + IDUtil.getID();
+                msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2011, msg);
             }
         });
         return null;

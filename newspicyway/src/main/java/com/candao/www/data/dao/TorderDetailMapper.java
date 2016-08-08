@@ -28,6 +28,13 @@ public interface TorderDetailMapper {
 	 */
 	public <T, K, V> List<T> findOrderDetailPad(Map<K, V> params);
 	
+	/**
+	 * 根据订单查询发票，订单信息  餐台信息
+	 * @param params
+	 * @return
+	 */
+	public <T, K, V> List<T> findOrderByInfo(String param);
+	
 	public int insert(TorderDetail torderDetail);
 	
 	public int insertOnce(List<TorderDetail> torderDetails);
