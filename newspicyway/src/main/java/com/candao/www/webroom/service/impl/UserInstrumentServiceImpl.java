@@ -82,7 +82,7 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 				}
 				String areaname =String.valueOf(tableList.get(0).get("areaname"));
 				message.append(userid+"|"+String.valueOf(params.get("msg_type"))+"|"+areaname+"|"+(String) params.get("tableno")+"|"+tbMessageInstrumentid);
-				msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2001,message.toString());
+				msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2001,10*60,message.toString());
 				TbMessageInstrument tbMessageInstrument = new TbMessageInstrument();
 				
 				tbMessageInstrument.setId(tbMessageInstrumentid);

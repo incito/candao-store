@@ -74,7 +74,31 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
 
             int msgId = (int) System.currentTimeMillis();
             MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
-            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), false);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), 4 * 60*60, false);
+            if (MsgType.MSG_1002.getValue().equals(msgType)) {
+                String tableNo = businessService.getTableNoByOrderId(msg);
+                if (StringUtils.isNotBlank(tableNo)) {
+                    dishService.deletePosOperation(tableNo);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseData.setData("0");
+            responseData.setData("发送广播消息异常");
+            LOGGER.error("#### broadCastMsgForNetty msgType={},msg={},error={}###", msgType, msg, e.getCause().getStackTrace());
+        }
+        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
+    }
+
+    @Override
+    public String broadCastMsg4Netty(String msgType, int expireSeconds, String msg) {
+        LOGGER.info("#### broadCastMsgForNetty msgType={},msg={}###", msgType, msg);
+        ResponseData responseData = new ResponseData();
+        try {
+
+            int msgId = (int) System.currentTimeMillis();
+            MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), expireSeconds, false);
             if (MsgType.MSG_1002.getValue().equals(msgType)) {
                 String tableNo = businessService.getTableNoByOrderId(msg);
                 if (StringUtils.isNotBlank(tableNo)) {
@@ -153,7 +177,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
      * @param isSingle
      */
     @Deprecated
-    private void broadCastMsgDevices(List<DeviceObject> objects, String msg, boolean isSingle) {
+    private void broadCastMsgDevices(List<DeviceObject> objects, String msg, int expireSeconds, boolean isSingle) {
         List<OfflineMsg> offlineMsgList = new ArrayList<>();
         for (final DeviceObject deviceObject : objects) {
             int single = 0;
@@ -351,6 +375,11 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             Map<Object, Object> order = orderMapper.findOne(orderId);
             if (null == order) {
                 return new Result(false, "该订单不存在");
+            }
+            //判断该订单是否已经结账
+            Object orderstatus = order.get("orderstatus");
+            if ("3".equals(orderstatus.toString()) || "2".equals(orderstatus.toString())) {
+                return new Result(false, "该桌台已经结账");
             }
             Object meid = order.get("meid");
             if (null == meid || meid.toString().isEmpty()) {

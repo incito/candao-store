@@ -1469,7 +1469,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
 
                     for (PrintDish printDish : pdList) {
-                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getDishUnit());
+                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId()+printDish.getPrimarykey()+printDish.getOrderseq());
                         String abbrname=printDish.getAbbrname()==null?"":printDish.getAbbrname();
                         if (obj != null && !abbrname.contains("退")) {//退菜单除外
                             temp = 1;//已经打印过
@@ -1483,7 +1483,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     new Thread(new PrintThread(printObj)).run();
 
                     for (PrintDish printDish : pdList) {
-                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getDishName(), 1);//已经打印的菜品
+                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId()+printDish.getPrimarykey()+printDish.getOrderseq(), 1);//已经打印的菜品
                     }
                 }
             }

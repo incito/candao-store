@@ -294,7 +294,7 @@ public class PadInterfaceController {
 		String result = "";
 		Map<String, Object> res = orderDetailService.setOrderDetailList(order);
 		// POS下单通知PAD订单改变
-		if ("2".equals(order.getSource())) {
+		if (Constant.SOURCE.POS.equals(order.getSource())) {
 			notifyService.notifyOrderChange(order.getOrderid());
 		}
 		logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
@@ -545,11 +545,13 @@ public class PadInterfaceController {
 		int flag = judgeRepeatData(toperationLog);
 		if (flag == 0) {
 			String a = orderDetailService.discardDishList(urgeDish, toperationLog);
+			if(Constant.SOURCE.POS.equals(urgeDish.getSource())) {
+				notifyService.notifyOrderChange(urgeDish.getOrderNo());
+			}
 			return a;
 		} else if (flag == 1) {
 			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		} else {
-			notifyService.notifyOrderChange(urgeDish.getOrderNo());
 			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		}
 	}
@@ -725,6 +727,8 @@ public class PadInterfaceController {
 		String result = orderSettleService.settleOrder(settlementInfo);
 
 		final String orderid = settlementInfo.getOrderNo();
+		//内部直接调用计算实收，POS不再调用
+		debitamout(orderid);
 		// 修改投诉表信息
 		new Thread(new Runnable() {
 			public void run() {
@@ -1721,13 +1725,9 @@ public class PadInterfaceController {
 			HttpServletResponse response) {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
-		if (map.get("code").equals("0")) {
+		if (map.get("code").equals("0")&&Constant.SOURCE.POS.equals(params.get("source"))) {
 			String orderid = (String) map.get("orderid");
-			// 发送广播通知
-			StringBuilder messageinfo = new StringBuilder(
-					Constant.TS_URL + Constant.MessageType.msg_2201 + "/" + orderid);
-			logger.info("称重发送通知，订单号：[" + orderid + "],菜品id:[" + params.get("dishid") + "]");
-			executor.execute(new TsThread(messageinfo.toString()));
+			notifyService.notifyOrderChange(orderid);
 		}
 		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
 		logger.info("更新菜品称重结果： " + wholeJsonStr);
@@ -2893,6 +2893,8 @@ public class PadInterfaceController {
 				config.setSeatimageurls(fileurl0 + ";" + "upload" + File.separator + newfilename);
 				padConfigService.saveorupdate(config);
 				map.put("code", 0);
+				map.put("fileurl0",fileurl0);
+				map.put("fileurl1","upload" + File.separator + newfilename);
 				return JacksonJsonMapper.objectToJson(map);
 			} else {
 				map.put("code", 1);
@@ -2915,6 +2917,8 @@ public class PadInterfaceController {
 				config.setSeatimageurls("upload" + File.separator + newfilename + ";" + fileurl1);
 				padConfigService.saveorupdate(config);
 				map.put("code", 0);
+				map.put("fileurl0","upload" + File.separator + newfilename);
+				map.put("fileurl1",fileurl1);
 				return JacksonJsonMapper.objectToJson(map);
 			} else {
 				map.put("code", 1);
@@ -2928,6 +2932,8 @@ public class PadInterfaceController {
 	}
 
 	private String filetwonewFile(List<CommonsMultipartFile> seatImagefiles, String realpath, String[] seatImagename) {
+		String fileurl0="";
+		String fileurl1="";
 		String seatimagenames = "";
 		String seatimageurls = "";
 		int temp = 0;
@@ -2944,10 +2950,17 @@ public class PadInterfaceController {
 				if (!file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();
 				}
+				if(temp==0){
+					fileurl0="upload" + File.separator + newfilename;
+				}else{
+					fileurl1="upload" + File.separator + newfilename;
+				}
 				// 文件上传
 				fileupload(commonsMultipartFile, imagelocation);
 				seatimagenames = seatimagenames + seatImagename[temp++] + ";";
 				seatimageurls = seatimageurls + "upload" + File.separator + newfilename + ";";
+				map.put("fileurl0",fileurl0);
+				map.put("fileurl1",fileurl1);
 			}
 
 			PadConfig config = new PadConfig();
