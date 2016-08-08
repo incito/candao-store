@@ -238,7 +238,9 @@ public class WeixinController extends BaseJsonController {
 			String totalmoney=getStringFromMap(weixininfos, "dueamount");
 			BigDecimal  decimal01=new BigDecimal(totalmoney);
 			BigDecimal  turnbackno=decimal01.multiply(new BigDecimal("100"));
+			loggers.info("发起微信退款");
 			Refund refund=new Refund(this.appid, this.appsecret, this.partner, outorderno, turnbackno.toString());
+			loggers.info("退款"+JacksonJsonMapper.objectToJson(refund));
 			int result=refund.wechatRefund(realpath);
 			if(result==1){
 				weixinService.deletetemp(orderno);
