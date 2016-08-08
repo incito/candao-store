@@ -44,6 +44,7 @@ public class UrgeDish implements java.io.Serializable{
     
     //退菜原因
     private String discardReason;
+	private String source="2"; //退菜来源 PAD 1;POS 2
     
 
 	public String getDiscardReason() {
@@ -176,6 +177,12 @@ public class UrgeDish implements java.io.Serializable{
 	public void setDishNo(String dishNo) {
 		this.dishNo = dishNo;
 	}
-	
-	
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
 }

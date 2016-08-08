@@ -2505,7 +2505,11 @@ SET tmp_len = LENGTH(tmp_str);
 
 END WHILE; 
 
+IF ISNULL(tmp_rs) THEN
+RETURN '';
+ELSE
 RETURN tmp_rs;
+END IF;
 
 END
 $$

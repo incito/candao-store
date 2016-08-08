@@ -40,6 +40,7 @@ import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.utils.OrderDetailParse;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.preferential.StrategyFactory;
 import com.candao.www.webroom.model.Coupons;
@@ -610,6 +611,16 @@ public class OrderServiceImpl implements OrderService {
 		mappa.put("dishtype", "0");
 		mappa.put("orderid", orderid);
 		List<Map<String, Object>> resultMap = torderDetailMapper.findOrderDetailPad(mappa);
+		//处理忌口信息
+		for (Map<String, Object> map : resultMap) {
+			String sperequire = (String)map.get("sperequire");
+			map.put("sperequire", OrderDetailParse.getSperequire(sperequire));
+			map.put("taste", OrderDetailParse.getTaste(sperequire));
+			map.put("globalsperequire", OrderDetailParse.getGlobalRemark(sperequire));
+			map.put("freeuser", OrderDetailParse.getFreeUser(sperequire));
+			map.put("freeauthorize", OrderDetailParse.getFreeAuthorize(sperequire));
+			map.put("freereason", OrderDetailParse.getFreeReason(sperequire));
+		}
 		// 火锅
 		mappa.put("dishtype", "1");
 		mappa.put("ismaster", "1");
