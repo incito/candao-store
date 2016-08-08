@@ -361,7 +361,7 @@ public class CallWaiterServiceImpl implements CallWaiterService {
                         //new TsThread(messageinfo.toString()).start();
                         try {
                             messageinfo.append(userid + "|" + finalmsgType + "|" + finalcallStatus + "|" + areaname + "|" + finaltableno + "|" + finalmessid);
-                            msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2001,messageinfo.toString());
+                            msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2001,10*60,messageinfo.toString());
                                 System.out.println("推送成功");
                         } catch (Exception e) {
                             logger.error("-->", e);
