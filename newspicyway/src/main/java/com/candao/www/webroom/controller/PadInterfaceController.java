@@ -294,7 +294,7 @@ public class PadInterfaceController {
 		String result = "";
 		Map<String, Object> res = orderDetailService.setOrderDetailList(order);
 		// POS下单通知PAD订单改变
-		if ("2".equals(order.getSource())) {
+		if (Constant.SOURCE.POS.equals(order.getSource())) {
 			notifyService.notifyOrderChange(order.getOrderid());
 		}
 		logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
@@ -545,7 +545,7 @@ public class PadInterfaceController {
 		int flag = judgeRepeatData(toperationLog);
 		if (flag == 0) {
 			String a = orderDetailService.discardDishList(urgeDish, toperationLog);
-			if("1".equals(urgeDish.getSource())) {
+			if(Constant.SOURCE.POS.equals(urgeDish.getSource())) {
 				notifyService.notifyOrderChange(urgeDish.getOrderNo());
 			}
 			return a;
@@ -1725,7 +1725,7 @@ public class PadInterfaceController {
 			HttpServletResponse response) {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
-		if (map.get("code").equals("0")&&"1".equals(params.get("source"))) {
+		if (map.get("code").equals("0")&&Constant.SOURCE.POS.equals(params.get("source"))) {
 			String orderid = (String) map.get("orderid");
 			notifyService.notifyOrderChange(orderid);
 		}
