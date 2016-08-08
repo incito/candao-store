@@ -725,6 +725,8 @@ public class PadInterfaceController {
 		String result = orderSettleService.settleOrder(settlementInfo);
 
 		final String orderid = settlementInfo.getOrderNo();
+		//内部直接调用计算实收，POS不再调用
+		debitamout(orderid);
 		// 修改投诉表信息
 		new Thread(new Runnable() {
 			public void run() {
