@@ -212,6 +212,9 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 				temp = fields.get(temp);
 			}
 		}
+		if (temp == null) {
+			temp = "";
+		}
 		return temp;
 	}
 
