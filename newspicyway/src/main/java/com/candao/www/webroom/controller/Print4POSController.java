@@ -310,7 +310,7 @@ public class Print4POSController {
 			if (args != null) {
 				insts = new Class<?>[args.length];
 				for (int i = 0; i < args.length; i++) {
-					insts[i] = args[i].getClass();
+					insts[i] = args[i] == null ? null : args[i].getClass();
 				}
 			}
 		} else {
