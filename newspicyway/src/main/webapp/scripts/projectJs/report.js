@@ -4,6 +4,7 @@ $(document).ready(function(){
 	},function(){
 		$(this).attr("src", global_Path+"/images/close-sm.png");
 	});
+
 });
 /**
  * 切换查询类型的时候，为searchType赋值
