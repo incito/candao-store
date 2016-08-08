@@ -272,6 +272,21 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 List<TorderDetail> list1 = t.getDishes();
                 for (TorderDetail t1 : list1) {
                     if (!"0".equals(t1.getDishnum())) {
+                    	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                        StringBuilder detailSperequire = new StringBuilder();
+                        detailSperequire.append(t1.getSperequire());
+                        detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                        detailSperequire.append(order.getGlobalsperequire());
+                        detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                        detailSperequire.append(t1.getTaste());
+                        detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                        detailSperequire.append(t1.getFreeuser());
+                        detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                        detailSperequire.append(t1.getFreeauthorize());
+                        detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                        detailSperequire.append(t1.getFreereason());
+                        t1.setSperequire(detailSperequire.toString());
+                        
                         t1.setDishtype("1");
                         t1.setRelatedishid(t.getDishid());
 
@@ -296,6 +311,21 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     for (TorderDetail t2 : list2) {
                         if ("0".equals(t2.getDishtype())) {
                             if (!"0".equals(t2.getDishnum())) {
+                            	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                                StringBuilder detailSperequire = new StringBuilder();
+                                detailSperequire.append(t2.getSperequire());
+                                detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                detailSperequire.append(order.getGlobalsperequire());
+                                detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                detailSperequire.append(t2.getTaste());
+                                detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                detailSperequire.append(t2.getFreeuser());
+                                detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                detailSperequire.append(t2.getFreeauthorize());
+                                detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                detailSperequire.append(t2.getFreereason());
+                                t2.setSperequire(detailSperequire.toString());
+                                
                                 t2.setOrderprice(new BigDecimal(0));
                                 t2.setDishtype("2");
                                 t2.setRelatedishid(t.getDishid());
@@ -311,6 +341,20 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 listall.add(t2);
                             }
                         } else if ("1".equals(t2.getDishtype())) {
+                        	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                            StringBuilder detailSperequire = new StringBuilder();
+                            detailSperequire.append(t2.getSperequire());
+                            detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                            detailSperequire.append(order.getGlobalsperequire());
+                            detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                            detailSperequire.append(t2.getTaste());
+                            detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                            detailSperequire.append(t2.getFreeuser());
+                            detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                            detailSperequire.append(t2.getFreeauthorize());
+                            detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                            detailSperequire.append(t2.getFreereason());
+                            t2.setSperequire(detailSperequire.toString());
 
                             t2.setRelatedishid(t.getDishid());
                             t2.setOrdertype(2);
@@ -327,6 +371,20 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             List<TorderDetail> list3 = t2.getDishes();
                             for (TorderDetail t3 : list3) {
                                 if (!"0".equals(t3.getDishnum())) {
+                                	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                                    detailSperequire = new StringBuilder();
+                                    detailSperequire.append(t3.getSperequire());
+                                    detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                    detailSperequire.append(order.getGlobalsperequire());
+                                    detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                    detailSperequire.append(t3.getTaste());
+                                    detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                    detailSperequire.append(t3.getFreeuser());
+                                    detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                    detailSperequire.append(t3.getFreeauthorize());
+                                    detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
+                                    detailSperequire.append(t3.getFreereason());
+                                    t3.setSperequire(detailSperequire.toString());
                                     t3.setDishtype("2");
                                     t3.setOrderprice(new BigDecimal(0));
                                     t3.setRelatedishid(t.getDishid());
@@ -1411,7 +1469,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
 
                     for (PrintDish printDish : pdList) {
-                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId());
+                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getDishUnit());
                         String abbrname=printDish.getAbbrname()==null?"":printDish.getAbbrname();
                         if (obj != null && !abbrname.contains("退")) {//退菜单除外
                             temp = 1;//已经打印过
@@ -1425,7 +1483,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     new Thread(new PrintThread(printObj)).run();
 
                     for (PrintDish printDish : pdList) {
-                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId(), 1);//已经打印的菜品
+                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getDishName(), 1);//已经打印的菜品
                     }
                 }
             }
