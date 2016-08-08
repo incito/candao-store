@@ -114,7 +114,7 @@
 				<c:if test="${psishow=='Y' }">
 						<c:if test="${item.key  == '0315' || item.key=='020101'}">
 						<li  class="ky-dropdown" id="psi">
-							<a href="#" class="ky-menu-psi ky-menu-erp" >进销存管理</a>
+							<a href="#" class="ky-menu-psi ky-menu-erp"  onclick="toBasic()">进销存管理</a>
 							 <ul class="ky-dropdown-menu ky-nav ky-nav-pills ky-dropdown-menu-erp">
 							 <c:forEach items="${menumap }" var="ite">
 							 <c:if test="${ite.key  == '031501' || ite.key=='020101'}">

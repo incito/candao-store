@@ -614,6 +614,14 @@ $("#test").click(function(){
 		                complete: function (XMLHttpRequest, textStatus) {
 		                	var result = $.parseJSON(XMLHttpRequest.responseText);
 
+							if(result.fileurl0 !== undefined && result.fileurl0 !== '') {
+								$('.seat-item').eq(0).attr({"img-src":result.fileurl0});
+							}
+
+							if(result.fileurl1 !== undefined && result.fileurl1 !== '') {
+								$('.seat-item').eq(1).attr({"img-src":result.fileurl1});
+							}
+
 
                 			 //更新其他字段
                 			validateFlag && $.ajax({
