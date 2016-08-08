@@ -545,11 +545,11 @@ public class PadInterfaceController {
 		int flag = judgeRepeatData(toperationLog);
 		if (flag == 0) {
 			String a = orderDetailService.discardDishList(urgeDish, toperationLog);
+			notifyService.notifyOrderChange(urgeDish.getOrderNo());
 			return a;
 		} else if (flag == 1) {
 			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
 		} else {
-			notifyService.notifyOrderChange(urgeDish.getOrderNo());
 			return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		}
 	}
