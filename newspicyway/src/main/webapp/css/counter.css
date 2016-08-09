@@ -55,13 +55,16 @@ body{
 	text-align: center;
 /*	width:10%;*/
 	position: relative;
-	width: 8.33%;
+	width: 8.3%;
 /* 	页面小数运算，存在偏差 */
 /* box-sizing: border-box;有时会对其有影响？ */
 } 
 
 ul.nav-counter li:not(:last-child) {
 	border-right:none;
+}
+ul.nav-counter li:last-child {
+	border-right:1px solid #cecece;
 }
 
 .nav-counter li.active{
@@ -115,6 +118,7 @@ ul.nav-counter li:not(:last-child) {
 	display: inline-block;
 	float:right; 
 	font-size:14px;
+	margin-right:-14px;
 }
 /* 姣忎釜鑿滃搧鍒嗙被鐨勫叿浣撳唴瀹�*/
 .counter-detail-add{
