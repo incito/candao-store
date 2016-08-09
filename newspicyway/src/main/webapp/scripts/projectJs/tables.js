@@ -931,12 +931,12 @@ $('#tables-detailAdd-dialog').modal('show');
 function showAndHidden(){
 	var count = $("#nav-tables").find("li").length;
 
-	if(count>10){
-		$(".nav-tables-prev").css({"display":"inline"});
-		$(".nav-tables-next").css({"display":"inline"});
+	if(count> parseInt(($('#nav-tables').width() -1 )/ $('#nav-tables li').eq(0).outerWidth())){
+		$(".nav-counter-prev").css({"display":"inline"});
+		$(".nav-counter-next").css({"display":"inline"});
 	}else{
-		$(".nav-tables-prev").css({"display":"none"});
-		$(".nav-tables-next").css({"display":"none"});
+		$(".nav-counter-prev").css({"display":"none"});
+		$(".nav-counter-next").css({"display":"none"});
 	}
 	if(count>0){
 

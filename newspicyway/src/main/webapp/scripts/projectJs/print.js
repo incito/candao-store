@@ -220,8 +220,7 @@ $(document).ready(function(){
 			
 			
 			$("#printArea-add-dialog #accordion").html(html);
-			$("#printArea-add-dialog #accordion").children(":first").find(".panel-collapse").removeClass("collapse");
-			$("#printArea-add-dialog #accordion").children(":first").find(".panel-collapse").removeClass("in");
+			$("#printArea-add-dialog #accordion").children(":first").find(".panel-collapse").addClass("in");
 //			$("#printArea-add-dialog #accordion").children(":first").find(".panel-title").click();
 			
 			//在餐台分类绑定选择框点击事件
@@ -351,8 +350,7 @@ $(document).ready(function(){
 			
 			
 			$("#printDishes-add-dialog #accordion").html(html);
-			$("#printDishes-add-dialog #accordion").children(":first").find(".panel-collapse").removeClass("collapse");
-			$("#printDishes-add-dialog #accordion").children(":first").find(".panel-collapse").removeClass("in");
+			$("#printDishes-add-dialog #accordion").children(":first").find(".panel-collapse").addClass("in");
 //			$("#printDishes-add-dialog #accordion").children(":first").find(".panel-title").click();
 //			//在餐台分类绑定选择框点击事件
 //			$(".panel").find("img").click(function(){
