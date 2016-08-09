@@ -212,28 +212,28 @@ public class BusinessServiceImpl implements BusinessService {
         // 定额优惠金额
         int ratedPreferenceMoney = 0;
         //品项消费
-        String itemMoney = tellerCashMapper.selectItemMoney(insertDate,userId);
+        String itemMoney = tellerCashMapper.selectItemMoney(insertDate, userId);
         float itemMoneyFloat = StringUtil.str2Float(itemMoney, 0);
         //优惠金额
-        String preferenceMoney = tellerCashMapper.selectPreferenceMoney(insertDate,userId);
+        String preferenceMoney = tellerCashMapper.selectPreferenceMoney(insertDate, userId);
         float preferenceMoneyFloat = StringUtil.str2Float(preferenceMoney, 0);
         //应收小计=品项总额-优惠金额。
         float accountsReceivableSubtotal = itemMoneyFloat - preferenceMoneyFloat;
         //抹零金额
-        String removeMoney = tellerCashMapper.selectRemoveMoney(insertDate,userId);
+        String removeMoney = tellerCashMapper.selectRemoveMoney(insertDate, userId);
         float removeMoneyFloat = StringUtil.str2Float(removeMoney, 0);
         // 应收合计
         float accountsReceivableTotal = accountsReceivableSubtotal - removeMoneyFloat;
         //合计
-        String TotalMoney = tellerCashMapper.selectTotalMoney(insertDate,userId);
+        String TotalMoney = tellerCashMapper.selectTotalMoney(insertDate, userId);
         float TotalMoneyFloat = StringUtil.str2Float(TotalMoney, 0);
         //计入收入合计
-        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate,userId);
+        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate, userId);
         float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
         // 不计收入合计
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;
-        clearMachineMapper.insert(userId);
-        settlementDetailMapper.setClear(userId);
+        clearMachineMapper.insert(userId, insertDate);
+        settlementDetailMapper.setClear(userId, insertDate);
         tellerCashMapper.updateStatus(ip, userId);
 
         // 餐具
@@ -295,7 +295,7 @@ public class BusinessServiceImpl implements BusinessService {
         param.put("userId", userId);
         param.put("classNo", classNo);
         param.put("workDate", openDate);
-        param.put("openDate", openDate);
+        param.put("beginTime", insertDate);
         nodeClassDetailMapper.insert(param);
 
         settlementMapper.setClear(userId);

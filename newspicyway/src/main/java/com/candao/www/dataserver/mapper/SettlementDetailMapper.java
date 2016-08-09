@@ -3,6 +3,7 @@ package com.candao.www.dataserver.mapper;
 import com.candao.www.dataserver.entity.SettlmentDetail;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ public interface SettlementDetailMapper {
 
     int update(@Param("dishId") String dishId, @Param("orderId") String orderId);
 
-    int setClear(@Param("userId") String userId);
+    int setClear(@Param("userId") String userId, @Param("beginTime") Date beginTime);
 
     int insertAfterInputCash(Map<String, Object> param);
 
