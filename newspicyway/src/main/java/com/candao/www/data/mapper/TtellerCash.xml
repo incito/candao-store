@@ -21,4 +21,9 @@
         from t_teller_cash tc
         where username=#{userId} and `status`='0' and ipaddress!=#{ip} limit 1
     </select>
+    <select id="selectLastUser" resultMap="BaseResultMap" parameterType="map">
+        SELECT tc.id, tc.username, tc.opendate, tc.ipaddress, tc.cashamount, tc.`status`
+        from t_teller_cash tc
+        where  ipaddress=#{ip} and username!=#{userId} and `status`='0' limit 1
+    </select>
 </mapper> 
