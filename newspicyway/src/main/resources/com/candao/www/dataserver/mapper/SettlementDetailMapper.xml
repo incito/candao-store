@@ -34,7 +34,7 @@
         update t_settlement_detail set dishid=#{dishId} where (dishid is null or dishid='') and orderid=#{orderId}
     </update>
     <update id="setClear" parameterType="map">
-        update t_settlement_detail set isclear=1 where opendate=#{openDate} and username=#{userId} and isclear=0
+        update t_settlement_detail set isclear=1 where username=#{userId} and isclear=0
     </update>
     <insert id="insertAfterInputCash" parameterType="map">
         INSERT INTO t_settlement_detail (sdetailid,orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, payamount,couponNum, feeamount, settledid, incometype, membercardno, bankcardno, opendate, username, payway)

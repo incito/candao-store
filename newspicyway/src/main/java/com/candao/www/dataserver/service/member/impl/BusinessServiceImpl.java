@@ -173,13 +173,12 @@ public class BusinessServiceImpl implements BusinessService {
             return "{\"Data\":\"0\",\"Info\":\"本机没有您的零找金记录，不能清机\"}";
         }
         String classNo = getJbNo();// 结帐单号
-        Date today = WorkDateUtil.getWorkDate1();
-        String openDate = DateUtils.toString(today, "yyyy-MM-dd");
+        String openDate = DateUtils.toString((Date) tellerCash.get("opendate"), "yyyy-MM-dd");
         Date now = new Date();//清机时间
         Date insertDate = (Date) tellerCash.get("insertdate");
 
-        //前班未结台数
         String beginTime = DateUtils.toString(insertDate, "yyyy-MM-dd HH:mm:ss");
+        //前班未结台数
         int lastNonTable = tellerCashMapper.selectLastNonTable(beginTime);
         // 前班未结押金
         int lastNonDeposit = 0;
@@ -213,29 +212,29 @@ public class BusinessServiceImpl implements BusinessService {
         // 定额优惠金额
         int ratedPreferenceMoney = 0;
         //品项消费
-        String itemMoney = tellerCashMapper.selectItemMoney(beginTime);
+        String itemMoney = tellerCashMapper.selectItemMoney(insertDate,userId);
         float itemMoneyFloat = StringUtil.str2Float(itemMoney, 0);
         //优惠金额
-        String preferenceMoney = tellerCashMapper.selectPreferenceMoney(beginTime);
+        String preferenceMoney = tellerCashMapper.selectPreferenceMoney(insertDate,userId);
         float preferenceMoneyFloat = StringUtil.str2Float(preferenceMoney, 0);
         //应收小计=品项总额-优惠金额。
         float accountsReceivableSubtotal = itemMoneyFloat - preferenceMoneyFloat;
         //抹零金额
-        String removeMoney = tellerCashMapper.selectRemoveMoney(beginTime);
+        String removeMoney = tellerCashMapper.selectRemoveMoney(insertDate,userId);
         float removeMoneyFloat = StringUtil.str2Float(removeMoney, 0);
         // 应收合计
         float accountsReceivableTotal = accountsReceivableSubtotal - removeMoneyFloat;
         //合计
-        String TotalMoney = tellerCashMapper.selectTotalMoney(insertDate, userId);
+        String TotalMoney = tellerCashMapper.selectTotalMoney(insertDate,userId);
         float TotalMoneyFloat = StringUtil.str2Float(TotalMoney, 0);
         //计入收入合计
-        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate, userId);
+        String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate,userId);
         float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
         // 不计收入合计
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat;
-        clearMachineMapper.insert(today, userId);
-        settlementDetailMapper.setClear(today, userId);
-        tellerCashMapper.updateStatus(today, ip, userId);
+        clearMachineMapper.insert(userId);
+        settlementDetailMapper.setClear(userId);
+        tellerCashMapper.updateStatus(ip, userId);
 
         // 餐具
         int tableware = 0;
@@ -285,7 +284,7 @@ public class BusinessServiceImpl implements BusinessService {
         param.put("todayTurnover", todayTurnover);
         param.put("priterTime", now);
         param.put("ipaddress", ip);
-        param.put("workdate", today);
+        param.put("workdate", openDate);
         param.put("shiftid", getShiftID());
         param.put("authorizer", authorizer);
         nodeClassMapper.insert(param);
@@ -295,11 +294,11 @@ public class BusinessServiceImpl implements BusinessService {
         param = new HashMap<>();
         param.put("userId", userId);
         param.put("classNo", classNo);
-        param.put("workDate", today);
+        param.put("workDate", openDate);
         param.put("openDate", openDate);
         nodeClassDetailMapper.insert(param);
 
-        settlementMapper.setClear(openDate, userId);
+        settlementMapper.setClear(userId);
         return "{\"Data\":\"1\",\"workdate\":\"" + openDate + "\",\"Info\":\"清机成功\"}";
     }
 

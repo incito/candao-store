@@ -4,6 +4,6 @@
 <mapper namespace="com.candao.www.dataserver.mapper.ClearMachineMapper">
     <insert id="insert" parameterType="map">
         insert into r_clearmachine(clearid,sdetailid, orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, payamount, couponNum, feeamount, settledid,incometype, membercardno, bankcardno, opendate, username, payway, cleardate, userid, workdate)
-        select '',sdetailid, orderid, dishid, sum(normalprice) as normalprice, discountamount, discountid, couponid, couponamount, sum(payamount) as payamount, couponNum, feeamount, settledid, incometype, membercardno, bankcardno, opendate, username, payway, now(),'',now() from t_settlement_detail where opendate=#{openDate} and username=#{userId} group by PAYWAY
+        select '',sdetailid, orderid, dishid, sum(normalprice) as normalprice, discountamount, discountid, couponid, couponamount, sum(payamount) as payamount, couponNum, feeamount, settledid, incometype, membercardno, bankcardno, opendate, username, payway, now(),'',now() from t_settlement_detail where orderid in (select orderid from t_settlement where userid='002' and isclear=0) group by PAYWAY
     </insert>
 </mapper>

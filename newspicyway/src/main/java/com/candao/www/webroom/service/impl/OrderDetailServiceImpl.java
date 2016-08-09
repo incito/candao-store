@@ -544,13 +544,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderOpService.calcOrderAmount(order.getOrderid());
 
         if (null == printObj) {
-            //更新桌台状态
-            TbTable table = new TbTable();
-            table.setTableid(order.getCurrenttableid());
-            table.setStatus(Constant.TABLESTATUS.EAT_STATUS);
-            table.setOrderid(order.getOrderid());
-            tableDao.updateStatus(table);
-
             Torder torder = new Torder();
             torder.setOrderid(order.getOrderid());
             torder.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);

@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.candao.www.dataserver.mapper.TellerCashMapper">
     <select id="selectInsertDate" resultType="Map" parameterType="Map">
-           SELECT insertdate,cashamount
+           SELECT insertdate,cashamount,opendate
            FROM t_teller_cash
            WHERE username = #{userId} AND `status` = 0 AND ipaddress = #{ip}
                 AND insertdate >= ( SELECT inserttime FROM t_open_log LIMIT 1 ) limit 1
@@ -51,35 +51,34 @@
         where b.begintime&gt;=#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectItemMoney" resultType="String" parameterType="String">
-        select sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 then 1 else a.discountrate end))
-        from t_order_detail a inner join t_order b on(a.orderid=b.orderid) where b.endtime>=#{endTime,jdbcType=VARCHAR} and  b.orderstatus=3 and a.status&lt;&gt;5
+        select sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 THEN 1 ELSE a.discountrate END))
+        FROM t_order_detail a INNER JOIN t_order b ON(a.orderid=b.orderid)
+        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5
     </select>
     <select id="selectPreferenceMoney" resultType="String" parameterType="String">
         SELECT SUM(ymamount)
         FROM (SELECT ymamount FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid)
-        WHERE b.endtime >= #{endTime,jdbcType=VARCHAR} AND b.orderstatus = 3 AND a.STATUS &lt;&gt; 5 GROUP BY b.orderid) t
+        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a.STATUS &lt;&gt; 5 GROUP BY b.orderid) t
     </select>
     <select id="selectRemoveMoney" resultType="String" parameterType="String">
        SELECT SUM(b.payamount)
        FROM t_order a INNER JOIN t_settlement_detail b ON(a.orderid=b.orderid AND b.payway=7)
-       WHERE b.payway=7 AND a.endtime>=#{endTime,jdbcType=VARCHAR}
+       WHERE a.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) b.payway=7
     </select>
     <select id="selectTotalMoney" resultType="String" parameterType="Map">
         select sum(case when b.payway='7' then 0-b.payamount else b.payamount end) as payamount  from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
-        where  b.payamount!=0
-        and a.inserttime>=#{insertTime,jdbcType=TIMESTAMP} and a.userid=#{userId} and a.isclear=0
+        where  a.beginTime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and a.userid=#{userId} and a.isclear=0
     </select>
     <select id="selectIncludedTotalMoney" resultType="String" parameterType="String">
         select sum(case when b.payway='7' then 0-b.payamount else b.payamount end) as payamount from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
-        where b.payamount!=0 and b.payway in(select itemid from v_revenuepayway)
-        and a.inserttime>=#{insertTime,jdbcType=TIMESTAMP} and a.userid=#{userId} and a.isclear=0
+        where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and b.payway in(select itemid from v_revenuepayway)  and a.userid=#{userId} and a.isclear=0
     </select>
     <update id="updateStatus" parameterType="map">
-        update  t_teller_cash set status=1 where opendate=#{openDate,jdbcType=VARCHAR} and ipaddress=#{ip} and username=#{userId} and status=0
+        update  t_teller_cash set status=1 where  ipaddress=#{ip} and username=#{userId} and status=0
     </update>
     <select id="selectNotClear" parameterType="java.util.Date" resultType="int">
         select count(*) from t_teller_cash where opendate=#{openDate} and status=0

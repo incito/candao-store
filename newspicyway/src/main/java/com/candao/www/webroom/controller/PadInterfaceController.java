@@ -965,11 +965,14 @@ public class PadInterfaceController {
 				}
 				String pwd = dataDictionaryService.find("SECRETKEY");
 				if (!pwd.equals(loginInfo.getPassword())) {
-					jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("密码错误"));
-				} else {
-					userService.updateLoginTime(loginInfo.getUsername());
-					jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
+					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("密码错误"));
 				}
+				List<TtellerCash> ttellerCashs = tellerCashService.selectNotClearByUserId(loginInfo.getUsername(), loginInfo.getMacAddress());
+				if( null!=ttellerCashs||!ttellerCashs.isEmpty()){
+					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先在您登录的POS上清机"));
+				}
+				userService.updateLoginTime(loginInfo.getUsername());
+				jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 			} else {
 				User user = loginService.authPadUser(loginInfo, 0, loginType);
 				if (user == null) {
