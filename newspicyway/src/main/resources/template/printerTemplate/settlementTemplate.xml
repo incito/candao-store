@@ -180,7 +180,7 @@
 		value="#{obj.settlementInfo4Pos.listJson}">
 		<row:row description="品项">
 			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">NORMAL</font>
+			<font description="字体大小">SMALL</font>
 			<locations description="品项">
 				<list>
 					<value>15</value>

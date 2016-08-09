@@ -29,6 +29,8 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 	private String value;
 
 	private String item;
+	
+	private List<Map<String, Object>> rowDefination;
 
 	@Override
 	public void init() throws Exception {
@@ -51,19 +53,21 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 			if (node instanceof Element) {
 				defaultElement((Element) node);
 				super.parseRow();
-				getRows().add(row);
+//				getRows().add(row);
+				getRowDefination().add(rowMap);
 			}
 		}
 	}
 
 	@Override
 	public List<Row> parse(Map<String, Object> obj) throws Exception {
-		if (CollectionUtils.isEmpty(getRows())) {
+		if (CollectionUtils.isEmpty(getRowDefination())) {
 			return null;
 		}
 		List<Row> rows = new ArrayList<>();
-		for (Row row : getRows()) {
+		for (Map<String, Object> row : getRowDefination()) {
 			// 更换模板
+//			super.setRowDefine(row);
 			super.setRowDefine(row);
 			if (value.contains(XmlReaderContext.PROPERTYSEPERATOR)) {
 				String valueCopy = new String(value.getBytes());
@@ -96,6 +100,17 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 			}
 		}
 		return rows;
+	}
+	
+	public List<Map<String, Object>> getRowDefination() {
+		if (rowDefination == null) {
+			synchronized (this) {
+				if (rowDefination == null) {
+					rowDefination = new ArrayList<>();
+				}
+			}
+		}
+		return rowDefination;
 	}
 
 }

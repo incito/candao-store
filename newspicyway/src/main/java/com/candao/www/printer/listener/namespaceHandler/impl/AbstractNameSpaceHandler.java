@@ -4,13 +4,15 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Map.Entry;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -32,17 +34,19 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 
 	public Row data;
 
+	public Map<String, Object> rowMap;
+
 	private ListNamespaceHandler listNamespaceHandler;
 
 	public static final String ROW = "row";
+
+	public static final String DATA = "data";
 
 	public static final String ROW_TAG_NAME = "row:row";
 
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final static int CLONE_LEVER = -1;
-
-	public final static String NON_PRIMITIVE_ARRAY = "[Ljava.lang.Integer;";
 
 	/**
 	 * 默认解析row元素
@@ -52,7 +56,8 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		if (element == null || element.getNodeType() != Node.ELEMENT_NODE) {
 			return;
 		}
-		row = new Row();
+		// row = new Row();
+		rowMap = new HashMap<>();
 		listNamespaceHandler = new ListNamespaceHandler();
 		NodeList epmAttr = element.getChildNodes();
 		// 得到element 的子节点
@@ -78,19 +83,23 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 					} else {
 						continue;
 					}
-					Field field = this.getClass().getField(ROW).getType().getDeclaredField(ele.getNodeName().trim());
-					if (field != null) {
-						field.setAccessible(true);
-						value = resolveType(field, value);
-						field.set(this.row, value);
-					}
+
+					this.rowMap.put(ele.getNodeName().trim(), value);
+
+					// Field field =
+					// this.getClass().getField(ROW).getType().getDeclaredField(ele.getNodeName().trim());
+					// if (field != null) {
+					// field.setAccessible(true);
+					// value = resolveType(field, value);
+					// field.set(this.row, value);
+					// }
 				}
 			}
 		}
 	}
 
-	public void setRowDefine(Row row) {
-		this.row = row;
+	public void setRowDefine(Map<String, Object> row) {
+		this.rowMap = row;
 	}
 
 	protected Object resolveType(Field field, Object value) {
@@ -99,7 +108,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 			return value;
 		}
 		String name = field.getType().getName();
-		if (NON_PRIMITIVE_ARRAY.equals(name)) {
+		if (XmlReaderContext.NON_PRIMITIVE_INTEGER_ARRAY.equals(name)) {
 			if (value.getClass().isArray()) {
 				List<Integer> temp = new ArrayList<>();
 				String[] val = (String[]) value;
@@ -154,43 +163,119 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 		doParseDatas(obj);
 	}
 
-	/**
-	 * 解析datas, 将占位符替换为obj的属性值
-	 * 
-	 * @param obj
-	 * @throws Exception
-	 */
+//	/**
+//	 * 解析datas, 将占位符替换为obj的属性值
+//	 * 
+//	 * @param obj
+//	 * @throws Exception
+//	 */
+//	protected void doParseDatas(Map<String, Object> obj) throws Exception {
+//		if (row == null || ArrayUtils.isEmpty(row.getDatas())) {
+//			return;
+//		}
+//		data = (Row) CloneUtil.clone(getRowDefine(), CLONE_LEVER);
+//		String[] data = this.data.getDatas();
+//		String[] buffer = new String[0];
+//		int newLength = 0;
+//		for (int i = 0; i < data.length; i++) {
+//			if (!StringUtils.isEmpty(data[i])) {
+//				data[i] = data[i].trim();
+//				buffer = Arrays.copyOf(buffer, ++newLength);
+//				// 判断是否变量
+//				if (!data[i].startsWith(XmlReaderContext.PLACEHOLDER_PREFIX)
+//						&& !data[i].endsWith(XmlReaderContext.PLACEHOLDER_SUBFIX)) {
+//					buffer[newLength - 1] = data[i];
+//					continue;
+//				}
+//				data[i] = StringUtils.delete(StringUtils.delete(data[i], XmlReaderContext.PLACEHOLDER_PREFIX),
+//						XmlReaderContext.PLACEHOLDER_SUBFIX);
+//				// 根据占位符取值
+//				String[] pros = StringUtils.delimitedListToStringArray(data[i], XmlReaderContext.PROPERTYSEPERATOR);
+//				if (ArrayUtils.isEmpty(pros)) {
+//					return;
+//				}
+//				Object temp = obj.get(pros[0]);
+//				temp = getDesiredFieldValue(temp, pros, 1);
+//				buffer[newLength - 1] = String.valueOf(temp);
+//			}
+//		}
+//		this.data.setDatas(buffer);
+//	}
+
+	protected void setValue(String filedname, Object value) throws Exception {
+		if (data == null) {
+			data = new Row();
+		}
+
+		Field field = this.getClass().getField(DATA).getType().getDeclaredField(filedname);
+		if (field != null) {
+			field.setAccessible(true);
+			value = resolveType(field, value);
+			// TODO
+			if (value == null) {
+				value = "";
+			}
+			field.set(this.data, value);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	protected void doParseDatas(Map<String, Object> obj) throws Exception {
-		if (row == null || ArrayUtils.isEmpty(row.getDatas())) {
+		if (CollectionUtils.isEmpty(rowMap)) {
 			return;
 		}
-		data = (Row) CloneUtil.clone(getRowDefine(), CLONE_LEVER);
-		String[] data = this.data.getDatas();
-		String[] buffer = new String[0];
-		int newLength = 0;
-		for (int i = 0; i < data.length; i++) {
-			if (!StringUtils.isEmpty(data[i])) {
-				data[i] = data[i].trim();
-				buffer = Arrays.copyOf(buffer, ++newLength);
-				// 判断是否变量
-				if (!data[i].startsWith(XmlReaderContext.PLACEHOLDER_PREFIX)
-						&& !data[i].endsWith(XmlReaderContext.PLACEHOLDER_SUBFIX)) {
-					buffer[newLength - 1] = data[i];
-					continue;
+		data = new Row();
+		Map<String, Object> map = (Map<String, Object>) CloneUtil.clone(rowMap, CLONE_LEVER);
+		for (Entry<String, Object> it : map.entrySet()) {
+			String name = it.getKey();
+			Object tempValue = it.getValue();
+			if (tempValue != null) {
+				// TODO
+				if (XmlReaderContext.NON_PRIMITIVE_STRING_ARRAY.equals(tempValue.getClass().getName())) {
+					String[] value = (String[]) tempValue;
+					String[] buffer = new String[0];
+					int newLength = 0;
+					for (String item : value) {
+						if (item != null) {
+							buffer = Arrays.copyOf(buffer, ++newLength);
+							Object res = getDesiredFiledValue(item, obj);
+							res = res == null ? "" : res;
+							buffer[newLength - 1] = res.toString();
+						}
+					}
+					setValue(name, buffer);
+				} else if (tempValue instanceof String) {
+					String value = (String) tempValue;
+					Object fieldValue = getDesiredFiledValue(value, obj);
+					setValue(name, fieldValue);
+				} else {
+					//TODO
 				}
-				data[i] = StringUtils.delete(StringUtils.delete(data[i], XmlReaderContext.PLACEHOLDER_PREFIX),
-						XmlReaderContext.PLACEHOLDER_SUBFIX);
-				// 根据占位符取值
-				String[] pros = StringUtils.delimitedListToStringArray(data[i], XmlReaderContext.PROPERTYSEPERATOR);
-				if (ArrayUtils.isEmpty(pros)) {
-					return;
-				}
-				Object temp = obj.get(pros[0]);
-				temp = getDesiredFieldValue(temp, pros, 1);
-				buffer[newLength - 1] = String.valueOf(temp);
 			}
 		}
-		this.data.setDatas(buffer);
+	}
+
+	private Object getDesiredFiledValue(String filedName, Map<String, Object> obj) throws Exception {
+		if (!StringUtils.isEmpty(filedName)) {
+			filedName = filedName.trim();
+			// 判断是否变量
+			if (!filedName.startsWith(XmlReaderContext.PLACEHOLDER_PREFIX)
+					&& !filedName.endsWith(XmlReaderContext.PLACEHOLDER_SUBFIX)) {
+				return filedName;
+			}
+			filedName = StringUtils.delete(StringUtils.delete(filedName, XmlReaderContext.PLACEHOLDER_PREFIX),
+					XmlReaderContext.PLACEHOLDER_SUBFIX);
+			// 根据占位符取值
+			String[] pros = StringUtils.delimitedListToStringArray(filedName, XmlReaderContext.PROPERTYSEPERATOR);
+			if (ArrayUtils.isEmpty(pros)) {
+				return null;
+			}
+			// 在模板中配置的要取值的对象
+			Object temp = obj.get(pros[0]);
+			temp = getDesiredFieldValue(temp, pros, 1);
+			return temp;
+		}
+		return null;
 	}
 
 	protected Object getDesiredFieldValue(Object obj, String[] pros, int fromindex) throws Exception {

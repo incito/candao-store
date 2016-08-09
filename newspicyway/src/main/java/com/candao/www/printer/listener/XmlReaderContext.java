@@ -34,6 +34,10 @@ public class XmlReaderContext {
 	
 	public static final String PROPERTYSEPERATOR = ".";
 	
+	public static final String NON_PRIMITIVE_INTEGER_ARRAY = "[Ljava.lang.Integer;";
+	
+	public static final String NON_PRIMITIVE_STRING_ARRAY = "[Ljava.lang.String;";
+	
 	public XmlReaderContext(XmlTemplateDefinitionReader reader ,NamespaceHandlerResolver resolver ){
 		this.reader = reader;
 		this.namespaceHandlerResover = resolver;
