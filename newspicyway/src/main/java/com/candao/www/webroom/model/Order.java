@@ -32,7 +32,7 @@ public class Order implements java.io.Serializable{
 	
 	private String sequence;//顺序
 
-	private String source="2" ;//下单来源 1:PAD  2:POS
+	private String source=Constant.SOURCE.POS ;//下单来源 1:PAD  2:POS
 	
 
 

@@ -16,5 +16,9 @@
 	<select id="findUncleanPosList" resultMap="BaseResultMap">
 		select tc.id, tc.username, tc.opendate, tc.ipaddress, tc.cashamount, tc.`status` from t_teller_cash tc, t_open_log ol where date_format(tc.opendate,'%y-%m-%d') = date_format(ol.opendate,'%y-%m-%d') and tc.`status` = 0;
 	</select>
-	
+	<select id="selectNotClearByUserId" resultMap="BaseResultMap" parameterType="map">
+        SELECT tc.id, tc.username, tc.opendate, tc.ipaddress, tc.cashamount, tc.`status`
+        from t_teller_cash tc
+        where username=#{userId} and `status`='0' and ipaddress!=#{ip} limit 1
+    </select>
 </mapper> 

@@ -294,7 +294,7 @@ public class PadInterfaceController {
 		String result = "";
 		Map<String, Object> res = orderDetailService.setOrderDetailList(order);
 		// POS下单通知PAD订单改变
-		if ("2".equals(order.getSource())) {
+		if (Constant.SOURCE.POS.equals(order.getSource())) {
 			notifyService.notifyOrderChange(order.getOrderid());
 		}
 		logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
@@ -545,7 +545,7 @@ public class PadInterfaceController {
 		int flag = judgeRepeatData(toperationLog);
 		if (flag == 0) {
 			String a = orderDetailService.discardDishList(urgeDish, toperationLog);
-			if("1".equals(urgeDish.getSource())) {
+			if(Constant.SOURCE.POS.equals(urgeDish.getSource())) {
 				notifyService.notifyOrderChange(urgeDish.getOrderNo());
 			}
 			return a;
@@ -824,25 +824,21 @@ public class PadInterfaceController {
 	}
 
 	/**
-	 * 处理实收字段的问题 ，pos 端调用
+	 * 处理实收
 	 *
 	 * @param orderId
 	 * @return
 	 */
-	@RequestMapping("/debitamout")
-	@ResponseBody
-	public String debitamout(@RequestBody final String orderId) {
-		new Thread(new Runnable() {
+	private String debitamout(final String orderId) {
+		executor.execute(new Runnable() {
 			public void run() {
-				@SuppressWarnings({ "unchecked" })
-				Map<String, String> map = JacksonJsonMapper.jsonToObject(orderId, Map.class);
 				try {
-					orderSettleService.calDebitAmount(map.get("orderNo"));
+					orderSettleService.calDebitAmount(orderId);
 				} catch (Exception e) {
 					logger.error("计算实收失败，订单号：" + orderId, e, "");
 				}
 			}
-		}).start();
+		});
 		return Constant.SUCCESSMSG;
 	}
 
@@ -965,11 +961,14 @@ public class PadInterfaceController {
 				}
 				String pwd = dataDictionaryService.find("SECRETKEY");
 				if (!pwd.equals(loginInfo.getPassword())) {
-					jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("密码错误"));
-				} else {
-					userService.updateLoginTime(loginInfo.getUsername());
-					jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
+					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("密码错误"));
 				}
+				List<TtellerCash> ttellerCashs = tellerCashService.selectNotClearByUserId(loginInfo.getUsername(), loginInfo.getMacAddress());
+				if( null!=ttellerCashs||!ttellerCashs.isEmpty()){
+					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先在您登录的POS上清机"));
+				}
+				userService.updateLoginTime(loginInfo.getUsername());
+				jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 			} else {
 				User user = loginService.authPadUser(loginInfo, 0, loginType);
 				if (user == null) {
@@ -1725,7 +1724,7 @@ public class PadInterfaceController {
 			HttpServletResponse response) {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
-		if (map.get("code").equals("0")&&"1".equals(params.get("source"))) {
+		if (map.get("code").equals("0")&&Constant.SOURCE.POS.equals(params.get("source"))) {
 			String orderid = (String) map.get("orderid");
 			notifyService.notifyOrderChange(orderid);
 		}

@@ -3,8 +3,10 @@
     <property name="LOG_HOME" value="/home/cloud-user/candao"/>
 
     <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <maxFileSize>100MB</maxFileSize>
             <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
+      	 	<totalSizeCap>20GB</totalSizeCap>
             <maxHistory>15</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -17,10 +19,13 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    
     <appender name="printAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <fileNamePattern>${LOG_HOME}/print_log/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
             <maxHistory>8</maxHistory>
+      	 	<totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
@@ -33,12 +38,18 @@
     </root>
 
     <logger name="dao" level="DEBUG"/>
+    
+    <logger name="org.springframework" level="DEBUG"/>
+    
     <!--打印日志输出-->
-    <logger name="com.candao.www.printer" level="INFO">
+    <logger name="com.candao.www.printer" additivity="false" level="INFO" >
         <appender-ref ref="printAppender"/>
+        <!-- <appender-ref ref="STDOUT"/> -->
     </logger>
-    <logger name="com.candao.print" level="INFO">
+    
+    <logger name="com.candao.print" additivity="false" level="INFO" >
         <appender-ref ref="printAppender"/>
+        <!-- <appender-ref ref="STDOUT"/> -->
     </logger>
 
 </configuration>

@@ -713,7 +713,7 @@
 		FROM t_p_preferential_activity
 		tpa , t_p_preferential_detail tpd,t_dish tdi
 		<where>
-			(tpa.status is null or tpa.`status` != #{status}) and tpa.apply_all=1
+			(tpa.status is null or tpa.`status` != 1) and tpa.apply_all=1
 			and tpa.id = tpd.preferential
 			and tdi.dishid=tpd.dish
 			and
@@ -736,7 +736,7 @@
 			tpa , t_p_preferential_detail tpd,t_dish
 			tdi
 			<where>
-				(tpa.status is null or tpa.`status` != #{status}) and
+				(tpa.status is null or tpa.`status` != 1) and
 				tpa.apply_all=0 and tpa.id = tpd.preferential and
 				tdi.dishid=tpd.dish
 				AND tpa.type = #{type}

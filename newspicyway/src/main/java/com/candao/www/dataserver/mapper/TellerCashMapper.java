@@ -31,17 +31,17 @@ public interface TellerCashMapper {
 
     String selectFoodMoney(@Param("beginTime") String beginTime);
 
-    String selectItemMoney(@Param("endTime") String endTime);
+    String selectItemMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
 
-    String selectPreferenceMoney(@Param("endTime") String endTime);
+    String selectPreferenceMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
 
-    String selectRemoveMoney(@Param("endTime") String endTime);
+    String selectRemoveMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
 
-    String selectTotalMoney(@Param("insertTime") Date insertTime, @Param("userId") String userId);
+    String selectTotalMoney(@Param("beginTime") Date beginTime, @Param("userId") String userId);
 
-    String selectIncludedTotalMoney(@Param("insertTime") Date insertTime, @Param("userId") String userId);
+    String selectIncludedTotalMoney(@Param("beginTime") Date beginTime, @Param("userId") String userId);
 
-    int updateStatus(@Param("openDate") Date openDate, @Param("ip") String ip, @Param("userId") String userId);
+    int updateStatus(@Param("ip") String ip, @Param("userId") String userId);
 
     int selectNotClear(@Param("openDate") Date openDate);
 

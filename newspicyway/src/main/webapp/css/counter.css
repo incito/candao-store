@@ -118,7 +118,6 @@ ul.nav-counter li:last-child {
 	display: inline-block;
 	float:right; 
 	font-size:14px;
-	margin-right:-14px;
 }
 /* 姣忎釜鑿滃搧鍒嗙被鐨勫叿浣撳唴瀹�*/
 .counter-detail-add{
