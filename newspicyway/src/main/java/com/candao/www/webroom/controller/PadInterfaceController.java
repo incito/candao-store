@@ -824,25 +824,21 @@ public class PadInterfaceController {
 	}
 
 	/**
-	 * 处理实收字段的问题 ，pos 端调用
+	 * 处理实收
 	 *
 	 * @param orderId
 	 * @return
 	 */
-	@RequestMapping("/debitamout")
-	@ResponseBody
-	public String debitamout(@RequestBody final String orderId) {
-		new Thread(new Runnable() {
+	private String debitamout(final String orderId) {
+		executor.execute(new Runnable() {
 			public void run() {
-				@SuppressWarnings({ "unchecked" })
-				Map<String, String> map = JacksonJsonMapper.jsonToObject(orderId, Map.class);
 				try {
-					orderSettleService.calDebitAmount(map.get("orderNo"));
+					orderSettleService.calDebitAmount(orderId);
 				} catch (Exception e) {
 					logger.error("计算实收失败，订单号：" + orderId, e, "");
 				}
 			}
-		}).start();
+		});
 		return Constant.SUCCESSMSG;
 	}
 
