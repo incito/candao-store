@@ -8,7 +8,9 @@ import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.www.dataserver.controller.OrderInterfaceController;
 import com.candao.www.dataserver.controller.StoreInterfaceController;
 import com.candao.www.dataserver.util.StringUtil;
+import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.Print4POSService;
+import com.candao.www.webroom.service.impl.Print4POSServiceImpl;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -60,6 +62,8 @@ public class Print4POSController {
 	private PreferentialAnalysisChartsController prefertialinfo;
 	@Autowired
 	private RegisterBillController registerBillinfo;
+	@Autowired
+	private OrderService orderService;
 
 	@RequestMapping(value = "/getOrderInfo/{aUserId}/{orderId}/{printType}", produces = {
 			"application/json;charset=UTF-8" })
@@ -70,12 +74,21 @@ public class Print4POSController {
 		boolean flag = true;
 		String msg = "";
 		try {
-			res = parse("getOrderInfo", orderInfo, new Class[] { String.class, String.class, String.class }, aUserId,
-					orderId, printType);
-			res = parseDSJson(res);
-			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
-			print4posService.print(settlementInfos, printType);
+			printType = printType.trim();
+			// 预结单
+			if (Print4POSServiceImpl.PRESETTLEMENT.equals(printType)) {
+				Map<String, Object> params = new HashMap<>();
+				params.put("orderid", orderId);
+				Map<String, Object> map = orderService.calGetOrderInfo(params);
+				print4posService.printPreSettlement(map, printType);
+			} else {// 结账客用
+				res = parse("getOrderInfo", orderInfo, new Class[] { String.class, String.class, String.class },
+						aUserId, orderId, printType);
+				res = parseDSJson(res);
+				List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
+				settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+				print4posService.print(settlementInfos, printType);
+			}
 		} catch (Exception e) {
 			msg = e.getMessage();
 			flag = false;

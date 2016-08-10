@@ -1229,12 +1229,14 @@ public class OrderServiceImpl implements OrderService {
 			outresultMap.put("tableStatus", resultMap.get("status"));
 			outresultMap.put("customerNumber", resultMap.get("custnum"));
 			outresultMap.put("memberno", resultMap.get("memberno"));
-			outresultMap.put("begintime",  resultMap.get("begintime"));
-			outresultMap.put("endtime",  resultMap.get("endtime"));
+			outresultMap.put("begintime",  DateUtils.formatDateToString( (Date) resultMap.get("begintime")));
+			  Date date= (Date) resultMap.get("endtime");
+			outresultMap.put("endtime",date==null?"":DateUtils.formatDateToString(date ));
 			outresultMap.put("areaname",  resultMap.get("areaname"));
 			outresultMap.put("tableName",  resultMap.get("tableName"));
 			outresultMap.put("fullName",  resultMap.get("userid"));
-			outresultMap.put("printcount ",  resultMap.get("printcount"));
+			int printcount=Integer.valueOf(String.valueOf(resultMap.get("printcount")));
+			outresultMap.put("printcount",  printcount+1);
 		}
 		outresultMap.put("orderid", orderid);
 		return outresultMap;
