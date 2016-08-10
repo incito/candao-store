@@ -164,46 +164,53 @@ function editMenuView(id){
 		contentType : "application/json; charset=utf-8",
 		success : function(result) {
 			if(!jQuery.isEmptyObject(result)){
-				$("#menuViewDishid").text(result.dish[0].dishid);
-				$("#menuViewDishno").text(result.dish[0].dishNo);
-				$("#menuViewTitle").text(result.dish[0].dishname);
-				$("#menuViewIntroduction").text(result.dish[0].dishintroduction);
-				if(result.dish[0].image!=''){
-					$("#imgsrc").attr("src",img_Path+result.dish[0].image);
-				}
-				if(result.dish[0].status==1){
-					$("#menuViewStatus").html('<img src="../images/menu-state-off.png" value="1" title="不足">');
-				}else{
-					$("#menuViewStatus").html('<img src="../images/menu-state-on.png" value="0" title="充足">');
+				if(result.dish.length > 0) {
+					$("#menuViewDishid").text(result.dish[0].dishid);
+					$("#menuViewDishno").text(result.dish[0].dishNo);
+					$("#menuViewTitle").text(result.dish[0].dishname);
+					$("#menuViewIntroduction").text(result.dish[0].dishintroduction);
+					if(result.dish[0].image !== ''){
+						$("#imgsrc").attr("src",img_Path+result.dish[0].image);
+					} else {
+						$("#imgsrc").attr("src",'../images/nopic.jpg');
+					}
+					if(result.dish[0].status==1){
+						$("#menuViewStatus").html('<img src="../images/menu-state-off.png" value="1" title="不足">');
+					}else{
+						$("#menuViewStatus").html('<img src="../images/menu-state-on.png" value="0" title="充足">');
 
+					}
+					$("#tasteAndLabel").append(result.dish[0].imagetitle);
+					if(result.dish[0].imagetitle!=""&&result.dish[0].abbrdesc!=""){
+						$("#tasteAndLabel").append(",");
+					}
+					$("#tasteAndLabel").append(result.dish[0].abbrdesc);
+					var dishcol='';
+					$.each(result.columnList,function(index,item){
+						dishcol = dishcol+","+item.itemDesc;
+					});
+					$("#menuViewDishType").append(dishcol.substr(1,dishcol.length-1));
+					var unit='';
+					var price='';
+					var vipprice='';
+					$.each(result.unitList,function(index,item){
+						if(item.unit!=''){
+							unit = unit+"/"+item.unit;
+						}
+						if(item.price!=''){
+							price = price+"/"+item.price;
+						}
+						if(item.vipprice!=''){
+							vipprice = vipprice+"/"+item.vipprice;
+						}
+					});
+					$("#menuViewUnit").text(unit.substr(1,unit.length-1));
+					$("#menuViewPrice").text(price.substr(1,price.length-1));
+					$("#menuViewVipPrice").text(vipprice.substr(1,vipprice.length-1));
+				} else {
+					$("#imgsrc").attr("src",'../images/nopic.jpg');
 				}
-				$("#tasteAndLabel").append(result.dish[0].imagetitle);
-				if(result.dish[0].imagetitle!=""&&result.dish[0].abbrdesc!=""){
-					$("#tasteAndLabel").append(",");
-				}
-				$("#tasteAndLabel").append(result.dish[0].abbrdesc);
-				var dishcol='';
-				$.each(result.columnList,function(index,item){
-					dishcol = dishcol+","+item.itemDesc;
-				});
-				$("#menuViewDishType").append(dishcol.substr(1,dishcol.length-1));
-				var unit='';
-				var price='';
-				var vipprice='';
-				$.each(result.unitList,function(index,item){
-					if(item.unit!=''){
-						unit = unit+"/"+item.unit;
-					}
-					if(item.price!=''){
-						price = price+"/"+item.price;
-					}
-					if(item.vipprice!=''){
-						vipprice = vipprice+"/"+item.vipprice;
-					}
-				});
-				$("#menuViewUnit").text(unit.substr(1,unit.length-1));
-				$("#menuViewPrice").text(price.substr(1,price.length-1));
-				$("#menuViewVipPrice").text(vipprice.substr(1,vipprice.length-1));
+
 			}
 		}
 	});
