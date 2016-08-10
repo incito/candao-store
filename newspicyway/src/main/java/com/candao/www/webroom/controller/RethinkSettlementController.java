@@ -1,5 +1,6 @@
 package com.candao.www.webroom.controller;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.common.utils.StringUtils;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.service.ItemDetailService;
 import com.candao.www.webroom.service.RethinkSettlementService;
@@ -91,14 +92,11 @@ public class RethinkSettlementController {
 	@RequestMapping(value="/queryStatement",method = RequestMethod.POST)
 	public JSONObject queryStatement(HttpServletRequest request){
 		String orderid = request.getParameter("orderid");
-//		String branchId = request.getParameter("branchId");
-//		if(branchId == null){
-			String branchId = PropertiesUtils.getValue("current_branch_id");
-//		}
+		String branchId = PropertiesUtils.getValue("current_branch_id");
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("orderid", orderid);
 		params.put("branchId", branchId);
-		if (StringUtils.isBlank(branchId)) {
+		if (StringUtils.isNull(branchId)) {
             branchId = PropertiesUtils.getValue("current_branch_id");
         }
         String branchname = itemDetailService.getBranchName(branchId);
@@ -108,11 +106,25 @@ public class RethinkSettlementController {
 			if(tableNo == null){
 				map = ReturnMap.getReturnMap(0, "003", "没有相匹配桌台信息");
 			}else{
-				Map<String,Object> rs = rethinkSettlementService.queryStatement(params);
-				rs.put("branchname", branchname);
-				JSONObject data = JSONObject.fromObject(rs);
-			    map = ReturnMap.getReturnMap(1, "001", "查询反结算数结账单数据成功");
-			    map.put("data", data);
+				Map<String,Object> lingtou = rethinkSettlementService.queryLingtou(params);
+				Long count = (Long) lingtou.get("count");
+				if(count != null && count.compareTo(2L) == 0){
+					map = ReturnMap.getReturnMap(0, "002", "四舍五入和抹零数据同时存在，请确认！");
+				}else{
+					Map<String,Object> rs = rethinkSettlementService.statementInfo(params);
+					Integer payway = (Integer) lingtou.get("payway");
+					BigDecimal payamount = (BigDecimal)lingtou.get("payamount");
+					if(payway == null){
+						rs.put("payway", 7);
+						rs.put("payamount", "0.00");
+					}else{
+						rs.put("payway",payway);
+						rs.put("payamount", StringUtils.ratioTransform2(payamount));
+					}
+					rs.put("branchname", branchname);
+				    map = ReturnMap.getReturnMap(1, "001", "查询反结算数结账单数据成功");
+				    map.put("data", rs);
+				}
 			}
 		}catch(Exception e){
 			map = ReturnMap.getReturnMap(0, "002", "查询结账单数据失败");

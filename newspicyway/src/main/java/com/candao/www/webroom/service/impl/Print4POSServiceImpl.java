@@ -195,7 +195,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 			int index = 0;
 			for (DishItem it : resultInfo4Pos.getData()) {
 				it.setIndex(++index + "");
-				total = stringAdd(total, it.getTotlePrice());
+				total = stringAdd(total, StringUtils.isEmpty(it.getTotlePrice()) ? "0" : it.getTotlePrice());
 			}
 		}
 		resultInfo4Pos.setTotal(total);
@@ -333,7 +333,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 		// 消费金额
 		posData.put("tip", tipList.get("tipMoney"));
-		
+
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		map.put("date", sdf.format(date));
@@ -354,22 +354,23 @@ public class Print4POSServiceImpl implements Print4POSService {
 	private List<Map<String, Object>> generatePreferList(Map<String, Object> map) {
 		Assert.notEmpty(map, "固定优惠不能为空");
 		List<Map<String, Object>> res = new LinkedList<>();
-		String[] name = {"优免","会员积分消费","会员券消费","折扣优惠","抹零","赠送金额","四舍五入","会员储值消费虚增"}; 
-		String[] valueName = {"bastfree","integralconsum","meberTicket","discountmoney","malingincom","give","handervalue","mebervalueadd"};
+		String[] name = { "优免", "会员积分消费", "会员券消费", "折扣优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增" };
+		String[] valueName = { "bastfree", "integralconsum", "meberTicket", "discountmoney", "malingincom", "give",
+				"handervalue", "mebervalueadd" };
 		for (int i = 0; i < name.length; i++) {
 			Map<String, Object> temp = new HashMap<>();
 			temp.put("name", name[i]);
-			temp.put("value",map.get(valueName[i]));
+			temp.put("value", map.get(valueName[i]));
 			res.add(temp);
 		}
 		return res;
 	}
-	
+
 	private List<Map<String, Object>> generateSettlementList(Map<String, Object> map) {
 		Assert.notEmpty(map, "固定结算信息不能为空");
 		List<Map<String, Object>> res = new LinkedList<>();
-		String[] name = {"现金","挂账","微信","支付宝","刷卡-工行","刷卡-他行","会员储值消费净值"}; 
-		String[] valueName = {"money","card","weixin","zhifubao","icbc","otherbank","merbervaluenet"};
+		String[] name = { "现金", "挂账", "微信", "支付宝", "刷卡-工行", "刷卡-他行", "会员储值消费净值" };
+		String[] valueName = { "money", "card", "weixin", "zhifubao", "icbc", "otherbank", "merbervaluenet" };
 		for (int i = 0; i < name.length; i++) {
 			Map<String, Object> temp = new HashMap<>();
 			temp.put("name", name[i]);

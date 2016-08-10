@@ -74,7 +74,7 @@ public interface TRethinkSettlementDao {
 	 * @param params
 	 * @return
 	 */
-	public Map<String,Object> querySettlementDetail(Map<String,Object> params);
+	public Map<String,Object> prosettlementDetail(Map<String,Object> params);
 	
 	/**
 	 * 查询桌号
@@ -95,48 +95,12 @@ public interface TRethinkSettlementDao {
 	public BigDecimal queryMemberInflate(String orderid);
 	
 	/**
-	 * 查询四舍五入和抹零
+	 * 查询零头处理方式
 	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
+	 * @since 2016-7-6
+	 * @param params
 	 * @return
 	 */
-	public List<Map<String,Object>> queryMoLing(String orderid);
-	
-	/**
-	 * 查询应收
-	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal totalconsumption(String orderid);
-	
-	/**
-	 * 查询实收
-	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal paidamount(String orderid);
-	
-	/**
-	 * 查询赠菜金额
-	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal giveamount(String orderid);
-	
-	/**
-	 * 获取套餐金额
-	 * @author weizhifang
-	 * @since 2016-5-31
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal taocanAmount(String orderid);
+	public Map<String,Object> queryLingtou(Map<String,Object> params);
 	
 }

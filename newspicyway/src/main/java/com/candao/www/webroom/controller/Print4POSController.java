@@ -68,18 +68,21 @@ public class Print4POSController {
 			@PathVariable("printType") String printType) {
 		String res = null;
 		boolean flag = true;
+		String msg = "";
 		try {
-			res = parse("getOrderInfo", orderInfo, null, aUserId, orderId, printType);
+			res = parse("getOrderInfo", orderInfo, new Class[] { String.class, String.class, String.class }, aUserId,
+					orderId, printType);
 			res = parseDSJson(res);
 			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
 			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
 			print4posService.print(settlementInfos, printType);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			flag = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
-		return getResponseMsg("", "", flag);
+		return getResponseMsg("", msg, flag);
 	}
 
 	@RequestMapping(value = "/getClearMachineData/{aUserid}/{jsorder}/{posid}/", produces = {
@@ -90,19 +93,22 @@ public class Print4POSController {
 		// TODO
 		String res = null;
 		boolean flag = true;
+		String msg = "";
 		try {
-			res = parse("getClearMachineData", storeInfo, null, aUserId, jsOrder, posId);
+			res = parse("getClearMachineData", storeInfo, new Class[] { String.class, String.class, String.class },
+					aUserId, jsOrder, posId);
 			res = parseDSJson(res);
 			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
 			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
 			print4posService.printClearMachine(settlementInfos);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			flag = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
 
-		return getResponseMsg("", "", flag);
+		return getResponseMsg("", msg, flag);
 	}
 
 	@RequestMapping(value = "/getMemberSaleInfo/{aUserId}/{orderId}/", produces = { "application/json;charset=UTF-8" })
@@ -111,19 +117,21 @@ public class Print4POSController {
 		// TODO
 		String res = null;
 		boolean flag = true;
+		String msg = "";
 		try {
-			res = parse("getMemberSaleInfo", orderInfo, null, aUserId, orderId);
+			res = parse("getMemberSaleInfo", orderInfo, new Class[] { String.class, String.class }, aUserId, orderId);
 			res = parseDSJson(res);
 			List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
 			settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
 			print4posService.printMemberSaleInfo(settlementInfos);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			flag = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
 
-		return getResponseMsg("", "", flag);
+		return getResponseMsg("", msg, flag);
 	}
 
 	private String parseDSJson(String src) {
@@ -148,16 +156,18 @@ public class Print4POSController {
 		// TODO
 		String res = null;
 		boolean sucess = true;
+		String msg = "";
 		try {
-			res = parse("getItemSellDetail", padInterface, null, flag);
+			res = parse("getItemSellDetail", padInterface, new Class[] { String.class }, flag);
 			ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
 			print4posService.printItemSellDetail(resultInfo4Pos);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			sucess = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
-		return getResponseMsg("", "", sucess);
+		return getResponseMsg("", msg, sucess);
 	}
 
 	/**
@@ -172,16 +182,18 @@ public class Print4POSController {
 		// TODO
 		String res = null;
 		boolean sucess = true;
+		String msg = "";
 		try {
-			res = parse("TipList", tipController, null, flag);
+			res = parse("TipList", tipController, new Class[] { String.class }, flag);
 			ResultTip4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
 			print4posService.printTip(resultInfo4Pos);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			sucess = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
-		return getResponseMsg("", "", sucess);
+		return getResponseMsg("", msg, sucess);
 	}
 
 	/**
@@ -195,6 +207,7 @@ public class Print4POSController {
 	@ResponseBody
 	public String printInvoice(@RequestBody String param) {
 		boolean sucess = true;
+		String msg = "";
 		if (StringUtils.isEmpty(param)) {
 			sucess = false;
 			return getResponseMsg("", "", sucess);
@@ -203,11 +216,12 @@ public class Print4POSController {
 			Map<String, Object> map = JSON.parseObject(param, Map.class);
 			print4posService.printInvoice(map);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			sucess = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
-		return getResponseMsg("", "", sucess);
+		return getResponseMsg("", msg, sucess);
 	}
 
 	/**
@@ -220,6 +234,7 @@ public class Print4POSController {
 	@ResponseBody
 	public String StoreCardToNewPos(@RequestBody String param) {
 		boolean sucess = true;
+		String msg = "";
 		if (StringUtils.isEmpty(param)) {
 			sucess = false;
 			return getResponseMsg("", "", sucess);
@@ -228,11 +243,12 @@ public class Print4POSController {
 			Map<String, Object> map = JSON.parseObject(param, Map.class);
 			print4posService.printStoredCard(map);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			sucess = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
-		return getResponseMsg("", "", sucess);
+		return getResponseMsg("", msg, sucess);
 	}
 
 	/**
@@ -245,6 +261,7 @@ public class Print4POSController {
 	@ResponseBody
 	public String printBusinessDetail(@RequestParam Map<String, Object> params, HttpServletRequest request) {
 		boolean sucess = true;
+		String msg = "";
 		if (StringUtils.isEmpty(params)) {
 			sucess = false;
 			return getResponseMsg("", "", sucess);
@@ -277,16 +294,17 @@ public class Print4POSController {
 			temp0.put("clearStatus", "0");
 			billCountList = parse("BillCount", registerBillinfo, new Class<?>[] { Map.class }, temp0);
 			// 获取小费总额
-			tipList = parse("TipListByTime", tipController, null, String.valueOf(temp.get("beginTime")),
-					String.valueOf(temp.get("endTime")));
+			tipList = parse("TipListByTime", tipController, new Class[] { String.class, String.class },
+					String.valueOf(temp.get("beginTime")), String.valueOf(temp.get("endTime")));
 			print4posService.printBusinessDetail(params, itemList, preferList, dayReportList, billCountList, tipList);
 		} catch (Exception e) {
+			msg = e.getMessage();
 			sucess = false;
 			e.printStackTrace();
 			log.error("", e);
 		}
 
-		return getResponseMsg("", "", sucess);
+		return getResponseMsg("", msg, sucess);
 	}
 
 	/**

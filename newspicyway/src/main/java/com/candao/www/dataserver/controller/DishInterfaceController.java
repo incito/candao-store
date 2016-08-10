@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,9 +19,9 @@ public class DishInterfaceController {
     @Autowired
     private DishService dishService;
 
-    @RequestMapping(value = "/getFoodStatus/{dishId}/{dishUnit}/", produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/getFoodStatus/{dishId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public String getFoodStatus(@PathVariable("dishId") String dishId, @PathVariable("dishUnit") String dishUnit) {
+    public String getFoodStatus(@PathVariable("dishId") String dishId, @RequestBody String dishUnit) {
         String result = dishService.getFoodStatus(dishId, dishUnit);
         result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);

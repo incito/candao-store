@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 public interface TableMapper {
     int updaStatus0(@Param("tableNo") String tableNo);
 
+    int clearTable(@Param("tableNo") String tableNo, @Param("orderId") String orderId);
+
     int updaStatus1(@Param("orderId") String orderId, @Param("tableId") String tableId);
 
     String getOrderIdByTableNo(String tableNo);

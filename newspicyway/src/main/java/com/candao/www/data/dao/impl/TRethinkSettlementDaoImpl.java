@@ -95,8 +95,8 @@ public class TRethinkSettlementDaoImpl implements TRethinkSettlementDao {
 	 * @param params
 	 * @return
 	 */
-	public Map<String,Object> querySettlementDetail(Map<String,Object> params){
-		return daoSupport.get(PREFIX + ".querySettlementDetail", params);
+	public Map<String,Object> prosettlementDetail(Map<String,Object> params){
+		return daoSupport.get(PREFIX + ".prosettlementDetail", params);
 	}
 	
 	/**
@@ -137,54 +137,14 @@ public class TRethinkSettlementDaoImpl implements TRethinkSettlementDao {
 	}
 	
 	/**
-	 * 查询应收
+	 * 查询零头处理方式
 	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
+	 * @since 2016-7-6
+	 * @param params
 	 * @return
 	 */
-	public BigDecimal totalconsumption(String orderid){
-		Map<String,Object> params = new HashMap<String,Object>();
-		params.put("orderid", orderid);
-		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".totalconsumption", params);
+	public Map<String,Object> queryLingtou(Map<String,Object> params){
+		return daoSupport.get(PREFIX+".queryLingtou", params);
 	}
 	
-	/**
-	 * 查询实收
-	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal paidamount(String orderid){
-		Map<String,Object> params = new HashMap<String,Object>();
-		params.put("orderid", orderid);
-		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".paidamount", params);
-	}
-	
-	/**
-	 * 查询赠菜金额
-	 * @author weizhifang
-	 * @since 2016-5-30
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal giveamount(String orderid){
-		Map<String,Object> params = new HashMap<String,Object>();
-		params.put("orderid", orderid);
-		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".giveamount", params);
-	}
-	
-	/**
-	 * 获取套餐金额
-	 * @author weizhifang
-	 * @since 2016-5-31
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal taocanAmount(String orderid){
-		Map<String,Object> params = new HashMap<String,Object>();
-		params.put("orderid", orderid);
-		return daoSupport.getSqlSessionTemplate().selectOne(PREFIX + ".taocanAmount", params);
-	}
 }
