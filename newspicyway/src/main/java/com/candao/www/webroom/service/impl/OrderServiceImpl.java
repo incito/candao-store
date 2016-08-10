@@ -38,6 +38,7 @@ import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.data.model.User;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
+import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.OrderDetailParse;
@@ -69,7 +70,8 @@ public class OrderServiceImpl implements OrderService {
 	TorderMapper torderMapper;
 	@Autowired
 	TorderDetailMapper torderDetailMapper;
-
+	@Autowired
+	OrderOpMapper  orderOpMapper;
 	@Autowired
 	private DataDictionaryService datadictionaryService;
 
@@ -1227,6 +1229,12 @@ public class OrderServiceImpl implements OrderService {
 			outresultMap.put("tableStatus", resultMap.get("status"));
 			outresultMap.put("customerNumber", resultMap.get("custnum"));
 			outresultMap.put("memberno", resultMap.get("memberno"));
+			outresultMap.put("begintime",  resultMap.get("begintime"));
+			outresultMap.put("endtime",  resultMap.get("endtime"));
+			outresultMap.put("areaname",  resultMap.get("areaname"));
+			outresultMap.put("tableName",  resultMap.get("tableName"));
+			outresultMap.put("fullName",  resultMap.get("userid"));
+			outresultMap.put("printcount ",  resultMap.get("printcount"));
 		}
 		outresultMap.put("orderid", orderid);
 		return outresultMap;
@@ -1291,7 +1299,7 @@ public class OrderServiceImpl implements OrderService {
 
 	
 		StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
-				operPreferentialResult, orderMapper);
+				operPreferentialResult, orderMapper,orderOpMapper);
 		return operPreferentialResult;
 	}
 
