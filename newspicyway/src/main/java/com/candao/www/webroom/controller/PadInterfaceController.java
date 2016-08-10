@@ -1764,15 +1764,15 @@ public class PadInterfaceController {
 			Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
 			Map<String, Object> map = new HashMap<>();
 			if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
-//				String macAddress = params.get("macAddress");
+				String macAddress = params.get("macAddress");
 //				TtellerCash ttellerCashs = tellerCashService.selectLastUser(username,macAddress);
 //				if( null!=ttellerCashs){
 //					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("收银员["+ttellerCashs.getUsername()+"]已经登录，请先清机"));
 //				}
-//				ttellerCashs = tellerCashService.selectNotClearByUserId(username, macAddress);
-//				if( null!=ttellerCashs){
-//					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先清机"));
-//				}
+				TtellerCash ttellerCashs = tellerCashService.selectNotClearByUserId(username, macAddress);
+				if( null!=ttellerCashs){
+					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先清机"));
+				}
 				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				String date = sDateFormat.format(new java.util.Date());
 				map.put("loginTime", date);
