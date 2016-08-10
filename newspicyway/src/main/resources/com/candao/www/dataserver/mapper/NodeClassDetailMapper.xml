@@ -4,7 +4,7 @@
 <mapper namespace="com.candao.www.dataserver.mapper.NodeClassDetailMapper">
     <insert id="insert" parameterType="map">
          insert into t_nodeclass_detail(sdetailid,classNo, orderid, dishid, normalprice, discountamount, discountid, couponid, couponamount, payamount, couponNum, feeamount, settledid,incometype, membercardno, bankcardno, username, payway,  userid, workdate)
-          select  b.sdetailid,#{classNo}, b.orderid, b.dishid, sum(b.normalprice) as normalprice, b.discountamount, b.discountid, b.couponid, b.couponamount, sum(b.payamount) as payamount, b.couponNum, b.feeamount, b.settledid, b.incometype, b.membercardno, b.bankcardno, b.username, b.payway, #{userId},#{workDate}
+          select  b.sdetailid,#{classNo}, b.orderid, b.dishid, IFNULL(sum(b.normalprice),0) as normalprice, b.discountamount, b.discountid, b.couponid, b.couponamount, IFNULL(sum(b.payamount),0) as payamount, b.couponNum, b.feeamount, b.settledid, b.incometype, b.membercardno, b.bankcardno, b.username, b.payway, #{userId},#{workDate}
           from t_settlement a  inner join t_settlement_detail b on(a.orderid=b.orderid)  where  a.userid=#{userId} and a.isclear=0 AND a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} group by PAYWAY
     </insert>
 </mapper>
