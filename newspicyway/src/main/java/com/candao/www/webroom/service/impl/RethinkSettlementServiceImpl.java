@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.candao.common.utils.DateUtils;
+import com.candao.common.utils.StringUtils;
 import com.candao.www.data.dao.TRethinkSettlementDao;
 import com.candao.www.webroom.service.RethinkSettlementService;
 
@@ -98,7 +99,7 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 	 * @param params
 	 * @return
 	 */
-	public Map<String,Object> queryStatement(Map<String,Object> params){
+	public Map<String,Object> statementInfo(Map<String,Object> params){
 		Map<String,Object> map = new HashMap<String,Object>();
 		//查询订单基本信息
 		Map<String,Object> order = tRethinkSettlementDao.queryOrder(params);
@@ -107,7 +108,7 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 		//查询优惠信息
 		List<Map<String,Object>> coupons = tRethinkSettlementDao.queryPreferenceDetail(params);
 		//查询结算信息
-		Map<String,Object> payways = querySettlementDetail(params.get("orderid").toString());//tRethinkSettlementDao.querySettlementDetail(params);
+		Map<String,Object> payways = tRethinkSettlementDao.prosettlementDetail(params);//tRethinkSettlementDao.querySettlementDetail(params);
 		List<Map<String,Object>> dishes = new ArrayList<Map<String,Object>>();
 		for(Map<String,Object> orderDetail : orderDetailList){
 			Map<String,Object> dishMap = new HashMap<String,Object>();
@@ -117,29 +118,23 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 			Double amount = (Double)orderDetail.get("amount");
 		    dishMap.put("itemdesc", itemdesc);
 		    dishMap.put("count", Math.round(count));
-		    dishMap.put("price", price.setScale(2,BigDecimal.ROUND_HALF_UP));
+		    dishMap.put("price", StringUtils.ratioTransform2(price));
 		    BigDecimal b = new BigDecimal(amount);
-		    dishMap.put("amount", b.setScale(2,BigDecimal.ROUND_HALF_UP));
+		    dishMap.put("amount", StringUtils.ratioTransform2(b));
 		    dishes.add(dishMap);
 		}
 		map.put("orderid", params.get("orderid"));
-		if(order != null){
-			map.put("personnum", order.get("personnum") == null ? 0 : order.get("personnum"));
-			map.put("begintime", order.get("begintime"));
-			map.put("endtime", order.get("endtime"));
-			map.put("tableno", order.get("tableno"));
-			map.put("area", order.get("area"));
-			map.put("waiter", order.get("waiter"));
-		}
-		if(payways != null){
-			map.put("totalconsumption", payways.get("totalconsumption"));
-			map.put("payway", payways.get("payway"));
-			map.put("payamount", payways.get("payamount"));
-			map.put("couponamount", payways.get("couponamount"));
-			map.put("giveamount", payways.get("giveamount"));
-			map.put("paidamount", payways.get("paidamount"));
-			map.put("invoiceamount", payways.get("invoiceamount"));
-		}
+		map.put("personnum", order.get("personnum") == null ? 0 : order.get("personnum"));
+		map.put("begintime", order.get("begintime"));
+		map.put("endtime", order.get("endtime"));
+		map.put("tableno", order.get("tableno"));
+		map.put("area", order.get("area"));
+		map.put("waiter", this.queryUserNameByJobNumber(order.get("userid").toString(),params.get("branchId").toString()));
+		map.put("totalconsumption", StringUtils.StringTransform(payways.get("totalconsumption").toString()));
+		map.put("couponamount", StringUtils.StringTransform(payways.get("couponamount").toString()));
+		map.put("giveamount", StringUtils.StringTransform(payways.get("giveamount").toString()));
+		map.put("paidamount", StringUtils.StringTransform(payways.get("paidamount").toString()));
+		map.put("invoiceamount", StringUtils.StringTransform(payways.get("invoiceamount").toString()));
 		map.put("dishes",dishes);
 		map.put("coupons", coupons);
 		return map;
@@ -157,64 +152,46 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 	}
 	
 	/**
-	 * 结算方式查询
+	 * 查询会员消费虚增值
 	 * @author weizhifang
-	 * @since 2016-5-30
+	 * @since 2016-01-25
+	 * @param orderid
+	 * @return
+	 */
+	public BigDecimal queryMemberInflate(String orderid){
+		return tRethinkSettlementDao.queryMemberInflate(orderid);
+	}
+    
+	/**
+	 * 根据用户ID查询用户名
+	 * @author weizhifang
+	 * @since 2015-11-19
+	 * @param userId
+	 * @return
+	 */
+	public String queryUserNameByJobNumber(String userId,String branchId){
+		return tRethinkSettlementDao.queryUserNameByJobNumber(userId,branchId);
+	}
+	/**
+	 * 查询反结算后数据
+	 * @author weizhifang
+	 * @since 2015-11-19
 	 * @param params
 	 * @return
 	 */
-	public Map<String,Object> querySettlementDetail(String orderid){
-		Map<String,Object> settlement = new HashMap<String,Object>();
-		//四舍五入/抹零
-		List<Map<String,Object>> payways = tRethinkSettlementDao.queryMoLing(orderid);
-		//应收
-		BigDecimal yingshou = tRethinkSettlementDao.totalconsumption(orderid);
-		//套餐
-		BigDecimal taocan = tRethinkSettlementDao.taocanAmount(orderid);
-		//实际应收=应收-套餐
-		BigDecimal totalconsumption = yingshou.subtract(taocan).setScale(2,BigDecimal.ROUND_HALF_UP);
-		//实收
-		BigDecimal paidamount = tRethinkSettlementDao.paidamount(orderid);
-		//赠菜
-		BigDecimal giveamount = tRethinkSettlementDao.giveamount(orderid);
-		//总优惠
-		BigDecimal couponamount = totalconsumption.subtract(paidamount).setScale(2,BigDecimal.ROUND_HALF_UP);
-		settlement.put("totalconsumption", ratioTransform2(totalconsumption));
-		settlement.put("paidamount", ratioTransform2(paidamount));
-		settlement.put("giveamount", ratioTransform2(giveamount));
-		settlement.put("couponamount", ratioTransform2(couponamount));
-		settlement.put("invoiceamount", "0.00");
-		if(payways != null && payways.size() > 0){
-			for(Map<String, Object> map : payways){
-				BigDecimal payamount = (BigDecimal)map.get("payamount");
-				if(!new BigDecimal(0).equals(payamount)){
-					settlement.put("payway", map.get("payway"));
-					settlement.put("payamount", ratioTransform2(payamount));
-				}
-			}
-		}else{
-			settlement.put("payway", "7");
-			settlement.put("payamount", "0.00");
-		}
-		return settlement;
+	public Map<String,Object> queryRethinkSettlementAfter(String orderId){
+		return tRethinkSettlementDao.queryRethinkSettlementAfter(orderId);
 	}
 	
-	/** 
-     * BigDecimal 保留2位小数
-     * @author weizhifang
-     * @since 2016-5-31
-     * @param amount 金额 
-     * @param scale 精度 
-     * @return 
-     */  
-    public static String ratioTransform2(BigDecimal amount) {  
-        DecimalFormat df = new DecimalFormat("0.00");  
-        df.setRoundingMode(RoundingMode.HALF_UP);  
-        return df.format(amount);  
-    }  
-    
-    public static void main(String[] args) {
-    	RethinkSettlementServiceImpl r = new RethinkSettlementServiceImpl();
-    	System.out.println(r.ratioTransform2(new BigDecimal("3.1415926")));
+	/**
+	 * 查询零头处理方式
+	 * @author weizhifang
+	 * @since 2016-7-6
+	 * @param params
+	 * @return
+	 */
+	public Map<String,Object> queryLingtou(Map<String,Object> params){
+		return tRethinkSettlementDao.queryLingtou(params);
 	}
+
 }

@@ -20,6 +20,7 @@
 		WHERE
 			tsdh.orderid = too.orderid
 		AND tsdh.orderid = tsh.orderid
+		AND too.branchid = #{branchId}
         <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
             AND too.endtime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
         </if>
@@ -67,23 +68,16 @@
 			DATE_FORMAT(too.endtime,'%Y-%m-%d %H:%i:%s') as endtime,
 			tt.tableNo as tableno,
 			tta.areaname as area,
-		    tbu.name as waiter
+		    too.userid
 		FROM
 			t_order too,
 			t_table tt,
-			t_tablearea tta,
-			t_b_employee tbe,
-		    t_b_user tbu
+			t_tablearea tta
 		WHERE
 			too.currenttableid = tt.tableid
 		AND tt.areaid = tta.areaid
-		AND tbe.user_id = tbu.id
-		AND tbe.job_number = too.userid 
         <if test="orderid!=null and orderid!=''">
             AND too.orderid = #{orderid}
-        </if>
-        <if test="branchId != null and branchId != ''">
-           and tbe.branch_id = #{branchId}
         </if>
     </select>
     
@@ -91,10 +85,10 @@
     <select id="queryOrderDetail" parameterType="map" resultType="map">
         SELECT
 			td.title AS itemdesc,
-			sum(tod.dishnum) AS count,
+			round(sum(tod.dishnum)) AS count,
 			tod.dishunit AS dishunit,
-			IFNULL(round(tod.orderprice,2), 0) AS price,
-			IFNULL(round(tod.orderprice * sum(tod.dishnum),2),0) AS amount
+			IFNULL(round(tod.orderprice,2), 0.00) AS price,
+			IFNULL(round(tod.orderprice * sum(tod.dishnum),2),0.00)  AS amount
 		FROM
 			t_order_detail tod,
 			t_dish td
@@ -141,28 +135,13 @@
     </select>
         
     <!-- 查询结算信息 -->
-    <select id="querySettlementDetail" parameterType="map" resultType="map">
-        select IFNULL(totalconsumption,0) as totalconsumption,
-	       IFNULL(payway,0) as payway,
-	       IFNULL(payamount,0) as payamount,
-	       couponamount,
-  		   IFNULL(giveamount,0) as giveamount,
-	       IFNULL(paidamount,0) as paidamount,
-	       invoiceamount
-		from
-        (select sum(tsd.payamount) as totalconsumption,
-			(select tp.payway from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (7,20)) as payway,
-			(select tp.payamount from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (7,20)) as payamount,
-			IFNULL(sum(tsd.couponamount),0) AS couponamount,
-			(select sum(orignalprice) from t_order_detail where orderid = #{orderid} and pricetype = 1) AS giveamount,
-			(select sum(tp.payamount) from t_settlement_detail tp where tp.orderid = #{orderid} and tp.payway in (0,1,5,8,13,17,18)) as paidamount,
-			0.00 AS invoiceamount
-			from t_settlement_detail tsd 
-		where 1=1 
-		<if test="orderid!=null and orderid!=''">
-            AND tsd.orderid = #{orderid}
-        </if>
-        group by tsd.orderid) torder
+    <select id="prosettlementDetail" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+       {
+          call p_report_jzd(
+            #{orderid,jdbcType=VARCHAR,mode=IN},
+            #{result,jdbcType=VARCHAR,mode=OUT}
+          )
+        }
     </select>
     
     <!-- 查询桌号 -->
@@ -186,28 +165,8 @@
         select Inflated from t_order_member where orderid = #{orderid}
     </select>
     
-    <!-- 查询抹零和四舍五入 -->
-    <select id="queryMoLing" parameterType="map" resultType="map">
-		select payway,IFNULL(payamount,0.00) as payamount from t_settlement_detail where orderid = #{orderid} and payway in (7,20)
-    </select>
-    
-    <!-- 查询应收 -->
-    <select id="totalconsumption" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(tod.dishnum*tod.orignalprice),0.00) as totalconsumption from t_order_detail tod where orderid = #{orderid} and pricetype <![CDATA[ <> ]]> 1
-    </select>
-    
-    <!-- 查询实收 -->
-    <select id="paidamount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(payamount),0.00) as paidamount from t_settlement_detail where orderid = #{orderid} and payway in (0,1,5,8,13,17,18)
-    </select>
-    
-    <!-- 查询赠菜金额 -->
-    <select id="giveamount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(orignalprice),0.00) as giveamount from t_order_detail where orderid = #{orderid} and pricetype = 1
-    </select>
-    
-    <!-- 查询套餐金额 -->
-    <select id="taocanAmount" resultType="BigDecimal" parameterType="map" >
-        select IFNULL(sum(dishnum*orignalprice),0.00) as taocan from t_order_detail where orderid = #{orderid} and dishtype = 2 AND superkey <![CDATA[ <> ]]> primarykey
+    <!-- 查询零头处理方式 -->
+    <select id="queryLingtou" resultType="map" parameterType="map">
+        select count(1) as count,payway,payamount from t_settlement_detail where orderid = #{orderid} and payway in (7,20);
     </select>
 </mapper>

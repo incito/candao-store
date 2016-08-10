@@ -2,6 +2,8 @@ package com.candao.common.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -444,5 +446,47 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		System.out.println(str1);
 		String str2 = bSubstring4("a啊3",2);
 		System.out.println(str2);
+	}
+	
+	/** 
+     * String四舍五入保留2位小数
+     * @author weizhifang
+     * @since 2016-5-31
+     * @param amount 金额 
+     * @param scale 精度 
+     * @return 
+     */  
+    public static String StringTransform(String amount) {
+    	BigDecimal bigDecimal = new BigDecimal(amount);
+        DecimalFormat df = new DecimalFormat("0.00");  
+        df.setRoundingMode(RoundingMode.HALF_UP);  
+        return df.format(bigDecimal);  
+    }
+    
+    /** 
+     * BigDecimal四舍五入保留2位小数
+     * @author weizhifang
+     * @since 2016-5-31
+     * @param amount 金额 
+     * @param scale 精度 
+     * @return 
+     */  
+    public static String ratioTransform2(BigDecimal amount) {  
+        DecimalFormat df = new DecimalFormat("0.00");  
+        df.setRoundingMode(RoundingMode.HALF_UP);  
+        return df.format(amount);  
+    }
+    
+    /**
+	 * 判断对象是否为空，为空返回true，不为空返回false
+	 * @date	2015-4-3 下午5:51:35	
+	 * @param o
+	 * @return
+	 */
+	public static boolean isNull(Object o) {
+		if (null == o || "".equals(o.toString())) {
+			return true;
+		}
+		return false;
 	}
 }
