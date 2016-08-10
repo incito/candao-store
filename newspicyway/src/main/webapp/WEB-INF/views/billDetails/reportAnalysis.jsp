@@ -13,14 +13,14 @@
 	src="<%=request.getContextPath()%>/scripts/json2.js"></script>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/tools/calendar_diy/WdatePicker.js"></script>
-	
+
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/index.css" />
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/preferential.css" />
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css" />
-<link rel="stylesheet" 
+<link rel="stylesheet"
 	href="<%=request.getContextPath()%>/tools/bootstrap/css/bootstrap.css"/>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/common.css" />
@@ -124,6 +124,11 @@
 		var selItemType1 = "";
 		var selItemType2 = "";
 		var selItemType3 = "";
+
+		var up_num1 = 0;
+		var up_num2 = 0;
+		var up_num3 = 0;
+
 		$(function() {
 			$(".long-search button").click(function() {
 				$(this).parent().find("button").removeClass("active");
@@ -217,7 +222,7 @@
 			if (dateType == 0) {
 				date.setDate(date.getDate() + 6);
 				end = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1) + "-" + formatMonDay(date.getDate());
-				
+
 			} else if (dateType == 1) {
 				date.setMonth(date.getMonth() + 6, 0);
 				end = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1);
@@ -232,7 +237,7 @@
 				date.setDate(date.getDate() -1);//当前日期的前一天
 				begintt = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1) + "-"
 						+ formatMonDay(date.getDate());
-				
+
 			} else if (dateType == 1) {
 				begintt = date.getFullYear() + "-" + formatMonDay(date.getMonth()+1);
 			} else {
@@ -248,7 +253,7 @@
 				//当前日期-日
 				date.setDate(date.getDate());
 				end = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1) + "-" + formatMonDay(date.getDate());
-				
+
 			} else if (dateType == 1) {
 				//当前日期-月
 				end = date.getFullYear() + "-" + formatMonDay(date.getMonth() + 1);
