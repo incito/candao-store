@@ -8,6 +8,7 @@ import java.util.Map;
 import com.candao.www.constant.Constant;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
+import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
 
@@ -42,19 +43,18 @@ public enum StrategyFactory {
 	}
 
 	/**
-	 * 计算实收金额
-	 * 优免金额
-	 * 挂账金额
-	 * 小费
+	 * 计算实收金额 优免金额 挂账金额 小费
+	 * 
 	 * @param caleTableAmountMapper
 	 * @param orderid
 	 * @param dataDictionaryService
 	 * @param preferentialResult
 	 * @param orderMapper
-	 * (核心计算方式)
+	 *            (核心计算方式)
 	 */
 	public void calcAmount(CaleTableAmountMapper caleTableAmountMapper, String orderid,
-			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,OrderMapper orderMapper) {
+			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,
+			OrderMapper orderMapper, OrderOpMapper orderOpMapper) {
 		caleTableAmountMapper.pCaleTableAmount(orderid);
 		Map<String, Object> amountMap = new HashMap<>();
 		amountMap.put("orderid", orderid);
@@ -62,15 +62,15 @@ public enum StrategyFactory {
 		if (resAmountList != null && !resAmountList.isEmpty()) {
 			Map<String, Object> resAmountMap = resAmountList.get(0);
 			BigDecimal tipAmount = new BigDecimal(String.valueOf(resAmountMap.get("tipAmount")));// 小费
-			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));//订单（菜品）总价
-			//计算实际优免金额与挂账金额
-			
-			//全单总价（不包含小费）
+			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));// 订单（菜品）总价
+			// 赠送金额
+			float zaAmount = orderOpMapper.getZdAmountByOrderId(orderid);
+			preferentialResult.setZdAmount(new BigDecimal(zaAmount));
+			// 全单总价（不包含小费）
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
-			//计算实际收入金额
-			CalMenuOrderAmountInterface amountInterface = new CalMenuOrderAmount();
-			preferentialResult.setPayamount(amountInterface.calPayAmount(dataDictionaryService, dueamount, preferentialResult.getAmount()));
+			// 计算实际收入金额
+			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult);
 		}
 	}
 }
