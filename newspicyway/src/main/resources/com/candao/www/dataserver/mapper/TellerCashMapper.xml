@@ -63,13 +63,13 @@
     <select id="selectRemoveMoney" resultType="String" parameterType="String">
        SELECT SUM(b.payamount)
        FROM t_order a INNER JOIN t_settlement_detail b ON(a.orderid=b.orderid AND b.payway=7)
-       WHERE a.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) b.payway=7
+       WHERE a.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) and  b.payway=7
     </select>
     <select id="selectTotalMoney" resultType="String" parameterType="Map">
         select sum(case when b.payway='7' then 0-b.payamount else b.payamount end) as payamount  from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
-        where  a.beginTime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and a.userid=#{userId} and a.isclear=0
+        where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and a.userid=#{userId} and a.isclear=0
     </select>
     <select id="selectIncludedTotalMoney" resultType="String" parameterType="String">
         select sum(case when b.payway='7' then 0-b.payamount else b.payamount end) as payamount from t_settlement a

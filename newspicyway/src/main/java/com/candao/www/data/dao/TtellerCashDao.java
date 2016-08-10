@@ -15,6 +15,7 @@ public interface TtellerCashDao {
      */
     public List<TtellerCash> findUncleanPosList();
 
-    public List<TtellerCash> selectNotClearByUserId(String userId, String ip);
+    public TtellerCash selectNotClearByUserId(String userId, String ip);
+    public TtellerCash selectLastUser(String userId, String ip);
 
 }

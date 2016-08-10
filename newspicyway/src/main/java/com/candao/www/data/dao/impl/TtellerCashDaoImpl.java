@@ -26,10 +26,18 @@ public class TtellerCashDaoImpl implements TtellerCashDao {
     }
 
     @Override
-    public List<TtellerCash> selectNotClearByUserId(String userId, String ip) {
+    public TtellerCash selectNotClearByUserId(String userId, String ip) {
         Map<String, String> param = new HashMap<>();
         param.put("userId", userId);
         param.put("ip", ip);
-        return daoSupport.find(PREFIX + ".selectNotClearByUserId", param);
+        return daoSupport.get(PREFIX + ".selectNotClearByUserId", param);
+    }
+
+    @Override
+    public TtellerCash selectLastUser(String userId, String ip) {
+        Map<String, String> param = new HashMap<>();
+        param.put("userId", userId);
+        param.put("ip", ip);
+        return daoSupport.get(PREFIX + ".selectLastUser", param);
     }
 }

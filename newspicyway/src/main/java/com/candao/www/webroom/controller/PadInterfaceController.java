@@ -963,10 +963,6 @@ public class PadInterfaceController {
 				if (!pwd.equals(loginInfo.getPassword())) {
 					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("密码错误"));
 				}
-				List<TtellerCash> ttellerCashs = tellerCashService.selectNotClearByUserId(loginInfo.getUsername(), loginInfo.getMacAddress());
-				if( null!=ttellerCashs||!ttellerCashs.isEmpty()){
-					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先在您登录的POS上清机"));
-				}
 				userService.updateLoginTime(loginInfo.getUsername());
 				jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 			} else {
@@ -1724,8 +1720,9 @@ public class PadInterfaceController {
 			HttpServletResponse response) {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
 		Map<String, Object> map = orderService.updateDishWeight(params);
-		if (map.get("code").equals("0")&&Constant.SOURCE.POS.equals(params.get("source"))) {
-			String orderid = (String) map.get("orderid");
+		Object source = params.get("source");
+		if (map.get("code").equals("0")&&(null==source||Constant.SOURCE.POS.equals(source))) {
+			String orderid = (String) params.get("orderid");
 			notifyService.notifyOrderChange(orderid);
 		}
 		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
@@ -1767,6 +1764,15 @@ public class PadInterfaceController {
 			Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
 			Map<String, Object> map = new HashMap<>();
 			if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
+				String macAddress = params.get("macAddress");
+//				TtellerCash ttellerCashs = tellerCashService.selectLastUser(username,macAddress);
+//				if( null!=ttellerCashs){
+//					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("收银员["+ttellerCashs.getUsername()+"]已经登录，请先清机"));
+//				}
+				TtellerCash ttellerCashs = tellerCashService.selectNotClearByUserId(username, macAddress);
+				if( null!=ttellerCashs){
+					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先清机"));
+				}
 				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				String date = sDateFormat.format(new java.util.Date());
 				map.put("loginTime", date);
