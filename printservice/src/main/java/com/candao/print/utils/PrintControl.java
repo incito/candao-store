@@ -1,14 +1,13 @@
 package com.candao.print.utils;
 
+import com.candao.print.entity.PrinterConstant;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.candao.print.entity.PrinterConstant;
 
 /**
  * 打印控制类
@@ -91,7 +90,7 @@ public class PrintControl {
      */
     public static final int OPERATION_TIMEOUT = -1;
 
-    public static int printerIsReady(int iTimeOut, OutputStream socketOut, InputStream inputStream) throws IOException {
+    public static int printerIsReady(int iTimeOut, OutputStream socketOut, InputStream inputStream,String ip) throws IOException {
 
         long iStartTime = 0;
         long iEndTime = 0;
@@ -133,7 +132,7 @@ public class PrintControl {
                 case STATUS_STOPPRINT:
                     // Clearing stop printing status data bit (1B 41)
                     // Chinese note:清除禁止打印状态
-                    if (ClearStopPrint(socketOut) == OPERATION_ERROR) {
+                    if (ClearStopPrint(socketOut,ip) == OPERATION_ERROR) {
                     	logger.error("[清除禁止打印状态]出错");
                         return STATUS_OFFLINE;
                     }
@@ -143,7 +142,7 @@ public class PrintControl {
                 case STATUS_CLEAR_STOPPRINT_END:
                     // Clearing stop printing end status data bit (10 06 07 08 04)
                     // Chinese note:清除已完成清除禁止打印状态标志
-                    if (ClearStopPrintEnd(socketOut) == OPERATION_ERROR) {
+                    if (ClearStopPrintEnd(socketOut,ip) == OPERATION_ERROR) {
                     	logger.error("[清除已完成清除禁止打印状态标志]出错");
                         return STATUS_OFFLINE;
                     }
@@ -153,7 +152,7 @@ public class PrintControl {
                 case STATUS_PRINT_UNDONE:
                     // Reset printer status(10 06 07 08 08)
                     // Chinese note:复位打印机状态
-                    if (ResetDevStatus(socketOut) == OPERATION_ERROR) {
+                    if (ResetDevStatus(socketOut,ip) == OPERATION_ERROR) {
                     	logger.error("[复位打印机状态]出错");
                         return STATUS_OFFLINE;
                     }
@@ -321,7 +320,7 @@ public class PrintControl {
      * @param inputStream
      * @throws IOException
      ********************************************************************/
-    public static int CheckJob(int iTimeOut, InputStream inputStream) throws IOException {
+    public static int CheckJob(int iTimeOut, InputStream inputStream,String ip) throws IOException {
         if (iTimeOut < 1000) {
             iTimeOut = 1000;
         }
@@ -389,7 +388,7 @@ public class PrintControl {
 					// Printer status is abnormal
 					// Chinese note:状态是否异常
 					if (bIsAbnormal) {
-						logger.error("打印机状态异常");
+						logger.error("["+ip+"]打印机状态异常");
 						iReturnValue = STATUS_ABNORMAL;
 						return iReturnValue;
 					}
@@ -397,7 +396,7 @@ public class PrintControl {
 					// Printer is stopped printing status
 					// Chinese note:是否出现禁止打印状态
 					if (bIsStopPrint) {
-						logger.error("打印机禁止打印");
+						logger.error("["+ip+"]打印机禁止打印");
 						iReturnValue = STATUS_STOPPRINT;
 						return iReturnValue;
 					}
@@ -405,7 +404,7 @@ public class PrintControl {
 					// Printer is start printing status
 					// Chinese note:启动打印状态
 					if (bIsPrinting) {
-						logger.info("[开始打印]");
+						logger.info("["+ip+"]开始打印");
 						bIsPrintingStart = true;
 					}
 
@@ -414,13 +413,13 @@ public class PrintControl {
 					if (bIsPrintingStart) {
 						if (bIsPrintUndone) // 非正常完成
 						{
-							logger.error("[打印机未完成]");
+							logger.error("["+ip+"]打印机未完成");
 							iReturnValue = STATUS_PRINT_UNDONE;
 							return iReturnValue;
 						}
 						if (!bIsPrinting) // 打印完成
 						{
-							logger.info("[打印完成]");
+							logger.info("["+ip+"]打印完成");
 							iReturnValue = STATUS_PRINT_DONE;
 							return iReturnValue;
 						}
@@ -456,14 +455,14 @@ public class PrintControl {
      *
      * @param socketOut
      ********************************************************************/
-    private static int ClearStopPrint(OutputStream socketOut) {
+    private static int ClearStopPrint(OutputStream socketOut,String ip) {
         byte[] cTempBuf = new byte[5];
         int iWriteLen = -1;
 
         cTempBuf[0] = 0x1b;
         cTempBuf[1] = 0x41;
         
-        logger.error("[清除禁止打印状态]");
+        logger.error("["+ip+"]清除禁止打印状态");
         if (ByWritePort(cTempBuf, 2, iWriteLen, socketOut) != 0) {
             return OPERATION_ERROR;
         }
@@ -484,7 +483,7 @@ public class PrintControl {
      *
      * @param socketOut
      ********************************************************************/
-    private static int ResetDevStatus(OutputStream socketOut) {
+    private static int ResetDevStatus(OutputStream socketOut,String ip) {
         byte[] cTempBuf = new byte[6];
         int iWriteLen = -1;
 
@@ -494,7 +493,7 @@ public class PrintControl {
         cTempBuf[3] = 0x08;
         cTempBuf[4] = 0x08;
 
-        logger.error("[复位打印机状态]");
+        logger.error("["+ip+"]复位打印机状态");
         if (ByWritePort(cTempBuf, 5, iWriteLen, socketOut) != 0) {
             return OPERATION_ERROR;
         }
@@ -515,7 +514,7 @@ public class PrintControl {
      *
      * @param socketOut
      ********************************************************************/
-    private static int ClearStopPrintEnd(OutputStream socketOut) {
+    private static int ClearStopPrintEnd(OutputStream socketOut,String ip) {
         byte[] cTempBuf = new byte[6];
         int iWriteLen = -1;
 
@@ -525,7 +524,7 @@ public class PrintControl {
         cTempBuf[3] = 0x08;
         cTempBuf[4] = 0x04;
 
-        logger.error("[清除已完成清除禁止打印状态标志]");
+        logger.error("["+ip+"]清除已完成清除禁止打印状态标志");
         if (ByWritePort(cTempBuf, 5, iWriteLen, socketOut) != 0) {
             return OPERATION_ERROR;
         }

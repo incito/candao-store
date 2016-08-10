@@ -74,7 +74,7 @@ public class Printer {
                         doCommand(outputStream);
                         //检查打印机状态
                         logger.info("[" + ip + "]检查打印机状态");
-                        int state = PrintControl.printerIsReady(3000, outputStream, inputStream);
+                        int state = PrintControl.printerIsReady(3000, outputStream, inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印机状态:" + state);
                         if (state != PrintControl.STATUS_OK) {
@@ -107,7 +107,7 @@ public class Printer {
                         doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
-                        state = PrintControl.CheckJob(8000, inputStream);
+                        state = PrintControl.CheckJob(8000, inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
@@ -226,7 +226,7 @@ public class Printer {
                 InputStream inputStream = channel.getInputStream();
                 doCommand(outputStream);
                 logger.info("[" + ip + "]检查打印机状态");
-                int state = PrintControl.printerIsReady(2000, outputStream, inputStream);
+                int state = PrintControl.printerIsReady(2000, outputStream, inputStream, getIp());
                 PrinterStatusManager.stateMonitor(state, this);
                 if (state != PrintControl.STATUS_OK) {
                     logger.info("[" + ip + "]打印机状态不正常:" + state);
@@ -235,7 +235,7 @@ public class Printer {
                 }
                 doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
-                state = PrintControl.CheckJob(8000, inputStream);
+                state = PrintControl.CheckJob(8000, inputStream, getIp());
                 result.setCode(state);
                 PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回
@@ -296,7 +296,7 @@ public class Printer {
                     return;
                 }
                 try {
-                    int state = PrintControl.printerIsReady(3000, channel.getOutputStream(), channel.getInputStream());
+                    int state = PrintControl.printerIsReady(3000, channel.getOutputStream(), channel.getInputStream(), getIp());
                     if (state == PrintControl.STATUS_OFFLINE) {
                         state = PrintControl.STATUS_OK;
                     }
