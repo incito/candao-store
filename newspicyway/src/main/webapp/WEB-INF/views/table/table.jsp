@@ -66,7 +66,7 @@
 					<div class="counter-detail-box" id="${item.tableid}" onmouseover="delDisplay(this)" onmouseout="delHidden(this)" >
 						<p>${item.tableName }</p>
 						<p>(${item.personNum }人桌)</p>
-						<i class="icon-remove hidden" onclick="delTablesDetail(${item.tableid },&apos;${item.tableName }&apos;,event)"></i>
+						<i class="icon-remove hidden" onclick="delTablesDetail(&apos;${item.tableid }&apos;,&apos;${item.tableName }&apos;,event)"></i>
 					</div>
 					</c:forEach>
 
