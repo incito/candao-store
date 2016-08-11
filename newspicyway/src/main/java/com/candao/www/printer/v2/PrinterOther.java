@@ -23,6 +23,9 @@ public class PrinterOther extends Printer {
         Socket channel = null;
         try {
             while (true) {
+                if (isDisabled()) {
+                    throw new RuntimeException("准备移除打印机[" + getIp() + "]，停止打印");
+                }
                 lastActiveTime = System.currentTimeMillis();
                 try {
                     /*打印机是否连接成功*/
@@ -69,6 +72,11 @@ public class PrinterOther extends Printer {
     @Override
     public PrintResult tryPrint(Object[] msg, long time) {
         {
+            PrintResult result = new PrintResult();
+            if (isDisabled()) {
+                result.setCode(PrintControl.STATUS_STOPPRINT);
+                return result;
+            }
             lastActiveTime = System.currentTimeMillis();
             if (time < 1000) {
                 time = 1000;
@@ -76,7 +84,6 @@ public class PrinterOther extends Printer {
             if (null == msg) {
                 msg = new Object[0];
             }
-            PrintResult result = new PrintResult();
             result.setCode(PrintControl.STATUS_ABNORMAL);
             logger.info("[" + getIp() + "]尝试获取打印机锁");
             boolean tryLock = false;
@@ -119,6 +126,9 @@ public class PrinterOther extends Printer {
 
     @Override
     public void checkState() {
+        if (isDisabled()) {
+            return;
+        }
         //超过检测周期
         if (System.currentTimeMillis() - lastActiveTime < checkStateInterval) {
             return;

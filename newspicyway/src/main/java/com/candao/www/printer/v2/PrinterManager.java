@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,30 +45,12 @@ public class PrinterManager {
     /**
      * 重新初始化打印机
      *
-     * @param printerAddress
+     * @param printerAddress 需要移除的打印机
      */
-    @Deprecated
     public synchronized static void initialize(List<String> printerAddress) {
         logger.info("重新初始化打印机");
-        clearPrinter();
-        PrinterService printerService = getPrinterService();
-        printerService.clearWorkStatus();
-        if (null == printerAddress) {
-            logger.info("重新初始化打印机结束");
-            return;
-        }
-        for (String address : printerAddress) {
-            String[] ipAndPort = address.split(":");
-            String ip = ipAndPort[0];
-            int port = 0;
-            try {
-                port = Integer.valueOf(ipAndPort[1]);
-            } catch (Exception e) {
-                logger.info("[" + ip + "]端口不正常:" + port);
-                continue;
-            }
-            createPrinter(ip, port);
-        }
+        clearPrinter(printerAddress);
+        initialize();
         logger.info("重新初始化打印机结束");
     }
 
@@ -134,12 +115,7 @@ public class PrinterManager {
      * @return
      */
     private static Printer hasCreated(String key) {
-        for (Printer printer : printers.values()) {
-            if (key.equals(printer.getKey())) {
-                return printer;
-            }
-        }
-        return null;
+        return printers.get(key);
     }
 
     /**
@@ -158,16 +134,14 @@ public class PrinterManager {
         return printerService;
     }
 
-    private static void clearPrinter() {
+    private static void clearPrinter(List<String> printerAddress) {
         logger.info("清空打印机集合");
-        for (Printer printer : printers.values()) {
-            Socket socket = printer.getChannel();
-            if (null != socket) {
-                try {
-                    socket.close();
-                } catch (Exception e) {
-
-                }
+        if (null != printerAddress) {
+            for (String printerKey : printerAddress) {
+                Printer printer = printers.get(printerKey);
+                printer.setDisabled(true);
+                PrinterConnector.closeConnection(printer.getChannel());
+                printers.remove(printerKey);
             }
         }
         printers.clear();
