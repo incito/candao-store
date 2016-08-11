@@ -82,32 +82,32 @@ public class OrderOpServiceImpl implements OrderOpService {
     @Override
     public String pCaleTableAmount(String aUserId, String orderId) {
         LOGGER.info("###pCaleTableAmount aUserId={}, orderId={}###", aUserId, orderId);
-//        ResponseData responseData = new ResponseData();
-//        try {
-//            caleTableAmountMapper.pCaleTableAmount(orderId);
-//        } catch (Exception e) {
-//            responseData.setData("0");
-//            responseData.setInfo("结算前计算帐单金额异常");
-//            LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
-//        }
-//        return JSON.toJSONString(responseData);
+        ResponseData responseData = new ResponseData();
+        try {
+            caleTableAmountMapper.pCaleTableAmount(orderId);
+        } catch (Exception e) {
+            responseData.setData("0");
+            responseData.setInfo("结算前计算帐单金额异常");
+            LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
+        }
+        return JSON.toJSONString(responseData);
         
-        //计算账单应收，不再调用存储过程
-        return calcOrderAmount(orderId);
     }
     
     @Override
 	public String calcOrderAmount(String orderId) {
-    	caleTableAmountMapper.updateOrderDetailPayAmount(orderId);
-        int updated = caleTableAmountMapper.updateOrderDueAmount(orderId);
-        if(updated == 1){
-        	return "1";
-        }else{
-        	return "0";
-        }
+//    	caleTableAmountMapper.updateOrderDetailPayAmount(orderId);
+//        int updated = caleTableAmountMapper.updateOrderDueAmount(orderId);
+//        if(updated == 1){
+//        	return "1";
+//        }else{
+//        	return "0";
+//        }
+    	caleTableAmountMapper.pCaleTableAmount(orderId);
+    	return "1";
 	}
 
-	@Override
+    @Override
     public String wmOrder(String orderId) {
         LOGGER.info("###wmOrder orderId={}###", orderId);
         ResponseData responseData = new ResponseData();
@@ -292,7 +292,7 @@ public class OrderOpServiceImpl implements OrderOpService {
         ResponseJsonData responseJsonData = new ResponseJsonData();
         try {
             orderMapper.deleteByOrderId(orderId);
-            tableMapper.updaStatus0(tableNo);
+            tableMapper.clearTable(tableNo, orderId);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e.getCause().getStackTrace());

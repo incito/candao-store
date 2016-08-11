@@ -42,6 +42,19 @@ public class OperPreferentialResult {
 	 * 挂账总金额
 	 */
 	private BigDecimal toalDebitAmount = new BigDecimal(0);
+
+	/***
+	 * 赠送金额 
+	 */
+	private BigDecimal zdAmount =new BigDecimal(0);
+	/***
+	 * 处理的金额(四舍五入或抹零)
+	 */
+	private BigDecimal moneyWipeAmount=new BigDecimal(0);
+	/**
+	 * (处理的名称 ：四舍五入 或 抹零)
+	 */
+	private String moneyWipeName;
 	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
 	public BigDecimal getAmount() {
@@ -99,6 +112,30 @@ public class OperPreferentialResult {
 
 	public void setToalDebitAmount(BigDecimal toalDebitAmount) {
 		this.toalDebitAmount = toalDebitAmount;
+	}
+
+	public BigDecimal getZdAmount() {
+		return zdAmount;
+	}
+
+	public void setZdAmount(BigDecimal zdAmount) {
+		this.zdAmount = zdAmount;
+	}
+
+	public BigDecimal getMoneyWipeAmount() {
+		return moneyWipeAmount;
+	}
+
+	public void setMoneyWipeAmount(BigDecimal moneyWipeAmount) {
+		this.moneyWipeAmount = moneyWipeAmount;
+	}
+
+	public String getMoneyWipeName() {
+		return moneyWipeName;
+	}
+
+	public void setMoneyWipeName(String moneyWipeName) {
+		this.moneyWipeName = moneyWipeName;
 	}
 
 }

@@ -13,7 +13,7 @@
 		</locations>
 		<datas description="分店名">
 			<list>
-				<value>#{obj.settlementInfo4Pos.branchName}</value>
+				<value>#{obj.posData.branchName}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -32,121 +32,106 @@
 			</list>
 		</datas>
 	</row:row>
-	<!-- 账单号-->
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="单号">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="位置">
-				<list>
-					<value>10</value>
-					<value>30</value>
-				</list>
-			</locations>
-			<datas description="账单号">
-				<list>
-					<value>结账单号：</value>
-					<value>#{it.orderid}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
+	<!-- 账单号 -->
+	<row:row description="单号">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="位置">
+			<list>
+				<value>10</value>
+				<value>30</value>
+			</list>
+		</locations>
+		<datas description="账单号">
+			<list>
+				<value>结账单号：</value>
+				<value>#{obj.posData.userOrderInfo.orderid}</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- 餐桌 -->
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="餐台">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="位置">
-				<list>
-					<value>5</value>
-					<value>15</value>
-					<value>5</value>
-					<value>15</value>
-				</list>
-			</locations>
-			<datas description="餐台">
-				<list>
-					<value>厅:</value>
-					<value>#{it.areaname}</value>
-					<value>客位:</value>
-					<value>#{it.tableName}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
+	<row:row description="餐台">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="位置">
+			<list>
+				<value>5</value>
+				<value>15</value>
+				<value>5</value>
+				<value>15</value>
+			</list>
+		</locations>
+		<datas description="餐台">
+			<list>
+				<value>厅:</value>
+				<value>#{obj.posData.userOrderInfo.areaname}</value>
+				<value>客位:</value>
+				<value>#{obj.posData.userOrderInfo.tableName}</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- 人数 -->
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="服务员">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="位置">
-				<list>
-					<value>5</value>
-					<value>15</value>
-					<value>7</value>
-					<value>13</value>
-				</list>
-			</locations>
-			<datas description="账单类型">
-				<list>
-					<value>人数:</value>
-					<value>#{it.custnum}</value>
-					<value>服务员:</value>
-					<value>#{it.fullName}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
+	<row:row description="服务员">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="位置">
+			<list>
+				<value>5</value>
+				<value>15</value>
+				<value>7</value>
+				<value>13</value>
+			</list>
+		</locations>
+		<datas description="账单类型">
+			<list>
+				<value>人数:</value>
+				<value>#{obj.posData.userOrderInfo.customerNumber}</value>
+				<value>服务员:</value>
+				<value>#{obj.posData.userOrderInfo.fullName}</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- 账单时间 -->
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="账单时间 ">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="账单时间 ">
-				<list>
-					<value>10</value>
-					<value>30</value>
-				</list>
-			</locations>
-			<datas description="账单时间 ">
-				<list>
-					<value>开始时间:</value>
-					<value>#{it.begintime}</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
+	<row:row description="账单时间 ">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="账单时间 ">
+			<list>
+				<value>10</value>
+				<value>30</value>
+			</list>
+		</locations>
+		<datas description="账单时间 ">
+			<list>
+				<value>开始时间:</value>
+				<value>#{obj.posData.userOrderInfo.begintime}</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- 账单时间 -->
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
-		<row:row description="结束时间">
-			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">SMALL</font>
-			<locations description="借宿时间">
-				<list>
-					<value>10</value>
-					<value>20</value>
-					<value>2</value>
-					<value>4</value>
-					<value>6</value>
-				</list>
-			</locations>
-			<datas description="结束时间">
-				<list>
-					<value>结束时间:</value>
-					<value>#{it.endtime}</value>
-					<value>第</value>
-					<value>#{it.printcount}</value>
-					<value>次打印</value>
-				</list>
-			</datas>
-		</row:row>
-	</foreach:foreach>
-	<!-- 分隔符-->
+	<row:row description="结束时间">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="借宿时间">
+			<list>
+				<value>10</value>
+				<value>20</value>
+				<value>2</value>
+				<value>4</value>
+				<value>6</value>
+			</list>
+		</locations>
+		<datas description="结束时间">
+			<list>
+				<value>结束时间:</value>
+				<value>#{obj.posData.userOrderInfo.endtime}</value>
+				<value>第</value>
+				<value>#{obj.posData.userOrderInfo.printcount}</value>
+				<value>次打印</value>
+			</list>
+		</datas>
+	</row:row>
+	<!-- 分隔符 -->
 	<row:row description="分隔符">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -183,11 +168,10 @@
 		</datas>
 	</row:row>
 	<!-- 品项 -->
-	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.listJson}">
+	<foreach:foreach item="it" value="#{obj.posData.rows}">
 		<row:row description="品项">
 			<align description="对齐">ALIGN_LEFT</align>
-			<font description="字体大小">NORMAL</font>
+			<font description="字体大小">SMALL</font>
 			<locations description="品项">
 				<list>
 					<value>15</value>
@@ -198,7 +182,7 @@
 			</locations>
 			<datas description="品项">
 				<list>
-					<value>#{it.title}</value>
+					<value>#{it.dishname}</value>
 					<value>#{it.dishnum}</value>
 					<value>#{it.orderprice}</value>
 					<value>#{it.payamount}</value>
@@ -206,7 +190,7 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<!-- 分隔符-->
+	<!-- 分隔符 -->
 	<row:row description="分隔符">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -236,7 +220,27 @@
 			</list>
 		</datas>
 	</row:row>
-	<!-- 分隔符-->
+	<!-- 结算备注 -->
+	<foreach:foreach item="it"
+		value="#{obj.posData.settlementInfo}">
+		<row:row description="结算备注">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="结算备注">
+				<list>
+					<value>15</value>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="结算备注">
+				<list>
+					<value>#{it.name}</value>
+					<value>#{it.value}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<!-- 分隔符 -->
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
@@ -264,7 +268,7 @@
 		<datas description="电话">
 			<list>
 				<value>电话：</value>
-				<value>#{obj.settlementInfo4Pos.tel}</value>
+				<value>#{obj.posData.tel}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -281,7 +285,7 @@
 		<datas description="地址">
 			<list>
 				<value>地址：</value>
-				<value>#{obj.settlementInfo4Pos.address}</value>
+				<value>#{obj.posData.address}</value>
 			</list>
 		</datas>
 	</row:row>

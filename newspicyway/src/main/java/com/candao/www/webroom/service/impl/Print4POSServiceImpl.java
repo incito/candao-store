@@ -1,7 +1,9 @@
 package com.candao.www.webroom.service.impl;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -195,7 +197,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 			int index = 0;
 			for (DishItem it : resultInfo4Pos.getData()) {
 				it.setIndex(++index + "");
-				total = stringAdd(total, it.getTotlePrice());
+				total = stringAdd(total, StringUtils.isEmpty(it.getTotlePrice()) ? "0" : it.getTotlePrice());
 			}
 		}
 		resultInfo4Pos.setTotal(total);
@@ -333,7 +335,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 		// 消费金额
 		posData.put("tip", tipList.get("tipMoney"));
-		
+
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		map.put("date", sdf.format(date));
@@ -354,22 +356,9 @@ public class Print4POSServiceImpl implements Print4POSService {
 	private List<Map<String, Object>> generatePreferList(Map<String, Object> map) {
 		Assert.notEmpty(map, "固定优惠不能为空");
 		List<Map<String, Object>> res = new LinkedList<>();
-		String[] name = {"优免","会员积分消费","会员券消费","折扣优惠","抹零","赠送金额","四舍五入","会员储值消费虚增"}; 
-		String[] valueName = {"bastfree","integralconsum","meberTicket","discountmoney","malingincom","give","handervalue","mebervalueadd"};
-		for (int i = 0; i < name.length; i++) {
-			Map<String, Object> temp = new HashMap<>();
-			temp.put("name", name[i]);
-			temp.put("value",map.get(valueName[i]));
-			res.add(temp);
-		}
-		return res;
-	}
-	
-	private List<Map<String, Object>> generateSettlementList(Map<String, Object> map) {
-		Assert.notEmpty(map, "固定结算信息不能为空");
-		List<Map<String, Object>> res = new LinkedList<>();
-		String[] name = {"现金","挂账","微信","支付宝","刷卡-工行","刷卡-他行","会员储值消费净值"}; 
-		String[] valueName = {"money","card","weixin","zhifubao","icbc","otherbank","merbervaluenet"};
+		String[] name = { "优免", "会员积分消费", "会员券消费", "折扣优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增" };
+		String[] valueName = { "bastfree", "integralconsum", "meberTicket", "discountmoney", "malingincom", "give",
+				"handervalue", "mebervalueadd" };
 		for (int i = 0; i < name.length; i++) {
 			Map<String, Object> temp = new HashMap<>();
 			temp.put("name", name[i]);
@@ -377,5 +366,93 @@ public class Print4POSServiceImpl implements Print4POSService {
 			res.add(temp);
 		}
 		return res;
+	}
+
+	private List<Map<String, Object>> generateSettlementList(Map<String, Object> map) {
+		Assert.notEmpty(map, "固定结算信息不能为空");
+		List<Map<String, Object>> res = new LinkedList<>();
+		String[] name = { "现金", "挂账", "微信", "支付宝", "刷卡-工行", "刷卡-他行", "会员储值消费净值" };
+		String[] valueName = { "money", "card", "weixin", "zhifubao", "icbc", "otherbank", "merbervaluenet" };
+		for (int i = 0; i < name.length; i++) {
+			Map<String, Object> temp = new HashMap<>();
+			temp.put("name", name[i]);
+			temp.put("value", map.get(valueName[i]));
+			res.add(temp);
+		}
+		return res;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void printPreSettlement(Map<String, Object> map, String... params) throws Exception {
+		Assert.notEmpty(map, "接口返回空！");
+		String json = JSON.toJSONString(map);
+		Map<String, Object> temp = JSON.parseObject(json, Map.class);
+		if (temp.containsKey("code")) {
+			if ("0".equals(temp.get("code"))) {
+				Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
+				PrintObj obj = new PrintObj();
+				obj.setListenerType(Constant.ListenerType.PreSettlementTemplate);
+				Object data = temp.get("data");
+				if (data instanceof Map) {
+					Map posdata = ((Map) data);
+					// 鱼锅
+					List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
+					if (!CollectionUtils.isEmpty(rows)) {
+						List<Map<String, Object>> temp2 = new ArrayList<>();
+						for (Map<String, Object> it : rows) {
+							it.put("payamount",
+									strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
+							temp2.add(it);
+							if (it.get("dishes") != null) {
+								List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
+								for (Map<String, Object> item : temp3) {
+									item.put("payamount", strMulti(String.valueOf(item.get("orderprice")),
+											String.valueOf(item.get("dishnum"))));
+									temp2.add(item);
+								}
+							}
+						}
+						posdata.put("rows", temp2);
+					}
+
+					// 优惠
+					Object preferentialInfo = posdata.get("preferentialInfo");
+					List<Map<String, String>> settlementInfo = null;
+					if (preferentialInfo instanceof Map) {
+						Map prefer = ((Map) preferentialInfo);
+						settlementInfo = new ArrayList<>();
+						String[] name = { "合计", prefer.get("moneyWipeName").toString(), "赠送金额", "总优惠", "实收" };
+						String[] value = { prefer.get("menuAmount").toString(),
+								prefer.get("moneyWipeAmount").toString(), prefer.get("zdAmount").toString(),
+								prefer.get("amount").toString(), prefer.get("payamount").toString() };
+						for (int i = 0; i < name.length; i++) {
+							Map<String, String> tempMap = new HashMap<>();
+							tempMap.put("name", name[i]);
+							tempMap.put("value", value[i]);
+							settlementInfo.add(tempMap);
+						}
+					}
+					posdata.put("settlementInfo", settlementInfo);
+					posdata.put("branchName", String.valueOf(branchInfo.get("branchname")));
+					((Map) data).put("tel", String.valueOf(branchInfo.get("managertel")));
+					posdata.put("address", String.valueOf(branchInfo.get("branchaddress")));
+					obj.setPosData(posdata);
+					// TODO
+					Map<String, Object> param = new HashMap<>();
+					param.put("printertype", "10");
+					sendToPrint(param, obj);
+				}
+			}
+		}
+
+	}
+
+	private String strMulti(String i1, String i2) {
+		if (StringUtils.isEmpty(i1) || "null".equals(i1) || StringUtils.isEmpty(i2) || "null".equals(i2)) {
+			return null;
+		}
+		return new BigDecimal(i1.toString()).multiply(new BigDecimal(i2.toString()))
+				.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
 	}
 }

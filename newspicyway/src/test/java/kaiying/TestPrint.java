@@ -71,7 +71,7 @@ public class TestPrint {
 //			System.out.println("第一次状态---");
 //			readStatus(socket, socketOut);
 			
-			int printerIsReady = new PrintControl().printerIsReady( 5000, socketOut, socket.getInputStream());
+			int printerIsReady = new PrintControl().printerIsReady( 5000, socketOut, socket.getInputStream(),print_ip);
 			System.out.println("打印前状态查询：" + printerIsReady);
 			
 			socketOut.write(27);
@@ -105,7 +105,7 @@ public class TestPrint {
 						socketOut.write(new byte[] { 0x1B, 0x69 });// 切纸
 						
 			// 打印机状态
-			int checkJob = new PrintControl().CheckJob( 5000, socket.getInputStream());
+			int checkJob = new PrintControl().CheckJob( 5000, socket.getInputStream(),print_ip);
 			System.out.println("打印后状态查询：" + printerIsReady);
 
 						

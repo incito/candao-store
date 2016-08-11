@@ -51,6 +51,7 @@ import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.data.model.User;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
+import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.utils.SessionUtils;
 import com.candao.www.utils.preferential.CalMenuOrderAmount;
 import com.candao.www.utils.preferential.CalMenuOrderAmountInterface;
@@ -97,6 +98,9 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 
 	@Autowired
 	private OrderMapper orderMapper;
+	
+	@Autowired
+	OrderOpMapper  orderOpMapper;
 
 	/*
 	 * (non-Javadoc)
@@ -1104,7 +1108,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
 						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
-								result, orderMapper);
+								result, orderMapper,orderOpMapper);
 					}
 
 				}

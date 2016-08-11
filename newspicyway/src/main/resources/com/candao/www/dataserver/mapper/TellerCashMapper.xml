@@ -17,7 +17,7 @@
         from t_teller_cash where opendate=#{openDate} and username=#{userId} and ipaddress=#{ip} and status=0
     </select>
     <select id="selectBeginPeople" resultType="String" parameterType="String">
-        select sum(custnum)
+        select IFNULL(sum(custnum),0)
         from t_order where begintime>=#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectBeginTableTotal" resultType="int" parameterType="String">
@@ -33,7 +33,7 @@
         from t_order where endtime>=#{endTime,jdbcType=VARCHAR} and orderstatus=3
     </select>
     <select id="selectClosingPeople" resultType="String" parameterType="String">
-        select sum(custnum)
+        select IFNULL(sum(custnum),0)
         from t_order where endtime>=#{endTime,jdbcType=VARCHAR} and orderstatus=3
     </select>
     <select id="selectLastNonTable" resultType="int" parameterType="String">
@@ -41,38 +41,38 @@
         from t_order where orderstatus=0 and begintime &lt;#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectNotClosingMoney" resultType="String" parameterType="String">
-        select sum(a.orderprice*a.dishnum*(case when a.discountrate &lt;=0 then 1 else a.discountrate end))
+        select IFNULL(sum(a.orderprice*a.dishnum*(case when a.discountrate &lt;=0 then 1 else a.discountrate end)),0)
         from  t_order_detail a inner join t_order b on(a.orderid=b.orderid)
         where b.begintime>=#{beginTime,jdbcType=VARCHAR} and  b.orderstatus=0 and a.status&lt;&gt;5
     </select>
     <select id="selectFoodMoney" resultType="String" parameterType="String">
-        select sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 then 1 else a.discountrate end))
+        select IFNULL(sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 then 1 else a.discountrate end)),0)
         from t_order_detail_discard a inner join t_order b on(a.orderid=b.orderid)
         where b.begintime&gt;=#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectItemMoney" resultType="String" parameterType="String">
-        select sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 THEN 1 ELSE a.discountrate END))
+        select IFNULL(sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 THEN 1 ELSE a.discountrate END)),0)
         FROM t_order_detail a INNER JOIN t_order b ON(a.orderid=b.orderid)
         WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5
     </select>
     <select id="selectPreferenceMoney" resultType="String" parameterType="String">
-        SELECT SUM(ymamount)
+        SELECT IFNULL(SUM(ymamount),0)
         FROM (SELECT ymamount FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid)
         WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a.STATUS &lt;&gt; 5 GROUP BY b.orderid) t
     </select>
     <select id="selectRemoveMoney" resultType="String" parameterType="String">
-       SELECT SUM(b.payamount)
+       SELECT IFNULL(SUM(b.payamount),0)
        FROM t_order a INNER JOIN t_settlement_detail b ON(a.orderid=b.orderid AND b.payway=7)
        WHERE a.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) and  b.payway=7
     </select>
     <select id="selectTotalMoney" resultType="String" parameterType="Map">
-        select sum(case when b.payway='7' then 0-b.payamount else b.payamount end) as payamount  from t_settlement a
+        select IFNULL(sum(case when b.payway='7' then 0-b.payamount else b.payamount end) ,0) as payamount  from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
         where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and a.userid=#{userId} and a.isclear=0
     </select>
     <select id="selectIncludedTotalMoney" resultType="String" parameterType="String">
-        select sum(case when b.payway='7' then 0-b.payamount else b.payamount end) as payamount from t_settlement a
+        select IFNULL(sum(case when b.payway='7' then 0-b.payamount else b.payamount end),0) as payamount from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
         where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and b.payway in(select itemid from v_revenuepayway)  and a.userid=#{userId} and a.isclear=0

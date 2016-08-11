@@ -116,9 +116,6 @@
 	<script
 		src="<%=request.getContextPath()%>/scripts/projectJs/report.js"></script>
 	<script type="text/javascript">
-		var up_num1 = 0;
-		var up_num2 = 0;
-		var up_num3 = 0;
 		$(function() {
 			getItemsType();
 			$("#to_detail").click(function(){

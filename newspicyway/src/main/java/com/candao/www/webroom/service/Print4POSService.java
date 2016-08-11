@@ -25,4 +25,5 @@ public interface Print4POSService {
 
 	void printBusinessDetail(Map<String, Object> map, String... params) throws Exception;
 
+	void printPreSettlement(Map<String, Object> map, String... params) throws Exception;
 }

@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	$("img.img-close").hover(function(){
-	 	$(this).attr("src", global_Path+"/images/close-active.png");	 
+	 	$(this).attr("src", global_Path+"/images/close-active.png");
 	},function(){
 		$(this).attr("src", global_Path+"/images/close-sm.png");
 	});
@@ -34,7 +34,7 @@ function initBussinessData() {
 		var series_data2 = [];
 		var series_data3 = [];
 		var xAxis_data = [];
-		
+
 		var legend = [];
 		var markPoint_data = [];
 		if (result != null && result.length > 0) {
@@ -77,7 +77,7 @@ function initBussinessData() {
 }
 /**
  * 营业数据统计 柱形图
- * 
+ *
  * @param xAxis_data
  * @param legend_datav
  * @param series_data1
@@ -151,7 +151,7 @@ function exportReportAnalysisDaliy() {
 			beginTime = d.getFullYear() + '-' + month + '-' + day
 					+ ' 00:00:00';
 		}
-	
+
 		if (endTime == null || "" == endTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -174,12 +174,12 @@ function exportReportAnalysisDaliy() {
 			if (d.getMinutes() < 10) {
 				minutes = "0" + minutes;
 			}
-	
+
 			var second = d.getSeconds();
 			if (d.getSeconds() < 10) {
 				second = "0" + second;
 			}
-	
+
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
 					+ hours + ":" + minutes + ":" + second;
 		}
@@ -196,18 +196,20 @@ function exportReportAnalysisDaliy() {
  * 品项类别点击切换
  */
 function scrollClick(){
-	$(".item-type").hover(function(){ 
+	$(".item-type").hover(function(){
 		var _this =$(this).find(".nav-dish-type");
-		if(_this.children().length>10){ 
+		if(_this.children().length>10){
 			_this.prev().css("visibility","visible");
 			_this.next().css("visibility","visible");
-		} 
+		}
 	},function(){
 		var _this =$(this).find(".nav-dish-type");
 		_this.prev().css("visibility","hidden");
 		_this.next().css("visibility","hidden");
 	});
+
 	$("#nav-types-prev1").click(function(event){
+
 		if(up_num1>=1){
 			$(this).next(".nav-dish-type").find("li").eq(up_num1-1).css("margin-left","0");
 			up_num1--;
@@ -218,6 +220,7 @@ function scrollClick(){
 		if(up_num1<count-10){
 			$(this).prev(".nav-dish-type").find("li").eq(up_num1).css("margin-left","-10%");
 			up_num1++;
+			console.info(up_num1);
 		}
 	});
 	$("#nav-types-prev2").click(function(event){
@@ -256,7 +259,7 @@ function scrollClick(){
      }else{
     	 dom1.addEventListener("mousewheel",addEvent_1,!1);
      }
-     
+
      var dom2 =$("#dish-type-sec")[0];
      if(user_agent.indexOf("Firefox")!=-1){// Firefox
     	 dom2.addEventListener("DOMMouseScroll",addEvent_2,!1);
@@ -414,7 +417,19 @@ function getItemsType() {
 					+ item.codeDesc
 					+ '</li>';
 		});
+
 		$("#dish-type-third").html(li3);
+
+		for(var i=0; i<up_num1; i++){
+			$("#dish-type-first").find("li").eq(i).css("margin-left", "-10%");
+		}
+		for(var i=0; i<up_num2; i++){
+			$("#dish-type-sec").find("li").eq(i).css("margin-left", "-10%");
+		}
+		for(var i=0; i<up_num3; i++){
+			$("#dish-type-third").find("li").eq(i).css("margin-left", "-10%");
+		}
+
 		$("ul#dish-type-first li").click(function() {
 			$("ul#dish-type-first li").removeClass("active");
 			$(this).addClass("active");
@@ -719,7 +734,7 @@ function getNewDate(dateStr, dateType){
 }
 /**
  * 查看明细
- * 
+ *
  * @param target
  */
 function toDetail(target) {
@@ -810,15 +825,15 @@ function billDataTb(result){
 		var item = result[0];
 		tb += '<tr><td>'
 			+ item.closedordermums+'</td><td>'
-			+ item.closedordershouldamount+'</td><td>' 
-			+ item.closedorderpersonnums + '</td><td>' 
-			+ item.nobillnums + '</td><td>' 
+			+ item.closedordershouldamount+'</td><td>'
+			+ item.closedorderpersonnums + '</td><td>'
+			+ item.nobillnums + '</td><td>'
 			+ item.nobillshouldamount + '</td><td>'
-			+ item.nopersonnums + '</td><td>' 
-			+ item.billnums + '</td><td>' 
-			+ item.billshouldamount + '</td><td>' 
-			+ item.personnums + '</td><td>' 
-			+ item.zaitaishu + '</td><td>' 
+			+ item.nopersonnums + '</td><td>'
+			+ item.billnums + '</td><td>'
+			+ item.billshouldamount + '</td><td>'
+			+ item.personnums + '</td><td>'
+			+ item.zaitaishu + '</td><td>'
 			+ item.kaitaishu + '</td></tr>';
 	}
 	$("#bill_data_tb tbody").html(tb);
@@ -837,11 +852,11 @@ function businessDataTb(result) {
 				+ item.shouldaverage + '</td><td>' + item.paidinaverage
 				+ '</td><td>' + item.attendance + '</td><td>' + item.overtaiwan
 				+ '</td><td>' + item.avgconsumtime + '</td><td>' + item.shouldamountNormal + '</td></tr>';
-		
-		takeoutTb = '<tr><td>' + item.shouldamountTakeout 
-				+ '</td><td>' + item.paidinamountTakeout 
-				+ '</td><td>' + item.ordercountTakeout 
-				+ '</td><td>' + item.avgpriceTakeout 
+
+		takeoutTb = '<tr><td>' + item.shouldamountTakeout
+				+ '</td><td>' + item.paidinamountTakeout
+				+ '</td><td>' + item.ordercountTakeout
+				+ '</td><td>' + item.avgpriceTakeout
 				+ '</td></tr>';
 	}
 	$("#business_data_tb tbody").html(tb);
@@ -856,11 +871,11 @@ function meberDataTb(result) {
 	if (result != null && result.length > 0) {
 		var item = result[0];
 		tb = '<tr><td>'+item.vipordercount+'</td><td>'
-			+item.viporderpercent+'</td><td>' 
-			+ item.meberTicket + '</td><td>' 
-			+ item.integralconsum + '</td><td>' 
+			+item.viporderpercent+'</td><td>'
+			+ item.meberTicket + '</td><td>'
+			+ item.integralconsum + '</td><td>'
 			+ item.merbervaluenet + '</td><td>'
-			+ item.mebervalueadd + '</td><td>' 
+			+ item.mebervalueadd + '</td><td>'
 			+ item.total + '</td></tr>';
 	}
 	$("#meber_data_tb tbody").html(tb);
@@ -881,7 +896,7 @@ function incomeStatistics(result) {
 		series_data.push(shouldamount);
 		series_data.push(paidinamount);
 		series_data.push(discountamount);
-		
+
 		yAxis_data = [ '应收总额', '实收总额 ', '折扣总额' ];
 		tb = '<tr><td>' + shouldamount + '</td><td>' + paidinamount
 				+ '</td><td>' + discountamount + '</td></tr>';
@@ -1024,7 +1039,7 @@ function exportReportDaliy() {
 			beginTime = d.getFullYear() + '-' + month + '-' + day
 					+ ' 00:00:00';
 		}
-	
+
 		if (endTime == null || "" == endTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1047,12 +1062,12 @@ function exportReportDaliy() {
 			if (d.getMinutes() < 10) {
 				minutes = "0" + minutes;
 			}
-	
+
 			var second = d.getSeconds();
 			if (d.getSeconds() < 10) {
 				second = "0" + second;
 			}
-	
+
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
 					+ hours + ":" + minutes + ":" + second;
 		}
@@ -1109,7 +1124,7 @@ function showPaywaySub(payway, nums, amount, membercardno, itemid){
 	$("#p-payway").val(payway);
 	$("#membercardno").val(membercardno);
 	$("#itemid").val(itemid);
-	
+
 	$("#payway-name").text(payway);
 	$("#payway-nums").text(nums);
 	$("#payway-amount").text(amount);
@@ -1179,7 +1194,7 @@ function exportxlsC(f) {
 			beginTime = d.getFullYear() + '-' + month + '-' + day
 					+ ' 00:00:00';
 		}
-	
+
 		if (endTime == null || "" == endTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1206,7 +1221,7 @@ function exportxlsC(f) {
 			if (d.getSeconds() < 10) {
 				second = "0" + second;
 			}
-	
+
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
 					+ hours + ":" + minutes + ":" + second;
 		}
@@ -1363,10 +1378,10 @@ function initReturnTb(result, isFirst){
 			$("#return_dish_data tbody").html(more);
 		}
 		$.each(result, function(i, item) {
-			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title 
-				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter 
+			tb += '<tr ondblclick="showReckon(\''+item.orderid+'\')"><td>' + item.beginTime + '</td><td>' + item.orderid + '</td><td>' + item.title
+				+ '</td><td>'+ item.num + '</td><td>' + item.amount + '</td><td>' + item.waiter
 			    + '</td><td >' + item.discardusername + '</td><td onclick="showReckon(\''+item.orderid+'\')">'
-			    + item.discardreason 
+			    + item.discardreason
 			    + '<i class="icon-chevron-right" style="color: #000000;float: right;"></i>'
 			    + '</td></tr>';
 		});
@@ -1415,7 +1430,7 @@ function exportReturnDishxls() {
 			beginTime = d.getFullYear() + '-' + month + '-' + day
 					+ ' 00:00:00';
 		}
-	
+
 		if (endTime == null || "" == endTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1442,7 +1457,7 @@ function exportReturnDishxls() {
 			if (d.getSeconds() < 10) {
 				second = "0" + second;
 			}
-	
+
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
 					+ hours + ":" + minutes + ":" + second;
 		}
@@ -1527,11 +1542,11 @@ function initTb(datalist) {
 				+ obj.shouldamount
 				+ '</td>'
 				+ '<td width="10%">'
-				+ obj.paidinamount 
+				+ obj.paidinamount
 				+ '</td>'
 				+ '<td width="10%">'
 				+ obj.perCapita
-				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td>' 
+				+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td>'
 				+ '</tr>';
 		});
 	}else{
@@ -1617,7 +1632,7 @@ function initSubTb(code, payway, ptype, result, isFirst) {
  * 活动名称
  */
 function getActiviy() {
-	$.get(global_Path+"/daliyReports/getActivityNameList.json", 
+	$.get(global_Path+"/daliyReports/getActivityNameList.json",
 	function(result){
 		var option = '<option value="-1">全部</option>';
 		$.each(result, function(i, item){
@@ -1660,7 +1675,7 @@ function getActiviyType() {
 		});
 		$("#type").html(option);
 	});
-	
+
 }
 /**
  * 优惠活动明细表 导出
@@ -1712,12 +1727,12 @@ function exportReportsCou(f) {
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' ' + hours
 					+ ":" + minutes + ":" + second;
 		}
-		
+
 		var payway = "";
 		var ptype = "";
 		var pname = "";
 		var action_Path = "";
-		
+
 		if(f == 1){
 			pname = $("#p-coupon-id").val();
 			payway = $("#p-coupon-payway").val();
@@ -1788,11 +1803,11 @@ function initItemTb(datalist) {
 					+ '<td width="15%">'
 					+ typedesc
 					+ '</td>'
-					+ '<td width="15%">' + Math.round(obj.number)
+					+ '<td width="15%">' + obj.number
 					+ '</td><td>'+obj.thousandstimes+'</td><td>'+obj.orignalprice
- 					+'</td>' 
+ 					+'</td>'
 					+ '<td width="15%">'
-					+ turnover.toFixed(2) 
+					+ turnover.toFixed(2)
 					+ '<i class="icon-chevron-right" style="color: #000000;float: right;"></i></td>'
 					+ '</tr>';
 		});
@@ -1812,7 +1827,7 @@ function showItemSubTb(id, dishType, itemdesc, typedesc) {
 	$("#dish-type-desc").text(typedesc);
 	$("#item-details-dialog").modal("show");
 	initItemSubTb(id, dishType);
-	
+
 }
 //初始化子表数据
 function initItemSubTb(id, dishType) {
@@ -1881,7 +1896,7 @@ function exportReportsItem(f) {
 			beginTime = d.getFullYear() + '-' + month + '-' + day
 					+ ' 00:00:00';
 		}
-	
+
 		if (endTime == null || "" == endTime) {
 			var d = new Date();
 			var month = d.getMonth() + 1;
@@ -1904,12 +1919,12 @@ function exportReportsItem(f) {
 			if (d.getMinutes() < 10) {
 				minutes = "0" + minutes;
 			}
-	
+
 			var second = d.getSeconds();
 			if (d.getSeconds() < 10) {
 				second = "0" + second;
 			}
-	
+
 			endTime = d.getFullYear() + '-' + month + '-' + day + ' '
 					+ hours + ":" + minutes + ":" + second;
 		}
@@ -1923,7 +1938,7 @@ function exportReportsItem(f) {
 		if(_dishType == null || _dishType == ""){
 			_dishType = "null";
 		}
-		
+
 		var itemids = "";
 		if(f == 1){
 			var itemid = $("#p-item-id").val();
@@ -1932,7 +1947,7 @@ function exportReportsItem(f) {
 		}else{
 			itemids = "null";
 		}
-		
+
 	//	location.href = global_Path + "/itemDetail/exportxlsA/"
 	//			+ beginTime + "/" + endTime + "/" + shiftid + "/" + id + "/"+ _dishType + "/"+itemids+"/"+searchType+".json";
 		$("#_beginTime").val(beginTime);
@@ -2103,7 +2118,7 @@ function getScheduleReport(){
 function initScheduleTb(result){
 	if(result == null || result.length == 0){
 		$("#nodataPrompt").modal("show");
-		
+
 		setInterval(function(){
 			$("#nodataPrompt").modal("hide");
 		},3000);
@@ -2113,14 +2128,14 @@ function initScheduleTb(result){
 	var scheduleThs  ='';//日期标题
 	var scheduleThs_sec = '<tr>';//下面的副标题
 	var scheduleTds = '';//内容
-	
+
 	var avgThs = '';
 	if(result != null && result.length > 0){
 		$.each(result, function(i, item){
 			console.log(item);
 			var time = item.time;
 			frozenTd += '<tr><td>'+time+'</td></tr>';
-			
+
 			var stores = item.stores;
 			if(stores!=null && stores.length>0){
 				var avgTds = '';
@@ -2167,7 +2182,7 @@ function initScheduleTb(result){
 		scheduleThs_sec += '</tr>';
 		frozenTh = '<tr><th nowrap="nowrap" rowspan="2" class="wight-bg" style="vertical-align: middle;height: 66px;">时间段</th></tr>';
 	}
-	
+
 	$("#frozen-schedule-Tb thead").html(frozenTh);
 	$("#frozen-schedule-Tb tbody").html(frozenTd);
 	$("#schedule-tb thead").html(scheduleThs+scheduleThs_sec);
@@ -2339,7 +2354,7 @@ function clearCurrtStorage(){
 	selBranchId = "";
 }
 /**
- * 
+ *
  */
 function doSearchBtn(){
 	clearCurrtStorage();
@@ -2352,7 +2367,7 @@ function initBusinessReport() {
 	localStorage.setItem("beginTime", $("#beginTime").val());
 	localStorage.setItem("endTime", $("#endTime").val());
 	localStorage.setItem("shiftId", $("#shiftid").val());
-	
+
 	branchId = localStorage.getItem("currentStore");
 	if(compareBeginEndTime()){
 		$.post(global_Path + "/branchbusiness/infos.json", {
@@ -2518,7 +2533,7 @@ function initBusinessReportThirdTb(data){
 	var tbody = '';
 	if(data!= null && data.length>0){
 		$.each(data, function(i, item){
-			tbody += '<tr title="双击查看结账单" orderid="'+item.orderId+'" ondblclick="showOrderPage(this)"><td>'+item.orderId+'</td>'	
+			tbody += '<tr title="双击查看结账单" orderid="'+item.orderId+'" ondblclick="showOrderPage(this)"><td>'+item.orderId+'</td>'
 				+ '<td>'+item.beginTime+'</td>'
 				+ '<td>'+item.endTime+'</td>'
 				+ '<td>'+item.shouldamount+'</td>'
@@ -2633,8 +2648,8 @@ function initWaiterSaleTb(datalist) {
 					+ '<td width="25%">'
 					+ dishunit
 					+ '</td>'
-					+ '<td width="25%">' 
-					+ num.toFixed(0) 
+					+ '<td width="25%">'
+					+ num.toFixed(0)
 					+ '</td>'
 					+ '</tr>';
 		});
@@ -2720,8 +2735,8 @@ function initWaiterSaleTb(datalist,isFirst){
 					+ '<td width="25%">'
 					+ dishunit
 					+ '</td>'
-					+ '<td width="25%">' 
-					+ num.toFixed(0) 
+					+ '<td width="25%">'
+					+ num.toFixed(0)
 					+ '</td>'
 					+ '</tr>';
 		});

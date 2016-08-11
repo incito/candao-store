@@ -49,6 +49,10 @@ public class Printer {
      * 最后活跃时间
      */
     protected long lastActiveTime;
+    /**
+     * 停止打印标示
+     */
+    private volatile boolean stop = false;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -64,6 +68,9 @@ public class Printer {
         printLock.lock();
         try {
             while (true) {
+                if (isDisabled()) {
+                    throw new RuntimeException("准备移除打印机[" + ip + "]，停止打印");
+                }
                 lastActiveTime = System.currentTimeMillis();
                 try {
                     initChannel();
@@ -74,7 +81,7 @@ public class Printer {
                         doCommand(outputStream);
                         //检查打印机状态
                         logger.info("[" + ip + "]检查打印机状态");
-                        int state = PrintControl.printerIsReady(3000, outputStream, inputStream);
+                        int state = PrintControl.printerIsReady(3000, outputStream, inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印机状态:" + state);
                         if (state != PrintControl.STATUS_OK) {
@@ -107,7 +114,7 @@ public class Printer {
                         doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
-                        state = PrintControl.CheckJob(8000, inputStream);
+                        state = PrintControl.CheckJob(8000, inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
@@ -193,6 +200,11 @@ public class Printer {
      * @return
      */
     public PrintResult tryPrint(Object[] msg, long time) {
+        PrintResult result = new PrintResult();
+        if (isDisabled()) {
+            result.setCode(PrintControl.STATUS_STOPPRINT);
+            return result;
+        }
         lastActiveTime = System.currentTimeMillis();
         if (time < 1000) {
             time = 1000;
@@ -201,7 +213,6 @@ public class Printer {
             msg = new Object[0];
         }
         long endTime = System.currentTimeMillis() + time;
-        PrintResult result = new PrintResult();
         result.setCode(PrintControl.STATUS_ABNORMAL);
         logger.info("[" + ip + "]尝试获取打印机锁");
         boolean tryLock = false;
@@ -226,7 +237,7 @@ public class Printer {
                 InputStream inputStream = channel.getInputStream();
                 doCommand(outputStream);
                 logger.info("[" + ip + "]检查打印机状态");
-                int state = PrintControl.printerIsReady(2000, outputStream, inputStream);
+                int state = PrintControl.printerIsReady(2000, outputStream, inputStream, getIp());
                 PrinterStatusManager.stateMonitor(state, this);
                 if (state != PrintControl.STATUS_OK) {
                     logger.info("[" + ip + "]打印机状态不正常:" + state);
@@ -235,7 +246,7 @@ public class Printer {
                 }
                 doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
-                state = PrintControl.CheckJob(8000, inputStream);
+                state = PrintControl.CheckJob(8000, inputStream, getIp());
                 result.setCode(state);
                 PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回
@@ -277,6 +288,9 @@ public class Printer {
      * 状态检查
      */
     public void checkState() {
+        if (isDisabled()) {
+            return;
+        }
         //超过检测周期
         if (System.currentTimeMillis() - lastActiveTime < checkStateInterval) {
             return;
@@ -296,7 +310,7 @@ public class Printer {
                     return;
                 }
                 try {
-                    int state = PrintControl.printerIsReady(3000, channel.getOutputStream(), channel.getInputStream());
+                    int state = PrintControl.printerIsReady(3000, channel.getOutputStream(), channel.getInputStream(), getIp());
                     if (state == PrintControl.STATUS_OFFLINE) {
                         state = PrintControl.STATUS_OK;
                     }
@@ -458,5 +472,13 @@ public class Printer {
         public boolean isEmpty() {
             return null == command || 0 == command.length;
         }
+    }
+
+    public void setDisabled(boolean disabled) {
+        stop = disabled;
+    }
+
+    public boolean isDisabled() {
+        return stop;
     }
 }

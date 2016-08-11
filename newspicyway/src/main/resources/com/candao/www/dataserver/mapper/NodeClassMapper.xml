@@ -21,8 +21,8 @@
         WHERE classno =#{jsOrder}
     </select>
     <select id="getJsListJsonByNo" resultType="java.util.HashMap">
-        SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,
-        SUM(payamount) AS payamount,itemDesc FROM t_nodeclass_detail a
+        SELECT orderid,IFNULL(SUM(couponNum),0) AS couponNum,incometype,membercardno,bankcardno,payway,
+        IFNULL(SUM(payamount),0) AS payamount,itemDesc FROM t_nodeclass_detail a
         LEFT JOIN (SELECT itemid,itemDesc FROM t_dictionary WHERE TYPE='PAYWAY')b
         ON(a.payway=b.itemid) WHERE payway&lt;&gt;7 AND a.payamount&lt;&gt;0 AND a.classno=#{jsOrder}
         GROUP BY orderid,couponNum,incometype,payway,itemDesc,membercardno,bankcardno
