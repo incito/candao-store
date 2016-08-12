@@ -178,6 +178,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Map<String, Object> tableMap = resultMapList.get(0);
         String tableId = String.valueOf(tableMap.get("tableid"));
 
+        //通知PAD清台
+        notifyService.notifyClearTable(tableNo);
+
         TbTable tbTable = new TbTable();
         tbTable.setTableid(tableId);
         tbTable.setStatus(0);
@@ -191,8 +194,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             torder.setEndtime(new Date());
             torderMapper.update(torder);
         }
-        //通知PAD清台
-        notifyService.notifyClearTable(tableNo);
         return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("清台成功"));
     }
 
