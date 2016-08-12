@@ -1973,7 +1973,7 @@ DROP PROCEDURE IF EXISTS p_setordermember$$
 CREATE PROCEDURE p_setordermember(IN v_orderid varchar(50), IN v_pricetype int)
   SQL SECURITY INVOKER
 BEGIN
-  DECLARE done int 0;
+  DECLARE done int default 0;
   DECLARE v_dishid varchar(50);
   DECLARE v_orderdetailid varchar(50);
   DECLARE v_dishunit varchar(100);
