@@ -1973,10 +1973,10 @@ DROP PROCEDURE IF EXISTS p_setordermember$$
 CREATE PROCEDURE p_setordermember(IN v_orderid varchar(50), IN v_pricetype int)
   SQL SECURITY INVOKER
 BEGIN
-  DECLARE done numeric;
+  DECLARE done int 0;
   DECLARE v_dishid varchar(50);
   DECLARE v_orderdetailid varchar(50);
-  DECLARE v_dishunit varchar(50);
+  DECLARE v_dishunit varchar(100);
   DECLARE v_template_vipprice decimal(10, 2);
   declare v_menuid varchar(100);
   DECLARE cur_orderlist CURSOR FOR

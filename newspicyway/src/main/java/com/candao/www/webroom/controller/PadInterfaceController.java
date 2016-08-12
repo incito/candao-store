@@ -1777,7 +1777,7 @@ public class PadInterfaceController {
 //				}
 					TtellerCash ttellerCashs = tellerCashService.selectNotClearByUserId(username, macAddress);
 					if (null != ttellerCashs) {
-						return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先在登录的POS上清机，才能登录本POS"));
+						return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS上登录，请在已登录POS上进行清机。清机完成后即可在本机登录。"));
 					}
 				}
 				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
