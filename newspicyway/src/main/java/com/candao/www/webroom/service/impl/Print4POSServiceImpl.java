@@ -437,9 +437,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                         }
                     }
                     posdata.put("settlementInfo", settlementInfo);
-                    posdata.put("branchName", String.valueOf(branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname")));
-                    posdata.put("tel", String.valueOf(branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel")));
-                    posdata.put("address", String.valueOf(branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress")));
+                    posdata.put("branchName", branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname").toString());
+                    posdata.put("tel", branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel").toString());
+                    posdata.put("address", branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress").toString());
                     obj.setPosData(posdata);
                     // TODO
                     Map<String, Object> param = new HashMap<>();
