@@ -210,7 +210,7 @@ public class WaiterShiftController {
             params.put("beginTime", beginTime);
             params.put("endTime", endTime);
             String title = ExcelUtils.setTabTitleToBusiness(filedisplay, params);
-            String[] clounNames = {"服务员编号", "服务员姓名", "开台数", "结算人数", "应收总额", "实收总额", "应收人均", "实收人均", "现金", "银行卡", "会员卡消费", "挂帐", "微信支付", "支付宝支付"};
+            String[] clounNames = {"服务员编号", "服务员姓名", "开台数", "结算人数", "应收总额", "实收总额", "应收人均", "实收人均", "实收/现金", "实收/银行卡", "实收/会员卡消费", "实收/挂帐", "实收/微信支付", "实收/支付宝支付"};
             String[] keys = {"userid", "username", "ordernum", "custnum", "shouldamount", "paidinamount", "shouldpre", "paidinpre", "xjamount", "yhkamount", "hykxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
             HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, clounNames, keys);
             OutputStream fout = response.getOutputStream();
@@ -283,7 +283,7 @@ public class WaiterShiftController {
             params.put("beginTime", beginTime);
             params.put("endTime", endTime);
             String title = ExcelUtils.setTabTitleToBusiness(filedisplay, params);
-            String[] clounNames = {"订单号", "台号", "就餐人数", "应收", "实收", "现金", "银行卡", "会员卡消费", "挂帐", "微信支付", "支付宝支付"};
+            String[] clounNames = {"订单号", "台号", "就餐人数", "应收", "实收", "实收/现金", "实收/银行卡", "实收/会员卡消费", "实收/挂帐", "实收/微信支付", "实收/支付宝支付"};
             String[] keys = {"orderid", "tableids", "custnum", "shouldamount", "paidinamount", "xjamount", "yhkamount", "hykxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
             HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, clounNames, keys);
             OutputStream fout = response.getOutputStream();

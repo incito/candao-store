@@ -17,6 +17,7 @@ import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TtellerCashDao;
 import com.candao.www.data.model.*;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
 import com.candao.www.permit.service.FunctionService;
@@ -727,6 +728,8 @@ public class PadInterfaceController {
 		String result = orderSettleService.settleOrder(settlementInfo);
 
 		final String orderid = settlementInfo.getOrderNo();
+		//计算订单的实收、优免等
+		orderOpService.calcOrderAmount(orderid);
 		//内部直接调用计算实收，POS不再调用
 		debitamout(orderid);
 		// 修改投诉表信息
@@ -3187,6 +3190,8 @@ public class PadInterfaceController {
 	private PadConfigService padConfigService;
 	@Autowired
 	private TorderDetailPreferentialService torderDetailPreferentialService;
+	@Autowired
+    private OrderOpService orderOpService;
 
 	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 

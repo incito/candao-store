@@ -1803,7 +1803,7 @@ function initItemTb(datalist) {
 					+ '<td width="15%">'
 					+ typedesc
 					+ '</td>'
-					+ '<td width="15%">' + Math.round(obj.number)
+					+ '<td width="15%">' + obj.number
 					+ '</td><td>'+obj.thousandstimes+'</td><td>'+obj.orignalprice
  					+'</td>'
 					+ '<td width="15%">'

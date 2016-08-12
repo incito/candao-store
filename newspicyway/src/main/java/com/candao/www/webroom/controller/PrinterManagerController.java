@@ -144,9 +144,12 @@ public class PrinterManagerController {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
+					//更新字体大小
 					PrinterListenerManager printerListener = (PrinterListenerManager) SpringContext
 							.getBean(PrinterListenerManager.class);
 					printerListener.updateListenerTemplate();
+					//更新打印队列，打印机连接
+					printerListener.updateListener();
 				} catch (Exception e) {
 					log.error("----------------------------------");
 					log.error("打印机模板字体更新失败！", e);
@@ -337,6 +340,22 @@ public class PrinterManagerController {
 		boolean b = printerManagerService.deleteById(id);
 		ModelAndView mav = new ModelAndView();
 		if (b) {
+			//更新打印队列，连接
+			executor.execute(new Runnable() {
+				public void run() {
+					try {
+						PrinterListenerManager printerListener = (PrinterListenerManager) SpringContext
+								.getBean(PrinterListenerManager.class);
+						//更新打印队列，打印机连接
+						printerListener.updateListener();
+					} catch (Exception e) {
+						log.error("----------------------------------");
+						log.error("打印机模板字体更新失败！", e);
+						e.printStackTrace();
+					}
+				}
+			});
+
 			mav.addObject("message", "删除成功");
 		} else {
 			mav.addObject("message", "删除失败");
