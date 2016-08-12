@@ -1764,14 +1764,18 @@ public class PadInterfaceController {
 			Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
 			Map<String, Object> map = new HashMap<>();
 			if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
-				String macAddress = params.get("macAddress");
+				//登录验证重复登录
+				String code = PropertiesUtils.getValue("logintype.030201");
+				if(loginType.equals(code)) {
+					String macAddress = params.get("macAddress");
 //				TtellerCash ttellerCashs = tellerCashService.selectLastUser(username,macAddress);
 //				if( null!=ttellerCashs){
 //					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("收银员["+ttellerCashs.getUsername()+"]已经登录，请先清机"));
 //				}
-				TtellerCash ttellerCashs = tellerCashService.selectNotClearByUserId(username, macAddress);
-				if( null!=ttellerCashs){
-					return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先在登录的POS上清机，才能登录本POS"));
+					TtellerCash ttellerCashs = tellerCashService.selectNotClearByUserId(username, macAddress);
+					if (null != ttellerCashs) {
+						return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("您已在其他POS登录，请先在登录的POS上清机，才能登录本POS"));
+					}
 				}
 				SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				String date = sDateFormat.format(new java.util.Date());

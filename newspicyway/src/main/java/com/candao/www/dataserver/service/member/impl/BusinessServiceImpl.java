@@ -356,6 +356,7 @@ public class BusinessServiceImpl implements BusinessService {
             param.put("ipaddress", ip);
             param.put("cashamount", cashAmount);
             param.put("shiftid", getShiftID());
+            param.put("insertdate", new Date());
             tellerCashMapper.insert(param);
             param = new HashMap<>();
             param.put("sdetailid", IDUtil.getID());

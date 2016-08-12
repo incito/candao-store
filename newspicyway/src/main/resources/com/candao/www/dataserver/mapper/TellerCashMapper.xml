@@ -92,6 +92,6 @@
     </select>
     <insert id="insert" parameterType="map">
         insert into t_teller_cash(username,opendate,insertdate,ipaddress,cashamount,status,shiftid)
-        values(#{username},#{opendate},now(),#{ipaddress},#{cashamount},0,#{shiftid})
+        values(#{username},#{opendate},#{insertdate},#{ipaddress},#{cashamount},0,#{shiftid})
     </insert>
 </mapper>
