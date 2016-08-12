@@ -1255,7 +1255,6 @@ public class OrderServiceImpl implements OrderService {
 		
 		String orderid = (String) params.get("orderid");
 		Map<String, Object> setMap = new HashMap<>();
-//		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		// 如果是获取优惠列表 则由优惠所有算出结果后在同一计算优惠信息
 		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
 		

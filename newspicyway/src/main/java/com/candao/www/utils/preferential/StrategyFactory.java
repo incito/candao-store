@@ -71,6 +71,8 @@ public enum StrategyFactory {
 			preferentialResult.setTipAmount(tipAmount);
 			// 计算实际收入金额
 			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult);
+			//应收应该是小费+消费
+			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
 		}
 	}
 }

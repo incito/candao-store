@@ -27,7 +27,7 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
 			listFind.addAll(listFind2);
 		}
-		RoundingEnum roundingEnum = RoundingEnum.fromString("1");
+		RoundingEnum roundingEnum = RoundingEnum.fromString((String) listFind.get(0).get("itemid"));
 		switch (roundingEnum) {
 		case ROUNDTOINTEGER:
 			preferentialResul.setMoneyWipeName("四舍五入");
@@ -37,10 +37,11 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 		case REMOVETAIL:
 			/** 抹零处理 **/
 			preferentialResul.setMoneyWipeName("抹零");
-			calPayAmount(RoundingMode.UP, preferentialResul, listFind);
+			calPayAmount(RoundingMode.DOWN, preferentialResul, listFind);
 			break;
 		default:
-			preferentialResul.getMenuAmount();
+			BigDecimal payAmount = preferentialResul.getMenuAmount().subtract(preferentialResul.getAmount());
+			preferentialResul.setPayamount(payAmount);
 			break;
 		}
 	}
@@ -50,7 +51,7 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 		BigDecimal menuAmout = preferentialResul.getMenuAmount();
 		BigDecimal amount = preferentialResul.getAmount();
 		BigDecimal payAmount = new BigDecimal("0");
-		BigDecimal noCalAmount=new BigDecimal("0");
+		BigDecimal noCalAmount = new BigDecimal("0");
 		if (listFind == null || listFind.size() <= 0) {
 			// 支付价格菜单价-优惠价
 			payAmount = menuAmout.subtract(amount);
@@ -58,10 +59,17 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			// 0：分 1角 2元
 			int itemId = Integer.valueOf((String) listFind.get(1).get("itemid"));
 			int scale = itemId == 0 ? 2 : itemId == 1 ? 1 : 0;
+
 			// 当前菜单多少钱没有四舍五入处理的
-			  noCalAmount = menuAmout.subtract(amount);
-			// 当前优惠有多少钱
-			payAmount = noCalAmount.divide(new BigDecimal("1"), scale, branchid);
+			noCalAmount = menuAmout.subtract(amount);
+			// 当前优惠有多少钱(对元进行处理)
+			if (scale == 0) {
+				payAmount = noCalAmount.divide(new BigDecimal(10)).setScale(0,branchid)
+						.multiply(new BigDecimal(10));
+			} else {
+
+				payAmount = noCalAmount.divide(new BigDecimal("1"), scale-1, branchid);
+			}
 		}
 		/** 如果小于0表示使用的优惠总金额，大于总价，所以支付价应该为0 **/
 		if (payAmount.doubleValue() <= 0) {

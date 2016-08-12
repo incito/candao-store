@@ -58,8 +58,7 @@ public class OperPreferentialResult {
 	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
 	public BigDecimal getAmount() {
-		amount.setScale(2, BigDecimal.ROUND_HALF_UP);
-		return amount;
+		return amount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setAmount(BigDecimal amount) {
@@ -75,7 +74,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getPayamount() {
-		return payamount;
+		return payamount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setPayamount(BigDecimal payamount) {
@@ -83,7 +82,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getMenuAmount() {
-		return menuAmount;
+		return menuAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setMenuAmount(BigDecimal menuAmount) {
@@ -91,7 +90,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getTipAmount() {
-		return tipAmount;
+		return tipAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setTipAmount(BigDecimal tipAmount) {
@@ -99,7 +98,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getToalFreeAmount() {
-		return toalFreeAmount;
+		return toalFreeAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setToalFreeAmount(BigDecimal toalFreeAmount) {
@@ -107,7 +106,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getToalDebitAmount() {
-		return toalDebitAmount;
+		return toalDebitAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setToalDebitAmount(BigDecimal toalDebitAmount) {
@@ -115,7 +114,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getZdAmount() {
-		return zdAmount;
+		return zdAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setZdAmount(BigDecimal zdAmount) {
@@ -123,7 +122,7 @@ public class OperPreferentialResult {
 	}
 
 	public BigDecimal getMoneyWipeAmount() {
-		return moneyWipeAmount;
+		return moneyWipeAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setMoneyWipeAmount(BigDecimal moneyWipeAmount) {

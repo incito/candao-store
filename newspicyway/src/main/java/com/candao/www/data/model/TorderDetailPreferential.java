@@ -114,7 +114,7 @@ public class TorderDetailPreferential implements Serializable {
 	}
 
 	public BigDecimal getDeAmount() {
-		return deAmount;
+		return deAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setDeAmount(BigDecimal deAmount) {
@@ -138,7 +138,7 @@ public class TorderDetailPreferential implements Serializable {
 	}
 
 	public BigDecimal getDiscount() {
-		return discount;
+		return discount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setDiscount(BigDecimal discount) {
@@ -170,7 +170,7 @@ public class TorderDetailPreferential implements Serializable {
 	}
 
 	public BigDecimal getToalFreeAmount() {
-		return toalFreeAmount;
+		return toalFreeAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setToalFreeAmount(BigDecimal toalFreeAmount) {
@@ -178,7 +178,7 @@ public class TorderDetailPreferential implements Serializable {
 	}
 
 	public BigDecimal getToalDebitAmount() {
-		return toalDebitAmount;
+		return toalDebitAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setToalDebitAmount(BigDecimal toalDebitAmount) {
