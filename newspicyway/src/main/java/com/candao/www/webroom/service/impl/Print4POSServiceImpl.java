@@ -146,10 +146,9 @@ public class Print4POSServiceImpl implements Print4POSService {
         for (int i = 0; i < types.length; i++) {
             PrintObj obj = new PrintObj();
             obj.setListenerType(Constant.ListenerType.MemberSaleInfoTemplate);
-            SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
-            OrderInfo4Pos temp = (OrderInfo4Pos) settlementInfo4Pos.getOrderJson().get(0).clone();
+            SettlementInfo4Pos settlementInfo4Pos = (SettlementInfo4Pos) CloneUtil.clone(settlementInfos.get(0), -1);
+            OrderInfo4Pos temp = (OrderInfo4Pos) settlementInfo4Pos.getOrderJson().get(0);
             temp.setType(types[i]);
-            settlementInfo4Pos.getOrderJson().set(0, temp);
             obj.setSettlementInfo4Pos(settlementInfo4Pos);
             Map<String, Object> params = new HashMap<>();
             params.put("printertype", "10");
@@ -428,7 +427,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
-                                if (StringUtils.isEmpty(value[i]) || 0 >= new BigDecimal(value[i]).compareTo(new BigDecimal(0))){
+                                if (StringUtils.isEmpty(value[i]) || 0 >= new BigDecimal(value[i]).compareTo(new BigDecimal(0))) {
                                     continue;
                                 }
                             }
@@ -438,9 +437,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                         }
                     }
                     posdata.put("settlementInfo", settlementInfo);
-                    posdata.put("branchName", String.valueOf(branchInfo.get("branchname")));
-                    ((Map) data).put("tel", String.valueOf(branchInfo.get("managertel")));
-                    posdata.put("address", String.valueOf(branchInfo.get("branchaddress")));
+                    posdata.put("branchName", String.valueOf(branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname")));
+                    posdata.put("tel", String.valueOf(branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel")));
+                    posdata.put("address", String.valueOf(branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress")));
                     obj.setPosData(posdata);
                     // TODO
                     Map<String, Object> param = new HashMap<>();
