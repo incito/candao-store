@@ -48,7 +48,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Autowired
     private OrderOpService orderOpService;
-    
+    @Autowired
+    private NotifyService notifyService;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public String updateorderprice(Order orders) {
@@ -189,6 +191,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             torder.setEndtime(new Date());
             torderMapper.update(torder);
         }
+        //通知PAD清台
+        notifyService.notifyClearTable(tableNo);
         return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("清台成功"));
     }
 
@@ -272,7 +276,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 List<TorderDetail> list1 = t.getDishes();
                 for (TorderDetail t1 : list1) {
                     if (!"0".equals(t1.getDishnum())) {
-                    	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                        //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                         StringBuilder detailSperequire = new StringBuilder();
                         detailSperequire.append(t1.getSperequire());
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
@@ -286,7 +290,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
                         detailSperequire.append(t1.getFreereason());
                         t1.setSperequire(detailSperequire.toString());
-                        
+
                         t1.setDishtype("1");
                         t1.setRelatedishid(t.getDishid());
 
@@ -311,7 +315,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     for (TorderDetail t2 : list2) {
                         if ("0".equals(t2.getDishtype())) {
                             if (!"0".equals(t2.getDishnum())) {
-                            	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                                //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                                 StringBuilder detailSperequire = new StringBuilder();
                                 detailSperequire.append(t2.getSperequire());
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
@@ -325,7 +329,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
                                 detailSperequire.append(t2.getFreereason());
                                 t2.setSperequire(detailSperequire.toString());
-                                
+
                                 t2.setOrderprice(new BigDecimal(0));
                                 t2.setDishtype("2");
                                 t2.setRelatedishid(t.getDishid());
@@ -341,7 +345,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 listall.add(t2);
                             }
                         } else if ("1".equals(t2.getDishtype())) {
-                        	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                            //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                             StringBuilder detailSperequire = new StringBuilder();
                             detailSperequire.append(t2.getSperequire());
                             detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
@@ -371,7 +375,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             List<TorderDetail> list3 = t2.getDishes();
                             for (TorderDetail t3 : list3) {
                                 if (!"0".equals(t3.getDishnum())) {
-                                	//忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
+                                    //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                                     detailSperequire = new StringBuilder();
                                     detailSperequire.append(t3.getSperequire());
                                     detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
@@ -824,7 +828,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             printObj.setPrintType(Constant.PRINTTYPE.NORMAL_DISH);
             printObj.setBillName(Constant.DISHBILLNAME.NORMALCUSTDISHNAME);
         }
-        printCustDish(printObj,isRepeat);
+        printCustDish(printObj, isRepeat);
     }
 
     /**
@@ -1073,14 +1077,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         map0.put("ismaster", "1");
         printMutilDish(map0, printObj, 0, paramsMap);
     }
-    
-    private void printCustDish(PrintObj printObj ,boolean flag) {
+
+    private void printCustDish(PrintObj printObj, boolean flag) {
 
         Map<String, Object> map0 = new HashMap<String, Object>();
         map0.put("printobjid", printObj.getId());
         if (!flag) {
-        	map0.put("printnum", 0);			
-		}
+            map0.put("printnum", 0);
+        }
         map0.put("dishtype", 0);
         List<PrintDish> listall = new ArrayList<>();
         //单品
@@ -1101,8 +1105,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Map<String, Object> map1 = new HashMap<String, Object>();
         map1.put("printobjid", printObj.getId());
         if (!flag) {
-        	map0.put("printnum", 0);			
-		}
+            map0.put("printnum", 0);
+        }
         map1.put("dishtype", 2);
         // 查询所有套餐
         List<PrintDish> temp = tbPrintObjDao.findDishGroupBySuperKey(map1);
@@ -1462,8 +1466,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
 
                     for (PrintDish printDish : pdList) {
-                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId()+printDish.getPrimarykey()+printDish.getOrderseq());
-                        String abbrname=printDish.getAbbrname()==null?"":printDish.getAbbrname();
+                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printDish.getOrderseq());
+                        String abbrname = printDish.getAbbrname() == null ? "" : printDish.getAbbrname();
                         if (obj != null && !abbrname.contains("退")) {//退菜单除外
                             temp = 1;//已经打印过
                             break;
@@ -1476,7 +1480,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     new Thread(new PrintThread(printObj)).run();
 
                     for (PrintDish printDish : pdList) {
-                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId()+printDish.getPrimarykey()+printDish.getOrderseq(), 1);//已经打印的菜品
+                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printDish.getOrderseq(), 1);//已经打印的菜品
                     }
                 }
             }
@@ -2159,7 +2163,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         //退菜后重新计算应收金额
         orderOpService.calcOrderAmount(orderId);
-        
+
         if (toperationLogService.save(toperationLog)) {
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         } else {
