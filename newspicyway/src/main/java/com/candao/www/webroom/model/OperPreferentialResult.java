@@ -44,13 +44,18 @@ public class OperPreferentialResult {
 	private BigDecimal toalDebitAmount = new BigDecimal(0);
 
 	/***
-	 * 赠送金额 
+	 * 赠送金额
 	 */
-	private BigDecimal zdAmount =new BigDecimal(0);
+	private BigDecimal zdAmount = new BigDecimal(0);
+	/***
+	 * 优惠调整
+	 *
+	 */
+	private BigDecimal adjAmout = new BigDecimal(0);
 	/***
 	 * 处理的金额(四舍五入或抹零)
 	 */
-	private BigDecimal moneyWipeAmount=new BigDecimal(0);
+	private BigDecimal moneyWipeAmount = new BigDecimal(0);
 	/**
 	 * (处理的名称 ：四舍五入 或 抹零)
 	 */
@@ -147,6 +152,14 @@ public class OperPreferentialResult {
 
 	public void setMoneyDisType(String moneyDisType) {
 		this.moneyDisType = moneyDisType;
+	}
+
+	public BigDecimal getAdjAmout() {
+		return adjAmout.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public void setAdjAmout(BigDecimal adjAmout) {
+		this.adjAmout = adjAmout;
 	}
 
 }

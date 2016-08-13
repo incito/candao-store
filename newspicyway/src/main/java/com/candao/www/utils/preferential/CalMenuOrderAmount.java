@@ -43,7 +43,7 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			break;
 		default:
 			BigDecimal payAmount = preferentialResul.getMenuAmount().subtract(preferentialResul.getAmount());
-			preferentialResul.setPayamount(payAmount);
+			preferentialResul.setPayamount(payAmount.compareTo(new BigDecimal("0"))==1?payAmount:new BigDecimal("0"));
 			preferentialResul.setMoneyDisType("0");
 			break;
 		}
@@ -78,8 +78,16 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 		if (payAmount.doubleValue() <= 0) {
 			payAmount = new BigDecimal("0");
 		}
+		  BigDecimal menuAmount = preferentialResul.getMenuAmount();
+		  BigDecimal   preAmount=preferentialResul.getAmount();
+		  BigDecimal noCalAmountTemp=null;
+		  if(menuAmount.compareTo(preAmount)==-1){
+			  noCalAmountTemp=new BigDecimal("0");
+		  }else{
+			  noCalAmountTemp=  noCalAmount.subtract(payAmount);
+		  }
 		preferentialResul.setPayamount(payAmount);
-		preferentialResul.setMoneyWipeAmount(noCalAmount.subtract(payAmount));
+		preferentialResul.setMoneyWipeAmount(noCalAmountTemp);
 	}
 
 }
