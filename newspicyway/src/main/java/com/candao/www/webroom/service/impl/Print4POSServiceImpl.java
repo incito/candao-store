@@ -424,7 +424,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                                 }
                             }
                             tempMap.put("name", name[i]);
-                            tempMap.put("value", value[i]);
+                            tempMap.put("value", "￥" + value[i]);
                             settlementInfo.add(tempMap);
                         }
                     }
