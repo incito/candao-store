@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
@@ -42,13 +43,22 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		if (cashGratis != null) {
 			return cashGratis;
 		}
-		List<Map<String, Object>> tempMapList = this.discountInfo(activityID, PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
+		List<Map<String, Object>> tempMapList = this.discountInfo(activityID,
+				PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
 
 		Map preMap = tempMapList.get(0);
+		//
 		// 获取当前账单的 菜品列表
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", orderid);
 		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
+		// 菜单总价
+		BigDecimal orderPrice = new BigDecimal(0);
+		for (TorderDetail torderDetail : orderDetailList) {
+			orderPrice = orderPrice
+					.add(torderDetail.getOrderprice().multiply(new BigDecimal(torderDetail.getDishnum())));
+		}
+
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal(String.valueOf(preMap.get("amount")));
 		for (int i = 0; i < preferentialNum; i++) {
@@ -60,19 +70,19 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) preMap.get("name"));
 			torder.setActivity(activity);
-			torder.setCoupondetailid((String) (tempMapList.size()>1?preMap.get("preferential"):preMap.get("id")));
-
+			torder.setCoupondetailid((String) (tempMapList.size() > 1 ? preMap.get("preferential") : preMap.get("id")));
 
 			// 如果为团购卷
 			if (String.valueOf(paraMap.get("type")).equals("05")) {
 				// 是团购又是手动输入的
 				String preferentialAmout = (String) paraMap.get("preferentialAmout");
 				BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
-				if (cashprelAmout.doubleValue()>0) {
+				if (cashprelAmout.doubleValue() > 0) {
 					torder.setToalDebitAmount(cashprelAmout);
 					torder.setDeAmount(cashprelAmout);
 					amount = cashprelAmout;
 				} else {
+					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
 					String billAmoutStri = preMap.get("bill_amount").toString();
 					BigDecimal billAmout = new BigDecimal(billAmoutStri);
 					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
@@ -84,6 +94,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 			} else {
 				// 代金卷
 				torder.setDeAmount(amount);
+				torder.setToalFreeAmount(amount);
 			}
 
 			detailPreferentials.add(torder);

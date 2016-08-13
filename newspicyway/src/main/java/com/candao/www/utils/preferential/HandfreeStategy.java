@@ -54,7 +54,6 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		orderDetail_params.put("orderid", orderid);
 		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
 
-		// 当前订单的原始价格
 		BigDecimal amount = new BigDecimal(0);
 		// 菜品原价
 		BigDecimal amountCount = new BigDecimal(0.0);
@@ -168,8 +167,10 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 					orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 				} else {
 					TorderDetailPreferential detailPreferential = createTorderDetail(orderDetailmap, dataDishId, 1,
-							paraMap, amountCount, orderid, preferentialid, tempMap, tempMapList);
+							paraMap, amount, orderid, preferentialid, tempMap, tempMapList);
+					amount=amount.add(detailPreferential.getDeAmount());
 					detailPreferentials.add(detailPreferential);
+					
 				}
 			} else {
 				// 菜品对应个数
@@ -193,7 +194,8 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 					}
 					for (int i = 0; i < inputNum; i++) {
 						TorderDetailPreferential detailPreferential = createTorderDetail(orderDetailmap, dishId, 1,
-								paraMap, amountCount, orderid, preferentialid, tempMap, tempMapList);
+								paraMap, amount, orderid, preferentialid, tempMap, tempMapList);
+						amount=amount.add(detailPreferential.getDeAmount());
 						detailPreferentials.add(detailPreferential);
 					}
 		
@@ -227,7 +229,8 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				addPreferential.setCoupondetailid(
 						(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
 				// 设置优免
-				addPreferential.setToalFreeAmount(amount);
+				addPreferential.setToalFreeAmount(orderprice);
+				addPreferential.setDeAmount(orderprice);
 			}
 		}
 		return addPreferential;

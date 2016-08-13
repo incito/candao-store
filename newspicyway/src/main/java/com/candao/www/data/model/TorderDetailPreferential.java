@@ -30,6 +30,10 @@ public class TorderDetailPreferential implements Serializable {
 	 * 挂账金额
 	 */
 	private BigDecimal toalDebitAmount = new BigDecimal("0");
+	/***
+	 * 挂账多收
+	 * */
+	private BigDecimal toalDebitAmountMany=new BigDecimal("0");
 	private TbPreferentialActivity activity;
 	// 优惠子ID
 	private String coupondetailid;
@@ -193,6 +197,14 @@ public class TorderDetailPreferential implements Serializable {
 
 	public void setCoupondetailid(String coupondetailid) {
 		this.coupondetailid = coupondetailid;
+	}
+
+	public BigDecimal getToalDebitAmountMany() {
+		return toalDebitAmountMany;
+	}
+
+	public void setToalDebitAmountMany(BigDecimal toalDebitAmountMany) {
+		this.toalDebitAmountMany = toalDebitAmountMany;
 	}
 
 }
