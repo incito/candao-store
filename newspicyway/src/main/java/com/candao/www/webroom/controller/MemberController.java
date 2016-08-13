@@ -35,9 +35,6 @@ public class MemberController extends BaseController{
 	
 	@Autowired
 	private OrderMemberService orderMemberService ;
-
-    @Autowired
-    private OrderOpService orderOpService;
 	
 	@RequestMapping("/MemberLogin")
 	@ResponseBody
@@ -60,9 +57,6 @@ public class MemberController extends BaseController{
 			params.put("pricetype", 0);  //设置会员价
 			orderService.setOrderMember(params);
 
-	        //重新计算应收金额
-	        orderOpService.calcOrderAmount(orderid);
-			
 			resultmap = ReturnMap.getSuccessMap("会员登录成功");
 		}catch(Exception e){
 			logger.error("-->",e);
@@ -94,9 +88,6 @@ public class MemberController extends BaseController{
 			params.put("pricetype", 1);  //设置会员价
 			orderService.setOrderMember(params);
 
-	        //重新计算应收金额
-	        orderOpService.calcOrderAmount(orderid);
-	        
 			resultmap = ReturnMap.getSuccessMap("会员退出成功");
 		}catch(Exception e){
 			logger.error("-->",e);
