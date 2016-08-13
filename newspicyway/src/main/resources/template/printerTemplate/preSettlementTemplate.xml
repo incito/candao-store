@@ -146,6 +146,57 @@
 			</list>
 		</datas>
 	</row:row>
+	<row:row description="优惠">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="分隔符">
+			<list>
+				<value>10</value>
+				<value>10</value>
+				<value>10</value>
+				<value>10</value>
+			</list>
+		</locations>
+		<datas description="分隔符">
+			<list>
+				<value>优惠(元)：</value>
+				<value>#{obj.posData.totalfree}</value>
+				<value>打印人：</value>
+				<value>#{obj.posData.printname}</value>
+			</list>
+		</datas>
+	</row:row>
+	<row:row description="优惠">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="分隔符">
+			<list>
+				<value>10</value>
+				<value>20</value>
+			</list>
+		</locations>
+		<datas description="分隔符">
+			<list>
+				<value>品项费：</value>
+				<value>#{obj.posData.pxFee}</value>
+			</list>
+		</datas>
+	</row:row>
+	<!-- 分隔符 -->
+	<row:row description="分隔符">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="分隔符">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="分隔符">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- 品项 -->
 	<row:row description="品项">
 		<align description="对齐">ALIGN_LEFT</align>
@@ -205,56 +256,56 @@
 			</list>
 		</datas>
 	</row:row>
-    <!-- 优惠备注 -->
-    <row:row description="结算备注">
-        <align description="对齐">ALIGN_LEFT</align>
-        <font description="字体大小">SMALL</font>
-        <locations description="结算备注">
-            <list>
-                <value>20</value>
-            </list>
-        </locations>
-        <datas description="优惠备注">
-            <list>
-                <value>结算备注：</value>
-            </list>
-        </datas>
-    </row:row>
-    <!-- 优惠备注 -->
-    <foreach:foreach item="it"
-                     value="#{obj.posData.preferentialInfo.detailPreferentials}">
-        <row:row description="结算备注">
-            <align description="对齐">ALIGN_LEFT</align>
-            <font description="字体大小">SMALL</font>
-            <locations description="结算备注">
-                <list>
-                    <value>15</value>
-                    <value>25</value>
-                </list>
-            </locations>
-            <datas description="优惠备注">
-                <list>
-                    <value>#{it.activity.name}</value>
-                    <value>#{it.deAmount}</value>
-                </list>
-            </datas>
-        </row:row>
-    </foreach:foreach>
-    <!-- 分隔符 -->
-    <row:row description="分割线">
-        <align description="对齐">ALIGN_LEFT</align>
-        <font description="字体大小">SMALL</font>
-        <locations description="分割线">
-            <list>
-                <value>40</value>
-            </list>
-        </locations>
-        <datas description="分割线">
-            <list>
-                <value>---------------------------------------</value>
-            </list>
-        </datas>
-    </row:row>
+	<!-- 优惠备注 -->
+	<row:row description="结算备注">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="结算备注">
+			<list>
+				<value>20</value>
+			</list>
+		</locations>
+		<datas description="优惠备注">
+			<list>
+				<value>优惠备注：</value>
+			</list>
+		</datas>
+	</row:row>
+	<!-- 优惠备注 -->
+	<foreach:foreach item="it"
+		value="#{obj.posData.preferentialInfo.detailPreferentials}">
+		<row:row description="结算备注">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="结算备注">
+				<list>
+					<value>20</value>
+					<value>20</value>
+				</list>
+			</locations>
+			<datas description="优惠备注">
+				<list>
+					<value>#{it.activity.name}</value>
+					<value>#{it.deAmount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<!-- 分隔符 -->
+	<row:row description="分割线">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="分割线">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="分割线">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- 结算备注 -->
 	<row:row description="结算备注">
 		<align description="对齐">ALIGN_LEFT</align>
@@ -271,8 +322,7 @@
 		</datas>
 	</row:row>
 	<!-- 结算备注 -->
-	<foreach:foreach item="it"
-		value="#{obj.posData.settlementInfo}">
+	<foreach:foreach item="it" value="#{obj.posData.settlementInfo}">
 		<row:row description="结算备注">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
