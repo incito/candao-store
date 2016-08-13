@@ -78,8 +78,9 @@ public class StringUtil {
 		// ...
 //		String temp = res.toString();
 		String temp;
-		temp = StringUtils.replace(src, "|", "\"");
-		temp = StringUtils.replace(temp, "\"{", "{");
+		//dataserver转型
+//		temp = StringUtils.replace(src, "|", "\"");
+		temp = StringUtils.replace(src, "\"{", "{");
 		temp = StringUtils.replace(temp, "}\"", "}");
 		return StringUtils.replace(temp, "&quot", "\"");
 	}
