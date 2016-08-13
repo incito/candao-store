@@ -42,6 +42,12 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		params.put("orderid", orderid);
 		return daoSupport.find(PREFIX + ".getTorderDetailPreS", params);
 	}
+	@Override
+	public List<TorderDetailPreferential> queryDetailPreByGift(String orderId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("orderid", orderId);
+		return daoSupport.find(PREFIX + ".queryDetailPreByGift", params);
+	}
 
 	@Override
 	public List<TorderDetailPreferential>  getTorderDetailSbyOrderid(Map<String, Object> params) {
@@ -53,5 +59,7 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		params.put("clear", String.valueOf(params.get("clear")));
 		return daoSupport.delete(PREFIX + ".deleteDetilPreFerInfo",params);
 	}
+
+
 
 }

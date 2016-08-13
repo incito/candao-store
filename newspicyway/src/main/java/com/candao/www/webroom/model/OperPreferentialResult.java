@@ -55,6 +55,10 @@ public class OperPreferentialResult {
 	 * (处理的名称 ：四舍五入 或 抹零)
 	 */
 	private String moneyWipeName;
+	/**
+	 * 
+	 */
+	private String moneyDisType;
 	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
 	public BigDecimal getAmount() {
@@ -135,6 +139,14 @@ public class OperPreferentialResult {
 
 	public void setMoneyWipeName(String moneyWipeName) {
 		this.moneyWipeName = moneyWipeName;
+	}
+
+	public String getMoneyDisType() {
+		return moneyDisType;
+	}
+
+	public void setMoneyDisType(String moneyDisType) {
+		this.moneyDisType = moneyDisType;
 	}
 
 }

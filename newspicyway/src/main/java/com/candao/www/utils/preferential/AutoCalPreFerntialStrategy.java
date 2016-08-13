@@ -153,6 +153,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 							TbPreferentialActivity activity = new TbPreferentialActivity();
 							activity.setName((String) res.get("name"));
 							torder.setActivity(activity);
+							torder.setCoupondetailid((String) (pres.size()>1?res.get("preferential"):res.get("id")));
+
 							// 设置优免金额
 							torder.setToalFreeAmount(amount);
 							detailPreferentials.add(torder);
@@ -191,6 +193,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 						TbPreferentialActivity activity = new TbPreferentialActivity();
 						activity.setName((String) res.get("name"));
 						torder.setActivity(activity);
+						torder.setCoupondetailid((String) (pres.size()>1?res.get("preferential"):res.get("id")));
+
 						// 设置优免金额
 						torder.setToalFreeAmount(amount);
 						detailPreferentials.add(torder);
