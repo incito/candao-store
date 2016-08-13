@@ -144,7 +144,6 @@ public class PrinterManager {
                 printers.remove(printerKey);
             }
         }
-        printers.clear();
     }
 
     public static void main(String[] args) {
