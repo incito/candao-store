@@ -118,7 +118,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			detailPreferentials.add(addPreferential);
 		} else if (!StringUtils.isEmpty(giveDish) && StringUtils.isEmpty(paraMap.get("discount"))
 				&& StringUtils.isEmpty(paraMap.get("amount"))) {
-			
+
 			// 赠菜卷，赠卷有dishID，无折扣 ，无现金优免
 			// 获取所有ID 以及对应的菜品个数
 			String[] preDishNum = ((String) paraMap.get("preferentialNum")).split(",");
@@ -144,59 +144,93 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			for (TorderDetailPreferential detailPreferential : orderDetailToPreferList) {
 				if (orderDetailToPreferMap.containsKey(detailPreferential.getDishid())) {
 					orderDetailToPreferMap.put(detailPreferential.getDishid(),
-							Double.valueOf(detailPreferential.getDishNum())+orderDetailToPreferMap.get(detailPreferential.getDishid()));
+							Double.valueOf(detailPreferential.getDishNum())
+									+ orderDetailToPreferMap.get(detailPreferential.getDishid()));
 				} else {
 					orderDetailToPreferMap.put(detailPreferential.getDishid(),
 							Double.valueOf(detailPreferential.getDishNum()));
 				}
 
 			}
+
 			// 获取数据库使用赠菜卷的数据 不包含
 			if (paraMap.containsKey("updateId")) {
-				  String dataDishId = preALLDishId[0];
-				  //获取当前菜品个数
-				  Double orderDishNum = orderDishIdToDishNumMap.get(dataDishId);
-				  //获取当前使用菜品优惠个数如果优惠大于菜品者删除优惠
-				  Double userPreferId = orderDetailToPreferMap.get(dataDishId);
-				  
-		 }
-
-
-			// 菜品对应个数
-			Map<String, Integer> dishForDishNum = new HashMap<>();
-			for (int i = 0; i < preALLDishId.length; i++) {
-				dishForDishNum.put(preALLDishId[i], Integer.valueOf(preDishNum[i]));
-			}
-
-			for (String dishId : dishForDishNum.keySet()) {
-				int inputNum = dishForDishNum.get(dishId);
-				TorderDetail ordetail = orderDetailmap.get(dishId);
-				if (ordetail != null) {
-					for (int i = 0; i < inputNum; i++) {
-						String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId")
-								: IDUtil.getID();
-						BigDecimal orderprice = ordetail.getOrderprice();
-						amount = amount.add(orderprice);
-						TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid,
-								ordetail.getDishid(), preferentialid, orderprice, String.valueOf(inputNum), 0, 1,
-								discount, 4);
-						// 设置优惠名称
-						TbPreferentialActivity activity = new TbPreferentialActivity();
-						activity.setName((String) tempMap.get("name"));
-						addPreferential.setActivity(activity);
-						addPreferential.setCoupondetailid(
-								(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
-						// 设置优免
-						addPreferential.setToalFreeAmount(amount);
-						detailPreferentials.add(addPreferential);
-					}
+				String dataDishId = preALLDishId[0];
+				// 获取当前菜品个数
+				Double orderDishNum = orderDishIdToDishNumMap.get(dataDishId);
+				// 获取当前使用菜品优惠个数如果优惠大于菜品者删除优惠
+				Double userPreferId = orderDetailToPreferMap.get(dataDishId);
+				if (orderDishNum < userPreferId) {
+					// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
+					Map<String, Object> delMap = new HashMap<>();
+					delMap.put("DetalPreferentiald", dataDishId);
+					delMap.put("orderid", orderid);
+					orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
+				} else {
+					TorderDetailPreferential detailPreferential = createTorderDetail(orderDetailmap, dataDishId, 1,
+							paraMap, amountCount, orderid, preferentialid, tempMap, tempMapList);
+					detailPreferentials.add(detailPreferential);
 				}
+			} else {
+				// 菜品对应个数
+				Map<String, Integer> dishForDishNum = new HashMap<>();
+				for (int i = 0; i < preALLDishId.length; i++) {
+					dishForDishNum.put(preALLDishId[i], Integer.valueOf(preDishNum[i]));
+				}
+
+				for (String dishId : dishForDishNum.keySet()) {
+					int inputNum = dishForDishNum.get(dishId);
+
+					if (orderDetailToPreferMap.containsKey(dishId)) {
+						// 验证是否可以使用优惠
+						// 获取当前菜品个数
+						Double orderDishNum = orderDishIdToDishNumMap.get(dishId);
+						// 获取当前使用菜品优惠个数如果优惠大于菜品者删除优惠
+						Double userPreferIdNum = orderDetailToPreferMap.get(dishId);
+						if ((userPreferIdNum + inputNum) > orderDishNum) {
+							continue;
+						}
+					}
+					for (int i = 0; i < inputNum; i++) {
+						TorderDetailPreferential detailPreferential = createTorderDetail(orderDetailmap, dishId, 1,
+								paraMap, amountCount, orderid, preferentialid, tempMap, tempMapList);
+						detailPreferentials.add(detailPreferential);
+					}
+		
+				}
+
 			}
 
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
 		return result;
+	}
+
+	private TorderDetailPreferential createTorderDetail(Map<String, TorderDetail> orderDetailmap, String dishId,
+			int inputNum, Map<String, Object> paraMap, BigDecimal amount, String orderid, String preferentialid,
+			Map tempMap, List<Map<String, Object>> tempMapList) {
+		// 创建优惠
+		TorderDetailPreferential addPreferential = null;
+		TorderDetail ordetail = orderDetailmap.get(dishId);
+		if (ordetail != null) {
+			for (int i = 0; i < inputNum; i++) {
+				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+				BigDecimal orderprice = ordetail.getOrderprice();
+				amount = amount.add(orderprice);
+				addPreferential = new TorderDetailPreferential(updateId, orderid, dishId, preferentialid, orderprice,
+						"1", 0, 1, new BigDecimal(0), 4);
+				// 设置优惠名称
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name"));
+				addPreferential.setActivity(activity);
+				addPreferential.setCoupondetailid(
+						(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
+				// 设置优免
+				addPreferential.setToalFreeAmount(amount);
+			}
+		}
+		return addPreferential;
 	}
 
 }

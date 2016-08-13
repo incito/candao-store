@@ -1235,8 +1235,9 @@ public class OrderServiceImpl implements OrderService {
 			outresultMap.put("areaname",  resultMap.get("areaname"));
 			outresultMap.put("tableName",  resultMap.get("tableName"));
 			outresultMap.put("fullName",  resultMap.get("userid"));
-			int printcount=Integer.valueOf(String.valueOf(resultMap.get("printcount")));
-			outresultMap.put("printcount",  printcount+1);
+			/**预打印**/
+			int printcount=Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
+			outresultMap.put("befprintcount",  printcount+1);
 		}
 		outresultMap.put("orderid", orderid);
 		return outresultMap;
@@ -1285,7 +1286,7 @@ public class OrderServiceImpl implements OrderService {
 			setMap.put("disrate", branchDataSyn.getDiscount().toString());
 			setMap.put("type", branchDataSyn.getActivity().getType());
 			setMap.put("subtype", branchDataSyn.getActivity().getSubType());
-			setMap.put("preferentialNum", branchDataSyn.getDishNum());
+			setMap.put("preferentialNum","1");
 			setMap.put("dishid", branchDataSyn.getDishid());
 			setMap.put("preferentialAmt", operPreferentialResult.getAmount().toString());
 			setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
