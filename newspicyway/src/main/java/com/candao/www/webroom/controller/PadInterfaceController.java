@@ -2195,10 +2195,14 @@ public class PadInterfaceController {
 
 		} catch (SysException e) {
 			loggers.error("门店上传到总店数据失败", e);
-			if (e.getCode().equals(""))
+			if (e.getCode().equals("")){
 				// 异常处理机制
 				dto = exceptionDeal(type);
-			// 使用原有代码MQ机制时出现的异常处理
+				// 使用原有代码MQ机制时出现的异常处理
+			}else{
+				dto=new  ResultDto();
+				dto.setMessage(e.getMessage());
+			}
 		} catch (Exception e) {
 			loggers.error("门店上传到总店数据失败", e);
 			dto = null;
