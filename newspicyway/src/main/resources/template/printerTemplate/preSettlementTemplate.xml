@@ -126,7 +126,7 @@
 				<value>结束时间:</value>
 				<value>#{obj.posData.userOrderInfo.endtime}</value>
 				<value>第</value>
-				<value>#{obj.posData.userOrderInfo.printcount}</value>
+				<value>#{obj.posData.userOrderInfo.befprintcount}</value>
 				<value>次打印</value>
 			</list>
 		</datas>

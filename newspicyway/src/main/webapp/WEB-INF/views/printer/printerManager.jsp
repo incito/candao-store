@@ -82,7 +82,7 @@
 								<select class="form-control" id="print-bill" name="print-bill">
 									<option value="1">厨打单</option>
 									<option value="2">客用单</option>
-									<option value="3">预结单</option>
+									<%--<option value="3">预结单</option>--%>
 									<option value="4">结账单</option>
 								</select>
 							</div>
