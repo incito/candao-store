@@ -18,6 +18,7 @@ public interface TorderDetailPreferentialDao {
 	public int addDetailPreFerInfo(TorderDetailPreferential detailPreferential);
 
 	public List<TorderDetailPreferential> queryDetailPreBy(String orderID);
+	public List<TorderDetailPreferential> queryDetailPreByGift(String orderID);
 
 	public int deleteBachInfo(List<TorderDetailPreferential> detailPreferentials);
 	public int deleteDetilPreFerInfo(Map<String, Object> params);

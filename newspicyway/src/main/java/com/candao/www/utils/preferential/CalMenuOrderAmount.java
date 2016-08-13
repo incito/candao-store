@@ -31,17 +31,20 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 		switch (roundingEnum) {
 		case ROUNDTOINTEGER:
 			preferentialResul.setMoneyWipeName("四舍五入");
+			preferentialResul.setMoneyDisType("1");
 			/** 4舍5入 **/
 			calPayAmount(RoundingMode.HALF_UP, preferentialResul, listFind);
 			break;
 		case REMOVETAIL:
 			/** 抹零处理 **/
 			preferentialResul.setMoneyWipeName("抹零");
+			preferentialResul.setMoneyDisType("2");
 			calPayAmount(RoundingMode.DOWN, preferentialResul, listFind);
 			break;
 		default:
 			BigDecimal payAmount = preferentialResul.getMenuAmount().subtract(preferentialResul.getAmount());
 			preferentialResul.setPayamount(payAmount);
+			preferentialResul.setMoneyDisType("0");
 			break;
 		}
 	}

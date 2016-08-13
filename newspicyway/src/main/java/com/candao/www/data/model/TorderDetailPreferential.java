@@ -17,7 +17,7 @@ public class TorderDetailPreferential implements Serializable {
 	private String preferential;
 	private BigDecimal deAmount;
 	private BigDecimal discount;
-	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 **/
+	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 4：赠送菜优惠 **/
 	private int isCustom;
 	private int isGroup;
 	private int isUse;
@@ -25,12 +25,14 @@ public class TorderDetailPreferential implements Serializable {
 	/***
 	 * 优免金额
 	 */
-	private BigDecimal toalFreeAmount=new BigDecimal("0");
+	private BigDecimal toalFreeAmount = new BigDecimal("0");
 	/***
 	 * 挂账金额
 	 */
-	private BigDecimal toalDebitAmount=new BigDecimal("0");
+	private BigDecimal toalDebitAmount = new BigDecimal("0");
 	private TbPreferentialActivity activity;
+	// 优惠子ID
+	private String coupondetailid;
 
 	public TorderDetailPreferential() {
 
@@ -183,6 +185,14 @@ public class TorderDetailPreferential implements Serializable {
 
 	public void setToalDebitAmount(BigDecimal toalDebitAmount) {
 		this.toalDebitAmount = toalDebitAmount;
+	}
+
+	public String getCoupondetailid() {
+		return coupondetailid;
+	}
+
+	public void setCoupondetailid(String coupondetailid) {
+		this.coupondetailid = coupondetailid;
 	}
 
 }

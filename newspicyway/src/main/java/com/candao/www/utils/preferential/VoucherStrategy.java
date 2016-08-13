@@ -36,14 +36,15 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		// 使用优惠张数
 		int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
 		String activityID = (String) paraMap.get("preferentialid");
-		String branchid = PropertiesUtils.getValue("current_branch_id");
 		String disrate = String.valueOf(paraMap.get("disrate"));
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
 		Map<String, Object> cashGratis = cashGratis(paraMap, torderDetailDao, tbPreferentialActivityDao);
 		if (cashGratis != null) {
 			return cashGratis;
 		}
-		Map preMap = discountInfo(activityID, branchid, tbPreferentialActivityDao);
+		List<Map<String, Object>> tempMapList = this.discountInfo(activityID, PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
+
+		Map preMap = tempMapList.get(0);
 		// 获取当前账单的 菜品列表
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", orderid);
@@ -59,6 +60,8 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) preMap.get("name"));
 			torder.setActivity(activity);
+			torder.setCoupondetailid((String) (tempMapList.size()>1?preMap.get("preferential"):preMap.get("id")));
+
 
 			// 如果为团购卷
 			if (String.valueOf(paraMap.get("type")).equals("05")) {

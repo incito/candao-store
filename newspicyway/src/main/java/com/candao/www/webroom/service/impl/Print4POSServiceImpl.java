@@ -13,6 +13,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.candao.www.dataserver.mapper.OrderOpMapper;
+import com.candao.www.dataserver.service.order.OrderOpService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +77,8 @@ public class Print4POSServiceImpl implements Print4POSService {
     private OrderService orderService;
     @Autowired
     private TableService tableService;
+    @Autowired
+    private OrderOpMapper orderMapper;
 
     @Override
     public void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception {
@@ -394,23 +398,11 @@ public class Print4POSServiceImpl implements Print4POSService {
                 Object data = temp.get("data");
                 if (data instanceof Map) {
                     Map posdata = ((Map) data);
+
                     // 鱼锅
                     List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
                     if (!CollectionUtils.isEmpty(rows)) {
-                        List<Map<String, Object>> temp2 = new ArrayList<>();
-                        for (Map<String, Object> it : rows) {
-                            it.put("payamount",
-                                    strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
-                            temp2.add(it);
-                            if (it.get("dishes") != null) {
-                                List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
-                                for (Map<String, Object> item : temp3) {
-                                    item.put("payamount", strMulti(String.valueOf(item.get("orderprice")),
-                                            String.valueOf(item.get("dishnum"))));
-                                    temp2.add(item);
-                                }
-                            }
-                        }
+                        List<Map<String, Object>> temp2 = parseRows(rows);
                         posdata.put("rows", temp2);
                     }
 
@@ -437,6 +429,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         }
                     }
                     posdata.put("settlementInfo", settlementInfo);
+                    //电话地址
                     posdata.put("branchName", branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname").toString());
                     posdata.put("tel", branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel").toString());
                     posdata.put("address", branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress").toString());
@@ -445,10 +438,37 @@ public class Print4POSServiceImpl implements Print4POSService {
                     Map<String, Object> param = new HashMap<>();
                     param.put("printertype", "10");
                     sendToPrint(param, obj);
+                    //更新打印数量
+                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
                 }
             }
         }
 
+    }
+
+    private List<Map<String, Object>> parseRows(List<Map<String, Object>> rows) {
+        List<Map<String, Object>> res = new ArrayList<>();
+        for (Map<String, Object> it : rows) {
+            it.put("payamount",
+                    strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
+            res.add(it);
+            if (it.get("dishes") != null) {
+                List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
+                for (Map<String, Object> item : temp3) {
+                    item.put("payamount", strMulti(String.valueOf(item.get("orderprice")),
+                            String.valueOf(item.get("dishnum"))));
+                    res.add(item);
+                }
+            }
+        }
+        return res;
+    }
+
+    private void updatePresettelmentCount(Map<String, Object> params) throws Exception {
+        if (StringUtils.isEmpty(params) || !params.containsKey("orderid")) {
+            throw new Exception("更新预结单次数失败：参数错误!");
+        }
+        orderMapper.updateBefPrintCount(params.get("orderid").toString());
     }
 
     private String strMulti(String i1, String i2) {

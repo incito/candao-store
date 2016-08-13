@@ -25,14 +25,13 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 * 
 	 * @return
 	 */
-	protected Map discountInfo(String activityID, String branchid,
+	protected List<Map<String, Object>> discountInfo(String activityID, String branchid,
 			TbPreferentialActivityDao tbPreferentialActivityDao) {
 		Map<String, String> detail_params = new HashMap<>();
 		detail_params.put("preferential", activityID);
 		detail_params.put("branchid", branchid);
 		List<Map<String, Object>> detailList = tbPreferentialActivityDao.findPreferentialDetail(detail_params);
-		Map detailMap = detailList.get(0);
-		return detailMap;
+		return detailList;
 	}
 
 	/**
@@ -55,7 +54,8 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
 			 String updateId=params.containsKey("updateId")?(String)params.get("updateId"):IDUtil.getID();
 			List<TorderDetailPreferential> listRest = new ArrayList<>();
-			Map tempMap = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
+			List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
+			Map tempMap = tempMapList.get(0);
 			TorderDetailPreferential detailPreferential = new TorderDetailPreferential(updateId, orderid, "",
 					(String) params.get("preferentialid"), amout, String.valueOf(orderDetailList.size()), 1, 1,
 					new BigDecimal(0), 1);
@@ -63,6 +63,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) tempMap.get("name"));
 			detailPreferential.setActivity(activity);
+			detailPreferential.setCoupondetailid((String) (tempMapList.size()>1?tempMap.get("preferential"):tempMap.get("id")));
 			//特殊团购卷
 			if(String.valueOf(params.get("type")).equals("05")){
 				detailPreferential.setToalDebitAmount(amout);
