@@ -473,7 +473,7 @@
 			<datas description="品项">
 				<list>
 					<value>应收合计</value>
-					<value>#{it.tRFoodMoney}</value>
+					<value>#{it.accountsReceivableTotal}</value>
 				</list>
 			</datas>
 		</row:row>
