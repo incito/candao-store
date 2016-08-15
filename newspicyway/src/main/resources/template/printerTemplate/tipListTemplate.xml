@@ -101,16 +101,22 @@
 		<locations description="借宿时间">
 			<list>
 				<value>5</value>
+				<value>1</value>
 				<value>15</value>
+				<value>1</value>
 				<value>10</value>
+				<value>1</value>
 				<value>10</value>
 			</list>
 		</locations>
 		<datas description="结束时间">
 			<list>
 				<value>序号</value>
+				<value> </value>
 				<value>服务员</value>
+				<value> </value>
 				<value>次数</value>
+				<value> </value>
 				<value>金额</value>
 			</list>
 		</datas>
@@ -122,16 +128,22 @@
 			<locations description="位置">
 				<list>
 					<value>5</value>
+					<value>1</value>
 					<value>15</value>
+					<value>1</value>
 					<value>10</value>
+					<value>1</value>
 					<value>10</value>
 				</list>
 			</locations>
 			<datas description="账单类型">
 				<list>
 					<value>#{it.index}</value>
+					<value> </value>
 					<value>#{it.waiterName}</value>
+					<value> </value>
 					<value>#{it.serviceCount}</value>
+					<value> </value>
 					<value>#{it.tipMoney}</value>
 				</list>
 			</datas>

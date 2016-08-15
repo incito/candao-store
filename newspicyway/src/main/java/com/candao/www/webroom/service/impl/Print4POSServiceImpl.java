@@ -116,7 +116,8 @@ public class Print4POSServiceImpl implements Print4POSService {
 		Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
 		Map<String, Object> param = new HashMap<>();
 		param.clear();
-		param.put("type", "ACCURACY");
+		//零头处理方式
+		param.put("type", "ROUNDING");
 		List<Map<String, Object>> resultmap = dataDictionaryService.findByParams(param);
 		if (!CollectionUtils.isEmpty(resultmap)) {
 			for (SettlementInfo4Pos it : settlementInfos) {

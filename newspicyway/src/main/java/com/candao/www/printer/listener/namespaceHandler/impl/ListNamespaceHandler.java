@@ -27,7 +27,7 @@ public class ListNamespaceHandler implements XmlNameSpaceHandler {
 			int m = 0;
 			for (int j = 0; j < nodes.getLength(); j++) {
 				if (Node.ELEMENT_NODE == nodes.item(j).getNodeType()) {
-					list[m] = nodes.item(j).getTextContent().trim();
+					list[m] = nodes.item(j).getTextContent();
 					m++;
 				}
 			}
