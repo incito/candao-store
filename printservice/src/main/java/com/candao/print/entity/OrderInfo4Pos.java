@@ -20,6 +20,7 @@ public class OrderInfo4Pos implements Serializable,Cloneable{
     private String netvalue;
     private String operatetype;
     private String ordertime;
+    private String orderday;
     private String psexpansivity;
     private String score;
     private String scorebalance;
@@ -1071,5 +1072,13 @@ public class OrderInfo4Pos implements Serializable,Cloneable{
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public String getOrderday() {
+		return orderday;
+	}
+
+	public void setOrderday(String orderday) {
+		this.orderday = orderday;
 	}
 }

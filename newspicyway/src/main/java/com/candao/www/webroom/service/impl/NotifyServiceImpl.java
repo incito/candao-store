@@ -45,7 +45,7 @@ public class NotifyServiceImpl implements NotifyService {
 
                 //广播给手环
                 Map<String, Object> table = tableService.getByOrderId(orderId);
-                String tableNo = StringUtils.isEmpty(table.get("tableno")) ? "" : table.get("tableno").toString();
+                String tableNo = StringUtils.isEmpty(table.get("tableNo")) ? "" : table.get("tableNo").toString();
                 String userId = StringUtils.isEmpty(table.get("userid")) ? "" : table.get("userid").toString();
                 String msg = userId + "|" + tableNo + "|" + orderId;
                 msgForwardService.broadCastMsg4Netty(Constant.MessageType.msg_2002, msg);

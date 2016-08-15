@@ -34,7 +34,8 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		String preferentialid = (String) paraMap.get("preferentialid"); //优惠活动id
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
-		Map tempMap = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
+		List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
+		Map tempMap = tempMapList.get(0);
 		BigDecimal discount = (BigDecimal) tempMap.get("discount");
 
 		// 获取当前账单的 菜品列表
@@ -117,6 +118,8 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
 				addPreferential.setActivity(activity);
+				addPreferential.setCoupondetailid((String) (tempMapList.size()>1?tempMap.get("preferential"):tempMap.get("id")));
+				
 				//设置优免金额
 				addPreferential.setToalFreeAmount(amount);
 			 List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();

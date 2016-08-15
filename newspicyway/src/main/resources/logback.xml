@@ -3,11 +3,11 @@
     <property name="LOG_HOME" value="/home/cloud-user/candao"/>
 
     <appender name="candao" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
-            <fileNamePattern>${LOG_HOME}/candao.%d{yyyy-MM-dd}.log</fileNamePattern>
-      	 	<totalSizeCap>20GB</totalSizeCap>
-            <maxHistory>15</maxHistory>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
@@ -19,13 +19,13 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    
+
     <appender name="printAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-            <fileNamePattern>${LOG_HOME}/print_log/%d{yyyy-MM-dd}.log</fileNamePattern>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/print_log/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
-            <maxHistory>8</maxHistory>
-      	 	<totalSizeCap>10GB</totalSizeCap>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
@@ -34,22 +34,22 @@
 
     <root level="info">
         <appender-ref ref="candao"/>
-        <!-- <appender-ref ref="STDOUT"/> -->
+        <!--<appender-ref ref="STDOUT"/>-->
     </root>
 
     <logger name="dao" level="DEBUG"/>
-    
-    <logger name="org.springframework" level="DEBUG"/>
-    
+
+    <logger name="org.springframework" level="INFO"/>
+
     <!--打印日志输出-->
-    <logger name="com.candao.www.printer" additivity="false" level="INFO" >
+    <logger name="com.candao.www.printer" additivity="false" level="INFO">
         <appender-ref ref="printAppender"/>
-        <!-- <appender-ref ref="STDOUT"/> -->
+        <!--<appender-ref ref="STDOUT"/>-->
     </logger>
-    
-    <logger name="com.candao.print" additivity="false" level="INFO" >
+
+    <logger name="com.candao.print" additivity="false" level="INFO">
         <appender-ref ref="printAppender"/>
-        <!-- <appender-ref ref="STDOUT"/> -->
+        <!--<appender-ref ref="STDOUT"/>-->
     </logger>
 
 </configuration>

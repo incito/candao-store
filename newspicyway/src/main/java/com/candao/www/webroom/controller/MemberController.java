@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.candao.www.dataserver.service.member.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,8 @@ public class MemberController extends BaseController{
 
     @Autowired
     private OrderOpService orderOpService;
+	@Autowired
+	private MemberService memberService;
 	
 	@RequestMapping("/MemberLogin")
 	@ResponseBody
@@ -50,15 +53,10 @@ public class MemberController extends BaseController{
 			String orderid = paramsJson.get("orderid");
 			String mobile = paramsJson.get("mobile");
 			
-			Torder order = new Torder();
-			order.setOrderid(orderid);
-			order.setMemberno(mobile);
-			orderService.update(order);
-			
 			HashMap<String , Object> params =  new HashMap<String , Object>();
 			params.put("orderid", orderid);
 			params.put("pricetype", 0);  //设置会员价
-			orderService.setOrderMember(params);
+			memberService.setMemberPrice("",orderid,mobile);
 
 	        //重新计算应收金额
 	        orderOpService.calcOrderAmount(orderid);
@@ -82,18 +80,9 @@ public class MemberController extends BaseController{
 		try{
 			HashMap<String , String> paramsJson = JacksonJsonMapper.jsonToObject(jsonString, HashMap.class);
 			String orderid = paramsJson.get("orderid");
-			String mobile = paramsJson.get("mobile");
-			
-			Torder order = new Torder();
-			order.setOrderid(orderid);
-			order.setMemberno("");
-			orderService.update(order);
-			
-			HashMap<String , Object> params =  new HashMap<String , Object>();
-			params.put("orderid", orderid);
-			params.put("pricetype", 1);  //设置会员价
-			orderService.setOrderMember(params);
 
+		 //还原会员价
+			memberService.revertMemberPrice2("userId",orderid,"");
 	        //重新计算应收金额
 	        orderOpService.calcOrderAmount(orderid);
 	        

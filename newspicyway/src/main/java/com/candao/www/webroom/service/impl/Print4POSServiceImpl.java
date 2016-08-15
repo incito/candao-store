@@ -13,9 +13,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.candao.www.dataserver.mapper.OrderOpMapper;
+import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.permit.service.UserService;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -34,8 +39,10 @@ import com.candao.print.entity.ResultTip4Pos;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.print.entity.TipItem;
 import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.data.dao.UserDao;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Tinvoice;
+import com.candao.www.data.model.User;
 import com.candao.www.spring.SpringContext;
 import com.candao.www.utils.CloneUtil;
 import com.candao.www.webroom.service.DataDictionaryService;
@@ -75,6 +82,11 @@ public class Print4POSServiceImpl implements Print4POSService {
 	private OrderService orderService;
 	@Autowired
 	private TableService tableService;
+	@Autowired
+	private OrderOpMapper orderMapper;
+	@Autowired
+	@Qualifier("t_userService")
+	private UserService userService;	
 
 	@Override
 	public void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception {
@@ -112,11 +124,13 @@ public class Print4POSServiceImpl implements Print4POSService {
 			}
 		}
 		SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
-		settlementInfo4Pos.setBranchName(String.valueOf(branchInfo.get("branchname")));
-		settlementInfo4Pos.setTel(String.valueOf(branchInfo.get("managertel")));
-		settlementInfo4Pos.setAddress(String.valueOf(branchInfo.get("branchaddress")));
+		settlementInfo4Pos.setBranchName(
+				String.valueOf(branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname")));
+		settlementInfo4Pos
+				.setTel(String.valueOf(branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel")));
+		settlementInfo4Pos.setAddress(
+				String.valueOf(branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress")));
 		obj.setSettlementInfo4Pos(settlementInfo4Pos);
-
 		// TODO
 		Map<String, Object> params = new HashMap<>();
 		params.put("printertype", "10");
@@ -147,10 +161,15 @@ public class Print4POSServiceImpl implements Print4POSService {
 		for (int i = 0; i < types.length; i++) {
 			PrintObj obj = new PrintObj();
 			obj.setListenerType(Constant.ListenerType.MemberSaleInfoTemplate);
-			SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
-			OrderInfo4Pos temp = (OrderInfo4Pos) settlementInfo4Pos.getOrderJson().get(0).clone();
+			SettlementInfo4Pos settlementInfo4Pos = (SettlementInfo4Pos) CloneUtil.clone(settlementInfos.get(0), -1);
+			OrderInfo4Pos temp = (OrderInfo4Pos) settlementInfo4Pos.getOrderJson().get(0);
 			temp.setType(types[i]);
-			settlementInfo4Pos.getOrderJson().set(0, temp);
+			String time = temp.getOrdertime();
+			Date date = new Date(Long.parseLong(time));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+			temp.setOrderday(sdf.format(date));
+			sdf = new SimpleDateFormat("HH:mm:ss");
+			temp.setOrdertime(sdf.format(date));
 			obj.setSettlementInfo4Pos(settlementInfo4Pos);
 			Map<String, Object> params = new HashMap<>();
 			params.put("printertype", "10");
@@ -388,6 +407,8 @@ public class Print4POSServiceImpl implements Print4POSService {
 		Assert.notEmpty(map, "接口返回空！");
 		String json = JSON.toJSONString(map);
 		Map<String, Object> temp = JSON.parseObject(json, Map.class);
+		List<Map<String, Object>> order = JSON.parseObject(params[1], List.class);
+		
 		if (temp.containsKey("code")) {
 			if ("0".equals(temp.get("code"))) {
 				Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
@@ -396,23 +417,11 @@ public class Print4POSServiceImpl implements Print4POSService {
 				Object data = temp.get("data");
 				if (data instanceof Map) {
 					Map posdata = ((Map) data);
+
 					// 鱼锅
 					List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
 					if (!CollectionUtils.isEmpty(rows)) {
-						List<Map<String, Object>> temp2 = new ArrayList<>();
-						for (Map<String, Object> it : rows) {
-							it.put("payamount",
-									strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
-							temp2.add(it);
-							if (it.get("dishes") != null) {
-								List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
-								for (Map<String, Object> item : temp3) {
-									item.put("payamount", strMulti(String.valueOf(item.get("orderprice")),
-											String.valueOf(item.get("dishnum"))));
-									temp2.add(item);
-								}
-							}
-						}
+						List<Map<String, Object>> temp2 = parseRows(rows);
 						posdata.put("rows", temp2);
 					}
 
@@ -422,30 +431,80 @@ public class Print4POSServiceImpl implements Print4POSService {
 					if (preferentialInfo instanceof Map) {
 						Map prefer = ((Map) preferentialInfo);
 						settlementInfo = new ArrayList<>();
-						String[] name = { "合计", prefer.get("moneyWipeName").toString(), "赠送金额", "总优惠", "实收" };
+						String[] name = { "合计：", prefer.get("moneyWipeName").toString() + ":", "赠送金额:", "总优惠:", "应收:" };
 						String[] value = { prefer.get("menuAmount").toString(),
 								prefer.get("moneyWipeAmount").toString(), prefer.get("zdAmount").toString(),
 								prefer.get("amount").toString(), prefer.get("payamount").toString() };
 						for (int i = 0; i < name.length; i++) {
 							Map<String, String> tempMap = new HashMap<>();
+							if (i > 0 && i < 3) {
+								if (StringUtils.isEmpty(value[i])
+										|| 0 >= new BigDecimal(value[i]).compareTo(new BigDecimal(0))) {
+									continue;
+								}
+							}
 							tempMap.put("name", name[i]);
-							tempMap.put("value", value[i]);
+							tempMap.put("value", "￥" + value[i]);
 							settlementInfo.add(tempMap);
 						}
 					}
-					posdata.put("settlementInfo", settlementInfo);
-					posdata.put("branchName", String.valueOf(branchInfo.get("branchname")));
-					((Map) data).put("tel", String.valueOf(branchInfo.get("managertel")));
-					posdata.put("address", String.valueOf(branchInfo.get("branchaddress")));
+					// 优惠（元）
+					Map<String, Object> orderJson = ((List<Map<String, Object>>) order.get(0).get("OrderJson")).get(0);
+					String free = orderJson.get("discountamount") == null ? ""
+							: orderJson.get("discountamount").toString();
+					posdata.put("totalfree", free);
+					// 品项费
+					String pxFee = stringAdd(free,
+							orderJson.get("dueamount") == null ? "" : orderJson.get("dueamount").toString());
+					posdata.put("pxFee", pxFee);
+					//打印人
+					Map<String, Object> param = new HashMap<>();
+					param.put("jobNumber", params[2]);
+					List<User> users = userService.queryUserList(param);
+					posdata.put("printname", users.get(0).getName());
+					
+					// 电话地址
+					posdata.put("branchName",
+							branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname").toString());
+					posdata.put("tel",
+							branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel").toString());
+					posdata.put("address",
+							branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress").toString());
 					obj.setPosData(posdata);
 					// TODO
-					Map<String, Object> param = new HashMap<>();
+					param.clear();
 					param.put("printertype", "10");
 					sendToPrint(param, obj);
+					// 更新打印数量
+					updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
 				}
 			}
 		}
 
+	}
+
+	private List<Map<String, Object>> parseRows(List<Map<String, Object>> rows) {
+		List<Map<String, Object>> res = new ArrayList<>();
+		for (Map<String, Object> it : rows) {
+			it.put("payamount", strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
+			res.add(it);
+			if (it.get("dishes") != null) {
+				List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
+				for (Map<String, Object> item : temp3) {
+					item.put("payamount",
+							strMulti(String.valueOf(item.get("orderprice")), String.valueOf(item.get("dishnum"))));
+					res.add(item);
+				}
+			}
+		}
+		return res;
+	}
+
+	private void updatePresettelmentCount(Map<String, Object> params) throws Exception {
+		if (StringUtils.isEmpty(params) || !params.containsKey("orderid")) {
+			throw new Exception("更新预结单次数失败：参数错误!");
+		}
+		orderMapper.updateBefPrintCount(params.get("orderid").toString());
 	}
 
 	private String strMulti(String i1, String i2) {

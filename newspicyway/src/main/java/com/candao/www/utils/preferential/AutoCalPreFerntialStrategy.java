@@ -153,6 +153,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 							TbPreferentialActivity activity = new TbPreferentialActivity();
 							activity.setName((String) res.get("name"));
 							torder.setActivity(activity);
+							torder.setCoupondetailid((String) (pres.size()>1?res.get("preferential"):res.get("id")));
+
 							// 设置优免金额
 							torder.setToalFreeAmount(amount);
 							detailPreferentials.add(torder);
@@ -178,24 +180,29 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		BigDecimal amount = new BigDecimal("0");
 		if (!doublePots.isEmpty()) {
 			List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(params);
-			Map<String, Object> res = pres.get(0);
-			for (TorderDetail detail : doublePots) {
-				if (pres != null && !pres.isEmpty()) {
-					BigDecimal tempAmount = new BigDecimal((String) res.get("amount"));
-					String preferentialid = (String) res.get("preferential");
+			if(!pres.isEmpty()){
+				Map<String, Object> res = pres.get(0);
+				for (TorderDetail detail : doublePots) {
+					if (pres != null && !pres.isEmpty()) {
+						BigDecimal tempAmount = new BigDecimal((String) res.get("amount"));
+						String preferentialid = (String) res.get("preferential");
 
-					TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid,
-							detail.getDishid(), preferentialid, tempAmount, String.valueOf("1"), 0, 1,
-							new BigDecimal(1), 2);
-					TbPreferentialActivity activity = new TbPreferentialActivity();
-					activity.setName((String) res.get("name"));
-					torder.setActivity(activity);
-					// 设置优免金额
-					torder.setToalFreeAmount(amount);
-					detailPreferentials.add(torder);
-					amount = amount.add(tempAmount);
+						TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid,
+								detail.getDishid(), preferentialid, tempAmount, String.valueOf("1"), 0, 1,
+								new BigDecimal(1), 2);
+						TbPreferentialActivity activity = new TbPreferentialActivity();
+						activity.setName((String) res.get("name"));
+						torder.setActivity(activity);
+						torder.setCoupondetailid((String) (pres.size()>1?res.get("preferential"):res.get("id")));
+
+						// 设置优免金额
+						torder.setToalFreeAmount(amount);
+						detailPreferentials.add(torder);
+						amount = amount.add(tempAmount);
+					}
 				}
 			}
+		
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);

@@ -70,7 +70,67 @@ public enum StrategyFactory {
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
 			// 计算实际收入金额
+			// 优免调整（如果优惠大于订单价做优惠调整）
+			if (preferentialResult.getAmount().compareTo(preferentialResult.getMenuAmount()) == 1) {
+				preferentialResult
+						.setAdjAmout(preferentialResult.getMenuAmount().subtract(preferentialResult.getAmount()));
+			}
 			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult);
+			// 应收应该是小费+消费
+			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
+
 		}
+	}
+
+	/**
+	 * 
+	 * @param orderPrice
+	 *            订单总价
+	 * @param orderPrePrice
+	 *            订单总优免
+	 * @param debitPrice
+	 *            挂账金额
+	 * @param onePrePrice
+	 *            当前优惠金额
+	 * @param calType
+	 *            5挂账 6优免（对应数据库字典表）
+	 * @return
+	 */
+	public Map<String, BigDecimal> calPreferentialPrice(BigDecimal orderPrice, BigDecimal orderPrePrice,
+			BigDecimal debitPrice, BigDecimal onePrePrice, int calType) {
+		// 返回
+		Map<String, BigDecimal> resultMapPrice = new HashMap<>();
+		// 实际收入价格
+		BigDecimal orderAct = orderPrice.subtract(orderPrePrice);
+		// 优免金额
+		BigDecimal toalFreeAmount = new BigDecimal(0);
+		// 挂装金额
+		BigDecimal toalDebitAmount = new BigDecimal(0);
+		switch (calType) {
+		case Constant.PAYWAY.DEBITE_ACCOUNT:
+			// 挂账
+			toalDebitAmount = debitPrice;
+			if (orderAct.compareTo(onePrePrice) == 1) {
+				// 如果实际支付金额大于总优惠金额
+				toalFreeAmount = onePrePrice.subtract(debitPrice);
+			} else if (orderAct.compareTo(onePrePrice) == -1 && orderAct.compareTo(debitPrice) == 1) {
+				// 如果实际支付金额大于挂账金额，小于抵用金额
+				toalFreeAmount = orderAct.subtract(debitPrice);
+			}
+			break;
+		case Constant.PAYWAY.PAYWAY_FREE:
+			// 优免
+			if (orderAct.compareTo(onePrePrice) == 1) {
+				toalFreeAmount = onePrePrice;
+			} else if (orderAct.compareTo(onePrePrice) == -1) {
+				toalFreeAmount = orderAct;
+			} else {
+				toalFreeAmount = onePrePrice;
+			}
+			break;
+		}
+		resultMapPrice.put("toalFreeAmount", toalFreeAmount);
+		resultMapPrice.put("toalDebitAmount", toalDebitAmount);
+		return resultMapPrice;
 	}
 }

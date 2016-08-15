@@ -20,6 +20,7 @@ CREATE TABLE `t_order_detail_preferential` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 alter table t_order MODIFY `gzcode`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+alter table t_order_history MODIFY `gzcode`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 
 ALTER TABLE `t_basicdata`
 MODIFY COLUMN `itemid`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '编号' AFTER `id`;

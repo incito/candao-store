@@ -153,7 +153,7 @@
 			<datas description="账单号">
 				<list>
 					<value>交易日期：</value>
-					<value>#{it.ordertime}</value>
+					<value>#{it.orderday}</value>
 				</list>
 			</datas>
 		</row:row>

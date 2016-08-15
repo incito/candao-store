@@ -1,14 +1,17 @@
 package com.candao.www.dataserver.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.service.dish.DishService;
 import com.candao.www.dataserver.util.StringUtil;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ytq on 2016/3/18.
@@ -22,6 +25,8 @@ public class DishInterfaceController {
     @RequestMapping(value = "/getFoodStatus/{dishId}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getFoodStatus(@PathVariable("dishId") String dishId, @RequestBody String dishUnit) {
+        Map<String, String> jsonObject = JSON.parseObject(dishUnit, HashMap.class);
+        dishUnit = jsonObject.get("dishUnit");
         String result = dishService.getFoodStatus(dishId, dishUnit);
         result = "{\"result\":[\"" + result + "\"]}";
         return StringUtil.string2Unicode(result);

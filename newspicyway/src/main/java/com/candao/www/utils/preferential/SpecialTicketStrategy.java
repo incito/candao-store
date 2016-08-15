@@ -34,8 +34,8 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String type = (String) paraMap.get("type");
-		Map tempMap = this.discountInfo(preferentialid, PropertiesUtils.getValue("current_branch_id"),
-				tbPreferentialActivityDao);
+		List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
+		Map tempMap = tempMapList.get(0);
 		TbPreferentialActivity activity = tbPreferentialActivityDao.get(preferentialid);
 		/** 当前订单使用优惠记录 ,以及保存了当前菜品多少张 **/
 		Map<String, Double> preferInfoMap = new HashMap<>();
@@ -111,6 +111,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 				// 说明当前菜单也有此菜品重新从新计算
 				TorderDetailPreferential resultTorderD = crateOrderDeailPre(dishid, dishCouponAmountMap,
 						orderMenuONumMap, menuCash, updateId, orderid, activity, type);
+				resultTorderD.setCoupondetailid((String) (tempMapList.size()>1?tempMap.get("preferential"):tempMap.get("id")));
 				amount=resultTorderD.getDeAmount();
 				detailPreferentials.add(resultTorderD);
 			}
@@ -138,6 +139,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 				// 根据2015-06-02跟唐家荣的沟通。特价券是 一张一个菜 如果客人点了10份，就用10张券 。
 				TorderDetailPreferential resultTorderD = crateOrderDeailPre(key, dishCouponAmountMap, orderMenuONumMap,
 						menuCash, updateId, orderid, activity, type);
+				resultTorderD.setCoupondetailid((String) (tempMapList.size()>1?tempMap.get("preferential"):tempMap.get("id")));
 				if (resultTorderD != null) {
 					amount=resultTorderD.getDeAmount();
 					detailPreferentials.add(resultTorderD);
