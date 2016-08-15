@@ -137,7 +137,7 @@
 							});
 						}
 						console.log("here");
-						html += "<label class='checkbox-inline col-xs-3 checkbox-overflow'> <input type='checkbox' id='dish_"
+						html += "<label class='checkbox-inline col-xs-3 checkbox-overflow' title='" + dishObj.title + "'> <input type='checkbox' id='dish_"
 								+checkboxId+"' value='"+dishObj.dishid+"' data-title='"+dishObj.title
 								+"' unit='"+dishObj.unit+"' dishtype='"+dishObj.dishtype+"' price='"+dishObj.price
 								+"' vipprice='"+dishObj.vipprice+"' unitflag='"+(dishObj.unitflag==1)+"' "+checked+">" +checkboxContent+"</label>";
