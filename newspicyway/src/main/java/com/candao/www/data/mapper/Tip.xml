@@ -66,7 +66,7 @@
 
     <!-- 查询门店服务员小费list -->
     <select id="tipList" parameterType="java.util.Map" resultType="java.util.Map">
-		select c.name waiterName,count(1) serviceCount, sum(paid) tipMoney 
+		select c.name waiterName,count(1) serviceCount, round(sum(paid),2) tipMoney 
   			from 
   		newspicyway.t_b_tip t, newspicyway.t_b_employee b, newspicyway.t_b_user c
   			where
