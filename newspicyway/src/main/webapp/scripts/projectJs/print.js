@@ -1004,7 +1004,7 @@ function clickFormAddPrintConfig(){
 	});
 
 	$("#printConfig-add-dialog").modal("hide");
-	alert("新增打印机或者修改打印机IP/端口后，需要重启门店服务。");
+	/*alert("新增打印机或者修改打印机IP/端口后，需要重启门店服务。");*/
 	
 }
 function substrControl(dishTitle,titleLength){

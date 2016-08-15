@@ -100,11 +100,11 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="借宿时间">
 			<list>
-				<value>5</value>
+				<value>4</value>
 				<value>1</value>
-				<value>15</value>
+				<value>14</value>
 				<value>1</value>
-				<value>10</value>
+				<value>9</value>
 				<value>1</value>
 				<value>10</value>
 			</list>
@@ -127,11 +127,11 @@
 			<font description="字体大小">SMALL</font>
 			<locations description="位置">
 				<list>
-					<value>5</value>
+					<value>4</value>
 					<value>1</value>
-					<value>15</value>
+					<value>14</value>
 					<value>1</value>
-					<value>10</value>
+					<value>9</value>
 					<value>1</value>
 					<value>10</value>
 				</list>

@@ -106,7 +106,7 @@ public class DishSetListener extends AbstractQueueListener {
 					+ StringUtils.bSubstring2("单位", 2) + "\r\n");
 			
 			writer.flush();//  
-			socketOut.write(PrinterConstant.getFd8Font());
+			socketOut.write(PrinterConstant.VerticalFont());
 			
 			for (PrintDish it : printDishList) {
 				it.setDishName(StringUtils.split2(it.getDishName(), "#"));
@@ -126,7 +126,7 @@ public class DishSetListener extends AbstractQueueListener {
 			writer.write("------------------------------------------\r\n");
 			
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
-			socketOut.write(PrinterConstant.getFdDoubleFont());
+			socketOut.write(PrinterConstant.VerticalFont());
 			writer.write(StringUtils.bSubstring2((printDishList.get(0)
 					.getAbbrname() == null ? "　" : printDishList.get(0)
 					.getAbbrname()), 4));
@@ -174,7 +174,7 @@ public class DishSetListener extends AbstractQueueListener {
 
 			writer.write("------------------------------------------\r\n");
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
-			socketOut.write(PrinterConstant.getFd8Font());
+			socketOut.write(PrinterConstant.VerticalFont());
 			
 			//填写菜品套餐信息
 			if (parentDishName != null && !"".equals(parentDishName)) {

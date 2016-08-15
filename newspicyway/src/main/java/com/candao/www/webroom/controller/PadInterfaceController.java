@@ -819,6 +819,10 @@ public class PadInterfaceController {
         String result = orderSettleService.saveOrder(settlementInfo);
 
         final String orderid = settlementInfo.getOrderNo();
+        //计算订单的实收、优免等
+        orderOpService.calcOrderAmount(orderid);
+        //内部直接调用计算实收，POS不再调用
+        debitamout(orderid);
         // 修改投诉表信息
         new Thread(new Runnable() {
             public void run() {

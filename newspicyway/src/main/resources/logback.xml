@@ -34,7 +34,7 @@
 
     <root level="info">
         <appender-ref ref="candao"/>
-        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="STDOUT"/>
     </root>
 
     <logger name="dao" level="DEBUG"/>
@@ -44,12 +44,12 @@
     <!--打印日志输出-->
     <logger name="com.candao.www.printer" additivity="false" level="INFO">
         <appender-ref ref="printAppender"/>
-        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="STDOUT"/>
     </logger>
 
     <logger name="com.candao.print" additivity="false" level="INFO">
         <appender-ref ref="printAppender"/>
-        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="STDOUT"/>
     </logger>
 
 </configuration>
