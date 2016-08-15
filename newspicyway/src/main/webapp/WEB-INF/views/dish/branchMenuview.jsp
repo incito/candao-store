@@ -105,7 +105,10 @@
 
 							<p>
 								<span class="sp1">菜品名称:</span><span class="sp2"
-									id="menuViewTitle"></span> <span class="sp1">库存状态:</span><span
+									id="menuViewTitle"></span>
+							</p>
+							<p>
+								<span class="sp1">库存状态:</span><span
 									class="sp2" id="menuViewStatus"></span>
 							</p>
 							<!--另一种状态的图片 menu-state-off.png-->
@@ -971,7 +974,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 		</div>
 		<!--样式十一-->
 		<div class="menu-detail hidden" id="menu-detail11">
