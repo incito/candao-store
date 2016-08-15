@@ -99,8 +99,8 @@ public class PrinterManager {
                 } else {
                     p = new PrinterOther();
                 }
-                p.setKey(ips[0]);
-                p.setIp(ips[0]);
+                p.setKey(ip);
+                p.setIp(ip);
                 p.setPort(portInt);
                 printers.put(p.getKey(), p);
                 PrinterStatusManager.stateMonitor(PrinterStatusManager.NORMAL, p);
@@ -138,10 +138,11 @@ public class PrinterManager {
         logger.info("清空打印机集合");
         if (null != printerAddress) {
             for (String printerKey : printerAddress) {
-                Printer printer = printers.get(printerKey);
+                String[] strings = StringUtils.tokenizeToStringArray(printerKey, ":");
+                Printer printer = printers.get(strings[0]);
                 printer.setDisabled(true);
                 PrinterConnector.closeConnection(printer.getChannel());
-                printers.remove(printerKey);
+                printers.remove(strings[0]);
             }
         }
     }

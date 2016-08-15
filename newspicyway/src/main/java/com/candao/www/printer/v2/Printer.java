@@ -87,7 +87,7 @@ public class Printer {
                         if (state != PrintControl.STATUS_OK) {
                             logger.info("[" + ip + "]打印机不可用:" + state);
                             boolean needCallBackPrinter = needCallBackPrinter(state);
-                            if (needCallBackPrinter && !StringUtils.isEmpty(backPrinterIp)) {
+                            if (!StringUtils.isEmpty(backPrinterIp) && needCallBackPrinter) {
                                 Printer backPrinter = PrinterManager.getPrinter(backPrinterIp);
                                 if (null == backPrinter) {
                                     logger.info("[" + ip + "]备用打印机[" + backPrinterIp + "]不存在");

@@ -2,6 +2,7 @@ package com.candao.www.printer.v2;
 
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.utils.PrintControl;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,6 +46,9 @@ public class PrinterOther extends Printer {
                     } else {
                         PrinterStatusManager.stateMonitor(PrintControl.STATUS_DISCONNECTE, this);
                         //调用备用打印机
+                        if (StringUtils.isEmpty(backPrinterIp)) {
+                            continue;
+                        }
                         Printer backPrinter = PrinterManager.getPrinter(backPrinterIp);
                         if (null != backPrinter) {
                             logger.info("[" + getIp() + "]尝试调用备用打印机:[" + backPrinter.getIp() + "]");
