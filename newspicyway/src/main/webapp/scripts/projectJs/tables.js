@@ -746,7 +746,7 @@ function  oneclickTableType(id){
 				$('#tables-detailMain-Add').before("<div class='counter-detail-box' id='"+item.tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>"+
 				"<p  >"+item.tableName+"</p>"+
 				"<p  >("+item.personNum+"人桌)</p>"+
-				"<i class='icon-remove hidden' onclick='delTablesDetail("+item.tableid+","+"&apos;"+item.tableName+"&apos;"+",event)'></i></div>");
+				"<i class='icon-remove hidden' onclick='delTablesDetail("+"&apos;"+item.tableid+"&apos;"+","+"&apos;"+item.tableName+"&apos;"+",event)'></i></div>");
 				$('#'+item.tableid).dblclick(function(){
 					doEdit(item.tableid);
 				});

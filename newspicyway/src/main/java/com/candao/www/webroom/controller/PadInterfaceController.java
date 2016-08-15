@@ -292,19 +292,26 @@ public class PadInterfaceController {
         logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
 
-        Map<String, String> mapDetail = new HashMap<String, String>();
+        Map<String, String> mapDetail = new HashMap<>();
         mapDetail.put("orderid", order.getOrderid());
 
-        String result = "";
+        String tableNo=order.getCurrenttableid();
         Map<String, Object> res = orderDetailService.setOrderDetailList(order);
-        // POS下单通知PAD订单改变
-        if (Constant.SOURCE.POS.equals(order.getSource())) {
-            notifyService.notifyOrderChange(order.getOrderid());
+        if("0".equals(res.get("code"))) {
+            // POS下单通知PAD订单改变
+            if (Constant.SOURCE.POS.equals(order.getSource())) {
+                notifyService.notifyOrderChange(order.getOrderid());
+            }
+            String type="12";
+            if("true".equals(res.get("data"))){
+                type="13";
+            }
+            executor.execute(new PadThread(tableNo,type));
         }
         logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
         logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
-        result = JacksonJsonMapper.objectToJson(res);
+        String result = JacksonJsonMapper.objectToJson(res);
 
         logger.error("saveOrderInfoList-end:" + result, "");
         return result;
@@ -1296,7 +1303,7 @@ public class PadInterfaceController {
     @ResponseBody
     public ModelAndView getCooperationUnit(@RequestBody String body) {
         /*
-		 * @SuppressWarnings("unchecked") Map<String, Object> params =
+         * @SuppressWarnings("unchecked") Map<String, Object> params =
 		 * JacksonJsonMapper.jsonToObject(body, Map.class); ModelAndView mav =
 		 * new ModelAndView(); String typeid=(String) params.get("typeid");
 		 * //优惠分类 if( !StringUtils.isBlank(typeid)){

@@ -2,7 +2,7 @@
 <%@ include file="/common/taglibs.jsp"%>
 <!DOCTYPE html>
 <html>
-<head> 
+<head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<title>Examples</title>
@@ -10,7 +10,7 @@
 	<meta name="keywords" content="">
 	<link href="../tools/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<link rel="stylesheet" href="../css/index.css">
-	
+
 <!-- 	<link rel="stylesheet" href="../css/fishpot.css"> -->
 	<link rel="stylesheet" href="../css/common.css">
 	<link rel="stylesheet" href="../tools/font-awesome/css/font-awesome.css">
@@ -102,7 +102,7 @@
 				<ul class="nav-dishes" id="nav-dishes">
 				</ul>
 				<div class="nav-dishes-next" style="display:none;"><i class="icon-chevron-right"></i></div>
-				
+
 				<div class="nav-dishes-tab">
 					<div id="dishDetailList" class="btn-group dishes-detail-add "  role="group" aria-label="..." style="font-size: 16px;">
 					</div>
@@ -137,50 +137,53 @@
 		</div>
 
 	</div>
-		
-		
-		
+
+
+
 		<!--信息查看-->
 		<div class="modal fade menuDetail-view-dialog in " id="menuDetail-view-dialog"  data-backdrop="static" >
 			<div class="modal-dialog">
-				<div class="modal-content">	
-					<div class="modal-header">				  
+				<div class="modal-content">
+					<div class="modal-header">
 				        <div class="modal-title">菜品信息</div>
 				        <img src="../images/close.png" class="img-close"  data-dismiss="modal">
 				    </div>
-					<div class="modal-body">	
+					<div class="modal-body">
 						<div class="row">
-							<div class="col-xs-9 div-left">	
-							<input type="hidden"	value="" class="form-control" id="menuViewDishid">	
+							<div class="col-xs-9 div-left">
+							<input type="hidden"	value="" class="form-control" id="menuViewDishid">
 <!-- 								<input type="hidden" value="" class="form-control" id="menuViewUnitflag"> -->
 								<input type="hidden" value="" class="form-control" id="menuidInDish">
 								<p><span class="sp1">菜品编号:</span><span class="sp2" id="menuViewDishno"></span></p>
-								
-								<p><span class="sp1">菜品名称:</span><span class="sp2" id="menuViewTitle"></span>
+
+								<p><span class="sp1">菜品名称:</span><span class="sp2" id="menuViewTitle"></span></p>
+
+								<p>
 									<span class="sp1">库存状态:</span><span class="sp2" id="menuViewStatus"></span></p>
+								</p>
 									<!--另一种状态的图片 menu-state-off.png-->
 								<p><span class="sp1">菜品分类:</span><span class="sp2" id="menuViewDishType"></span></p>
 								<p><span class="sp1">单位:</span><span class="sp2" id="menuViewUnit"></span></p>
 								<p><span class="sp1">价格:</span><span class="sp2" id="menuViewPrice"></span>
 									<span class="sp1">会员价:</span><span class="sp2" id="menuViewVipPrice"></span></p>
-					
+
 								<p><span class="sp1">其他:</span><span class="sp2" id="tasteAndLabel"></span></p>
 							</div>
 							<div class="col-xs-3 div-right">
 								<img id="imgsrc" src="../images/nopic.jpg">
-							</div>							
+							</div>
 						</div>
 						<div class="row">
 							<p ><span class="sp1">菜品介绍:</span><span class="sp3-intro" id="menuViewIntroduction"></span></p>
 						</div>
-					
-	
-				
+
+
+
 					</div>
-					
-	
+
+
 				</div>
-				
+
 			</div>
 		</div>
 
@@ -194,8 +197,8 @@
 			var marginl = -147.5*(--count)+'px';
 			$('.dishes-comboList:eq(0)').css('margin-left',marginl);
 		});
-		
-		
+
+
 		</script>
 </body>
 </html>

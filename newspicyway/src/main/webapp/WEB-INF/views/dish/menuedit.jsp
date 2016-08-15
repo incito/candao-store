@@ -1358,7 +1358,10 @@
 								<p><span class="sp1">菜品编号:</span><span class="sp2" id="menuViewDishno"></span></p>
 								
 								<p><span class="sp1">菜品名称:</span><span class="sp2" id="menuViewTitle"></span>
-									<span class="sp1">库存状态:</span><span class="sp2" id="menuViewStatus"></span></p>
+									</p>
+								<p>
+									<span class="sp1">库存状态:</span><span class="sp2" id="menuViewStatus"></span>
+								</p>
 									<!--另一种状态的图片 menu-state-off.png-->
 								<p><span class="sp1">菜品分类:</span><span class="sp2" id="menuViewDishType"></span></p>
 								<p><span class="sp1">单位:</span><span class="sp2" id="menuViewUnit"></span></p>
