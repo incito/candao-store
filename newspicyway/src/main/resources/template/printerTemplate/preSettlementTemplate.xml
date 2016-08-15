@@ -204,16 +204,22 @@
 		<locations description="品项">
 			<list>
 				<value>15</value>
+				<value>1</value>
 				<value>5</value>
+				<value>1</value>
 				<value>10</value>
+				<value>1</value>
 				<value>10</value>
 			</list>
 		</locations>
 		<datas description="品项">
 			<list>
 				<value>品项</value>
+				<value> </value>
 				<value>数量</value>
+				<value> </value>
 				<value>单价</value>
+				<value> </value>
 				<value>小计</value>
 			</list>
 		</datas>
@@ -226,16 +232,22 @@
 			<locations description="品项">
 				<list>
 					<value>15</value>
+					<value>1</value>
 					<value>5</value>
+					<value>1</value>
 					<value>10</value>
+					<value>1</value>
 					<value>10</value>
 				</list>
 			</locations>
 			<datas description="品项">
 				<list>
 					<value>#{it.dishname}</value>
+					<value> </value>
 					<value>#{it.dishnum}</value>
+					<value> </value>
 					<value>#{it.orderprice}</value>
+					<value> </value>
 					<value>#{it.payamount}</value>
 				</list>
 			</datas>

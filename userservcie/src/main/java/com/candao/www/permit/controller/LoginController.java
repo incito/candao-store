@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -168,7 +168,7 @@ public class LoginController {
 	 * @return
 	 */
 	private Map<String, Function> setFunctionCode(List<Function> fnList){
-		Map<String, Function> menumap = new HashMap<>();
+		Map<String, Function> menumap = new TreeMap<>();
 		String mCode = PropertiesUtils.getValue("shop_admin_function_code"); //门店管理员code
 		for (Function f : fnList) {
 			if(mCode.equals(f.getCode())){//如果有门店管理员权限，则不需要其他任何权限
