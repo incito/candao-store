@@ -1847,7 +1847,7 @@ function initItemSubTb(id, dishType) {
 			subTbody += "<td>" + item.dishNo + "</td>";
 			subTbody += "<td>" + item.price + "</td>";
 			subTbody += "<td>" + item.unit + "</td>";
-			subTbody += "<td>" + Math.round(item.number) + "</td>";
+			subTbody += "<td>" + item.number + "</td>";
 			subTbody += "<td>" + item.thousandstimes+"</td><td>"+item.orignalprice+"</td>";
 			subTbody += "<td>" + turnover.toFixed(2) + "</td>";//
 			subTbody += "</tr>";
