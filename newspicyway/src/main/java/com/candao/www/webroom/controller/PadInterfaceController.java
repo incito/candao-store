@@ -2194,23 +2194,23 @@ public class PadInterfaceController {
         // 获取同步数据的传送方式
         String type = PropertiesUtils.getValue("SYN_DATA_TYPE");
         try {
-            // 选择处理方式
-            dto = selectMethod(type);
+			// 选择处理方式
+			dto = selectMethod(type);
 
-        } catch (SysException e) {
-            loggers.error("门店上传到总店数据失败", e);
-            if (e.getCode().equals("")) {
-                // 异常处理机制
-                dto = exceptionDeal(type);
-                // 使用原有代码MQ机制时出现的异常处理
-            } else {
-                dto = new ResultDto();
-                dto.setMessage(e.getMessage());
-            }
-        } catch (Exception e) {
-            loggers.error("门店上传到总店数据失败", e);
-            dto = null;
-        }
+		} catch (SysException e) {
+			loggers.error("门店上传到总店数据失败", e);
+			if (e.getCode().equals("")||"null".equals(e.getCode())||null==e.getCode()){
+				// 异常处理机制
+				dto = exceptionDeal(type);
+				// 使用原有代码MQ机制时出现的异常处理
+			}else{
+				dto=new  ResultDto();
+				dto.setInfo(ResultMessage.OTHER_EXEC_ERROR);
+			}
+		} catch (Exception e) {
+			loggers.error("门店上传到总店数据失败2", e);
+			dto = null;
+		}
         if (dto == null) {
             dto = new ResultDto();
             dto.setInfo(ResultMessage.NO_RETURN_MESSAGE);

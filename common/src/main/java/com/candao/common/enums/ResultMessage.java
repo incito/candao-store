@@ -13,7 +13,9 @@ public enum ResultMessage {
 	
 	INTERNET_EXE("1001","数据传输失败,请检查网络是否正常或者稍后再试"),
 	LOST_MESSAGE("1002","数据丢失,请重新尝试"),
-	NO_RETURN_MESSAGE("1003","没有数据返回")
+	NO_RETURN_MESSAGE("1003","没有数据返回"),
+	SQL_EXEC_ERROR("1004","sql执行报错"),
+	OTHER_EXEC_ERROR("1005","其他异常")
 	;
 	
 	
