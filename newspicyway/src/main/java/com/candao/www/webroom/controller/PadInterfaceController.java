@@ -2402,7 +2402,7 @@ public class PadInterfaceController {
                             userid = useridstr;
                         }
                     }
-                    
+
                     if (!userid.equals("")) {
                         StringBuilder messageinfo = new StringBuilder();
                         messageinfo.append(userid + "|" + finalmsgType + "|" + finalcallStatus + "|" + tableList.get(0).get("areaname") + "|"
