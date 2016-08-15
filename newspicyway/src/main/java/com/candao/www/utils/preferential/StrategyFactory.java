@@ -72,8 +72,15 @@ public enum StrategyFactory {
 			// 计算实际收入金额
 			// 优免调整（如果优惠大于订单价做优惠调整）
 			if (preferentialResult.getAmount().compareTo(preferentialResult.getMenuAmount()) == 1) {
+				// 挂账多收规则 优免调整=((挂账+优免)-订单价)
+				BigDecimal orderPrice = preferentialResult.getMenuAmount();
+				// 优免
+				BigDecimal toalFreeAmount = preferentialResult.getToalFreeAmount();
+				// 挂账
+				BigDecimal toaldDebitAmount = preferentialResult.getToalDebitAmount();
+				BigDecimal toaldDebitAmountMany = preferentialResult.getToalDebitAmountMany();
 				preferentialResult
-						.setAdjAmout(preferentialResult.getMenuAmount().subtract(preferentialResult.getAmount()));
+						.setAdjAmout(orderPrice.subtract(toaldDebitAmount.add(toalFreeAmount).add(toaldDebitAmountMany)));
 			}
 			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult);
 			// 应收应该是小费+消费

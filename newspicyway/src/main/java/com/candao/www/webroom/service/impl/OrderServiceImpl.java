@@ -1314,15 +1314,18 @@ public class OrderServiceImpl implements OrderService {
 		BigDecimal preferentialAmt =operPreferentialResult.getAmount();
 		BigDecimal toalFreeAmount = operPreferentialResult.getToalFreeAmount();
 		BigDecimal toalDebitAmount =operPreferentialResult.getToalDebitAmount();
+		BigDecimal toalDebitAmountMany = operPreferentialResult.getToalDebitAmountMany();
 		// 就算每次优免总额
 		for (TorderDetailPreferential dep : operResult.getDetailPreferentials()) {
 			preferentialAmt = preferentialAmt.add(dep.getDeAmount());
 			toalFreeAmount=toalFreeAmount.add(dep.getToalFreeAmount());
 			toalDebitAmount=toalDebitAmount.add(dep.getToalDebitAmount());
+			toalDebitAmountMany=toalDebitAmountMany.add(dep.getToalDebitAmountMany());
 		}
 		operPreferentialResult.setAmount(preferentialAmt);
 		operPreferentialResult.setToalFreeAmount(toalFreeAmount);
 		operPreferentialResult.setToalDebitAmount(toalDebitAmount);
+		operPreferentialResult.setToalDebitAmountMany(toalDebitAmountMany);
 		 List<TorderDetailPreferential> detailPreferentials = operPreferentialResult.getDetailPreferentials();
 		if(detailPreferentials==null||detailPreferentials.isEmpty()){
 			operPreferentialResult.setDetailPreferentials(operResult.getDetailPreferentials());

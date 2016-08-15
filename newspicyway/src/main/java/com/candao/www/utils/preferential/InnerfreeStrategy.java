@@ -87,6 +87,9 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 
 				//是否挂账，优免
 				if(can_credit.equals("0")){
+					if(amountCount.compareTo(amount)==-1){
+						addPreferential.setToalDebitAmountMany(amountCount.subtract(amount));
+					}
 					addPreferential.setToalDebitAmount(amount);
 				}else{
 					addPreferential.setToalFreeAmount(amount);
@@ -108,8 +111,10 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 				activity.setName((String) tempMap.get("name"));
 				addPreferential.setActivity(activity);
 				//是否挂账，优免
-				//是否挂账，优免
 				if(can_credit.equals("0")){
+					if(amountCount.compareTo(amount)==-1){
+						addPreferential.setToalDebitAmountMany(amountCount.subtract(amount));
+					}
 					addPreferential.setToalDebitAmount(amount);
 				}else{
 					addPreferential.setToalFreeAmount(amount);

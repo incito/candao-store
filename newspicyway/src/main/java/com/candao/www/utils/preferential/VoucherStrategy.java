@@ -62,6 +62,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal(String.valueOf(preMap.get("amount")));
 		for (int i = 0; i < preferentialNum; i++) {
+				
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 			TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, "",
 					(String) paraMap.get("preferentialid"), amount, String.valueOf(orderDetailList.size()), 1, 1,
@@ -74,22 +75,49 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 
 			// 如果为团购卷
 			if (String.valueOf(paraMap.get("type")).equals("05")) {
+				orderPrice=orderPrice.subtract(new BigDecimal((String)(paraMap.get("preferentialAmt"))));
 				// 是团购又是手动输入的
 				String preferentialAmout = (String) paraMap.get("preferentialAmout");
 				BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
 				if (cashprelAmout.doubleValue() > 0) {
+					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
+					if(orderPrice.compareTo( cashprelAmout.multiply(new BigDecimal(String.valueOf(preferentialNum))))==-1){
+						if(cashprelAmout.multiply(new BigDecimal(i+1)).compareTo(orderPrice)==1){
+							if(cashprelAmout.multiply(new BigDecimal(i)).compareTo(orderPrice)==-1){
+								 BigDecimal negAmoun = cashprelAmout.multiply(new BigDecimal(i+1)).subtract(orderPrice);
+								torder.setToalDebitAmountMany( (negAmoun.multiply(new BigDecimal("-1"))));
+							}else{
+								torder.setToalDebitAmountMany( cashprelAmout.multiply(new BigDecimal(-1)));
+							}
+						}
+					}
+					
 					torder.setToalDebitAmount(cashprelAmout);
+					
 					torder.setDeAmount(cashprelAmout);
 					amount = cashprelAmout;
 				} else {
 					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
 					String billAmoutStri = preMap.get("bill_amount").toString();
+					//设置为挂账金额
+					String setAmoutStr = preMap.get("amount").toString();
 					BigDecimal billAmout = new BigDecimal(billAmoutStri);
+					BigDecimal setAmout = new BigDecimal(setAmoutStr);
 					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
-					torder.setToalFreeAmount(billAmout.subtract(amount));
-					torder.setToalDebitAmount(amount);
-					amount = billAmout;
+					if(orderPrice.compareTo( billAmout.multiply(new BigDecimal(String.valueOf(preferentialNum))))==-1){
+						if(setAmout.multiply(new BigDecimal(i+1)).compareTo(orderPrice)==1){
+							if(setAmout.multiply(new BigDecimal(i)).compareTo(orderPrice)==-1){
+								BigDecimal negAmoun = setAmout.multiply(new BigDecimal(i+1)).subtract(orderPrice);
+								torder.setToalDebitAmountMany( negAmoun.multiply(new BigDecimal(-1)));
+							}else{
+								torder.setToalDebitAmountMany( setAmout.multiply(new BigDecimal(-1)));
+							}
+						}
+					}
+					torder.setToalFreeAmount(billAmout.subtract(setAmout));
+					torder.setToalDebitAmount(setAmout);
 					torder.setDeAmount(billAmout);
+					amount = billAmout;
 				}
 			} else {
 				// 代金卷
