@@ -488,7 +488,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             transactionManager.commit(status);
             log.info(orders.getOrderid() + "下单成功");
 //            return getResult("0", "下单成功", "");
-            return ReturnMap.getSuccessMap("下单成功");
+            Map<String, Object> retMap = ReturnMap.getSuccessMap("下单成功");
+            retMap.put("data", result.get("isAdd"));
+            return retMap;
         } catch (Exception ex) {
             log.error("-->", ex);
             ex.printStackTrace();
@@ -625,8 +627,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             printObj.setTableArea(areaName);
             printObj.setTableid(order.getCurrenttableid());
             tbPrintObjDao.insertPrintObj(printObj);
+            result.put("isAdd", "false");
         } else {
             tbPrintObjDao.updateTimemsg(DateUtils.dateToString(new Date()), printobjId);
+            result.put("isAdd", "true");
         }
         result.put("code", "0");
         result.put("msg", "下单成功");
