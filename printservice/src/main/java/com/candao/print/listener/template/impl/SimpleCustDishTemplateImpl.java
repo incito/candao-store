@@ -14,10 +14,10 @@ import com.candao.print.entity.PrintObj;
 import com.candao.print.entity.PrinterConstant;
 import com.candao.print.listener.template.ListenerTemplate;
 
-public class SimpleCustDishTemplateImpl implements ListenerTemplate{
-	
+public class SimpleCustDishTemplateImpl implements ListenerTemplate {
+
 	private Log logger = LogFactory.getLog(SimpleCustDishTemplateImpl.class.getName());
-	//模板大小
+	// 模板大小
 	private Integer type;
 	private Template template;
 
@@ -49,7 +49,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public byte[] getTitleFont() {
-		//TODO
+		// TODO
 		return PrinterConstant.getClear_font();
 	}
 
@@ -93,7 +93,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		String[] names = this.checkTealMsg(obj);
 		Integer[] lengths = template.getTailLength();
 		String[] temp = StringUtils.getLineFeedText(names, lengths);
-		if (temp!= null && temp.length != 0) {
+		if (temp != null && temp.length != 0) {
 			for (int i = 0; i < temp.length; i++) {
 				temp[i].trim();
 			}
@@ -103,7 +103,7 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 
 	@Override
 	public Integer[] getNoteLength() {
-		return new Integer[]{template.getNoteLength()};
+		return new Integer[] { template.getNoteLength() };
 	}
 
 	@Override
@@ -114,122 +114,126 @@ public class SimpleCustDishTemplateImpl implements ListenerTemplate{
 		trim(temp);
 		return temp;
 	}
-	
-	private void trim(String[] temp){
-		if (temp!= null && temp.length != 0) {
+
+	private void trim(String[] temp) {
+		if (temp != null && temp.length != 0) {
 			for (int i = 0; i < temp.length; i++) {
 				temp[i] = temp[i].trim();
 			}
 		}
 	}
 
-	private String[] checkTealMsg(PrintObj obj){
+	private String[] checkTealMsg(PrintObj obj) {
 		PrintDish printDish = obj.getpDish().get(0);
-		String abbrName = printDish.getAbbrname() == null?"":printDish.getAbbrname();
-		String ordersq = obj.getOrderseq() == 0 ? "": "第"+obj.getOrderseq()+"张";
+		String abbrName = printDish.getAbbrname() == null ? "" : printDish.getAbbrname();
+		String ordersq = obj.getOrderseq() == 0 ? "" : "第" + obj.getOrderseq() + "张";
 		String timestamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
-		return new String[]{abbrName,ordersq,timestamp};
+		return new String[] { abbrName, ordersq, timestamp };
 	}
-	
-	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {{
-		Object[] res = null;
-		List<PrintDish> list = object.getList();
 
-		for (PrintDish it : list) {
-			// 校验名称
-			String dishName = it.getDishName() == null ? "" : it.getDishName();
-			String [] dishNames = org.springframework.util.StringUtils.split(dishName, "#");
-			
-			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
-			String dishPrice = it.getDishPrice() == null ? "" : it.getDishPrice().toString();
-			
-			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
-			String [] dishUnits = org.springframework.util.StringUtils.split(dishUnit, "#");
-			
-			String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")" : "";
-			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()
-					? "(" + it.getSperequire().trim() + ")" : "";
-			
-			taste += Sperequire;
-			
-			// 判断是否赠菜
-			if(it.getPrintport()!=null && !it.getPrintport().isEmpty()){
-				if ("1".equals(it.getPrintport().trim())) {
-					taste += "(赠)";
+	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+		{
+			Object[] res = null;
+			List<PrintDish> list = object.getList();
+
+			for (PrintDish it : list) {
+				// 校验名称
+				String dishName = it.getDishName() == null ? "" : it.getDishName();
+				String[] dishNames = org.springframework.util.StringUtils.split(dishName, "#");
+
+				String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
+				String dishPrice = it.getDishPrice() == null ? "" : it.getDishPrice().toString();
+
+				String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+				String[] dishUnits = org.springframework.util.StringUtils.split(dishUnit, "#");
+
+				String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")"
+						: "";
+				String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()
+						? "(" + it.getSperequire().trim() + ")" : "";
+
+				taste += Sperequire;
+
+				// 判断是否赠菜
+				if (it.getPrintport() != null && !it.getPrintport().isEmpty()) {
+					if ("1".equals(it.getPrintport().trim())) {
+						taste += "(赠)";
+					}
 				}
-			}
-			
-			if (dishUnits == null) {
-				String dishUnitTemp = org.springframework.util.StringUtils.isEmpty(dishUnit) ? "" : "(" + dishUnit + ")";
-				dishUnits = new String[]{dishUnitTemp,dishUnitTemp};
-			} else {
-				dishUnits = new String []{"(" + dishUnits[0] + ")","(" + dishUnits[1] + ")"};
-			}
-			
-			if (dishNames != null) {
-				dishName = dishNames[0] + taste  + dishUnits[0] + "\n" + dishNames[1] + taste  + dishUnits[1] ;
-			} else {
-				dishName = dishName + taste + dishUnits[0] ;
+
+				if (dishUnits == null) {
+					String dishUnitTemp = org.springframework.util.StringUtils.isEmpty(dishUnit) ? ""
+							: "(" + dishUnit + ")";
+					dishUnits = new String[] { dishUnitTemp, dishUnitTemp };
+				} else {
+					dishUnits = new String[] { "(" + dishUnits[0] + ")", "(" + dishUnits[1] + ")" };
+				}
+
+				if (dishNames != null) {
+					dishName = dishNames[0] + taste + dishUnits[0] + "\n" + dishNames[1] + taste + dishUnits[1];
+				} else {
+					dishName = dishName + taste + dishUnits[0];
+				}
+
+				String[] name = { dishName, BLANK_SPACE, dishNum, BLANK_SPACE, dishPrice };
+				Integer[] len = { num1, BLANK_SPACE_LENGTH, num2, BLANK_SPACE_LENGTH, num3 };
+
+				String[] temp = StringUtils.getLineFeedText(name, len);
+
+				res = ArrayUtils.addAll(res, temp);
 			}
 
-			String[] name = { dishName, dishNum, dishPrice };
-			Integer[] len = { num1, num2, num3 };
-
-			String[] temp = StringUtils.getLineFeedText(name, len);
-
-			res = ArrayUtils.addAll(res, temp);
+			return res;
 		}
+	}
 
-		return res;
-	}}
-
-	class Template{
+	class Template {
 		private int tableLength;
 		private int noteLength;
 		private Integer[] bodyLength;
 		private Integer[] tailLength;
-		
+
 		public Template(int size) {
 			switch (size) {
 			case 1:
 				this.tableLength = 40;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{25,8,8};
-				this.tailLength = new Integer[]{5,27,8};
+				this.bodyLength = new Integer[] { 24, 7, 8 };
+				this.tailLength = new Integer[] { 5, 27, 8 };
 				break;
 			case 2:
 				this.tableLength = 40;
 				this.noteLength = 38;
-				this.bodyLength = new Integer[]{25,8,8};
-				this.tailLength = new Integer[]{5,27,8};
+				this.bodyLength = new Integer[] { 24, 7, 8 };
+				this.tailLength = new Integer[] { 5, 27, 8 };
 				break;
 			case 3:
 				this.tableLength = 20;
 				this.noteLength = 19;
-				this.bodyLength = new Integer[]{12,5,4};
-				this.tailLength = new Integer[]{5,8,8};
+				this.bodyLength = new Integer[] { 11, 4, 4 };
+				this.tailLength = new Integer[] { 5, 8, 8 };
 				break;
 			default:
 				break;
 			}
 		}
-		
-		public Integer getTableLength(){
+
+		public Integer getTableLength() {
 			return this.tableLength;
 		}
-		
-		public Integer getNoteLength(){
+
+		public Integer getNoteLength() {
 			return this.noteLength;
 		}
-		
-		public Integer[] getBodyLength(){
+
+		public Integer[] getBodyLength() {
 			return this.bodyLength;
 		}
-		
-		public Integer[] getTailLength(){
+
+		public Integer[] getTailLength() {
 			return this.tailLength;
 		}
-		
+
 	}
 
 	@Override

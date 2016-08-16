@@ -445,6 +445,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 							settlementInfo.add(tempMap);
 						}
 					}
+                    posdata.put("settlementInfo", settlementInfo);
 					// 优惠（元）
 					Map<String, Object> orderJson = ((List<Map<String, Object>>) order.get(0).get("OrderJson")).get(0);
 					String free = orderJson.get("discountamount") == null ? ""
@@ -493,7 +494,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 			if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
 				it.put("title", it.get("title") + "(赠)");
 			}
-			it.put("title", StringUtils.tokenizeToStringArray(it.get("title").toString(), "#")[0]);
+			it.put("dishname", StringUtils.tokenizeToStringArray(it.get("dishname").toString(), "#")[0]);
 			it.put("dishunit", StringUtils.tokenizeToStringArray(it.get("dishunit").toString(), "#")[0]);
 			res.add(it);
 			if (it.get("dishes") != null) {
@@ -501,7 +502,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 				for (Map<String, Object> item : temp3) {
 					item.put("payamount",
 							strMulti(String.valueOf(item.get("orderprice")), String.valueOf(item.get("dishnum"))));
-					it.put("title", StringUtils.tokenizeToStringArray(it.get("title").toString(), "#")[0]);
+					it.put("dishname", StringUtils.tokenizeToStringArray(it.get("dishname").toString(), "#")[0]);
 					it.put("dishunit", StringUtils.tokenizeToStringArray(it.get("dishunit").toString(), "#")[0]);
 					if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
 						it.put("title", it.get("title") + "(赠)");
