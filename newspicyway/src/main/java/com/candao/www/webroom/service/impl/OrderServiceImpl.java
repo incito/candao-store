@@ -1208,7 +1208,7 @@ public class OrderServiceImpl implements OrderService {
 			Map<String, Object> preMap = new HashMap<>();
 			preMap.put("orderid", orderid);
 
-			OperPreferentialResult result = preResult(preMap);
+			OperPreferentialResult result = preResult(params);
 			mapRet.put("preferentialInfo", result);
 		}
 
@@ -1302,7 +1302,7 @@ public class OrderServiceImpl implements OrderService {
 
 	
 		StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
-				operPreferentialResult, orderMapper,orderOpMapper);
+				operPreferentialResult, orderMapper,orderOpMapper,(String) params.get("itemid"));
 		return operPreferentialResult;
 	}
 

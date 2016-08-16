@@ -1119,7 +1119,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
 						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
-								result, orderMapper,orderOpMapper);
+								result, orderMapper,orderOpMapper,(String) params.get("itemid"));
 					}
 
 				}
