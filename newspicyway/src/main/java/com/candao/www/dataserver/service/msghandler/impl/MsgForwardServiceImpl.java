@@ -74,7 +74,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
 
             int msgId = (int) System.currentTimeMillis();
             MsgData msgData = new MsgData(msgId, Integer.valueOf(msgType), msg);
-            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), 4 * 60*60, false);
+            broadCastMsgDevices(deviceObjectService.getAllDevice(), JSON.toJSONString(msgData), 4 * 60 * 60, false);
             if (MsgType.MSG_1002.getValue().equals(msgType)) {
                 String tableNo = businessService.getTableNoByOrderId(msg);
                 if (StringUtils.isNotBlank(tableNo)) {
@@ -173,7 +173,6 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
      *
      * @param objects
      * @param msg
-     * @param msgType
      * @param isSingle
      */
     @Deprecated
@@ -321,6 +320,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
             List<DeviceObject> devices = new ArrayList<>();
             DeviceObject deivce = deviceObjectService.getDeviceByMeId(imei);
             if (null == deivce) {
+                LOGGER.info("设备[" + imei + "]不存在");
                 return new Result(false, "设备不存在");
             }
             devices.add(deivce);
@@ -343,14 +343,17 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         try {
             Map<Object, Object> order = orderMapper.findOne(orderId);
             if (null == order) {
+                LOGGER.info("订单不[" + orderId + "]存在");
                 return new Result(false, "该订单不存在");
             }
             Object meid = order.get("meid");
             if (null == meid || meid.toString().isEmpty()) {
+                LOGGER.info("该桌台没有PAD");
                 return new Result(false, "该桌台没有PAD");
             }
             DeviceObject deivce = deviceObjectService.getDeviceByMeId(meid.toString());
             if (null == deivce) {
+                LOGGER.info("设备[" + meid + "]不存在");
                 return new Result(false, "设备不存在");
             }
             List<DeviceObject> devices = new ArrayList<>();
@@ -374,19 +377,23 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         try {
             Map<Object, Object> order = orderMapper.findOne(orderId);
             if (null == order) {
+                LOGGER.info("订单不[" + orderId + "]存在");
                 return new Result(false, "该订单不存在");
             }
             //判断该订单是否已经结账
             Object orderstatus = order.get("orderstatus");
             if ("3".equals(orderstatus.toString()) || "2".equals(orderstatus.toString())) {
+                LOGGER.info("该桌台已经结账");
                 return new Result(false, "该桌台已经结账");
             }
             Object meid = order.get("meid");
             if (null == meid || meid.toString().isEmpty()) {
+                LOGGER.info("该桌台没有PAD");
                 return new Result(false, "该桌台没有PAD");
             }
             final DeviceObject device = deviceObjectService.getDeviceByMeId(meid.toString());
             if (null == device) {
+                LOGGER.info("设备[" + meid + "]不存在");
                 return new Result(false, "设备不存在");
             }
             Map<String, List<String>> target = new HashMap<>();

@@ -1331,7 +1331,12 @@ public class PadInterfaceController {
         @SuppressWarnings("unchecked")
         Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
         OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
-        mav.addObject(ReturnMap.getSuccessMap(result));
+        if(result.isFalg()){
+            mav.addObject(ReturnMap.getSuccessMap(result));
+        }else{
+        	mav.addObject(ReturnMap.getFailureMap(result.getMes(),result));
+        }
+        
         return mav;
     }
 

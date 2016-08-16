@@ -17,7 +17,7 @@ import com.candao.www.webroom.service.DataDictionaryService;
 public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 
 	@Override
-	public void calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResul) {
+	public void calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResul,String itemid) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("type", "ROUNDING");
 		List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
@@ -27,7 +27,14 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
 			listFind.addAll(listFind2);
 		}
-		RoundingEnum roundingEnum = RoundingEnum.fromString((String) listFind.get(0).get("itemid"));
+		
+		String calItemid="";
+		if(itemid==null||!itemid.equals("0")){
+			calItemid=(String) listFind.get(0).get("itemid");
+		}else{
+			calItemid=itemid;
+		}
+		RoundingEnum roundingEnum = RoundingEnum.fromString(calItemid);
 		switch (roundingEnum) {
 		case ROUNDTOINTEGER:
 			preferentialResul.setMoneyWipeName("四舍五入");

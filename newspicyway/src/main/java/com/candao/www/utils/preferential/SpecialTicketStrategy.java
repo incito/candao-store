@@ -19,6 +19,7 @@ import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
+import com.candao.www.utils.ReturnMes;
 
 /**
  * 
@@ -95,7 +96,8 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		BigDecimal menuCash = null;
 		// 分两种方式使用心得优惠卷，重新计算优惠卷(updateIP不为空说明是根据数据库保存优惠重新计算)
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-
+		//是否需要提示标示使用优惠是否成功0成功1失败
+		boolean flag=false;
 		// 2重新计算特价卷计算方式
 		String dishid = (String) paraMap.get("dishid");
 		if (dishid != null && paraMap.containsKey("updateId")) {
@@ -117,6 +119,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 			}
 		} else {
 
+
 			// 1特价卷使用特价计算方式
 			for (String key : orderMenuONumMap.keySet()) {
 				updateId = IDUtil.getID();
@@ -127,7 +130,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 				if (!dishCouponAmountMap.containsKey(key)) {
 					continue;
 				}
-
+				
 				if (preferInfoMap.containsKey(key)) {
 					// 数据库中保存的优惠个数(如果当前个菜品已经满足了优惠券个数 说明不能使用)
 					double preferNum = preferInfoMap.get(key);
@@ -136,6 +139,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 						continue;
 					}
 				}
+				flag=true;
 				// 根据2015-06-02跟唐家荣的沟通。特价券是 一张一个菜 如果客人点了10份，就用10张券 。
 				TorderDetailPreferential resultTorderD = crateOrderDeailPre(key, dishCouponAmountMap, orderMenuONumMap,
 						menuCash, updateId, orderid, activity, type);
@@ -149,6 +153,8 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		}
 		result.put("amount", amount.setScale(2, RoundingMode.HALF_UP));
 		result.put("detailPreferentials", detailPreferentials);
+		result.put("falg", flag);
+		result.put("mes", flag?ReturnMes.SUCCESS.getMsg():ReturnMes.SPECIAL_FAIL.getMsg());
 		return result;
 	}
 

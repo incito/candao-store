@@ -1089,6 +1089,11 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
+					//是否有返回状态
+					if(resultMap.containsKey("falg") && resultMap.containsKey("mes")){
+						result.setFalg((boolean) resultMap.get("falg"));
+						result.setMes((String) resultMap.get("mes"));
+					}
 					// 获取总的挂账，以及优免
 					String inputDebitAmount = (String) params.get("toalDebitAmount");//上次挂账金额
 					String inputFreeAmount = (String) params.get("toalFreeAmount");//上次优免金额
@@ -1114,7 +1119,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
 						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
-								result, orderMapper,orderOpMapper);
+								result, orderMapper,orderOpMapper,(String) params.get("itemid"));
 					}
 
 				}
