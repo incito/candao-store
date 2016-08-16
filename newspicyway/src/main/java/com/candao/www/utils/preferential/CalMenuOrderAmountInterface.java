@@ -9,6 +9,6 @@ import com.candao.www.webroom.service.DataDictionaryService;
  *
  */
 public interface CalMenuOrderAmountInterface {
-	void  calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult);
+	void  calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,String itemid);
 
 }

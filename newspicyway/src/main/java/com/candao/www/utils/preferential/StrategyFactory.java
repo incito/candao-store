@@ -54,7 +54,7 @@ public enum StrategyFactory {
 	 */
 	public void calcAmount(CaleTableAmountMapper caleTableAmountMapper, String orderid,
 			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,
-			OrderMapper orderMapper, OrderOpMapper orderOpMapper) {
+			OrderMapper orderMapper, OrderOpMapper orderOpMapper,String itemid) {
 		caleTableAmountMapper.pCaleTableAmount(orderid);
 		Map<String, Object> amountMap = new HashMap<>();
 		amountMap.put("orderid", orderid);
@@ -82,7 +82,7 @@ public enum StrategyFactory {
 				preferentialResult
 						.setAdjAmout(orderPrice.subtract(toaldDebitAmount.add(toalFreeAmount).add(toaldDebitAmountMany)));
 			}
-			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult);
+			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult,itemid);
 			// 应收应该是小费+消费
 			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
 
