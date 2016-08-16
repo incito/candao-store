@@ -62,10 +62,14 @@ public class OperPreferentialResult {
 	private String moneyWipeName;
 	/***
 	 * 挂账多收
-	 * */
-	private BigDecimal toalDebitAmountMany=new BigDecimal("0");
+	 */
+	private BigDecimal toalDebitAmountMany = new BigDecimal("0");
 	private String moneyDisType;
 	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
+	/***
+	 * */
+	private boolean falg=true;
+	private String mes="";
 
 	public BigDecimal getAmount() {
 		return amount.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -169,6 +173,22 @@ public class OperPreferentialResult {
 
 	public void setToalDebitAmountMany(BigDecimal toalDebitAmountMany) {
 		this.toalDebitAmountMany = toalDebitAmountMany;
+	}
+
+	public boolean isFalg() {
+		return falg;
+	}
+
+	public void setFalg(boolean falg) {
+		this.falg = falg;
+	}
+
+	public String getMes() {
+		return mes;
+	}
+
+	public void setMes(String mes) {
+		this.mes = mes;
 	}
 
 }

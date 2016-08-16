@@ -83,7 +83,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 				if (cashprelAmout.doubleValue() > 0) {
 					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
 					if (orderTempPrice.compareTo(new BigDecimal("0")) == -1) {
-						torder.setToalDebitAmountMany(cashprelAmout);
+						torder.setToalDebitAmountMany(cashprelAmout.multiply(new BigDecimal("-1")));
 					} else if (orderTempPrice.compareTo(cashprelAmout) == -1) {
 						torder.setToalDebitAmountMany(orderTempPrice.subtract(cashprelAmout));
 					}
@@ -102,7 +102,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 					BigDecimal setAmout = new BigDecimal(setAmoutStr);
 					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
 					if (orderTempPrice.compareTo(new BigDecimal("0")) == -1) {
-						torder.setToalDebitAmountMany(setAmout);
+						torder.setToalDebitAmountMany(setAmout.multiply(new BigDecimal("-1")));
 					} else if (orderTempPrice.compareTo(setAmout) == -1) {
 						torder.setToalDebitAmountMany(orderTempPrice.subtract(setAmout));
 					}
