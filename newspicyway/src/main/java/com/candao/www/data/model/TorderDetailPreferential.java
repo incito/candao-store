@@ -200,7 +200,7 @@ public class TorderDetailPreferential implements Serializable {
 	}
 
 	public BigDecimal getToalDebitAmountMany() {
-		return toalDebitAmountMany;
+		return toalDebitAmountMany.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 
 	public void setToalDebitAmountMany(BigDecimal toalDebitAmountMany) {

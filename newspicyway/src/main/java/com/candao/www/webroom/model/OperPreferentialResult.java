@@ -60,9 +60,10 @@ public class OperPreferentialResult {
 	 * (处理的名称 ：四舍五入 或 抹零)
 	 */
 	private String moneyWipeName;
-	/**
-	 * 
-	 */
+	/***
+	 * 挂账多收
+	 * */
+	private BigDecimal toalDebitAmountMany=new BigDecimal("0");
 	private String moneyDisType;
 	private List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
@@ -160,6 +161,14 @@ public class OperPreferentialResult {
 
 	public void setAdjAmout(BigDecimal adjAmout) {
 		this.adjAmout = adjAmout;
+	}
+
+	public BigDecimal getToalDebitAmountMany() {
+		return toalDebitAmountMany.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public void setToalDebitAmountMany(BigDecimal toalDebitAmountMany) {
+		this.toalDebitAmountMany = toalDebitAmountMany;
 	}
 
 }

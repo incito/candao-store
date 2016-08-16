@@ -752,10 +752,10 @@ public class PadInterfaceController {
         if ("0".equals(result)) {
             logger.info("结算成功，调用进销存接口");
             String psicallback = psicallback(settlementInfo, 0);
-            // 通知PAD
-            if (Constant.SUCCESSMSG.equals(psicallback)) {
+            /*// 通知PAD
+            if (Constant.SUCCESSMSG.equals(psicallback)) {*/
                 notifyService.notifySettleOrder(orderid);
-            }
+           /* }*/
             return psicallback;
         } else {
             logger.error("结算失败，result :" + result);
@@ -787,11 +787,12 @@ public class PadInterfaceController {
             }
             @SuppressWarnings("unchecked")
             Map<String, String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
-            if (retMap == null || "1".equals(retMap.get("code"))) {
-                SettlementInfo info = new SettlementInfo();
+            if (retMap == null || "1".equals(retMap.get("code"))) {//调用进销存失败,给用户提示
+               /* SettlementInfo info = new SettlementInfo();
                 info.setOrderNo(settlementInfo.getOrderNo());
                 orderSettleService.rebackSettleOrder(settlementInfo);
-                return Constant.FAILUREMSG;
+                return Constant.FAILUREMSG;*/
+            	return Constant.PSIERROR;
             }
         }
 
@@ -819,6 +820,10 @@ public class PadInterfaceController {
         String result = orderSettleService.saveOrder(settlementInfo);
 
         final String orderid = settlementInfo.getOrderNo();
+        //计算订单的实收、优免等
+        orderOpService.calcOrderAmount(orderid);
+        //内部直接调用计算实收，POS不再调用
+        debitamout(orderid);
         // 修改投诉表信息
         new Thread(new Runnable() {
             public void run() {

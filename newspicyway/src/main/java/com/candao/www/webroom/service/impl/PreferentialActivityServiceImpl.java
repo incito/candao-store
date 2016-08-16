@@ -1092,15 +1092,21 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					// 获取总的挂账，以及优免
 					String inputDebitAmount = (String) params.get("toalDebitAmount");//上次挂账金额
 					String inputFreeAmount = (String) params.get("toalFreeAmount");//上次优免金额
+					//获取挂账多收
+					String inputToalDebitAmountMany=(String) params.get("toalDebitAmountMany");//挂账多收总金额
+					BigDecimal toalDebitAmountMany = new BigDecimal(inputToalDebitAmountMany == null ? "0" : inputToalDebitAmountMany);
 					BigDecimal toalDebitAmount = new BigDecimal(inputDebitAmount == null ? "0" : inputDebitAmount);
-					BigDecimal toalFreeAmount = new BigDecimal(inputFreeAmount == null ? "0" : inputDebitAmount);
+					BigDecimal toalFreeAmount = new BigDecimal(inputFreeAmount == null ? "0" : inputFreeAmount);
 					for (TorderDetailPreferential detailPreferential : detailPreferentials) {
 						toalDebitAmount = toalDebitAmount.add(detailPreferential.getToalDebitAmount());
 						toalFreeAmount = toalFreeAmount.add(detailPreferential.getToalFreeAmount());
+						toalDebitAmountMany=toalDebitAmountMany.add(detailPreferential.getToalDebitAmountMany());
 					}
-
+			
+					
 					result.setToalDebitAmount(toalDebitAmount);
 					result.setToalFreeAmount(toalFreeAmount);
+					result.setToalDebitAmountMany(toalDebitAmountMany);
 					// 总的优惠金额=本次优惠+以往优惠
 					result.setDetailPreferentials(detailPreferentials);
 					// 本次优惠是否需要计算实际收入金额金额

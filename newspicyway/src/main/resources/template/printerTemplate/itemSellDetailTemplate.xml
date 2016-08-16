@@ -102,16 +102,22 @@
 		<locations description="位置">
 			<list>
 				<value>5</value>
-				<value>18</value>
+				<value>1</value>
+				<value>15</value>
+				<value>1</value>
 				<value>7</value>
+				<value>1</value>
 				<value>10</value>
 			</list>
 		</locations>
 		<datas description="账单类型">
 			<list>
 				<value>序号</value>
+				<value> </value>
 				<value>品项</value>
+				<value> </value>
 				<value>数量</value>
+				<value> </value>
 				<value>金额</value>
 			</list>
 		</datas>
@@ -137,16 +143,22 @@
 			<locations description="位置">
 				<list>
 					<value>5</value>
-					<value>18</value>
+					<value>1</value>
+					<value>15</value>
+					<value>1</value>
 					<value>7</value>
+					<value>1</value>
 					<value>10</value>
 				</list>
 			</locations>
 			<datas description="账单类型">
 				<list>
 					<value>#{it.index}</value>
+					<value> </value>
 					<value>#{it.dishName}</value>
+					<value> </value>
 					<value>#{it.dishCount}</value>
+					<value> </value>
 					<value>#{it.totlePrice}</value>
 				</list>
 			</datas>

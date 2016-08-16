@@ -52,6 +52,12 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			Map<String, String> orderDetail_params = new HashMap<>();
 			orderDetail_params.put("orderid", orderid);
 			List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
+			//菜单价格
+			BigDecimal orderPrice=new BigDecimal("0");
+			for(TorderDetail torderDetail:orderDetailList){
+				orderPrice=orderPrice.add(torderDetail.getOrderprice().multiply(new BigDecimal(torderDetail.getDishnum())));
+			}
+			
 			 String updateId=params.containsKey("updateId")?(String)params.get("updateId"):IDUtil.getID();
 			List<TorderDetailPreferential> listRest = new ArrayList<>();
 			List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
@@ -66,6 +72,9 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			detailPreferential.setCoupondetailid((String) (tempMapList.size()>1?tempMap.get("preferential"):tempMap.get("id")));
 			//特殊团购卷
 			if(String.valueOf(params.get("type")).equals("05")){
+				if(orderPrice.compareTo(amout)==-1){
+					detailPreferential.setToalDebitAmountMany(orderPrice.subtract(amout));
+				}
 				detailPreferential.setToalDebitAmount(amout);
 			}else{
 				detailPreferential.setToalFreeAmount(amout);

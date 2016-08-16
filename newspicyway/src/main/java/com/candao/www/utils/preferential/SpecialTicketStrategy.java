@@ -97,7 +97,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 
 		// 2重新计算特价卷计算方式
-		String dishid = (String) paraMap.get("dishId");
+		String dishid = (String) paraMap.get("dishid");
 		if (dishid != null && paraMap.containsKey("updateId")) {
 			// 如果有使用的菜品以及返回有ID说明是重新计算优惠
 			TorderDetail updateOrderDetail = orderMenuONumMap.get(dishid);
