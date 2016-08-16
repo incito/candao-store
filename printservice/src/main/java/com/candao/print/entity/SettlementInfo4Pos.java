@@ -122,6 +122,11 @@ public class SettlementInfo4Pos implements Serializable {
                 String dishnum = it.getDishnum() == null ? "" : it.getDishnum();
                 String dishunit = it.getDishunit() == null ? "" : it.getDishunit();
                 it.setDishnum(dishnum + dishunit);
+                it.setTitle(StringUtils.tokenizeToStringArray(it.getTitle(), "#")[0]);
+                it.setDishunit(StringUtils.tokenizeToStringArray(it.getDishunit(), "#")[0]);
+                if ("1".equals(it.getPricetype())) {
+					it.setTitle(it.getTitle()+"(赠)");
+				}
             }
         }
         // 结算信息初始化

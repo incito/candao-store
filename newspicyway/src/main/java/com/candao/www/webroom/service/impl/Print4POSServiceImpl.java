@@ -1,7 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,11 +13,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.candao.www.dataserver.mapper.OrderOpMapper;
-import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.service.UserService;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -27,8 +24,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.candao.common.utils.Constant;
 import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.DishItem;
@@ -39,7 +34,6 @@ import com.candao.print.entity.ResultTip4Pos;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.print.entity.TipItem;
 import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.data.dao.UserDao;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Tinvoice;
 import com.candao.www.data.model.User;
@@ -64,6 +58,8 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 	public static final String MEMBERSALEINFO_STORE = "商户联";
 
+	public static final String FREE_DISH_TYPE = "1";
+
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,
 			new ArrayBlockingQueue<Runnable>(5000));
 
@@ -86,7 +82,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 	private OrderOpMapper orderMapper;
 	@Autowired
 	@Qualifier("t_userService")
-	private UserService userService;	
+	private UserService userService;
 
 	@Override
 	public void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception {
@@ -116,7 +112,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 		Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
 		Map<String, Object> param = new HashMap<>();
 		param.clear();
-		//零头处理方式
+		// 零头处理方式
 		param.put("type", "ROUNDING");
 		List<Map<String, Object>> resultmap = dataDictionaryService.findByParams(param);
 		if (!CollectionUtils.isEmpty(resultmap)) {
@@ -409,7 +405,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 		String json = JSON.toJSONString(map);
 		Map<String, Object> temp = JSON.parseObject(json, Map.class);
 		List<Map<String, Object>> order = JSON.parseObject(params[1], List.class);
-		
+
 		if (temp.containsKey("code")) {
 			if ("0".equals(temp.get("code"))) {
 				Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
@@ -458,19 +454,19 @@ public class Print4POSServiceImpl implements Print4POSService {
 					String pxFee = stringAdd(free,
 							orderJson.get("dueamount") == null ? "" : orderJson.get("dueamount").toString());
 					posdata.put("pxFee", pxFee);
-					//打印人
+					// 打印人
 					Map<String, Object> param = new HashMap<>();
 					param.put("jobNumber", params[2]);
 					List<User> users = userService.queryUserList(param);
 					posdata.put("printname", users.get(0).getName());
-					
+
 					// 电话地址
 					posdata.put("branchName",
-							branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname").toString());
+							com.candao.common.utils.StringUtils.resolveNullType(branchInfo.get("branchname")));
 					posdata.put("tel",
-							branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel").toString());
+							com.candao.common.utils.StringUtils.resolveNullType(branchInfo.get("managertel")));
 					posdata.put("address",
-							branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress").toString());
+							com.candao.common.utils.StringUtils.resolveNullType(branchInfo.get("branchaddress")));
 					obj.setPosData(posdata);
 					// TODO
 					param.clear();
@@ -484,16 +480,32 @@ public class Print4POSServiceImpl implements Print4POSService {
 
 	}
 
+	/**
+	 * 解析品项,判断赠菜和鱼锅套餐
+	 * 
+	 * @param rows
+	 * @return
+	 */
 	private List<Map<String, Object>> parseRows(List<Map<String, Object>> rows) {
 		List<Map<String, Object>> res = new ArrayList<>();
 		for (Map<String, Object> it : rows) {
 			it.put("payamount", strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
+			if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
+				it.put("title", it.get("title") + "(赠)");
+			}
+			it.put("title", StringUtils.tokenizeToStringArray(it.get("title").toString(), "#")[0]);
+			it.put("dishunit", StringUtils.tokenizeToStringArray(it.get("dishunit").toString(), "#")[0]);
 			res.add(it);
 			if (it.get("dishes") != null) {
 				List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
 				for (Map<String, Object> item : temp3) {
 					item.put("payamount",
 							strMulti(String.valueOf(item.get("orderprice")), String.valueOf(item.get("dishnum"))));
+					it.put("title", StringUtils.tokenizeToStringArray(it.get("title").toString(), "#")[0]);
+					it.put("dishunit", StringUtils.tokenizeToStringArray(it.get("dishunit").toString(), "#")[0]);
+					if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
+						it.put("title", it.get("title") + "(赠)");
+					}
 					res.add(item);
 				}
 			}
