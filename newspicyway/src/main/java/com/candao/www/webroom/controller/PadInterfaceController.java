@@ -796,9 +796,9 @@ public class PadInterfaceController {
             }
         }
 
-        /*if (1 == isweixin) {
+        if (1 == isweixin) {
             return Constant.WEIXINSUCCESSMSG;
-        }*/
+        }
         return Constant.SUCCESSMSG;
     }
 
