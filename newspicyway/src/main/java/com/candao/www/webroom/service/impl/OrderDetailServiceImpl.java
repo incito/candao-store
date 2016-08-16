@@ -2275,7 +2275,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         //得到打印机配置
         Map<String, Object> printertypeMap = new HashMap<String, Object>();
-        printertypeMap.put("printertype", 4);
+        printertypeMap.put("printertype", 10);//pos打印单据
         List<Map> ipconfigs = tbPrinterManagerDao.find(printertypeMap);
         if (ipconfigs != null && ipconfigs.size() > 0) {
             for (Map tbPrinter : ipconfigs) {
