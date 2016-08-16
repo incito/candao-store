@@ -489,4 +489,11 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 		}
 		return false;
 	}
+	
+	public static String resolveNullType(Object src){
+		if (src == null || "null".equals(src)) {
+			return "";
+		}
+		return src.toString();
+	}
 }

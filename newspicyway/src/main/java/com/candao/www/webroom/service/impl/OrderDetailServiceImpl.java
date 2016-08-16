@@ -279,17 +279,17 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     if (!"0".equals(t1.getDishnum())) {
                         //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                         StringBuilder detailSperequire = new StringBuilder();
-                        detailSperequire.append(t1.getSperequire());
+                        detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t1.getSperequire()));
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                        detailSperequire.append(order.getGlobalsperequire());
+                        detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(order.getGlobalsperequire()));
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                        detailSperequire.append(t1.getTaste());
+                        detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t1.getTaste()));
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                        detailSperequire.append(t1.getFreeuser());
+                        detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t1.getFreeuser()));
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                        detailSperequire.append(t1.getFreeauthorize());
+                        detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t1.getFreeauthorize()));
                         detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                        detailSperequire.append(t1.getFreereason());
+                        detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t1.getFreereason()));
                         t1.setSperequire(detailSperequire.toString());
 
                         t1.setDishtype("1");
@@ -318,17 +318,17 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             if (!"0".equals(t2.getDishnum())) {
                                 //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                                 StringBuilder detailSperequire = new StringBuilder();
-                                detailSperequire.append(t2.getSperequire());
+                                detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getSperequire()));
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                detailSperequire.append(order.getGlobalsperequire());
+                                detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(order.getGlobalsperequire()));
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                detailSperequire.append(t2.getTaste());
+                                detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getTaste()));
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                detailSperequire.append(t2.getFreeuser());
+                                detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getFreeuser()));
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                detailSperequire.append(t2.getFreeauthorize());
+                                detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getFreeauthorize()));
                                 detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                detailSperequire.append(t2.getFreereason());
+                                detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getFreereason()));
                                 t2.setSperequire(detailSperequire.toString());
 
                                 t2.setOrderprice(new BigDecimal(0));
@@ -348,17 +348,17 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         } else if ("1".equals(t2.getDishtype())) {
                             //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                             StringBuilder detailSperequire = new StringBuilder();
-                            detailSperequire.append(t2.getSperequire());
+                            detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getSperequire()));
                             detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                            detailSperequire.append(order.getGlobalsperequire());
+                            detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(order.getGlobalsperequire()));
                             detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                            detailSperequire.append(t2.getTaste());
+                            detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getTaste()));
                             detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                            detailSperequire.append(t2.getFreeuser());
+                            detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getFreeuser()));
                             detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                            detailSperequire.append(t2.getFreeauthorize());
+                            detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getFreeauthorize()));
                             detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                            detailSperequire.append(t2.getFreereason());
+                            detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t2.getFreereason()));
                             t2.setSperequire(detailSperequire.toString());
 
                             t2.setRelatedishid(t.getDishid());
@@ -378,17 +378,17 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 if (!"0".equals(t3.getDishnum())) {
                                     //忌口、全单备注、口味、赠菜人、赠菜授权人、赠菜原因合并
                                     detailSperequire = new StringBuilder();
-                                    detailSperequire.append(t3.getSperequire());
+                                    detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t3.getSperequire()));
                                     detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                    detailSperequire.append(order.getGlobalsperequire());
+                                    detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(order.getGlobalsperequire()));
                                     detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                    detailSperequire.append(t3.getTaste());
+                                    detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t3.getTaste()));
                                     detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                    detailSperequire.append(t3.getFreeuser());
+                                    detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t3.getFreeuser()));
                                     detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                    detailSperequire.append(t3.getFreeauthorize());
+                                    detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t3.getFreeauthorize()));
                                     detailSperequire.append(Constant.ORDER_REMARK_SEPARATOR);
-                                    detailSperequire.append(t3.getFreereason());
+                                    detailSperequire.append(com.candao.common.utils.StringUtils.resolveNullType(t3.getFreereason()));
                                     t3.setSperequire(detailSperequire.toString());
                                     t3.setDishtype("2");
                                     t3.setOrderprice(new BigDecimal(0));

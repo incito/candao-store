@@ -84,9 +84,7 @@ $(document).ready(function(){
 				}
 			}
 			if (vcheck) {
-				if(check_same_printerName()
-						&&check_same_IpAddress()
-						){
+				if(check_same_printerName()){
 				clickFormAddPrintConfig();
 				
 				}else{
@@ -1261,47 +1259,7 @@ function check_same_printerName(){
 	return flag;
 } 
 
-function check_same_IpAddress(){
-	var printerid = $("#printerid").val();
-	var printertype = $("#printertype").val();
-	var tableAndPrinternameList=[];
-	var dishAndPrinternameList=[];
-	$.each(findTableids,function(i,item){
-		tableAndPrinternameList.push({"tableid":item,"printerid":printerid,"printertype":printertype});
-	});
-	$.each(findDishids,function(i,item){
-		dishAndPrinternameList.push({"dishid":item,"printerid":printerid,"printertype":printertype});
-	});
-	flagIpAddress=true;
-	var list=[];
-	list.push(tableAndPrinternameList);
-	list.push(dishAndPrinternameList);
-	
-	$.ajax({
-		type : "post",
-		async : false,
-		url : global_Path+"/printerManager/check_same_IpAddress",
-		dataType : "json",
-		contentType:'application/json;charset=UTF-8',
-		data:
-			JSON.stringify(list)
-			
-		,
-		success : function(result) {
-			if(result.message=='打印机IP不能重复'){
-			
-			$("#ipAddress_tip").text(result.message);
-			$("#ipAddress").focus();
-			flagIpAddress=false;
-			$("#printTables-confirm-dialog").modal("show");			
-			}
-		}
-	});
-	return flagIpAddress;
-}
-function changeIPFlag(){
-	flagIpAddress = true;
-}
+
 
 function preLoad(names){
 	var html='';

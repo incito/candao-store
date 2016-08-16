@@ -447,7 +447,8 @@ public class BranchDataSyn {
 	}
 
 	private boolean updateSynRecord() {
-		return branchDataSynDao.updateSynRecord(null) > 0;
+		branchDataSynDao.updateSynRecord(null);
+		return true;
 	}
 	
 	private boolean updateSynRecord(String id) {

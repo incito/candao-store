@@ -98,7 +98,8 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			}
 	
 		} else if (caseAmount != null && caseAmount.doubleValue() > 0) {
-			// 现金减免方式
+			//获取除开优惠的支付金额
+			BigDecimal orderTempPrice = amountCount.subtract(new BigDecimal((String) (paraMap.get("preferentialAmt"))));
 			//获取优惠卷个数(如果POS选择多张优惠卷，后台会在数据库写入多个数据，所以要拆分优惠卷)
 			int preferentialNum=Integer.valueOf((String)paraMap.get("preferentialNum"));
 			amount=caseAmount.multiply(new BigDecimal(preferentialNum));
@@ -112,10 +113,13 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 				addPreferential.setActivity(activity);
 				//是否挂账，优免
 				if(can_credit.equals("0")){
-					if(amountCount.compareTo(amount)==-1){
-						addPreferential.setToalDebitAmountMany(amountCount.subtract(amount));
+					if (orderTempPrice.compareTo(new BigDecimal("0")) == -1) {
+						addPreferential.setToalDebitAmountMany(caseAmount.multiply(new BigDecimal("-1")));
+					} else if (orderTempPrice.compareTo(caseAmount) == -1) {
+						addPreferential.setToalDebitAmountMany(orderTempPrice.subtract(caseAmount));
 					}
-					addPreferential.setToalDebitAmount(amount);
+					addPreferential.setToalDebitAmount(caseAmount);
+					orderTempPrice=	orderTempPrice.subtract(caseAmount);
 				}else{
 					addPreferential.setToalFreeAmount(amount);
 				}
