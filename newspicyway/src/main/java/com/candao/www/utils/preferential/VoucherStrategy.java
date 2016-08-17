@@ -55,8 +55,9 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		// 菜单总价
 		BigDecimal orderPrice = new BigDecimal(0);
 		for (TorderDetail torderDetail : orderDetailList) {
+			  BigDecimal dataOrderPrice=torderDetail.getOrderprice()==null?new BigDecimal("0"):torderDetail.getOrderprice();
 			orderPrice = orderPrice
-					.add(torderDetail.getOrderprice().multiply(new BigDecimal(torderDetail.getDishnum())));
+					.add(dataOrderPrice.multiply(new BigDecimal(torderDetail.getDishnum())));
 		}
 
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();

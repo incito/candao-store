@@ -218,7 +218,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		if (ordetail != null) {
 			for (int i = 0; i < inputNum; i++) {
 				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-				BigDecimal orderprice = ordetail.getOrderprice();
+				BigDecimal orderprice = ordetail.getOrderprice()==null?new BigDecimal("0"): ordetail.getOrderprice();
 				amount = amount.add(orderprice);
 				addPreferential = new TorderDetailPreferential(updateId, orderid, dishId, preferentialid, orderprice,
 						"1", 0, 1, new BigDecimal(0), 4);

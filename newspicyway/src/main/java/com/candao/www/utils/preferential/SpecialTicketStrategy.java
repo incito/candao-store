@@ -164,7 +164,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		TorderDetailPreferential detailPreferential = null;
 		TbPreferenceDetail preferenceDetail = dishCouponAmountMap.get(dishId);
 		BigDecimal preInfo = preferenceDetail.getPrice();
-		menuCash = orderMenuONumMap.get(dishId).getOrderprice();
+		menuCash = orderMenuONumMap.get(dishId).getOrderprice()==null?new BigDecimal("0"):orderMenuONumMap.get(dishId).getOrderprice();
 		if (null != preInfo && null != menuCash && menuCash.compareTo(preInfo) > 0) {
 			// // 将此菜品添加到 orderDishMapList，用于后续金额的更新
 			detailPreferential = new TorderDetailPreferential(updateId, orderid, preferenceDetail.getDish(),

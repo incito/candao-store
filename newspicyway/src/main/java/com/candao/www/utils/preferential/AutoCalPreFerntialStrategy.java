@@ -98,12 +98,12 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			if (orderDetailMap.containsKey(detail.getDishid())) {
 
 				BigDecimal currentAmount = orderDetailMap.get(dishId);
-				BigDecimal tempAmount = detail.getOrderprice();
+				BigDecimal tempAmount = detail.getOrderprice()==null?new BigDecimal("0"):detail.getOrderprice();
 				String num = detail.getDishnum();
 				BigDecimal setAmout = tempAmount.divide(new BigDecimal(2)).multiply(new BigDecimal(num));
 				orderDetailMap.put(dishId, currentAmount.add(setAmout));
 			} else {
-				BigDecimal tempAmount = detail.getOrderprice();
+				BigDecimal tempAmount = detail.getOrderprice()==null?new BigDecimal("0"):detail.getOrderprice();
 				Double num = Double.valueOf(detail.getDishnum());
 				if (num > 1) {
 					BigDecimal setAmout = tempAmount.divide(new BigDecimal(2)).multiply(new BigDecimal(num - 1));
