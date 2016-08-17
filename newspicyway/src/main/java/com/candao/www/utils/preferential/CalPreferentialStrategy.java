@@ -55,7 +55,8 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			//菜单价格
 			BigDecimal orderPrice=new BigDecimal("0");
 			for(TorderDetail torderDetail:orderDetailList){
-				orderPrice=orderPrice.add(torderDetail.getOrderprice().multiply(new BigDecimal(torderDetail.getDishnum())));
+				  BigDecimal dataOrderPrice=torderDetail.getOrderprice()==null?new BigDecimal("0"):torderDetail.getOrderprice();
+				orderPrice=orderPrice.add(dataOrderPrice.multiply(new BigDecimal(torderDetail.getDishnum())));
 			}
 			
 			 String updateId=params.containsKey("updateId")?(String)params.get("updateId"):IDUtil.getID();
