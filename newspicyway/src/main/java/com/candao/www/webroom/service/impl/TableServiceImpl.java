@@ -154,12 +154,12 @@ public class TableServiceImpl implements TableService {
 //		map.put("status", "1");
 		List<Map<String, Object>> orignalMap = tableDao.find(map);
 		if(orignalMap == null || orignalMap.size() == 0 || orignalMap.size() > 1){
-			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("目标餐台不存在!"));
 		}
 		
 		Map<String, Object> map2 =  torderMapper.findOne(String.valueOf(orignalMap.get(0).get("orderid")));
 		if(map2 == null || map2.size() == 0 || "3".equals(String.valueOf(map2.get("orderstatus")))){
-			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("餐台信息错误"));
 		}
 		
 //		Map<String, Object> orignalMap2 =  orignalMap.get(0);
@@ -170,7 +170,7 @@ public class TableServiceImpl implements TableService {
 		map.put("status", "0");
 		List<Map<String, Object>> currentMap = tableDao.find(map);
 		if(currentMap == null || currentMap.size() == 0 || currentMap.size() > 1){
-			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+			return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("此桌已开台"));
 		}
 		
 		
@@ -184,7 +184,7 @@ public class TableServiceImpl implements TableService {
        result = String.valueOf(mapParam.get("result"));
        
        if(!"0".equals(result)){
-    	   return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+    	   return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("换台失败"));
        }else {
     	   if(toperationLogService.save(toperationLog)){
     		   String userId = (String)map2.get("userid");
@@ -203,7 +203,7 @@ public class TableServiceImpl implements TableService {
         	   printTableChangeBill(pj,"7");
 		   	   return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
 		   	}else{
-		   		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+		   		return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("换台失败end"));
 		   	}
 	    }
 	}
