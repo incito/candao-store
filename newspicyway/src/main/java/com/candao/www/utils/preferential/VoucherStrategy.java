@@ -2,6 +2,7 @@ package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,9 +67,11 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		for (int i = 0; i < preferentialNum; i++) {
 
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+			Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+					: new Date());
 			TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, "",
 					(String) paraMap.get("preferentialid"), amount, String.valueOf(orderDetailList.size()), 1, 1,
-					discount, 0);
+					discount, 0,insertime);
 			// 设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) preMap.get("name"));

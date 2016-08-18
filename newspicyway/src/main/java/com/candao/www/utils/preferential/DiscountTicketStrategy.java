@@ -2,6 +2,7 @@ package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
 			TdishDao tdishDao) {
 		String orderid = (String) paraMap.get("orderid"); // 账单号
-		String preferentialid = (String) paraMap.get("preferentialid"); //优惠活动id
+		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
 		List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
@@ -87,6 +88,7 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		BigDecimal amountCount = new BigDecimal(0.0);
 		// 优惠折扣菜单个数
 		double tempDishNum = 0;
+		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		for (TorderDetail d : orderDetailList) {
 			nd = noDiscountDishMap.get(d.getDishid());
 			if (null == nd) {
@@ -109,24 +111,37 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1) {
 			amount = amountCount.subtract(bd)
 					.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
-			//是重新计算优惠还是，新加优惠
+			// 是重新计算优惠还是，新加优惠
+
+			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+			Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+					: new Date());
+			TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
+					preferentialid, amount, String.valueOf(tempDishNum), 1, 1, discount, 0,insertime);
+			// 设置优惠名称
+			TbPreferentialActivity activity = new TbPreferentialActivity();
+			activity.setName((String) tempMap.get("name"));
+			addPreferential.setActivity(activity);
+			addPreferential.setCoupondetailid(
+					(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
+
+			// 设置优免金额
+			addPreferential.setToalFreeAmount(amount);
+
+			detailPreferentials.add(addPreferential);
+
+		} else {
+			// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
+			if(paraMap.containsKey("updateId")){
+				Map<String, Object> delMap = new HashMap<>();
+				delMap.put("DetalPreferentiald",  paraMap.get("updateId"));
+				delMap.put("orderid", orderid);
+				orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
+			}
 		
-		   String updateId=paraMap.containsKey("updateId")?(String)paraMap.get("updateId"):IDUtil.getID();
-			 TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid,
-						amount, String.valueOf(tempDishNum), 1, 1, discount, 0);
-			 	//设置优惠名称
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) tempMap.get("name"));
-				addPreferential.setActivity(activity);
-				addPreferential.setCoupondetailid((String) (tempMapList.size()>1?tempMap.get("preferential"):tempMap.get("id")));
-				
-				//设置优免金额
-				addPreferential.setToalFreeAmount(amount);
-			 List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-			 detailPreferentials.add(addPreferential);
-			result.put("detailPreferentials",detailPreferentials);
-			result.put("amount", amount);
 		}
+		result.put("detailPreferentials", detailPreferentials);
+		result.put("amount", amount);
 		return result;
 	}
 
