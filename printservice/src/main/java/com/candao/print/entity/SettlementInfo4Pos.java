@@ -125,8 +125,8 @@ public class SettlementInfo4Pos implements Serializable {
                 it.setDishunit(StringUtils.tokenizeToStringArray(it.getDishunit(), "#")[0]);
                 it.setDishnum(dishnum + dishunit);
                 if ("1".equals(it.getPricetype())) {
-					it.setTitle(it.getTitle()+"(赠)");
-				}
+                    it.setTitle(it.getTitle() + "(赠)");
+                }
             }
         }
         // 结算信息初始化
@@ -136,18 +136,18 @@ public class SettlementInfo4Pos implements Serializable {
             String dueamount = orderinfo.getDueamount();
             String ssamount = orderinfo.getSsamount();
             if (!StringUtils.isEmpty(dueamount)) {
-                settlementInfos.add(getSettlementInfo("总额", dueamount));
+                settlementInfos.add(getSettlementInfo("总额:", "￥" + dueamount));
             }
             switch (type) {
                 case 1: {
                     if (!StringUtils.isEmpty(orderinfo.getPayamount2()) && 1 == new BigDecimal(orderinfo.getPayamount2()).compareTo(new BigDecimal("0"))) {
-                        settlementInfos.add(getSettlementInfo("四舍五入", orderinfo.getPayamount2()));
+                        settlementInfos.add(getSettlementInfo("四舍五入:", "￥" + orderinfo.getPayamount2()));
                     }
                     break;
                 }
                 case 2: {
                     if (!StringUtils.isEmpty(orderinfo.getPayamount()) && 1 == new BigDecimal(orderinfo.getPayamount()).compareTo(new BigDecimal("0"))) {
-                        settlementInfos.add(getSettlementInfo("抹零", orderinfo.getPayamount()));
+                        settlementInfos.add(getSettlementInfo("抹零:", "￥" + orderinfo.getPayamount()));
                     }
                     break;
                 }
@@ -155,14 +155,17 @@ public class SettlementInfo4Pos implements Serializable {
                     break;
 
             }
+            if (!StringUtils.isEmpty(orderinfo.getTipPaid()) && 1 == new BigDecimal(orderinfo.getTipPaid()).compareTo(new BigDecimal("0"))) {
+                settlementInfos.add(getSettlementInfo("小费:", "￥" + orderinfo.getTipPaid()));
+            }
             if (!StringUtils.isEmpty(orderinfo.getZdAmount()) && 1 == new BigDecimal(orderinfo.getZdAmount()).compareTo(new BigDecimal("0"))) {
-                settlementInfos.add(getSettlementInfo("赠送金额", orderinfo.getZdAmount()));
+                settlementInfos.add(getSettlementInfo("赠送金额:", "￥" + orderinfo.getZdAmount()));
             }
             float amount = new BigDecimal(dueamount).subtract(new BigDecimal(ssamount)).floatValue();
             if (amount >= 0) {
-                settlementInfos.add(getSettlementInfo("总优惠", String.valueOf(amount)));
+                settlementInfos.add(getSettlementInfo("总优惠:", "￥" + String.valueOf(amount)));
             }
-            settlementInfos.add(getSettlementInfo("实收：", ssamount));
+            settlementInfos.add(getSettlementInfo("实收:：", "￥" + ssamount));
         }
 
     }

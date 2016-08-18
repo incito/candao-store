@@ -20,7 +20,7 @@
 
 	<row:row description="单据号">
 		<align description="对齐">ALIGN_CENTER</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">LARGE</font>
 		<locations description="位置">
 			<list>
 				<value>6</value>
@@ -250,15 +250,19 @@
 			<font description="字体大小">SMALL</font>
 			<locations description="结算方式">
 				<list>
-					<value>10</value>
-					<value>10</value>
-					<value>20</value>
+					<value>15</value>
+					<value>1</value>
+					<value>8</value>
+					<value>1</value>
+					<value>15</value>
 				</list>
 			</locations>
 			<datas description="数据">
 				<list>
 					<value>#{it.itemDesc}</value>
+					<value> </value>
 					<value>#{it.payamount}</value>
+					<value> </value>
 					<value>#{it.bankcardno}</value>
 				</list>
 			</datas>
@@ -292,21 +296,6 @@
 			</list>
 		</datas>
 	</row:row>
-	<!-- 分割线 -->
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="位置">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
 	<!-- 结算备注 -->
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.settlementInfos}">
@@ -316,12 +305,14 @@
 			<locations description="结算备注">
 				<list>
 					<value>15</value>
-					<value>25</value>
+					<value>1</value>
+					<value>24</value>
 				</list>
 			</locations>
 			<datas description="数据">
 				<list>
 					<value>#{it.name}</value>
+					<value> </value>
 					<value>#{it.value}</value>
 				</list>
 			</datas>
