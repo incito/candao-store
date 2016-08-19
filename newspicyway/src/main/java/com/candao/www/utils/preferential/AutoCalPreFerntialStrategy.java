@@ -2,6 +2,7 @@ package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				for (String keyset : orderDetailMap.keySet()) {
 					String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId")
 							: IDUtil.getID();
+					Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+							: new Date());
 					if (dishIDColumindMap.containsKey(keyset)) {
 						// 获取菜单价格
 						amount = amount.add(orderDetailMap.get(keyset));
@@ -149,7 +152,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 						if (orderDetailMap.get(keyset).doubleValue() > 0) {
 							TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, keyset,
 									preferentialid, orderDetailMap.get(keyset), String.valueOf("1"), 0, 1,
-									new BigDecimal(1), 2);
+									new BigDecimal(1), 2,insertime);
 							TbPreferentialActivity activity = new TbPreferentialActivity();
 							activity.setName((String) res.get("name"));
 							torder.setActivity(activity);
@@ -177,6 +180,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+		Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+				: new Date());
 		BigDecimal amount = new BigDecimal("0");
 		if (!doublePots.isEmpty()) {
 			List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(params);
@@ -189,7 +194,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 
 						TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid,
 								detail.getDishid(), preferentialid, tempAmount, String.valueOf("1"), 0, 1,
-								new BigDecimal(1), 2);
+								new BigDecimal(1), 2,insertime);
 						TbPreferentialActivity activity = new TbPreferentialActivity();
 						activity.setName((String) res.get("name"));
 						torder.setActivity(activity);

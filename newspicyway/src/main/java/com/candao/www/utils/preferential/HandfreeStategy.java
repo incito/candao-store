@@ -2,6 +2,7 @@ package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,8 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				&& StringUtils.isEmpty(giveDish)) {
 			BigDecimal decimalDisrate = new BigDecimal(disrate);
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-
+			Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+					: new Date());
 			// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
 			// 手工输入折扣优免
 			if (amountCount.compareTo(BigDecimal.ZERO) > 0
@@ -85,7 +87,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				amount = amountCount.subtract(bd)
 						.multiply(new BigDecimal("1").subtract(decimalDisrate.divide(new BigDecimal(10))));
 				TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
-						preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
+						preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1,insertime);
 				// 设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
@@ -103,9 +105,11 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			// 手工输入现金优免
 			BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+			Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+					: new Date());
 			amount = cashprelAmout;
 			TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
-					preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1);
+					preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1,insertime);
 			// 设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) tempMap.get("name"));
@@ -162,7 +166,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				if (orderDishNum < userPreferId) {
 					// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
 					Map<String, Object> delMap = new HashMap<>();
-					delMap.put("DetalPreferentiald", dataDishId);
+					delMap.put("DetalPreferentiald", paraMap.get("updateId"));
 					delMap.put("orderid", orderid);
 					orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 				} else {
@@ -218,10 +222,12 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		if (ordetail != null) {
 			for (int i = 0; i < inputNum; i++) {
 				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+				Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+						: new Date());
 				BigDecimal orderprice = ordetail.getOrderprice()==null?new BigDecimal("0"): ordetail.getOrderprice();
 				amount = amount.add(orderprice);
 				addPreferential = new TorderDetailPreferential(updateId, orderid, dishId, preferentialid, orderprice,
-						"1", 0, 1, new BigDecimal(0), 4);
+						"1", 0, 1, new BigDecimal(0), 4,insertime);
 				// 设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));

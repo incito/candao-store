@@ -169,7 +169,9 @@ public class Printer {
 
     protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         outputStream.write(PrinterConstant.AUTO_STATUS);
-        outputStream.write(new byte[]{27, 27});
+        //added by caicai
+        //省纸
+        /*outputStream.write(new byte[]{27, 27});*/
         for (Object o : msg) {
             if (null == o) {
                 o = "";

@@ -65,7 +65,7 @@ public class TorderDetailPreferential implements Serializable {
 	}
 
 	public TorderDetailPreferential(String id, String orderid, String dishid, String preferential, BigDecimal deAmount,
-			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom) {
+			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom,Date insertime) {
 		this.orderid = orderid;
 		this.preferential = preferential;
 		this.dishid = dishid;
@@ -76,7 +76,7 @@ public class TorderDetailPreferential implements Serializable {
 		this.discount = discount;
 		this.isCustom = isCustom;
 		this.id = id;
-		this.insertime = new Date();
+		this.insertime = insertime;
 	}
 
 	public String getOrderid() {

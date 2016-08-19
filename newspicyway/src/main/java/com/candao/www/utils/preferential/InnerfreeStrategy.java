@@ -2,6 +2,7 @@ package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,13 +73,14 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 		// 设置金额
 		if (discount != null && discount.doubleValue() > 0) {
 			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-
+			Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+					: new Date());
 			if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1){
 				// 折扣计算方式
 				amount = amountCount.subtract(bd)
 						.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
 				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, amount,
-						String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+						String.valueOf(orderDetailList.size()), 1, 1, discount, 0,insertime);
 				//设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
@@ -105,8 +107,10 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			amount=caseAmount.multiply(new BigDecimal(preferentialNum));
 			for(int i=0;i<preferentialNum;i++){
 				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
+				Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
+						: new Date());
 				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, caseAmount,
-						String.valueOf(orderDetailList.size()), 1, 1, discount, 0);
+						String.valueOf(orderDetailList.size()), 1, 1, discount, 0,insertime);
 				//设置优惠名称
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) tempMap.get("name"));
