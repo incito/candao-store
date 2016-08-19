@@ -1778,6 +1778,12 @@ public class PadInterfaceController {
             String username = params.get("username");
             String password = params.get("password");
             String loginType = params.get("loginType");
+            if(!"030202".equals(loginType)){
+            	TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+                if(tbOpenBizLog == null){
+                	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("未开业，不能登录"));
+                }
+            }
             Map<String, Object> userMap = userService.validatePasswordLoginTypeByAccount(username, password, loginType);
             Map<String, Object> map = new HashMap<>();
             if (Boolean.valueOf(String.valueOf(userMap.get("success")))) {
