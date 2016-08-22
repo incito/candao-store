@@ -12,7 +12,9 @@ public class Row implements Cloneable{
 	// 数据
 	private String[] datas;
 	// 是否换行
-	private boolean lineFeed;
+	private boolean lineFeed = true;
+	//是否trim
+	private boolean trim = false;
 
 	public String getAlign() {
 		return align;
@@ -70,4 +72,11 @@ public class Row implements Cloneable{
 		return (Row)super.clone();
 	}
 
+	public boolean isTrim() {
+		return trim;
+	}
+
+	public void setTrim(boolean trim) {
+		this.trim = trim;
+	}
 }

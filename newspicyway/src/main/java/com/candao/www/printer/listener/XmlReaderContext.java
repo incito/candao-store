@@ -37,6 +37,18 @@ public class XmlReaderContext {
 	public static final String NON_PRIMITIVE_INTEGER_ARRAY = "[Ljava.lang.Integer;";
 	
 	public static final String NON_PRIMITIVE_STRING_ARRAY = "[Ljava.lang.String;";
+
+	public static final String PRIMITIVE_BOOLEAN = "boolean";
+
+	public static final String PLACEHOLDER_METHOD_PREFIX = "(";
+
+	public static final String PLACEHOLDER_METHOD_SUBFIX = ")";
+
+	public static final String PLACEHOLDER_PARAM_SEPERATOR = ",";
+
+	public static final String PLACEHOLDER_TRUE = "TRUE";
+
+	public static final String PLACEHOLDER_FALSE = "FALSE";
 	
 	public XmlReaderContext(XmlTemplateDefinitionReader reader ,NamespaceHandlerResolver resolver ){
 		this.reader = reader;
