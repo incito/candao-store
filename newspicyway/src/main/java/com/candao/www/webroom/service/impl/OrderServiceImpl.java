@@ -175,8 +175,15 @@ public class OrderServiceImpl implements OrderService {
 	// rollbackFor=Exception.class)
 	@Override
 	public String startOrder(Torder tOrder) {
-
 		Map<String, Object> mapRet = new HashMap<>();
+
+		Map<String, Object> validateResult = userService.validateLoginTypeByAccount(tOrder.getUsername(), PropertiesUtils.getValue("logintype.030101"));
+		if (!Boolean.valueOf(String.valueOf(validateResult.get("success")))) {
+			String msg = String.valueOf(validateResult.get("msg"));
+			mapRet = ReturnMap.getFailureMap(msg);
+			logger.error("开台失败，"+ msg);
+			return JacksonJsonMapper.objectToJson(mapRet);
+		}
 
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if (tbOpenBizLog == null) {

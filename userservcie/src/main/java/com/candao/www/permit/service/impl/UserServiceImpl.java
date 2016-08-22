@@ -129,6 +129,43 @@ public class UserServiceImpl implements UserService {
 		return resultMap;
 	}
 
+	public Map<String, Object> validateLoginTypeByAccount(String username, String loginType) {
+		/*
+		 * 验证密码
+		 */
+		Map<String, Object> queryMap = new HashMap<String, Object>();
+		queryMap.put("jobNumber", username);
+		List<User> userList = userDao.queryUserList(queryMap);
+		if (userList.isEmpty()) {
+			Map<String, Object> resultMap = new HashMap<String, Object>();
+			resultMap.put("success", false);
+			resultMap.put("msg", "账号不存在");
+			return resultMap;
+		}
+		User user = userList.get(0);
+		/*
+		 * 验证权限
+		 */
+		Map<String, Object> queryMap2 = new HashMap<String, Object>();
+		queryMap2.put("account", user.getAccount());
+		// 获取登录方式对应的菜单编码
+		String code = PropertiesUtils.getValue("logintype." + loginType);
+		String loginTypeText = PropertiesUtils.getValue("logintypetext." + loginType);
+		queryMap2.put("code", code);
+		Integer funTotal = functionDao.getFunctionTotal(queryMap2);
+		if (funTotal != 1) {
+			Map<String, Object> resultMap = new HashMap<String, Object>();
+			resultMap.put("success", false);
+			resultMap.put("msg", "没有" + loginTypeText + "权限");
+			return resultMap;
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("success", true);
+		resultMap.put("msg", "验证成功");
+		resultMap.put("name", userList.get(0).getName());
+		return resultMap;
+	}
+
 	/**
 	 * 验证密码,根据员工号、密码
 	 * 
