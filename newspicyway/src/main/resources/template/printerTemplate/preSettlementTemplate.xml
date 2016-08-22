@@ -20,7 +20,7 @@
 	<!-- 单据类型 -->
 	<row:row description="单据号">
 		<align description="对齐">ALIGN_CENTER</align>
-		<font description="字体大小">SMALL</font>
+		<font description="字体大小">LARGE</font>
 		<locations description="位置">
 			<list>
 				<value>6</value>
@@ -205,9 +205,9 @@
 			<list>
 				<value>14</value>
 				<value>1</value>
-				<value>4</value>
+				<value>5</value>
 				<value>1</value>
-				<value>9</value>
+				<value>8</value>
 				<value>1</value>
 				<value>10</value>
 			</list>
@@ -233,9 +233,9 @@
 				<list>
 					<value>14</value>
 					<value>1</value>
-					<value>4</value>
+					<value>5</value>
 					<value>1</value>
-					<value>9</value>
+					<value>8</value>
 					<value>1</value>
 					<value>10</value>
 				</list>
@@ -292,12 +292,14 @@
 			<locations description="结算备注">
 				<list>
 					<value>20</value>
-					<value>20</value>
+					<value>1</value>
+					<value>19</value>
 				</list>
 			</locations>
 			<datas description="优惠备注">
 				<list>
 					<value>#{it.activity.name}</value>
+					<value> </value>
 					<value>#{it.deAmount}</value>
 				</list>
 			</datas>
@@ -341,12 +343,14 @@
 			<locations description="结算备注">
 				<list>
 					<value>15</value>
-					<value>25</value>
+					<value>1</value>
+					<value>24</value>
 				</list>
 			</locations>
 			<datas description="结算备注">
 				<list>
 					<value>#{it.name}</value>
+					<value> </value>
 					<value>#{it.value}</value>
 				</list>
 			</datas>

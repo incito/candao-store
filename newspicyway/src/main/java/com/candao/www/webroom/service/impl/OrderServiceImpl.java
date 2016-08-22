@@ -1298,6 +1298,7 @@ public class OrderServiceImpl implements OrderService {
 			setMap.put("preferentialAmt", operPreferentialResult.getAmount().toString());
 			setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
 			setMap.put("updateId", branchDataSyn.getId());
+			setMap.put("insertime", branchDataSyn.getInsertime());
 			setMap.put("resultAmount", "0");
 			if (branchDataSyn.getIsCustom() == 1) {
 				setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());

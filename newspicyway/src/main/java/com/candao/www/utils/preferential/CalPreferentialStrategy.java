@@ -2,6 +2,7 @@ package com.candao.www.utils.preferential;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,16 +56,19 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			//菜单价格
 			BigDecimal orderPrice=new BigDecimal("0");
 			for(TorderDetail torderDetail:orderDetailList){
-				orderPrice=orderPrice.add(torderDetail.getOrderprice().multiply(new BigDecimal(torderDetail.getDishnum())));
+				  BigDecimal dataOrderPrice=torderDetail.getOrderprice()==null?new BigDecimal("0"):torderDetail.getOrderprice();
+				orderPrice=orderPrice.add(dataOrderPrice.multiply(new BigDecimal(torderDetail.getDishnum())));
 			}
 			
 			 String updateId=params.containsKey("updateId")?(String)params.get("updateId"):IDUtil.getID();
+				Date insertime = (params.containsKey("insertime") ?  (Date) params.get("insertime")
+						: new Date());
 			List<TorderDetailPreferential> listRest = new ArrayList<>();
 			List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
 			Map tempMap = tempMapList.get(0);
 			TorderDetailPreferential detailPreferential = new TorderDetailPreferential(updateId, orderid, "",
 					(String) params.get("preferentialid"), amout, String.valueOf(orderDetailList.size()), 1, 1,
-					new BigDecimal(0), 1);
+					new BigDecimal(0), 1,insertime);
 			//设置优惠名称
 			TbPreferentialActivity activity = new TbPreferentialActivity();
 			activity.setName((String) tempMap.get("name"));

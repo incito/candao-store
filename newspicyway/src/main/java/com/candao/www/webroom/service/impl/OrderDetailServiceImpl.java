@@ -1387,12 +1387,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinter(paramMap);
             if (printers != null) {
                 for (TbPrinterManager tbPrinter : printers) {
-                    if (IPList != null) {
+                 /*   if (IPList != null) {
                         if (IPList.contains(tbPrinter.getIpaddress())) {
                             continue;
                         }
                         IPList.add(tbPrinter.getIpaddress());
-                    }
+                    }*/
 
                     if (!"(退)".equals(printObj.getAbbrbillName())) {
                         int printNum = (tbPrinter.getPrintNum() == null ? 0 : tbPrinter.getPrintNum()) + 1;
@@ -1467,27 +1467,28 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
 
-                   // int temp = 0;//默认表示还没有打印
+                    int temp = 0;//默认表示还没有打印
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
 
+                   String printid= tbPrinter.getPrinterid();
                     for (PrintDish printDish : pdList) {
-                    	/* 
-                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printDish.getOrderseq());
+                    	 
+                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid);
                         String abbrname = printDish.getAbbrname() == null ? "" : printDish.getAbbrname();
-                         * if (obj != null && !abbrname.contains("退")) {//退菜单除外
+                         if (obj != null && !abbrname.contains("退")) {//退菜单除外
                             temp = 1;//已经打印过
                             break;
-                        }*/
+                        }
                         logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
                     }
-                    /*if (temp == 1) {
+                    if (temp == 1) {
                         continue;//已经打印过了
-                    }*/
+                    }
                     new Thread(new PrintThread(printObj)).run();
 
-                   /* for (PrintDish printDish : pdList) {
-                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printDish.getOrderseq(), 1);//已经打印的菜品
-                    }*/
+                    for (PrintDish printDish : pdList) {
+                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
+                    }
                 }
             }
             if (refundDish == 1) {

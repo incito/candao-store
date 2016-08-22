@@ -372,21 +372,6 @@
 			</list>
 		</datas>
 	</row:row>
-	<!-- 分割线 -->
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.orderJson}">
 		<row:row description="品项">
@@ -440,21 +425,6 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<!-- 分割线 -->
-	<row:row description="分割线">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="分割线">
-			<list>
-				<value>40</value>
-			</list>
-		</locations>
-		<datas description="分割线">
-			<list>
-				<value>---------------------------------------</value>
-			</list>
-		</datas>
-	</row:row>
 	<foreach:foreach item="it"
 		value="#{obj.settlementInfo4Pos.jSJson}">
 		<row:row description="品项">
