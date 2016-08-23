@@ -301,14 +301,14 @@ public class OrderServiceImpl implements OrderService {
 			order.setTableids(tableId);
 			order.setOrderid(orderId);
 			order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
-			order.setChildNum(tOrder.getChildNum());
+			order.setChildNum(tOrder.getChildNum()==null?0:tOrder.getChildNum());
 			order.setCurrenttableid(tableId);
 			order.setCustnum((tOrder.getManNum() == null ? 0 : tOrder.getManNum())
 					+ (tOrder.getWomanNum() == null ? 0 : tOrder.getWomanNum()));
-			order.setManNum(tOrder.getManNum());
+			order.setManNum(tOrder.getManNum()==null?0:tOrder.getManNum());
 			order.setSpecialrequied(tOrder.getSpecialrequied());
 			order.setUserid(tOrder.getUsername());
-			order.setWomanNum(tOrder.getWomanNum());
+			order.setWomanNum(tOrder.getWomanNum()==null?0:tOrder.getWomanNum());
 			order.setBranchid(Integer.valueOf(PropertiesUtils.getValue("current_branch_id")));
 			// 根据数据字典配置 得出早市还是晚市
 			order.setShiftid(shiftid);
@@ -926,13 +926,13 @@ public class OrderServiceImpl implements OrderService {
 			order.setTableids(tableId);
 			order.setOrderid(orderId);
 			order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
-			order.setChildNum(tOrder.getChildNum());
+			order.setChildNum(tOrder.getChildNum()==null?0:tOrder.getChildNum());
 			order.setCurrenttableid(tableId);
 			order.setCustnum(tOrder.getCustnum());
-			order.setManNum(tOrder.getManNum());
+			order.setManNum(tOrder.getManNum()==null?0:tOrder.getManNum());
 			order.setSpecialrequied(tOrder.getSpecialrequied());
 			order.setUserid(tOrder.getUsername());
-			order.setWomanNum(tOrder.getWomanNum());
+			order.setWomanNum(tOrder.getWomanNum()==null?0:tOrder.getWomanNum());
 			order.setBranchid(Integer.valueOf(PropertiesUtils.getValue("current_branch_id")));
 			// 根据数据字典配置 得出早市还是晚市
 			order.setShiftid(shiftid);
