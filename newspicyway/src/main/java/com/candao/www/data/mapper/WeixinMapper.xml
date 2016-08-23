@@ -60,7 +60,7 @@
 	select t.id,t.code,t.name,t.type_name,d.discount
 		from t_p_preferential_activity t
 		LEFT OUTER JOIN t_p_preferential_detail  d on t.id=d.preferential
-		where t.type=#{activityCode} and now()&gt;t.starttime and now()&lt;date(t.endtime)
+		where t.type=#{activityCode} and ((now()&gt;t.starttime and now()&lt;date(t.endtime)) or (t.starttime is null and t.endtime is null))
 		ORDER BY t.starttime desc
 		limit 1
 	</select>
