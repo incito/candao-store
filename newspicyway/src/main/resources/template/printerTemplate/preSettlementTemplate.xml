@@ -88,7 +88,7 @@
 				<value>人数:</value>
 				<value>#{obj.posData.userOrderInfo.customerNumber}</value>
 				<value>服务员:</value>
-				<value>#{obj.posData.userOrderInfo.fullName}</value>
+				<value>#{obj.posData.userOrderInfo.waiterName}</value>
 			</list>
 		</datas>
 	</row:row>
