@@ -473,8 +473,8 @@ public class Print4POSServiceImpl implements Print4POSService {
                     param.clear();
                     param.put("printertype", "10");
                     sendToPrint(param, obj);
-                    // 更新打印数量
-                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
+//                    // 更新打印数量
+//                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
                 }
             }
         }

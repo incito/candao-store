@@ -518,9 +518,9 @@ public class PoiExcleTest {
 					row.getCell(7).setCellStyle(stylerow);
 				}
 			}
-			
+
 			//人均
-			if (baseList.get(i).getPerCapita().equals("null") && baseList.get(i).getPerCapita().equals("") ) {
+			if (baseList.get(i).getPerCapita() == null || "null".equals(baseList.get(i).getPerCapita()) || "".equals(baseList.get(i).getPerCapita())) {
 				row.createCell((short) (8)).setCellValue("");
 			} else {
 				row.createCell((short) (8)).setCellValue(baseList.get(i).getPerCapita().toString());
