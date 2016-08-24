@@ -899,6 +899,8 @@
 	</update>
 
 	<select id="findOrderByInfo" parameterType="map" resultType="java.util.HashMap">
+
+
 		SELECT
 		tor.userid,
 		tor.begintime,
@@ -913,12 +915,23 @@
 		tor.childNum,
 		tor.mannum,
 		tab.`status`,
+		tbue.`name`,
 		tinv.invoice_title
 		FROM
 		t_order tor
 		LEFT JOIN t_table tab ON tab.orderid = tor.orderid
 		LEFT JOIN t_tablearea tba ON tba.areaid = tab.areaid
 		LEFT JOIN t_invoice tinv ON tinv.orderid = tor.orderid
+		LEFT JOIN (
+		SELECT
+		tbu.`name`,
+		tbe.branch_id,
+		tbe.job_number
+		FROM
+		t_b_user tbu
+		LEFT JOIN t_b_employee tbe ON tbu.id=tbe.user_id AND
+		tbe.branch_id=#{branchId}) tbue
+		ON tbue.job_number=tor.userid
 		WHERE
 		tor.orderid = #{orderid};
 	</select>
