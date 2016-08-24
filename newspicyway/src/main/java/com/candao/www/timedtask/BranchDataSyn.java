@@ -560,7 +560,9 @@ public class BranchDataSyn {
 		// 将数据转换成json
 		String json = JSON.toJSONString(synSqlObject);
 		// 上传数据到总店
+		logger.info("start数据上传"+json);
 		String result = upToData(json);
+		logger.info("snail上传数据到总店"+result);
 
 		return result;
 	}
