@@ -58,13 +58,11 @@ public class DishOpServiceImpl implements DishService {
         LOGGER.info("###getAllWmFood userId={}###", userId);
         try {
             dishMapper.updateDishPY();
-            List<Map> mapList = dishMapper.getAllWmFood();
-            responseJsonData.setOrderJson(mapList);
         } catch (Exception e) {
-            responseJsonData.setData("0");
-            responseJsonData.setInfo("获取全部菜品异常");
-            LOGGER.error("###getAllWmFood userId={},error={}###", userId, e.getCause().getStackTrace());
+            LOGGER.error("###getAllWmFood userId={},error={}###", userId, "计算菜品拼音首字母出错！" + e.getCause().getStackTrace());
         }
+        List<Map> mapList = dishMapper.getAllWmFood();
+        responseJsonData.setOrderJson(mapList);
         String s = JSON.toJSONString(responseJsonData);
         LOGGER.info("###getAllWmFood ###RESPONSE### result={}", s);
         return s;
