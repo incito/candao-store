@@ -231,15 +231,19 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="结算方式">
 			<list>
-				<value>10</value>
-				<value>10</value>
-				<value>20</value>
+				<value>15</value>
+				<value>1</value>
+				<value>8</value>
+				<value>1</value>
+				<value>15</value>
 			</list>
 		</locations>
 		<datas description="数据">
 			<list>
 				<value>结算方式</value>
+				<value> </value>
 				<value>金额</value>
+				<value> </value>
 				<value>备注</value>
 			</list>
 		</datas>

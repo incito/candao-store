@@ -161,10 +161,10 @@ public class SettlementInfo4Pos implements Serializable {
             if (!StringUtils.isEmpty(orderinfo.getZdAmount()) && 1 == new BigDecimal(orderinfo.getZdAmount()).compareTo(new BigDecimal("0"))) {
                 settlementInfos.add(getSettlementInfo("赠送金额:", "￥" + orderinfo.getZdAmount()));
             }
-            float amount = new BigDecimal(dueamount).subtract(new BigDecimal(ssamount)).floatValue();
-            if (amount >= 0) {
-                settlementInfos.add(getSettlementInfo("总优惠:", "￥" + String.valueOf(amount)));
-            }
+//            float amount = new BigDecimal(dueamount).subtract(new BigDecimal(ssamount)).floatValue();
+//            if (amount >= 0) {
+            settlementInfos.add(getSettlementInfo("总优惠:", "￥" + (StringUtils.isEmpty(dueamount) ? "0.00" : dueamount)));
+//            }
             settlementInfos.add(getSettlementInfo("实收:：", "￥" + ssamount));
         }
 
