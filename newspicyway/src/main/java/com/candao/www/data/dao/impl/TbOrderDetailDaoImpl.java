@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.candao.common.dao.DaoSupport;
 import com.candao.common.page.Page;
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailSimple;
@@ -308,6 +309,7 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	public <T, K, V> List<T> findOrderByInfo(String param) {
 		Map<String,String> params = new HashMap<String,String>();
 		params.put("orderid", param);
+		params.put("branchId", PropertiesUtils.getValue("current_branch_id"));
 		return dao.find(PREFIX + ".findOrderByInfo", params);
 	}
 

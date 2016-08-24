@@ -1246,6 +1246,7 @@ public class OrderServiceImpl implements OrderService {
 			outresultMap.put("areaname", resultMap.get("areaname"));
 			outresultMap.put("tableName", resultMap.get("tableName"));
 			outresultMap.put("fullName", resultMap.get("userid"));
+			outresultMap.put("waiterName", resultMap.get("name"));
 			/** 预打印 **/
 			int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
 			outresultMap.put("befprintcount", printcount + 1);
