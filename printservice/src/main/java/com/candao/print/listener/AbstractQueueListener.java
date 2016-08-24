@@ -34,8 +34,13 @@ public abstract class AbstractQueueListener implements QueueListener{
     protected abstract void printBusinessData(PrintObj object, PrintData socketOut, PrintData writer,ListenerTemplate template) throws Exception;
     
     public void write(PrintData writer,Object[] msg){
+		write(writer,msg,false);
+	}
+	public void write(PrintData writer,Object[] msg,boolean istrim){
 		if (msg != null && msg.length != 0) {
 			for (int i = 0; i < msg.length; i++) {
+				if (istrim)
+					msg[i] = msg[i].toString().trim();
 				writer.write(msg[i].toString());
 				writer.write("\r\n");
 			}

@@ -35,14 +35,19 @@ public class NormalDishListener extends AbstractQueueListener {
 		//居中
 		socketOut.write(template.setAlignCenter());
 		// 单号
-		if ("退菜单".equals(billName)) {
-			writer.write("===" + StringUtils.bSubstring2(billName, 3) + "===\r\n");
+		billName = billName + "(" + object.getPrintName() + ")";
+		if (billName.contains("退菜单")) {
+			billName = "===" + StringUtils.bSubstring2(billName, billName.length()) + "===";
 		} else {
-			writer.write( StringUtils.bSubstring2(billName, billName.length()) + "\r\n");
+			billName = StringUtils.bSubstring2(billName, billName.length());
 		}
-		// 档口名称
-		Object[] portName = template.getPrinterPortMsg(object);
-		this.write(writer, portName);
+		//默认20个长度
+		String[] portsMsg = StringUtils.getLineFeedText(new String[]{billName}, new Integer[]{20});
+		write(writer, portsMsg);
+
+//		// 档口名称
+//		Object[] portName = template.getPrinterPortMsg(object);
+//		this.write(writer, portName);
 
 		writer.flush();
 		socketOut.write(template.setClearfont());

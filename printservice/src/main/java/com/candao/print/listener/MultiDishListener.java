@@ -33,11 +33,14 @@ public class MultiDishListener extends AbstractQueueListener {
 		// 居中
 		socketOut.write(template.setAlignCenter());
 		// 单号
-		writer.write(StringUtils.bSubstring2(billName, billName.length())+"\r\n");
-		writer.flush();//
-		// 档口名称
-		Object[] portName = template.getPrinterPortMsg(object);
-		this.write(writer, portName);
+		billName = billName + object.getPrintName();
+		//默认20个长度
+		String[] portsMsg = StringUtils.getLineFeedText(new String[]{StringUtils.bSubstring2(billName, billName.length())}, new Integer[]{20});
+		write(writer, portsMsg);
+		writer.flush();
+//		// 档口名称
+//		Object[] portName = template.getPrinterPortMsg(object);
+//		this.write(writer, portName);
 		// 居左
 		socketOut.write(template.setAlignLeft());
 		socketOut.write(template.setClearfont());

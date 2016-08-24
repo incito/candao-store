@@ -6,9 +6,10 @@
 	<row:row description="分店名">
 		<align description="对齐">ALIGN_CENTER</align>
 		<font description="字体大小">LARGE</font>
+		<trim description="是否去掉前后空格">TRUE</trim>
 		<locations description="位置">
 			<list>
-				<value>10</value>
+				<value>20</value>
 			</list>
 		</locations>
 		<datas description="分店名">

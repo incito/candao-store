@@ -558,10 +558,10 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 					String weixinturnback = "http://"
 							+ PropertiesUtils.getValue("PSI_URL")
 							+ "/newspicyway/weixin/turnback";
+					logger.info("微信扫码反结算"+weixinturnback);
 					String retPSI = new HttpRequestor().doPost(weixinturnback,
 							dataMap);
 					Map<String, String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
-					System.out.println("微信扫码反结算");
 					if (retMap == null || "1".equals(retMap.get("code"))) {
 						transactionManager.rollback(status); // 强制回滚
 						logger.error("反结算失败！微信反结算失败");

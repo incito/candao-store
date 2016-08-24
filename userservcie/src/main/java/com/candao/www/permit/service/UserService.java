@@ -45,6 +45,14 @@ public interface UserService {
 	public Map<String,Object> validatePasswordLoginTypeByAccount(String id,String password,String loginType);
 
 	/**
+	 * 校验账号对应的权限
+	 * @param id
+	 * @param loginType
+     * @return
+     */
+	public Map<String,Object> validateLoginTypeByAccount(String id,String loginType);
+
+	/**
 	 * 获取授权给用户的url
 	 * 
 	 * @param user
@@ -235,4 +243,5 @@ public interface UserService {
 	   * @return
 	   */
 	  public List<UserBranch> queryUserBranchListByUserId(String userId);
+
 }
