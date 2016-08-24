@@ -2309,6 +2309,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             urgeDish.setOrderNo(String.valueOf(tableList.get(0).get("orderid")));
         }
         String orderNo = urgeDish.getOrderNo();
+        if("".equals(orderNo) || orderNo == null){
+        	return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("找不到对应的订单号")); 
+        }
 
         Map<String, Object> mapStatus = torderMapper.findOne(orderNo);
         if (!"0".equals(String.valueOf(mapStatus.get("orderstatus")))) {
