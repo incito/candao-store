@@ -13,12 +13,15 @@ import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
+import com.candao.www.webroom.service.TorderDetailPreferentialService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,9 @@ public class OrderOpServiceImpl implements OrderOpService {
     private OrderOpMapper orderMapper;
     @Autowired
     private CaleTableAmountMapper caleTableAmountMapper;
+    
+	@Autowired
+	private TorderDetailPreferentialService torderDetailPreferentialService;
     @Autowired
     private TableMapper tableMapper;
 
@@ -291,8 +297,13 @@ public class OrderOpServiceImpl implements OrderOpService {
         LOGGER.info("###cancelOrder userId={} orderId={} tableNo={}###", userId, orderId, tableNo);
         ResponseJsonData responseJsonData = new ResponseJsonData();
         try {
+        	  Map<String, Object> params=new HashMap<>();
+              params.put("orderid", orderId);
+              params.put("clear", "1");
+              torderDetailPreferentialService.deleteDetilPreFerInfo(params);
             orderMapper.deleteByOrderId(orderId);
             tableMapper.clearTable(tableNo, orderId);
+          
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e.getCause().getStackTrace());
