@@ -83,8 +83,11 @@ public enum StrategyFactory {
 						.setAdjAmout(orderPrice.subtract(toaldDebitAmount.add(toalFreeAmount).add(toaldDebitAmountMany)));
 			}
 			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult,itemid);
+			//优惠总消费重新计算（菜单总价-应收金额）
+			preferentialResult.setAmount(preferentialResult.getMenuAmount().subtract(preferentialResult.getPayamount()));
 			// 应收应该是小费+消费
 			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
+		
 
 		}
 	}
