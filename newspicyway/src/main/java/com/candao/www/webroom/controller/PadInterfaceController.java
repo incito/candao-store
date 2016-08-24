@@ -660,8 +660,16 @@ public class PadInterfaceController {
 		record.setJson(JacksonJsonMapper.objectToJson(table));
 		record.setPadpath("cleantable");
 		jsonRecordService.insertJsonRecord(record);
-
+		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
+		if(tbTable!=null){
+			Map<String, Object> params=new HashMap<>();
+			params.put("orderid", tbTable.getOrderid());
+			params.put("clear", "1");
+			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+		}
 		String cleantable = orderDetailService.cleantable(table);
+	
+	
 		return cleantable;
 	}
 
@@ -678,8 +686,15 @@ public class PadInterfaceController {
 		record.setJson(JacksonJsonMapper.objectToJson(table));
 		record.setPadpath("cleanTableSimply");
 		jsonRecordService.insertJsonRecord(record);
-
+		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
+		if(tbTable!=null){
+			Map<String, Object> params=new HashMap<>();
+			params.put("orderid", tbTable.getOrderid());
+			params.put("clear", "1");
+			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+		}
 		String result = orderDetailService.cleantableSimply(table);
+	
 		return result;
 	}
 
