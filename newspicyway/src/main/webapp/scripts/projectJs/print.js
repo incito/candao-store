@@ -1220,6 +1220,12 @@ function printerBillChange(text){
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+	}else if(text ==='4')
+	{
+		$("#print-font").removeClass("hidden");
+		$("#print-area").addClass("hidden");
+		$("#print-dishes").addClass("hidden");
+		$("#print-groupdishes").addClass("hidden");
 	}else{
 		$("#print-font").addClass("hidden");
 		$("#print-area").addClass("hidden");

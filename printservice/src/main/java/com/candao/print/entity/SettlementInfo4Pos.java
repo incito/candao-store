@@ -165,7 +165,7 @@ public class SettlementInfo4Pos implements Serializable {
 //            if (amount >= 0) {
             settlementInfos.add(getSettlementInfo("总优惠:", "￥" + (StringUtils.isEmpty(amount) ? "0.00" : amount)));
 //            }
-            settlementInfos.add(getSettlementInfo("实收:：", "￥" + ssamount));
+            settlementInfos.add(getSettlementInfo("实收:", "￥" + ssamount));
         }
 
     }
