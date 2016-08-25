@@ -140,13 +140,13 @@ public class SettlementInfo4Pos implements Serializable {
             }
             switch (type) {
                 case 1: {
-                    if (!StringUtils.isEmpty(orderinfo.getPayamount2()) && 1 == new BigDecimal(orderinfo.getPayamount2()).compareTo(new BigDecimal("0"))) {
+                    if (!StringUtils.isEmpty(orderinfo.getPayamount2()) && 0 != new BigDecimal(orderinfo.getPayamount2()).compareTo(new BigDecimal("0"))) {
                         settlementInfos.add(getSettlementInfo("四舍五入:", "￥" + orderinfo.getPayamount2()));
                     }
                     break;
                 }
                 case 2: {
-                    if (!StringUtils.isEmpty(orderinfo.getPayamount()) && 1 == new BigDecimal(orderinfo.getPayamount()).compareTo(new BigDecimal("0"))) {
+                    if (!StringUtils.isEmpty(orderinfo.getPayamount()) && 0 != new BigDecimal(orderinfo.getPayamount()).compareTo(new BigDecimal("0"))) {
                         settlementInfos.add(getSettlementInfo("抹零:", "￥" + orderinfo.getPayamount()));
                     }
                     break;
@@ -155,14 +155,15 @@ public class SettlementInfo4Pos implements Serializable {
                     break;
 
             }
-            if (!StringUtils.isEmpty(orderinfo.getTipPaid()) && 1 == new BigDecimal(orderinfo.getTipPaid()).compareTo(new BigDecimal("0"))) {
+            if (!StringUtils.isEmpty(orderinfo.getTipPaid()) && 0 != new BigDecimal(orderinfo.getTipPaid()).compareTo(new BigDecimal("0"))) {
                 settlementInfos.add(getSettlementInfo("小费:", "￥" + orderinfo.getTipPaid()));
             }
-            if (!StringUtils.isEmpty(orderinfo.getZdAmount()) && 1 == new BigDecimal(orderinfo.getZdAmount()).compareTo(new BigDecimal("0"))) {
+            if (!StringUtils.isEmpty(orderinfo.getZdAmount()) && 0 != new BigDecimal(orderinfo.getZdAmount()).compareTo(new BigDecimal("0"))) {
                 settlementInfos.add(getSettlementInfo("赠送金额:", "￥" + orderinfo.getZdAmount()));
             }
             String amount = new BigDecimal(dueamount).subtract(new BigDecimal(ssamount)).toString();
 //            if (amount >= 0) {
+            //总优惠默认显示
             settlementInfos.add(getSettlementInfo("总优惠:", "￥" + (StringUtils.isEmpty(amount) ? "0.00" : amount)));
 //            }
             settlementInfos.add(getSettlementInfo("实收:", "￥" + ssamount));
