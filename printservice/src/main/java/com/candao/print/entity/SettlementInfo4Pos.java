@@ -119,14 +119,26 @@ public class SettlementInfo4Pos implements Serializable {
         // 品项初始化
         if (!CollectionUtils.isEmpty(this.listJson)) {
             for (PosDish it : listJson) {
-                String dishnum = it.getDishnum() == null ? "" : it.getDishnum();
-                String dishunit = it.getDishunit() == null ? "" : it.getDishunit();
-                it.setTitle(StringUtils.tokenizeToStringArray(it.getTitle(), "#")[0]);
-                it.setDishunit(StringUtils.tokenizeToStringArray(it.getDishunit(), "#")[0]);
-                it.setDishnum(dishnum + dishunit);
+                String title = resolveType(it.getTitle());
+                String dishnum = resolveType(it.getDishnum());
+                String dishunit = resolveType(it.getDishunit());
+
+                String[] titles = StringUtils.split(title, "#");
+                String[] dishunits = StringUtils.split(dishunit, "#");
+
+                title = (titles == null ? title : titles[0]) + "(" + (dishunits == null ? dishunit : dishunits[0]) + ")";
+
                 if ("1".equals(it.getPricetype())) {
-                    it.setTitle(it.getTitle() + "(赠)");
+                    title += "(赠)";
                 }
+
+                if (titles != null || dishunits != null) {
+                    title += "\n";
+                    title += (titles == null ? "" : titles[1]) + (dishunits == null ? "" : "(" + dishunits[1] + ")");
+                }
+                it.setTitle(title);
+                it.setDishunit(StringUtils.tokenizeToStringArray(it.getDishunit(), "#")[0]);
+                it.setDishnum(dishnum);
             }
         }
         // 结算信息初始化
@@ -175,6 +187,10 @@ public class SettlementInfo4Pos implements Serializable {
         info.setName(name);
         info.setValue(value);
         return info;
+    }
+
+    private String resolveType(Object src) {
+        return com.candao.common.utils.StringUtils.resolveNullType(src);
     }
 
 }

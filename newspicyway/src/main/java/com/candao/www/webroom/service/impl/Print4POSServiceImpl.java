@@ -425,13 +425,15 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // 优惠
                     Object preferentialInfo = posdata.get("preferentialInfo");
                     List<Map<String, String>> settlementInfo = null;
+                    List<Map<String, String>> preferListInfo = null;
                     if (preferentialInfo instanceof Map) {
                         Map prefer = ((Map) preferentialInfo);
+                        //组合结算备注
                         settlementInfo = new ArrayList<>();
-                        String[] name = {"合计：", prefer.get("moneyWipeName").toString() + ":", "赠送金额:", "总优惠:", "应收:"};
-                        String[] value = {prefer.get("menuAmount").toString(),
-                                prefer.get("moneyWipeAmount").toString(), prefer.get("zdAmount").toString(),
-                                prefer.get("amount").toString(), prefer.get("payamount").toString()};
+                        String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
+                        String[] value = {resolveNullType(prefer.get("menuAmount")),
+                                resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
+                                resolveNullType(prefer.get("amount")), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
@@ -444,16 +446,29 @@ public class Print4POSServiceImpl implements Print4POSService {
                             tempMap.put("value", "￥" + value[i]);
                             settlementInfo.add(tempMap);
                         }
+                        //组合优惠备注
+                        preferListInfo = new ArrayList<>();
+                        List<Map<String, Object>> prefers = (List<Map<String, Object>>) prefer.get("detailPreferentials");
+                        if (!CollectionUtils.isEmpty(prefers)) {
+                            for (Map<String, Object> it : prefers) {
+                                String activeName = it.get("activity") == null ? "" : resolveNullType(((Map<String, Object>) it.get("activity")).get("name"));
+                                preferListInfo.add(createItem(activeName, it.get("toalFreeAmount")));
+                                if (0 != new BigDecimal(0).compareTo(new BigDecimal(resolveNullType(it.get("toalDebitAmount"))))) {
+                                    preferListInfo.add(createItem(activeName, it.get("toalDebitAmount")));
+                                }
+                            }
+                        }
                     }
+                    //结算备注
                     posdata.put("settlementInfo", settlementInfo);
+                    //优惠备注
+                    posdata.put("preferListInfo", preferListInfo);
                     // 优惠（元）
                     Map<String, Object> orderJson = ((List<Map<String, Object>>) order.get(0).get("OrderJson")).get(0);
-                    String free = orderJson.get("discountamount") == null ? ""
-                            : orderJson.get("discountamount").toString();
+                    String free = resolveNullType(orderJson.get("discountamount"));
                     posdata.put("totalfree", free);
                     // 品项费
-                    String pxFee = stringAdd(free,
-                            orderJson.get("dueamount") == null ? "" : orderJson.get("dueamount").toString());
+                    String pxFee = stringAdd(free, resolveNullType(orderJson.get("dueamount")));
                     posdata.put("pxFee", pxFee);
                     // 打印人
                     Map<String, Object> param = new HashMap<>();
@@ -462,12 +477,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                     posdata.put("printname", users.get(0).getName());
 
                     // 电话地址
-                    posdata.put("branchName",
-                            com.candao.common.utils.StringUtils.resolveNullType(branchInfo.get("branchname")));
-                    posdata.put("tel",
-                            com.candao.common.utils.StringUtils.resolveNullType(branchInfo.get("managertel")));
-                    posdata.put("address",
-                            com.candao.common.utils.StringUtils.resolveNullType(branchInfo.get("branchaddress")));
+                    posdata.put("branchName", resolveNullType(branchInfo.get("branchname")));
+                    posdata.put("tel", resolveNullType(branchInfo.get("managertel")));
+                    posdata.put("address", resolveNullType(branchInfo.get("branchaddress")));
                     obj.setPosData(posdata);
                     // TODO
                     param.clear();
@@ -478,7 +490,17 @@ public class Print4POSServiceImpl implements Print4POSService {
                 }
             }
         }
+    }
 
+    private Map<String, String> createItem(Object name, Object value) {
+        Map<String, String> temp = new HashMap<>();
+        temp.put("name", resolveNullType(name));
+        temp.put("value", resolveNullType(value));
+        return temp;
+    }
+
+    private String resolveNullType(Object param) {
+        return com.candao.common.utils.StringUtils.resolveNullType(param);
     }
 
     /**
@@ -505,19 +527,28 @@ public class Print4POSServiceImpl implements Print4POSService {
 
     /**
      * 解决打印单据展现的特殊需求
+     *
      * @param it
      */
     private void resolveSpecialRequire(Map<String, Object> it) {
-        it.put("payamount",
-                strMulti(String.valueOf(it.get("orderprice")), String.valueOf(it.get("dishnum"))));
-        it.put("dishname", StringUtils.tokenizeToStringArray(it.get("dishname").toString(), "#")[0]);
-        it.put("dishunit", StringUtils.tokenizeToStringArray(it.get("dishunit").toString(), "#")[0]);
+        String dishname = resolveNullType(it.get("dishname"));
+        String dishunit = resolveNullType(it.get("dishunit"));
+        String[] dishnames = StringUtils.split(dishname, "#");
+        String[] dishunits = StringUtils.split(dishunit, "#");
+
+        dishname = (dishnames == null ? dishname : dishnames[0]) + "(" + (dishunits == null ? dishunit : dishunits[0]) + ")";
         if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
-            it.put("title", it.get("title") + "" + "(赠)");
+            dishname += "(增)";
         }
-        String dishnum = it.get("dishnum") == null ? "" : it.get("dishnum").toString();
-        String dishunit = it.get("dishunit") == null ? "" : it.get("dishunit").toString();
-        it.put("dishnum", dishnum + dishunit);
+        if (dishnames != null || dishunits != null) {
+            dishname += "\n";
+            dishname += (dishnames == null ? "" : dishnames[1]) + (dishunits == null ? "" : "(" + dishunits[1] + ")");
+        }
+        it.put("payamount",
+                strMulti(resolveNullType(it.get("orderprice")), resolveNullType(it.get("dishnum"))));
+        it.put("dishname", dishname);
+        String dishnum = resolveNullType(it.get("dishnum"));
+        it.put("dishnum", dishnum);
     }
 
     private void updatePresettelmentCount(Map<String, Object> params) throws Exception {

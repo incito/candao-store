@@ -286,7 +286,7 @@
 	</row:row>
 	<!-- 优惠备注 -->
 	<foreach:foreach item="it"
-		value="#{obj.posData.preferentialInfo.detailPreferentials}">
+		value="#{obj.posData.preferListInfo}">
 		<row:row description="结算备注">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -299,9 +299,9 @@
 			</locations>
 			<datas description="优惠备注">
 				<list>
-					<value>#{it.activity.name}</value>
+					<value>#{it.name}</value>
 					<value> </value>
-					<value>#{it.deAmount}</value>
+					<value>#{it.value}</value>
 				</list>
 			</datas>
 		</row:row>
