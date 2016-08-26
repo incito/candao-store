@@ -1,0 +1,125 @@
+.left-div .dish-sel{
+	height: 250px;
+}
+.left-div .preferential-sel{
+	height: 220px;
+}
+.left-div .total-amount{
+	margin-bottom: 10px;
+}
+.left-div .discount-total-amount{
+	font-size: 14px;
+  	color: #FF5803;
+  	padding: 0 30px;
+  	margin-top: 8px;
+}
+.left-div .discount-hr{
+	position: absolute;
+  	width: 2px;
+  	height: 15px;
+  	background: #FF5803;
+  	margin: 10px 20px;
+}
+.oper-div .preferential-oper-btns{
+	
+}
+.oper-div .dish-oper-btns{
+	height: 240px;
+}
+.main-div .preferentials{
+  	height: 240px;
+}
+.main-div .preferentials .preferentials-content{
+	width: 92%;
+	float: left;
+}
+.main-div .preferentials .preferential-info{
+	width: 132px;
+	height: 48px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	border-radius: 3px;
+	float: left;
+  	margin-right: 5px;
+  	margin-bottom: 5px;
+	padding: 10px 5px 7px;
+	color: #515356;
+	text-align: center;
+	font-size: 14px;
+}
+.main-div .tab-payment ul li{
+	float: left;
+	text-align: center;
+  	padding: 12px 0;
+	position: relative;
+	font-size: 14px;
+  	color: #111111;
+  	width: 12%;
+  	height: 45px;
+  	font-weight: bold;
+  	margin: 2px 10px;
+  	cursor: pointer;
+}
+.main-div .tab-payment ul li.active{
+	color: #FF5803;
+  	font-size: 16px;
+  	padding: 6px 0;
+  	border-bottom: 3px solid #FF5803;
+}
+.main-div .pay-div{
+	width: 100%;
+	height: 250px;
+  	padding-top: 10px;
+}
+.main-div .pay-div .paytype-input{
+	width: 50%;
+	float: left;
+}
+.paytype-input span{
+	position: absolute;
+  	font-size: 16px;
+  	margin-top: 10px;
+  	margin-left: 10px;
+}
+.paytype-input .cash-input{
+	height: 90px;
+  	width: 260px;
+  	padding-left: 60px;
+  	font-size: 60px;
+  	text-align: right;
+}
+.main-div .virtual-keyboard{
+	width: 50%;
+	float: right;
+}
+.main-div .virtual-keyboard ul li {
+	list-style: none;
+  	float: left;
+  	text-align: center;
+	border-radius: 3px;
+	box-shadow: 0px 1px 0px 0px #CFCFCF;
+	background: #FFFFFF;
+	color: #040404;
+	cursor: pointer;
+	height: 42px;
+	padding-top: 8px;
+	margin: 3px 2px;
+}
+.main-div .virtual-keyboard ul li:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #ffffff;
+}
+.main-div .virtual-keyboard ul li:active{
+	background: #FF5803;
+	opacity: 1;
+	box-shadow: 0px 2px 0px 0px #C64300;
+}
+.main-div .num-virtual-keyboard ul li {
+	width: 92px;/*30%*/
+  	font-size: 18px;
+}
+.main-div .letter-virtual-keyboard ul li{
+	width: 44px;/*15%*/
+  	font-size: 16px;
+}

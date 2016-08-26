@@ -1,0 +1,185 @@
+article{
+  	padding: 10%;
+}
+.content{
+	height: 270px;
+  	width: 80%;
+  	max-width: 700px;
+  	min-width: 560px;
+  	margin: auto auto;
+  	border: 1px solid white;
+}
+.login-form {
+	width: 50%;
+  	padding-left: 20px;
+  	float: left;
+}
+.login-form .form-group{
+	margin: 18px auto;
+	width: 100%;
+}
+.input-group{
+	border: 1px solid #ccc;
+  	border-radius: 4px;
+  	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  	-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+  	-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  	background: #fff;
+}
+.input-group:focus{
+	border-color: #66afe9;
+  	outline: 0;
+  	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+.span-user{
+	/*
+	background-position: center center;
+  	float: left;
+  	height: 56px;
+  	width: 20%;
+  	padding-left: 5%;
+  	line-height: 4;
+  	color: #999;*/
+  	position: absolute;
+  	line-height: 4;
+  	padding-left: 10px;
+  	color: #999;
+}
+.login-form .form-input{
+	width: 80%;
+  	height: 54px;
+  	border: 0;
+  	border-radius: 0px;
+}
+.login-form .form-control{
+	width: 100%;
+  	height: 54px;
+  	padding-left: 60px;
+}
+.login-form .form-control[readonly]{
+	background-color: #fff;
+	padding-left: 60px;
+}
+.login-form .m{
+	cursor: pointer;
+}
+.login-form .btn{
+	width: 49%;
+	height: 40px;
+	font-size: 16px;
+	color: #FFFFFF;
+	border-radius: 4px;
+}
+.login-form .btn:hover, .confirm-dialog .btn:hover{
+	background: #F68D70;
+	border-color: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.login-form .btn:active, .confirm-dialog .btn:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}
+.login-form .btn-primary {
+  	color: #fff;
+  	background-color: #FF5803;
+  	border-color: #FF5803;
+}
+.login-form .btn-primary:active, .login-form .btn-primary:focus {
+  	color: #fff;
+  	background-color: #FF5803;
+  	border-color: #FF5803;
+}
+.login-form .btn-default{
+	font-family: PingFangTC-Regular;
+	color: #000000;
+}
+.virtual-keyboard {
+	width: 50%;
+	float: right;
+}
+.virtual-keyboard li{
+	width: 30%;
+  	height: 59px;
+  	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+  	text-align: center;
+  	vertical-align: middle;
+  	line-height: 3;
+  	list-style: none;
+  	float: left;
+  	margin-left: 6px;
+  	margin-top: 6px;
+	font-size: 18px;
+	color: #040404;
+	cursor: pointer;
+}
+.virtual-keyboard li:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.virtual-keyboard li:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}
+.thechange-dialog .modal-dialog{
+	width: 80%;
+	max-width: 700px;
+  	min-width: 560px;
+  	margin-top: 10%;
+}
+.thechange-dialog .modal-header{
+	height: 60px;
+  	background: #FF5803;
+  	color: #FFFFFF;
+  	font-size: 20px;
+  	text-align: center;
+}
+.thechange-dialog .modal-body {
+	height: 270px;
+	background: rgb(224, 220, 220);
+}
+.thechange-dialog .login-form .form-control{
+	padding-left: 100px;
+}
+.thechange-dialog .login-form .form-control[readonly]{
+	padding-left: 100px;
+}
+.thechange-dialog .login-form .span-user{
+  	width: 100px;
+}
+.confirm-dialog .modal-dialog{
+	width: 400px;
+	margin-top: 10%;
+}
+.confirm-dialog .img-close{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+.confirm-dialog .modal-body{
+	background: rgb(224, 220, 220);
+}
+.confirm-dialog .btn{
+	width: 150px;
+	height: 40px;
+	background: white;
+}
+.confirm-dialog .btn-save{
+	color: #fff;
+  	background-color: #FF5803;
+  	border-color: #FF5803;
+}
+.dialog-sm-header{
+	background-color: #FF5803;
+	height: 54px;
+	border-top-left-radius: 4px;
+  	border-top-right-radius: 4px;
+}

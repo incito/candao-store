@@ -1,0 +1,59 @@
+@-webkit-viewport   { width: device-width; }
+@-moz-viewport      { width: device-width; }
+@-ms-viewport       { width: device-width; }
+@-o-viewport        { width: device-width; }
+@viewport           { width: device-width; }
+
+html, body{
+	height: 100%;
+	overflow: hidden;
+/*	font-family: 微软雅黑;*/
+	background: #E8E8E8;
+	min-width: 1024px;
+/*	width: 1026px;
+  	margin: auto auto;
+  	border: 1px solid #E8E8E8;*/
+}
+header{
+	height: 60px;
+  	background: #FF5803;
+  	color: #FFFFFF;
+  	font-size: 20px;
+  	text-align: center;
+  	line-height: 3;
+  	position: fixed;
+	width: 100%;
+	min-width: 1024px;
+}
+article{
+  	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 60px;
+	min-width: 1024px;
+}
+.content{
+	background: #E8E8E8;
+}
+.fl{
+	float: left;
+	padding-left: 10px;
+}
+.fr{
+	float: right;
+  	padding-right: 10px;
+}
+.close-win{
+	cursor: pointer;
+}
+.btn-operate {
+  	text-align: center;
+  	margin: 40px 0px 0px;
+}
+footer{
+	position: fixed;
+	width: 100%;
+	bottom: 0px;
+	min-width: 1024px;
+	background: #FFFFFF;
+}
