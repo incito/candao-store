@@ -30,6 +30,10 @@ public class OperPreferentialResult {
 	 */
 	private BigDecimal payamount = new BigDecimal(0);
 	/***
+	 * 预结单 金额
+	 * */
+	private BigDecimal reserveAmout= new BigDecimal("0");
+	/***
 	 * 小费金额
 	 */
 	private BigDecimal tipAmount = new BigDecimal(0);
@@ -189,6 +193,14 @@ public class OperPreferentialResult {
 
 	public void setMes(String mes) {
 		this.mes = mes;
+	}
+
+	public BigDecimal getReserveAmout() {
+		return reserveAmout.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public void setReserveAmout(BigDecimal reserveAmout) {
+		this.reserveAmout = reserveAmout;
 	}
 
 }

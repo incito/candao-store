@@ -437,8 +437,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
+                            	//只有为0时才不显示
                                 if (StringUtils.isEmpty(value[i])
-                                        || 0 >= new BigDecimal(value[i]).compareTo(new BigDecimal(0))) {
+                                        || 0 == new BigDecimal(value[i]).compareTo(new BigDecimal(0))) {
                                     continue;
                                 }
                             }

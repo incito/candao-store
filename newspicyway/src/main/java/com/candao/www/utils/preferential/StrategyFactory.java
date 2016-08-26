@@ -87,7 +87,8 @@ public enum StrategyFactory {
 			preferentialResult.setAmount(preferentialResult.getMenuAmount().subtract(preferentialResult.getPayamount()));
 			// 应收应该是小费+消费
 			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
-		
+			//预结单小票
+			preferentialResult.setReserveAmout(preferentialResult.getPayamount().add(preferentialResult.getToalDebitAmount()));
 
 		}
 	}
