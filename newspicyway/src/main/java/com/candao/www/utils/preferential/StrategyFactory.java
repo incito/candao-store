@@ -63,12 +63,15 @@ public enum StrategyFactory {
 			Map<String, Object> resAmountMap = resAmountList.get(0);
 			BigDecimal tipAmount = new BigDecimal(String.valueOf(resAmountMap.get("tipAmount")));// 小费
 			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));// 订单（菜品）总价
+			BigDecimal originalOrderAmount=new BigDecimal(String.valueOf(resAmountMap.get("freeamount")));// 原价
 			// 赠送金额
 			float zaAmount = orderOpMapper.getZdAmountByOrderId(orderid);
 			preferentialResult.setZdAmount(new BigDecimal(zaAmount));
 			// 全单总价（不包含小费）
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
+			//原始价格
+			preferentialResult.setOriginalOrderAmount(originalOrderAmount);
 			// 计算实际收入金额
 			// 优免调整（如果优惠大于订单价做优惠调整）
 			if (preferentialResult.getAmount().compareTo(preferentialResult.getMenuAmount()) == 1) {
@@ -89,6 +92,7 @@ public enum StrategyFactory {
 			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
 			//预结单小票
 			preferentialResult.setReserveAmout(preferentialResult.getPayamount().add(preferentialResult.getToalDebitAmount()));
+			
 
 		}
 	}

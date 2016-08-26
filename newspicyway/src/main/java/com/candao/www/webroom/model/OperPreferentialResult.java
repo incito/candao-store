@@ -46,6 +46,10 @@ public class OperPreferentialResult {
 	 * 挂账总金额
 	 */
 	private BigDecimal toalDebitAmount = new BigDecimal(0);
+	/**
+	 * 原始价格
+	 */
+	private BigDecimal originalOrderAmount =new BigDecimal(0);
 
 	/***
 	 * 赠送金额
@@ -201,6 +205,14 @@ public class OperPreferentialResult {
 
 	public void setReserveAmout(BigDecimal reserveAmout) {
 		this.reserveAmout = reserveAmout;
+	}
+
+	public BigDecimal getOriginalOrderAmount() {
+		return originalOrderAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public void setOriginalOrderAmount(BigDecimal originalOrderAmount) {
+		this.originalOrderAmount = originalOrderAmount;
 	}
 
 }
