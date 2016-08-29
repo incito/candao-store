@@ -219,7 +219,7 @@ $("#test").click(function(){
 			avoidArr.push(avoid);
 		});
 		doPost(type, avoidArr, function(data){
-			$("#avoid-list").find(".dishTasteUl").last().attr("dictid",data.JI_KOU_SPECIAL[data.JI_KOU_SPECIAL.length-1].dictid);
+			$("#avoid-list").find(".dishTasteUl").last().attr("dictid",data.JI_KOU_SPECIAL[data.JI_KOU_SPECIAL.length-1] && data.JI_KOU_SPECIAL[data.JI_KOU_SPECIAL.length-1].dictid);
 			$("#saveAvoid").addClass("hide");
 			$("#editAvoid").removeClass("hide");
 			$("#avoid-list .avoid-li").attr("disabled", true);
