@@ -842,20 +842,19 @@ BEGIN
   declare v_ssamount decimal(10,2);
   declare v_gzamount decimal(10,2);
   declare v_ymamount decimal(10,2);
+  declare v_originalOrderAmount decimal(10,2);
   select a.fulldiscountrate,couponname INTO  v_fulldiscountrate,v_couponname from t_order a    where orderid=v_orderid;
   
   set v_fulldiscountrate = 1;
-  update t_order_detail set discountrate=1 where orderid=v_orderid;
-  
-  
-  
+  update t_order_detail set discountrate=1 where orderid=v_orderid; 
   update t_order_detail set payamount=0, discountamount=0,predisamount=0  where ((status<>5 and  (not (orderprice>0))) or (status=5))  and orderid=v_orderid;
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
   select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,5,8,13,17,18,30);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
-  update t_order set dueamount=v_dueamount,wipeamount=v_dueamount-floor(v_dueamount),ssamount=v_ssamount,gzamount=v_gzamount,ymamount=v_ymamount where orderid=v_orderid;
+  select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid GROUP BY orderid;
+  update t_order set dueamount=v_dueamount,wipeamount=v_dueamount-floor(v_dueamount),ssamount=v_ssamount,gzamount=v_gzamount,ymamount=v_ymamount,freeamount=v_originalOrderAmount where orderid=v_orderid;
 END
 $$
 
