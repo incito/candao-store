@@ -120,6 +120,10 @@ public class TipService {
 
         return dao.findOne(PREFIX + ".tipListByTime", params);
     }
+    
+    public int rebacktip(String orderid){
+        return 	dao.update(PREFIX + ".rebacktip", orderid);
+    }
 
 
 }

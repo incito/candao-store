@@ -79,6 +79,10 @@
          
           
 	</select>
+	 <!-- 反结算 消费恢复默认值 -->
+	<update id="rebacktip"  parameterType="java.lang.String" >
+		UPDATE t_b_tip as tbp SET tbp.paid=NULL WHERE tbp.orderid=#{orderid};
+	</update>
     <!-- 查询门店服务员小费list -->
     <select id="tipListByTime" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
