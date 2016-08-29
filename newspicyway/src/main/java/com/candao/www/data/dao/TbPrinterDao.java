@@ -41,4 +41,5 @@ public final static String PREFIX = TbPrinterDao.class.getName();
 	public int updateWorkstate(String ip,short workStatus);
 	public List<Map<String,Object>> queryPrinterWorkStatus();
 	public int clearWorkStatus();
+	public int deleteWorkStatusByIp(String ip);
 }

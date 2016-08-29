@@ -112,6 +112,7 @@ public class PrintControl {
             byte[] cReadBuf = new byte[inputStream.available()];
             inputStream.read(cReadBuf);
             iState = ReadDeviceStatus(cReadBuf);
+            logger.info("[" + ip + "]status:"+iState);
             switch (iState) {
                 case STATUS_OFFLINE: {
                     try {

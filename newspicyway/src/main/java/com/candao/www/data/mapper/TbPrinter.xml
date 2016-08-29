@@ -306,4 +306,7 @@
 	<delete id="clearWorkStatus">
 		truncate table t_printer_state
 	</delete>
+	<delete id="deleteWorkStatusByIp" parameterType="map">
+		delete from t_printer_state where ip=#{ip}
+	</delete>
 </mapper> 

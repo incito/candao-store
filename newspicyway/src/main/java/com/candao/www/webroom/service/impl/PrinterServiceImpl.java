@@ -91,5 +91,10 @@ public class PrinterServiceImpl implements PrinterService {
 	public int clearWorkStatus() {
 		return tbPrinterDao.clearWorkStatus();
 	}
+
+	@Override
+	public int clearWorkStatus(String ip) {
+		return tbPrinterDao.deleteWorkStatusByIp(ip);
+	}
 }
 
