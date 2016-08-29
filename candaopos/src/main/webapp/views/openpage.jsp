@@ -22,6 +22,7 @@
 	article{
 		background: #FFFFFF;
 		padding: 200px 10%;
+		top: 0;
 	}
 	.content{
 		height: 270px;
@@ -30,6 +31,7 @@
 	  	min-width: 560px;
 	  	margin: auto auto;
 	  	border: 1px solid white;
+	  	padding: 50px;
 	}
 	.font{
 		font-size: 32px;
