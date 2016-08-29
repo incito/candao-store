@@ -57,3 +57,25 @@ footer{
 	min-width: 1024px;
 	background: #FFFFFF;
 }
+.dialog-sm-header {
+  	background-color: #FF5803;
+  	height: 54px;
+  	border-top-left-radius: 4px;
+  	border-top-right-radius: 4px;
+}
+.modal-dialog .img-close {
+  	position: absolute;
+  	right: 10px;
+  	top: 10px;
+}
+.btn:hover{
+	background: #F68D70;
+	border-color: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.btn:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}

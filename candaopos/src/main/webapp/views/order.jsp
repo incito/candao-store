@@ -26,7 +26,10 @@ var nowPage3 = 0;//待选优惠分页
 		},function(){
 			$(this).attr("src","<%=request.getContextPath()%>/images/close-sm.png");
 		});
-		
+		//未开过台的先开台
+		if(!isopened){
+			$("#open-dialog").modal("show");
+		}
 		//点击加菜
 		$("#add-dish").click(function(){
 			$("#adddish-dialog").load("<%=request.getContextPath()%>/views/orderdish.jsp");
@@ -198,11 +201,17 @@ var nowPage3 = 0;//待选优惠分页
 			$("#letter-keyboard").removeClass("hide");
 		}
 	}
+	//确认开台
+	function confirmOpen(){
+		$("#open-dialog").modal("hide");
+		$("#adddish-dialog").load("<%=request.getContextPath()%>/views/orderdish.jsp");
+		$("#adddish-dialog").modal("show");
+	}
 </script>
 </head>
 <body>
-	<div class="modal-dialog" id="order-modal"
-		data-backdrop="static">
+	<div class="modal-dialog main-modal-dialog" id="order-modal"
+		data-backdrop="static" >
 		<div class="modal-content">
 			<div class="modal-body">
 				<header>
@@ -211,6 +220,7 @@ var nowPage3 = 0;//待选优惠分页
 				</header>
 				<article>
 					<div class="content">
+						<input type="hidden" id="isopened" value="">
 						<div class="left-div">
 							<div class="order-info">
 								<div>
@@ -323,13 +333,32 @@ var nowPage3 = 0;//待选优惠分页
 							</div>
 							<hr style="border: 1px solid #D3D3D3;">
 							<div class="tab-payment">
-								<ul><li class="active" target="#cash">现金支付</li><li>银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">挂账支付</li><li target="#pay-treasure">支付宝</li><li>微信支付</li></ul>
+								<ul><li class="active" target="#cash">现金支付</li><li target="#bank-card">银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">挂账支付</li><li target="#pay-treasure">支付宝</li><li target="#wechat-pay">微信支付</li></ul>
 							</div>
 							<div class="pay-div">
+								<!-- 现金支付 -->
 								<div class="paytype-input cash" id="cash">
-									<span>金额：</span> <input type="text"
-										class="form-control">
+									<div>
+										<span>金额：</span>
+										<input type="text" class="form-control">
+									</div>
 								</div>
+								<!-- 银行卡支付 -->
+								<div class="paytype-input bank-card hide" id="bank-card">
+									<div style="display: inline-flex;">
+										<input type="text" class="form-control bank-type" placeholder="银行类型" disabled="disabled">
+										<div class="selbank-btn">选择银行</div>
+									</div>
+									<div>
+										<span>银行卡号:</span>
+										<input type="text" class="form-control" >
+									</div>
+									<div>
+										<span>金额:</span>
+										<input type="text" class="form-control" >
+									</div>
+								</div>
+								<!-- 会员卡支付 -->
 								<div class="paytype-input membership-card hide"
 									id="membership-card">
 									<div style="display: inline-flex;">
@@ -350,10 +379,39 @@ var nowPage3 = 0;//待选优惠分页
 									</div>
 									<div><div class="register-btn">注册</div></div>
 								</div>
+								<!-- 挂账支付 -->
 								<div class="paytype-input this-card hide" id="this-card">
-									<input type="text" class="form-control">
+									<div style="display: inline-flex;">
+										<input type="text" class="form-control payment-unit" placeholder="挂账单位" disabled="disabled">
+										<div class="sel-btn">选择</div>
+									</div>
+									<div>
+										<span>挂账金额:</span>
+										<input type="text" class="form-control" >
+									</div>
 								</div>
-								<div class="paytype-input pay-treasure hide" id="pay-treasure"></div>
+								<!-- 支付宝支付 -->
+								<div class="paytype-input pay-treasure hide" id="pay-treasure">
+									<div>
+										<span>支付宝:</span>
+										<input type="text" class="form-control" >
+									</div>
+									<div>
+										<span>金额:</span>
+										<input type="text" class="form-control" >
+									</div>
+								</div>
+								<!-- 微信支付 -->
+								<div class="paytype-input wechat-pay hide" id="wechat-pay">
+									<div>
+										<span>微信号:</span>
+										<input type="text" class="form-control" >
+									</div>
+									<div>
+										<span>金额:</span>
+										<input type="text" class="form-control" >
+									</div>
+								</div>
 								<div class="virtual-keyboard num-virtual-keyboard hide" id="num-keyboard">
 									<ul>
 										<li>1</li><li>2</li><li>3</li>
@@ -390,16 +448,78 @@ var nowPage3 = 0;//待选优惠分页
 								</div>
 							</div>
 						</div>
-						<footer>
-							<div class="info">
-								<span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19
-									12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span>
-							</div>
-						</footer>
 					</div>
 				</article>
+				<footer>
+					<div class="info">
+						<span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19
+						12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span>
+					</div>
+				</footer>
 			</div>
 		</div>
+	</div>
+	<!--开台 -->
+	<div class="modal fade in open-dialog" data-backdrop="static" id="open-dialog">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">开台</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" data-dismiss="modal">
+	            </div>
+	            <div class="modal-body">
+	            	<div style="padding: 13px; float: left;">
+		            	<div class="hori-lf-div">
+		            		<div>
+		            			<span>服务员编号:</span>
+		            			<input type="text" class="form-control">
+		            		</div>
+		            		<div>
+		            			<span>桌号:</span>
+		            			<input type="text" class="form-control tableno">
+		            		</div>
+		            		<div>
+		            			<span>就餐人数(男):</span>
+		            			<input type="text" class="form-control personnum">
+		            		</div>
+		            		<div>
+		            			<span>就餐人数(女):</span>
+		            			<input type="text" class="form-control personnum">
+		            		</div>
+		            		<div>
+		            			<span>餐具数量:</span>
+		            			<input type="text" class="form-control">
+		            		</div>
+		            	</div>
+		            	<div class="hori-rt-div">
+		            		<div class="virtual-keyboard">
+								<ul>
+									<li>1</li><li>2</li><li>3</li>
+								</ul>
+								<ul>
+									<li>4</li><li>5</li><li>6</li>
+								</ul>
+								<ul>
+									<li>7</li><li>8</li><li>9</li>
+								</ul>
+								<ul>
+									<li>.</li><li>0</li><li>←</li>
+								</ul>
+							</div>
+		            	</div>
+	            	</div>
+	            	<div class="age-type">
+	            		<div>儿童</div><div>青年</div><div>中年</div><div>老年</div>
+	            	</div>
+	                <div class="btn-operate ">
+	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="confirmOpen()">确认开台
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
 	</div>
 </body>
 </html>
