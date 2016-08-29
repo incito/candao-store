@@ -72,4 +72,11 @@ public interface PrinterService {
   * @return
      */
  public int clearWorkStatus();
+
+ /**
+  * 清除指定打印机状态
+  * @param ip
+  * @return
+     */
+ public int clearWorkStatus(String ip);
 }

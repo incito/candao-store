@@ -112,6 +112,13 @@ public class TbPrinterImpl implements TbPrinterDao {
 	public int clearWorkStatus() {
 		return dao.delete(PREFIX + ".clearWorkStatus",null);
 	}
+
+	@Override
+	public int deleteWorkStatusByIp(String ip) {
+		Map<String, Object> params = new HashMap<String, Object>(2);
+		params.put("ip", ip);
+		return dao.delete(PREFIX + ".deleteWorkStatusByIp",params);
+	}
 }
 
 

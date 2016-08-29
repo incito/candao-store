@@ -22,6 +22,7 @@
 <script src="<%=request.getContextPath()%>/scripts/main.js"></script>
 <script type="text/javascript">
 	var nowPage = 0;
+	var isopened = false;
 	$(document).ready(function(){
 		$("img.img-close").hover(function(){
 		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
@@ -45,13 +46,16 @@
 		$("ul#standard-tables li").click(function(){
 			var cla = $(this).attr("class");
 			if(cla == "opened"){
-				$("#order-dialog").load("<%=request.getContextPath()%>/views/orderdish.jsp");
+				isopened = true;
+				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
 				$("#order-dialog").modal("show");
 			}else if(cla == "reserved"){
 				
 			}else{
+				isopened = false;
 				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
 				$("#order-dialog").modal("show");
+//				$("#open-dialog").modal("show");
 			}
 		});
 		$(".page .prev-btn").click(function(){
@@ -146,9 +150,9 @@
 		</div>
 		<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 	</footer>
-	<div class="modal fade in" data-backdrop="static" id="order-dialog" style="width: 1041px; height: 768px; padding: 0;margin: auto; overflow: hidden;">
+	<div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 	</div>
-	<div class="modal fade in" data-backdrop="static" id="adddish-dialog" style="width: 1041px; height: 768px; padding: 0;margin: auto; overflow: hidden;">
+	<div class="modal fade in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
 	</div>
 </body>
 </html>

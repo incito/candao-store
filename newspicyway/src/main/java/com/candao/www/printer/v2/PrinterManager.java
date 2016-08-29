@@ -35,7 +35,7 @@ public class PrinterManager {
             synchronized (PrinterManager.class) {
                 if (printers.isEmpty()) {
                     logger.info("初始化打印机池");
-                    initialize();
+                    initialize(true);
                 }
             }
         }
@@ -50,19 +50,21 @@ public class PrinterManager {
     public synchronized static void initialize(List<String> printerAddress) {
         logger.info("重新初始化打印机");
         clearPrinter(printerAddress);
-        initialize();
+        initialize(false);
         logger.info("重新初始化打印机结束");
     }
 
     /**
      * 初始化打印机
      */
-    public synchronized static void initialize() {
+    public synchronized static void initialize(boolean clearStatus) {
         String printerControlStr = PropertiesUtils.getValue("PRINTER_CONTROL");
         printerControl = null != printerControlStr && "y".equals(printerControlStr.toLowerCase());
 
         PrinterService printerService = getPrinterService();
-        printerService.clearWorkStatus();
+        if (clearStatus) {
+            printerService.clearWorkStatus();
+        }
         List<Map<String, Object>> printerList = printerService.find(null);
         if (null != printerList) {
             for (Map<String, Object> printer : printerList) {
@@ -136,6 +138,7 @@ public class PrinterManager {
 
     private static void clearPrinter(List<String> printerAddress) {
         logger.info("清空打印机集合");
+        PrinterService printerService = getPrinterService();
         if (null != printerAddress) {
             for (String printerKey : printerAddress) {
                 String[] strings = StringUtils.tokenizeToStringArray(printerKey, ":");
@@ -143,6 +146,7 @@ public class PrinterManager {
                 printer.setDisabled(true);
                 PrinterConnector.closeConnection(printer.getChannel());
                 printers.remove(strings[0]);
+                printerService.clearWorkStatus(strings[0]);
             }
         }
     }

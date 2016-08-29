@@ -150,7 +150,7 @@ var activeinputele;
 </script>
 </head>
 <body>
-	<div class="modal-dialog" id="adddish-modal" data-backdrop="static">
+	<div class="modal-dialog main-modal-dialog" id="adddish-modal" data-backdrop="static" >
 		<div class="modal-content">
 			<div class="modal-body">
 				<header>
@@ -276,14 +276,14 @@ var activeinputele;
 								<div class="place-order">下单</div>
 							</div>
 						</div>
-						<footer>
-							<div class="info">
-								<span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19
-									12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span>
-							</div>
-						</footer>
 					</div>
 				</article>
+				<footer>
+					<div class="info">
+						<span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span>
+						<span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span>
+					</div>
+				</footer>
 			</div>
 		</div>
 	</div>

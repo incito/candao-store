@@ -201,3 +201,10 @@ footer .info{
   	color: #B5B5B5;
   	padding-top: 5px;
 }
+.main-dialog .main-modal-dialog{
+	width: 1041px; 
+	height: 768px; 
+	padding: 0;
+	margin: 50px auto auto; 
+	overflow: hidden;
+}

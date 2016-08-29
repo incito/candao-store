@@ -17,7 +17,7 @@ public class InitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        PrinterManager.initialize();
+        PrinterManager.initialize(true);
     }
 
     @Override
