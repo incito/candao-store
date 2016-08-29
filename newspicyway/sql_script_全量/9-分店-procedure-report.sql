@@ -9317,10 +9317,11 @@ BEGIN
   FROM t_order_detail tod
   WHERE orderid = pi_orderid AND pricetype <> 1;
 
-  SELECT
-    IFNULL(SUM(dishnum * orignalprice), 0.00) INTO v_taocan
-  FROM t_order_detail
-  WHERE orderid = pi_orderid AND dishtype = 2 AND superkey <> primarykey;
+  #added by caicai
+  #SELECT
+  #  IFNULL(SUM(dishnum * orignalprice), 0.00) INTO v_taocan
+  #FROM t_order_detail
+  #WHERE orderid = pi_orderid AND dishtype = 2 AND superkey <> primarykey;
 
   SELECT
     payway,
@@ -9338,7 +9339,9 @@ BEGIN
   FROM t_order_detail
   WHERE orderid = pi_orderid AND pricetype = 1;
 
-  SET v_couponamount = v_totalconsumption - v_taocan - v_paidamount;
+  #SET v_couponamount = v_totalconsumption - v_taocan - v_paidamount;
+  #added by caicai
+  SET v_couponamount = v_totalconsumption - v_paidamount;
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res (
@@ -9351,8 +9354,11 @@ BEGIN
     invoiceamount double(13, 2)       -- 发票金额 
   ) ENGINE = MEMORY DEFAULT charset = utf8;
 
+  #INSERT INTO t_temp_res (payway, payamount, totalconsumption, paidamount, giveamount, couponamount, invoiceamount)
+  #VALUES (v_payway, v_pamount, v_totalconsumption - v_taocan, v_paidamount, v_giveamount, v_couponamount, 0.00);
+
   INSERT INTO t_temp_res (payway, payamount, totalconsumption, paidamount, giveamount, couponamount, invoiceamount)
-    VALUES (v_payway, v_pamount, v_totalconsumption - v_taocan, v_paidamount, v_giveamount, v_couponamount, 0.00);
+    VALUES (v_payway, v_pamount, v_totalconsumption, v_paidamount, v_giveamount, v_couponamount, 0.00);
 
   SELECT
     *
