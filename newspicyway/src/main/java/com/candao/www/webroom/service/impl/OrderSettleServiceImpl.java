@@ -68,6 +68,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	TorderDetailMapper  torderDetailMapper;
+	@Autowired
+	TipService tipService;
 	
 	@Autowired
 	private TdishDao tdishDao;
@@ -551,6 +553,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			tbTable.setOrderid(orderId);
 
 			tableService.updateSettleStatus(tbTable);
+			//反结算小费信息
+			tipService.rebacktip(orderId);
 			// AUTO事物处理
 			// 微信扫码支付反结算调用
 			if (isweixin > 0) {// 是微信扫码结算的

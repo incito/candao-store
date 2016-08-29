@@ -102,7 +102,7 @@ article{
 	width: 50%;
 	float: right;
 }
-.virtual-keyboard li{
+.virtual-keyboard ul li{
 	width: 30%;
   	height: 59px;
   	background: #FFFFFF;
@@ -119,12 +119,12 @@ article{
 	color: #040404;
 	cursor: pointer;
 }
-.virtual-keyboard li:hover{
+.virtual-keyboard ul li:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #fff;
 }
-.virtual-keyboard li:active{
+.virtual-keyboard ul li:active{
 	background: #FF5803;
 	opacity: 1;
 	color: #fff;
@@ -159,11 +159,6 @@ article{
 	width: 400px;
 	margin-top: 10%;
 }
-.confirm-dialog .img-close{
-	position: absolute;
-	right: 10px;
-	top: 10px;
-}
 .confirm-dialog .modal-body{
 	background: rgb(224, 220, 220);
 }
@@ -176,10 +171,4 @@ article{
 	color: #fff;
   	background-color: #FF5803;
   	border-color: #FF5803;
-}
-.dialog-sm-header{
-	background-color: #FF5803;
-	height: 54px;
-	border-top-left-radius: 4px;
-  	border-top-right-radius: 4px;
 }
