@@ -75,18 +75,76 @@
 	width: 50%;
 	float: left;
 }
+
 .paytype-input span{
 	position: absolute;
+	margin-left: 10px;
+}
+.cash span{
   	font-size: 16px;
   	margin-top: 10px;
-  	margin-left: 10px;
 }
-.paytype-input .cash-input{
+.cash input{
 	height: 90px;
   	width: 260px;
   	padding-left: 60px;
   	font-size: 60px;
   	text-align: right;
+}
+.membership-card span{
+	font-size: 14px;
+	color: #A6A6A6;
+	margin-top: 10px;
+}
+.membership-card input{
+	margin-top: 10px;
+	width: 260px;
+	height: 40px;
+	padding-left: 70px;
+}
+.membership-card input.card-number{
+	padding-left: 12px;
+	width: 170px;
+}
+.membership-card .login-btn{
+	margin-left: 6px;
+  	width: 84px;
+  	height: 38px;
+  	background: #FFFFFF;
+  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
+  	border-radius: 3px;
+  	font-size: 14px;
+	color: #000000;
+	margin-top: 10px;
+	text-align: center;
+  	padding-top: 10px;
+  	cursor: pointer;
+}
+.membership-card .register-btn{
+	margin-left: 6px;
+  	width: 84px;
+  	height: 38px;
+  	background: #FFFFFF;
+  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
+  	border-radius: 3px;
+  	font-size: 14px;
+	color: #000000;
+	margin-top: 10px;
+	text-align: center;
+  	padding-top: 10px;
+  	cursor: pointer;
+  	margin-left: 176px;
+}
+.membership-card .login-btn:hover, .membership-card .register-btn:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #ffffff;
+}
+.membership-card .login-btn:active, .membership-card .register-btn:active{
+	background: #FF5803;
+	opacity: 1;
+	box-shadow: 0px 2px 0px 0px #C64300;
+	border: 0;
 }
 .main-div .virtual-keyboard{
 	width: 50%;

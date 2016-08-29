@@ -328,11 +328,27 @@ var nowPage3 = 0;//待选优惠分页
 							<div class="pay-div">
 								<div class="paytype-input cash" id="cash">
 									<span>金额：</span> <input type="text"
-										class="form-control cash-input">
+										class="form-control">
 								</div>
 								<div class="paytype-input membership-card hide"
 									id="membership-card">
-									<input type="text" class="form-control">
+									<div style="display: inline-flex;">
+										<input type="text" class="form-control card-number" placeholder="卡号">
+										<div class="login-btn">登录</div>
+									</div>
+									<div>
+										<span>刷卡金额:</span>
+										<input type="text" class="form-control" >
+									</div>
+									<div>
+										<span>使用积分:</span>
+										<input type="text" class="form-control" >
+									</div>
+									<div>
+										<span>会员密码:</span>
+										<input type="text" class="form-control" >
+									</div>
+									<div><div class="register-btn">注册</div></div>
 								</div>
 								<div class="paytype-input this-card hide" id="this-card">
 									<input type="text" class="form-control">
