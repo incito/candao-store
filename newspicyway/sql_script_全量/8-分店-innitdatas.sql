@@ -582,7 +582,12 @@ INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) V
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('35ddb100-c17e-42c0-a850-efe09cd1c924', 'd6e6fb6045034c8ab49436bcce461b02', '85969423-01b2-460b-937e-a8743694f46d', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba', 'd6e6fb6045034c8ab49436bcce461b02', '883b94e9-3f44-44fc-82c1-2cf28aa22890', NULL, NULL); 
 INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('658b5dbd-28e5-44ed-8478-c4c5e0db20ba2', 'd6e6fb6045034c8ab49436bcce461b02', '5eb5e07d-ee9e-449a-a837-e4bb25a67890', NULL, NULL);
+INSERT INTO t_b_role_function (id, role, `function`, role_name, function_name) VALUES ('ffffffffffffffffffffffffffffffff', 'ffffffffffffffffffffffffffffffff', 'ae731df2-8fac-40ce-8d3c-1810f09f0d23', null, null);
 
+INSERT INTO `t_b_user` (`id`, `account`, `password`, `name`, `status`, `mobile`, `area_code`, `telephone`, `createtime`, `creator`, `email`, `user_type`, `order_num`, `lastlogintime`, `tenantid`) VALUES ('ffffffffffffffffffffffffffffffff', 'candao', 'e10adc3949ba59abbe56e057f20f883e', '餐道管理员', '01', '13888888888', null, null, '2016-03-28 18:03:01', null, '', '02', null, null, '100011');
+INSERT INTO `t_b_role` (`id`, `code`, `name`, `type`, `scope_code`, `scope_name`, `status`, `description`, `createtime`, `creator`) VALUES ('ffffffffffffffffffffffffffffffff', null, '餐道管理员', null, '02', null, null, null, '2016-08-29 18:55:01', null);
+INSERT INTO `t_b_user_role` (`id`, `user_id`, `role_id`) VALUES ('ffffffffffffffffffffffffffffffff', 'ffffffffffffffffffffffffffffffff', 'ffffffffffffffffffffffffffffffff');
+INSERT INTO `t_b_user_branch` (`id`, `user_id`, `branch_id`, `branch_name`) VALUES ('ffffffffffffffffffffffffffffffff', 'ffffffffffffffffffffffffffffffff', '447240', '门店通用');
 
 INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename)  VALUES('activity000','0','赠菜','0','1','ACTIVITY','手工优免活动方式');
 INSERT into t_dictionary (dictid,itemid,itemDesc,itemSort,`status`,type,typename) VALUES('activity001','1','折扣','1','1','ACTIVITY','手工优免活动方式');

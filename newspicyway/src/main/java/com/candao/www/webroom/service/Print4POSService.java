@@ -11,13 +11,13 @@ public interface Print4POSService {
 
 	void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception;
 
-	void printClearMachine(List<SettlementInfo4Pos> settlementInfos);
+	void printClearMachine(List<SettlementInfo4Pos> settlementInfos) throws Exception;
 
 	void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos) throws Exception;
 
-	void printItemSellDetail(ResultInfo4Pos resultInfo4Pos);
+	void printItemSellDetail(ResultInfo4Pos resultInfo4Pos) throws Exception;
 
-	void printTip(ResultTip4Pos resultInfo4Pos);
+	void printTip(ResultTip4Pos resultInfo4Pos) throws Exception;
 
 	void printInvoice(Map<String, Object> map) throws Exception;
 

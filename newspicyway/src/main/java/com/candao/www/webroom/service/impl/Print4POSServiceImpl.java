@@ -135,7 +135,7 @@ public class Print4POSServiceImpl implements Print4POSService {
     }
 
     @Override
-    public void printClearMachine(List<SettlementInfo4Pos> settlementInfos) {
+    public void printClearMachine(List<SettlementInfo4Pos> settlementInfos) throws Exception {
         if (CollectionUtils.isEmpty(settlementInfos)) {
             return;
         }
@@ -174,7 +174,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         }
     }
 
-    private void sendToPrint(Map<String, Object> param, PrintObj obj) {
+    private void sendToPrint(Map<String, Object> param, PrintObj obj) throws Exception{
         // TODO
         if (param == null) {
             return;
@@ -185,17 +185,18 @@ public class Print4POSServiceImpl implements Print4POSService {
         }
         for (int i = 0; i < res.size(); i++) {
             Map<String, Object> map = res.get(i);
-            obj.setPrinterid(String.valueOf(map.get("printerid")));
-            obj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress")));
+            PrintObj tempObj = (PrintObj) CloneUtil.clone(obj,-1);
+            tempObj.setPrinterid(String.valueOf(map.get("printerid")));
+            tempObj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress")));
             Print4POSProcedure print4POSProcedure = (Print4POSProcedure) SpringContext
                     .getBean(Print4POSProcedure.class);
-            print4POSProcedure.setSource(obj);
+            print4POSProcedure.setSource(tempObj);
             executor.execute(print4POSProcedure);
         }
     }
 
     @Override
-    public void printItemSellDetail(ResultInfo4Pos resultInfo4Pos) {
+    public void printItemSellDetail(ResultInfo4Pos resultInfo4Pos) throws Exception {
         if (resultInfo4Pos == null) {
             return;
         }
@@ -235,7 +236,7 @@ public class Print4POSServiceImpl implements Print4POSService {
     }
 
     @Override
-    public void printTip(ResultTip4Pos resultInfo4Pos) {
+    public void printTip(ResultTip4Pos resultInfo4Pos) throws Exception {
         if (resultInfo4Pos == null) {
             return;
         }
