@@ -390,6 +390,10 @@ public class TableServiceImpl implements TableService {
 		if(sourceHasDish && targetHasDish)
 		{
 			tbPrintObjDao.updatePrintdishForMerge(sourceOrderId, targetOrderId);
+			//删除打印主表的数据,防止后续开台的订单号一样，打印单数据错乱
+			Map<String, Object> map2 = new HashMap<>();
+			map2.put("orderno", targetOrderId);
+			tbPrintObjDao.deletePrintObj(map2);
 		}
 		else if(!sourceHasDish && targetHasDish)
 		{
