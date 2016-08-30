@@ -33,7 +33,7 @@
         b.dishtype,a.dishunit,SUM(a.payamount) AS payamount,SUM(a.predisamount) AS predisamount,
         CASE WHEN a.pricetype=2 THEN CONCAT('(礼)',IFNULL(f.dishname,MAX(b.title))) ELSE IFNULL(f.dishname,MAX(b.title))
         END AS title,
-        b.image,b.dishid,c.itemid,c.itemdesc,a.dishstatus,a.pricetype FROM t_order_detail a INNER JOIN t_dish b
+        b.image,b.dishid,c.itemid,c.itemdesc,a.dishstatus,a.pricetype,a.parentkey,a.ismaster FROM t_order_detail a INNER JOIN t_dish b
         ON(a.dishid=b.dishid)
         LEFT JOIN t_basicdata c ON(b.source=c.ID) LEFT JOIN (SELECT MAX(dishname) AS dishname,dishid FROM
         t_template_dishunit
@@ -42,7 +42,7 @@
         mb.menuid = tm.menuid AND tm.status ='1' ORDER BY tm.effecttime DESC LIMIT 1) GROUP BY dishid) f
         ON(a.dishid=f.dishid)
         WHERE (NOT a.dishtype IN(3,4)) AND a.status&lt;&gt;5 AND a.orderid=#{orderId}
-        GROUP BY a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.orderprice ORDER BY
+        GROUP BY a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.orderprice
     </select>
     <select id="getJsJson" resultType="java.util.HashMap">
         SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,SUM(payamount) AS

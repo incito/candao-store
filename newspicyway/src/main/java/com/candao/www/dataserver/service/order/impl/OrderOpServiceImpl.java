@@ -14,16 +14,12 @@ import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import com.candao.www.webroom.service.TorderDetailPreferentialService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ytq on 2016/3/15.
@@ -35,9 +31,9 @@ public class OrderOpServiceImpl implements OrderOpService {
     private OrderOpMapper orderMapper;
     @Autowired
     private CaleTableAmountMapper caleTableAmountMapper;
-    
-	@Autowired
-	private TorderDetailPreferentialService torderDetailPreferentialService;
+
+    @Autowired
+    private TorderDetailPreferentialService torderDetailPreferentialService;
     @Autowired
     private TableMapper tableMapper;
 
@@ -73,6 +69,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                 }
             }
             List<Map> listJson = orderMapper.getListJson(orderId);
+            reorderListJson(listJson);
             List<Map> jsJson = orderMapper.getJsJson(orderId);
             responseJsonData.setOrderJson(orderJson);
             responseJsonData.setListJson(listJson);
@@ -83,6 +80,41 @@ public class OrderOpServiceImpl implements OrderOpService {
             LOGGER.error("#### getOrderInfo aUserId={},orderId={},printType={} error={} ###", aUserId, orderId, printType, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseJsonData);
+    }
+
+    /**
+     * 菜品列表重排序
+     *
+     * @param listJson
+     */
+    private void reorderListJson(List<Map> listJson) {
+        if (null != listJson && !listJson.isEmpty()) {
+            Map<String, List<Map>> reorderMap = new HashMap<>();
+            for (Map<String, Object> map : listJson) {
+                String parentkey = map.get("parentkey").toString();
+                List<Map> group = reorderMap.get(parentkey);
+                if (null == group) {
+                    group = new ArrayList<>();
+                    reorderMap.put(parentkey, group);
+                }
+                group.add(map);
+            }
+            listJson.clear();
+            for (List list : reorderMap.values()) {
+                Collections.sort(listJson, new Comparator<Map>() {
+                    @Override
+                    public int compare(Map o1, Map o2) {
+                        int ismaster1 = Integer.parseInt(o1.get("ismaster").toString());
+                        int ismaster2 = Integer.parseInt(o2.get("ismaster").toString());
+                        if (ismaster1 == ismaster2) {
+                            return 0;
+                        }
+                        return ismaster1 > ismaster2 ? -1 : 1;
+                    }
+                });
+                listJson.addAll(list);
+            }
+        }
     }
 
     @Override
@@ -97,11 +129,11 @@ public class OrderOpServiceImpl implements OrderOpService {
             LOGGER.error("###pCaleTableAmount aUserId={}, orderId={},error={}###", aUserId, orderId, e.getCause().getStackTrace());
         }
         return JSON.toJSONString(responseData);
-        
+
     }
-    
+
     @Override
-	public String calcOrderAmount(String orderId) {
+    public String calcOrderAmount(String orderId) {
 //    	caleTableAmountMapper.updateOrderDetailPayAmount(orderId);
 //        int updated = caleTableAmountMapper.updateOrderDueAmount(orderId);
 //        if(updated == 1){
@@ -109,9 +141,9 @@ public class OrderOpServiceImpl implements OrderOpService {
 //        }else{
 //        	return "0";
 //        }
-    	caleTableAmountMapper.pCaleTableAmount(orderId);
-    	return "1";
-	}
+        caleTableAmountMapper.pCaleTableAmount(orderId);
+        return "1";
+    }
 
     @Override
     public String wmOrder(String orderId) {
@@ -297,13 +329,13 @@ public class OrderOpServiceImpl implements OrderOpService {
         LOGGER.info("###cancelOrder userId={} orderId={} tableNo={}###", userId, orderId, tableNo);
         ResponseJsonData responseJsonData = new ResponseJsonData();
         try {
-        	  Map<String, Object> params=new HashMap<>();
-              params.put("orderid", orderId);
-              params.put("clear", "1");
-              torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+            Map<String, Object> params = new HashMap<>();
+            params.put("orderid", orderId);
+            params.put("clear", "1");
+            torderDetailPreferentialService.deleteDetilPreFerInfo(params);
             orderMapper.deleteByOrderId(orderId);
             tableMapper.clearTable(tableNo, orderId);
-          
+
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e.getCause().getStackTrace());
