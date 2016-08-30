@@ -116,16 +116,16 @@ footer{
   	padding: 0;
   	margin: 0;
   	height: 43px;
-  	width: 85%;
+  	width: 522px;/***85%****/
   	float: left;
 }
 .main-div .nav-types li{
-	margin: 0 2px;
+	margin: 0;
   	font-weight: bold;
 	position: relative;
   	list-style: none;
 	float: left;
-  	width: 80px;
+  	width: 16.66%;
   	height: 100%;
   	text-align: center;
   	padding: 12px 2px;
@@ -277,7 +277,7 @@ footer{
   	padding: 10px;
 }
 .left-div .dish-info{
-	height: 550px;
+	height: 570px;
 }
 .left-div .table{
 	border-top: 1px solid #ffffff;
@@ -331,7 +331,7 @@ footer{
 .modal-dialog{
 	height: 100%;
   	width: 100%;
- 	margin: 0;
+ 	margin: 0 auto;
 }
 .modal-content{
 	height: 100%;
@@ -342,8 +342,26 @@ footer{
 }
 .modal-body{
 	padding: 0;
-  	height: 100%;
   	margin: 0;
   	border: 0;
   	width: 100%;
+}
+.confirm-dialog .modal-dialog {
+  	width: 400px;
+  	height: 180px;
+  	margin-top: 10%;
+}
+.confirm-dialog .modal-body {
+  	background: rgb(224, 220, 220);
+  	padding: 15px;
+}
+.confirm-dialog .btn{
+	width: 150px;
+	height: 40px;
+	background: white;
+}
+.confirm-dialog .btn-save{
+	color: #fff;
+  	background-color: #FF5803;
+  	border-color: #FF5803;
 }

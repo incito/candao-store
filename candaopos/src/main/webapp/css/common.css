@@ -79,3 +79,31 @@ footer{
 	opacity: 1;
 	color: #fff;
 }
+.confirm-dialog .modal-dialog {
+  	width: 400px;
+  	margin-top: 10%;
+}
+.confirm-dialog .modal-body {
+  	background: rgb(224, 220, 220);
+}
+.confirm-dialog .btn{
+	width: 150px;
+	height: 40px;
+	background: white;
+}
+.confirm-dialog .btn-save{
+	color: #fff;
+  	background-color: #FF5803;
+  	border-color: #FF5803;
+}
+.confirm-dialog .btn:hover{
+	background: #F68D70;
+	border-color: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.confirm-dialog .btn:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}

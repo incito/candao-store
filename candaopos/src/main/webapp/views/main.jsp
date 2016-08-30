@@ -21,6 +21,7 @@
 <script src="<%=request.getContextPath()%>/scripts/page.js"></script>
 <script src="<%=request.getContextPath()%>/scripts/main.js"></script>
 <script type="text/javascript">
+	var global_path = "<%=request.getContextPath()%>";
 	var nowPage = 0;
 	var isopened = false;
 	$(document).ready(function(){

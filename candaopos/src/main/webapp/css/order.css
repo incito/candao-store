@@ -20,8 +20,29 @@
   	background: #FF5803;
   	margin: 10px 20px;
 }
-.oper-div .preferential-oper-btns{
-	
+.left-div .operate-btns div{
+	width: 65px;
+  	height: 42px;
+  	background: #F6F6F6;
+  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
+  	border-radius: 3px;
+  	text-align: center;
+  	display: inline-block;
+  	font-size: 14px;
+  	color: #040404;
+  	padding-top: 10px;
+  	margin-left: 2px;
+  	cursor: pointer;
+}
+.left-div .operate-btns div:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #ffffff;
+}
+.left-div .operate-btns div:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
 }
 .oper-div .dish-oper-btns{
 	height: 240px;
@@ -197,6 +218,11 @@
 	padding-top: 8px;
 	margin: 3px 2px;
 }
+.main-div .virtual-keyboard ul li.ok-btn{
+	width: 92px;
+	background: #FF5803;
+	color: #ffffff;
+}
 .main-div .virtual-keyboard ul li:hover{
 	background: #F68D70;
 	opacity: 0.5;
@@ -209,7 +235,7 @@
 }
 .main-div .num-virtual-keyboard ul li {
 	width: 92px;/*30%*/
-  	font-size: 18px;
+  	font-size: 16px;
 }
 .main-div .letter-virtual-keyboard ul li{
 	width: 44px;/*15%*/
@@ -330,4 +356,9 @@
   	margin: auto 2px;
   	text-align: center;
   	padding-top: 12px
+}
+.age-type div.active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
 }
