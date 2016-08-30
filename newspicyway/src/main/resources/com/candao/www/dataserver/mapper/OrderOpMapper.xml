@@ -43,7 +43,6 @@
         ON(a.dishid=f.dishid)
         WHERE (NOT a.dishtype IN(3,4)) AND a.status&lt;&gt;5 AND a.orderid=#{orderId}
         GROUP BY a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.orderprice ORDER BY
-        c.itemid,a.orderdetailid,a.pricetype
     </select>
     <select id="getJsJson" resultType="java.util.HashMap">
         SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,SUM(payamount) AS
