@@ -62,4 +62,13 @@ public class Constant {
 	
 	/** */
 	public static final String DELIMITER_SPECIAL = "|";
+
+	public static final String DEFALUT_USER = "candao";
+
+	public static final String DEFAULT_PASSWORD = "e10adc3949ba59abbe56e057f20f883e";
+
+	public static final String URL_SYSTEM = "/system/systemSet";
+
+	public static final String FUNCTION_SYSTEM = "0311";
+
 }

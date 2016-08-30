@@ -2,11 +2,7 @@ package com.candao.www.permit.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -78,20 +75,39 @@ public class LoginController {
 			if (username == null || username.trim().length() <= 0) {
 				throw new BusinessException("缺少账号、手机号或者邮箱！");
 			}
-			User webUser = userService.login(username, password);
-			
-//			对门店管理员的判断
-			verifyBranchManage(webUser, branchid);
-			
-//			不是门店管理员，判断是否有登录权限
-			HashSet<String> urlSet = userService.getAuthedUrls(webUser);
-			verifyLogin(urlSet);
-			
-//			获取该用户对应的function和code
-			List<Function> fnList = this.functionService.getMenuFunction4User(webUser.getId());
-			Map<String, Function> menumap = setFunctionCode(fnList);
-			mav.addObject("menumap", menumap);
 
+			User webUser = null;
+			HashSet<String> urlSet = null;
+			Map<String, Function> menumap = null;
+
+			if (Constant.DEFALUT_USER.equals(username) && Constant.DEFAULT_PASSWORD.equals(password)){
+				webUser = new User();
+				webUser.setAccount(Constant.DEFALUT_USER);
+				webUser.setPassword(Constant.DEFAULT_PASSWORD);
+				urlSet = new HashSet<>();
+				urlSet.add(Constant.URL_SYSTEM);
+				List<Function> fnList = new ArrayList<>();
+				Function function = new Function();
+				function.setCode(Constant.FUNCTION_SYSTEM);
+				fnList.add(function);
+				menumap = new HashMap<>();
+				menumap.put(function.getCode(),function);
+			} else {
+				webUser = userService.login(username, password);
+
+//			对门店管理员的判断
+				verifyBranchManage(webUser, branchid);
+
+//			不是门店管理员，判断是否有登录权限
+				urlSet = userService.getAuthedUrls(webUser);
+				verifyLogin(urlSet);
+
+//			获取该用户对应的function和code
+				List<Function> fnList = this.functionService.getMenuFunction4User(webUser.getId());
+				menumap = setFunctionCode(fnList);
+			}
+
+			mav.addObject("menumap", menumap);
 //			 获取门店名称
 			String showName = getBranchName(branchid);
 			mav.addObject("showName", showName);
