@@ -101,7 +101,7 @@ public class OrderOpServiceImpl implements OrderOpService {
             }
             listJson.clear();
             for (List list : reorderMap.values()) {
-                Collections.sort(listJson, new Comparator<Map>() {
+                Collections.sort(list, new Comparator<Map>() {
                     @Override
                     public int compare(Map o1, Map o2) {
                         int ismaster1 = Integer.parseInt(o1.get("ismaster").toString());
