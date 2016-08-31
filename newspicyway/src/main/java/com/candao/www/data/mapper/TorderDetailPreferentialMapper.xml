@@ -110,4 +110,7 @@
 		todp.isUse=1 ORDER BY todp.insertime
 		ASC;
 	</select>
+	<select id="statisticALLDiscount" parameterType="map" resultType="java.math.BigDecimal">
+		SELECT IFNULL(SUM(deAmount) ,0) FROM t_order_detail_preferential WHERE orderid=#{orderid};
+	</select>
 </mapper>

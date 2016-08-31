@@ -1,5 +1,6 @@
 package com.candao.www.data.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -24,4 +25,6 @@ public interface TorderDetailPreferentialDao {
 	public int deleteDetilPreFerInfo(Map<String, Object> params);
 
 	public List<TorderDetailPreferential> getTorderDetailSbyOrderid(Map<String, Object> params);
+	
+	public BigDecimal  statisticALLDiscount(String orderid);
 }

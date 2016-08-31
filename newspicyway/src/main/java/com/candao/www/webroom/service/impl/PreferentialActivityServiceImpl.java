@@ -1082,6 +1082,10 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					result.setAmount(new BigDecimal(0).setScale(2, RoundingMode.HALF_UP));
 					 return result;
 				} else {
+					if(params.containsKey("preferentialAmt")&&!params.containsKey("resultAmount")){
+						 BigDecimal staticPrice = orderDetailPreferentialDao.statisticALLDiscount((String) params.get("orderid"));
+						 params.put("preferentialAmt", staticPrice.toString());
+					}
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
 							torderDetailDao, orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
 					List<TorderDetailPreferential> detailPreferentials = (List<TorderDetailPreferential>) resultMap
@@ -1118,7 +1122,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!params.containsKey("resultAmount")) {
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
-						StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
+						StrategyFactory.INSTANCE.calcAmount(orderDetailPreferentialDao,caleTableAmountMapper, orderid, dataDictionaryService,
 								result, orderMapper,orderOpMapper,(String) params.get("itemid"));
 					}
 
