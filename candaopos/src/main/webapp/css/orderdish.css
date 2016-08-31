@@ -352,7 +352,7 @@ footer{
   	margin-top: 10%;
 }
 .confirm-dialog .modal-body {
-  	background: rgb(224, 220, 220);
+  	background: #EAE9E6;
   	padding: 15px;
 }
 .confirm-dialog .btn{
@@ -364,4 +364,49 @@ footer{
 	color: #fff;
   	background-color: #FF5803;
   	border-color: #FF5803;
+}
+#updatenum-dialog .modal-dialog{
+	width: 340px;
+}
+#updatenum-dialog .modal-title{
+	text-align: center;
+  	font-size: 16px;
+  	color: #FFFFFF;
+  	padding-top: 15px;
+}
+#updatenum-dialog .dialog-sm-info span.inpt-span{
+	position: absolute;
+	font-size: 16px;
+	color: #B0B0B0;
+	padding-top: 12px;
+  	padding-left: 10px;
+}
+#updatenum-dialog .dialog-sm-info input{
+	padding-left: 85px;
+	height: 45px;
+}
+#updatenum-dialog .dialog-sm-info .dishname{
+	font-size: 16px;
+	color: #FF5803;
+	padding-left: 10px;
+}
+#updatenum-dialog .dialog-sm-info .virtual-keyboard ul{
+	padding: 0;
+	margin: 0;
+}
+#updatenum-dialog .dialog-sm-info .virtual-keyboard ul li{
+	width: 100px;
+  	height: 48px;
+  	background: #FFFFFF;
+  	box-shadow: 0px 1px 0px 0px #CFCFCF;
+  	border-radius: 3px;
+  	text-align: center;
+  	line-height: 2.5;
+  	list-style: none;
+  	float: left;
+  	margin-left: 3px;
+  	margin-bottom: 5px;
+  	font-size: 18px;
+  	color: #040404;
+  	cursor: pointer;
 }
