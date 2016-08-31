@@ -155,20 +155,3 @@ article{
 .thechange-dialog .login-form .span-user{
   	width: 100px;
 }
-.confirm-dialog .modal-dialog{
-	width: 400px;
-	margin-top: 10%;
-}
-.confirm-dialog .modal-body{
-	background: rgb(224, 220, 220);
-}
-.confirm-dialog .btn{
-	width: 150px;
-	height: 40px;
-	background: white;
-}
-.confirm-dialog .btn-save{
-	color: #fff;
-  	background-color: #FF5803;
-  	border-color: #FF5803;
-}

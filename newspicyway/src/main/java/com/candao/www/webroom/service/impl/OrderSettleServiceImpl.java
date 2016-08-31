@@ -332,8 +332,15 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		String orderId = settlementInfo.getOrderNo();
 
 		Map<String, String> mapRet = new HashMap<String, String>();
+		Map<String,Object> order = orderService.findOrderById(orderId);
+		if (order == null || order.isEmpty()) {
+			logger.error("结算失败！查找订单失败 ,订单id:" + orderId);
+			mapRet.put("result", "2");
+			return JacksonJsonMapper.objectToJson(mapRet);
+		}
+
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("orderid", orderId);
+		map.put("tableid", order.get("currenttableid"));
 		List<Map<String, Object>> resultMap = tableService.find(map);
 
 		if (resultMap == null || resultMap.size() == 0) {
@@ -427,7 +434,6 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		tsettlementDetailMapper.insertOnce(listInsert);
 		
 		//挂单结账时候不需要打印
-		Map<String, Object> order = orderService.findOrderById(orderId);
 		String payway = order.get("payway")==null?"":order.get("payway").toString();
 		String ordertype = order.get("ordertype")==null?"":order.get("ordertype").toString();
 		if ("3".equals(payway) && "2".equals(ordertype)) {
@@ -449,7 +455,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		
 		//最后一步打印
 		if (isPrint) {
-			orderdetailservice.afterprint(orderId);			
+			orderdetailservice.afterprint(orderId);
 		}
 		
 		logger.info("结算成功！");
