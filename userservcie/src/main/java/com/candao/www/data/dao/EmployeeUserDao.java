@@ -97,4 +97,5 @@ public interface EmployeeUserDao {
 	public List<EmployeeUser> getEmployeeUser4Store(String branchId);
 
 	public EmployeeUser getByparams(Map<String, Object> map);
+	public Map<String ,Object > getUserByJobNumber(String jobNumber);
 }

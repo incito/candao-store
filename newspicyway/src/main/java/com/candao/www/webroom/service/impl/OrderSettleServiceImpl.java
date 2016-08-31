@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.data.dao.*;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,6 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.Constant.TABLETYPE;
-import com.candao.www.data.dao.TRethinkSettlementDao;
-import com.candao.www.data.dao.TbOpenBizLogDao;
-import com.candao.www.data.dao.TdishDao;
-import com.candao.www.data.dao.TorderDetailMapper;
-import com.candao.www.data.dao.TsettlementDetailMapper;
-import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Torder;
@@ -98,7 +93,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	private OrderDetailService orderdetailservice;
-
+	@Autowired
+	private EmployeeUserDao employeeUserDao;
  	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
 	public String saveposcash(SettlementInfo settlementInfo) {
@@ -494,17 +490,18 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			// 查询反结算次数
 			String againSettleNums = settlementMapper
 					.queryAgainSettleNums(orderId);
+			Map<String, Object> userInfo = employeeUserDao.getUserByJobNumber(settlementInfo.getUserName());
 			if (againSettleNums == null || againSettleNums.equals("0")) {
 				// 插入反结算 主记录，先判断是否有会员消费虚增
 				Double inflated = settlementMapper.getMemberInflated(orderId);
 				settlementMapper.insertSettlementHistory(orderId,
 						settlementInfo.getReason(), 1,
-						settlementInfo.getUserName(), inflated);
+						userInfo.get("name")+"("+settlementInfo.getUserName()+")", inflated);
 			} else {
 				// 如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
 				int nums = Integer.parseInt(againSettleNums) + 1;
 				settlementMapper.updateSettlementHistory(orderId, nums,
-						settlementInfo.getUserName(),
+						userInfo.get("name")+"("+settlementInfo.getUserName()+")",
 						settlementInfo.getReason());
 			}
 			// 删除原结算信息
