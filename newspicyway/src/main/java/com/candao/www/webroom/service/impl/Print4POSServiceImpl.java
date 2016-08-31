@@ -540,7 +540,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 
         dishname = (dishnames == null ? dishname : dishnames[0]) + "(" + (dishunits == null ? dishunit : dishunits[0]) + ")";
         if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
-            dishname += "(增)";
+            dishname += "(赠)";
         }
         if (dishnames != null || dishunits != null) {
             dishname += "\n";
