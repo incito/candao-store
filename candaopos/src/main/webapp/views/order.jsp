@@ -79,9 +79,8 @@
 							<div class="total-amount">
 								应收：￥<span id="should-amount">548</span>
 							</div>
-							<div class="operate-btns">
+							<div class="operate-btns" style="padding-left: 11px;">
 								<div>预结单</div>
-								<div>反结</div>
 								<div onclick="takeOrder()">点菜</div>
 								<div>开钱箱</div>
 								<div>更多</div>

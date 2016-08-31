@@ -51,7 +51,7 @@
 							</div>
 							<hr class="lf-hr">
 							<div class="total-amount">
-								消费：￥<span id="amount">0</span>
+								消费：￥<span id="total-amount">0</span>
 							</div>
 						</div>
 						<div class="oper-div">
@@ -65,13 +65,13 @@
 								<div class="oper-btn next-btn">
 									<span class="glyphicon glyphicon-chevron-down"></span>
 								</div>
-								<div class="oper-btn">
+								<div class="oper-btn" onclick="add()">
 									<span class="glyphicon glyphicon-plus"></span>
 								</div>
-								<div class="oper-btn">
+								<div class="oper-btn" onclick="reduct()">
 									<span class="glyphicon glyphicon-minus"></span>
 								</div>
-								<div class="oper-btn">
+								<div class="oper-btn" onclick="updateNum()">
 									<span>数量</span>
 								</div>
 								<div class="oper-btn">
@@ -219,6 +219,48 @@
 	                </div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="closeConfirm('nodish-confirm-dialog')">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 更新购物车单个菜品数量 -->
+	<div class="modal fade dialog-sm confirm-dialog in " id="updatenum-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">菜品数量设置</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('updatenum-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	                    <div class="form-group dishname">菜品名称：<span id="dish-name"></span></div>
+	                    <div class="form-group">
+	                    	<span class="inpt-span">菜品数量:</span>
+	                    	<input type="text" class="form-control">
+	                    </div>
+	                    <div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('updatenum-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
 	                    </button>
 	                </div>
 	            </div>
