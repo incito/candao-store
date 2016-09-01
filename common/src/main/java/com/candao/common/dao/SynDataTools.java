@@ -32,6 +32,8 @@ public class SynDataTools {
 	
 	
 	public List<Map<String,String>> generateData(String tableName,String sqlCondition)throws SysException{
+		logger.info("tableName:-->"+tableName);
+		logger.info("sqlCondition:-->"+sqlCondition);
 		Statement stmt = null;
 		ResultSet rs = null;
 		List<Map<String,String>> result = null;
@@ -48,6 +50,7 @@ public class SynDataTools {
 			//设置同步对象
 			result = setData(rs,columns);
 		} catch (SQLException e) {
+			logger.error("sql报错",e);
 			throw new SysException(ErrorMessage.SQLEXE_ERROR, Module.LOCAL_SHOP);
 		} finally {
 			try {
