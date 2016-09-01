@@ -8377,6 +8377,7 @@ DELIMITER ;
 
 DELIMITER $$
 
+ DROP PROCEDURE IF EXISTS p_report_gzxxmxb$$
  CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxmxb`(IN  pi_branchid INT(11),
 
                                               IN  pi_ksrq     DATETIME, #开始时间
@@ -8812,6 +8813,7 @@ DELIMITER ;
 
 DELIMITER $$
 
+DROP PROCEDURE IF EXISTS p_report_gzxxtjb$$
  CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxtjb`(IN  pi_branchid INT(11),
 
                                               IN  pi_ksrq     DATETIME, #开始时间
