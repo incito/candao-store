@@ -84,7 +84,7 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 					map.put("paidindifference", paidindifference);
 					map.put("waiter", waiter != null ? waiter : "");
 					map.put("cashier", cashier != null ? cashier : "");
-					map.put("authorized", authorizerName);
+					map.put("authorized", authorizerName==null?"":authorizerName);
 					list.add(map);
 				}
 			}
