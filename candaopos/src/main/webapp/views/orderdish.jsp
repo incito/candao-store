@@ -12,141 +12,8 @@
 <title>点菜</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/orderdish.css">
 <script src="<%=request.getContextPath()%>/scripts/page.js"></script>
+<script src="<%=request.getContextPath()%>/scripts/addDish.js"></script>
 <script type="text/javascript">
-
-var nowPage4 = 0;//已选择菜品分页
-var nowPage5 = 0;//待选择菜品分页
-
-var activeinputele;
-	$(document).ready(function(){
-		$("img.img-close").hover(function(){
-		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
-		},function(){
-			$(this).attr("src","<%=request.getContextPath()%>/images/close-sm.png");
-		});
-		$(".search input[type='search']").focus(function(event){
-	        activeinputele = $(this);
-		});
-		//删除搜索条件
-		$(".search .delsearch-btn").click(function(){
-			$(".search input[type='search']").val("");
-		});
-		//搜索条件输入
-		$(".search-btns div").click(function(){
-			var keytext = $(this).text();
-			if(activeinputele != null && activeinputele != undefined){
-				var val = activeinputele.val();
-				val = val + keytext;
-				activeinputele.val(val);
-				activeinputele.focus();
-			}
-		});
-		//上一页
-		$(".oper-div .prev-btn").click(function(){
-			if($(this).hasClass("disabled")){
-				return false;
-			}
-			page4(nowPage4-1);
-		});
-		//下一页
-		$(".oper-div .next-btn").click(function(){
-			if($(this).hasClass("disabled")){
-				return false;
-			}
-			page4(nowPage4+1);
-		});
-		//上一页
-		$(".main-div .prev-btn").click(function(){
-			if($(this).hasClass("disabled")){
-				return false;
-			}
-			page5(nowPage5-1);
-		});
-		//下一页
-		$(".main-div .next-btn").click(function(){
-			if($(this).hasClass("disabled")){
-				return false;
-			}
-			page5(nowPage5+1);
-		});
-		page4(0);
-		initDishType();
-	});
-	//已点菜品分页
-	function page4(currPage ){
-		nowPage4 = loadPage({
-			obj: "#sel-dish-table tbody tr",
-			listNum: 16,
-	        currPage: currPage, 
-	        totleNums: $("#sel-dish-table tbody tr").length,
-	        curPageObj: "#adddish-modal #curr-page",
-	        pagesLenObj: "#adddish-modal #pages-len",
-	        prevBtnObj: "#adddish-modal .oper-div .prev-btn",
-	        nextBtnObj: "#adddish-modal .oper-div .next-btn",
-	        callback: function(){
-	        	$("#sel-dish-table tbody tr").not(".hide").eq(0).addClass("selected");
-	        }
-		});
-	}
-	//菜品分页
-	function page5(currPage){
-		nowPage5 = loadPage({
-			obj: ".dishes-content .dish-info",
-			listNum: 20,
-	        currPage: currPage, 
-	        totleNums: $(".dishes-content .dish-info").length,
-	        curPageObj: "#adddish-modal #curr-page1",
-	        pagesLenObj: "#adddish-modal #pages-len1",
-	        prevBtnObj: "#adddish-modal .main-div .prev-btn",
-	        nextBtnObj: "#adddish-modal .main-div .next-btn"
-		});
-	}
-	//菜品分类
-	function initDishType(){
-		var htm = '';
-		for(var i=0; i< 20; i++){
-			var cla = "";
-			if(i == 0)
-				cla = "active";
-			htm += '<li class="'+cla+'">分类'+i+'</li>';
-		}
-		$(".nav-types").html(htm);
-		initDishes();
-		$(".nav-types li").click(function(){
-			$(".nav-types li").removeClass("active");
-			$(this).addClass("active");
-			initDishes();
-		});
-	}
-	//通过分类获取菜品信息
-	function initDishes(){
-		var htm = '';
-		for(var i=0; i< 45; i++){
-			htm += '<div class="dish-info" dishid="dish-id-'+i+'" dishname="菜品'+i+'" price="49">'
-				+'<div class="dish-name">菜品'+i+'</div>'
-				+'<hr>'
-				+'<div class="dish-price">20元~999元</div>'
-				+'</div>';
-		}
-		$(".main-div .dishes-content").html(htm);
-		page5(nowPage5);
-		$(".dishes-content .dish-info").click(function(){
-			var tr = "";
-			var dishname = $(this).attr("dishname");
-			var price = $(this).attr("price");
-			tr = "<tr><td>"+dishname+"</td><td>1</td><td>"+price+"</td></tr>";
-			
-			$("#sel-dish-table tbody").prepend(tr);
-			$("#sel-dish-table tbody tr").removeClass("selected");
-			page4(nowPage4);
-			
-			//选中已点菜品
-			$("#sel-dish-table tbody tr").click(function(){
-				$("#sel-dish-table tbody tr").removeClass("selected");
-				$(this).addClass("selected");
-			});
-		});
-	}
 </script>
 </head>
 <body>
@@ -184,7 +51,7 @@ var activeinputele;
 							</div>
 							<hr class="lf-hr">
 							<div class="total-amount">
-								消费：￥<span id="amount">0</span>
+								消费：￥<span id="total-amount">0</span>
 							</div>
 						</div>
 						<div class="oper-div">
@@ -198,13 +65,13 @@ var activeinputele;
 								<div class="oper-btn next-btn">
 									<span class="glyphicon glyphicon-chevron-down"></span>
 								</div>
-								<div class="oper-btn">
+								<div class="oper-btn" onclick="add()">
 									<span class="glyphicon glyphicon-plus"></span>
 								</div>
-								<div class="oper-btn">
+								<div class="oper-btn" onclick="reduct()">
 									<span class="glyphicon glyphicon-minus"></span>
 								</div>
-								<div class="oper-btn">
+								<div class="oper-btn" onclick="updateNum()">
 									<span>数量</span>
 								</div>
 								<div class="oper-btn">
@@ -214,11 +81,11 @@ var activeinputele;
 						</div>
 						<div class="main-div">
 							<div class="dish-type">
-								<div class="nav-type-prev">
+								<div class="nav-type-prev nav-dishtype-prev">
 									<span class="glyphicon glyphicon-chevron-left"></span>
 								</div>
-								<ul class="nav-types"></ul>
-								<div class="nav-type-next nav-type">
+								<ul class="nav-types nav-dish-types"></ul>
+								<div class="nav-type-next nav-type nav-dishtype-next">
 									<span class="glyphicon glyphicon-chevron-right"></span>
 								</div>
 							</div>
@@ -270,10 +137,10 @@ var activeinputele;
 								</div>
 							</div>
 							<div class="main-oper-btns">
-								<div>赠菜</div>
-								<div>全单备注</div>
-								<div>清空</div>
-								<div class="place-order">下单</div>
+								<div onclick="giveFood()">赠菜</div>
+								<div onclick="allNote()">全单备注</div>
+								<div onclick="clearSelected()">清空</div>
+								<div class="place-order" onclick="placeOrder()">下单</div>
 							</div>
 						</div>
 					</div>
@@ -286,6 +153,119 @@ var activeinputele;
 				</footer>
 			</div>
 		</div>
+	</div>
+	<!-- 清空确认框 -->
+	<div class="modal fade dialog-sm confirm-dialog in " id="clear-confirm-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title"></div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('clear-confirm-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	                    <p class="p1">确定要清空已选菜品吗？
+	                    </p>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('clear-confirm-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="doClear()">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 下单确认框 -->
+	<div class="modal fade dialog-sm confirm-dialog in " id="placeorder-confirm-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title"></div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('placeorder-confirm-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	                    <p class="p1">餐台【<sapn id="tableno">002</sapn>】确定下单吗？
+	                    </p>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('placeorder-confirm-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" data-dismiss="modal" onclick="doPlaceOrder()">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 是否选菜确认框 -->
+	<div class="modal fade dialog-sm confirm-dialog in " id="nodish-confirm-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title"></div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('nodish-confirm-dialog')">
+	            </div>
+	            <div class="modal-body">
+	                <div class="dialog-sm-info">
+	                    <p class="p1" id="confirm-msg">请先选择菜品。</p>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="closeConfirm('nodish-confirm-dialog')">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 更新购物车单个菜品数量 -->
+	<div class="modal fade dialog-sm confirm-dialog in " id="updatenum-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">菜品数量设置</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('updatenum-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	                    <div class="form-group dishname">菜品名称：<span id="dish-name"></span></div>
+	                    <div class="form-group">
+	                    	<span class="inpt-span">菜品数量:</span>
+	                    	<input type="text" class="form-control">
+	                    </div>
+	                    <div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('updatenum-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
 	</div>
 </body>
 </html>

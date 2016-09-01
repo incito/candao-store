@@ -198,6 +198,7 @@
                 and typename=#{typename}
             </if>
         </where>
+        order by itemSort asc
     </select>
 
     <select id="page" parameterType="map" resultMap="pageResultMap">

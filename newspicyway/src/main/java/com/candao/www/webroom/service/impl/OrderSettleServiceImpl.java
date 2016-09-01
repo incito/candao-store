@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.data.dao.*;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,6 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.Constant.TABLETYPE;
-import com.candao.www.data.dao.TRethinkSettlementDao;
-import com.candao.www.data.dao.TbOpenBizLogDao;
-import com.candao.www.data.dao.TdishDao;
-import com.candao.www.data.dao.TorderDetailMapper;
-import com.candao.www.data.dao.TsettlementDetailMapper;
-import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Torder;
@@ -98,7 +93,8 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	private OrderDetailService orderdetailservice;
-
+	@Autowired
+	private EmployeeUserDao employeeUserDao;
  	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
 	public String saveposcash(SettlementInfo settlementInfo) {
@@ -336,8 +332,15 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		String orderId = settlementInfo.getOrderNo();
 
 		Map<String, String> mapRet = new HashMap<String, String>();
+		Map<String,Object> order = orderService.findOrderById(orderId);
+		if (order == null || order.isEmpty()) {
+			logger.error("结算失败！查找订单失败 ,订单id:" + orderId);
+			mapRet.put("result", "2");
+			return JacksonJsonMapper.objectToJson(mapRet);
+		}
+
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("orderid", orderId);
+		map.put("tableid", order.get("currenttableid"));
 		List<Map<String, Object>> resultMap = tableService.find(map);
 
 		if (resultMap == null || resultMap.size() == 0) {
@@ -431,7 +434,6 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		tsettlementDetailMapper.insertOnce(listInsert);
 		
 		//挂单结账时候不需要打印
-		Map<String, Object> order = orderService.findOrderById(orderId);
 		String payway = order.get("payway")==null?"":order.get("payway").toString();
 		String ordertype = order.get("ordertype")==null?"":order.get("ordertype").toString();
 		if ("3".equals(payway) && "2".equals(ordertype)) {
@@ -453,7 +455,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		
 		//最后一步打印
 		if (isPrint) {
-			orderdetailservice.afterprint(orderId);			
+			orderdetailservice.afterprint(orderId);
 		}
 		
 		logger.info("结算成功！");
@@ -494,17 +496,18 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			// 查询反结算次数
 			String againSettleNums = settlementMapper
 					.queryAgainSettleNums(orderId);
+			Map<String, Object> userInfo = employeeUserDao.getUserByJobNumber(settlementInfo.getUserName());
 			if (againSettleNums == null || againSettleNums.equals("0")) {
 				// 插入反结算 主记录，先判断是否有会员消费虚增
 				Double inflated = settlementMapper.getMemberInflated(orderId);
 				settlementMapper.insertSettlementHistory(orderId,
 						settlementInfo.getReason(), 1,
-						settlementInfo.getUserName(), inflated);
+						userInfo.get("name")+"("+settlementInfo.getUserName()+")", inflated);
 			} else {
 				// 如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
 				int nums = Integer.parseInt(againSettleNums) + 1;
 				settlementMapper.updateSettlementHistory(orderId, nums,
-						settlementInfo.getUserName(),
+						userInfo.get("name")+"("+settlementInfo.getUserName()+")",
 						settlementInfo.getReason());
 			}
 			// 删除原结算信息

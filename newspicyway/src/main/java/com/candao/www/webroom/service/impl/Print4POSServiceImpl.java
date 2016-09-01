@@ -434,7 +434,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
                         String[] value = {resolveNullType(prefer.get("menuAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
-                                resolveNullType(prefer.get("amount")), resolveNullType(prefer.get("reserveAmout"))};
+                                resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
@@ -540,7 +540,7 @@ public class Print4POSServiceImpl implements Print4POSService {
 
         dishname = (dishnames == null ? dishname : dishnames[0]) + "(" + (dishunits == null ? dishunit : dishunits[0]) + ")";
         if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
-            dishname += "(增)";
+            dishname += "(赠)";
         }
         if (dishnames != null || dishunits != null) {
             dishname += "\n";

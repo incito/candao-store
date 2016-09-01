@@ -1,7 +1,10 @@
 package com.candao.www.utils.preferential;
 
+import java.math.BigDecimal;
+
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
  * 
@@ -9,6 +12,6 @@ import com.candao.www.webroom.service.DataDictionaryService;
  *
  */
 public interface CalMenuOrderAmountInterface {
-	void  calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,String itemid);
+	void  calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,String itemid, BigDecimal statisticPrice);
 
 }

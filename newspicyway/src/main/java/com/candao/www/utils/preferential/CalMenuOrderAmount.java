@@ -9,6 +9,7 @@ import java.util.Map;
 import com.candao.www.utils.RoundingEnum;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
  * 
@@ -17,7 +18,8 @@ import com.candao.www.webroom.service.DataDictionaryService;
 public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 
 	@Override
-	public void calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResul,String itemid) {
+	public void calPayAmount(
+			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResul, String itemid, BigDecimal statisticPrice) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("type", "ROUNDING");
 		List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
@@ -27,12 +29,12 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
 			listFind.addAll(listFind2);
 		}
-		
-		String calItemid="";
-		if(itemid==null||!itemid.equals("0")){
-			calItemid=(String) listFind.get(0).get("itemid");
-		}else{
-			calItemid=itemid;
+
+		String calItemid = "";
+		if (itemid == null || !itemid.equals("0")) {
+			calItemid = (String) listFind.get(0).get("itemid");
+		} else {
+			calItemid = itemid;
 		}
 		RoundingEnum roundingEnum = RoundingEnum.fromString(calItemid);
 		switch (roundingEnum) {
@@ -40,26 +42,27 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			preferentialResul.setMoneyWipeName("四舍五入");
 			preferentialResul.setMoneyDisType("1");
 			/** 4舍5入 **/
-			calPayAmount(RoundingMode.HALF_UP, preferentialResul, listFind);
+			calPayAmount(RoundingMode.HALF_UP, preferentialResul, listFind,statisticPrice);
 			break;
 		case REMOVETAIL:
 			/** 抹零处理 **/
 			preferentialResul.setMoneyWipeName("抹零");
 			preferentialResul.setMoneyDisType("2");
-			calPayAmount(RoundingMode.DOWN, preferentialResul, listFind);
+			calPayAmount(RoundingMode.DOWN, preferentialResul, listFind,statisticPrice);
 			break;
 		default:
 			BigDecimal payAmount = preferentialResul.getMenuAmount().subtract(preferentialResul.getAmount());
-			preferentialResul.setPayamount(payAmount.compareTo(new BigDecimal("0"))==1?payAmount:new BigDecimal("0"));
+			preferentialResul
+					.setPayamount(payAmount.compareTo(new BigDecimal("0")) == 1 ? payAmount : new BigDecimal("0"));
 			preferentialResul.setMoneyDisType("0");
 			break;
 		}
 	}
 
-	private void calPayAmount(RoundingMode branchid, OperPreferentialResult preferentialResul,
-			List<Map<String, Object>> listFind) {
+	private void calPayAmount(RoundingMode branchid,  OperPreferentialResult preferentialResul,
+			List<Map<String, Object>> listFind,BigDecimal statisticPrice) {
 		BigDecimal menuAmout = preferentialResul.getMenuAmount();
-		BigDecimal amount = preferentialResul.getAmount();
+		BigDecimal amount = statisticPrice;
 		BigDecimal payAmount = new BigDecimal("0");
 		BigDecimal noCalAmount = new BigDecimal("0");
 		if (listFind == null || listFind.size() <= 0) {
@@ -74,25 +77,24 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			noCalAmount = menuAmout.subtract(amount);
 			// 当前优惠有多少钱(对元进行处理)
 			if (scale == 0) {
-				payAmount = noCalAmount.divide(new BigDecimal(10)).setScale(0,branchid)
-						.multiply(new BigDecimal(10));
+				payAmount = noCalAmount.divide(new BigDecimal(10)).setScale(0, branchid).multiply(new BigDecimal(10));
 			} else {
 
-				payAmount = noCalAmount.divide(new BigDecimal("1"), scale-1, branchid);
+				payAmount = noCalAmount.divide(new BigDecimal("1"), scale - 1, branchid);
 			}
 		}
 		/** 如果小于0表示使用的优惠总金额，大于总价，所以支付价应该为0 **/
 		if (payAmount.doubleValue() <= 0) {
 			payAmount = new BigDecimal("0");
 		}
-		  BigDecimal menuAmount = preferentialResul.getMenuAmount();
-		  BigDecimal   preAmount=preferentialResul.getAmount();
-		  BigDecimal noCalAmountTemp=null;
-		  if(menuAmount.compareTo(preAmount)==-1){
-			  noCalAmountTemp=new BigDecimal("0");
-		  }else{
-			  noCalAmountTemp=  noCalAmount.subtract(payAmount);
-		  }
+		BigDecimal menuAmount = preferentialResul.getMenuAmount();
+		BigDecimal preAmount =statisticPrice;
+		BigDecimal noCalAmountTemp = null;
+		if (menuAmount.compareTo(preAmount) == -1) {
+			noCalAmountTemp = new BigDecimal("0");
+		} else {
+			noCalAmountTemp = noCalAmount.subtract(payAmount);
+		}
 		preferentialResul.setPayamount(payAmount);
 		preferentialResul.setMoneyWipeAmount(noCalAmountTemp);
 	}

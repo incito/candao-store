@@ -240,7 +240,12 @@
 	<select id="getEmployeeUser4Store" parameterType="java.util.Map" resultMap="employeeResultMap2">
 		select * from t_b_employee where branch_id=#{branch_id}
 	</select>
-	
+	<select id="getUserByJobNumber" resultType="map">
+		   SELECT *
+			FROM t_b_user
+			where id=(select user_id from t_b_employee where job_number=#{jobNumber} limit 1)
+			limit 1
+	</select>
 	
 	
 </mapper>

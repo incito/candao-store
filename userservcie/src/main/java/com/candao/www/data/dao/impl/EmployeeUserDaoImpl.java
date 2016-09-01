@@ -99,4 +99,10 @@ public class EmployeeUserDaoImpl implements EmployeeUserDao{
 		return this.dao.get(PREFIX+".get", map);
 	}
 
+	@Override
+	public Map<String, Object> getUserByJobNumber(String jobNumber) {
+		Map<String ,String > params=new HashMap();
+		params.put("jobNumber", jobNumber);
+		return this.dao.get(PREFIX+".getUserByJobNumber", params);
+	}
 }

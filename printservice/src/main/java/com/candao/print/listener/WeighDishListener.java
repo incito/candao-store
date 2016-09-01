@@ -74,7 +74,7 @@ public class WeighDishListener extends AbstractQueueListener{
 			socketOut.write(PrinterConstant.getFdDoubleFont());
 
 			String[] tableName = {object.getTableNo()};
-			Integer[] tableLength = {15};
+			Integer[] tableLength = {20};
 			String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 			if(table != null){
 				for (int i = 0; i < table.length; i++) {

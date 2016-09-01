@@ -1,5 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,11 @@ public class TorderDetailPreferentialServiceImpl implements TorderDetailPreferen
 	@Override
 	public List<TorderDetailPreferential> getTorderDetailSbyOrderid(Map<String, Object> params) {
 		return detailPreferentialDao.getTorderDetailSbyOrderid(params);
+	}
+
+	@Override
+	public BigDecimal statisticALLDiscount(String orderid) {
+		return detailPreferentialDao.statisticALLDiscount(orderid);
 	}
 
 }
