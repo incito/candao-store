@@ -48,6 +48,7 @@ public class SynDataTools {
 			//设置同步对象
 			result = setData(rs,columns);
 		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
 			throw new SysException(ErrorMessage.SQLEXE_ERROR, Module.LOCAL_SHOP);
 		} finally {
 			try {
