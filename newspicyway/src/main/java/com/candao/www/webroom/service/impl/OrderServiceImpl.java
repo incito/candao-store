@@ -146,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
     // @Transactional(propagation=Propagation.REQUIRED,
     // rollbackFor=Exception.class)
     @Override
-    public String startOrder(Torder tOrder) {
+    public synchronized String startOrder(Torder tOrder) {
         Map<String, Object> mapRet = new HashMap<>();
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -173,9 +173,6 @@ public class OrderServiceImpl implements OrderService {
             logger.error("开台失败，开业记录为空");
             return JacksonJsonMapper.objectToJson(mapRet);
         }
-
-        synchronized (this) {
-
 
             if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
                 // logger.error("开台失败！ 查找不到桌台");
@@ -365,8 +362,6 @@ public class OrderServiceImpl implements OrderService {
             // 开台前清空当前台的操作日记
             toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());
             mapRet = ReturnMap.getSuccessMap(result);
-        }
-
         return JacksonJsonMapper.objectToJson(mapRet);
     }
 
