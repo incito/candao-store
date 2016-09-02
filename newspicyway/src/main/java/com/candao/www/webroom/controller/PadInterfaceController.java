@@ -2614,9 +2614,10 @@ public class PadInterfaceController {
 			e.printStackTrace();
 			return ReturnMap.getFailureMap("数据异常，请联系管理员");
 		}
-		if (maps == null || maps.size() <= 0) {
-			return ReturnMap.getFailureMap("没有查询到相应的数据");
-		}
+//		//后台没配置的情况，给PAD返回成功
+//		if (maps == null || maps.size() <= 0) {
+//			return ReturnMap.getFailureMap("没有查询到相应的数据");
+//		}
 		return ReturnMap.getSuccessMap("查询成功", maps);
 	}
 
