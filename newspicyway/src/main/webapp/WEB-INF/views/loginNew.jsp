@@ -15,7 +15,7 @@
 	<meta http-equiv="cache-control" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>登录</title>
+	<title>登录-</title>
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/login.css" />
 	<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery.min.js"></script>
 	<script type="text/javascript">
@@ -119,12 +119,12 @@
 	<div class="ky-navbar ky-navbar-default">
 		<div class="ky-navbar-header">
 			<img alt="" src="../images/logo.png"/>
-			<p>餐道后台管理平台</p>
+			<p>餐道门店管理平台</p>
 		</div>
 	</div>
 	<div class="ky-title"></div>
 	<div class="ky-content">
-		<img src="../images/bg.jpg" class="contentBj" alt="" width="1024px" height="362px"/>
+		<img src="../images/bg.jpg" class="contentBj" alt="" width="100%" height="362px"/>
 		<div class="loginWrap main">
 			<form method="post"
 			action="${ pageContext.request.contextPath}/login/login"
@@ -168,8 +168,8 @@
 		</div>
 	</div>
 	<div class="footer">
-		<p><a href="###">关于餐道</a> | <a href="###">联系我们</a></p>
-		<p>© 2015 candaochina.com 版权所有</p>
+		<p><a href="http://candaochina.com/Index/index.shtml">关于餐道</a> | <a href="http://candaochina.com/Index/contact">联系我们</a></p>
+		<p>© 2016 candaochina.com 版权所有</p>
 	</div>
 </body>
 </html>
