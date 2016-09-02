@@ -79,8 +79,8 @@ public class OrderServiceImpl implements OrderService {
     private NotifyService notifyService;
     @Autowired
     private OrderOpService orderOpService;
-    @Autowired
-    private TorderDetailPreferentialService torderDetailPreferentialService;
+	@Autowired
+	private TorderDetailPreferentialDao detailPreferentialDao;
     @Autowired
     private CaleTableAmountMapper caleTableAmountMapper;
     @Autowired
@@ -1234,7 +1234,7 @@ public class OrderServiceImpl implements OrderService {
      */
     private OperPreferentialResult preResult(Map<String, Object> params) {
         // 获取所有订单优惠
-        List<TorderDetailPreferential> allDetailPre = torderDetailPreferentialService.getTorderDetailSbyOrderid(params);
+        List<TorderDetailPreferential> allDetailPre = detailPreferentialDao.getTorderDetailSbyOrderid(params);
         // 清空订单对应得优惠券
 
         String orderid = (String) params.get("orderid");
@@ -1284,7 +1284,7 @@ public class OrderServiceImpl implements OrderService {
             calALLAmout(setMap, operPreferentialResult);
         }
 
-        StrategyFactory.INSTANCE.calcAmount(caleTableAmountMapper, orderid, dataDictionaryService,
+        StrategyFactory.INSTANCE.calcAmount(detailPreferentialDao,caleTableAmountMapper, orderid, dataDictionaryService,
                 operPreferentialResult, orderMapper, orderOpMapper, (String) params.get("itemid"));
         return operPreferentialResult;
     }

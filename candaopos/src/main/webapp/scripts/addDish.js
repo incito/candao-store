@@ -134,21 +134,108 @@ function initDishes() {
 	$(".dishes-content .dish-info").click(
 			function() {
 				var tr = "";
+				var dishid = $(this).attr("dishid");
 				var dishname = $(this).attr("dishname");
 				var price = $(this).attr("price");
-				tr = "<tr><td>" + dishname + "</td><td>1</td><td>" + price
+				
+				var arr = isExist(dishid);
+				if(arr[0]){
+					var num = arr[1].find("td.num").text().trim();
+					num = parseFloat(num)+1;
+					var price1 = arr[1].find("td.price").text().trim();
+					price1 =  parseFloat(price1)+parseFloat(price);
+					
+					arr[1].find("td.num").text(num);
+					arr[1].find("td.price").text(price1);
+				}else{
+					tr = "<tr dishid='"+dishid+"' price="+price+"><td class='dishname'>" + dishname + "</td><td class='num'>1</td><td class='price'>" + price
 						+ "</td></tr>";
 
-				$("#sel-dish-table tbody").prepend(tr);
+					$("#sel-dish-table tbody").prepend(tr);
+				}
 				$("#sel-dish-table tbody tr").removeClass("selected");
 				page4(nowPage4);
-
+				//更新总消费金额
+				updateTotalAmount();
+				
 				// 选中已点菜品
 				$("#sel-dish-table tbody tr").click(function() {
 					$("#sel-dish-table tbody tr").removeClass("selected");
 					$(this).addClass("selected");
 				});
 			});
+}
+/**
+ * 修改菜品数量
+ */
+function updateNum(){
+	var name = $("#sel-dish-table tbody tr.selected").find("td.dishname").text().trim();
+	$("#updatenum-dialog #dish-name").text(name);
+	$("#updatenum-dialog").modal("show");
+}
+/**
+ * 加菜
+ */
+function add(){
+	var $tr = $("#sel-dish-table tbody tr.selected");
+	var totalNum = $tr.find("td.num").text().trim();
+	var totalPrice = $tr.find("td.price").text().trim();
+	var price = $tr.attr("price");
+	totalNum = parseFloat(totalNum) + 1;
+	totalPrice = parseFloat(totalPrice) + parseFloat(price);
+	$tr.find("td.num").text(totalNum);
+	$tr.find("td.price").text(totalPrice);
+	updateTotalAmount();
+	page4(nowPage4);
+}
+/**
+ * 减菜
+ */
+function reduct(){
+	var $tr = $("#sel-dish-table tbody tr.selected");
+	var totalNum = $tr.find("td.num").text().trim();
+	var totalPrice = $tr.find("td.price").text().trim();
+	var price = $tr.attr("price");
+	if(parseFloat(totalNum) <= 1){
+		//如果数量小于1，则删除本条
+		$tr.remove();
+		$("#sel-dish-table tbody tr").not(".hide").eq(0).addClass("selected");
+	}else{
+		totalNum = parseFloat(totalNum) - 1;
+		totalPrice = parseFloat(totalPrice) - parseFloat(price);
+		$tr.find("td.num").text(totalNum);
+		$tr.find("td.price").text(totalPrice);
+	}
+	updateTotalAmount();
+	page4(nowPage4);
+}
+/**
+ * 更新总消费额
+ */
+function updateTotalAmount(){
+	var total_amount = 0;
+	if($("#sel-dish-table tbody tr").length >0 ){
+		$("#sel-dish-table tbody tr").each(function(){
+			var price = $(this).find("td.price").text().trim();
+			total_amount += parseFloat(price);
+		});
+	}
+	$("#total-amount").text(total_amount);
+}
+/**
+ * 是否已存在，若已存在，只更新数量和金额
+ */
+function isExist(dishid){
+	var $tr = null;
+	var f = false;
+	$("#sel-dish-table tbody tr").each(function(){
+		if(dishid == $(this).attr("dishid")){
+			$tr = $(this);
+			f = true;
+			return;
+		}
+	});
+	return [f, $tr];
 }
 // 清空已选菜品
 function clearSelected() {
@@ -157,6 +244,7 @@ function clearSelected() {
 function doClear() {
 	closeConfirm("clear-confirm-dialog");
 	$("#sel-dish-table tbody").html("");
+	updateTotalAmount();
 	page4(0);
 }
 // 下单

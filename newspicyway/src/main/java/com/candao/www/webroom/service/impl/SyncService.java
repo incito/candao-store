@@ -131,17 +131,25 @@ public class SyncService {
             stmt = connection.createStatement();
 
 
-            // 循环处理多张表
-            for (Map.Entry<String, List<Map<String, Object>>> entry : tables.entrySet()) {
-                if ("t_dictionary".equalsIgnoreCase(entry.getKey()))
-                    stmt.addBatch("DELETE FROM t_dictionary WHERE `type` IN ('SPECIAL','DISHSTATUS')");
-                else
-                    stmt.addBatch("DELETE FROM " + entry.getKey());
-
-                String dml = createSql(entry.getKey(), entry.getValue(), connection);
-                if (StringUtils.hasText(dml))
-                    stmt.addBatch(dml);
-            }
+			// 循环处理多张表
+			for (Map.Entry<String, List<Map<String, Object>>> entry : tables.entrySet()) {
+				//字典表不需要从总店同步
+				if(!"t_dictionary".equalsIgnoreCase(entry.getKey())){
+					if ("t_template_dishunit".equalsIgnoreCase(entry.getKey())) {
+						//套餐表不去除餐具信息
+						stmt.addBatch("DELETE FROM t_template_dishunit WHERE id NOT IN('DISHES_98')");
+					} else if ("t_dish".equalsIgnoreCase(entry.getKey())) {
+						//套餐表不去除餐具信息
+						stmt.addBatch("DELETE FROM t_dish WHERE dishid NOT IN('DISHES_98')");
+					} 
+					else {
+						stmt.addBatch("DELETE FROM " + entry.getKey());
+					}
+					String dml = createSql(entry.getKey(), entry.getValue(), connection);
+					if (StringUtils.hasText(dml))
+						stmt.addBatch(dml);
+				}
+			}
             // 持久化
             stmt.executeBatch();
             transactionManager.commit(status);
@@ -182,7 +190,7 @@ public class SyncService {
     		return null;
     	}
 
-        StringBuffer sbf = new StringBuffer("insert into " + tableName + "(");
+        StringBuffer sbf = new StringBuffer("insert ignore  into " + tableName + "(");
 
         try (ResultSet rs = connection.getMetaData().getColumns(null, null, tableName, "%")) {
             List<String> columns = new ArrayList<>();

@@ -309,17 +309,18 @@ public class BranchDataSyn {
 			Integer id = branchDataSynDao.getMaxId();
 			updateSynRecord(id.toString());
 		}else{
-			//云端执行失败,通知相关人员
+			/*//云端执行失败,通知相关人员
 			singleThreadPool.execute(new Runnable() {
 				public void run() {
 					sendErrSms();
 				}
-			});
+			});*/
 			throw new SysException(ErrorMessage.SYNDATA_FAIL, Module.LOCAL_SHOP);
 		}
 		return dto;
 	}
 	//上传失败短信通知
+	@Deprecated
 	private void sendErrSms(){
 		//云端执行失败,通知相关人员
 		String value = PropertiesUtils.getValue("UPDATA_ERR_MOBILE");
@@ -519,6 +520,14 @@ public class BranchDataSyn {
 		map.put("size", String.valueOf(data.length()));
 		// 存放字符串校验码
 		map.put("code", MD5.md5(data));
+		
+		map.put("branchid", PropertiesUtils.getValue("current_branch_id"));
+		Map<String, Object> branchinfo=   branchDao.getBranchInfo();
+		String branchname="";
+		if(branchinfo!=null){
+			branchname=branchinfo.get("branchname")==null?"":branchinfo.get("branchname").toString();
+		}
+		map.put("branchname", branchname);
 
 		String masterUrl = PropertiesUtils.getValue("cloud.host");
 		String webname=PropertiesUtils.getValue("cloud.webroot");

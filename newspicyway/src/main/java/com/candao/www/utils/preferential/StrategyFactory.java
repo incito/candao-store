@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
  * 
@@ -44,15 +46,17 @@ public enum StrategyFactory {
 
 	/**
 	 * 计算实收金额 优免金额 挂账金额 小费
+	 * @param orderDetailPreferentialDao 
 	 * 
 	 * @param caleTableAmountMapper
 	 * @param orderid
 	 * @param dataDictionaryService
+	 * @param torderDetailPreferentialService 
 	 * @param preferentialResult
 	 * @param orderMapper
 	 *            (核心计算方式)
 	 */
-	public void calcAmount(CaleTableAmountMapper caleTableAmountMapper, String orderid,
+	public void calcAmount(TorderDetailPreferentialDao orderDetailPreferentialDao, CaleTableAmountMapper caleTableAmountMapper, String orderid,
 			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,
 			OrderMapper orderMapper, OrderOpMapper orderOpMapper,String itemid) {
 		caleTableAmountMapper.pCaleTableAmount(orderid);
@@ -85,7 +89,9 @@ public enum StrategyFactory {
 				preferentialResult
 						.setAdjAmout(orderPrice.subtract(toaldDebitAmount.add(toalFreeAmount).add(toaldDebitAmountMany)));
 			}
-			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult,itemid);
+			//查询数据库价格
+			BigDecimal statisticPrice = orderDetailPreferentialDao.statisticALLDiscount(orderid);
+			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult,itemid,statisticPrice);
 			//优惠总消费重新计算（菜单总价-应收金额）
 			preferentialResult.setAmount(preferentialResult.getMenuAmount().subtract(preferentialResult.getPayamount()));
 			// 应收应该是小费+消费

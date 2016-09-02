@@ -1,5 +1,6 @@
 package com.candao.www.data.dao.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,13 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 	public int deleteDetilPreFerInfo(Map<String, Object> params) {
 		params.put("clear", String.valueOf(params.get("clear")));
 		return daoSupport.delete(PREFIX + ".deleteDetilPreFerInfo",params);
+	}
+
+	@Override
+	public BigDecimal statisticALLDiscount(String orderid) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("orderid", orderid);
+		return daoSupport.get(PREFIX + ".statisticALLDiscount", params);
 	}
 
 

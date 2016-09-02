@@ -33,7 +33,7 @@ loadPage = function(options){
 	pageNum = pagesLen==0?0:(currPage+1);
 	$(settings.curPageObj).text(pageNum);
 	$(settings.pagesLenObj).text(pagesLen);
-	if(pageNum == 1){
+	if(pageNum == 1 || pageNum == 0){
 		$(settings.prevBtnObj).addClass("disabled");
 	}else{
 		$(settings.prevBtnObj).removeClass("disabled");

@@ -202,11 +202,11 @@
 									</td>
 							        <td>结算金额</td>
 							        <td>
-							            <input id="jiesuajine" type="text"/>
+							            <input onkeyup='this.value=this.value.replace(/[^0-9]D*$/,"")' ondragenter="return false" onpaste="return !clipboardData.getData('text').match(/D/)" id="jiesuajine" type="text"/>
 							        </td>
 							        <td>优免金额</td>
 							        <td>
-							            <input id="youmianjine" type="text"/>
+							            <input onkeyup='this.value=this.value.replace(/[^0-9]D*$/,"")' ondragenter="return false" onpaste="return !clipboardData.getData('text').match(/D/)" id="youmianjine" type="text"/>
 							        </td>
 							    </tr>
 							    <tr>

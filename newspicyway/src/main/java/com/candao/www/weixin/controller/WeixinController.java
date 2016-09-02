@@ -327,6 +327,7 @@ public class WeixinController extends BaseJsonController {
                     //保存到orderid和随机订单id到数据表
 
                 } catch (Exception e) {
+                	loggers.error("支付成功，处理失败",e);
                     isSuucess = "2";//支付成功，清台或者打印结账单出错
                     //退款操作暂时注释
                     //weixincallback(attchresults[0], request);
