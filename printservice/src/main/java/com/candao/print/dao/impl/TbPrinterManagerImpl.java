@@ -167,7 +167,11 @@ public class TbPrinterManagerImpl implements TbPrinterManagerDao {
 		params.put("printerid", printerid);
 		return dao.update(PREFIX + ".cleanDishGroup", params);
 	}
-	
+
+	@Override
+	public List<TbPrinterManager> findDishPrinterWithLock(Map<String, Object> paramMap) {
+		return dao.find(PREFIX + ".findDishPrinter", paramMap);
+	}
 }
 
 

@@ -62,6 +62,7 @@ public final static String PREFIX = TbPrinterManagerDao.class.getName();
 	public List<TbPrinterManager> findNoDishPrinter(Map<String, Object> paramMap);
 
 	public List<TbPrinterManager> findDishPrinter(Map<String, Object> paramMap);
+	public List<TbPrinterManager> findDishPrinterWithLock(Map<String, Object> paramMap);
 	/**
 	 * 根据答应机类型，找到打印机。这个打印机不关联桌子和菜品
 	 * @author shen

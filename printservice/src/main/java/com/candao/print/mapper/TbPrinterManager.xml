@@ -410,6 +410,20 @@
 			and tpd.dishid = #{dishid}
 			
 	</select>
+	<select id ="findDishPrinterWithLock" parameterType="map" resultType="com.candao.print.entity.TbPrinterManager">
+			SELECT DISTINCT  tp.printerid,tp.printerNo,tp.printername,tp.printertype,
+			tp.createuserid,tp.inserttime,tp.ipaddress,tp.port,tp.status,tp.printnum FROM
+			  t_table tt , t_printer_area tpa,t_printer tp,t_printer_detail tpd
+			WHERE tt.tableid = tpa.tableid
+			    AND tpa.printerid = tp.printerid
+			   AND tp.printerid = tpd.printerid
+			   AND tt.areaid = tpa.areaid
+			and tp.status =#{status}
+			and tp.printertype = #{printertype}
+			   AND tt.tableid =#{tableid}
+			and tpd.dishid = #{dishid}
+			for update
+	</select>
 	<select id ="findPrintDetail" parameterType="map" resultType="com.candao.print.entity.TbPrinterDetail">
 			SELECT id,printerid,dishid,columnid,groupsequence,status FROM 
 			  t_printer_detail

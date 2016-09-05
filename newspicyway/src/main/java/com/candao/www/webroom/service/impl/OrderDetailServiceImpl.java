@@ -1023,7 +1023,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 // 需要把所有的菜品配置的打印机全部打印
                 paramMap.put("dishid", pd.getDishId());
                 List<String> IPList = new ArrayList<String>();
-                List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinter(paramMap);
+                List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinterWithLock(paramMap);
                 TbPrinterManager tbPrinter = new TbPrinterManager();
 
                 if (printers != null && printers.size() > 0) {
@@ -1384,7 +1384,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
             paramMap.put("dishid", pd.getDishId());
 
-            List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinter(paramMap);
+            List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinterWithLock(paramMap);
             if (printers != null) {
                 for (TbPrinterManager tbPrinter : printers) {
                  /*   if (IPList != null) {
@@ -1769,7 +1769,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     //需要把所有的菜品配置的打印机全部打印
                     paramMap.put("dishid", pd.getDishId());
                     List<String> IPList = new ArrayList<String>();
-                    List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinter(paramMap);
+                    List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinterWithLock(paramMap);
                     TbPrinterManager tbPrinter = new TbPrinterManager();
                     if (printers != null && printers.size() > 0) {
                         tbPrinter = printers.get(0);
