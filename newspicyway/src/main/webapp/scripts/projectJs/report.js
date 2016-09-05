@@ -2711,6 +2711,10 @@ function initWaiterSaleTb(datalist,isFirst){
 			var dishid = obj.dishid;
 			var dishunit = obj.dishunit;
 			var dishtype = obj.dishtype;
+			var orderprice = obj.orderprice;
+			var present = parseFloat(obj.present);
+			var discount = parseFloat(obj.discount);
+			var currdate = obj.currdate;
 			tHtml += '<tr dishid="'+dishid+'" userid="'+userid+'"num="'+num.toFixed(0)+'"name="'+name+'"title="'+title+'"dishunit="'+dishunit+'"dishtype="'+dishtype+'" ondblclick="showWaiterSaleSubTb(\''
 					+ userid
 					+ '\',\''
@@ -2726,16 +2730,28 @@ function initWaiterSaleTb(datalist,isFirst){
 					+ '\',\''
 					+ dishtype
 					+ '\')">'
-					+ '<td width="25%">'
+					+ '<td width="12.5%">'
+					+ currdate
+					+ '</td>'
+					+ '<td width="12.5%">'
 					+ name
 					+ '</td>'
-					+ '<td width="25%">'
+					+ '<td width="12.5%">'
 					+ title
 					+ '</td>'
-					+ '<td width="25%">'
+					+ '<td width="12.5%">'
+					+ orderprice
+					+ '</td>'
+					+ '<td width="12.5%">'
 					+ dishunit
 					+ '</td>'
-					+ '<td width="25%">'
+					+ '<td width="12.5%">'
+					+ present.toFixed(0)
+					+ '</td>'
+					+ '<td width="12.5%">'
+					+ discount.toFixed(0)
+					+ '</td>'
+					+ '<td width="12.5%">'
 					+ num.toFixed(0)
 					+ '</td>'
 					+ '</tr>';
@@ -2746,7 +2762,7 @@ function initWaiterSaleTb(datalist,isFirst){
 		}
 	}else{
 		if(isFirst){
-			tHtml += '<tr><td colspan="4">没有数据</td></tr>';
+			tHtml += '<tr><td colspan="8">没有数据</td></tr>';
 			$("#waiter-sale-tb tbody").html(tHtml);
 	    }else{
 			alert("没有更多数据");

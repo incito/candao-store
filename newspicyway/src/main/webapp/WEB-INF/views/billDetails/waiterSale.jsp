@@ -113,9 +113,13 @@
 			<table class="ky-table table table-striped table-bordered table-hover datatable table-list click-table" id="waiter-sale-tb">
 				<thead>
 					<tr>
+						<th>日期</th>
 						<th>服务员姓名</th>
 						<th>售卖菜品</th>
+						<th>单价</th>
 						<th>单位</th>
+						<th>赠送数量</th>
+						<th>打折数量</th>
 						<th>售卖数量</th>
 					</tr>
 				</thead>

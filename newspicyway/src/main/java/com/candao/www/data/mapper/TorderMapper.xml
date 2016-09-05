@@ -52,7 +52,7 @@
   <insert id="insert" parameterType="com.candao.www.data.model.Torder" >
     insert into t_order (orderid, userid, begintime, 
       endtime, orderstatus, custnum,  womannum,mannum,childnum,specialrequied,
-      tableIds, currenttableid,shiftid,ageperiod,meid,branchid)
+      tableIds, currenttableid,shiftid,ageperiod,meid,branchid,isfree,num_of_meals)
     values (#{orderid,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, current_timestamp(), 
       #{endtime,jdbcType=TIMESTAMP}, #{orderstatus,jdbcType=INTEGER}, #{custnum,jdbcType=INTEGER}, 
       #{womanNum,jdbcType=INTEGER}, 
@@ -64,7 +64,9 @@
       #{shiftid,jdbcType=INTEGER},
       #{ageperiod,jdbcType=VARCHAR},
       #{meid,jdbcType=VARCHAR},
-      #{branchid,jdbcType=INTEGER}
+      #{branchid,jdbcType=INTEGER},
+      #{isFree,jdbcType=TINYINT},
+      #{numOfMeals,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.candao.www.data.model.Torder" >
@@ -269,6 +271,12 @@
       </if>
      <if test="childNum != null" >
         childNum = #{childNum,jdbcType=INTEGER},
+      </if>
+        <if test="isFree!=null">
+         isfree=#{isFree,jdbcType=TINYINT},
+      </if>
+      <if test="numOfMeals!=null">
+      	num_of_meals=#{numOfMeals,jdbcType=INTEGER},
       </if>
     <if test="specialrequied != null" >
        specialrequied =  #{specialrequied,jdbcType=VARCHAR},

@@ -34,6 +34,7 @@ public interface TorderDetailMapper {
 	 * @return
 	 */
 	public <T, K, V> List<T> findOrderByInfo(String param);
+	public <T, K, V> List<T> findOrderByTip(String param);
 	
 	public int insert(TorderDetail torderDetail);
 	

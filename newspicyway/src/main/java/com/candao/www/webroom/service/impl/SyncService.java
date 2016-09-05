@@ -196,7 +196,7 @@ public class SyncService {
             List<String> columns = new ArrayList<>();
             while (rs.next()) {
                 columns.add(rs.getString("COLUMN_NAME"));
-            }
+            } 
 
             Assert.notEmpty(columns);
 

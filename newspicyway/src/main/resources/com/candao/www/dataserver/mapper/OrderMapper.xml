@@ -37,7 +37,7 @@
         select count(*) from t_order where begintime>=CURRENT_DATE() and orderstatus=0
     </select>
     <select id="selectTableOrder" resultType="map">
-        SELECT a.*,b.*,IFNULL(c.receivables, 0) AS tipAmount,IFNULL(c.paid,0) as tipPaid
+        SELECT a.*,b.*,IFNULL(c.receivables, 0) AS tipAmount,c.waiter_number,IFNULL(c.paid,0) as tipPaid
         FROM t_order a
         INNER JOIN t_table b on(a.currenttableid=b.tableid)
         LEFT JOIN t_b_tip c ON (a.orderid = c.orderid)

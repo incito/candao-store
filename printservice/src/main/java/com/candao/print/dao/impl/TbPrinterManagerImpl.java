@@ -170,7 +170,7 @@ public class TbPrinterManagerImpl implements TbPrinterManagerDao {
 
 	@Override
 	public List<TbPrinterManager> findDishPrinterWithLock(Map<String, Object> paramMap) {
-		return dao.find(PREFIX + ".findDishPrinter", paramMap);
+		return dao.find(PREFIX + ".findDishPrinterWithLock", paramMap);
 	}
 }
 

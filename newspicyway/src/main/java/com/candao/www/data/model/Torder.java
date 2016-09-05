@@ -21,6 +21,8 @@ public class Torder {
     
     private String isShield;
     
+    private int  isFree=0;
+    private int  numOfMeals=0;
 
     public String getMemberno() {
 		return memberno;
@@ -235,5 +237,21 @@ public class Torder {
 
 	public void setIsShield(String isShield) {
 		this.isShield = isShield;
+	}
+
+	public int getIsFree() {
+		return isFree;
+	}
+
+	public void setIsFree(int isFree) {
+		this.isFree = isFree;
+	}
+
+	public int getNumOfMeals() {
+		return numOfMeals;
+	}
+
+	public void setNumOfMeals(int numOfMeals) {
+		this.numOfMeals = numOfMeals;
 	}
 }

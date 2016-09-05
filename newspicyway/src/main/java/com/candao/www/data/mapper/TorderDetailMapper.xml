@@ -904,6 +904,8 @@
 		tor.begintime,
 		tor.endtime,
 		tor.befprintcount,
+		tor.isfree,
+		tor.num_of_meals,
 		tab.tableName,
 		tba.areaname,
 		tor.memberno,
@@ -933,7 +935,16 @@
 		WHERE
 		tor.orderid = #{orderid};
 	</select>
-
+    <select id="queryOrderByTip" parameterType="map" resultType="java.util.HashMap">
+	SELECT
+	tbt.waiter_number,tu.`name`
+	FROM
+	t_b_tip tbt
+	LEFT JOIN t_b_employee tbe ON tbe.job_number = tbt.waiter_number
+	LEFT JOIN t_b_user tu ON tu.id = tbe.user_id
+	WHERE tbt.orderid=#{orderid} AND tbe.branch_id=#{branchId};
+    </select>
+  
 	<select id="getItemSellDetail" parameterType="map" resultType="java.util.HashMap">
 		select CONCAT(d.title,'(',od.dishunit,')') as 'dishName',
 		SUM(od.dishnum) as 'dishCount', SUM(od.debitamount) as 'totlePrice'
