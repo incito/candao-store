@@ -358,7 +358,7 @@ BEGIN
   FROM
     t_temp_settlement_detail
   WHERE
-    payway IN (0, 1, 5, 8, 13, 17, 18)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
+    payway IN (0, 1, 5, 8, 13, 17, 18,30)  -- SHANGWENCHAO 2015/12/21 23:28:59 增加结算方式13
     AND ordertype > 0;
 
   #设置实收（外卖） = 外卖实收- 外卖虚增
@@ -2456,7 +2456,7 @@ BEGIN
   WHERE
     a.orderid = b.orderid
     AND b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8,13,17,18);
+    AND b.payway IN (0, 1, 5, 8,13,17,18,30);
   CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
 
   #创建会员消费内存表
@@ -4689,7 +4689,7 @@ BEGIN
   FROM
     t_temp_settlement_detail
   WHERE
-    payway IN (0, 1, 5, 8, 17, 18 ,13);
+    payway IN (0, 1, 5, 8, 17, 18 ,13,30);
   CREATE INDEX ix_t_temp_paidinamout_orderid ON t_temp_paidinamout (orderid);
 
 
@@ -7777,7 +7777,7 @@ BEGIN
   WHERE
     a.orderid = b.orderid
     and b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8, 11, 12, 13,17, 18);
+    AND b.payway IN (0, 1, 5, 8, 11, 12, 13,17, 18,30);
   
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
