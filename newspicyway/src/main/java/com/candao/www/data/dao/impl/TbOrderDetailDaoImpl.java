@@ -313,6 +313,14 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 		return dao.find(PREFIX + ".findOrderByInfo", params);
 	}
 
+	@Override
+	public <T, K, V> List<T> findOrderByTip(String param) {
+		Map<String,String> params = new HashMap<String,String>();
+		params.put("orderid", param);
+		params.put("branchId", PropertiesUtils.getValue("current_branch_id"));
+		return dao.find(PREFIX + ".queryOrderByTip", params);
+	}
+
 
 }
  

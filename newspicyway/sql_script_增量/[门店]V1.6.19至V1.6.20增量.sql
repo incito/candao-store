@@ -26,3 +26,7 @@ ALTER TABLE `t_basicdata`
 MODIFY COLUMN `itemid`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '编号' AFTER `id`;
 ALTER TABLE `t_dish`
 MODIFY COLUMN `cantakeout`  varchar(2) NOT NULL DEFAULT b'0' AFTER `py`;
+
+alter table `t_order`  ADD `isfree` TINYINT(1)   DEFAULT 0 COMMENT '是否餐具需要收费0不收费1收费';
+alter table `t_order` ADD `num_of_meals` INT(2)  DEFAULT 0 COMMENT '用餐人数 pad专用';
+ 

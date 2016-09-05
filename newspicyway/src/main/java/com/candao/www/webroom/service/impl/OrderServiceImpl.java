@@ -289,6 +289,8 @@ public class OrderServiceImpl implements OrderService {
             order.setAgeperiod(tOrder.getAgeperiod());
             order.setMeid(tOrder.getMeid());
             order.setOrderNum(maxOrderNum);
+            order.setIsFree(tOrder.getIsFree());
+            order.setNumOfMeals(tOrder.getNumOfMeals());
             torderMapper.insert(order);
 
             TbTable tTable = new TbTable();
@@ -378,7 +380,8 @@ public class OrderServiceImpl implements OrderService {
         order.setUserid(tOrder.getUsername());
         order.setWomanNum(tOrder.getWomanNum());
         order.setAgeperiod(tOrder.getAgeperiod());
-
+        order.setIsFree(tOrder.getIsFree());
+        order.setNumOfMeals(tOrder.getNumOfMeals());
         User tbUser = userService.findMaxOrderNum();
         userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
 
@@ -1202,10 +1205,14 @@ public class OrderServiceImpl implements OrderService {
         Map<String, Object> outresultMap = new HashMap<>();
         List<Map<String, Object>> resultMapList = torderDetailMapper.findOrderByInfo(orderid);
         if (resultMapList != null && !resultMapList.isEmpty()) {
+        	List<Object> tipMapList = torderDetailMapper.findOrderByTip(orderid);
             Map<String, Object> resultMap = resultMapList.get(0);
+            Map<String, Object>  tipMap=!tipMapList.isEmpty()?( Map<String, Object>)tipMapList.get(0):null;
             outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
             outresultMap.put("orderStatus", resultMap.get("orderstatus"));
             outresultMap.put("tableStatus", resultMap.get("status"));
+            outresultMap.put("isFree", (Boolean)resultMap.get("isfree")?"1":"0");
+            outresultMap.put("numOfMeals", resultMap.get("num_of_meals"));
             outresultMap.put("customerNumber", resultMap.get("custnum"));
             outresultMap.put("womanNum", resultMap.get("womanNum"));
             outresultMap.put("childNum", resultMap.get("childNum"));
@@ -1218,6 +1225,9 @@ public class OrderServiceImpl implements OrderService {
             outresultMap.put("tableName", resultMap.get("tableName"));
             outresultMap.put("fullName", resultMap.get("userid"));
             outresultMap.put("waiterName", resultMap.get("name"));
+            //小费相关
+            outresultMap.put("tipWaiterNum",tipMap!=null?tipMap.get("waiter_number"):"");
+            outresultMap.put("tipWaiterName",tipMap!=null? tipMap.get("name"):"");
             /** 预打印 **/
             int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
             outresultMap.put("befprintcount", printcount + 1);

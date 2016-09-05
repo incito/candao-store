@@ -37,6 +37,7 @@ public class OperPreferentialResult {
 	 * 小费金额
 	 */
 	private BigDecimal tipAmount = new BigDecimal(0);
+	
 
 	/***
 	 * 优免总金额
