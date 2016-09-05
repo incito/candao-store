@@ -107,3 +107,176 @@ footer{
 	opacity: 1;
 	color: #fff;
 }
+
+.switch {
+	margin: 0 auto;
+	position: relative;
+}
+
+/*
+* dialog-base
+*/
+.dialog-normal{
+	height: 768px;
+	padding: 0;
+	overflow: hidden;
+	border:none;
+	height: auto;
+}
+.dialog-normal .modal-dialog {
+	margin: 30px auto;
+}
+.dialog-normal .modal-header {
+	height: 60px;
+	background: #FF5803;
+	color: #FFFFFF;
+	font-size: 20px;
+	text-align: center;
+	line-height: 3;
+	width: 100%;
+	padding:0;
+}
+.dialog-normal .modal-body {
+	padding:10px;
+}
+.dialog-normal.bg-gray .modal-body  {
+	background-color:rgb(224, 220, 220);
+}
+.dialog-normal .dialog-article {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 60px;
+}
+
+/*
+* 表单基础样式
+*/
+.form-group-base .form-label {
+	position: absolute;
+	line-height: 48px;
+	padding-left: 10px;
+	color: #999;
+}
+.form-group-base .form-control,.form-group-base .form-info {
+	width: 100%;
+	height: 48px;
+	line-height: 48px;
+	padding-left: 75px;
+}
+
+.btn-base {
+	height: 38px;
+	font-size: 16px;
+	border-radius: 4px;
+	color:#000;
+	border:1px solid #cfcfcf;
+}
+
+
+/*
+* virtual-keyboard-base
+*/
+.virtual-keyboard-base {
+	width: 360px;
+}
+.virtual-keyboard-base ul li{
+	width: 100px;
+	height: 50px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 3;
+	list-style: none;
+	float: left;
+	margin-left: 6px;
+	margin-bottom: 6px;
+	font-size: 18px;
+	color: #040404;
+	cursor: pointer;
+}
+.virtual-keyboard-base ul li:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.virtual-keyboard-base ul li:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}
+
+.switch label {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: block;
+}
+
+.switch input {
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	opacity: 0;
+	z-index: 100;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+
+/* DEMO 3 */
+
+.switch {
+	width: 55px;
+	height: 20px;
+}
+
+.switch label {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: rgba(34,31,31,0.26);
+	border-radius: 40px;
+}
+
+
+.switch label i {
+	display: block;
+	height: 30px;
+	width: 30px;
+	border-radius: inherit;
+	position: absolute;
+	z-index: 2;
+	top: -5px;
+	background: #F1F1F1;
+	box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.12), 0px 2px 2px 0px rgba(0,0,0,0.24);
+}
+
+.switch input:checked ~ label {
+	background-color: rgba(255, 88, 3,0.5);
+}
+
+.switch input:checked ~ label i {
+	right: -1%;
+	background: #FF5803;
+	box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.12), 0px 2px 2px 0px rgba(0,0,0,0.24);
+}
+
+.table-list {
+	text-align: center;
+}
+.table-list thead th {
+	background: #FFC2A3;
+	text-align: center;
+}
+.text-danger {
+	color:#FF5803;
+}
+
+
+

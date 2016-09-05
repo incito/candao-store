@@ -1,0 +1,79 @@
+
+.modal .content{
+	height: 100%;
+  	width: 100%;
+  	padding: 0;
+	margin:1px auto auto auto;
+}
+.modal-dialog{
+	height: 100%;
+	width: 100%;
+	margin: 0 auto;
+}
+.modal-content{
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+.modal-body{
+	padding: 0;
+	margin: 0;
+	border: 0;
+	width: 100%;
+}
+.g-l{position:relative;float:left;width:142px;margin-right:-142px;background-color: #fff;height: 540px;}
+.g-l li {
+	display: block;
+	line-height: 60px;
+	text-align: center;
+	color:#000;
+	font-size:16px;
+	border-bottom:1px solid #eee;
+}
+.g-l li i {
+	font-style: normal;
+	background: #FF5803;
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+	line-height: 15px;
+	border-radius: 100%;
+	font-size: 12px;
+	color: #fff;
+	vertical-align: middle;
+	margin-left: 2px;
+}
+.g-l li.active {
+	color:#fff;
+	background-color: #FF5803 ;
+}
+.g-l li.active i {
+	background-color: #fff ;
+	color:#FF5803;
+}
+.g-r{float:right;width:100%;margin-top:10px;}
+.g-r-content{margin-left:152px;margin-right:10px;height: 540px;}
+
+.item-card {
+	background: #fff;
+	position: relative;
+	padding:15px 25px 5px 25px;
+	margin-bottom:5px;
+}
+.item-card h3 {
+	font-size:20px;
+	line-height: 20px;
+	padding:0;
+	margin: 0 0 10px 0;
+}
+.item-card p {
+	color:#A2A2A2;
+}
+.item-card .switch {
+	position: absolute;
+	top:50%;
+	right:25px;
+	margin-top:-10px;
+}

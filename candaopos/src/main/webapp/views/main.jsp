@@ -59,6 +59,27 @@
 //				$("#open-dialog").modal("show");
 			}
 		});
+
+		//顶部菜单
+		$(".menu-top>div").click(function(){
+			var me = $(this);
+			if(me.hasClass('J-btn-register')) {
+				$("#register-dialog").load("<%=request.getContextPath()%>/views/member/register.jsp");
+				$("#register-dialog").modal("show");
+			}
+		}).click();
+
+
+		//底部菜单事件绑定
+		$(".foot-menu li").click(function(){
+			var me = $(this);
+			if(me.hasClass('J-btn-sys')) {
+				$("#sys-dialog").load("<%=request.getContextPath()%>/views/sys.jsp");
+				$("#sys-dialog").modal("show");
+			}
+		});
+
+
 		$(".page .prev-btn").click(function(){
 			if($(this).hasClass("disabled")){
 				return false;
@@ -93,7 +114,7 @@
 	<header>
 		<div class="fl">餐道</div>
 		<div class="fl menu-top">
-			<div>会员查询</div><div>会员储值</div><div>会员注册</div>
+			<div>会员查询</div><div>会员储值</div><div class="J-btn-register">会员注册</div>
 		</div>
 		<div class="fr exit-sys">退出系统</div>
 	</header>
@@ -146,7 +167,7 @@
 			<span class="free-num">空闲（10）</span><span>就餐（11）</span>
 		</div>
 		<div class="foot-menu">
-			<ul><li>外卖</li><li>账单</li><li>报表</li><li>清机</li><!--li>结业</li--><li>会员</li><li>系统设置</li></ul>
+			<ul><li>外卖</li><li>账单</li><li>报表</li><li>清机</li><!--li>结业</li--><li>会员</li><li class="J-btn-sys">系统设置</li></ul>
 			<div class="page"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
 		</div>
 		<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
@@ -154,6 +175,10 @@
 	<div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 	</div>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
+	</div>
+	<div class="modal fade in main-dialog" data-backdrop="static" id="sys-dialog" style="overflow: auto;">
+	</div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;height: 600px;">
 	</div>
 </body>
 </html>
