@@ -178,7 +178,7 @@
 	</div>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="sys-dialog" style="overflow: auto;">
 	</div>
-	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;height: 600px;">
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;">
 	</div>
 </body>
 </html>

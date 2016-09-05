@@ -25,7 +25,7 @@
 	</script>
 </head>
 <body>
-<div class="modal-dialog" style="width: 760px">
+<div class="modal-dialog" style="width: 760px;height: 600px;">
 	<div class="modal-content">
 		<div class="modal-header">
 			<div class="fl">餐道</div>
@@ -84,8 +84,8 @@
 							</div>
 						</div>
 						<div class="form-group form-group-base">
-							<button class="btn-default btn-lg btn-base">取消</button>
-							<button class="btn-default btn-lg btn-base">注册</button>
+							<button class="btn-default btn-lg btn-base btn-base-flex2">取消</button>
+							<button class="btn-default btn-lg btn-base btn-base-flex2">注册</button>
 						</div>
 					</form>
 				</div>
@@ -106,10 +106,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="modal-footer">
-			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			<button type="button" class="btn btn-primary">Save changes</button>
 		</div>
 	</div>
 </div>
