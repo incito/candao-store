@@ -452,6 +452,9 @@ public class TableServiceImpl implements TableService {
 		mergeMap.put("targetChildnum", targetOrder.get("childNum") == null ? 0 : targetOrder.get("childNum"));
 		mergeMap.put("targetMannum", targetOrder.get("manNum") == null ? 0 : targetOrder.get("manNum"));
 		mergeMap.put("targetAgeperiod", targetOrder.get("ageperiod") == null ? 0 : targetOrder.get("ageperiod"));
+		mergeMap.put("targetMealsNum", targetOrder.get("num_of_meals") == null ? 0 : targetOrder.get("num_of_meals"));
+		//只要有一个台的餐具是否，并台后则为收费
+		mergeMap.put("targetIsfree", (targetOrder.get("isfree") != null && targetOrder.get("isfree").equals("0")) ? "0" : "1");
 	}
 	
 	/**

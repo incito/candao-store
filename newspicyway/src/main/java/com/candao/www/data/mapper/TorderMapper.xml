@@ -523,6 +523,12 @@
       <if test="targetAgeperiod != null" >
        ,ageperiod = CONCAT(ageperiod,#{targetAgeperiod})
       </if>
+      <if test="targetMealsNum != null" >
+       ,num_of_meals = num_of_meals + #{targetMealsNum}
+      </if>
+      <if test="targetIsfree == 0" >
+       ,isfree = 0
+      </if>
     </set>
     where orderid = #{orderid}
   </update>
