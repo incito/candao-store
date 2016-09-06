@@ -272,10 +272,10 @@
      <if test="childNum != null" >
         childNum = #{childNum,jdbcType=INTEGER},
       </if>
-        <if test="isFree!=null">
+        <if test="isFree!=null and isFree>0">
          isfree=#{isFree,jdbcType=TINYINT},
       </if>
-      <if test="numOfMeals!=null">
+      <if test="numOfMeals!=null and numOfMeals>0 ">
       	num_of_meals=#{numOfMeals,jdbcType=INTEGER},
       </if>
     <if test="specialrequied != null" >
