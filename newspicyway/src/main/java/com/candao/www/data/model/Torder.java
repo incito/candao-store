@@ -2,6 +2,8 @@ package com.candao.www.data.model;
 
 import java.util.Date;
 
+import com.candao.www.constant.Constant;
+
 public class Torder {
     private String orderid;
     
@@ -254,4 +256,5 @@ public class Torder {
 	public void setNumOfMeals(int numOfMeals) {
 		this.numOfMeals = numOfMeals;
 	}
+
 }

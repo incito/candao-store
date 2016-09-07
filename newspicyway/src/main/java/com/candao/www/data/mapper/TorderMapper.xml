@@ -19,6 +19,8 @@
       <result column="memberno" property="memberno" jdbcType="VARCHAR" />
       <result column="meid" property="meid" jdbcType="VARCHAR" />
       <result column="invoice_id" property="invoice_id" jdbcType="VARCHAR" />
+      <result column="isfree" property="isFree" jdbcType="INTEGER"/>
+      <result column="num_of_meals" property="numOfMeals" jdbcType="INTEGER"/>
   </resultMap>
   
  
@@ -32,7 +34,7 @@
   <sql id="Base_Column_List" >
     orderid, userid, begintime, 
       endtime, orderstatus, custnum, womannum,mannum,childnum,
-      tableIds, currenttableid, specialrequied,shiftid,ageperiod,memberno,meid,invoice_id
+      tableIds, currenttableid, specialrequied,shiftid,ageperiod,memberno,meid,invoice_id,isfree,num_of_meals
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
