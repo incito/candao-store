@@ -374,7 +374,7 @@ BEGIN DECLARE v_fetch_done     NUMERIC DEFAULT 0;
     childdishtype TINYINT,
     primarykey VARCHAR(50),
     parentkey VARCHAR(50),
-    dishunit VARCHAR(50),
+    dishunit VARCHAR(100),
     ismaster VARCHAR(3),
     superkey VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
@@ -2744,7 +2744,7 @@ BEGIN
     orderid VARCHAR(50),
     dishid VARCHAR(50),
     dishtype INT,
-    dishunit VARCHAR(50),
+    dishunit VARCHAR(100),
     superkey VARCHAR(255),
     primarykey VARCHAR(255),
     debitamount DECIMAL(20, 2)
