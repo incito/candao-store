@@ -53,9 +53,12 @@
 									</tbody>
 								</table>
 							</div>
-							<hr class="lf-hr">
-							<div class="total-amount">
-								消费：￥<span id="amount">548</span>
+							<div>
+								<hr class="lf-hr">
+								<div class="total-amount">
+									消费：￥<span id="amount">548.00</span>
+									<div class="tip"><hr class="lf-hr">小费：￥<span id="tip-amount">0.00</span></div>
+								</div>
 							</div>
 							<div class="preferential-sel">
 								<table class="table display-table sel-dish-table"
@@ -71,19 +74,26 @@
 									</tbody>
 								</table>
 							</div>
-							<hr class="discount-hr">
-							<div class="discount-total-amount">
-								优惠总额：￥<span id="discount-amount">40</span>
+							<div>
+								<hr class="discount-hr">
+								<div class="discount-total-amount">
+									优惠总额：￥<span id="discount-amount">40</span>
+								</div>
 							</div>
-							<hr class="lf-hr">
-							<div class="total-amount">
-								应收：￥<span id="should-amount">548</span>
+							<div>
+								<hr class="lf-hr">
+								<div class="total-amount">
+									应收：￥<span id="should-amount">548</span>
+								</div>
 							</div>
 							<div class="operate-btns" style="padding-left: 11px;">
 								<div>预结单</div>
 								<div onclick="takeOrder()">点菜</div>
 								<div>开钱箱</div>
-								<div>更多</div>
+								<div class="show-more">更多</div>
+							</div>
+							<div class="more-oper hide">
+								<ul><li onclick="backFood(1)">整单退菜</li><li onclick="reprint()">重印客用单</li><li onclick="cancelOrder()">取消订单</li><li>零头不处理</li></ul>
 							</div>
 						</div>
 						<div class="oper-div">
@@ -97,11 +107,11 @@
 								<div class="oper-btn next-btn">
 									<span class="glyphicon glyphicon-chevron-down"></span>
 								</div>
-								<div class="oper-btn" id="add-dish">
-									<span class="glyphicon glyphicon-plus"></span>
-								</div>
 								<div class="oper-btn" id="back-dish">
-									<span class="glyphicon glyphicon-minus"></span>
+									退菜
+								</div>
+								<div class="oper-btn" id="weigh-dish">
+									称重
 								</div>
 							</div>
 							<div class="preferential-oper-btns btns">
@@ -162,7 +172,7 @@
 								<div class="paytype-input bank-card hide" id="bank-card">
 									<div style="display: inline-flex;">
 										<input type="text" class="form-control bank-type" placeholder="银行类型" disabled="disabled">
-										<div class="selbank-btn">选择银行</div>
+										<div class="selbank-btn" onclick="selectBank()">选择银行</div>
 									</div>
 									<div>
 										<span>银行卡号:</span>
@@ -330,6 +340,163 @@
 	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
 	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="confirmOpen()">确认开台
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 填写优惠数量 -->
+	<div class="modal fade default-dialog in input-num-dialog" id="coupnum-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">优惠券</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('coupnum-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	                    <div class="form-group coupname"><span id="coup-name">团购券</span></div>
+	                    <div class="form-group">
+	                    	<span class="inpt-span">使用数量:</span>
+	                    	<input type="text" class="form-control padding-left" id="num">
+	                    </div>
+	                    <div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('coupnum-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 退菜 -->
+	 <div class="modal fade default-dialog in " id="backfood-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">餐道</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('backfood-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	               		<h6>退菜原因</h6>
+	               		<div class="form-group"><div class="avoid">客户要求</div><div class="avoid">菜品质量</div><div class="avoid">用餐服务</div></div>
+	               		<div class="form-group"><span class="inpt-span">其他退菜原因：</span><input type="text" id="backfood-reason" class="form-control padding-left" onclick="inputBackReason()"></div>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backfood-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="doBack()">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 输入退菜原因 -->
+	<div class="modal fade default-dialog input-dialog in " id="backreasoninput-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">餐道</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('backreasoninput-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<div class="fl ">其他退菜原因：</div>
+	            	<div class="fr">还可以输入<span id="backreason-count">20</span>字</div>
+	            	<textarea class="form-control" maxlength="20" rows="5" cols="80" id="backreason-inp" onkeyup="changeBackReaCount()"></textarea>
+	            	<div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearBackReasonInput()">清空
+	                    </button>
+	                    <div style="float: right;">
+	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backreasoninput-dialog')">取消
+		                    </button>
+		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeBackReason()">确认
+		                    </button>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	 </div>
+	 <!-- 称重-->
+	<div class="modal fade in default-dialog input-num-dialog" id="weight-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">称重</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('weight-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<!-- 仅存在一个分类中-->
+	                <div class="dialog-sm-info">
+	                    <div class="form-group coupname"><span id="coup-name">称重菜品</span></div>
+	                    <div class="form-group">
+	                    	<span class="inpt-span">称重数量:</span>
+	                    	<input type="text" class="form-control padding-left" id="num">
+	                    </div>
+	                    <div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+	                </div>
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('weight-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 选择银行 -->
+	<div class="modal fade in default-dialog" id="select-bank-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">餐道</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('select-bank-dialog')">
+	            </div>
+	            <div class="modal-body">
+	                <div class="btn-operate  ">
+	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('select-bank-dialog')">取消
+	                    </button>
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
 	                    </button>
 	                </div>
 	            </div>

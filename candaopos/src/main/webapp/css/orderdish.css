@@ -25,6 +25,7 @@ footer{
 	display: inline-block;
 	background: #FFFFFF;
 	float:  left;
+	position: relative;
 }
 /******涓棿鎿嶄綔鏍�****/
 .oper-div{
@@ -47,25 +48,27 @@ footer{
 	box-shadow: 0px 2px 0px 0px #B1B1B1;
 	border-radius: 2px;
 	text-align: center;
-  	padding-top: 12px;
+  	padding: 12px 0;
 }
 .oper-div .btns .oper-btn:hover, .main-div .page-btns .page-btn:hover{
 	background: #F68D70;
 	opacity: 0.5;
+	color: #FFFFFF;
 }
 .oper-div .btns .oper-btn:active, .main-div .page-btns .page-btn:active{
 	background: #FF5803;
 	opacity: 1;
 	box-shadow: 0px 2px 0px 0px #C64300;
+	color: #FFFFFF;
 }
 .oper-div .btns .oper-btn:hover span, .oper-div .btns .oper-btn:active span, 
 .main-div .page-btns .page-btn:hover span, .main-div .page-btns .page-btn:active span{
 	color: #ffffff;
 }
-.oper-div .btns div.oper-btn span{
+.oper-div .btns .oper-btn span{
 	color: #555555;
 }
-.oper-div .btns div.page-info{
+.oper-div .btns .page-info{
 	margin-bottom: 10px;
 	text-align: center;
 }
@@ -154,15 +157,18 @@ footer{
 	text-align: center;
 	padding: 10px;
 }
-.main-div .search-btns div:hover, .main-div .search .delsearch-btn:hover, .main-div .main-oper-btns div:hover{
+.main-div .search-btns div:hover, .main-div .search .delsearch-btn:hover, 
+.main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, 
+.default-dialog .taste ul li:hover, #combodish-dialog .btns-div .num-btn:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #ffffff;
 }
-.main-div .search-btns div:active, .main-div .search .delsearch-btn:active, .main-div .main-oper-btns div:active{
+.main-div .search-btns div:active, .main-div .search .delsearch-btn:active, 
+.main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, 
+.default-dialog .taste ul li:active, #combodish-dialog .btns-div .num-btn:active{
 	background: #FF5803;
 	opacity: 1;
-	box-shadow: 0px 2px 0px 0px #C64300;
 	color: #ffffff;
 }
 .main-div>div{
@@ -247,7 +253,14 @@ footer{
 .main-div .page-btns .page-info{
 	padding: 10px 0;
 }
-.main-div .main-oper-btns div{
+.btn.disabled{
+	pointer-events: none;
+}
+.main-div .main-oper-btns .btn.place-order{
+	float: right;
+	width: 162px;
+}
+.main-div .main-oper-btns .btn{
 	width: 130px;
 	height: 45px;
 	background: #FFFFFF;
@@ -263,10 +276,6 @@ footer{
 	cursor: pointer;
 	float: left;
 }
-.main-div .main-oper-btns div.place-order{
-	float: right;
-	width: 162px;
-}
 /***********宸︿晶**********/
 .left-div .order-info{
 	width: 100%;
@@ -277,7 +286,7 @@ footer{
   	padding: 10px;
 }
 .left-div .dish-info{
-	height: 570px;
+	height: 560px;
 }
 .left-div .table{
 	border-top: 1px solid #ffffff;
@@ -326,7 +335,7 @@ footer{
   	width: 2px;
   	height: 20px;
   	background: #FF5803;
-  	margin: 10px 20px;
+  	margin: 2px 20px;
 }
 .modal-dialog{
 	height: 100%;
@@ -346,24 +355,11 @@ footer{
   	border: 0;
   	width: 100%;
 }
-.confirm-dialog .modal-dialog {
-  	width: 400px;
-  	height: 180px;
-  	margin-top: 10%;
-}
-.confirm-dialog .modal-body {
-  	background: #EAE9E6;
-  	padding: 15px;
-}
-.confirm-dialog .btn{
-	width: 150px;
-	height: 40px;
-	background: white;
-}
-.confirm-dialog .btn-save{
-	color: #fff;
-  	background-color: #FF5803;
-  	border-color: #FF5803;
+.confirm-dialog .modal-title{
+	text-align: left;
+  	font-size: 16px;
+  	color: #FFFFFF;
+  	padding: 12px;
 }
 #updatenum-dialog .modal-dialog{
 	width: 340px;
@@ -374,39 +370,141 @@ footer{
   	color: #FFFFFF;
   	padding-top: 15px;
 }
-#updatenum-dialog .dialog-sm-info span.inpt-span{
-	position: absolute;
-	font-size: 16px;
-	color: #B0B0B0;
-	padding-top: 12px;
-  	padding-left: 10px;
-}
-#updatenum-dialog .dialog-sm-info input{
-	padding-left: 85px;
-	height: 45px;
-}
 #updatenum-dialog .dialog-sm-info .dishname{
 	font-size: 16px;
 	color: #FF5803;
 	padding-left: 10px;
 }
-#updatenum-dialog .dialog-sm-info .virtual-keyboard ul{
+#note-dialog .modal-content{
+	background: #EAE9E6;
+}
+.default-dialog .form-group{
+	float: left;
+	width: 100%;
+}
+.default-dialog .avoid{
+	float: left;
+  	width: 100px;
+  	height: 40px;
+  	text-align: center;
+  	padding-top: 10px;
+  	background: white;
+  	margin-right: 4px;
+  	border-radius: 2px;
+}
+.default-dialog .avoid.active, #note-dialog .taste ul li.active{
+	background: #FF5803;
+	opacity: 1;
+	color: #ffffff;
+}
+.default-dialog .taste ul {
 	padding: 0;
 	margin: 0;
 }
-#updatenum-dialog .dialog-sm-info .virtual-keyboard ul li{
-	width: 100px;
-  	height: 48px;
+.default-dialog .taste ul li{
+	text-align: center;
+  	display: inline-block;
+  	width: 80px;
+  	height: 40px;
   	background: #FFFFFF;
-  	box-shadow: 0px 1px 0px 0px #CFCFCF;
-  	border-radius: 3px;
+  	padding-top: 10px;
+  	margin-right: 4px;
+}
+.input-dialog .modal-dialog{
+	width: 600px;
+	height: 300px;
+}
+#givefood-dialog .form-group input.padding-left{
+	padding-left: 120px;
+}
+#combodish-dialog .modal-dialog{
+	width: 800px;
+	margin-top: 50px;
+}
+#combodish-dialog .modal-content, #combodish-dialog .modal-body{
+	float: left;
+}
+#combodish-dialog .dish-div{
+	width: 80%;
+	padding: 0 10px 0 0;
+}
+#combodish-dialog .btns-div{
+	width: 20%;
+}
+#combodish-dialog .btns-div .num-btn{
+	width: 40px;
+  	height: 40px;
+  	background: #ffffff;
   	text-align: center;
-  	line-height: 2.5;
-  	list-style: none;
+  	padding-top: 10px;
+  	margin: auto;
+  	margin-top: 4px;
+  	border-radius: 3px;
+}
+#combodish-dialog .dishname{
+	text-align: center;
+	width: 100%;
+	font-size: 18px;
+  	font-weight: bold;
+}
+.combo-group{
+	overflow-y: auto;
+	height: 400px;
+	width: 100%;
+}
+.combo-group .group-title{
+	text-align: center;
+  	background: #FFA87C;
+  	height: 30px;
+  	padding-top: 8px;
+  	color: #333333;
+  	font-weight: bold;
   	float: left;
-  	margin-left: 3px;
-  	margin-bottom: 5px;
-  	font-size: 18px;
-  	color: #040404;
-  	cursor: pointer;
+  	width: 100%;
+}
+.combo-group .col-xs-7{
+	font-size: 16px;
+  	padding-top: 10px;
+}
+.combo-group .num-inp{
+	width: 40px;
+	height: 36px;
+	float: right;
+}
+.default-dialog .dialog-sm-info span.inpt-span {
+  	position: absolute;
+  	font-size: 16px;
+  	color: #B0B0B0;
+  	padding-top: 10px;
+  	padding-left: 10px;
+}
+.default-dialog .form-group input.padding-left{
+	height: 40px;
+	padding-left: 90px;
+}
+#fishpotdish-dialog .fishpot .form-group .col-xs-7{
+	width: 320px;
+  	height: 45px;
+  	text-align: center;
+  	padding-top: 10px;
+  	background: #FF5803;
+  	border-radius: 4px;
+  	color: #ffffff;
+  	font-size: 16px;
+}
+#fishpotdish-dialog .fishpot .form-group .num-oper{
+	float: right;
+	text-align: right;
+}
+.fishpot .form-group .num-oper .num-inp{
+	width: 40px;
+	height: 40px;
+	display: inline-block;
+}
+.fishpot .form-group .num-oper .num-oper-btn{
+	width: 40px;
+	display: inline-block;
+}
+#fishpotdish-dialog .btn-operate  {
+	text-align: right;
 }
