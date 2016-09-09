@@ -190,6 +190,11 @@ public class PadInterfaceController {
 		record.setJson(JacksonJsonMapper.objectToJson(order));
 		record.setPadpath("setorder");
 		jsonRecordService.insertJsonRecord(record);
+		//判断是否是pos开台还是pad开台
+		if(order.getMeid()==null||order.getMeid().trim().isEmpty()){
+			order.setNumOfMeals((order.getManNum() == null ? 0 : order.getManNum())
+                    + (order.getWomanNum() == null ? 0 : order.getWomanNum()));
+		}
 
 		String returnStr = orderService.startOrder(order);
 

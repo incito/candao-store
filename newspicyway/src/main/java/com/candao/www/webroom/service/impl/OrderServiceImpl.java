@@ -700,9 +700,8 @@ public class OrderServiceImpl implements OrderService {
         // TODO Auto-generated method stub
         boolean flag = true;
         Map<String, Object> mapRet = new HashMap<String, Object>();
-        TbTable table = tableService.findByTableNo((String) params.get("tableNo"));
-        if (table != null) {
-            String orderid = table.getOrderid();
+       String orderid=(String) params.get("orderId");
+        if (orderid != null&&!orderid.trim().isEmpty()) {
             if (orderid != null && !"".equals(orderid)) {
 
                 params.put("orderid", orderid);

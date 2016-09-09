@@ -85,10 +85,15 @@ footer{
 }
 .confirm-dialog .modal-dialog {
   	width: 400px;
+  	height: auto;
   	margin-top: 10%;
 }
+.confirm-dialog .modal-content{
+	background: #EAE9E6;
+}
 .confirm-dialog .modal-body {
-  	background: rgb(224, 220, 220);
+  	background: #EAE9E6;
+  	padding: 15px;
 }
 .confirm-dialog .btn{
 	width: 150px;
@@ -445,3 +450,73 @@ footer{
 }
 
 
+
+.default-dialog .modal-dialog{
+	width: 600px;
+  	height: auto;
+  	margin: 100px auto;
+}
+.default-dialog .modal-content{
+	background: #EAE9E6;
+}
+.default-dialog .modal-body {
+  	background: #EAE9E6;
+  	padding: 15px;
+}
+.default-dialog .modal-title {
+  	text-align: left;
+  	font-size: 16px;
+  	color: #FFFFFF;
+  	padding: 12px;
+}
+.default-dialog .btn{
+	width: 150px;
+	height: 40px;
+	background: white;
+}
+.default-dialog .btn-save{
+	color: #fff;
+  	background-color: #FF5803;
+  	border-color: #FF5803;
+}
+.default-dialog .btn:hover{
+	background: #F68D70;
+	border-color: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.default-dialog .btn:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}
+.virtual-keyboard ul{
+	margin: 0;
+	padding: 0;
+}
+.virtual-keyboard ul li{
+	width: 100px;
+  	height: 48px;
+  	background: #FFFFFF;
+  	box-shadow: 0px 1px 0px 0px #CFCFCF;
+  	border-radius: 3px;
+  	text-align: center;
+  	padding-top: 10px;
+  	list-style: none;
+  	float: left;
+  	margin-left: 3px;
+  	margin-bottom: 5px;
+  	font-size: 18px;
+  	color: #040404;
+  	cursor: pointer;
+}
+.virtual-keyboard ul li:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.virtual-keyboard ul li:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}

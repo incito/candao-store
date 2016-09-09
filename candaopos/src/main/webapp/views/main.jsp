@@ -57,7 +57,6 @@
 				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
 				$("#order-dialog").modal("show");
 //				$("#open-dialog").modal("show");
-
 			}
 		});
 

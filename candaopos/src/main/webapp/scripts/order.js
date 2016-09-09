@@ -12,11 +12,6 @@ $(document).ready(function(){
 	if(!isopened){
 		$("#open-dialog").modal("show");
 	}
-	//点击加菜
-	$("#add-dish").click(function(){
-		$("#adddish-dialog").load(global_path+"/views/orderdish.jsp");
-		$("#adddish-dialog").modal("show");
-	});
 	
 	//已点菜上一页
 	$(".dish-oper-btns .prev-btn").click(function() {
@@ -98,7 +93,58 @@ $(document).ready(function(){
 	});
 	initPreferentialType();
 	initOrderDish();
+	
+	$(document).click(function(e){
+		$(".more-oper").addClass("hide");
+		e.stopPropagation();  
+	});
+	$(".show-more").click(function(e){
+		$(".more-oper").removeClass("hide");
+		e.stopPropagation();  
+	});
+	//退菜
+	$("#back-dish").click(function(){
+		backFood(0);
+	});
+	//称重
+	$("#weigh-dish").click(function(){
+		$("#weight-dialog").modal("show");
+	});
 });
+/**
+ * 选择银行
+ */
+function selectBank(){
+	$("#select-bank-dialog").modal("show");
+}
+/**
+ * 重印客用单
+ */
+function reprint(){
+	$("#tips-dialog #tips-msg").text("客用单打印完成！");
+	$("#tips-dialog").modal("show");
+}
+/**
+ * 取消订单
+ */
+function cancelOrder(){
+	$("#tips-dialog #tips-msg").text("只能取消空账单！");
+	$("#tips-dialog").modal("show");
+}
+/**
+ * 退菜
+ * @param type： 0：单个退菜；1:整单退菜
+ */
+function backFood(type){
+	$("#backfood-dialog").modal("show");
+	$("#backfood-dialog .avoid").unbind("click").on("click", function(){
+		if($(this).hasClass("active")){
+			$(this).removeClass("active");
+		}else{
+			$(this).addClass("active");
+		}
+	});
+}
 // 已点菜品分页
 function page1(currPage) {
 	nowPage1 = loadPage({
@@ -111,6 +157,7 @@ function page1(currPage) {
 		prevBtnObj : "#order-modal .dish-oper-btns .prev-btn",
 		nextBtnObj : "#order-modal .dish-oper-btns .next-btn",
 		callback : function() {
+			$("#order-dish-table tbody tr").removeClass("selected");
 			$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
 					"selected");
 		}
@@ -142,14 +189,22 @@ function page3(currPage) {
 		nextBtnObj : "#order-modal .main-div .next-btn"
 	});
 }
+function trClickEvent(){
+	// 选中已点菜品
+	$("#order-dish-table tbody tr").click(function() {
+		$("#order-dish-table tbody tr").removeClass("selected");
+		$(this).addClass("selected");
+	});
+}
 function initOrderDish() {
-	for (var i = 0; i < 14; i++) {
+	for (var i = 0; i < 3; i++) {
 		var tr = "";
-		tr = "<tr><td>菜品" + i + "</td><td>1</td><td>49</td></tr>";
+		tr = "<tr dishid='dish-id-"+i+"' price=49><td class='dishname'>菜品" + i + "</td><td class='num'>1</td><td class='price'>49</td></tr>";
 
 		$("#order-dish-table tbody").prepend(tr);
 	}
 	page1(0);
+	trClickEvent();
 }
 // 优惠分类
 function initPreferentialType() {
@@ -168,7 +223,7 @@ function initPreferentialType() {
 		initPreferential();
 	});
 }
-// 通过分类获取菜品信息
+// 通过分类获取优惠券信息
 function initPreferential() {
 	var htm = '';
 	for (var i = 0; i < 20; i++) {
@@ -178,26 +233,24 @@ function initPreferential() {
 	}
 	$(".main-div .preferentials-content").html(htm);
 	page3(nowPage3);
-	$(".preferentials-content .preferential-info").click(
-			function() {
-				var tr = "";
-				var dishname = $(this).attr("dishname");
-				var price = $(this).attr("price");
-				tr = "<tr><td>" + dishname + "</td><td>1</td><td>" + price
-						+ "</td></tr>";
+	$(".preferentials-content .preferential-info").click( function() {
+		$("#coupnum-dialog").modal("show");
+		var tr = "";
+		var dishname = $(this).attr("dishname");
+		var price = $(this).attr("price");
+		tr = "<tr><td>" + dishname + "</td><td>1</td><td>" + price
+				+ "</td></tr>";
 
-				$("#sel-preferential-table tbody").prepend(tr);
-				$("#sel-preferential-table tbody tr").removeClass("selected");
-				page2(nowPage2);
+		$("#sel-preferential-table tbody").prepend(tr);
+		$("#sel-preferential-table tbody tr").removeClass("selected");
+		page2(nowPage2);
 
-				// 选中已选优惠
-				$(".sel-preferential-table tbody tr").click(
-						function() {
-							$(".sel-preferential-table tbody tr").removeClass(
-									"selected");
-							$(this).addClass("selected");
-						});
-			});
+		// 选中已选优惠
+		$(".sel-preferential-table tbody tr").click( function() {
+			$(".sel-preferential-table tbody tr").removeClass( "selected");
+			$(this).addClass("selected");
+		});
+	});
 }
 // 切换小键盘
 function changeKeyboard(type) {
@@ -219,4 +272,65 @@ function confirmOpen() {
 	$("#open-dialog").modal("hide");
 	$("#adddish-dialog").load(global_path+"/views/orderdish.jsp");
 	$("#adddish-dialog").modal("show");
+}
+/**
+ * 退菜
+ */
+function inputBackReason(){
+	$("#backreasoninput-dialog").modal("show");
+}
+var count = 20;
+function inputBackReason(){
+	var reason = $("#backfood-reason").val();
+	$("#backreason-inp").val(reason);
+	$("#backreasoninput-dialog").modal("show");
+	$("#backreason-inp").focus();
+}
+function changeBackReaCount(){
+	var value = $("#backreason-inp").val();
+	var c = count;
+	if(value != null && value != ""){
+		c = count-value.length;
+	}
+	if(c <=0){
+		c = 0;
+	}
+	$("#backreason-count").text(c);
+	contrlClearBtn(value);
+}
+function changeBackReason(){
+	var reason = $("#backreason-inp").val();
+	$("#backfood-reason").val(reason);
+	$("#backreasoninput-dialog").modal("hide");
+}
+/**
+ * 清空输入的退菜原因
+ */
+function clearBackReasonInput(){
+	$("#backreason-inp").val("");
+	contrlClearBtn("");
+}
+/**
+ * 控制清空按钮
+ * @param value
+ */
+function contrlClearBtn(value){
+	if(value != null && value != ""){
+		$(".clear-btn").removeClass("disabled");
+	}else{
+		$(".clear-btn").addClass("disabled");
+	}
+}
+//关闭dialog
+function closeConfirm(dialogId) {
+	$("#" + dialogId).modal("hide");
+}
+function stoppro(evt){
+	var e=evt?evt:window.event; //判断浏览器的类型，在基于ie内核的浏览器中的使用cancelBubble  
+	if (window.event) {  
+		e.cancelBubble=true;  
+	} else {  
+	    e.preventDefault(); //在基于firefox内核的浏览器中支持做法stopPropagation  
+		e.stopPropagation();  
+	}  
 }
