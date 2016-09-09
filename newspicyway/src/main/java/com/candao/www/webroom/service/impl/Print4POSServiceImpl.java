@@ -434,7 +434,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
                         String[] value = {resolveNullType(prefer.get("menuAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
-                                stringAdd(resolveNullType(prefer.get("toalFreeAmount")),resolveNullType(prefer.get("moneyWipeName"))), resolveNullType(prefer.get("reserveAmout"))};
+                                stringAdd(resolveNullType(prefer.get("toalFreeAmount")),resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
@@ -455,9 +455,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                             for (Map<String, Object> it : prefers) {
                                 String activeName = it.get("activity") == null ? "" : resolveNullType(((Map<String, Object>) it.get("activity")).get("name"));
                                 preferListInfo.add(createItem(activeName, it.get("toalFreeAmount")));
-                                if (0 != new BigDecimal(0).compareTo(new BigDecimal(resolveNullType(it.get("toalDebitAmount"))))) {
+                                /*if (0 != new BigDecimal(0).compareTo(new BigDecimal(resolveNullType(it.get("toalDebitAmount"))))) {
                                     preferListInfo.add(createItem(activeName, it.get("toalDebitAmount")));
-                                }
+                                }*/
                             }
                         }
                     }
