@@ -10,33 +10,32 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
-	<title>会员注册</title>
+	<title>修改基本信息</title>
 </head>
 <body>
 <div class="modal-dialog" style="width: 760px;">
 	<div class="modal-content">
 		<div class="modal-header">
-			<div class="fl">餐道</div>
-			<div class="fr close-win" data-dismiss="modal">关闭</div>
+			<div class="fl">修改基本信息</div>
+			<div class="fr close-win" data-dismiss="modal">x</div>
 		</div>
 		<div class="modal-body">
+			<div class="block-shadow block-radius ">
+				<ul class="member-info-list">
+					<li>卡号：<span>827375738</span></li>
+					<li>手机号码：<span>827375738</span></li>
+					<li>姓名：<span>张晓东</span></li>
+				</ul>
+			</div>
 			<div class="row">
 				<div class="col-md-7">
 					<form action="">
 						<div class="form-group form-group-base">
-							<span class="form-label">手机号码:</span>
+							<span class="form-label">姓名:</span>
 							<input value="" name="phone"  type="text" class="form-control" autocomplete="off">
 						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label form-group-base">验证码:</span>
-							<input value="" name="code"  type="text" class="form-control" autocomplete="off">
-						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label">姓名:</span>
-							<input value="" name="name"  type="text" class="form-control" autocomplete="off">
-						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label">姓名:</span>
+						<div class="form-group form-group-base"  style="height: 38px; margin-top: -10px;">
+							<span class="form-label">性别:</span>
 							<div class="form-info">
 								<div class="radio-box">
 									<label>
@@ -56,24 +55,8 @@
 							<span class="form-label">生日:</span>
 							<input value="" name="birthday"  type="date" class="form-control" autocomplete="off">
 						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label">密码:</span>
-							<input value="" name="pwd"  type="password" class="form-control" autocomplete="off">
-						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label">确认密码:</span>
-							<input value="" name="repwd"  type="password" class="form-control" autocomplete="off">
-						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label">实体会员卡:</span>
-							<div class="form-info" style="padding-left:100px;">
-								<button class="btn-default btn-lg btn-base">绑定实体卡</button>
-								可绑定IC卡, ID卡, 磁条卡
-							</div>
-						</div>
 						<div class="form-group form-group-base">
-							<button class="btn-default btn-lg btn-base btn-base-flex2">取消</button>
-							<button class="btn-default btn-lg btn-base btn-base-flex2">注册</button>
+							<button class="btn-default btn-lg btn-base btn-base-sm btn-yellow" style="width: 100%;">保存修改</button>
 						</div>
 					</form>
 				</div>

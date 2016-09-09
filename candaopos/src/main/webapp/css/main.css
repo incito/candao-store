@@ -193,6 +193,9 @@ html{
 footer{
 	height: 115px;
 }
+.footer-min {
+	height: 25px;
+}
 footer .info{
 	float: left;
   	text-align: center;

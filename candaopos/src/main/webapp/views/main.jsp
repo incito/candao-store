@@ -57,6 +57,7 @@
 				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
 				$("#order-dialog").modal("show");
 //				$("#open-dialog").modal("show");
+
 			}
 		});
 
@@ -67,7 +68,17 @@
 				$("#register-dialog").load("<%=request.getContextPath()%>/views/member/register.jsp");
 				$("#register-dialog").modal("show");
 			}
-		}).click();
+
+			if(me.hasClass('J-btn-storge')) {
+				window.location.href = '<%=request.getContextPath()%>/views/member/storge.jsp';
+			}
+
+			if(me.hasClass('J-btn-memberView')) {
+				window.location.href = './member/view.jsp';
+			}
+		});
+
+//		$(".menu-top>div").eq(0).click();
 
 
 		//底部菜单事件绑定
@@ -114,7 +125,7 @@
 	<header>
 		<div class="fl">餐道</div>
 		<div class="fl menu-top">
-			<div>会员查询</div><div>会员储值</div><div class="J-btn-register">会员注册</div>
+			<div class="J-btn-memberView">会员查询</div><div class="J-btn-storge">会员储值</div><div class="J-btn-register">会员注册</div>
 		</div>
 		<div class="fr exit-sys">退出系统</div>
 	</header>
@@ -178,7 +189,6 @@
 	</div>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="sys-dialog" style="overflow: auto;">
 	</div>
-	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;">
-	</div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;"></div>
 </body>
 </html>
