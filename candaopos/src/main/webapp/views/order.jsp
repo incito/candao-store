@@ -124,12 +124,12 @@
 								<div class="oper-btn next-btn">
 									<span class="glyphicon glyphicon-chevron-down"></span>
 								</div>
-								<div class="oper-btn" id="del-pref">
+								<button class="btn oper-btn disabled" id="del-pref">
 									<span class="glyphicon glyphicon-minus"></span>
-								</div>
-								<div class="oper-btn" id="clear-pref">
+								</button>
+								<button class="btn oper-btn disabled" id="clear-pref">
 									<span>C</span>
-								</div>
+								</button>
 							</div>
 						</div>
 						<div class="main-div">
@@ -163,22 +163,25 @@
 							<div class="pay-div">
 								<!-- 现金支付 -->
 								<div class="paytype-input cash" id="cash">
-									<div>
+									<div class="form-group">
 										<span>金额：</span>
 										<input type="text" class="form-control">
+									</div>
+									<div class="form-group the-change-div">
+										找零：<span class="the-change-span">0.00</span>
 									</div>
 								</div>
 								<!-- 银行卡支付 -->
 								<div class="paytype-input bank-card hide" id="bank-card">
-									<div style="display: inline-flex;">
+									<div class="form-group" style="display: inline-flex;">
 										<input type="text" class="form-control bank-type" placeholder="银行类型" disabled="disabled">
-										<div class="selbank-btn" onclick="selectBank()">选择银行</div>
+										<button class="btn selbank-btn" onclick="selectBank()">选择银行</button>
 									</div>
-									<div>
+									<div class="form-group">
 										<span>银行卡号:</span>
 										<input type="text" class="form-control" >
 									</div>
-									<div>
+									<div class="form-group">
 										<span>金额:</span>
 										<input type="text" class="form-control" >
 									</div>
@@ -186,53 +189,55 @@
 								<!-- 会员卡支付 -->
 								<div class="paytype-input membership-card hide"
 									id="membership-card">
-									<div style="display: inline-flex;">
+									<div class="form-group" style="display: inline-flex;">
 										<input type="text" class="form-control card-number" placeholder="卡号">
-										<div class="login-btn">登录</div>
+										<button class="btn login-btn">登录</button>
 									</div>
-									<div>
+									<div class="form-group">
 										<span>刷卡金额:</span>
 										<input type="text" class="form-control" >
 									</div>
-									<div>
+									<div class="form-group">
 										<span>使用积分:</span>
 										<input type="text" class="form-control" >
 									</div>
-									<div>
+									<div class="form-group">
 										<span>会员密码:</span>
 										<input type="text" class="form-control" >
 									</div>
-									<div><div class="register-btn">注册</div></div>
+									<!--div class="form-group"><button class="btn register-btn">注册</button></div-->
+									<div class="form-group" style="color: #FF5803;">储值金额：</div>
+									<div class="form-group" style="color: #FF5803;">积分余额：</div>
 								</div>
 								<!-- 挂账支付 -->
 								<div class="paytype-input this-card hide" id="this-card">
-									<div style="display: inline-flex;">
+									<div class="form-group" style="display: inline-flex;">
 										<input type="text" class="form-control payment-unit" placeholder="挂账单位" disabled="disabled">
-										<div class="sel-btn">选择</div>
+										<button class="btn sel-btn" onclick="selPayCompany()">选择</button>
 									</div>
-									<div>
+									<div class="form-group">
 										<span>挂账金额:</span>
 										<input type="text" class="form-control" >
 									</div>
 								</div>
 								<!-- 支付宝支付 -->
 								<div class="paytype-input pay-treasure hide" id="pay-treasure">
-									<div>
+									<div class="form-group">
 										<span>支付宝:</span>
 										<input type="text" class="form-control" >
 									</div>
-									<div>
+									<div class="form-group">
 										<span>金额:</span>
 										<input type="text" class="form-control" >
 									</div>
 								</div>
 								<!-- 微信支付 -->
 								<div class="paytype-input wechat-pay hide" id="wechat-pay">
-									<div>
+									<div class="form-group">
 										<span>微信号:</span>
 										<input type="text" class="form-control" >
 									</div>
-									<div>
+									<div class="form-group">
 										<span>金额:</span>
 										<input type="text" class="form-control" >
 									</div>
@@ -486,18 +491,113 @@
 	<!-- 选择银行 -->
 	<div class="modal fade in default-dialog" id="select-bank-dialog"
 	     data-backdrop="static">
-	    <div class="modal-dialog">
+	    <div class="modal-dialog" style="width: 800px;">
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
 	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('select-bank-dialog')">
 	            </div>
 	            <div class="modal-body">
+	            	<div style="font-size: 20px;font-weight: bold;">请选择银行</div>
+	            	<div class="bank-icon">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/1.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/2.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/3.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/4.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/5.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/6.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/7.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/8.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/9.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/10.png">
+	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/11.png">
+	            		<img class="active" alt="" src="<%=request.getContextPath()%>/images/bank/0.png">
+	            	</div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('select-bank-dialog')">取消
 	                    </button>
 	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
 	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 选择挂账单位 -->
+	<div class="modal fade in default-dialog" id="select-paycompany-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog" style="width: 800px;">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">餐道</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('select-paycompany-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<div style="font-size: 20px;font-weight: bold;">请选择挂账单位</div>
+					<div class="form-group search-btns">
+						<div class="search-btn">A</div>
+						<div class="search-btn">B</div>
+						<div class="search-btn">C</div>
+						<div class="search-btn">D</div>
+						<div class="search-btn">E</div>
+						<div class="search-btn">F</div>
+						<div class="search-btn">G</div>
+						<div class="search-btn">H</div>
+						<div class="search-btn">I</div>
+						<div class="search-btn">J</div>
+						<div class="search-btn">K</div>
+						<div class="search-btn">L</div>
+						<div class="search-btn">M</div>
+						<div class="search-btn">N</div>
+						<div class="search-btn">O</div>
+						<div class="search-btn">P</div>
+						<div class="search-btn">Q</div>
+						<div class="search-btn">R</div>
+						<div class="search-btn">S</div>
+						<div class="search-btn">T</div>
+						<div class="search-btn">U</div>
+						<div class="search-btn">V</div>
+						<div class="search-btn">W</div>
+						<div class="search-btn">X</div>
+						<div class="search-btn">Y</div>
+						<div class="search-btn">Z</div>
+					</div>
+					<div class="form-group search">
+						<span class="glyphicon glyphicon-search"></span> 
+						<input type="search" class="form-control" placeholder="输入首字母过滤">
+						<div class="delsearch-btn">C</div>
+					</div>
+					<div class="form-group paycompany-content">
+						<ul>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+						</ul>
+					</div>
+					<div class="btn-operate  ">
+						<div class="page">
+							<button class="btn page-btn prev-btn">
+								<span class="glyphicon glyphicon-chevron-left"></span>
+							</button>
+							<div class="page-info" style="display: inline-block;">
+								<span id="pay-curr-page">0</span>/<span id="pay-pages-len">0</span>
+							</div>
+							<button class="btn page-btn next-btn">
+								<span class="glyphicon glyphicon-chevron-right"></span>
+							</button>
+						</div>
+						<div style="text-align: right;">
+		                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('select-paycompany-dialog')">取消
+		                    </button>
+		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+		                    </button>
+	                    </div>
 	                </div>
 	            </div>
 	        </div>

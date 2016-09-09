@@ -2,6 +2,8 @@ var nowPage1 = 0;// 已选择菜品分页
 var nowPage2 = 0;// 已选择优惠分页
 var nowPage3 = 0;// 待选优惠分页
 var pref_prev = 0;
+
+var pay_nowPage = 0;//挂账单位
 $(document).ready(function(){
 	$("img.img-close").hover(function(){
 	 	$(this).attr("src",global_path+"/images/close-active.png");	 
@@ -110,12 +112,53 @@ $(document).ready(function(){
 	$("#weigh-dish").click(function(){
 		$("#weight-dialog").modal("show");
 	});
+	//删除购物车优惠
+	$("#del-pref").click(function(){
+		$("#sel-preferential-table tbody tr.selected").remove();
+		page2(nowPage2);
+	});
+	//清空购物车优惠
+	$("#clear-pref").click(function(){
+		$("#sel-preferential-table tbody tr").remove();
+		page2(0);
+	});
 });
 /**
  * 选择银行
  */
 function selectBank(){
 	$("#select-bank-dialog").modal("show");
+	$(".bank-icon img").unbind("click").on("click", function(){
+		$(".bank-icon img").removeClass("active");
+		$(this).addClass("active");
+	});
+}
+/**
+ * 选择挂账单位
+ */
+function selPayCompany(){
+	pay_nowPage = 0;
+	payPage(0);
+	$("#select-paycompany-dialog").modal("show");
+	$(".paycompany-content ul li").unbind("click").on("click", function(){
+		$(".paycompany-content ul li").removeClass("active");
+		$(this).addClass("active");
+	});
+	
+	//已点菜上一页
+	$("#select-paycompany-dialog .prev-btn").unbind("click").on("click", function(){
+		if ($(this).hasClass("disabled")) {
+			return false;
+		}
+		payPage(pay_nowPage - 1);
+	});
+	//已点菜下一页
+	$("#select-paycompany-dialog .next-btn").unbind("click").on("click", function(){
+		if ($(this).hasClass("disabled")) {
+			return false;
+		}
+		payPage(pay_nowPage + 1);
+	});
 }
 /**
  * 重印客用单
@@ -173,8 +216,14 @@ function page2(currPage) {
 		curPageObj : "#order-modal #curr-page2",
 		pagesLenObj : "#order-modal #pages-len2",
 		prevBtnObj : "#order-modal .preferential-oper-btns .prev-btn",
-		nextBtnObj : "#order-modal .preferential-oper-btns .next-btn"
+		nextBtnObj : "#order-modal .preferential-oper-btns .next-btn",
+		callback : function() {
+			$("#sel-preferential-table tbody tr").removeClass("selected");
+			$("#sel-preferential-table tbody tr").not(".hide").eq(0).addClass(
+					"selected");
+		}
 	});
+	controlOperBtns();
 }
 // 优惠分页
 function page3(currPage) {
@@ -187,6 +236,21 @@ function page3(currPage) {
 		pagesLenObj : "#order-modal #pages-len3",
 		prevBtnObj : "#order-modal .main-div .prev-btn",
 		nextBtnObj : "#order-modal .main-div .next-btn"
+	});
+}
+//挂账单位选择页面分页
+function payPage(currPage) {
+	pay_nowPage = loadPage({
+		obj : ".paycompany-content ul li",
+		listNum : 8,
+		currPage : currPage,
+		totleNums : $(".paycompany-content ul li").length,
+		curPageObj : "#select-paycompany-dialog #pay-curr-page",
+		pagesLenObj : "#select-paycompany-dialog #pay-pages-len",
+		prevBtnObj : "#select-paycompany-dialog .prev-btn",
+		nextBtnObj : "#select-paycompany-dialog .next-btn",
+		callback : function() {
+		}
 	});
 }
 function trClickEvent(){
@@ -228,7 +292,7 @@ function initPreferential() {
 	var htm = '';
 	for (var i = 0; i < 20; i++) {
 		htm += '<div class="preferential-info" dishid="dish-id-' + i
-				+ '" dishname="菜品' + i + '" price="49">'
+				+ '" dishname="优惠活动' + i + '" price="49">'
 				+ '<div class="dish-name">优惠活动' + i + '</div>' + '</div>';
 	}
 	$(".main-div .preferentials-content").html(htm);
@@ -251,6 +315,19 @@ function initPreferential() {
 			$(this).addClass("selected");
 		});
 	});
+}
+/**
+ * 优惠购物车操作
+ */
+function controlOperBtns(){
+	if($("#sel-preferential-table tbody tr.selected").length > 0){
+		$("#del-pref").removeClass("disabled");
+		$("#clear-pref").removeClass("disabled");
+	}else{
+		$("#del-pref").addClass("disabled");
+		$("#clear-pref").addClass("disabled");
+	}
+	
 }
 // 切换小键盘
 function changeKeyboard(type) {

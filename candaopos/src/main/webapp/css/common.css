@@ -452,7 +452,7 @@ footer{
 .default-dialog .modal-dialog{
 	width: 600px;
   	height: auto;
-  	margin: 100px auto;
+  	margin: 50px auto;
 }
 .default-dialog .modal-content{
 	background: #EAE9E6;

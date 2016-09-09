@@ -89,7 +89,7 @@
 							</div>
 						</div>
 						<div class="main-div">
-							<div class="dish-type">
+							<div class="form-group dish-type">
 								<div class="nav-type-prev nav-dishtype-prev">
 									<span class="glyphicon glyphicon-chevron-left"></span>
 								</div>
@@ -98,40 +98,40 @@
 									<span class="glyphicon glyphicon-chevron-right"></span>
 								</div>
 							</div>
-							<div class="search-btns">
-								<div>A</div>
-								<div>B</div>
-								<div>C</div>
-								<div>D</div>
-								<div>E</div>
-								<div>F</div>
-								<div>G</div>
-								<div>H</div>
-								<div>I</div>
-								<div>J</div>
-								<div>K</div>
-								<div>L</div>
-								<div>M</div>
-								<div>N</div>
-								<div>O</div>
-								<div>P</div>
-								<div>Q</div>
-								<div>R</div>
-								<div>S</div>
-								<div>T</div>
-								<div>U</div>
-								<div>V</div>
-								<div>W</div>
-								<div>X</div>
-								<div>Y</div>
-								<div>Z</div>
+							<div class="form-group search-btns">
+								<div class="search-btn">A</div>
+								<div class="search-btn">B</div>
+								<div class="search-btn">C</div>
+								<div class="search-btn">D</div>
+								<div class="search-btn">E</div>
+								<div class="search-btn">F</div>
+								<div class="search-btn">G</div>
+								<div class="search-btn">H</div>
+								<div class="search-btn">I</div>
+								<div class="search-btn">J</div>
+								<div class="search-btn">K</div>
+								<div class="search-btn">L</div>
+								<div class="search-btn">M</div>
+								<div class="search-btn">N</div>
+								<div class="search-btn">O</div>
+								<div class="search-btn">P</div>
+								<div class="search-btn">Q</div>
+								<div class="search-btn">R</div>
+								<div class="search-btn">S</div>
+								<div class="search-btn">T</div>
+								<div class="search-btn">U</div>
+								<div class="search-btn">V</div>
+								<div class="search-btn">W</div>
+								<div class="search-btn">X</div>
+								<div class="search-btn">Y</div>
+								<div class="search-btn">Z</div>
 							</div>
-							<div class="search">
+							<div class="form-group search">
 								<span class="glyphicon glyphicon-search"></span> <input
-									type="search" class="form-control" placeholder="输入菜品名">
+									type="search" class="form-control" placeholder="输入菜品首字母">
 								<div class="delsearch-btn">C</div>
 							</div>
-							<div class="dishes">
+							<div class="form-group dishes">
 								<div class="dishes-content"></div>
 								<div class="page-btns">
 									<div class="page-btn prev-btn">

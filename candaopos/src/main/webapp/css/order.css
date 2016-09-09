@@ -111,7 +111,6 @@
  	margin-top: 10px;
 }
 .paytype-input input {
-  	margin-top: 10px;
 	width: 260px;
 	height: 40px;
 	padding-left: 70px;
@@ -126,11 +125,23 @@
   	font-size: 60px;
   	text-align: right;
 }
+.cash .the-change-div{
+	color: #FF5803; 
+	font-weight: bold;  
+	padding-left: 10px; 
+	font-size: 18px;
+}
+.cash .the-change-span{
+	margin-top: -2px; 
+	margin-left: 30px; 
+	color: #FF5803; 
+	font-size: 18px;
+}
 .membership-card input.card-number{
 	padding-left: 12px;
 	width: 170px;
 }
-.membership-card .login-btn{
+.pay-div .btn{
 	margin-left: 6px;
   	width: 84px;
   	height: 38px;
@@ -139,32 +150,19 @@
   	border-radius: 3px;
   	font-size: 14px;
 	color: #000000;
-	margin-top: 10px;
 	text-align: center;
   	padding-top: 10px;
   	cursor: pointer;
 }
 .membership-card .register-btn{
-	margin-left: 6px;
-  	width: 84px;
-  	height: 38px;
-  	background: #FFFFFF;
-  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
-  	border-radius: 3px;
-  	font-size: 14px;
-	color: #000000;
-	margin-top: 10px;
-	text-align: center;
-  	padding-top: 10px;
-  	cursor: pointer;
   	margin-left: 176px;
 }
-.membership-card .login-btn:hover, .membership-card .register-btn:hover, .bank-card .selbank-btn:hover, .this-card .sel-btn:hover{
+.pay-div .btn:hover {
 	background: #F68D70;
 	opacity: 0.5;
 	color: #ffffff;
 }
-.membership-card .login-btn:active, .membership-card .register-btn:active, .bank-card .selbank-btn:active, .this-card .sel-btn:active{
+.pay-div .btn:active {
 	background: #FF5803;
 	opacity: 1;
 	box-shadow: 0px 2px 0px 0px #C64300;
@@ -175,37 +173,9 @@
 	padding-left: 12px;
 	width: 170px;
 }
-.bank-card .selbank-btn{
-	margin-left: 6px;
-  	width: 84px;
-  	height: 38px;
-  	background: #FFFFFF;
-  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
-  	border-radius: 3px;
-  	font-size: 14px;
-	color: #000000;
-	margin-top: 10px;
-	text-align: center;
-  	padding-top: 10px;
-  	cursor: pointer;
-}
 .this-card input.payment-unit{
 	padding-left: 12px;
 	width: 170px;
-}
-.this-card .sel-btn{
-	margin-left: 6px;
-  	width: 84px;
-  	height: 38px;
-  	background: #FFFFFF;
-  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
-  	border-radius: 3px;
-  	font-size: 14px;
-	color: #000000;
-	margin-top: 10px;
-	text-align: center;
-  	padding-top: 10px;
-  	cursor: pointer;
 }
 .main-div .virtual-keyboard{
 	width: 50%;
@@ -354,4 +324,49 @@
 }
 #backfood-dialog .form-group input.padding-left{
 	padding-left: 120px;
+}
+.bank-icon{
+	background: #FFFFFF;
+}
+.bank-icon img{
+	border: 3px solid gray;
+  	display: inline-block;
+  	width: 240px;
+  	margin: 10px 5px;
+}
+.bank-icon img.active{
+	border: 3px solid #FF5803;
+}
+.paycompany-content{
+	background: #FFFFFF;
+	height: 380px;
+}
+.paycompany-content ul{
+	padding: 10px 0;
+}
+.paycompany-content ul li{
+	list-style: none;
+  	height: 45px;
+  	padding: 12px;
+  	font-size: 16px;
+  	padding-left: 50px;
+  	color: #333333;
+  	cursor: pointer;
+  	font-weight: bold;
+}
+.paycompany-content ul li:hover{
+	opacity: 0.5;
+	color: #FF5803;
+}
+.paycompany-content ul li:active{
+	opacity: 1;
+	color: #FF5803;
+}
+.paycompany-content ul li.active{
+	opacity: 1;
+	color: #FF5803;
+}
+#select-paycompany-dialog .page{
+	float: left;
+  	display: inline-block;
 }

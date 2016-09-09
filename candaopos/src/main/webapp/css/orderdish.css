@@ -143,7 +143,7 @@ footer{
 	border-bottom: 3px solid #FF5803;
 }
 
-.main-div .search-btns div{
+.search-btns div.search-btn{
 	width: 43px;
 	height: 43px;
 	float: left;
@@ -157,14 +157,14 @@ footer{
 	text-align: center;
 	padding: 10px;
 }
-.main-div .search-btns div:hover, .main-div .search .delsearch-btn:hover, 
+.search-btns div.search-btn:hover, .search .delsearch-btn:hover, 
 .main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, 
 .default-dialog .taste ul li:hover, #combodish-dialog .btns-div .num-btn:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #ffffff;
 }
-.main-div .search-btns div:active, .main-div .search .delsearch-btn:active, 
+.search-btns div.search-btn:active, .search .delsearch-btn:active, 
 .main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, 
 .default-dialog .taste ul li:active, #combodish-dialog .btns-div .num-btn:active{
 	background: #FF5803;
@@ -179,10 +179,10 @@ footer{
 .main-div .dish-type{
 	margin-bottom: 10px;
 }
-.main-div .search{
-	padding-top: 10px;
+.search{
+	position: relative;
 }
-.main-div input[type=search] {
+input[type=search] {
 	width: 83%;
   	background: #FFFFFF;
   	border: 1px solid #DBDBDB;
@@ -191,13 +191,12 @@ footer{
   	height: 43px;
   	float: left;
 }
-.main-div .search .glyphicon-search{
+.search .glyphicon-search{
 	position: absolute;
-	left: 15px;
-  	top: 25px;
+	padding: 13px;
   	color: #515356;
 }
-.main-div .search .delsearch-btn{
+.search .delsearch-btn{
 	height: 42px;
 	width: 90px;
 	float: right;
@@ -209,8 +208,7 @@ footer{
   	padding: 10px;
 }
 .main-div .dishes{
-	padding: 18px 0 0;
-	height: 395px;
+	height: 375px;
 }
 .main-div .dishes .dishes-content{
 	width: 92%;
@@ -270,7 +268,7 @@ footer{
 	color: #040404;
 	text-align: center;
 	display: inline-block;
-	margin-top: 10px;
+	margin-top: 5px;
 	margin-right: 5px;
 	padding: 12px;
 	cursor: pointer;
