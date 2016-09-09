@@ -24,7 +24,26 @@ function goBack(){
 	window.history.back(-1);
 }
 
-
+/*
+* 公共模态框
+* ***参数***
+*
+*  - `content` {String} 填充内容
+*  - `title` {String} 模态框标题
+*  - `width` {Number} 默认500
+*  - `height` {Number} 默认auto
+*  - `vertical` {Boolean} 默认true
+*  - `cls` {String} 为modal添加样式,多个用空格分开
+*  - `hasBtns` {Boolean} 是否有按钮 默认为true
+*  - `btnOkTxt` {String} ok按钮文字 为''时,不显示
+*  - `btnCancelTxt` {String} cancle按钮文字 为''时,不显示
+*  - `btnOkCb` {Function} ok按钮回调
+*  - `btnCancelCb` {Function} cancel按钮回调 默认带有关闭事件
+* ***方法***
+*
+* - `show()`
+* - `hide()` 
+* */
 window.Modal = function () {
 	var _tplHtml =
 		'<div class="modal dialog-normal bg-gray created-modal [Cls]" id="[Id]">' +
@@ -37,8 +56,8 @@ window.Modal = function () {
 					'[Content]' +
 				'</div>' +
 				'<div class="modal-footer" >' +
+					'<button type="button" class="btn-base btn-base-sm cancel" data-dismiss="modal">[BtnCancelTxt]</button>' +
 					'<button type="button" class="btn-base btn-yellow btn-base-sm ok">[BtnOkTxt]</button>' +
-					'<button type="button" class="btn-base btn-base-sm  cancel" data-dismiss="modal">[BtnCancelTxt]</button>' +
 				'</div>' +
 			'</div>';
 		'</div>';

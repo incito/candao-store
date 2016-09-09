@@ -189,5 +189,26 @@
 	<div class="modal fade in main-dialog" data-backdrop="static" id="sys-dialog" style="overflow: auto;">
 	</div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;"></div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;">
+	</div>
+	<!-- 提示用dialog -->
+	<div class="modal fade dialog-sm confirm-dialog in" id="tips-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title"></div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('tips-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<p class="p1" style="text-align: center; padding-top: 20px; font-size: 16px;" id="tips-msg"></p>
+	            	<div class="btn-operate  ">
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="closeConfirm('tips-dialog')">确认
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	 </div>
 </body>
 </html>
