@@ -160,18 +160,18 @@ function initDishType() {
 // 通过分类获取菜品信息
 function initDishes() {
 	var htm = '';
-	for (var i = 0; i < 45; i++) {
+	for (var i = 0; i < 25; i++) {
 		var name = "";
 		var price = 49;
 		var unit = "份";
 		var type = 0;
-		if(i<10){
+		if(i<5){
 			type = 0;
 			name = "无口味菜品"+i;
-		}else if(i<20){
+		}else if(i<10){
 			type = 1;
 			name = "多口味菜品"+i;
-		}else if(i<30){
+		}else if(i<15){
 			type = 2;
 			name="套餐类菜品"+i;
 			unit = "套";
