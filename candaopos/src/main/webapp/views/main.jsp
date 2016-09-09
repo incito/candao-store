@@ -87,6 +87,68 @@
 				$("#sys-dialog").load("<%=request.getContextPath()%>/views/sys.jsp");
 				$("#sys-dialog").modal("show");
 			}
+			if(me.hasClass('J-btn-rep')) {
+				$("#sys-dialog").load("<%=request.getContextPath()%>/views/reporting/reporting.jsp");
+				$("#sys-dialog").modal("show");
+			}
+			if(me.hasClass('J-btn-check')) {
+				window.location.href="<%=request.getContextPath()%>/views/check/check.jsp";
+
+			}
+			if(me.hasClass('J-btn-checkout')) {
+				var str ='<strong>确定要结业吗？</strong>';
+
+				var alertModal = Modal.alert({
+					cls: 'fade in',
+					content:str,
+					width:400,
+					height:500,
+					title: "结业提醒",
+					btnOkTxt: '确定',
+					btnOkCb: function(){
+						$(".modal-alert").modal("hide");
+						$("#J-btn-checkout-dialog").load("<%=request.getContextPath()%>/views/check/impower.jsp",{"title" : "结业授权"});
+						$("#J-btn-checkout-dialog").modal("show");
+					},
+					btnCancelCb: function(){
+					}
+				})
+
+			}
+			if(me.hasClass('J-btn-clear')) {
+				var str ='<strong>请选择倒班或结业：</strong>'+
+						'<div id="cleardata" class="form-group form-group-base" style="margin-top: 20px">'+
+						'<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" style="margin-right: 5px">倒班</button>'+
+						'<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'+
+						'</div>'+
+						'<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
+
+				var alertModal = Modal.alert({
+					cls: 'fade in',
+					content:str,
+					width:400,
+					height:500,
+					title: "清机提醒",
+					hasBtns:false,
+				});
+				$("#cleardata button").click(function () {
+					var _this = $(this);
+					if(_this.hasClass("clearAll")){
+						$(".modal-alert").modal("hide");
+						$("#J-btn-clear-dialog").load("<%=request.getContextPath()%>/views/check/impower.jsp",{"title" : "清机授权","clearType":"倒班"});
+						$("#J-btn-clear-dialog").modal("show");
+					}
+					if(_this.hasClass("clearCompletion")){
+						$(".modal-alert").modal("hide");
+						$("#J-btn-clear-dialog").load("<%=request.getContextPath()%>/views/check/impower.jsp",{"title" : "清机授权","clearType":"结业"});
+						$("#J-btn-clear-dialog").modal("show");
+					}
+
+				})
+
+			}
+
+
 		});
 
 
@@ -177,7 +239,7 @@
 			<span class="free-num">空闲（10）</span><span>就餐（11）</span>
 		</div>
 		<div class="foot-menu">
-			<ul><li>外卖</li><li>账单</li><li>报表</li><li>清机</li><!--li>结业</li--><li>会员</li><li class="J-btn-sys">系统设置</li></ul>
+			<ul><li>外卖</li><li class="J-btn-check">账单</li><li class="J-btn-rep">报表</li><li class="J-btn-clear">清机</li><li class="J-btn-checkout">结业</li><li >会员</li><li class="J-btn-sys">系统设置</li></ul>
 			<div class="page"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
 		</div>
 		<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
@@ -189,26 +251,8 @@
 	<div class="modal fade in main-dialog" data-backdrop="static" id="sys-dialog" style="overflow: auto;">
 	</div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;"></div>
-	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;">
-	</div>
-	<!-- 提示用dialog -->
-	<div class="modal fade dialog-sm confirm-dialog in" id="tips-dialog"
-	     data-backdrop="static">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title"></div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('tips-dialog')">
-	            </div>
-	            <div class="modal-body">
-	            	<p class="p1" style="text-align: center; padding-top: 20px; font-size: 16px;" id="tips-msg"></p>
-	            	<div class="btn-operate  ">
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="closeConfirm('tips-dialog')">确认
-	                    </button>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	 </div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-checkout-dialog" style="overflow: auto;"></div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-clear-dialog" style="overflow: auto;"></div>
+
 </body>
 </html>

@@ -1,0 +1,112 @@
+
+.g-a-content{margin-left:10px;
+    margin-right:10px;
+    height: 540px;
+}
+.item-card {
+    background: #fff;
+    position: relative;
+    padding:15px 25px 5px 25px;
+    margin-bottom:5px;
+}
+.item-card h3 {
+    font-size:20px;
+    line-height: 20px;
+    padding:0;
+    margin: 0 0 10px 0;
+}
+.item-card p {
+    color:#A2A2A2;
+}
+.item-card .switch {
+    position: absolute;
+    top:50%;
+    right:25px;
+    margin-top:-10px;
+}
+.keyboard,.check-type{
+    float: left;
+    padding: 0 14px 13px;
+}
+.keyboard div{
+    width: 40px;
+    height: 40px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 0px 0px #CFCFCF;
+    border-radius: 3px;
+    float: left;
+    margin: auto 2px;
+    text-align: center;
+    padding-top: 12px;
+    cursor: pointer;
+}
+.keyboard div:hover ,.check-type div:hover{
+    background: #F68D70;
+    opacity: 0.5;
+    color: #fff;
+}
+.keyboard div.active,.check-type div.active{
+    background: #FF5803;
+    color: #fff;
+    opacity: 1
+}
+.clear{
+    clear: both;
+}
+.check-type div{
+    width: 80px;
+    height: 40px;
+    color: #000000;
+    font-size: 16px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 0px 0px #CFCFCF;
+    border-radius: 3px;
+    float: left;
+    margin: auto 2px;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+}
+.check-searchText{
+    line-height: 40px;
+    width: 75px;
+    float: left;
+    font-size:16px;
+    font-weight:bold;
+}
+ .contentInfo .info{
+    float: left;
+    text-align: center;
+    width: 100%;
+    font-size: 10px;
+    color: #B5B5B5;
+    padding-top: 5px;
+}
+.contentInfo .foot-menu ul button{
+    float: left;
+    height: 40px;
+    width: 100px;
+    text-align: center;
+    font-size: 16px;
+    color: #000000;
+    background: #ffffff;
+    padding: 10px;
+    margin: 0 2px;
+    box-shadow: 0px 1px 0px 0px #CFCFCF;
+    border-radius: 3px;
+    cursor: pointer;
+    border:none;
+}
+.contentInfo .foot-menu ul button:hover{
+    background: #F68D70;
+    opacity: 0.5;
+    color: #fff;
+}
+.contentInfo .foot-menu ul button:active{
+    background: #FF5803;
+    opacity: 1;
+    color: #fff;
+}
+.contentInfo .foot-menu ul .disabled{
+    color: #999;
+}

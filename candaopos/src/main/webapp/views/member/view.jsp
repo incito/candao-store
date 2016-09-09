@@ -57,12 +57,12 @@
 
 		<ul class="member-op-list">
 			<li><a href="./storge.jsp">会员储值</a></li>
-			<li class="J-add-card">新增实体卡</li>
+			<li>新增实体卡</li>
 			<li  class="J-modify-base">修改基本信息</li>
 			<li class="J-modify-pwd">修改消费密码</li>
-			<li class="J-modify-card">修改卡号</li>
+			<li>修改卡号</li>
 			<li class="J-modify-phone">修改手机号</li>
-			<li class="J-report-loss">会员挂失</li>
+			<li>会员挂失</li>
 			<li class="J-cancellation">会员注销</li>
 		</ul>
 
@@ -112,87 +112,39 @@
 			}
 
 			if(me.hasClass('J-cancellation')) {
-				var tpl = '<strong>是否要注销[李提付]?</strong>'
-				var cancellationModal = Modal.alert({
-					cls: 'fade in',
-					content:tpl,
-					width:500,
-					height:500,
-					btnOkCb: function(){
-						Modal.alert({
-							cls: 'fade in',
-							content:'<strong>注销成功</strong>',
-							width:500,
-							height:500,
-							hasBtns: false
-						});
-						cancellationModal.close();
-					},
-					btnCancelCb: function(){
-					}
-				});
-			}
-
-			if(me.hasClass('J-report-loss')) {
-				var tpl = '<strong>是否要挂失[李提付]?</strong>'
-				var lossModal = Modal.alert({
-					cls: 'fade in',
-					content:tpl,
-					width:500,
-					height:500,
-					btnOkCb: function(){
-						lossModal.close();
-						Modal.alert({
-							cls: 'fade in',
-							content:'<strong>挂失成功</strong>',
-							width:500,
-							height:500,
-							hasBtns: false
-						});
-
-					},
-					btnCancelCb: function(){
-					}
-				});
-			}
-
-
-			if(me.hasClass('J-add-card')) {
-				var tpl =
-						'<strong>修改卡号-请刷卡</strong>' +
-						'<br/><br/>' +
-						'<i>正在读取会员卡信息......</i>';
-				var addCardModal = Modal.alert({
-					title:'新增实体卡',
-					cls: 'fade in',
-					content:tpl,
-					width:500,
-					height:500,
-					btnOkCb: function(){
-					},
-					btnCancelCb: function(){
-					}
-				});
-			}
-
-			if(me.hasClass('J-modify-card')) {
-				var tpl =
-						'<strong>修改卡号-请刷卡</strong>' +
-						'<br/><br/>' +
-						'<i>正在读取会员卡信息......</i>';
-				var modifyCardModal = Modal.alert({
-					title:'修改卡号',
-					cls: 'fade in',
-					content:tpl,
-					width:500,
-					height:500,
-					btnOkCb: function(){
-					},
-					btnCancelCb: function(){
-					}
-				});
+				$("#modify-cancellation-dialog").load("<%=request.getContextPath()%>/views/member/cancellation.jsp");
+				$("#modify-cancellation-dialog").modal("show");
 			}
 		});
+
+
+		var tpl =
+					'<strong>上传营业数据失败，请重新上传！失败原因：</strong><br/><br/>' +
+					'<i>您可以选择“重新上传”立即重传或者点击“关闭”按钮<i/>';
+
+		var alertModal = Modal.alert({
+			cls: 'fade in',
+			content:tpl,
+			width:500,
+			height:500,
+			btnOkTxt: '重新上传',
+			btnOkCb: function(){
+				alert('okCb');
+			},
+			btnCancelCb: function(){
+				alert('cancelCb');
+			}
+		});
+
+
+//		setTimeout(function(){
+//			alertModal.hide();
+//		},2000)
+//
+//		setTimeout(function(){
+//			alertModal.show();
+//		},3000)
+
 
 	})
 </script>
