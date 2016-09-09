@@ -455,9 +455,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                             for (Map<String, Object> it : prefers) {
                                 String activeName = it.get("activity") == null ? "" : resolveNullType(((Map<String, Object>) it.get("activity")).get("name"));
                                 preferListInfo.add(createItem(activeName, it.get("toalFreeAmount")));
-                                if (0 != new BigDecimal(0).compareTo(new BigDecimal(resolveNullType(it.get("toalDebitAmount"))))) {
+                                /*if (0 != new BigDecimal(0).compareTo(new BigDecimal(resolveNullType(it.get("toalDebitAmount"))))) {
                                     preferListInfo.add(createItem(activeName, it.get("toalDebitAmount")));
-                                }
+                                }*/
                             }
                         }
                     }

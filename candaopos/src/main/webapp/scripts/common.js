@@ -41,8 +41,9 @@ function goBack(){
 *  - `btnCancelCb` {Function} cancel按钮回调 默认带有关闭事件
 * ***方法***
 *
-* - `show()`
-* - `hide()` 
+* - `close()` 销毁modal
+* - `hide()`  隐藏modal
+* - `show()`  对hide的modal 显示
 * */
 window.Modal = function () {
 	var _tplHtml =
@@ -75,6 +76,9 @@ window.Modal = function () {
 			hide: function(){
 				modal.modal('hide');
 			},
+			close: function(){
+				_close(id);
+			},
 			show:function(){
 				modal.modal('show');
 			}
@@ -84,9 +88,18 @@ window.Modal = function () {
 	var _confirm = function (options) {
 		var id = _dialog(options);
 		var modal = $('#' + id);
-
+		modal.addClass('modal-confirm');
 		return {
-			id: id
+			id: id,
+			hide: function(){
+				modal.modal('hide');
+			},
+			close: function(){
+				_close(id);
+			},
+			show:function(){
+				modal.modal('show');
+			}
 		};
 	};
 
@@ -95,6 +108,12 @@ window.Modal = function () {
 		var date = new Date();
 		return 'mdl' + date.valueOf();
 	};
+
+	var _close = function(id){
+		var $modal = $('#' + id);
+		$modal.next().remove();
+		$modal.remove();
+	}
 
 	var _dialog = function (options) {
 		var ops = {
@@ -130,9 +149,6 @@ window.Modal = function () {
 		$('body').append(html);
 
 		var $modal = $('#' + modalId);
-		var $content = $modal.find('.modal-content');
-
-
 
 		//按钮逻辑
 		if(!ops.hasBtns) {
@@ -152,10 +168,16 @@ window.Modal = function () {
 			} else {
 				$modal.find('.cancel').bind('click', function(){
 					ops.btnCancelCb && ops.btnCancelCb.call(this);
+					_close(modalId);
+
 				})
 			}
 		}
 
+		//关闭按钮
+		$modal.find('.close').bind('click', function(){
+			_close(modalId);
+		})
 
 		if(ops.vertical) {
 			$modal.css({
@@ -164,7 +186,7 @@ window.Modal = function () {
 			});
 		}
 
-
+		$modal.next('.modal-backdrop').addClass('.modal-backdrop-' + modalId);
 		$modal.modal({
 			width: ops.width,
 			backdrop: 'static'

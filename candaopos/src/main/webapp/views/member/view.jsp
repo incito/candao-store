@@ -126,7 +126,7 @@
 							height:500,
 							hasBtns: false
 						});
-						cancellationModal.hide();
+						cancellationModal.close();
 					},
 					btnCancelCb: function(){
 					}
@@ -141,6 +141,7 @@
 					width:500,
 					height:500,
 					btnOkCb: function(){
+						lossModal.close();
 						Modal.alert({
 							cls: 'fade in',
 							content:'<strong>挂失成功</strong>',
@@ -148,7 +149,7 @@
 							height:500,
 							hasBtns: false
 						});
-						lossModal.hide();
+
 					},
 					btnCancelCb: function(){
 					}
