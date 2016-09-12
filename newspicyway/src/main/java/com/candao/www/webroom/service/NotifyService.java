@@ -24,6 +24,15 @@ public interface NotifyService {
     Result notifyClearTable(String tableNo);
 
     /**
+     * 清台通知PAD，如果{@code meid}与{@code tableNo}的{@code meid}一样，则不通知清台
+     *
+     * @param meid
+     * @param tableNo
+     * @return
+     */
+    Result notifyClearTable(String meid, String tableNo);
+
+    /**
      * 赠送礼物通知
      *
      * @param tableNo   赠送者桌台
