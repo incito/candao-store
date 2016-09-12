@@ -90,7 +90,7 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
              jxl.write.Label labelTitle = new jxl.write.Label(0, 0, title);
              labelTitle.setCellFormat(wcfTitle); 
              sheet.addCell(labelTitle);// 放入工作簿  
-             String text [] = {"日期","服务员姓名","售卖菜品","单价","单位","赠送数量","打折数量","售卖数量"};
+             String text [] = {"日期","服务员姓名","售卖菜品","单位","赠送数量","打折数量","售卖数量"};
              for(int i=0;i<text.length;i++){
             	 sheet.setColumnView(i,25);
             	 sheet.addCell(new Label(i,1,text[i],wcfHead));  
@@ -103,7 +103,6 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 	            	 String currdate = list.get(i).get("currdate") == null ? "" : list.get(i).get("currdate").toString();
 	            	 String waiterName = list.get(i).get("NAME") == null ? "" : list.get(i).get("NAME").toString();
 	            	 String dishName = list.get(i).get("title") == null ? "" : list.get(i).get("title").toString();
-	            	 String orderprice = list.get(i).get("orderprice") == null ? "" : list.get(i).get("orderprice").toString();
 	            	 String dishunit = list.get(i).get("dishunit") == null ? "" : list.get(i).get("dishunit").toString();
 	            	 String present = list.get(i).get("present") == null ? "" : list.get(i).get("present").toString();
 	            	 String discount = list.get(i).get("discount") == null ? "" : list.get(i).get("discount").toString();
@@ -111,11 +110,10 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 	            	 sheet.addCell(new Label(0, rowNum, currdate, wcfTable));
 	            	 sheet.addCell(new Label(1, rowNum, waiterName, wcfTable));
 	            	 sheet.addCell(new Label(2, rowNum, dishName, wcfTable));
-	            	 sheet.addCell(new Label(3, rowNum, orderprice, wcfTable));
-	            	 sheet.addCell(new Label(4, rowNum, dishunit, wcfTable));
-	            	 sheet.addCell(new Label(5, rowNum, present.substring(0, num.length()-2), wcfTable)); 
-	            	 sheet.addCell(new Label(6, rowNum, discount, wcfTable));
-	            	 sheet.addCell(new Label(7, rowNum, num.substring(0, num.length()-2), wcfTable));
+	            	 sheet.addCell(new Label(3, rowNum, dishunit, wcfTable));
+	            	 sheet.addCell(new Label(4, rowNum, present, wcfTable)); 
+	            	 sheet.addCell(new Label(5, rowNum, discount, wcfTable));
+	            	 sheet.addCell(new Label(6, rowNum, num.substring(0, num.length()-2), wcfTable));
 	             }
              }
              // 写入数据     

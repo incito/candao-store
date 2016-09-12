@@ -2711,7 +2711,6 @@ function initWaiterSaleTb(datalist,isFirst){
 			var dishid = obj.dishid;
 			var dishunit = obj.dishunit;
 			var dishtype = obj.dishtype;
-			var orderprice = obj.orderprice;
 			var present = parseFloat(obj.present);
 			var discount = parseFloat(obj.discount);
 			var currdate = obj.currdate;
@@ -2738,9 +2737,6 @@ function initWaiterSaleTb(datalist,isFirst){
 					+ '</td>'
 					+ '<td width="12.5%">'
 					+ title
-					+ '</td>'
-					+ '<td width="12.5%">'
-					+ orderprice
 					+ '</td>'
 					+ '<td width="12.5%">'
 					+ dishunit
