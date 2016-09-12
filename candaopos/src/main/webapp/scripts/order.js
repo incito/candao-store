@@ -292,28 +292,38 @@ function initPreferential() {
 	var htm = '';
 	for (var i = 0; i < 20; i++) {
 		htm += '<div class="preferential-info" dishid="dish-id-' + i
-				+ '" dishname="优惠活动' + i + '" price="49">'
+				+ '" prefname="优惠活动' + i + '" price="49">'
 				+ '<div class="dish-name">优惠活动' + i + '</div>' + '</div>';
 	}
 	$(".main-div .preferentials-content").html(htm);
 	page3(nowPage3);
 	$(".preferentials-content .preferential-info").click( function() {
+		$("#pref-name").val($(this).attr("prefname"));
+		$("#pref-price").val($(this).attr("price"));
 		$("#coupnum-dialog").modal("show");
-		var tr = "";
-		var dishname = $(this).attr("dishname");
-		var price = $(this).attr("price");
-		tr = "<tr><td>" + dishname + "</td><td>1</td><td>" + price
-				+ "</td></tr>";
+	});
+}
+/**
+ * 添加优惠
+ */
+function addPref(){
+	var tr = "";
+	var name = $("#pref-name").val();
+	var price = $("#pref-price").val();
+	var num = $("#pref-num").val();
+	if(num == null || num== ""){
+		num = 1;
+	}
+	tr = "<tr><td>" + name + "</td><td>"+num+"</td><td>" + price
+			+ "</td></tr>";
 
-		$("#sel-preferential-table tbody").prepend(tr);
-		$("#sel-preferential-table tbody tr").removeClass("selected");
-		page2(nowPage2);
-
-		// 选中已选优惠
-		$(".sel-preferential-table tbody tr").click( function() {
-			$(".sel-preferential-table tbody tr").removeClass( "selected");
-			$(this).addClass("selected");
-		});
+	$("#sel-preferential-table tbody").prepend(tr);
+	page2(nowPage2);
+	$("#coupnum-dialog").modal("hide");
+	// 选中已选优惠
+	$("#sel-preferential-table tbody tr").unbind("click").on("click", function(){
+		$("#sel-preferential-table tbody tr").removeClass( "selected");
+		$(this).addClass("selected");
 	});
 }
 /**

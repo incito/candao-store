@@ -2,7 +2,6 @@ html{
 	overflow: auto;
 }
 .content{
-	height: 400px;
   	width: 100%;
   	margin: auto auto;
   	padding: 8px;

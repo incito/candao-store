@@ -284,7 +284,6 @@
 					<div class="info">
 						<span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19
 						12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span>
-						<div class="page"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
 					</div>
 				</footer>
 			</div>
@@ -364,10 +363,12 @@
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
+	                	<input type="hidden" id="pref-name">
+	                	<input type="hidden" id="pref-price">
 	                    <div class="form-group coupname"><span id="coup-name">团购券</span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">使用数量:</span>
-	                    	<input type="text" class="form-control padding-left" id="num">
+	                    	<input type="text" class="form-control padding-left" id="pref-num">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -387,7 +388,7 @@
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('coupnum-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="addPref()">确认
 	                    </button>
 	                </div>
 	            </div>

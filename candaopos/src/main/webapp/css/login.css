@@ -2,7 +2,7 @@ article{
   	padding: 10%;
 }
 .content{
-	height: 270px;
+	height: 290px;
   	width: 80%;
   	max-width: 700px;
   	min-width: 560px;
@@ -110,7 +110,7 @@ article{
 	border-radius: 3px;
   	text-align: center;
   	vertical-align: middle;
-  	line-height: 3;
+  	padding-top: 15px;
   	list-style: none;
   	float: left;
   	margin-left: 6px;
@@ -118,6 +118,7 @@ article{
 	font-size: 18px;
 	color: #040404;
 	cursor: pointer;
+	margin-bottom: 2px;
 }
 .virtual-keyboard ul li:hover{
 	background: #F68D70;
@@ -143,7 +144,7 @@ article{
   	text-align: center;
 }
 .thechange-dialog .modal-body {
-	height: 270px;
+	height: 300px;
 	background: rgb(224, 220, 220);
 }
 .thechange-dialog .login-form .form-control{
