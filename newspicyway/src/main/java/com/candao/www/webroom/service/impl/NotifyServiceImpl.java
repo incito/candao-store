@@ -1,6 +1,7 @@
 package com.candao.www.webroom.service.impl;
 
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.msghandler.obj.MsgForwardTran;
 import com.candao.www.dataserver.service.msghandler.obj.Result;
@@ -28,6 +29,8 @@ public class NotifyServiceImpl implements NotifyService {
     private MsgForwardService msgForwardService;
     @Autowired
     private TableService tableService;
+    @Autowired
+    private TorderMapper orderMapper;
     /**
      * 发送异步消息的处理线程
      */
@@ -64,6 +67,26 @@ public class NotifyServiceImpl implements NotifyService {
         List<Map<String, Object>> resultMapList = tableService.find(map);
         if (null == resultMapList || resultMapList.isEmpty()) {
             return null;
+        }
+        msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
+
+        return null;
+    }
+
+    @Override
+    public Result notifyClearTable(String meid, String tableNo) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("tableNo", tableNo);
+        List<Map<String, Object>> resultMapList = tableService.find(map);
+        if (null == resultMapList || resultMapList.isEmpty()) {
+            return null;
+        }
+        Map<Object, Object> order = orderMapper.findOne(resultMapList.get(0).get("orderid").toString());
+        if (null == order) {
+            return new Result(false, "该订单不存在");
+        }
+        if (null != meid && meid.equals(order.get("meid"))) {
+            return new Result(false, "源MEID和目标MEID相同,不发送");
         }
         msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
 

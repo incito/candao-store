@@ -34,7 +34,8 @@ public class Table {
 	 * 是否清空目标餐台，0：不清空，1：清空
 	 */
 	private int  cleanTable = 0;
-	
+	private String  meid;
+
 	
 
 	public String getDiscardUserId() {
@@ -149,6 +150,12 @@ public class Table {
 	public void setCleanTable(int cleanTable) {
 		this.cleanTable = cleanTable;
 	}
- 
-	
+
+	public String getMeid() {
+		return meid;
+	}
+
+	public void setMeid(String meid) {
+		this.meid = meid;
+	}
 }
