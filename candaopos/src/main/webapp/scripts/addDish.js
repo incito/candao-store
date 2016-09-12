@@ -13,7 +13,15 @@ $(document).ready(function(){
 	},function(){
 		$(this).attr("src",global_path+"/images/close-sm.png");
 	});
-	
+	if(g_eatType == "TAKE-OUT"){
+		//外卖
+		$(".give-dish").addClass("hide");
+		$(".gua-dan").removeClass("hide");
+	}else if(g_eatType == "EAT-IN"){
+		//堂食
+		$(".gua-dan").addClass("hide");
+		$(".give-dish").removeClass("hide");
+	}
 	$(".search input[type='search']").focus(function(event){
         activeinputele = $(this);
 	});
@@ -672,6 +680,12 @@ function refreshOrder(){
 		page1(nowPage1);
 		trClickEvent();
 	}
+}
+/**
+ * 挂单
+ */
+function guadan(){
+	$("#guadan-dialog").modal("show");
 }
 /**
  * 赠菜

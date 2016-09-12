@@ -3,7 +3,6 @@ var nowPage2 = 0;// 已选择优惠分页
 var nowPage3 = 0;// 待选优惠分页
 var pref_prev = 0;
 
-var pay_nowPage = 0;//挂账单位
 $(document).ready(function(){
 	$("img.img-close").hover(function(){
 	 	$(this).attr("src",global_path+"/images/close-active.png");	 
@@ -11,7 +10,7 @@ $(document).ready(function(){
 		$(this).attr("src",global_path+"/images/close-sm.png");
 	});
 	//未开过台的先开台
-	if(!isopened){
+	if(!g_isopened){
 		$("#open-dialog").modal("show");
 	}
 	
@@ -134,33 +133,6 @@ function selectBank(){
 	});
 }
 /**
- * 选择挂账单位
- */
-function selPayCompany(){
-	pay_nowPage = 0;
-	payPage(0);
-	$("#select-paycompany-dialog").modal("show");
-	$(".paycompany-content ul li").unbind("click").on("click", function(){
-		$(".paycompany-content ul li").removeClass("active");
-		$(this).addClass("active");
-	});
-	
-	//已点菜上一页
-	$("#select-paycompany-dialog .prev-btn").unbind("click").on("click", function(){
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		payPage(pay_nowPage - 1);
-	});
-	//已点菜下一页
-	$("#select-paycompany-dialog .next-btn").unbind("click").on("click", function(){
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		payPage(pay_nowPage + 1);
-	});
-}
-/**
  * 重印客用单
  */
 function reprint(){
@@ -238,21 +210,7 @@ function page3(currPage) {
 		nextBtnObj : "#order-modal .main-div .next-btn"
 	});
 }
-//挂账单位选择页面分页
-function payPage(currPage) {
-	pay_nowPage = loadPage({
-		obj : ".paycompany-content ul li",
-		listNum : 8,
-		currPage : currPage,
-		totleNums : $(".paycompany-content ul li").length,
-		curPageObj : "#select-paycompany-dialog #pay-curr-page",
-		pagesLenObj : "#select-paycompany-dialog #pay-pages-len",
-		prevBtnObj : "#select-paycompany-dialog .prev-btn",
-		nextBtnObj : "#select-paycompany-dialog .next-btn",
-		callback : function() {
-		}
-	});
-}
+
 function trClickEvent(){
 	// 选中已点菜品
 	$("#order-dish-table tbody tr").click(function() {

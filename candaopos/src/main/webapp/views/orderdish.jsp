@@ -146,7 +146,8 @@
 								</div>
 							</div>
 							<div class="main-oper-btns">
-								<button class="btn disabled" onclick="giveFood()">赠菜</button>
+								<button class="btn disabled gua-dan hide" onclick="guadan()">挂单</button>
+								<button class="btn disabled give-dish" onclick="giveFood()">赠菜</button>
 								<button class="btn disabled" onclick="allNote()">全单备注</button>
 								<button class="btn disabled" onclick="clearSelected()">清空</button>
 								<button class="btn disabled place-order" onclick="placeOrder()">下单</button>
@@ -290,6 +291,58 @@
 	        </div>
 	    </div>
 	</div>
+	<!--挂单 -->
+	<div class="modal fade in default-dialog guadan-dialog" data-backdrop="static" id="guadan-dialog">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title" style="text-align: center;">挂单</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('guadan-dialog')" >
+	            </div>
+	            <div class="modal-body">
+	            	<div style=" display: inline-block;width: 100%;">
+		            	<div class="col-xs-6" style="padding: 0;">
+		            		<div class="form-group">
+		            			<span class="inpt-span">订餐单位:</span>
+		            			<input type="text" class="form-control" style="width: 80%; display: inline-block;">
+		            			<button class="btn sel-btn" onclick="selPayCompany()">选择</button>
+		            		</div>
+		            		<div class="form-group">
+		            			<span class="inpt-span">联系人:</span>
+		            			<input type="text" class="form-control">
+		            		</div>
+		            		<div class="form-group">
+		            			<span class="inpt-span">联系电话:</span>
+		            			<input type="text" class="form-control">
+		            		</div>
+		            		<div class="btn-operate ">
+			                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('guadan-dialog')" >取消
+			                    </button>
+			                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认挂单
+			                    </button>
+	                		</div>
+		            	</div>
+		            	<div class="col-xs-6" style="float: right; padding: 0 11px;">
+		            		<div class="virtual-keyboard">
+								<ul>
+									<li>1</li><li>2</li><li>3</li>
+								</ul>
+								<ul>
+									<li>4</li><li>5</li><li>6</li>
+								</ul>
+								<ul>
+									<li>7</li><li>8</li><li>9</li>
+								</ul>
+								<ul>
+									<li>.</li><li>0</li><li>←</li>
+								</ul>
+							</div>
+		            	</div>
+		            </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 	 <!-- 赠菜 -->
 	 <div class="modal fade default-dialog in " id="givefood-dialog"
 	     data-backdrop="static">
@@ -333,7 +386,7 @@
 	            	<div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearReasonInput()">清空
 	                    </button>
-	                    <div style="float: right;">
+	                    <div style="text-align: right;">
 	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('reasoninput-dialog')">取消
 		                    </button>
 		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeReason()">确认
@@ -495,14 +548,18 @@
 	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('noteinput-dialog')">
 	            </div>
 	            <div class="modal-body">
-	            	<input type="hidden" id="type" value="">
-	            	<div class="fl ">其他忌口：</div>
-	            	<div class="fr">还可以输入<span id="note-count">20</span>字</div>
-	            	<textarea class="form-control" maxlength="20" rows="5" cols="80" id="note-inp" onkeyup="changeCount()"></textarea>
+	            	<div class="form-group">
+		            	<input type="hidden" id="type" value="">
+		            	<div class="fl ">其他忌口：</div>
+		            	<div class="fr">还可以输入<span id="note-count">20</span>字</div>
+	            	</div>
+	            	<div class="form-group">
+	            		<textarea class="form-control" maxlength="20" rows="5" cols="80" id="note-inp" onkeyup="changeCount()"></textarea>
+	            	</div>
 	            	<div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearNoteInput()">清空
 	                    </button>
-	                    <div style="float: right;">
+	                    <div style="text-align: right;">
 	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('noteinput-dialog')">取消
 		                    </button>
 		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeNote()">确认

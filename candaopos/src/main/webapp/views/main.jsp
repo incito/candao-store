@@ -23,7 +23,9 @@
 <script type="text/javascript">
 	var global_path = "<%=request.getContextPath()%>";
 	var nowPage = 0;
-	var isopened = false;
+	var g_isopened = false;
+
+	var g_eatType = "EAT-IN";//堂食
 	$(document).ready(function(){
 		$("img.img-close").hover(function(){
 		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
@@ -45,18 +47,18 @@
 			doPage(nowPage);
 		});
 		$("ul#standard-tables li").click(function(){
+			g_eatType = "EAT-IN";
 			var cla = $(this).attr("class");
 			if(cla == "opened"){
-				isopened = true;
+				g_isopened = true;
 				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
 				$("#order-dialog").modal("show");
 			}else if(cla == "reserved"){
 				
 			}else{
-				isopened = false;
+				g_isopened = false;
 				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
 				$("#order-dialog").modal("show");
-//				$("#open-dialog").modal("show");
 			}
 		});
 
@@ -83,6 +85,13 @@
 		//底部菜单事件绑定
 		$(".foot-menu li").click(function(){
 			var me = $(this);
+			if(me.hasClass("J-btn-takeout")){
+				$("#J-takeout-dialog").modal("show");
+				$(".take-out-list li").unbind("click").on("click",  function(){
+					$(".take-out-list li").removeClass("active");
+					$(this).addClass("active");
+				});
+			}
 			if(me.hasClass('J-btn-sys')) {
 				$("#sys-dialog").load("<%=request.getContextPath()%>/views/sys.jsp");
 				$("#sys-dialog").modal("show");
@@ -166,6 +175,15 @@
 		});
 		doPage(nowPage);
 	});
+	//外带
+	function takeOut(){
+		g_isopened = true;
+		g_eatType = "TAKE-OUT";
+		$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
+		$("#order-dialog").modal("show");
+		$("#adddish-dialog").load(global_path+"/views/orderdish.jsp");
+		$("#adddish-dialog").modal("show");
+	}
 	function doPage(currPage){
 		var o = $(".tab-div ul li.active").attr("loaddiv") + " li";
 		var options = {
@@ -239,7 +257,7 @@
 			<span class="free-num">空闲（10）</span><span>就餐（11）</span>
 		</div>
 		<div class="foot-menu">
-			<ul><li>外卖</li><li class="J-btn-check">账单</li><li class="J-btn-rep">报表</li><li class="J-btn-clear">清机</li><li class="J-btn-checkout">结业</li><li >会员</li><li class="J-btn-sys">系统设置</li></ul>
+			<ul><li class="J-btn-takeout">外卖</li><li class="J-btn-check">账单</li><li class="J-btn-rep">报表</li><li class="J-btn-clear">清机</li><li class="J-btn-checkout">结业</li><li >会员</li><li class="J-btn-sys">系统设置</li></ul>
 			<div class="page"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
 		</div>
 		<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
@@ -266,7 +284,120 @@
 	            </div>
 	        </div>
 	    </div>
+	</div>
+	<!-- 外卖 -->
+	<div class="modal fade default-dialog J-takeout-dialog in " id="J-takeout-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title" style="text-align: center;">备注桌号</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" data-dismiss="modal">
+	            </div>
+	            <div class="modal-body">
+	            	<div class="form-group">
+	            		<ul class="take-out-list">
+	            			<li class="active">咖啡外卖1</li>
+	            			<li>咖啡外卖2</li>
+	            			<li>咖啡外卖3</li>
+	            			<li>咖啡外卖4</li>
+	            			<li>咖啡外卖5</li>
+	            		</ul>
+	            	</div>
+	            	<div class="btn-operate  ">
+	            		<button class="btn btn-cancel in-btn135 clear-btn" style="float: left;" type="button" data-dismiss="modal" onclick="takeOut()">外带
+		                </button>
+	                    <div style="text-align: right;">
+	                    	<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+		                    </button>
+		                    <button class="btn btn-save in-btn135" id="" type="button" data-dismiss="modal" onclick="takeOut()">确认
+		                    </button>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
 	 </div>
+	 <!-- 选择挂账单位 -->
+	<div class="modal fade in default-dialog" id="select-paycompany-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog" style="width: 800px;">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">餐道</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('select-paycompany-dialog')">
+	            </div>
+	            <div class="modal-body">
+	            	<div style="font-size: 20px;font-weight: bold;">请选择挂账单位</div>
+					<div class="form-group search-btns">
+						<div class="search-btn">A</div>
+						<div class="search-btn">B</div>
+						<div class="search-btn">C</div>
+						<div class="search-btn">D</div>
+						<div class="search-btn">E</div>
+						<div class="search-btn">F</div>
+						<div class="search-btn">G</div>
+						<div class="search-btn">H</div>
+						<div class="search-btn">I</div>
+						<div class="search-btn">J</div>
+						<div class="search-btn">K</div>
+						<div class="search-btn">L</div>
+						<div class="search-btn">M</div>
+						<div class="search-btn">N</div>
+						<div class="search-btn">O</div>
+						<div class="search-btn">P</div>
+						<div class="search-btn">Q</div>
+						<div class="search-btn">R</div>
+						<div class="search-btn">S</div>
+						<div class="search-btn">T</div>
+						<div class="search-btn">U</div>
+						<div class="search-btn">V</div>
+						<div class="search-btn">W</div>
+						<div class="search-btn">X</div>
+						<div class="search-btn">Y</div>
+						<div class="search-btn">Z</div>
+					</div>
+					<div class="form-group search">
+						<span class="glyphicon glyphicon-search"></span> 
+						<input type="search" class="form-control" placeholder="输入首字母过滤">
+						<div class="delsearch-btn">C</div>
+					</div>
+					<div class="form-group paycompany-content">
+						<ul>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+							<li>合作单位1111111111111111111111111</li>
+						</ul>
+					</div>
+					<div class="btn-operate  ">
+						<div class="page">
+							<button class="btn page-btn prev-btn">
+								<span class="glyphicon glyphicon-chevron-left"></span>
+							</button>
+							<div class="page-info" style="display: inline-block;">
+								<span id="pay-curr-page">0</span>/<span id="pay-pages-len">0</span>
+							</div>
+							<button class="btn page-btn next-btn">
+								<span class="glyphicon glyphicon-chevron-right"></span>
+							</button>
+						</div>
+						<div style="text-align: right;">
+		                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('select-paycompany-dialog')">取消
+		                    </button>
+		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+		                    </button>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="sys-dialog" style="overflow: auto;">
 	</div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;"></div>
