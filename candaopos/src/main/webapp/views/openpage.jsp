@@ -66,7 +66,7 @@
 		margin-top: 30px;
 	}
 	.confirm-dialog .modal-body{
-		height: 420px;
+		height: 450px;
 	}
 	.confirm-dialog .virtual-keyboard{
 		width: 100%;
