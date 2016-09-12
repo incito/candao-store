@@ -302,7 +302,7 @@
 	            <div class="modal-body">
 	            	<div style=" display: inline-block;width: 100%;">
 		            	<div class="col-xs-6" style="padding: 0;">
-		            		<div class="form-group">
+		            		<div class="form-group" style="display: inline-block;">
 		            			<span class="inpt-span">订餐单位:</span>
 		            			<input type="text" class="form-control" style="width: 80%; display: inline-block;">
 		            			<button class="btn sel-btn" onclick="selPayCompany()">选择</button>

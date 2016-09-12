@@ -200,6 +200,9 @@ footer .info{
 	margin: 30px auto auto; 
 	overflow: hidden;
 }
+.main-dialog .modal-content{
+	height: 100%;
+}
 .J-takeout-dialog .take-out-list{
 	padding: 0;
 }
