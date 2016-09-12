@@ -8240,26 +8240,29 @@ BEGIN -- 返回字段说明如下
 END$$
 DELIMITER ;
 
+--服务员销售统计表 start--
 DELIMITER $$
+
 DROP PROCEDURE IF EXISTS p_report_fwyxstjb$$
-CREATE PROCEDURE p_report_fwyxstjb (IN pi_branchid int(11),
-IN pi_ksrq datetime, -- 开始日期
-IN pi_jsrq datetime, -- 结束日期
-IN pi_fwyxm varchar(30), -- 服务员姓名
-IN pi_smcp varchar(300), -- 菜品名称
-IN pi_dqym int, -- 当前页码 第一次进入时从0开始
-IN pi_myts int, -- 每页显示的条数
-OUT po_errmsg varchar(100))
-SQL SECURITY INVOKER
-COMMENT '服务员销售统计表'
+
+CREATE PROCEDURE p_report_fwyxstjb(IN pi_branchid INT(11),
+IN pi_ksrq DATETIME, 
+IN pi_jsrq DATETIME, 
+IN pi_fwyxm VARCHAR(30), 
+IN pi_smcp VARCHAR(300), 
+IN pi_dqym INT, 
+IN pi_myts INT, 
+OUT po_errmsg VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '服务员销售统计表'
 label_main:
 BEGIN
-  DECLARE v_waiter_name varchar(300);
-  DECLARE v_dish_name varchar(30);
-  DECLARE v_date_start datetime;
-  DECLARE v_date_end datetime;
-  DECLARE v_current_page int;
-  DECLARE v_nums_page int;
+  DECLARE v_waiter_name VARCHAR(300);
+  DECLARE v_dish_name VARCHAR(30);
+  DECLARE v_date_start DATETIME;
+  DECLARE v_date_end DATETIME;
+  DECLARE v_current_page INT;
+  DECLARE v_nums_page INT;
 
   IF pi_branchid IS NULL THEN
     SELECT
@@ -8294,9 +8297,9 @@ BEGIN
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order (
-    orderid varchar(50),
-    userid varchar(50)
-  ) ENGINE = MEMORY DEFAULT charset = utf8;
+    orderid VARCHAR(50),
+    userid VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_order
     SELECT
@@ -8311,15 +8314,18 @@ BEGIN
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail (
-    orderid varchar(50),
-    dishid varchar(50),
-    primarykey varchar(50),
-    superkey varchar(50),
-    dishnum varchar(50),
-    dishtype int,
+    orderid VARCHAR(50),
+    dishid VARCHAR(50),
+    primarykey VARCHAR(50),
+    superkey VARCHAR(50),
+    dishnum VARCHAR(50),
+    dishtype INT,
     orderprice DECIMAL(10, 2),
-    dishunit varchar(100)
-  ) ENGINE = MEMORY DEFAULT charset = utf8;
+    dishunit VARCHAR(100),
+    begintime VARCHAR(50),
+    pricetype VARCHAR(50),
+    debitamount VARCHAR(50)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   INSERT INTO t_temp_order_detail
     SELECT
@@ -8330,28 +8336,35 @@ BEGIN
       tod.dishnum,
       tod.dishtype,
       tod.orderprice,
-      tod.dishunit
+      tod.dishunit,
+      tod.begintime,
+      tod.pricetype,
+      tod.debitamount
     FROM t_order_detail tod,
          t_temp_order too
     WHERE tod.orderid = too.orderid;
 
-  #删除套餐中的明细
+  
   DELETE
     FROM t_temp_order_detail
   WHERE dishtype = '2' AND primarykey <> superkey;
 
-  #删除鱼锅名称
+  
   DELETE
     FROM t_temp_order_detail
   WHERE orderprice IS NULL;
 
   SELECT
+    DATE_FORMAT(tod.begintime,'%Y-%m-%d') AS currdate,
     too.orderid,
     too.userid,
     tbu.NAME,
     td.title,
+    tod.orderprice,
     tod.dishunit,
     td.dishid,
+    SUM(tod.pricetype = 1) AS present,
+    SUM(tod.dishnum*tod.orderprice<>tod.debitamount) AS discount,
     SUM(tod.dishnum) AS num,
     tod.dishtype
   FROM t_temp_order too,
@@ -8370,12 +8383,10 @@ BEGIN
            tod.dishunit,
            tod.dishtype
   LIMIT v_current_page, v_nums_page;
-END
-$$
+END$$
 
 DELIMITER ;
-
-DELIMITER $$
+--服务员销售统计表 end--
 
  DROP PROCEDURE IF EXISTS p_report_gzxxmxb$$
  CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxmxb`(IN  pi_branchid INT(11),
