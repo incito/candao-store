@@ -140,7 +140,6 @@
                     <include>**/*.properties</include>
                     <include>**/template/**</include>
                     <include>**/other/*</include>
-                    <include>**/nettyserver/*</include>
                     <include>**/template/**</include>
                 </includes>
             </resource>

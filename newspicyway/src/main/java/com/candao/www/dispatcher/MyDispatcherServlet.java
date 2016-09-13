@@ -11,7 +11,7 @@ import java.io.IOException;
 public class MyDispatcherServlet extends DispatcherServlet {
     @Override
     public void destroy() {
-        destroyNettyServer();
+//        destroyNettyServer();
         //为了防止netty服务tomcat stop时候异常
         System.out.println("#########关闭netty 连接#######");
         NettyService.off();
