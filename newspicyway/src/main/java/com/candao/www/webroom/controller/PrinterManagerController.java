@@ -429,12 +429,12 @@ public class PrinterManagerController {
 		mav.addObject(map);
 		return mav; 
 	}
-	
+
 	@RequestMapping("/addGroupDishes")
-	public ModelAndView  addGroupDishes(@RequestBody List<Map<String,Object>> list){
+	public ModelAndView  addGroupDishes(@RequestBody String printerid, List<Map<String,Object>> list){
 		ModelAndView mav = new ModelAndView();
 		Map<String, Object> map = new HashMap<String, Object>();
-		boolean a = printerManagerService.cleanDishGroup((String) list.get(0).get("printerid"));
+		boolean a = printerManagerService.cleanDishGroup(printerid);
 		if (a) {
 			map.put("messageDelete", "删除成功");
 		} else {
