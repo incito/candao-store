@@ -5,6 +5,24 @@ body{
 .print-content{
 	margin-top:20px;
 }
+
+.group-div b {
+	display: block;
+	position: absolute;
+	top:5px;
+	right:18px;
+	width: 13px;
+	height: 15px;
+	line-height: 10px;
+	text-align: center;
+	border-radius: 20px;
+	color: #c8c8c8;
+}
+.group-div b:hover {
+
+	background: #000;
+	cursor: pointer;
+}
 .print-detail-box{
 	margin:0 15px 0 15px;
 	display: inline-block;

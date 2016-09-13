@@ -128,14 +128,14 @@
 						}
 						var checked = "";
 						console.info(haveSelected);
-						if(haveSelected != null && haveSelected.length>0){
-							$.each(haveSelected, function(n, gift){
-								if(gift.dish == dishObj.dishid && gift.dish_title == dishObj.title && gift.unit==dishObj.unit){
-									checked = "checked";
-									return;
-								}
-							});
-						}
+//						if(haveSelected != null && haveSelected.length>0){
+//							$.each(haveSelected, function(n, gift){
+//								if(gift.dish == dishObj.dishid && gift.dish_title == dishObj.title && gift.unit==dishObj.unit){
+//									checked = "checked";
+//									return;
+//								}
+//							});
+//						}
 						console.log("here");
 						html += "<label class='checkbox-inline col-xs-3 checkbox-overflow' title='" + dishObj.title + "'> <input type='checkbox' id='dish_"
 								+checkboxId+"' value='"+dishObj.dishid+"' data-title='"+dishObj.title
@@ -200,6 +200,14 @@
 				}
 				generalDishTitle();
 			});
+
+
+			//选择默认菜品
+			if(haveSelected != null && haveSelected.length>0){
+				$.each(haveSelected, function(key,obj) {
+					$("input[value=" + obj.dish + "][unit=" + obj.unit + "]").click();
+				});
+			}
 
 			//绑定确定按钮
 			$("#dish-select-dialog #dish-select-confirm").click(function(){
