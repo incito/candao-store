@@ -4,16 +4,16 @@
 <mapper namespace="com.candao.www.dataserver.mapper.TableMapper">
     <update id="clearTable" parameterType="map">
         update t_table set status=0,orderid=''
-        where tableno=#{tableNo} and orderid=#{orderId}
+        where tableno=#{tableNo} and orderid=#{orderId} and status!=5
     </update>
     <update id="updaStatus0" parameterType="String">
         update t_table set status=0
-        where tableno=#{tableNo}
+        where tableno=#{tableNo} and status!=5
     </update>
     <!-- k咖啡模式 -->
     <update id="updaStatus1" parameterType="map">
         update t_table set orderid=#{orderId}
-        where tableid=#{tableId}
+        where tableid=#{tableId} and status!=5
     </update>
     <select id="getOrderIdByTableNo" resultType="java.lang.String">
        SELECT orderid FROM t_table b WHERE b.tableno =#{tableNo} LIMIT 0,1
