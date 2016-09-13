@@ -84,7 +84,7 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
              wwb = Workbook.createWorkbook(os);  
              WritableSheet sheet = wwb.createSheet("服务员销售统计表", 1);// 建立工作簿 
              // 写表头  
-             sheet.mergeCells(0, 0, 7, 0);
+             sheet.mergeCells(0, 0, 6, 0);
              sheet.setRowView(0, 1200);
              String title = ExcelUtils.setTabTitle("服务员销售统计表",params);
              jxl.write.Label labelTitle = new jxl.write.Label(0, 0, title);
