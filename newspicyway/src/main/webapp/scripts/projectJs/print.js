@@ -554,6 +554,14 @@ $(document).ready(function(){
 			clearGroup();
 		}
 	});
+
+	$('body').on('click','.group-div b',function(e){
+		var groupid = $(this).parents('.group-div').attr('groupid');
+		findGroupDishidMap.remove(groupid);
+		findGroupDishnameMap.remove(groupid);
+		reInitGroupDiv();
+		return false;
+	});
 	//绑定确定按钮
 	$("#printGroup-add-dialog #print-groupdishes-confirm").click(function(){
 		$("#print-groupdishes-add_tip").text("");
@@ -639,11 +647,11 @@ function reInitGroupDiv(){
 			var	groupdiv = $('<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="'+group+'">'
 					+'<button type="button" style="font-size: 13px;" class="btn btn-default selectBranch required " data-html="true" title=""'
 					+'ata-container=""  data-toggle="popover" data-placement="bottom" '
-					+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(group)+'</button></div>');
+					+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(group)+'</button><b>x</b></div>');
 			$(lastDiv).before(groupdiv);
 			var ul = $("<ul/>").addClass("storesDiv");
 			$.each(branchnames,function(i,item){
-				
+
 				ul.append("<li>"+item+"</li>");
 			});
 			var ileft = iwidth ="";
@@ -673,7 +681,7 @@ function showGroupDialog(obj){
 	$("#printGroup-add-dialog #group-radio-uncheck").attr("checked", false);
 	$("#printGroup-add-dialog").modal("show");
 	$("#printGroup-add-dialog #accordion").html("数据正在加载中......");
-	
+
 	var group = $(curGroupObjDiv).attr("groupid");
 	var curValues = findGroupDishidMap.get(group);
 	if(curValues!=null && curValues.length>0){
@@ -722,19 +730,19 @@ function showGroupDialog(obj){
 						$.each(obj,function(i,dishObj){
 							var checkboxId;
 							var checkboxContent;
-							
+
 								checkboxId = dishObj.dishid;
 								checkboxContent = dishObj.title;
 							html += "<label class='checkbox-inline col-xs-3'><input type='checkbox' id='gdish_"
 									+checkboxId+"' value='"+dishObj.dishid+"' data-title='"+dishObj.title
 									+"' code='"+dishObj.dishno+"'><span>"+substrControl(checkboxContent,12)+"</span></label>";
-							
+
 						});
 					}
 					html+=  "		</div>      "
 							+"	</div>      "
 							+"</div>      ";
-					}		
+					}
 				});
 			});
 			$("#printGroup-add-dialog #accordion").html(html);
@@ -743,7 +751,7 @@ function showGroupDialog(obj){
 		}else{
 			$("#printGroup-add-dialog #accordion").html("没有可选择的菜品");
 		}
-		
+
 		//在菜品分类绑定选择框点击事件
 		$(".panel").find("img").click(function(){
 			var panelCheckedStatus = $(this).attr("alt");
@@ -754,10 +762,10 @@ function showGroupDialog(obj){
 			$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
 			generalDishTitle("printGroup-add-dialog");
 			checkedBoxLength("#printGroup-add-dialog #group-count");
-			
+
 		});
-		
-		
+
+
 		$("#printGroup-add-dialog input[type='checkbox']").click(function(){
 			var selectedDish = parseInt($("#group-count").text());
 			if($(this).prop("checked")){
@@ -783,7 +791,7 @@ function showGroupDialog(obj){
 				$("#printGroup-add-dialog #group-radio-uncheck").attr("checked",false);
 				$("#printGroup-add-dialog #group-radio-check").attr("checked",false);
 			}
-			
+
 			generalDishTitle("printGroup-add-dialog");
 		});
 		var group = $(curGroupObjDiv).attr("groupid");
@@ -801,7 +809,7 @@ function showGroupDialog(obj){
 			$("#printGroup-add-dialog #group-radio-check").click();
 		}
 		checkedBoxLength("#printGroup-add-dialog #group-count");
-		
+
 	});
 }
 //-------------------------------------------------------------------------------------------------------
@@ -825,7 +833,7 @@ function editPrintBox(e){
 		dataType : "json",
 		success : function(result) {
 			$("#printerid").val(result.printerid);
-			
+
 			$("#printConfig-name").val(result.printername);
 			$("#print-bill").find("option[value="+result.printertype+"]").attr("selected",true);
 			printerBillChange(result.printertype);
@@ -853,9 +861,9 @@ function editPrintBox(e){
 				$.each( result.dishTypeslistTag, function(i,item){
 					dishTypeIdListTag.push(item.id);
 					getDishTypeslistTag.push(item.itemDesc);
-					
+
 				});
-				
+
 				$.each( result.tbPrinterDetailList, function(i,item){
 					if(findDishids.indexOf(item.dishid)==-1){
 						findDishids.push(item.dishid);
@@ -907,8 +915,8 @@ function editPrintBox(e){
 			if(!jQuery.isEmptyObject(findTableids)){
 //				$("#print-area-add").html(getAreaslistTag.join(","));
 				$("#print-area-add").text("已选中"+findTableids.length + "个餐台");
-				
-			}	
+
+			}
 			if(!jQuery.isEmptyObject(findDishids)){
 //				$("#print-dishes-add").html(getDishTypeslistTag.join(","));
 				$("#print-dishes-add").text("已选中"+findDishids.length + "个菜品");
@@ -917,7 +925,7 @@ function editPrintBox(e){
 	});
 	showSelectStoreDiv(findTablenames,"#div-print-area-add");
 	showSelectStoreDiv(findDishnames,"#div-print-dishes-add");
-	
+
 }
 function delPrintBox(e){
 	$("#printConfig-del-dialog").modal("show");
@@ -928,10 +936,10 @@ function clickFormAddPrintConfig(){
 	$.ajax({
 		type : "post",
 		async : false,
-		url: global_Path+"/printerManager/save.json",  
-		
+		url: global_Path+"/printerManager/save.json",
+
 		dataType : "json",
-		
+
 		data :{
 			printerid:$("#printerid").val(),
 			printername:$("#printConfig-name").val(),
@@ -940,7 +948,7 @@ function clickFormAddPrintConfig(){
 			port:$("#port").val(),
 			printerNo:$("#fontSize").val()
 		},
-		
+
 		success : function(result) {
 			$("#printerid").val(result.printerid);
 //			$.each(selectedAreas);
@@ -979,7 +987,7 @@ function clickFormAddPrintConfig(){
 				}
 					selectedDishs.push(d);
 			});
-			
+
 			//使用选择的菜品，构建一个显示在页面表单中的列表。
 			addDishesToPrinter(selectedDishs);
 			}
@@ -990,7 +998,7 @@ function clickFormAddPrintConfig(){
 			}
 			var text = $("#printConfig-name").val();
 			if(result.maessge=="添加成功"){
-				
+
 				var html = '<div id='+result.printerid+' class="print-detail-box" onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPrintBox(this)">';
 					html +='<p class="print-img"><img src="../images/print.png"></p>';
 					html += '<p id="printernameShow">'+substrControl(text,18)+'</p><i class="icon-remove hidden" onclick="delPrintBox(this)"></i></div>';
@@ -1003,7 +1011,7 @@ function clickFormAddPrintConfig(){
 
 	$("#printConfig-add-dialog").modal("hide");
 	/*alert("新增打印机或者修改打印机IP/端口后，需要重启门店服务。");*/
-	
+
 }
 function substrControl(dishTitle,titleLength){
 	dishTitleLength="";
@@ -1017,22 +1025,22 @@ function substrControl(dishTitle,titleLength){
 			return dishTitle.substr(0,i-1)+"...";
 		}
 	}
-	
-	
+
+
 }
 //中文字符判断
-function getStrLength(str) { 
-    var len = str.length; 
-    var reLen = 0; 
-    for (var i = 0; i < len; i++) {        
-        if (str.charCodeAt(i) < 27 || str.charCodeAt(i) > 126) { 
-            // 全角    
-            reLen += 2; 
-        } else { 
-            reLen++; 
-        } 
-    } 
-    return reLen;    
+function getStrLength(str) {
+    var len = str.length;
+    var reLen = 0;
+    for (var i = 0; i < len; i++) {
+        if (str.charCodeAt(i) < 27 || str.charCodeAt(i) > 126) {
+            // 全角
+            reLen += 2;
+        } else {
+            reLen++;
+        }
+    }
+    return reLen;
 }
 
 function addTablesToPrinter(selectedAreas){
@@ -1044,13 +1052,13 @@ function addTablesToPrinter(selectedAreas){
 		async:false,
 		url : global_Path+'/printerManager/addPrinterTables.json',
 		contentType:'application/json;charset=UTF-8',
-	    data:JSON.stringify(selectedAreas), 
+	    data:JSON.stringify(selectedAreas),
 		dataType : "json",
 		success : function(result) {
 		}
 	});
-	
-	
+
+
 	}
 }
 function addDishesToPrinter(selectedDishs){
@@ -1062,50 +1070,63 @@ function addDishesToPrinter(selectedDishs){
 		async:false,
 		url : global_Path+'/printerManager/addPrinterDishes.json',
 		contentType:'application/json;charset=UTF-8',
-	    data:JSON.stringify(selectedDishs), 
+	    data:JSON.stringify(selectedDishs),
 		dataType : "json",
 		success : function(result) {
 		}
 	});
-	
-	
+
+
 	}
 }
 //保存菜品组合
 function addGroupDishesToPrinter(){
+	var printerid = $("#printerid").val();
+	var list = {};
+	var groupdata = [];
 	if(findGroupDishidMap !=null && findGroupDishidMap.size()>0){
-		var printerid = $("#printerid").val();
 		var keys = findGroupDishidMap.keySet();
-		var list = [];
 		$.each(keys, function(i, key){
 			var dishid = findGroupDishidMap.get(key);
-			var obj = {
-					printerid: printerid,
-					groupsequence: key,
-					dishid: dishid
-			};
-			list.push(obj);
+			groupdata.push({
+				groupsequence: key,
+				dishid: dishid,
+				printerid: printerid
+			})
+
 		});
-		
-		$.ajax({
-			type:"post",
-			async:false,
-			url : global_Path+'/printerManager/addGroupDishes.json',
-			contentType:'application/json;charset=UTF-8',
-		    data:JSON.stringify(list), 
-			dataType : "json",
-			success : function(result) {
-			}
-		});
+		list = {
+			printerid: printerid,
+			groupdata:groupdata
+		};
+
+
+	} else {
+		list = {
+			printerid: printerid,
+			groupdata:groupdata
+		};
 	}
+
+
+	$.ajax({
+		type:"post",
+		async:false,
+		url : global_Path+'/printerManager/addGroupDishes.json',
+		contentType:'application/json;charset=UTF-8',
+		data:JSON.stringify(list),
+		dataType : "json",
+		success : function(result) {
+		}
+	});
 }
 /**
  * 生成菜品选择分类的显示内容
  */
 function generalDishTitle(addDialog){
-	
+
 	$.each( $("#"+addDialog+" #accordion").find(".panel"), function(i,panel){
-		
+
 		var dishs= $(this).find("input[type=checkbox]:checked");
 		if(dishs.length > 0){
 			if(dishs.length < $(this).find("input[type=checkbox]").length){
@@ -1125,7 +1146,7 @@ function generalDishTitle(addDialog){
 				if(i < dishs.length -1){
 					panelTitle +=",";
 				}
-				
+
 			});
 			panelTitle = "(" + panelTitle + ")";
 			if($(this).find("img").attr("alt")==1){
@@ -1133,21 +1154,21 @@ function generalDishTitle(addDialog){
 			}else{
 				$(this).find(".dish-label").html("");
 			}
-			
-			
+
+
 		} else {
 			$(this).find("img").attr("alt", "0");
 			$(this).find("img").attr("src", global_Path+ "/images/none_select.png");
 			//报错定位不准确，要控制变量
 			$(this).find(".dish-label").html("");
 		}
-		
+
 	});
-	
+
 
 }
 function dishLabelText(){
-	
+
 }
 function initPrinter(){
 	$("#printerid").val("");
@@ -1184,19 +1205,19 @@ function initPrinter(){
 	$("#print-groupdishes").addClass("hidden");
 	$(".error").text("");
 	$(".popover").remove();
-	
+
 }
 function getPrintBillTag(){
 	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},/*{'value':'3','printBillName':'预结单'},*/{'value':'4','printBillName':'前台退菜单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'},{'value':'10','printBillName':'POS单据'}];
-	
-	
-			$.each(result, function(i,val){  
-				
+
+
+			$.each(result, function(i,val){
+
 				$("#print-bill").append("<option value ="+val.value+"  class='form-control myInfo-select-addrW'>"+val.printBillName+"</option>");
 			});
 }
 function deletePrinter(){
-	
+
 		$.ajax({
 			type : "post",
 			async : false,
@@ -1208,7 +1229,7 @@ function deletePrinter(){
 		});
 }
 function printerBillChange(text){
-	
+
 	if(text =='1'){
 		$("#print-font").removeClass("hidden");
 		$("#print-area").removeClass("hidden");
@@ -1243,27 +1264,27 @@ function check_same_printerName(){
 		data:{
 			printerid:printerid,
 			printername:printername,
-		
+
 		},
 		url : global_Path+"/printerManager/validatePrinter.json",
 		dataType : "json",
 		success : function(result) {
 			if(result.messagePrintername=='打印机名称不能重复'){
-			
+
 			$("#printConfig-name_tip").text(result.messagePrintername);
 			$("#printConfig-name").focus();
-				
-			
+
+
 			flag=false;
-						
+
 			}
-					
-			
+
+
 		}
-			
+
 	});
 	return flag;
-} 
+}
 
 
 
@@ -1271,11 +1292,11 @@ function preLoad(names){
 	var html='';
 	$.each(names, function(i,item){
 		html += '<div class="tableOrdiah-detail-box"  >'+item+'</div>';
-		
+
 	});
-	
+
 	return html;
-	
+
 }
 function popoverLoadTable(){
 	return preLoad(findTablenames);
@@ -1295,20 +1316,20 @@ function checkedBoxLength(addDialog){
 		$(addDialog).parent().css("display","inline");
 		$(addDialog).text(findTDid.length);
 	}
-	
+
 }
 function f_check_IP(){
    var ip = document.getElementById('ipAddress').value;
-   var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;//正则表达式   
-   if(re.test(ip)||ip=="")   
-   {   
+   var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;//正则表达式
+   if(re.test(ip)||ip=="")
+   {
        if( RegExp.$1<256 && RegExp.$2<256 && RegExp.$3<256 && RegExp.$4<256||ip==""){
     	   return true;
-       } 
-          
-   }   
-  
-   return false;    
+       }
+
+   }
+
+   return false;
 }
 function findTableAndDish(addDialog){
 	var checkedtables=$(addDialog).find("input[type=checkbox]:checked");
@@ -1332,14 +1353,14 @@ function showSelectStoreDiv(branchnames,selectType){
 			$(selectType).find("div.popover").remove();
 			var ul = $("<ul/>").addClass("storesDiv");
 			$.each(branchnames,function(i,item){
-				
+
 				ul.append("<li>"+item+"</li>");
 			});
 			var ileft = iwidth ="";
 			if(branchnames.length >= 3){
 				iwidth = "460px";
 				ileft = "-155px";
-				
+
 			}
 			var div = $("<div>").addClass("popover fade bottom in").css({
 				width : iwidth,
@@ -1350,11 +1371,11 @@ function showSelectStoreDiv(branchnames,selectType){
 			$(selectType).append(div);
 			if(selectType=="#div-print-area-add"){
 				$("#print-area-add").text("已选中"+branchnames.length + "个餐台").addClass("selectBranch");
-				
+
 			}else if(selectType=="#div-print-dishes-add"){
 				$("#print-dishes-add").text("已选中"+branchnames.length + "个菜品").addClass("selectBranch");
 			}
-			
+
 		}else{
 			if(selectType=="#div-print-area-add"){
 				$("#print-area-add").html('<i class="icon-plus-sign"></i>');
@@ -1369,7 +1390,7 @@ function showSelectStoreDiv(branchnames,selectType){
 	}, function(){
 		$(this).find(".popover").hide();
 	});
-	
+
 }
 //鼠标停留按钮显示已选择div---菜品组合
 function showAllSelectStoreDivGroup(){
@@ -1387,11 +1408,11 @@ function showAllSelectStoreDivGroup(){
 				var	groupdiv = $('<div class="col-xs-2 group-div" style="text-align: left; margin: auto; width: 130px;padding-top: 5px;" groupid="'+key+'">'
 						+'<button type="button" style="font-size: 13px;" class="btn btn-default selectBranch required " data-html="true" title=""'
 						+'ata-container=""  data-toggle="popover" data-placement="bottom" '
-						+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(key)+'</button></div>');
+						+'ata-content="" onclick="showGroupDialog(this)">组合'+DX(key)+'</button><b>x</b></div>');
 				$(lastDiv).before(groupdiv);
 				var ul = $("<ul/>").addClass("storesDiv");
 				$.each(branchnames,function(i,item){
-					
+
 					ul.append("<li>"+item+"</li>");
 				});
 				var ileft = iwidth ="";
@@ -1414,7 +1435,7 @@ function showAllSelectStoreDivGroup(){
 	}, function(){
 		$(this).find(".popover").hide();
 	});
-	
+
 }
 //鼠标停留按钮显示已选择div---菜品组合
 function showSelectStoreDivGroup(branchnames){
@@ -1423,7 +1444,7 @@ function showSelectStoreDivGroup(branchnames){
 			$(curGroupObjDiv).find("div.popover").remove();
 			var ul = $("<ul/>").addClass("storesDiv");
 			$.each(branchnames,function(i,item){
-				
+
 				ul.append("<li>"+item+"</li>");
 			});
 			var ileft = iwidth ="";
@@ -1438,7 +1459,7 @@ function showSelectStoreDivGroup(branchnames){
 			}).append('<div class="arrow" style="left: 50%;"></div>');
 			div.append(ul);
 			$(curGroupObjDiv).append(div);
-			$(curGroupObjDiv).find("button").text("组合"+DX(group)).addClass("selectBranch");
+			$(curGroupObjDiv).find("button").html("组合"+DX(group)).addClass("selectBranch").next().html('<b>x</b>');
 			
 		}else{
 			if(group < groupid){

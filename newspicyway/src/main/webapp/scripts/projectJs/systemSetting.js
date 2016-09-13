@@ -495,7 +495,7 @@ $("#test").click(function(){
 	 */
 	$("#editGifts").click(function(){
 		$("#dish-select-dialog").load("loadDishSelect",function(){
-			console.info(haveSelected);
+			//console.info(haveSelected);
 		});
 		$("#dish-select-dialog").modal("show");
 	});

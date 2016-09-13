@@ -25,7 +25,9 @@ import org.springframework.util.StringUtils;
 import com.candao.common.utils.HttpUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TtemplateDishUnitlDao;
+import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TtemplateDishUnit;
 import com.candao.www.spring.SpringContext;
 
@@ -44,6 +46,9 @@ public class SyncService {
 
     @Autowired
     private TtemplateDishUnitlDao ttemplateDishUnitlDao;
+    
+    @Autowired
+	private TdishDao tdishDao;
 
     private final String COOKBOOK = "cookbook";
 
@@ -139,15 +144,26 @@ public class SyncService {
 						//套餐表不去除餐具信息
 						stmt.addBatch("DELETE FROM t_template_dishunit WHERE id NOT IN('DISHES_98')");
 					} else if ("t_dish".equalsIgnoreCase(entry.getKey())) {
-						//套餐表不去除餐具信息
+						//不去除餐具信息
 						stmt.addBatch("DELETE FROM t_dish WHERE dishid NOT IN('DISHES_98')");
 					} 
 					else {
 						stmt.addBatch("DELETE FROM " + entry.getKey());
 					}
 					String dml = createSql(entry.getKey(), entry.getValue(), connection);
-					if (StringUtils.hasText(dml))
+					if (StringUtils.hasText(dml)){
 						stmt.addBatch(dml);
+					}
+					//菜品的人气是门店本地数据，需要备份及恢复
+					if("t_dish".equalsIgnoreCase(entry.getKey())){
+						List<Tdish> findAllDish = tdishDao.findAllDish();
+						for (Tdish tdish : findAllDish) {
+							if(tdish.getOrderNum() != null){
+								String sql = "update t_dish set orderNum = " + Integer.parseInt(tdish.getOrderNum()) + " where dishid = '" + tdish.getDishid() + "';";
+								stmt.addBatch(sql);
+							}
+						}
+					}
 				}
 			}
             // 持久化
@@ -230,5 +246,5 @@ public class SyncService {
 
         return sbf.toString();
     }
-
+    
 }

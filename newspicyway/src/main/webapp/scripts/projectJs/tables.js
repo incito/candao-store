@@ -646,9 +646,12 @@ function save_table() {
 			if(printerHave!=""&&$("#tableid").val()==""){
 				addPrinterArea(printerHave);
 			}
-			var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
-			$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
-			console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+			if($("#editTitle2").text() === "添加餐台") {
+				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
+				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+				console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+			}
+
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
