@@ -27,4 +27,5 @@ public interface TorderDetailPreferentialDao {
 	public List<TorderDetailPreferential> getTorderDetailSbyOrderid(Map<String, Object> params);
 	
 	public BigDecimal  statisticALLDiscount(String orderid);
+	public <T, K, V> List<T> queryGiveprefer(String orderid); 
 }

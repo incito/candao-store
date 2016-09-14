@@ -1364,6 +1364,17 @@ public class PadInterfaceController {
 
 		return mav;
 	}
+	
+	@RequestMapping(value="/givePrefer",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView queryGiveprefer(@RequestBody String body){
+		ModelAndView mav = new ModelAndView();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		  List<Map<String, Object>> retuMap=torderDetailPreferentialService.queryGiveprefer((String) params.get("orderId"));
+		  mav.addObject(ReturnMap.getSuccessMap(retuMap));
+		return mav;
+	}
 
 	/**
 	 * 删除使用优惠（根据订单号以及消费的ID删除使用优惠）
