@@ -36,7 +36,7 @@ public class NormalDishListener extends AbstractQueueListener {
         // 单号
         billName = billName + "(" + object.getPrintName() + ")";
         if (billName.contains("退菜单")) {
-            billName = "===" + StringUtils.bSubstring2(billName, billName.length()) + "===";
+            billName = "==" + StringUtils.bSubstring2(billName, billName.length()) + "==";
         } else {
             billName = StringUtils.bSubstring2(billName, billName.length());
         }
