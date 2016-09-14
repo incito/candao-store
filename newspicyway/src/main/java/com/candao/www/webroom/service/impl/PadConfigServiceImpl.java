@@ -25,6 +25,8 @@ public class PadConfigServiceImpl  implements PadConfigService{
 	private TbDataDictionaryDao tbDataDictionaryDao;
     @Autowired
 	private WeixinDao weixinDao;
+	@Autowired
+	private SystemServiceImpl systemServiceImpl;
 
 	private final String PADIMG="PADIMG";
 	
@@ -43,27 +45,18 @@ public class PadConfigServiceImpl  implements PadConfigService{
 	public PadConfig getconfiginfos() {
 		PadConfig  padConfig=new PadConfig();
 		padConfig=padConfigDao.getconfiginfos();
-		List<Map<String, Object>>   maps=tbDataDictionaryDao.getDicListByType(PADIMG);
+		List<Map<String, Object>>   maps = systemServiceImpl.getImgByType(PADIMG);
 		String urlprexx=PropertiesUtils.getValue(FASTDFSURL);
 		if(maps!=null && maps.size()>0){
-			//找出最新的图
-			int logoMaxIndex = 0;
-			int  backgroudMaxIndex = 0;
 			for(Map<String, Object> map:maps){
 				String itemid=getValue(map, "itemid");
 				String value = getValue(map, "itemValue");
-				int sort = map.get("chargesstatus") == null ? 0 : Integer.parseInt((String) map.get("chargesstatus"));
-				
-				if("1".equals(itemid) && sort > logoMaxIndex){//logo图片
-					logoMaxIndex = sort;
+				if("1".equals(itemid)){//logo图片
 					padConfig.setLogourl(urlprexx+value);
-				}else if ("2".equals(itemid) && sort > backgroudMaxIndex) {//背景图片
-					backgroudMaxIndex = sort;
+				}else if ("2".equals(itemid)) {//背景图片
 					padConfig.setBackgroudurl(urlprexx+value);
 				}
 			}
-
-
 		}
 		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null&& !"".equals(padConfig.getSeatimageurls())&& !"".equals(padConfig.getSeatimagenames())){
 			

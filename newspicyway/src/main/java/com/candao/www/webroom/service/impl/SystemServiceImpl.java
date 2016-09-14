@@ -345,8 +345,39 @@ public class SystemServiceImpl {
 	 * @return
 	 */
 	public List<Map<String, Object>> getImgByType(String type){
-		List<Map<String, Object>> infoList = tbDataDictionaryDao.getDicListByType(type);
-		return infoList;
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> maps = tbDataDictionaryDao.getDicListByType(type);
+		if(maps!=null && maps.size()>0){
+			//找出最新图的索引
+			int logoMaxIndex = 0;
+			int  backgroudMaxIndex = 0;
+			for(Map<String, Object> map:maps){
+				String itemid=getValue(map, "itemid");
+				int sort = map.get("chargesstatus") == null ? 0 : Integer.parseInt((String) map.get("chargesstatus"));
+				
+				if("1".equals(itemid) && sort > logoMaxIndex){//logo图片
+					logoMaxIndex = sort;
+				}else if ("2".equals(itemid) && sort > backgroudMaxIndex) {//背景图片
+					backgroudMaxIndex = sort;
+				}
+			}
+			//只取有效的返回给PAD和后台页面
+			for (Map<String, Object> map : maps) {
+				String itemid=getValue(map, "itemid");
+				int sort = map.get("chargesstatus") == null ? 0 : Integer.parseInt((String) map.get("chargesstatus"));
+				if("1".equals(itemid) && sort == logoMaxIndex){//logo图片
+					list.add(map);
+				}else if ("2".equals(itemid) && sort == backgroudMaxIndex) {//背景图片
+					list.add(map);
+				}
+			}
+		}
+		return list;
+	}
+
+	private String getValue(Map<String, Object> map,String key){
+		if(map==null){return "";}
+		return map.get(key).toString();
 	}
 	
 	/**
