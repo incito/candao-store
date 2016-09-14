@@ -102,7 +102,7 @@
 	
 	<select id="queryGiveprefer" parameterType="map" resultType="java.util.HashMap">
 			SELECT
-			COUNT(id) AS conut,
+			COUNT(id) AS count,
 			top.dishid
 		FROM
 			t_order_detail_preferential AS top
