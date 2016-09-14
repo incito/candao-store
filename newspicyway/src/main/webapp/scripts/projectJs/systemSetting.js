@@ -908,6 +908,14 @@ function doGetPadData(){
 					});
 			}
 
+			//设置logo和pad背景图
+			if(data.backgroudurl !== null && data.backgroudurl !== ''){
+				$("#def_background").attr("src",data.backgroudurl);
+			}
+			if(data.logourl !== null && data.logourl !== ''){
+				$("#defaultlogo").attr("src",data.logourl);
+			}
+
 			//会员设置
 			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
 			$('select[name=viptype]').val(data.viptype);
@@ -1386,23 +1394,24 @@ function initData(data, type){
 	}
 	
 	if(type == null){
-		var imgs = data.PADIMG;
-		var logoImg;
-		var bgImg;
-		$(imgs).each(function(){
-			if(this.itemid == 1){
-				logoImg = this;
-			}
-			if(this.itemid == 2){
-				bgImg = this;
-			}
-			if(logoImg != null){
-				$("#defaultlogo").attr("src",img_Path + logoImg.item_value);
-			}
-			if(bgImg != null){
-				$("#def_background").attr("src",img_Path + bgImg.item_value);
-			}
-		});
+		//console.log();
+		//var imgs = data.PADIMG;
+		//var logoImg;
+		//var bgImg;
+		//$(imgs).each(function(){
+		//	if(this.itemid == 1){
+		//		logoImg = this;
+		//	}
+		//	if(this.itemid == 2){
+		//		bgImg = this;
+		//	}
+		//	if(logoImg != null){
+		//		$("#defaultlogo").attr("src",img_Path + logoImg.item_value);
+		//	}
+		//	if(bgImg != null){
+		//		$("#def_background").attr("src",img_Path + bgImg.item_value);
+		//	}
+		//});
 		
 		//一页菜谱显示
 		//var   onepaytypes=data.ONEPAGETYPE;
