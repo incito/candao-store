@@ -46,14 +46,24 @@ public class PadConfigServiceImpl  implements PadConfigService{
 		List<Map<String, Object>>   maps=tbDataDictionaryDao.getDicListByType(PADIMG);
 		String urlprexx=PropertiesUtils.getValue(FASTDFSURL);
 		if(maps!=null && maps.size()>0){
+			//找出最新的图
+			int logoMaxIndex = 0;
+			int  backgroudMaxIndex = 0;
 			for(Map<String, Object> map:maps){
-						String itemid=getValue(map, "itemid");
-						if("1".equals(itemid)){//logo图片
-							padConfig.setLogourl(urlprexx+getValue(map, "itemValue"));
-						}else if ("2".equals(itemid)) {//背景图片
-							padConfig.setBackgroudurl(urlprexx+getValue(map, "itemValue"));
-						}
+				String itemid=getValue(map, "itemid");
+				String value = getValue(map, "itemValue");
+				int sort = map.get("chargesstatus") == null ? 0 : Integer.parseInt((String) map.get("chargesstatus"));
+				
+				if("1".equals(itemid) && sort > logoMaxIndex){//logo图片
+					logoMaxIndex = sort;
+					padConfig.setLogourl(urlprexx+value);
+				}else if ("2".equals(itemid) && sort > backgroudMaxIndex) {//背景图片
+					backgroudMaxIndex = sort;
+					padConfig.setBackgroudurl(urlprexx+value);
+				}
 			}
+
+
 		}
 		if(padConfig.getSeatimageurls()!=null && padConfig.getSeatimagenames()!=null&& !"".equals(padConfig.getSeatimageurls())&& !"".equals(padConfig.getSeatimagenames())){
 			
