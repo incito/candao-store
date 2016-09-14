@@ -89,7 +89,7 @@ footer{
   	margin-top: 10%;
 }
 .confirm-dialog .modal-content{
-	background: #EAE9E6;
+/*	background: #EAE9E6;*/
 }
 .confirm-dialog .modal-body {
   	background: #EAE9E6;
@@ -449,15 +449,10 @@ footer{
 	display: inline-block;
 }
 
-
-
 .default-dialog .modal-dialog{
 	width: 600px;
   	height: auto;
-  	margin: 100px auto;
-}
-.default-dialog .modal-content{
-	background: #EAE9E6;
+  	margin: 50px auto;
 }
 .default-dialog .modal-body {
   	background: #EAE9E6;

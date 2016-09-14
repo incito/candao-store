@@ -362,8 +362,7 @@
 		</div-->
 		<div class="setup_div">
 			<div style="height: 30px;">
-				<div class="system-setup-title" style="">零头处理方式</div>
-				<br>&nbsp;&nbsp;&nbsp;&nbsp;<font color="red" size="1">(编辑保存后需重启POS方能生效)</font>
+				<div class="system-setup-title" style="">零头处理方式&nbsp;&nbsp;&nbsp;&nbsp;<font color="red" size="1">(编辑保存后需重启POS方能生效)</font></div>
 					<button type="button" id="editRounding" class="btn btn-default">编辑</button>
 					<button type="button" id="saveRounding"
 						class="btn btn-default hide">保存</button>

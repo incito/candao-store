@@ -89,7 +89,7 @@
 							</div>
 						</div>
 						<div class="main-div">
-							<div class="dish-type">
+							<div class="form-group dish-type">
 								<div class="nav-type-prev nav-dishtype-prev">
 									<span class="glyphicon glyphicon-chevron-left"></span>
 								</div>
@@ -98,40 +98,40 @@
 									<span class="glyphicon glyphicon-chevron-right"></span>
 								</div>
 							</div>
-							<div class="search-btns">
-								<div>A</div>
-								<div>B</div>
-								<div>C</div>
-								<div>D</div>
-								<div>E</div>
-								<div>F</div>
-								<div>G</div>
-								<div>H</div>
-								<div>I</div>
-								<div>J</div>
-								<div>K</div>
-								<div>L</div>
-								<div>M</div>
-								<div>N</div>
-								<div>O</div>
-								<div>P</div>
-								<div>Q</div>
-								<div>R</div>
-								<div>S</div>
-								<div>T</div>
-								<div>U</div>
-								<div>V</div>
-								<div>W</div>
-								<div>X</div>
-								<div>Y</div>
-								<div>Z</div>
+							<div class="form-group search-btns">
+								<div class="search-btn">A</div>
+								<div class="search-btn">B</div>
+								<div class="search-btn">C</div>
+								<div class="search-btn">D</div>
+								<div class="search-btn">E</div>
+								<div class="search-btn">F</div>
+								<div class="search-btn">G</div>
+								<div class="search-btn">H</div>
+								<div class="search-btn">I</div>
+								<div class="search-btn">J</div>
+								<div class="search-btn">K</div>
+								<div class="search-btn">L</div>
+								<div class="search-btn">M</div>
+								<div class="search-btn">N</div>
+								<div class="search-btn">O</div>
+								<div class="search-btn">P</div>
+								<div class="search-btn">Q</div>
+								<div class="search-btn">R</div>
+								<div class="search-btn">S</div>
+								<div class="search-btn">T</div>
+								<div class="search-btn">U</div>
+								<div class="search-btn">V</div>
+								<div class="search-btn">W</div>
+								<div class="search-btn">X</div>
+								<div class="search-btn">Y</div>
+								<div class="search-btn">Z</div>
 							</div>
-							<div class="search">
+							<div class="form-group search">
 								<span class="glyphicon glyphicon-search"></span> <input
-									type="search" class="form-control" placeholder="输入菜品名">
+									type="search" class="form-control" placeholder="输入菜品首字母">
 								<div class="delsearch-btn">C</div>
 							</div>
-							<div class="dishes">
+							<div class="form-group dishes">
 								<div class="dishes-content"></div>
 								<div class="page-btns">
 									<div class="page-btn prev-btn">
@@ -146,7 +146,8 @@
 								</div>
 							</div>
 							<div class="main-oper-btns">
-								<button class="btn disabled" onclick="giveFood()">赠菜</button>
+								<button class="btn disabled gua-dan hide" onclick="guadan()">挂单</button>
+								<button class="btn disabled give-dish" onclick="giveFood()">赠菜</button>
 								<button class="btn disabled" onclick="allNote()">全单备注</button>
 								<button class="btn disabled" onclick="clearSelected()">清空</button>
 								<button class="btn disabled place-order" onclick="placeOrder()">下单</button>
@@ -290,6 +291,58 @@
 	        </div>
 	    </div>
 	</div>
+	<!--挂单 -->
+	<div class="modal fade in default-dialog guadan-dialog" data-backdrop="static" id="guadan-dialog">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title" style="text-align: center;">挂单</div>
+	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('guadan-dialog')" >
+	            </div>
+	            <div class="modal-body">
+	            	<div style=" display: inline-block;width: 100%;">
+		            	<div class="col-xs-6" style="padding: 0;">
+		            		<div class="form-group" style="display: inline-block;">
+		            			<span class="inpt-span">订餐单位:</span>
+		            			<input type="text" class="form-control" style="width: 80%; display: inline-block;">
+		            			<button class="btn sel-btn" onclick="selPayCompany()">选择</button>
+		            		</div>
+		            		<div class="form-group">
+		            			<span class="inpt-span">联系人:</span>
+		            			<input type="text" class="form-control">
+		            		</div>
+		            		<div class="form-group">
+		            			<span class="inpt-span">联系电话:</span>
+		            			<input type="text" class="form-control">
+		            		</div>
+		            		<div class="btn-operate ">
+			                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('guadan-dialog')" >取消
+			                    </button>
+			                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认挂单
+			                    </button>
+	                		</div>
+		            	</div>
+		            	<div class="col-xs-6" style="float: right; padding: 0 11px;">
+		            		<div class="virtual-keyboard">
+								<ul>
+									<li>1</li><li>2</li><li>3</li>
+								</ul>
+								<ul>
+									<li>4</li><li>5</li><li>6</li>
+								</ul>
+								<ul>
+									<li>7</li><li>8</li><li>9</li>
+								</ul>
+								<ul>
+									<li>.</li><li>0</li><li>←</li>
+								</ul>
+							</div>
+		            	</div>
+		            </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 	 <!-- 赠菜 -->
 	 <div class="modal fade default-dialog in " id="givefood-dialog"
 	     data-backdrop="static">
@@ -333,7 +386,7 @@
 	            	<div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearReasonInput()">清空
 	                    </button>
-	                    <div style="float: right;">
+	                    <div style="text-align: right;">
 	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('reasoninput-dialog')">取消
 		                    </button>
 		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeReason()">确认
@@ -495,14 +548,18 @@
 	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('noteinput-dialog')">
 	            </div>
 	            <div class="modal-body">
-	            	<input type="hidden" id="type" value="">
-	            	<div class="fl ">其他忌口：</div>
-	            	<div class="fr">还可以输入<span id="note-count">20</span>字</div>
-	            	<textarea class="form-control" maxlength="20" rows="5" cols="80" id="note-inp" onkeyup="changeCount()"></textarea>
+	            	<div class="form-group">
+		            	<input type="hidden" id="type" value="">
+		            	<div class="fl ">其他忌口：</div>
+		            	<div class="fr">还可以输入<span id="note-count">20</span>字</div>
+	            	</div>
+	            	<div class="form-group">
+	            		<textarea class="form-control" maxlength="20" rows="5" cols="80" id="note-inp" onkeyup="changeCount()"></textarea>
+	            	</div>
 	            	<div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearNoteInput()">清空
 	                    </button>
-	                    <div style="float: right;">
+	                    <div style="text-align: right;">
 	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('noteinput-dialog')">取消
 		                    </button>
 		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeNote()">确认

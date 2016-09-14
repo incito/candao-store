@@ -231,7 +231,7 @@ public class BusinessServiceImpl implements BusinessService {
         String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate, userId);
         float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
         // 不计收入合计
-        float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat+removeMoneyFloat;
+        float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat+removeMoneyFloat*2;
         clearMachineMapper.insert(userId, insertDate);
         settlementDetailMapper.setClear(userId, insertDate);
         tellerCashMapper.updateStatus(ip, userId);

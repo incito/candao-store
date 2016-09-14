@@ -2,7 +2,6 @@ html{
 	overflow: auto;
 }
 .content{
-	height: 400px;
   	width: 100%;
   	margin: auto auto;
   	padding: 8px;
@@ -156,12 +155,12 @@ html{
 .page .next-btn{
 	margin-left: 12px;
 }
-.page .page-btn:hover{
+.page .page-btn:hover, .J-takeout-dialog .take-out-list li:hover, .foot-menu ul li:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #fff;
 }
-.page .page-btn:active{
+.page .page-btn:active, .J-takeout-dialog .take-out-list li:active, .foot-menu ul li:active{
 	background: #FF5803;
 	opacity: 1;
 	color: #fff;
@@ -179,16 +178,6 @@ html{
 	box-shadow: 0px 1px 0px 0px #CFCFCF;
 	border-radius: 3px;
 	cursor: pointer;
-}
-.foot-menu ul li:hover{
-	background: #F68D70;
-	opacity: 0.5;
-	color: #fff;
-}
-.foot-menu ul li:active{
-	background: #FF5803;
-	opacity: 1;
-	color: #fff;
 }
 footer{
 	height: 115px;
@@ -208,6 +197,26 @@ footer .info{
 	width: 1041px; 
 	height: 768px; 
 	padding: 0;
-	margin: 50px auto auto; 
+	margin: 30px auto auto; 
 	overflow: hidden;
+}
+.main-dialog .modal-content{
+	height: 100%;
+}
+.J-takeout-dialog .take-out-list{
+	padding: 0;
+}
+.J-takeout-dialog .take-out-list li{
+	list-style: none;
+  	display: inline-block;
+  	width: 100px;
+  	text-align: center;
+  	height: 45px;
+  	padding-top: 12px;
+  	background: #FFFFFF;
+  	border-radius: 4px;
+}
+.J-takeout-dialog .take-out-list li.active{
+	background: #FF5803;
+	color: #fff;
 }
