@@ -180,7 +180,12 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				// 菜品对应个数
 				Map<String, Integer> dishForDishNum = new HashMap<>();
 				for (int i = 0; i < preALLDishId.length; i++) {
-					dishForDishNum.put(preALLDishId[i], Integer.valueOf(preDishNum[i]));
+					if(dishForDishNum.containsKey(preALLDishId[i])){
+						dishForDishNum.put(preALLDishId[i], dishForDishNum.get(preALLDishId[i])+Integer.valueOf(preDishNum[i]));
+					}else{
+						dishForDishNum.put(preALLDishId[i], Integer.valueOf(preDishNum[i]));
+					}
+					
 				}
 
 				for (String dishId : dishForDishNum.keySet()) {
