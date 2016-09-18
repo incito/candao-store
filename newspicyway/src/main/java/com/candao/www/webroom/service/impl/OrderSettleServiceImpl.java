@@ -500,9 +500,11 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			if (againSettleNums == null || againSettleNums.equals("0")) {
 				// 插入反结算 主记录，先判断是否有会员消费虚增
 				Double inflated = settlementMapper.getMemberInflated(orderId);
-				settlementMapper.insertSettlementHistory(orderId,
-						settlementInfo.getReason(), 1,
-						userInfo.get("name")+"("+settlementInfo.getUserName()+")", inflated);
+//				inflated= inflated==null?0:inflated;
+					settlementMapper.insertSettlementHistory(orderId,
+							settlementInfo.getReason(), 1,
+							userInfo.get("name")+"("+settlementInfo.getUserName()+")", inflated);
+		
 			} else {
 				// 如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
 				int nums = Integer.parseInt(againSettleNums) + 1;
