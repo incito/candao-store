@@ -89,6 +89,8 @@ public class OrderServiceImpl implements OrderService {
     DataDictionaryService dataDictionaryService;
     @Autowired
     private OrderMapper orderMapper;
+	@Autowired
+	private TorderDetailPreferentialService torderDetailPreferentialService;
 
     @Override
     public int saveOrder(Torder order) {
@@ -363,6 +365,12 @@ public class OrderServiceImpl implements OrderService {
 
             // 开台前清空当前台的操作日记
             toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());
+            //删除优惠的脏数据
+			Map<String, Object> params=new HashMap<>();
+			params.put("orderid", orderId);
+			params.put("clear", "1");
+			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+			
             mapRet = ReturnMap.getSuccessMap(result);
         return JacksonJsonMapper.objectToJson(mapRet);
     }

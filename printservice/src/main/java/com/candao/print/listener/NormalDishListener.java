@@ -36,7 +36,7 @@ public class NormalDishListener extends AbstractQueueListener {
         // 单号
         billName = billName + "(" + object.getPrintName() + ")";
         if (billName.contains("退菜单")) {
-            billName = "===" + StringUtils.bSubstring2(billName, billName.length()) + "===";
+            billName = "==" + StringUtils.bSubstring2(billName, billName.length()) + "==";
         } else {
             billName = StringUtils.bSubstring2(billName, billName.length());
         }
@@ -136,6 +136,19 @@ public class NormalDishListener extends AbstractQueueListener {
         for (PrintDish it : object.getpDish()) {
             it.setDishName(StringUtils.split2(it.getDishName(), "#"));
             it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
+            //忌口国际化，厨打单只打中文
+            String newSperequire = "";
+            String sperequire = it.getSperequire();
+            String[] split = sperequire.split(";");
+            for (String spe : split) {
+            	newSperequire += StringUtils.split2(spe, "#") + ";";
+			}
+            if(!newSperequire.isEmpty()){
+            	newSperequire = newSperequire.substring(0, newSperequire.length() - 1);
+            }else{
+            	newSperequire = sperequire;
+            }
+			it.setSperequire(newSperequire);
         }
 
 
