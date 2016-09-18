@@ -317,11 +317,18 @@
 			</ul>
 			<div class="page"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
 		</div>
+		<div class="form-group amount-div">
+			<span class="highlight-color">总金额：</span><span class="highlight-color">1360.999</span>
+			<span>&nbsp;&nbsp;已结金额：</span><span>1360.999</span>
+			<span>&nbsp;&nbsp;未结金额：</span><span>0</span>
+			<span>&nbsp;&nbsp;人数：</span><span>100</span>
+			<span>&nbsp;&nbsp;已结单数：</span><span>100</span>
+		</div>
 		<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 	</footer>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 	</div>
-	<div class="modal fade in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
+	<div class="modal in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
 	</div>
 	<!-- 提示用dialog -->
 	<div class="modal fade dialog-sm confirm-dialog in" id="tips-dialog"

@@ -254,10 +254,15 @@ html{
   	box-shadow: none;
 }
 footer{
-	height: 115px;
+	height: auto;
 }
 .footer-min {
 	height: 25px;
+}
+footer .amount-div{
+	padding: 10px;
+  	height: 40px;
+  	margin-bottom: 5px;
 }
 footer .info{
 	float: left;
@@ -266,6 +271,7 @@ footer .info{
   	font-size: 10px;
   	color: #B5B5B5;
   	padding-top: 5px;
+  	background: #FFFFFF;
 }
 .main-dialog .main-modal-dialog{
 	width: 1041px; 
