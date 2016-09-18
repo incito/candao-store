@@ -7,7 +7,6 @@
 html, body{
 	height: 100%;
 	overflow: hidden;
-/*	font-family: 微软雅黑;*/
 	background: #E8E8E8;
 	min-width: 1024px;
 /*	width: 1026px;
@@ -62,7 +61,6 @@ footer{
 	width: 100%;
 	bottom: 0px;
 	min-width: 1024px;
-/*	background: #FFFFFF;*/
 }
 .dialog-sm-header {
   	background-color: #FF5803;
@@ -92,7 +90,7 @@ footer{
   	margin-top: 10%;
 }
 .confirm-dialog .modal-content{
-/*	background: #EAE9E6;*/
+
 }
 .confirm-dialog .modal-body {
   	background: #EAE9E6;
