@@ -723,7 +723,8 @@
 	, customerprinterip
 	, customerprinterport
 	, tableArea,
-	tableid)
+	tableid
+	,custnum)
 
 	VALUES (
 	#{id}
@@ -736,6 +737,7 @@
 	,#{customerPrinterPort}
 	,#{tableArea}
 	,#{tableid}
+	,#{custnum}
 	)
 </insert>
     <update id="updateTimemsg" parameterType="Map">

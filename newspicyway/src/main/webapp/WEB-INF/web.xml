@@ -11,6 +11,7 @@
             classpath:branch.xml,
             classpath:branchmq.xml,
             classpath:ApplicationContext-service.xml
+        <!--     classpath:spring-context-payment.xml -->
         </param-value>
     </context-param>
 

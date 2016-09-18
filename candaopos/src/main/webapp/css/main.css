@@ -7,7 +7,9 @@ html{
   	padding: 8px;
 }
 .exit-sys{
-	cursor: pointer;
+	position: absolute;
+  	right: 10px;
+  	cursor: pointer;
 }
 .menu-top div{
 	display: inline-block;
@@ -15,32 +17,75 @@ html{
 	font-size: 18px;
 	cursor: pointer;
 }
-.tab-div{
-	height: 60px;
-  	position: relative;
-  	background: #ffffff;
+.menu-tab{
+	position: absolute;
+	width: 100%;
+	height: 100%;
 }
-.tab-div ul{
-	width: 400px;
-    margin: auto auto;
-    padding-bottom: 4px;
-    list-style: none;
-}
-.tab-div ul li{
-	width: 70px;
-  	float: left;
-  	height: 100%;
-  	text-align: center;
-  	padding: 12px 0;
-  	font-size: 20px;
-  	color: #111111;
-  	margin: 0 40px;
+.menu-tab ul{
+	list-style: none;
+  	margin: 10px auto;
+  	border-radius: 6px;
+  	border: 1px solid #F9EFE1;
+  	width: 300px;
+  	height: 42px;
+  	margin-top: 10px;
+  	padding: 0;
+  	line-height: 2;
+  	color: #F9EFE1;
   	cursor: pointer;
 }
-.tab-div ul li.active{
+.menu-tab ul li{
+  	display: inline-block;
+  	width: 50%;
+}
+.menu-tab ul li.active{
+	background: #FFFFFF;
 	color: #FF5803;
-	border-bottom: 3px solid #FF5803;
-	font-size: 22px;
+}
+.rooms-type{
+	height: 60px;
+  	background: #FFFFFF;
+  	padding: 10px 5px;
+}
+.rooms-type .nav-type-btn{
+	float: left;
+	width: 2%;
+	text-align: center;
+	padding-top: 8px;
+	cursor: pointer;
+}
+.rooms-type .nav-type-next{
+	float: right;
+}
+.rooms-type .nav-types{
+	white-space: nowrap;
+  	overflow: hidden;
+  	display: inline-block;
+  	padding: 0;
+  	margin: 0;
+  	height: 35px;
+  	width: 96%;
+  	float: left;
+}
+.rooms-type .nav-types li{
+	margin: 0 1%;
+  	font-weight: bold;
+  	position: relative;
+  	list-style: none;
+  	float: left;
+  	width: 8%;
+  	height: 100%;
+  	text-align: center;
+  	padding: 8px 2px;
+  	font-size: 14px;
+  	color: #111111;
+  	cursor: pointer;
+}
+.rooms-type .nav-types li.active{
+	border: 1px solid #FF5803;
+	border-radius: 20px;
+	color: #FF5803;
 }
 .content ul{
 	list-style: none;
@@ -51,11 +96,11 @@ html{
 	float: left;
 	margin: 2px;
 	width: 12%;
-	height: 64px;
+	height: 75px;
 	text-align: center;
-  	font-size: 20px;
+  	font-size: 24px;
   	font-weight: bold;
-  	padding: 12px 0;
+  	padding: 16px 0;
 	position: relative;
 	color: #FF5803;
 }
@@ -70,10 +115,10 @@ html{
   	color: #A8A8A8;
 }
 .content ul li.opened{
-	background: #FFA87C;
+	background: #FF5803;
 	box-shadow: 0px 1px 0px 0px #C64300;
 	border-radius: 3px;
-	color: #000000;
+	color: #FFFFFF;
 }
 .content ul li.reserved{
 	background: #CBCBCB;
@@ -88,48 +133,60 @@ html{
   	color: #515356;
 }
 .content ul li.opened .tb-info{
-  	color: #000000;
+  	color: #FFFFFF;
+  	opacity: 0.7;
 }
 .content ul li.reserved .tb-info{
   	color: #FFFFFF;
 }
 .content ul li .tb-status{
   	top: 5px;
-  	right: 5px;
+  	right: 8px;
 }
 .content ul li .meal-time{
-  	left: 4px;
+  	left: 8px;
   	bottom: 3px;
 }
 .content ul li .tb-person{
-  	right: 5px;
+  	right: 8px;
   	bottom: 3px;
 }
 .table-nums{
 	height: 40px;
-	width: 100%;
-	padding: 2px 0;
-	font-size: 16px;
-	color: #000000;
-	background: #E8E8E8;
+  	width: 100%;
+  	font-size: 14px;
+  	color: #000000;
+  	background: #E8E8E8;
+  	display: inline-block;
+  	padding: 5px 8px;
 }
-.table-nums span{
-	margin-left: 20px;
+.table-nums div{
+	display: inline-block;
+  	height: 30px;
+  	width: 100px;
+  	text-align: center;
+  	background: #FFFFFF;
+  	padding-top: 5px;
+  	border-radius: 4px;
+  	margin: 0 2px;
+  	cursor: pointer;
 }
-.table-nums .free-num{
-	color: #FF5803;
+.table-nums div.active{
+	background: #FF5803;
+	color: #FFFFFF;
 }
 .foot-menu{
 	height: 50px;
 	width: 100%;
   	background: #E8E8E8;
 }
-.foot-menu ul{
+.foot-menu>ul{
 	list-style: none;
 	padding: 0 8px;
   	margin: 0;
   	float: left;
   	display: inline-table;
+  	position: relative;
 }
 .foot-menu .page{
   	float: right;
@@ -178,6 +235,23 @@ html{
 	box-shadow: 0px 1px 0px 0px #CFCFCF;
 	border-radius: 3px;
 	cursor: pointer;
+}
+.m-member.popover{
+	bottom: 50px;
+  	right: 108px;
+  	width: 110px;
+  	background: #FFFFFF;
+  	left: auto;
+  	top: auto;
+}
+.m-member.popover>ul{
+	padding: 0;
+	list-style: none;
+}
+.m-member.popover>ul>li{
+	margin: 2px 2px;
+  	width: 102px;
+  	box-shadow: none;
 }
 footer{
 	height: 115px;
