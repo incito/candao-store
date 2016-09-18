@@ -328,7 +328,7 @@
 	</footer>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 	</div>
-	<div class="modal fade in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
+	<div class="modal in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
 	</div>
 	<!-- 提示用dialog -->
 	<div class="modal fade dialog-sm confirm-dialog in" id="tips-dialog"
