@@ -54,12 +54,15 @@ article{
   	text-align: center;
   	margin: 40px 0px 0px;
 }
+.highlight-color{
+	color: #FF5803;
+}
 footer{
 	position: fixed;
 	width: 100%;
 	bottom: 0px;
 	min-width: 1024px;
-	background: #FFFFFF;
+/*	background: #FFFFFF;*/
 }
 .dialog-sm-header {
   	background-color: #FF5803;
