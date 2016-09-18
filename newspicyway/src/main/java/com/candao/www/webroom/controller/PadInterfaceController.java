@@ -89,6 +89,17 @@ public class PadInterfaceController {
 	// 屏蔽礼物
 	private final String NO_GIFT = "0";
 
+
+	@RequestMapping("/consumInfo")
+	@ResponseBody
+	public String consumInfo(){
+		try {
+			return orderService.consumInfo();
+		}catch (Exception e){
+			logger.error("--->",e);
+			return JSON.toJSONString(ReturnMap.getFailureMap());
+		}
+	}
 	/**
 	 * ti 菜品分类接口，全部页菜品数据获取
 	 *
