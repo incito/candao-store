@@ -141,6 +141,9 @@ public class NormalDishListener extends AbstractQueueListener {
             String sperequire = it.getSperequire();
             String[] split = sperequire.split(";");
             for (String spe : split) {
+            	if(spe == null || spe.isEmpty()){
+            		continue;
+            	}
             	newSperequire += StringUtils.split2(spe, "#") + ";";
 			}
             if(!newSperequire.isEmpty()){
