@@ -28,6 +28,57 @@
 	var g_eatType = "EAT-IN";//堂食
 	var roomtype_prev = 0;
 	$(document).ready(function(){
+		var dom =$("#nav-room-types")[0];
+		var user_agent = navigator.userAgent;
+		if(typeof(dom) == 'object'){
+			if(user_agent.indexOf("Firefox")!=-1){// Firefox
+	            dom.addEventListener("DOMMouseScroll",addEvent,!1);
+		    } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
+		        dom.attachEvent("onmousewheel",addEvent,!1);
+		    }else{
+		        dom.addEventListener("mousewheel",addEvent,!1);
+		    }
+		}
+		
+		var startX = 0, startY = 0, moveEndX=0, moveEndY=0, X, Y;
+		$("#nav-room-types").on("touchstart", function(e) {
+		    e.preventDefault();
+		    e.stopPropagation();
+		    startX = e.originalEvent.changedTouches[0].pageX,
+		    startY = e.originalEvent.changedTouches[0].pageY;
+		});
+		$("#nav-room-types").on("touchmove", function(e) {
+		    e.preventDefault();
+		    e.stopPropagation();
+		    moveEndX = e.originalEvent.changedTouches[0].pageX,
+		    moveEndY = e.originalEvent.changedTouches[0].pageY,
+		    X = moveEndX - startX,
+		    Y = moveEndY - startY;
+		    var count = $("#nav-room-types").children("li").length;		 
+		    if ( Math.abs(X) > Math.abs(Y) && X > 0 ) {
+		        if(roomtype_prev > 0){
+		        	$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");	
+					$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
+					roomtype_prev--;
+		        }
+		    }
+		    else if ( Math.abs(X) > Math.abs(Y) && X < 0 ) {
+				if(count-roomtype_prev>10){
+					$(".rooms-type .nav-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
+					$(".rooms-type .nav-types").find("li").eq(roomtype_prev+1).click();
+					roomtype_prev++;
+				}
+		    }
+		    else if ( Math.abs(Y) > Math.abs(X) && Y > 0) {
+//		        alert("top 2 bottom");
+		    }
+		    else if ( Math.abs(Y) > Math.abs(X) && Y < 0 ) {
+//		        alert("bottom 2 top");
+		    }
+		    else{
+//		        alert("just touch");
+		    }
+		});
 		$("img.img-close").hover(function(){
 		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
 		},function(){
@@ -58,7 +109,7 @@
 		});
 		$(".rooms-type .nav-type-prev").click(function(){
 			if(roomtype_prev>=1){	
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","1%");	
+				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");	
 				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
 				roomtype_prev--;
 			}
@@ -85,7 +136,6 @@
 				$("#order-dialog").modal("show");
 			}
 		});
-
 		//顶部菜单
 		$(".m-member>ul>li").click(function(){
 			var me = $(this);
@@ -101,6 +151,10 @@
 			if(me.hasClass('J-btn-memberView')) {
 				window.location.href = './member/view.jsp';
 			}
+		});
+		$(".table-nums>div").click(function(){
+			$(".table-nums>div").removeClass("active");
+			$(this).addClass("active");
 		});
 		$(document).click(function(e){
 			$(".m-member.popover").hide();
@@ -183,10 +237,9 @@
 						$("#J-btn-clear-dialog").modal("show");
 					}
 
-				})
+				});
 
 			}
-
 
 		});
 
@@ -228,6 +281,39 @@
 			};
 		nowPage = page(options);
 	}
+//	document.addEventListener("touchmove", addEvent, false);
+	function addEvent(event){
+			event.preventDefault();
+			event=event || window.event;
+		    
+		    var type = event.type;
+		    if (type == 'DOMMouseScroll' || type == 'mousewheel' || type == 'touchmove') {
+		        event.delta = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
+		    }
+		    var count = $("#nav-room-types").children("li").length;		 
+			if(event.delta > 0){
+				if(count-roomtype_prev>10)
+				{
+					$("#nav-room-types").find("li").eq(roomtype_prev).css("margin-left","-10%");
+					$(".rooms-type .nav-types").find("li").eq(roomtype_prev+1).click();
+					roomtype_prev++;
+				}
+
+			}else{ 
+				if(roomtype_prev>=1){	
+					$("#nav-room-types").find("li").eq(roomtype_prev-1).css("margin-left","0");	
+					$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
+					roomtype_prev--;
+				}
+			}
+
+			if(document.all){
+		    	event.cancelBubble = false;
+		    	return false;
+		    }else{
+		    	event.preventDefault();
+		    }
+	}
 </script>
 </head>
 <body>
@@ -249,7 +335,7 @@
 			<div class="nav-type-btn nav-type-prev">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
-			<ul class="nav-types">
+			<ul class="nav-types" id="nav-room-types">
 				<li class="active">全部</li><li>包间 1</li><li>包间2</li><li>包间3</li><li>包间4</li><li>包间5</li><li>包间6</li><li>包间7</li><li>包间8</li><li>包间9</li><li>包间10</li><li>包间11</li><li>包间12</li><li>包间13</li><li>包间14</li><li>包间15</li><li>包间16</li><li>包间17</li><li>包间18</li>
 			</ul>
 			<div class="nav-type-btn nav-type-next">
