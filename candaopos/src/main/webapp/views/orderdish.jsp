@@ -10,9 +10,9 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>点菜</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/orderdish.css">
-<script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/addDish.js"></script>
+<link rel="stylesheet" href="../css/orderdish.css">
+<script src="../scripts/page.js"></script>
+<script src="../scripts/addDish.js"></script>
 <script type="text/javascript">
 </script>
 </head>
@@ -171,7 +171,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('clear-confirm-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('clear-confirm-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -196,7 +196,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('placeorder-confirm-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('placeorder-confirm-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -221,7 +221,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">菜品数量设置</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('updatenum-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('updatenum-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -264,7 +264,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('note-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('note-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -297,7 +297,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title" style="text-align: center;">挂单</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('guadan-dialog')" >
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('guadan-dialog')" >
 	            </div>
 	            <div class="modal-body">
 	            	<div style=" display: inline-block;width: 100%;">
@@ -350,7 +350,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('givefood-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('givefood-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -377,7 +377,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('reasoninput-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('reasoninput-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<div class="fl ">其他赠菜原因：</div>
@@ -404,7 +404,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('combodish-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('combodish-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<div class="fl dish-div">
@@ -491,7 +491,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('fishpotdish-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('fishpotdish-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            		<!-- 仅存在一个分类中-->
@@ -545,7 +545,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('noteinput-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('noteinput-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<div class="form-group">

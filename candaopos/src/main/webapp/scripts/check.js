@@ -42,7 +42,7 @@ $('.foot-menu button').on('click', function(){
             '<strong>订单号：'+orderNumber+'</strong><br/><br/>' +
             '<strong>确定反结算吗？</strong>';
 
-        var alertModal = Modal.alert({
+        var alertModal = widget.modal.alert({
             cls: 'fade in',
             content:str,
             width:500,
@@ -62,7 +62,7 @@ $('.foot-menu button').on('click', function(){
             '<strong>订单号：'+orderNumber+'</strong><br/><br/>' +
             '<strong>确定结算吗？</strong>';
 
-        var alertModal = Modal.alert({
+        var alertModal = widget.modal.alert({
             cls: 'fade in',
             content:str,
             width:500,
@@ -111,7 +111,7 @@ function reason() {//反结原因
         '<label><input name="Fruit" type="radio" value="客人投诉" />客人投诉 </label><br/>'+
         '</div>';
 
-    var alertModal = Modal.alert({
+    var alertModal = widget.modal.alert({
         cls: 'fade in',
         content: str,
         width: 500,

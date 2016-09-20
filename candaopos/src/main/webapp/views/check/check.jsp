@@ -11,18 +11,18 @@
     <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
     <meta name="renderer" content="webkit">
     <title>订单</title>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+    <link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/main.css">
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+    <script src="../scripts/jquery-3.1.0.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-    <script src="<%=request.getContextPath()%>/scripts/common.js"></script>
-    <script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-    <script src="<%=request.getContextPath()%>/scripts/main.js"></script>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/check.css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reporting.css">
+    <script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="../scripts/common.js"></script>
+    <script src="../scripts/page.js"></script>
+    <script src="../scripts/main.js"></script>
+    <link rel="stylesheet" href="../css/check.css">
+    <link rel="stylesheet" href="../css/reporting.css">
 
 </head>
 <body>
@@ -168,7 +168,7 @@
 
 
 
-<script src="<%=request.getContextPath()%>/scripts/check.js"></script>
+<script src="../scripts/check.js"></script>
 <script>
 
     $(function () {

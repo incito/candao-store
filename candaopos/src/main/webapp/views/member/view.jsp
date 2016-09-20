@@ -11,17 +11,17 @@
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
 	<title>会员查询</title>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+	<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/main.css">
 	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-	<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+	<script src="../scripts/jquery-3.1.0.min.js"></script>
 	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-	<script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/common.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/main.js"></script>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/member.css">
+	<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+	<script src="../scripts/common.js"></script>
+	<script src="../scripts/page.js"></script>
+	<script src="../scripts/main.js"></script>
+	<link rel="stylesheet" href="../css/member.css">
 </head>
 <body>
 
@@ -97,22 +97,22 @@
 		$('.member-op-list li').on('click', function(){
 			var me = $(this);
 			if(me.hasClass('J-modify-base')) {
-				$("#modify-base-dialog").load("<%=request.getContextPath()%>/views/member/modifyBase.jsp");
+				$("#modify-base-dialog").load("../views/member/modifyBase.jsp");
 				$("#modify-base-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-modify-phone')) {
-				$("#modify-phone-dialog").load("<%=request.getContextPath()%>/views/member/modifyPhone.jsp");
+				$("#modify-phone-dialog").load("../views/member/modifyPhone.jsp");
 				$("#modify-phone-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-modify-pwd')) {
-				$("#modify-pwd-dialog").load("<%=request.getContextPath()%>/views/member/modifyPwd.jsp");
+				$("#modify-pwd-dialog").load("../views/member/modifyPwd.jsp");
 				$("#modify-pwd-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-cancellation')) {
-				$("#modify-cancellation-dialog").load("<%=request.getContextPath()%>/views/member/cancellation.jsp");
+				$("#modify-cancellation-dialog").load("../views/member/cancellation.jsp");
 				$("#modify-cancellation-dialog").modal("show");
 			}
 		});
@@ -122,7 +122,7 @@
 					'<strong>上传营业数据失败，请重新上传！失败原因：</strong><br/><br/>' +
 					'<i>您可以选择“重新上传”立即重传或者点击“关闭”按钮<i/>';
 
-		var alertModal = Modal.alert({
+		var alertModal = widget.modal.alert({
 			cls: 'fade in',
 			content:tpl,
 			width:500,

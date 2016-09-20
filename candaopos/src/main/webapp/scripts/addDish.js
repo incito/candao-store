@@ -7,7 +7,7 @@ var dishMap = null;//添加进购物车的菜品
 
 var tastDish = {};
 $(document).ready(function(){
-	dishMap = new HashMap();
+	dishMap = new utils.HashMap();
 	$("img.img-close").hover(function(){
 	 	$(this).attr("src",global_path+"/images/close-active.png");	 
 	},function(){
@@ -638,7 +638,7 @@ function clearSelected() {
 function doClear() {
 	closeConfirm("clear-confirm-dialog");
 	$("#sel-dish-table tbody").html("");
-	dishMap = new HashMap();
+	dishMap = new utils.HashMap();
 	updateTotalAmount();
 	page4(0);
 	controlBtns();

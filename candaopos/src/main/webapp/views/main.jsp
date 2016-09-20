@@ -10,18 +10,18 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>主页</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/main.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+<script src="../scripts/jquery-3.1.0.min.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/common.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/main.js"></script>
+<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="../scripts/common.js"></script>
+<script src="../scripts/page.js"></script>
+<script src="../scripts/main.js"></script>
 <script type="text/javascript">
-	var global_path = "<%=request.getContextPath()%>";
+	var global_path = "..";
 	var nowPage = 0;
 	var g_isopened = false;
 
@@ -39,7 +39,7 @@
 		        dom.addEventListener("mousewheel",addEvent,!1);
 		    }
 		}
-		
+
 		var startX = 0, startY = 0, moveEndX=0, moveEndY=0, X, Y;
 		$("#nav-room-types").on("touchstart", function(e) {
 		    e.preventDefault();
@@ -54,10 +54,10 @@
 		    moveEndY = e.originalEvent.changedTouches[0].pageY,
 		    X = moveEndX - startX,
 		    Y = moveEndY - startY;
-		    var count = $("#nav-room-types").children("li").length;		 
+		    var count = $("#nav-room-types").children("li").length;
 		    if ( Math.abs(X) > Math.abs(Y) && X > 0 ) {
 		        if(roomtype_prev > 0){
-		        	$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");	
+		        	$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
 					$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
 					roomtype_prev--;
 		        }
@@ -80,13 +80,13 @@
 		    }
 		});
 		$("img.img-close").hover(function(){
-		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
+		 	$(this).attr("src","../images/close-active.png");
 		},function(){
-			$(this).attr("src","<%=request.getContextPath()%>/images/close-sm.png");
+			$(this).attr("src","../images/close-sm.png");
 		});
-		
+
 		$(".exit-sys").click(function(){
-			window.location = "<%=request.getContextPath()%>/views/login.jsp";
+			window.location = "../views/login.jsp";
 		});
 		$(".menu-tab ul li").click(function(){
 			nowPage = 0;
@@ -108,8 +108,8 @@
 			}
 		});
 		$(".rooms-type .nav-type-prev").click(function(){
-			if(roomtype_prev>=1){	
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");	
+			if(roomtype_prev>=1){
+				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
 				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
 				roomtype_prev--;
 			}
@@ -126,13 +126,13 @@
 			var cla = $(this).attr("class");
 			if(cla == "opened"){
 				g_isopened = true;
-				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
+				$("#order-dialog").load("../views/order.jsp");
 				$("#order-dialog").modal("show");
 			}else if(cla == "reserved"){
-				
+
 			}else{
 				g_isopened = false;
-				$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
+				$("#order-dialog").load("../views/order.jsp");
 				$("#order-dialog").modal("show");
 			}
 		});
@@ -140,12 +140,12 @@
 		$(".m-member>ul>li").click(function(){
 			var me = $(this);
 			if(me.hasClass('J-btn-register')) {
-				$("#register-dialog").load("<%=request.getContextPath()%>/views/member/register.jsp");
+				$("#register-dialog").load("../views/member/register.jsp");
 				$("#register-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-btn-storge')) {
-				window.location.href = '<%=request.getContextPath()%>/views/member/storge.jsp';
+				window.location.href = '../views/member/storge.jsp';
 			}
 
 			if(me.hasClass('J-btn-memberView')) {
@@ -158,7 +158,7 @@
 		});
 		$(document).click(function(e){
 			$(".m-member.popover").hide();
-			e.stopPropagation();  
+			e.stopPropagation();
 		});
 
 		//底部菜单事件绑定
@@ -177,21 +177,21 @@
 				e.stopPropagation();
 			}
 			if(me.hasClass('J-btn-sys')) {
-				$("#sys-dialog").load("<%=request.getContextPath()%>/views/sys.jsp");
+				$("#sys-dialog").load("../views/sys.jsp");
 				$("#sys-dialog").modal("show");
 			}
 			if(me.hasClass('J-btn-rep')) {
-				$("#sys-dialog").load("<%=request.getContextPath()%>/views/reporting/reporting.jsp");
+				$("#sys-dialog").load("../views/reporting/reporting.jsp");
 				$("#sys-dialog").modal("show");
 			}
 			if(me.hasClass('J-btn-check')) {
-				window.location.href="<%=request.getContextPath()%>/views/check/check.jsp";
+				window.location.href="../views/check/check.jsp";
 
 			}
 			if(me.hasClass('J-btn-checkout')) {
 				var str ='<strong>确定要结业吗？</strong>';
 
-				var alertModal = Modal.alert({
+				var alertModal = widget.modal.alert({
 					cls: 'fade in',
 					content:str,
 					width:400,
@@ -200,7 +200,7 @@
 					btnOkTxt: '确定',
 					btnOkCb: function(){
 						$(".modal-alert").modal("hide");
-						$("#J-btn-checkout-dialog").load("<%=request.getContextPath()%>/views/check/impower.jsp",{"title" : "结业授权"});
+						$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{"title" : "结业授权"});
 						$("#J-btn-checkout-dialog").modal("show");
 					},
 					btnCancelCb: function(){
@@ -216,7 +216,7 @@
 						'</div>'+
 						'<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
 
-				var alertModal = Modal.alert({
+				var alertModal = widget.modal.alert({
 					cls: 'fade in',
 					content:str,
 					width:400,
@@ -228,12 +228,12 @@
 					var _this = $(this);
 					if(_this.hasClass("clearAll")){
 						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("<%=request.getContextPath()%>/views/check/impower.jsp",{"title" : "清机授权","clearType":"倒班"});
+						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"倒班"});
 						$("#J-btn-clear-dialog").modal("show");
 					}
 					if(_this.hasClass("clearCompletion")){
 						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("<%=request.getContextPath()%>/views/check/impower.jsp",{"title" : "清机授权","clearType":"结业"});
+						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"结业"});
 						$("#J-btn-clear-dialog").modal("show");
 					}
 
@@ -262,7 +262,7 @@
 	function takeOut(){
 		g_isopened = true;
 		g_eatType = "TAKE-OUT";
-		$("#order-dialog").load("<%=request.getContextPath()%>/views/order.jsp");
+		$("#order-dialog").load("../views/order.jsp");
 		$("#order-dialog").modal("show");
 		$("#adddish-dialog").load(global_path+"/views/orderdish.jsp");
 		$("#adddish-dialog").modal("show");
@@ -285,12 +285,12 @@
 	function addEvent(event){
 			event.preventDefault();
 			event=event || window.event;
-		    
+
 		    var type = event.type;
 		    if (type == 'DOMMouseScroll' || type == 'mousewheel' || type == 'touchmove') {
 		        event.delta = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
 		    }
-		    var count = $("#nav-room-types").children("li").length;		 
+		    var count = $("#nav-room-types").children("li").length;
 			if(event.delta > 0){
 				if(count-roomtype_prev>10)
 				{
@@ -299,9 +299,9 @@
 					roomtype_prev++;
 				}
 
-			}else{ 
-				if(roomtype_prev>=1){	
-					$("#nav-room-types").find("li").eq(roomtype_prev-1).css("margin-left","0");	
+			}else{
+				if(roomtype_prev>=1){
+					$("#nav-room-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
 					$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
 					roomtype_prev--;
 				}
@@ -423,7 +423,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('tips-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('tips-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<p class="p1" style="text-align: center; padding-top: 20px; font-size: 16px;" id="tips-msg"></p>
@@ -442,7 +442,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title" style="text-align: center;">备注桌号</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" data-dismiss="modal">
+	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
 	            </div>
 	            <div class="modal-body">
 	            	<div class="form-group">
@@ -475,7 +475,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('select-paycompany-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('select-paycompany-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<div style="font-size: 20px;font-weight: bold;">请选择挂账单位</div>
@@ -508,7 +508,7 @@
 						<div class="search-btn">Z</div>
 					</div>
 					<div class="form-group search">
-						<span class="glyphicon glyphicon-search"></span> 
+						<span class="glyphicon glyphicon-search"></span>
 						<input type="search" class="form-control" placeholder="输入首字母过滤">
 						<div class="delsearch-btn">C</div>
 					</div>

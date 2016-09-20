@@ -11,7 +11,7 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>订单</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/sys.css">
+<link rel="stylesheet" href="../css/sys.css">
 	<script>
 		$(function(){
 			var $tabBox = $('.tab-box');

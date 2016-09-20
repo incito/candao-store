@@ -11,10 +11,10 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>订单</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/orderdish.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/order.css">
-<script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/order.js"></script>
+<link rel="stylesheet" href="../css/orderdish.css">
+<link rel="stylesheet" href="../css/order.css">
+<script src="../scripts/page.js"></script>
+<script src="../scripts/order.js"></script>
 <script type="text/javascript">
 </script>
 </head>
@@ -295,7 +295,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">开台</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" data-dismiss="modal">
+	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
 	            </div>
 	            <div class="modal-body">
 	            	<div style="padding: 13px; float: left;">
@@ -358,7 +358,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">优惠券</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('coupnum-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('coupnum-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -402,7 +402,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('backfood-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('backfood-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -428,7 +428,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('backreasoninput-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('backreasoninput-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<div class="fl ">其他退菜原因：</div>
@@ -455,7 +455,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">称重</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('weight-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('weight-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -497,23 +497,23 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" onclick="closeConfirm('select-bank-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('select-bank-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<div style="font-size: 20px;font-weight: bold;">请选择银行</div>
 	            	<div class="bank-icon">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/1.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/2.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/3.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/4.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/5.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/6.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/7.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/8.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/9.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/10.png">
-	            		<img alt="" src="<%=request.getContextPath()%>/images/bank/11.png">
-	            		<img class="active" alt="" src="<%=request.getContextPath()%>/images/bank/0.png">
+	            		<img alt="" src="../images/bank/1.png">
+	            		<img alt="" src="../images/bank/2.png">
+	            		<img alt="" src="../images/bank/3.png">
+	            		<img alt="" src="../images/bank/4.png">
+	            		<img alt="" src="../images/bank/5.png">
+	            		<img alt="" src="../images/bank/6.png">
+	            		<img alt="" src="../images/bank/7.png">
+	            		<img alt="" src="../images/bank/8.png">
+	            		<img alt="" src="../images/bank/9.png">
+	            		<img alt="" src="../images/bank/10.png">
+	            		<img alt="" src="../images/bank/11.png">
+	            		<img class="active" alt="" src="../images/bank/0.png">
 	            	</div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('select-bank-dialog')">取消

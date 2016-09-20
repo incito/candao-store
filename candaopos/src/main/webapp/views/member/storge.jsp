@@ -11,17 +11,17 @@
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
 	<title>会员储值</title>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+	<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/main.css">
 	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-	<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+	<script src="../scripts/jquery-3.1.0.min.js"></script>
 	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-	<script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/common.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/main.js"></script>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/member.css">
+	<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+	<script src="../scripts/common.js"></script>
+	<script src="../scripts/page.js"></script>
+	<script src="../scripts/main.js"></script>
+	<link rel="stylesheet" href="../css/member.css">
 </head>
 <body>
 
@@ -127,6 +127,6 @@
 <footer class="footer-min">
 	<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 </footer>
-<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/member.js"></script>
+<script type="text/javascript" src="../scripts/member.js"></script>
 </body>
 </html>
