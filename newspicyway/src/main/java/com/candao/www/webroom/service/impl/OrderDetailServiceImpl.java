@@ -627,7 +627,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             String areaName = StringUtils.isEmpty(tableInfo.get("areaname")) ? "" : tableInfo.get("areaname").toString();
             printObj.setTableArea(areaName);
             printObj.setTableid(order.getCurrenttableid());
-            printObj.setCustnum(String.valueOf(order.getCustnum() == null ? "" : order.getCustnum()));
+            Map<String,Object> res = orderService.findOrderById(order.getOrderid());
+            printObj.setCustnum(String.valueOf(res.get("custnum") == null ? "" : res.get("custnum")));
             tbPrintObjDao.insertPrintObj(printObj);
             result.put("isAdd", "false");
         } else {

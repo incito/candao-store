@@ -15,200 +15,200 @@ import com.candao.print.entity.PrinterConstant;
 import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.print.listener.template.impl.SimpleNormalDishTemplateImpl.Template;
 
-public class SimpleMultiDishTemplateImpl implements ListenerTemplate{
-	
-	private Log logger = LogFactory.getLog(SimpleMultiDishTemplateImpl.class.getName());
-	//模板大小
-	private Integer type;
-	private Template template;
+public class SimpleMultiDishTemplateImpl implements ListenerTemplate {
 
-	@Override
-	public void setType(Integer type) {
-		this.type = type;
-		this.template = new Template(type);
-	}
+    private Log logger = LogFactory.getLog(SimpleMultiDishTemplateImpl.class.getName());
+    //模板大小
+    private Integer type;
+    private Template template;
 
-	@Override
-	public Integer getType() {
-		return type;
-	}
+    @Override
+    public void setType(Integer type) {
+        this.type = type;
+        this.template = new Template(type);
+    }
 
-	@Override
-	public byte[] setAlignCenter() {
-		return PrinterConstant.alignCenter();
-	}
+    @Override
+    public Integer getType() {
+        return type;
+    }
 
-	@Override
-	public byte[] setAlignLeft() {
-		return PrinterConstant.alignLeft();
-	}
+    @Override
+    public byte[] setAlignCenter() {
+        return PrinterConstant.alignCenter();
+    }
 
-	@Override
-	public byte[] setClearfont() {
-		return PrinterConstant.getClear_font();
-	}
+    @Override
+    public byte[] setAlignLeft() {
+        return PrinterConstant.alignLeft();
+    }
 
-	@Override
-	public byte[] getTitleFont() {
-		//TODO
-		return PrinterConstant.getClear_font();
-	}
+    @Override
+    public byte[] setClearfont() {
+        return PrinterConstant.getClear_font();
+    }
 
-	@Override
-	public byte[] getBodyFont() {
-		byte[] rs = null;
-		switch (type) {
-		case 1:
-			rs = PrinterConstant.VerticalFont();
-			break;
-		case 2:
-			rs = PrinterConstant.getClear_font();
-			break;
-		case 3:
-			rs = PrinterConstant.getFdDoubleFont();
-			break;
-		default:
-			rs = PrinterConstant.VerticalFont();
-			break;
-		}
-		return rs;
-	}
+    @Override
+    public byte[] getTitleFont() {
+        //TODO
+        return PrinterConstant.getClear_font();
+    }
 
-	@Override
-	public String[] getTableMsg(PrintObj obj) throws Exception {
-		String[] tableName = { obj.getTableNo() };
-		Integer[] tableLength = { template.getTableLength() };
-		String[] table = StringUtils.getLineFeedText(tableName, tableLength);
-		trim(table);
-		return table;
-	}
+    @Override
+    public byte[] getBodyFont() {
+        byte[] rs = null;
+        switch (type) {
+            case 1:
+                rs = PrinterConstant.VerticalFont();
+                break;
+            case 2:
+                rs = PrinterConstant.getClear_font();
+                break;
+            case 3:
+                rs = PrinterConstant.getFdDoubleFont();
+                break;
+            default:
+                rs = PrinterConstant.VerticalFont();
+                break;
+        }
+        return rs;
+    }
 
-	@Override
-	public Object[] getBodyMsg(PrintObj obj) throws Exception {
-		Integer[] bodyLength = template.getBodyLength();
-		return this.getPrintText(obj, bodyLength[0], bodyLength[1], bodyLength[2]);
-	}
+    @Override
+    public String[] getTableMsg(PrintObj obj) throws Exception {
+        String[] tableName = {obj.getTableNo(), " " , "人数:" + obj.getCustnum()};
+        Integer[] tableLength = template.getTableLength();
+        String[] table = StringUtils.getLineFeedText(tableName, tableLength);
+        trim(table);
+        return table;
+    }
 
-	@Override
-	public Object[] getTailMsg(PrintObj obj) throws Exception {
-		String[] names = this.checkTealMsg(obj);
-		Integer[] lengths = template.getTailLength();
-		String[] temp = StringUtils.getLineFeedText(names, lengths);
-		if (temp!= null && temp.length != 0) {
-			for (int i = 0; i < temp.length; i++) {
-				temp[i].trim();
-			}
-		}
-		return temp;
-	}
+    @Override
+    public Object[] getBodyMsg(PrintObj obj) throws Exception {
+        Integer[] bodyLength = template.getBodyLength();
+        return this.getPrintText(obj, bodyLength[0], bodyLength[1], bodyLength[2]);
+    }
 
-	@Override
-	public Integer[] getNoteLength() {
-		return new Integer[]{template.getNoteLength()};
-	}
+    @Override
+    public Object[] getTailMsg(PrintObj obj) throws Exception {
+        String[] names = this.checkTealMsg(obj);
+        Integer[] lengths = template.getTailLength();
+        String[] temp = StringUtils.getLineFeedText(names, lengths);
+        if (temp != null && temp.length != 0) {
+            for (int i = 0; i < temp.length; i++) {
+                temp[i].trim();
+            }
+        }
+        return temp;
+    }
 
-	@Override
-	public Object[] getPrinterPortMsg(PrintObj obj) throws Exception {
-		String[] portName = { "(" + obj.getPrintName() + ")" };
-		Integer[] len = { 21 };
-		String[] temp = StringUtils.getLineFeedText(portName, len);
-		trim(temp);
-		return temp;
-	}
-	
-	private void trim(String[] temp){
-		if (temp!= null && temp.length != 0) {
-			for (int i = 0; i < temp.length; i++) {
-				temp[i] = temp[i].trim();
-			}
-		}
-	}
+    @Override
+    public Integer[] getNoteLength() {
+        return new Integer[]{template.getNoteLength()};
+    }
 
-	private String[] checkTealMsg(PrintObj obj){
-		PrintDish printDish = obj.getList().get(0);
-		String abbrName = printDish.getAbbrname() == null?"":printDish.getAbbrname();
-		String ordersq = obj.getOrderseq() == 0 ? "": "第"+obj.getOrderseq()+"张";
-		String timestamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
-		return new String[]{abbrName,ordersq,timestamp};
-	}
-	
-	private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
-		Object[] res = null;
-		
-		List<PrintDish> list = object.getList();
+    @Override
+    public Object[] getPrinterPortMsg(PrintObj obj) throws Exception {
+        String[] portName = {"(" + obj.getPrintName() + ")"};
+        Integer[] len = {21};
+        String[] temp = StringUtils.getLineFeedText(portName, len);
+        trim(temp);
+        return temp;
+    }
 
-		for (PrintDish it : list) {
-			// 校验名称
-			String dishName = it.getDishName() == null ? "" : it.getDishName();
-			String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
-			String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
-			String taste = it.getTaste() != null && !it.getTaste().isEmpty()? "(" + it.getTaste().trim()+")":"";
-			String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty()? "(" + it.getSperequire().trim()+")":"";
-			dishName += taste+Sperequire;
+    private void trim(String[] temp) {
+        if (temp != null && temp.length != 0) {
+            for (int i = 0; i < temp.length; i++) {
+                temp[i] = temp[i].trim();
+            }
+        }
+    }
 
-			String[] name = { dishName, dishNum, dishUnit };
-			Integer[] len = { num1, num2, num3 };
+    private String[] checkTealMsg(PrintObj obj) {
+        PrintDish printDish = obj.getList().get(0);
+        String abbrName = printDish.getAbbrname() == null ? "" : printDish.getAbbrname();
+        String ordersq = obj.getOrderseq() == 0 ? "" : "第" + obj.getOrderseq() + "张";
+        String timestamp = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
+        return new String[]{abbrName, ordersq, timestamp};
+    }
 
-			String[] temp = StringUtils.getLineFeedText(name, len);
+    private Object[] getPrintText(PrintObj object, int num1, int num2, int num3) throws Exception {
+        Object[] res = null;
 
-			res = ArrayUtils.addAll(res, temp);
-		}
+        List<PrintDish> list = object.getList();
 
-		return res;
-	}
+        for (PrintDish it : list) {
+            // 校验名称
+            String dishName = it.getDishName() == null ? "" : it.getDishName();
+            String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
+            String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
+            String taste = it.getTaste() != null && !it.getTaste().isEmpty() ? "(" + it.getTaste().trim() + ")" : "";
+            String Sperequire = it.getSperequire() != null && !it.getSperequire().isEmpty() ? "(" + it.getSperequire().trim() + ")" : "";
+            dishName += taste + Sperequire;
 
-	class Template{
-		private int tableLength;
-		private int noteLength;
-		private Integer[] bodyLength;
-		private Integer[] tailLength;
-		
-		public Template(int size) {
-			switch (size) {
-			case 1:
-				this.tableLength = 40;
-				this.noteLength = 38;
-				this.bodyLength = new Integer[]{25,8,8};
-				this.tailLength = new Integer[]{9,24,8};
-				break;
-			case 2:
-				this.tableLength = 40;
-				this.noteLength = 38;
-				this.bodyLength = new Integer[]{25,8,8};
-				this.tailLength = new Integer[]{9,24,8};
-				break;
-			case 3:
-				this.tableLength = 20;
-				this.noteLength = 19;
-				this.bodyLength = new Integer[]{12,5,4};
-				this.tailLength = new Integer[]{5,8,8};
-				break;
-			default:
-				break;
-			}
-		}
-		
-		public Integer getTableLength(){
-			return this.tableLength;
-		}
-		
-		public Integer getNoteLength(){
-			return this.noteLength;
-		}
-		
-		public Integer[] getBodyLength(){
-			return this.bodyLength;
-		}
-		
-		public Integer[] getTailLength(){
-			return this.tailLength;
-		}
-		
-	}
+            String[] name = {dishName, dishNum, dishUnit};
+            Integer[] len = {num1, num2, num3};
 
-	@Override
-	public String[] getSpecTableMsg(PrintObj obj) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            String[] temp = StringUtils.getLineFeedText(name, len);
+
+            res = ArrayUtils.addAll(res, temp);
+        }
+
+        return res;
+    }
+
+    class Template {
+        private Integer[] tableLength;
+        private int noteLength;
+        private Integer[] bodyLength;
+        private Integer[] tailLength;
+
+        public Template(int size) {
+            switch (size) {
+                case 1:
+                    this.tableLength = new Integer[]{32,1, 8};
+                    this.noteLength = 38;
+                    this.bodyLength = new Integer[]{25, 8, 8};
+                    this.tailLength = new Integer[]{9, 24, 8};
+                    break;
+                case 2:
+                    this.tableLength = new Integer[]{32,1, 8};
+                    this.noteLength = 38;
+                    this.bodyLength = new Integer[]{25, 8, 8};
+                    this.tailLength = new Integer[]{9, 24, 8};
+                    break;
+                case 3:
+                    this.tableLength = new Integer[]{12,1, 8};
+                    this.noteLength = 19;
+                    this.bodyLength = new Integer[]{12, 5, 4};
+                    this.tailLength = new Integer[]{5, 8, 8};
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public Integer[] getTableLength() {
+            return this.tableLength;
+        }
+
+        public Integer getNoteLength() {
+            return this.noteLength;
+        }
+
+        public Integer[] getBodyLength() {
+            return this.bodyLength;
+        }
+
+        public Integer[] getTailLength() {
+            return this.tailLength;
+        }
+
+    }
+
+    @Override
+    public String[] getSpecTableMsg(PrintObj obj) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
