@@ -1348,6 +1348,11 @@ public class OrderServiceImpl implements OrderService {
             consumInfo.put("custnum", "0");
             consumInfo.put("orderCount", "0");
         } else {
+            for(Map.Entry<String,Object> entry:consumInfo.entrySet()){
+                if(null==entry.getValue()){
+                    entry.setValue(new BigDecimal(0));
+                }
+            }
             BigDecimal dueamount = (BigDecimal) consumInfo.get("dueamount");
             BigDecimal ssamount = (BigDecimal) consumInfo.get("ssamount");
             BigDecimal totalAmount = dueamount.add(ssamount);
