@@ -410,7 +410,7 @@
 			<span>&nbsp;&nbsp;人数：</span><span>100</span>
 			<span>&nbsp;&nbsp;已结单数：</span><span>100</span>
 		</div>
-		<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+		<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 	</footer>
 	<div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 	</div>

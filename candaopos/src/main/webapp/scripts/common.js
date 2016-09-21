@@ -12,13 +12,7 @@ $(document).ready(function(){
 	}
 });
 
-function backspace(){
-    var inputtext = activeinputele.val();
-    if(inputtext.length>0){
-        inputtext = inputtext.substring(0,inputtext.length-1);
-        activeinputele.val(inputtext);
-    }    
-}
+
 
 function goBack(){
 	window.history.back(-1);
@@ -337,6 +331,51 @@ widget.modal = function () {
 	}
 }();
 
+/**
+ * 键盘组件
+ * @param opts
+ * @returns {*}
+ */
+widget.keyboard = function(opts){
+	var defautlopts = {
+		target: '.virtual-keyboard'
+	};
+	var doc = $(document);
+	var opts = $.extend({},defautlopts, opts);
+	var focusIpt;
+
+	function _init(){
+	 	focusIpt = null;
+		_bindEvent();
+	}
+
+	function _bindEvent (){
+		doc.delegate(opts.target + ' li','click', function(){
+
+			if(focusIpt === null) return false;
+
+			var focusVal = focusIpt.val();
+			var keyVal = $(this).text();
+
+			if(keyVal == "←"){
+				if(focusVal.length>0){
+					focusIpt.focus();
+					focusIpt.val(focusVal.substring(0,focusVal.length-1));
+				}
+			}else{
+				focusVal += keyVal;
+				focusIpt.val(focusVal);
+				focusIpt.focus();
+			}
+		});
+
+		doc.delegate('input[type=text],input[type=password]','focus', function(){
+			focusIpt = $(this);
+		});
+	};
+	return _init()
+};
+
 
 /************
  * 工具类
@@ -475,14 +514,40 @@ utils.HashMap = function(){
  * localStorage
  */
 utils.storage = {
-	getter: function (key, prefix) {
-		var prefix = prefix || (_config.projectName + '_');
-		return localStorage.getItem( prefix + key);
+	getter: function (key) {
+		return localStorage.getItem( _config.projectName + '_' + key);
 	},
-	setter: function (key, val,prefix) {
-		var prefix = prefix || (_config.projectName + '_');
-		return localStorage.setItem(prefix + key, val);
+	setter: function (key, val) {
+		return localStorage.setItem(_config.projectName + '_' + key, val);
+	},
+	remove: function(key){
+		return localStorage.removeItem(_config.projectName + '_' + key);
 	}
+};
+/**
+ * date
+ */
+utils.date = {
+	current: function() {
+		var date = new Date();
+		var seperator1 = "-";
+		var seperator2 = ":";
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var strDate = date.getDate();
+		if (month >= 1 && month <= 9) {
+			month = "0" + month;
+		}
+		if (strDate >= 0 && strDate <= 9) {
+			strDate = "0" + strDate;
+		}
+		var currentdate = year + seperator1 + month + seperator1 + strDate
+			+ " " + date.getHours() + seperator2 + date.getMinutes()
+			+ seperator2 + date.getSeconds();
+		return currentdate;
+	},
+
+
 }
 
 
