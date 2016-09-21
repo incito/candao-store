@@ -68,6 +68,13 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		return daoSupport.get(PREFIX + ".statisticALLDiscount", params);
 	}
 
+	@Override
+	public <T, K, V> List<T> queryGiveprefer(String orderid) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("orderid", orderid);
+		return daoSupport.find(PREFIX + ".queryGiveprefer", params);
+	}
+
 
 
 }

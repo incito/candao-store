@@ -39,6 +39,7 @@ function goBack(){
 *  - `btnCancelTxt` {String} cancle按钮文字 为''时,不显示
 *  - `btnOkCb` {Function} ok按钮回调
 *  - `btnCancelCb` {Function} cancel按钮回调 默认带有关闭事件
+*  - `onReady` {Function} 创建完成后回调
 * ***方法***
 *
 * - `close()` 销毁modal
@@ -113,7 +114,7 @@ window.Modal = function () {
 		var $modal = $('#' + id);
 		$modal.next().remove();
 		$modal.remove();
-	}
+	};
 
 	var _dialog = function (options) {
 		var ops = {
@@ -127,6 +128,7 @@ window.Modal = function () {
 			btnCancelTxt: '取消',
 			btnOkTxt: '确定',
 			vertical: true,
+			onReady: null,
 		};
 
 		ops = $.extend({},ops, options);
@@ -174,10 +176,13 @@ window.Modal = function () {
 			}
 		}
 
+
+		ops.onReady && ops.onReady.call(this);
+
 		//关闭按钮
 		$modal.find('.close').bind('click', function(){
 			_close(modalId);
-		})
+		});
 
 		if(ops.vertical) {
 			$modal.css({

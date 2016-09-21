@@ -70,7 +70,7 @@
 				<list>
 					<value>厅:</value>
 					<value>#{it.areaname}</value>
-					<value>客位:</value>
+					<value>台号:</value>
 					<value>#{it.tableName}</value>
 				</list>
 			</datas>

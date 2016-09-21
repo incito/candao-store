@@ -29,6 +29,8 @@
 	src="<%=request.getContextPath()%>/tools/jquery-validation/jquery.validate.js"></script>
 <script
 	src="<%=request.getContextPath()%>/tools/jquery-validation/messages_zh.js"></script>
+	<script src="${path}/scripts/jquery.Jcrop.min.js"></script>
+	<script src="${path}/scripts/ajaxfileupload.js?v=${VERSION}"></script>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/jquery-ui.css" />
 <link rel="stylesheet"
@@ -43,6 +45,7 @@
 	href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css" />
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/system.css" />
+	<link rel="stylesheet" href="${path}/css/common/jquery.Jcrop.min.css" />
 </head>
 
 
@@ -362,8 +365,7 @@
 		</div-->
 		<div class="setup_div">
 			<div style="height: 30px;">
-				<div class="system-setup-title" style="">零头处理方式</div>
-				<br>&nbsp;&nbsp;&nbsp;&nbsp;<font color="red" size="1">(编辑保存后需重启POS方能生效)</font>
+				<div class="system-setup-title" style="">零头处理方式&nbsp;&nbsp;&nbsp;&nbsp;<font color="red" size="1">(编辑保存后需重启POS方能生效)</font></div>
 					<button type="button" id="editRounding" class="btn btn-default">编辑</button>
 					<button type="button" id="saveRounding"
 						class="btn btn-default hide">保存</button>
@@ -751,44 +753,90 @@
 
 		<!-- -------------------------------------PAD端图片设置------------------------------------- -->
 
-		<div class="setup_div clear deflogo">
-			<form action="" method="post" class="form-horizontal " name=""
-				id="tableware_form">
-				<div style="height: 30px;">
-					<div class="system-setup-title">LOGO图片设置</div>
-				</div>
-				<hr style="margin: 5px 0px;" />
-				<div class="modal-body" style="padding-top: 0px;">
-					<img src='../images/defaultlogo.png' id="defaultlogo" />
-					<div class="tag">
-						<div class="arrow">
-							<em></em><span></span>
-						</div>
-						<span class="tagspan">更改LOGO请登录总店后台修改</span>
+		<div style="margin: 10px 10px 200px 10px;">
+			<div class="setup_div clear">
+				<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
+					<div style="height: 30px;">
+						<div class="system-setup-title">LOGO图片设置</div>
+						<button type="button" id="editLOGO" class="btn btn-default" onclick="changLOGOImg();">编辑</button>
+						<button type="button" id="saveLOGO" class="btn btn-default hide" onclick="saveLOGOImg();">保存</button>
 					</div>
-				</div>
-			</form>
+					<hr style="margin: 5px 0px;" />
+					<div class="modal-body" style="padding-top: 0px;">
+						<img src='../images/defaultlogo.png' id="defaultlogo" />
+						<input type="file" onchange="showImg2()" style="position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;" size="1" id="logoimg" name="logoimg" accept="image/*" />
+						<input type="hidden" id="logoDictid" name="logoDictid" value=""/>
+						<input type="hidden" id="logoUrl" name="logoUrl" value=""/>
+						<div class="tag">
+							<div class="arrow">
+								<em></em><span></span>
+							</div>
+							<span class="tagspan">1、上传图片支持jpg和png格式</span>
+							<span class="tagspan">2、上传图片最佳尺寸为70*60px</span>
+							<span class="tagspan">3、上传图片大小不能超过2M</span>
+						</div>
+					</div>
+				</form>
+			</div>
+
+
+			<div class="setup_div clear defBackground">
+				<form action="" method="post" class="form-horizontal " name="" id="tableware_form">
+					<div style="height: 30px;">
+						<div class="system-setup-title">PAD启动背景图片设置</div>
+						<button type="button" id="editBackground" class="btn btn-default" onclick="changBackgroundImg();">编辑</button>
+						<button type="button" id="saveBackground" class="btn btn-default hide" onclick="saveBackgroundImg();">保存</button>
+					</div>
+					<hr style="margin: 5px 0px;" />
+					<div class="modal-body" style="padding-top: 0px;">
+						<img src='../images/def_background.png' id="def_background"style="margin:0;padding:0;border:1px solid #ddd;float:left"/>
+						<input type="file" onchange="showImg2()" style="position: absolute; filter: alpha(opacity = 0); opacity: 0; width: 0; height: 0;" size="1" id="backgroundimg" name="backgroundimg" accept="image/*" />
+						<input type="hidden" id="backgroundDictid" name="backgroundDictid" />
+						<input type="hidden" id="backgroundUrl" name="backgroundUrl" />
+						<div class="tag bgtag">
+							<div class="arrow" >
+								<em></em><span></span>
+							</div>
+							<span class="tagspan1">1、上传图片支持jpg和png格式</span>
+							<span class="tagspan1">2、上传图片最佳尺寸为1536*1950px</span>
+							<span class="tagspan1">3、上传图片大小不能超过2M</span>
+						</div>
+					</div>
+				</form>
+			</div>
+
 		</div>
 
-
-		<div class="setup_div clear defBackground">
-			<form action="" method="post" class="form-horizontal " name=""
-				id="tableware_form">
-				<div style="height: 30px;">
-					<div class="system-setup-title">PAD启动背景图片设置</div>
-				</div>
-				<hr style="margin: 5px 0px;" />
-				<div class="modal-body" style="padding-top: 0px;">
-					<img src='../images/def_background.png' id="def_background"
-						style="margin: 0; padding: 0; border: 1px solid #ddd; float: left" />
-					<div class="bgtag">
-						<div class="arrow">
-							<em></em><span></span>
+		<div class="modal fade menuImg-adjust-dialog in" id="menuImg-adjust-dialog" data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header" style="min-height: 16px; padding: 15px; margin-top:0;border-bottom: 1px solid #e5e5e5;">
+						<div class="modal-title">图片调整</div>
+						<img src="../images/close.png" class="img-close" data-dismiss="modal" />
+					</div>
+					<div class="res" onclick="reUpload();" id="reUpload">
+						重新上传图片
+					</div>
+					<div class="modal-body">
+						<div class="menu-img-adjust">
+							<img src="" id="target-img" />
 						</div>
-						<span class="tagspan1">更改PAD背景图请登录总店后台修改</span>
+						<div>
+							<input type="hidden" id="x" name="x" value="" />
+							<input type="hidden" id="y" name="y" value="" />
+							<input type="hidden" id="h" name="h" value="" />
+							<input type="hidden" id="w" name="w" value="" />
+							<input type="hidden" id="imgname" name="imgname" value="" />
+							<input type="hidden" id="falg" name="falg" value=""/>
+						</div>
+						<div class="btn-operate" style= "margin: 20px 0px 0px;" >
+							<button class="btn btn-cancel" id="cancel-btn" type="button" data-dismiss="modal">取消</button>
+							<div class="btn-division" style="margin: 0px 1px -15px;"></div>
+							<button class="btn btn-save" id="adjust-save" type="button" onclick="adjustpic();">确认</button>
+						</div>
 					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 
 		<!-- --------------------------PAD端图片设置结束----------------------------------------- -->

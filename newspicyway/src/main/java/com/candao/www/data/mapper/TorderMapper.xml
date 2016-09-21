@@ -546,5 +546,25 @@
 	      )
 	  }  
   </select>
- 
+
+    <select id="selectConsumInfo"  resultType="map">
+        select
+        sum(dueamount) as dueamount,sum(ssamount) as ssamount,sum(custnum) as custnum,sum(orderCount) as orderCount
+        from(
+            SELECT
+                    dueamount as dueamount,0 as ssamount,custnum,0 as orderCount
+            FROM
+                    t_order
+            WHERE
+                    orderstatus = 0 AND begintime>=(select inserttime from t_open_log limit 1)
+            UNION ALL
+            SELECT
+                    0,ssamount,custnum,count(1)
+            FROM
+                    t_order
+            WHERE
+                    orderstatus = 3 AND begintime>=(select inserttime from t_open_log limit 1)
+        )t
+    </select>
+
 </mapper>

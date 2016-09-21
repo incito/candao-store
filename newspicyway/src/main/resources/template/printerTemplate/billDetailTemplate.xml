@@ -284,7 +284,7 @@
 		</row:row>
 	</foreach:foreach>
 	<!-- 挂账 -->
-	<foreach:foreach item="it" value="#{obj.posData.billCount}">
+	<!--<foreach:foreach item="it" value="#{obj.posData.billCount}">
 		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -301,7 +301,7 @@
 				</list>
 			</datas>
 		</row:row>
-	</foreach:foreach>
+	</foreach:foreach>-->
 	<foreach:foreach item="it" value="#{obj.posData.prefer}">
 		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>

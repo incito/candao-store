@@ -39,7 +39,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.*;
 
-
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService {
 
@@ -473,6 +472,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             mapParam1.put("orderid", orders.getOrderid());
             TorderDetail detailList = torderDetailMapper.findOne(mapParam1);
 
+            //added by caicai 顾客人数
+            orders.setCustnum(orderLock.getCustnum());
             Map<String, String> result = order(orders, listall);
 
             String code = result.get("code");
@@ -532,7 +533,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         Map<String, Object> tableInfo = tableDao.getTableNoById(order.getCurrenttableid());
         String tableNo = StringUtils.isEmpty(tableInfo.get("tableno")) ? "" : tableInfo.get("tableno").toString();
-        tableNo = "桌号: " + tableNo;
+        tableNo = "台号: " + tableNo;
         List<String> dishIds = getDishIds(orderDetails);
         List<Tdish> dishs = dishService.findAllByIds(dishIds);
         ;
@@ -626,6 +627,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             String areaName = StringUtils.isEmpty(tableInfo.get("areaname")) ? "" : tableInfo.get("areaname").toString();
             printObj.setTableArea(areaName);
             printObj.setTableid(order.getCurrenttableid());
+            Map<String,Object> res = orderService.findOrderById(order.getOrderid());
+            printObj.setCustnum(String.valueOf(res.get("custnum") == null ? "" : res.get("custnum")));
             tbPrintObjDao.insertPrintObj(printObj);
             result.put("isAdd", "false");
         } else {

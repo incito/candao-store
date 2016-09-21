@@ -45,4 +45,9 @@ public class TorderDetailPreferentialServiceImpl implements TorderDetailPreferen
 		return detailPreferentialDao.statisticALLDiscount(orderid);
 	}
 
+	@Override
+	public <T, K, V> List<T> queryGiveprefer(String orderid) {
+		return detailPreferentialDao.queryGiveprefer(orderid);
+	}
+
 }

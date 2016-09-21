@@ -15,6 +15,7 @@ import com.candao.www.constant.SystemConstant;
 import com.candao.www.data.dao.TbBranchDao;
 import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.dao.TtellerCashDao;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
@@ -89,6 +90,17 @@ public class PadInterfaceController {
 	// 屏蔽礼物
 	private final String NO_GIFT = "0";
 
+
+	@RequestMapping("/consumInfo")
+	@ResponseBody
+	public String consumInfo(){
+		try {
+			return orderService.consumInfo();
+		}catch (Exception e){
+			logger.error("--->",e);
+			return JSON.toJSONString(ReturnMap.getFailureMap());
+		}
+	}
 	/**
 	 * ti 菜品分类接口，全部页菜品数据获取
 	 *
@@ -190,10 +202,10 @@ public class PadInterfaceController {
 		record.setJson(JacksonJsonMapper.objectToJson(order));
 		record.setPadpath("setorder");
 		jsonRecordService.insertJsonRecord(record);
-		//判断是否是pos开台还是pad开台
-		if(order.getMeid()==null||order.getMeid().trim().isEmpty()){
+		// 判断是否是pos开台还是pad开台
+		if (order.getMeid() == null || order.getMeid().trim().isEmpty()) {
 			order.setNumOfMeals((order.getManNum() == null ? 0 : order.getManNum())
-                    + (order.getWomanNum() == null ? 0 : order.getWomanNum()));
+					+ (order.getWomanNum() == null ? 0 : order.getWomanNum()));
 		}
 
 		String returnStr = orderService.startOrder(order);
@@ -666,15 +678,14 @@ public class PadInterfaceController {
 		record.setPadpath("cleantable");
 		jsonRecordService.insertJsonRecord(record);
 		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-		if(tbTable!=null){
-			Map<String, Object> params=new HashMap<>();
+		if (tbTable != null) {
+			Map<String, Object> params = new HashMap<>();
 			params.put("orderid", tbTable.getOrderid());
 			params.put("clear", "1");
 			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
 		}
 		String cleantable = orderDetailService.cleantable(table);
-	
-	
+
 		return cleantable;
 	}
 
@@ -692,14 +703,14 @@ public class PadInterfaceController {
 		record.setPadpath("cleanTableSimply");
 		jsonRecordService.insertJsonRecord(record);
 		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-		if(tbTable!=null){
-			Map<String, Object> params=new HashMap<>();
+		if (tbTable != null) {
+			Map<String, Object> params = new HashMap<>();
 			params.put("orderid", tbTable.getOrderid());
 			params.put("clear", "1");
 			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
 		}
 		String result = orderDetailService.cleantableSimply(table);
-	
+
 		return result;
 	}
 
@@ -899,6 +910,16 @@ public class PadInterfaceController {
 		jsonRecordService.insertJsonRecord(record);
 
 		SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
+//		// 判断是否查询订单服务员ID
+//		if (settlementInfo.getUserName() == null) {
+//			Map<String, Object> paramstset = new HashMap<>();
+//			paramstset.put("orderid", settlementInfo.getOrderNo());
+//			List<Map<String, Object>> orderMap = tsettlementMapper.find(paramstset);
+//			if (!orderMap.isEmpty()) {
+//				settlementInfo.setUserName(((Tsettlement) orderMap.get(0)).getUserid());
+//			}
+//			
+//		}
 		String result = orderSettleService.rebackSettleOrder(settlementInfo);
 
 		if ("0".equals(result)) {
@@ -1362,6 +1383,18 @@ public class PadInterfaceController {
 			mav.addObject(ReturnMap.getFailureMap(result.getMes(), result));
 		}
 
+		return mav;
+	}
+
+	@RequestMapping(value = "/givePrefer", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView queryGiveprefer(@RequestBody String body) {
+		ModelAndView mav = new ModelAndView();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
+		List<Map<String, Object>> retuMap = torderDetailPreferentialService
+				.queryGiveprefer((String) params.get("orderId"));
+		mav.addObject(ReturnMap.getSuccessMap(retuMap));
 		return mav;
 	}
 
@@ -2619,10 +2652,10 @@ public class PadInterfaceController {
 			e.printStackTrace();
 			return ReturnMap.getFailureMap("数据异常，请联系管理员");
 		}
-//		//后台没配置的情况，给PAD返回成功
-//		if (maps == null || maps.size() <= 0) {
-//			return ReturnMap.getFailureMap("没有查询到相应的数据");
-//		}
+		// //后台没配置的情况，给PAD返回成功
+		// if (maps == null || maps.size() <= 0) {
+		// return ReturnMap.getFailureMap("没有查询到相应的数据");
+		// }
 		return ReturnMap.getSuccessMap("查询成功", maps);
 	}
 
@@ -3144,7 +3177,6 @@ public class PadInterfaceController {
 	private ToperationLogService toperationLogService;
 	@Autowired
 	private DishTypeService dishTypeService;
-
 	@Autowired
 	private OrderService orderService;
 
@@ -3207,6 +3239,8 @@ public class PadInterfaceController {
 	private TbUserInstrumentDao tbUserInstrumentDao;
 	@Autowired
 	TorderMapper torderMapper;
+	@Autowired
+	TsettlementMapper tsettlementMapper;
 	@Autowired
 	private CallWaiterService callService;
 	@Autowired
