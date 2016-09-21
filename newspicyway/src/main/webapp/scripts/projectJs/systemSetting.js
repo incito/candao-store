@@ -1569,3 +1569,317 @@ function getObjectURL(file) {
     }
     return url ;
 }
+
+
+//裁剪图片
+var jcrop_api = null;
+
+/**
+ * 销毁jcrop
+ */
+function destroyJcrop(){
+	jcrop_api.destroy();
+}
+
+
+//原图高度和宽度
+var originalWidth=0;
+var originalHeight=0;
+
+/**
+ * 点击LOGO设置的编辑按钮
+ */
+function changLOGOImg(){
+	$('#saveLOGO').removeClass('hide');
+	$('#editLOGO').hide();
+	$('#defaultlogo').attr('src','../images/uplogo.png');
+
+	$('#defaultlogo').css("border","1px dashed #ddd")
+	$('#defaultlogo').click(function(){
+		imgtempClick(this);
+	})
+}
+
+/**
+ * 点击背景图设置的编辑按钮
+ */
+function changBackgroundImg(){
+	$('#saveBackground').removeClass('hide');
+	$('#editBackground').hide();
+	$('#def_background').attr('src','../images/upbg.png');
+
+	$('#def_background').css("border","1px dashed #ddd")
+	$('#def_background').click(function(){
+		imgtempClick(this);
+	})
+}
+
+/**
+ * 重新上传图片
+ */
+function reUpload(){
+	var imgname = $("#imgname").val();
+	var img;
+	if(imgname == "logoimg"){
+		img = $("#defaultlogo");
+	}
+	if(imgname == "backgroundimg"){
+		img = $("#def_background");
+	}
+	imgtempClick(img);
+}
+
+/**
+ * 点击图片触发点击input file上传
+ */
+function imgtempClick(o){
+	var id = o.id;
+	if(id == "defaultlogo"){
+		$("#falg").attr("value","logo");
+	}else if(id == "def_background"){
+		$("#falg").attr("value","bg");
+	}
+	$(o).parent().find("input[type='file']").click();
+}
+
+
+function showImg2(){
+	$("#menuImg-adjust-dialog .menu-img-adjust").html('<img src="" id="target-img">');
+	var logoimg = getObjectURL(document.getElementById("logoimg").files[0]);
+	var backgroundimg = getObjectURL(document.getElementById("backgroundimg").files[0]);
+	var pobj = $("#menu-img-adjust");
+	var img$ = $("#target-img");
+	img$.removeAttr("style");
+
+	if(logoimg != null){
+		img$.attr("src",logoimg);
+		$("#imgname").attr("value","logoimg");
+		imgLoad(logoimg, calculateImg, img$, pobj);
+	}else if(backgroundimg != null){
+		img$.attr("src",backgroundimg);
+		$("#imgname").attr("value","backgroundimg");
+		imgLoad(backgroundimg, calculateImg, img$,pobj);
+	}
+	$("#logoimg").attr("value","");
+	$("#backgroundimg").attr("value","");
+	/*$("#falg").attr("value","");
+	 $("#falg").attr("value","");*/
+	logoimg = null;
+	backgroundimg = null;
+}
+
+//load图片
+var imgLoad = function (src, callback, img$, pobj) {
+	var img_= document.createElement('img');
+	img_.src=src;
+	if (img_.complete) {
+		callback(img_.width, img_.height, img$, pobj);
+	} else {
+		img_.onload = function (status) {
+			console.log(status);
+			callback(img_.width, img_.height, img$, pobj);
+			img_.onload = null;
+		};
+		img_.onerror=function(){
+			$("#menuadd-prompt-modal #prop-msg").text("图片异常或找不到该图片");
+			$("#menuadd-prompt-modal").modal("show");
+		};
+	};
+};
+
+
+/**
+ * 计算图片宽高
+ */
+var falg = null;
+function calculateImg(w, h, img$, pobj){
+	falg = $("#falg").val();
+	var maxW = 700;
+	var minW = 360;
+	var maxH = 450;
+	var minH = 200;
+	originalWidth = w;
+	originalHeight = h;
+	var img_w = w;
+	var img_h = h;
+	if(img_w/maxW > img_h/maxH){
+		if(img_w < minW ){
+			img_w = minW;
+		}else if(img_w > maxW ){
+			img_w= maxW;
+		}
+		img$.width(img_w);
+		var heightV = (h/w)*img_w;
+		img$.height(heightV);
+
+		$("#menuImg-adjust-dialog .modal-content").width(img_w+50);
+		$("#menuImg-adjust-dialog .modal-content").height(heightV+180);
+	}else{
+		if(img_h < minH ){
+			img_h = minH;
+		}else if(img_h > maxH ){
+			img_h= maxH;
+		}
+		img$.height(img_h);
+		var widthV = (w/h)*img_h;
+		img$.width(widthV);
+
+		$("#menuImg-adjust-dialog .modal-dialog").width(widthV+50);
+		$("#menuImg-adjust-dialog .modal-content").width(widthV+50);
+		$("#menuImg-adjust-dialog .modal-content").height(img_h+180);
+	}
+
+	var cropW=0,croph=0;
+	var K = 0;
+	var G = 0;
+	if(falg == "logo"){
+		K = 70;
+		G = 60;
+	}else if(falg == "bg"){
+		K = 1536;
+		G = 1950;
+	}else{
+		K = 50;
+		G = 50;
+	}
+	$('#menuImg-adjust-dialog').on('shown.bs.modal', function () {
+		$("#target-img").Jcrop({
+			aspectRatio: K/G,
+			onSelect: updateCoords,
+			onChange: function(c){
+				cropW = c.w;
+				croph = c.h;
+			},
+		},function(){
+			jcrop_api = this;
+			jcrop_api.animateTo([100, 100, 400, 300]);
+
+			fillVal(100, 100, cropW, croph);
+		});
+		$("#menuImg-adjust-dialog .jcrop-holder").removeClass("hide");
+		$(".jcrop-keymgr").css("width", "0px");
+		$(".jcrop-keymgr").css("display", "none");
+		$(".jcrop-holder").css("margin","0 auto");
+		$(".jcrop-holder").css("background-color", "white");
+	});
+	$("#menuImg-adjust-dialog").modal("show");
+	isHidden = $("#menuImg-adjust-dialog").is(":hidden");
+	if(!isHidden){
+		$("#target-img").Jcrop({
+			aspectRatio: K/G,
+			onSelect: updateCoords,
+			onChange: function(c){
+				cropW = c.w;
+				croph = c.h;
+			},
+		},function(){
+			jcrop_api = this;
+			jcrop_api.animateTo([100, 100, 400, 300]);
+
+			fillVal(100, 100, cropW, croph);
+		});
+	}
+}
+
+/**
+ * 拖动裁剪框时改变参数
+ * @param c
+ */
+function updateCoords(c){
+	fillVal(c.x, c.y, c.w, c.h);
+};
+
+function fillVal(x, y, w, h){
+	var o = $("#target-img");
+	var width = $(o).width();
+	var height = $(o).height();
+	w = (originalWidth*w)/width;
+	h = (originalHeight*h)/height;
+	x = (originalWidth*x)/width;
+	y = (originalHeight*y)/height;
+	$('#menuImg-adjust-dialog #x').val(x);
+	$('#menuImg-adjust-dialog #y').val(y);
+	$('#menuImg-adjust-dialog #w').val(w);
+	$('#menuImg-adjust-dialog #h').val(h);
+}
+
+
+
+function adjustpic(){
+	var imgname = $("#imgname").val();
+	var option = {
+		image: "",
+		oldimage: "",
+		type: "",
+		x: "",
+		y: "",
+		h: "",
+		w: ""
+	};
+	option.image = $("#target-img").attr("src");
+	option.x = $('#menuImg-adjust-dialog #x').val();
+	option.y = $('#menuImg-adjust-dialog #y').val();
+	option.h = $('#menuImg-adjust-dialog #h').val();
+	option.w = $('#menuImg-adjust-dialog #w').val();
+
+	$.ajaxFileUpload({
+		fileElementId: [imgname],
+		url: '/padinterface/catImg',
+		dataType: 'json',
+		contentType:'application/json;charset=UTF-8',
+		data : {
+			x : option.x,
+			y : option.y,
+			h : option.h,
+			w : option.w,
+		},
+		success: function (data, textStatus) {
+		},
+		complete: function (XMLHttpRequest, textStatus) {
+			var result = $.parseJSON(XMLHttpRequest.responseText);
+			var type = result.type;
+			/*var msg = result.msg;
+			 if(msg != null || msg != ""){
+			 alert(msg);
+			 }*/
+			if(type == "logo"){
+				$("#defaultlogo").attr("src",img_Path+result.image);
+				$("#logoUrl").attr("value",result.image);
+			}else if(type == "bg"){
+				$("#def_background").attr("src",img_Path+result.image);
+				$("#backgroundUrl").attr("value",result.image);
+			}
+			$("#menuImg-adjust-dialog").modal("hide");
+		}
+	});
+}
+
+
+
+/**
+ * @param img
+ * @returns
+ */
+function cutPath(img){
+	var image = "";
+	if(img != null && img != ""){
+		alert(img.split(img_Path));
+		image = img.split(img_Path)[1];
+		if(image.indexOf("\/") == 0){
+			image = image.substring(1, image.length);
+		}
+	}
+	return replaceEscape(image);
+}
+
+/**
+ * 将路径中的\转换为/
+ * @param img
+ * @returns
+ */
+function replaceEscape(img){
+	if(img!=null && img!=""){
+		img = img.replace("\\", "/");
+	}
+	return img;
+}
