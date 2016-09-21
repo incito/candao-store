@@ -211,7 +211,7 @@
 			if(me.hasClass('J-btn-clear')) {
 				var str ='<strong>请选择倒班或结业：</strong>'+
 						'<div id="cleardata" class="form-group form-group-base" style="margin-top: 20px">'+
-						'<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" style="margin-right: 5px">倒班</button>'+
+						'<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" style="margin-right: 5px">清机</button>'+
 						'<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'+
 						'</div>'+
 						'<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
@@ -228,12 +228,12 @@
 					var _this = $(this);
 					if(_this.hasClass("clearAll")){
 						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"倒班"});
+						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"清机"});
 						$("#J-btn-clear-dialog").modal("show");
 					}
 					if(_this.hasClass("clearCompletion")){
 						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"结业"});
+						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "结业授权","clearType":"结业"});
 						$("#J-btn-clear-dialog").modal("show");
 					}
 

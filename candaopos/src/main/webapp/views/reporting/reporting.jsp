@@ -13,80 +13,8 @@
     <title>订单</title>
     <link rel="stylesheet" href="../css/sys.css">
     <link rel="stylesheet" href="../css/reporting.css">
-    <script>
-        $(function(){
-            var clickCunt=0
-            $("#getItemSellDetail .dataSelect-type div").eq(0).trigger("click")
-            var $tabBox = $('.tab-box');
-            $('.J-g-menu li').click(function(){
-                var me = $(this), idx = me.index()
-                me.addClass('active').siblings().removeClass('active');
-                if(idx==1){
-                    clickCunt++;
-                    if(clickCunt==1){
-                        $("#getTipList .dataSelect-type div").eq(0).trigger("click")
-                    }
+    <link rel="stylesheet" href="../lib/pagination.css">
 
-                }
-                $tabBox.find('.tab-item').hide().eq(idx).show();
-            });
-
-        })
-        function getItemSellDetail(flag) {//获取品项消费明细
-            var me = $(flag),flag=me.attr("flag");
-            me.addClass("active").siblings().removeClass('active')
-            $.ajax({
-                url:'/newspicyway/padinterface/getItemSellDetail.json',
-                type: "get",
-                dataType: "json",
-                data:{"flag":flag},
-                success: function (data) {
-                    var str="",total=data.data.length,count=0,sum=0;
-                    for( var i=0;i<total;i++) {
-                        count+=Number(data.data[i].dishCount);
-                        sum+=Number(data.data[i].totlePrice);
-                        str+='<tr>';
-                        str+='   <td>'+data.data[i].dishName+'</td>';
-                        str+='   <td>'+data.data[i].dishCount+'</td>';
-                        str+='   <td>'+data.data[i].totlePrice+'</td>';
-
-                    };
-                    $("#getItemSellDetail tbody").html(str);
-                    $("#getItemSellDetail .reportingInfo i").eq(0).text(total);
-                    $("#getItemSellDetail .reportingInfo i").eq(1).text(count.toFixed(1));
-                    $("#getItemSellDetail .reportingInfo i").eq(2).text(sum.toFixed(2));
-
-                },
-            });
-        }
-        function getTipList(flag) {//获取小费明细
-            var me = $(flag),flag=me.attr("flag");
-            me.addClass("active").siblings().removeClass('active')
-            $.ajax({
-                url:'/newspicyway/tip/tipList.json',
-                type: "get",
-                dataType: "json",
-                data:{"flag":flag},
-                success: function (data) {
-                    var str="",total=data.data.length,count=0,sum=0;
-                    for( var i=0;i<total;i++) {
-                        count+=Number(data.data[i].dishCount);
-                        sum+=Number(data.data[i].totlePrice);
-                        str+='<tr>';
-                        str+='   <td>'+data.data[i].dishName+'</td>';
-                        str+='   <td>'+data.data[i].dishCount+'</td>';
-                        str+='   <td>'+data.data[i].totlePrice+'</td>';
-
-                    };
-                    $("#getTipList tbody").html(str);
-                    $("#getTipList .reportingInfo i").eq(0).text(total);
-                    $("#getTipList .reportingInfo i").eq(1).text(count.toFixed(1));
-                    $("#getTipList .reportingInfo i").eq(2).text(sum.toFixed(2));
-                    console.log(sum)
-                },
-            });
-        }
-    </script>
 </head>
 <body>
 <div class="modal-dialog main-modal-dialog" style="height: 600px;" id="sys-modal"
@@ -117,7 +45,7 @@
                                     <div flag="4" onclick="getItemSellDetail(this)">上月</div>
                                 </div>
                                 <div class="dataSelect-type print" >
-                                    <div class="active">打印</div>
+                                    <div class="active" onclick="ItemSellDetailPrint()">打印</div>
                                 </div>
                                 <table class="table table-bordered table-hover table-list " style="background: #fff">
                                     <thead>
@@ -139,7 +67,11 @@
                                             <span class="reportingInfo-text" >数量总计：<i></i></span>
                                             <span class="reportingInfo-text" >金额合计：<i></i></span>
                                         </div>
-                                        <div class="page print"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
+
+                                        <div class=" print">
+                                            <div  class="paginationjs paginationjs-big demo">
+                                        </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -202,5 +134,6 @@
         </div>
     </div>
 </div>
+<script src="../scripts/reporting.js"></script>
 </body>
 </html>
