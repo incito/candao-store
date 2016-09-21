@@ -12,13 +12,7 @@ $(document).ready(function(){
 	}
 });
 
-function backspace(){
-    var inputtext = activeinputele.val();
-    if(inputtext.length>0){
-        inputtext = inputtext.substring(0,inputtext.length-1);
-        activeinputele.val(inputtext);
-    }    
-}
+
 
 function goBack(){
 	window.history.back(-1);
@@ -336,6 +330,51 @@ widget.modal = function () {
 		confirm: _confirm
 	}
 }();
+
+/**
+ * 键盘组件
+ * @param opts
+ * @returns {*}
+ */
+widget.keyboard = function(opts){
+	var defautlopts = {
+		target: '.virtual-keyboard'
+	};
+	var doc = $(document);
+	var opts = $.extend({},defautlopts, opts);
+	var focusIpt;
+
+	function _init(){
+	 	focusIpt = null;
+		_bindEvent();
+	}
+
+	function _bindEvent (){
+		doc.delegate(opts.target + ' li','click', function(){
+
+			if(focusIpt === null) return false;
+
+			var focusVal = focusIpt.val();
+			var keyVal = $(this).text();
+
+			if(keyVal == "←"){
+				if(focusVal.length>0){
+					focusIpt.focus();
+					focusIpt.val(focusVal.substring(0,focusVal.length-1));
+				}
+			}else{
+				focusVal += keyVal;
+				focusIpt.val(focusVal);
+				focusIpt.focus();
+			}
+		});
+
+		doc.delegate('input[type=text],input[type=password]','focus', function(){
+			focusIpt = $(this);
+		});
+	};
+	return _init()
+};
 
 
 /************
