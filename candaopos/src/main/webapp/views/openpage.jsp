@@ -102,40 +102,27 @@
   	}
 </style>
 <script type="text/javascript">
-var activeinputele;
-	$(document).ready(function(){
-		$("img.img-close").hover(function(){
-		 	$(this).attr("src","../images/close-active.png");
-		},function(){
-			$(this).attr("src","../images/close-sm.png");
-		});
-		
-		$("#confirm-opening-btn").click(function(){
-			$("#mg-login-dialog").modal("show");
-		});
-		
-		$(".virtual-keyboard ul li").click(function(e){
-			var keytext = $(this).text();
-			if(activeinputele != null && activeinputele != undefined){
-				if(keytext == "←"){
-					activeinputele.focus();
-					backspace();
-				}else{
-					var val = activeinputele.val();
-					val = val + keytext;
-					activeinputele.val(val);
-					activeinputele.focus();
-				}
+	$.ajax({
+		url: _config.interfaceUrl.RestaurantOpened + '\/\/192.168.10.54\/0\/',
+		method: 'GET',
+		dataType:'text',
+		success: function(res){
+			var res = JSON.parse(res.substring(12,res.length-3));
+			if(res.Data === '0') {
+				window.location = "../views/login.jsp";
 			}
-		});
-		$("#mg-login-dialog input").focus(function(event){
-	        activeinputele = $(this);
-		});
-	});
-	function toLogin(){
-		$("#mg-login-dialog").modal("hide");
-		window.location = "../views/login.jsp";
-	}
+		},
+		error: function(){
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>获取当日结业信息失败</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+		}
+	})
 </script>
 </head>
 <body>
@@ -184,12 +171,14 @@ var activeinputele;
 					 <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="toLogin()">确认
+	                    <button class="btn btn-save in-btn135 J-submit" id="" type="button" onclick="toLogin()">确认
 	                    </button>
 	                </div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<script src="../scripts/common.js"></script>
+	<script src="../scripts/openpage.js"></script>
 </body>
 </html>

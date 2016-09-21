@@ -1,4 +1,32 @@
-var pay_nowPage = 0;//π“’Àµ•Œª
+var MainPage = {
+	init: function(){
+
+		this.bindEvent();
+
+		this.setSysInfo();
+	},
+
+	bindEvent: function(){
+
+	},
+
+	setSysInfo: function(){
+		$('.J-sys-info')
+			.find('.branch-num').text(utils.storage.getter('branch_branchcode'))
+			.end().find('.user-info').text(utils.storage.getter('fullname') + ' ' + utils.storage.getter('aUserid'));
+
+		setInterval(function(){
+			$('.J-sys-info').find('.time').text(utils.date.current());
+		},1000)
+	}
+};
+
+$(function(){
+	MainPage.init();
+});
+
+
+var pay_nowPage = 0;
 function paging(currPage) {
 	var o = $(".tab-div ul li.active").attr("loaddiv") + " li";
 	nowPage = loadPage({
@@ -16,10 +44,6 @@ function paging(currPage) {
 function page(options) {
 	return loadPage(options);
 }
-
-/**
- * —°‘Òπ“’Àµ•Œª
- */
 function selPayCompany(){
 	pay_nowPage = 0;
 	payPage(0);
@@ -29,14 +53,14 @@ function selPayCompany(){
 		$(this).addClass("active");
 	});
 	
-	//“—µ„≤À…œ“ª“≥
+	//ÔøΩ—µÔøΩÔøΩÔøΩÔøΩ“ª“≥
 	$("#select-paycompany-dialog .prev-btn").unbind("click").on("click", function(){
 		if ($(this).hasClass("disabled")) {
 			return false;
 		}
 		payPage(pay_nowPage - 1);
 	});
-	//“—µ„≤Àœ¬“ª“≥
+	//ÔøΩ—µÔøΩÔøΩÔøΩÔøΩ“ª“≥
 	$("#select-paycompany-dialog .next-btn").unbind("click").on("click", function(){
 		if ($(this).hasClass("disabled")) {
 			return false;
@@ -44,7 +68,6 @@ function selPayCompany(){
 		payPage(pay_nowPage + 1);
 	});
 }
-//π“’Àµ•Œª—°‘Ò“≥√Ê∑÷“≥
 function payPage(currPage) {
 	pay_nowPage = loadPage({
 		obj : ".paycompany-content ul li",
