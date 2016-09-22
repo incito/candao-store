@@ -404,6 +404,17 @@ utils.array = {
 		if (index > -1) {
 			this.splice(index, 1);
 		}
+	},
+
+	unique:  function(ret) {
+		var n = []; //一个新的临时数组
+		for(var i = 0; i < ret.length; i++) //遍历当前数组
+		{
+			//如果当前数组的第i已经保存进了临时数组，那么跳过，
+			//否则把当前项push到临时数组里面
+			if (n.indexOf(ret[i]) == -1) n.push(ret[i]);
+		}
+		return n;
 	}
 };
 /**
