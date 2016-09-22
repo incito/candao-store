@@ -58,6 +58,11 @@ public class TbDataDictionaryDaoImpl implements TbDataDictionaryDao {
 	public int insert(TbDataDictionary tbDataDictionary) {
 		return dao.insert(PREFIX + ".insert", tbDataDictionary);
 	}
+	
+	@Override
+	public int insertPadimg(TbDataDictionary tbDataDictionary) {
+		return dao.insert(PREFIX +".insertPadimg", tbDataDictionary);
+	}
 
 	@Override
 	public int update(TbDataDictionary tbDataDictionary) {
@@ -144,6 +149,7 @@ public class TbDataDictionaryDaoImpl implements TbDataDictionaryDao {
 	public int updataCallTimeSet(Map<String,Object> paramMap) {
 		return dao.update(PREFIX+".updataCallTimeSet",paramMap);
 	}
+	
 	
 	
 }

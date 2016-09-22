@@ -66,4 +66,6 @@ public interface OrderDetailService {
 	 * @return
 	 */
 	public String cleantableSimply(Table table);
+	
+	public int deleteordreDetailByOrderid(String orderid);
 }

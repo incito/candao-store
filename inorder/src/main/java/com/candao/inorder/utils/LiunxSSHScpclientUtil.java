@@ -8,6 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +118,6 @@ public class LiunxSSHScpclientUtil {
 		return buffer;
 	}
 
-	@SuppressWarnings("resource")
 	private void printModel() {
 
 		if (empPrintbuffer!=null&&!empPrintbuffer.trim().isEmpty()) {
@@ -124,13 +126,13 @@ public class LiunxSSHScpclientUtil {
 		StringBuffer empsbf = new StringBuffer();
 		try {
 			// 是否切换
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(
-					new File("C:\\Users\\Candao\\git\\candao-store\\inorder\\src\\main\\resources\\printModel")));
+	        ClassLoader classLoader = getClass().getClassLoader();  
+	          InputStream resource = classLoader.getResourceAsStream("printModel");
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource));
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
 				empsbf.append(line);
 				empsbf.append("\r\n");
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

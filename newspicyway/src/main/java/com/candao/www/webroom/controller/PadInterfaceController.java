@@ -28,6 +28,7 @@ import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
 import com.candao.www.utils.DataServerUtil;
 import com.candao.www.utils.HttpRequestor;
+import com.candao.www.utils.ImageCompress;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.*;
@@ -678,6 +679,31 @@ public class PadInterfaceController {
 		record.setPadpath("cleantable");
 		jsonRecordService.insertJsonRecord(record);
 		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
+		if (tbTable != null) {
+			Map<String, Object> params = new HashMap<>();
+			params.put("orderid", tbTable.getOrderid());
+			params.put("clear", "1");
+			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+		}
+		String cleantable = orderDetailService.cleantable(table);
+
+		return cleantable;
+	}
+	
+	@RequestMapping("/inoderCleanTable")
+	@ResponseBody
+	public String inoderCleanTable(@RequestBody Table table, HttpServletRequest reqeust){
+		TJsonRecord record = new TJsonRecord();
+		record.setJson(JacksonJsonMapper.objectToJson(table));
+		record.setPadpath("cleantable");
+		jsonRecordService.insertJsonRecord(record);
+		
+
+		//清台
+		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
+		
+		//整单退菜
+		orderDetailService.deleteordreDetailByOrderid(tbTable.getOrderid());
 		if (tbTable != null) {
 			Map<String, Object> params = new HashMap<>();
 			params.put("orderid", tbTable.getOrderid());
@@ -3054,6 +3080,121 @@ public class PadInterfaceController {
 		return JacksonJsonMapper.objectToJson(map);
 
 	}
+	
+	/**
+	 * 上传log背景
+	 * pad背景
+	 * @param request
+	 * @param x
+	 * @param y
+	 * @param h
+	 * @param w
+	 * @return
+	 * @throws FileNotFoundException 
+	 * 
+	 */
+	@RequestMapping("/catImg")
+	@ResponseBody
+	public String catImg(HttpServletRequest request,@RequestParam("x") String x,@RequestParam("y") String y,
+			@RequestParam("h") String h,@RequestParam("w") String w) throws FileNotFoundException{
+		
+		//上传文件跟路径
+		String realpath = request.getSession().getServletContext().getRealPath("");
+		//实际文件路径
+		String imagelocation = realpath+File.separator+ "upload" + File.separator;
+		Map<String, Object> map = new HashMap<String, Object>();
+		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
+		MultipartFile file ;
+		if(fileMap.get("logoimg") == null){
+			file = fileMap.get("backgroundimg");
+			map.put("type", "bg");
+		}else{
+			file = fileMap.get("logoimg");
+			map.put("type", "logo");
+		}
+		String fileName = null;
+		if (!file.isEmpty()) {
+			 fileName = file.getOriginalFilename();
+			imagelocation= imagelocation+fileName;
+			try {
+				//存储数据到字典
+				  this.fileupload(file.getInputStream(),imagelocation);
+			} catch (Exception e) {
+				logger.error("图片上传失败"+e.getMessage(), "");
+				e.printStackTrace();
+				return JacksonJsonMapper.objectToJson(map);
+			}
+		}
+
+		int imageX = Math.round(Float.valueOf(x == null || x == "" ? "0" : x));
+		int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
+		int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
+		int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
+		
+		
+		String fileupload=File.separator+ "upload" + File.separator;
+
+		String inputDir = request.getRealPath("") +fileupload;
+		ImageCompress imageCompress = new ImageCompress();
+		String afterCatImgUrl = "";
+		String imageurl = imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
+		if (!"".equals(imageurl)) {
+			 afterCatImgUrl="upload" + File.separator+imageurl;
+			 PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
+			  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
+			  this.delFile(imagelocation);
+			  this.delFile(inputDir+delPathName);
+		}
+		map.put("image", afterCatImgUrl);
+		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	
+	private void delFile(String fileName){
+		File file = new File(fileName);
+		if(file.exists()){
+			file.delete();
+		}
+	}
+	
+	private int fileupload(InputStream inuStream, String imagelocation) {
+		try {
+			// 拿到输出流，同时重命名上传的文件
+			FileOutputStream os = new FileOutputStream(imagelocation);
+			// 拿到上传文件的输入流
+			FileInputStream in = (FileInputStream) inuStream;
+
+			// 以写字节的方式写文件
+			int b = 0;
+			while ((b = in.read()) != -1) {
+				os.write(b);
+			}
+			os.flush();
+			os.close();
+			in.close();
+			// 保存成功
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 1;
+		}
+
+		return 0;
+	}
+	private byte[] getFileBuffer(File file) {
+		byte[] fileByte = null;
+		try {
+			FileInputStream fis = new FileInputStream(file);
+			fileByte = new byte[fis.available()];
+			fis.read(fileByte);
+			fis.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fileByte;
+	}
 
 	/**
 	 * 0成功 1失败
@@ -3255,7 +3396,6 @@ public class PadInterfaceController {
 	private TorderDetailPreferentialService torderDetailPreferentialService;
 	@Autowired
 	private OrderOpService orderOpService;
-
 	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
