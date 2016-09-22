@@ -1825,6 +1825,14 @@ function adjustpic(){
 	option.h = $('#menuImg-adjust-dialog #h').val();
 	option.w = $('#menuImg-adjust-dialog #w').val();
 
+
+	console.log({
+		x : option.x,
+		y : option.y,
+		h : option.h,
+		w : option.w,
+	});
+
 	$.ajaxFileUpload({
 		fileElementId: [imgname],
 		url: '/newspicyway/padinterface/catImg',
@@ -1857,7 +1865,49 @@ function adjustpic(){
 	});
 }
 
+/**
+ * 保存Logo图
+ */
+function saveLOGOImg(){
+	var dictid = $("#logoDictid").val();
+	var imgUrl = $("#logoUrl").val();
+	if(imgUrl == ""){
+		alert("请选择图片");
+		return;
+	}
+	$.post("../system/setImg",{
+		id : dictid,
+		itemid : "1",
+		itemDesc : "PadLOGO图",
+		itemSort : "1",
+		itemValue : imgUrl
+	},function(data){
+		console.log(data);
+		window.location.href = global_Path + '/'+data;
+	});
+}
 
+/**
+ * 保存背景图
+ */
+function saveBackgroundImg(){
+	var dictid = $("#backgroundDictid").val();
+	var imgUrl = $("#backgroundUrl").val();
+	if(imgUrl == ""){
+		alert("请选择图片");
+		return;
+	}
+	$.post("../system/setImg",{
+		id : dictid,
+		itemid : "2",
+		itemDesc : "Pad背景图",
+		itemSort : "2",
+		itemValue : imgUrl
+	},function(data){
+		console.log(data);
+		window.location.href = global_Path + '/'+data;
+	});
+}
 
 /**
  * @param img
