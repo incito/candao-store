@@ -216,7 +216,7 @@
 			<div class="total-num active">全部（16）</div><div class="free-num">空闲（10）</div><div>就餐（11）</div>
 		</div>
 		<div class="foot-menu">
-			<ul><li class="J-btn-takeout">外卖</li>
+			<ul class="menu"><li class="J-btn-takeout">外卖</li>
 				<li class="J-btn-check">账单</li>
 				<li class="J-btn-rep">报表</li>
 				<li class="J-btn-clear">清机 / 结业</li>
@@ -230,7 +230,7 @@
 				</div>
 				<li class="J-btn-sys">系统设置</li>
 			</ul>
-			<div class="page"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
+			<div class="page" id="J-page"></div>
 		</div>
 		<div class="form-group amount-div">
 			<span class="highlight-color">总金额：</span><span class="highlight-color">1360.999</span>
@@ -311,7 +311,6 @@
 
 	<div class="modal in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
 	</div>
-
 	<!-- 提示用dialog -->
 	<div class="modal fade dialog-sm confirm-dialog in" id="tips-dialog"
 	     data-backdrop="static">
@@ -331,7 +330,6 @@
 	        </div>
 	    </div>
 	</div>
-
 	<!-- 外卖 -->
 	<div class="modal fade default-dialog J-takeout-dialog in " id="J-takeout-dialog"
 	     data-backdrop="static">
@@ -365,7 +363,6 @@
 	        </div>
 	    </div>
 	 </div>
-
 	 <!-- 选择挂账单位 -->
 	<div class="modal fade in default-dialog" id="select-paycompany-dialog"
 	     data-backdrop="static">
