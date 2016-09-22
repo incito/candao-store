@@ -19,10 +19,9 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
     <script src="../../scripts/common.js"></script>
-    <script src="../../scripts/page.js"></script>
-    <script src="../../scripts/main.js"></script>
     <link rel="stylesheet" href="../../css/check.css">
     <link rel="stylesheet" href="../../css/reporting.css">
+    <link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
 
 </head>
 <body>
@@ -65,12 +64,12 @@
                         <div class="print">
                             <div class="form-group form-group-base form-input">
                                 <span class="form-label" style="line-height: 40px">开始时间:</span>
-                                <input value="" name="startDate" type="date" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
+                                <input value="" name="startDate" type="text" id="inpstart" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
                             </div>
 
                             <div class="form-group form-group-base form-input">
                                 <span class="form-label" style="line-height: 40px">结束时间:</span>
-                                <input value="" name="endDate" type="date" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
+                                <input value="" name="endDate" type="text" id="end" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
                             </div>
                             <div class="check-type print">
                                 <div class="active">查询</div>
@@ -161,6 +160,7 @@
         </div>
     </div>
 </article>
+
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="c-mod-fjs" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-pwd-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-phone-dialog" style="overflow: auto;"></div>
@@ -169,6 +169,7 @@
 
 
 <script src="../../scripts/check.js"></script>
+<script type="text/javascript" src="../../lib/jedate/jedate.min.js"></script>
 <script>
 
     $(function () {
@@ -234,12 +235,23 @@
             },
 
         });
-
     })
+    var start = {
+                dateCell: '#inpstart',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                minDate: jeDate.now(0), //设定最小日期为当前日期
 
+                maxDate: '2099-06-30 23:59:59', //最大日期}
+    };
+    jeDate(start)
+    var end = {
+        dateCell: '#end',
+        format: 'YYYY-MM-DD hh:mm:ss',
+        minDate: jeDate.now(0), //设定最小日期为当前日期
 
-
-
+        maxDate: '2099-06-30 23:59:59', //最大日期}
+    };
+    jeDate(end)
 </script>
 
 </body>

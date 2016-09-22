@@ -331,7 +331,7 @@ widget.modal = function () {
 	}
 }();
 /*
- * pagination.js 2.0.7 分页插件
+ * pagination.js 2.0.7
  * A jQuery plugin to provide simple yet fully customisable pagination
  * https://github.com/superRaytin/paginationjs
 
@@ -385,8 +385,25 @@ widget.keyboard = function(opts){
 	};
 	return _init()
 };
+/**
+ * 设置底部Info
+ * @param opts
+ * @returns {*}
+ */
+var SetBotoomIfon = {
+	init: function(){
+		this.setSysInfo();
+	},
+	setSysInfo: function(){
+		$('.J-sys-info')
+			.find('.branch-num').text(utils.storage.getter('branch_branchcode'))
+			.end().find('.user-info').text(utils.storage.getter('fullname') + ' ' + utils.storage.getter('aUserid'));
 
-
+		setInterval(function(){
+			$('.J-sys-info').find('.time').text(utils.date.current());
+		},1000)
+	}
+}
 /************
  * 工具类
  ************/

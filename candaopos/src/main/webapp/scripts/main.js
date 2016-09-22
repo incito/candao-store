@@ -134,8 +134,9 @@ var MainPage = {
 				$("#sys-dialog").modal("show");
 			}
 			if(me.hasClass('J-btn-rep')) {
-				$("#sys-dialog").load("../views/reporting/reporting.jsp");
-				$("#sys-dialog").modal("show");
+				/*$("#sys-dialog").load("../views/reporting/reporting.jsp");
+				$("#sys-dialog").modal("show");*/
+				window.location.href="../views/reporting/reporting.jsp";
 			}
 			if(me.hasClass('J-btn-check')) {
 				window.location.href="../views/check/check.jsp";
@@ -251,16 +252,6 @@ var MainPage = {
 
 			}
 		})
-	},
-
-	setSysInfo: function(){
-		$('.J-sys-info')
-			.find('.branch-num').text(utils.storage.getter('branch_branchcode'))
-			.end().find('.user-info').text(utils.storage.getter('fullname') + ' ' + utils.storage.getter('aUserid'));
-
-		setInterval(function(){
-			$('.J-sys-info').find('.time').text(utils.date.current());
-		},1000)
 	}
 };
 
