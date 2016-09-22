@@ -9,7 +9,7 @@ var MainPage = {
 
 		this.setTables();
 
-		SetBotoomIfon.init()
+		SetBotoomIfon.init();
 
 		this.bindEvent();
 
