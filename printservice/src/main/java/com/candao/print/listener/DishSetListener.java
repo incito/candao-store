@@ -91,7 +91,7 @@ public class DishSetListener extends AbstractQueueListener {
         String[] table = StringUtils.getLineFeedText(tableName, tableLength);
         if (table != null) {
             for (int i = 0; i < table.length; i++) {
-                writer.write("　　" + table[i] + "\r\n");
+                writer.write(table[i] + "\r\n");
             }
         }
 

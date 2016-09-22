@@ -78,9 +78,9 @@ public class WeighDishListener extends AbstractQueueListener{
 			String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 			if(table != null){
 				for (int i = 0; i < table.length; i++) {
-					writer.write("　　" + table[i]+"\r\n");
-				}
-			}
+                    writer.write(table[i] + "\r\n");
+                }
+            }
 
 			writer.flush();// 关键,很重要,不然指令一次性输出,后面指令覆盖前面指令,导致取消放大指令无效
 			socketOut.write(PrinterConstant.getClear_font());

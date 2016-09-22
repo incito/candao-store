@@ -790,6 +790,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         object.setTableNo(printObj.getTableNo());
                         object.setPrinterid(printer.getPrinterid());
                         object.setPrintName(printObj.getPrintName());
+                        object.setCustnum(printObj.getCustnum());
 
                         List<PrintDish> printDishList = new ArrayList<>();
 
