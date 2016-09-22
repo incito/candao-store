@@ -183,7 +183,7 @@ html{
 	width: 100%;
   	background: #E8E8E8;
 }
-.foot-menu>ul{
+.foot-menu>ul.menu{
 	list-style: none;
 	padding: 0 8px;
   	margin: 0;
@@ -225,7 +225,7 @@ html{
 	opacity: 1;
 	color: #fff;
 }
-.foot-menu ul li{
+.foot-menu ul.menu li{
 	float: left;
   	height: 40px;
   	width: 100px;

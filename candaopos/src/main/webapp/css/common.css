@@ -516,3 +516,48 @@ footer{
 	opacity: 1;
 	color: #fff;
 }
+
+/**
+*	paginationjs
+**/
+.paginationjs {
+	position: relative;
+	text-align: center;
+}
+
+.paginationjs ul {
+	padding:0;
+	margin:0;
+}
+
+.paginationjs ul li {
+	width: 40px;
+	height: 40px;
+	background: #F6F6F6;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	border-radius: 3px;
+	color: #000000;
+	font-size: 12px;
+	display: inline-table;
+	text-align: center;
+	padding-top: 12px;
+	cursor: pointer;
+}
+.paginationjs ul li + li {
+	margin-left:45px;
+}
+.paginationjs-nav {
+	margin-top:-30px;
+}
+.paginationjs ul li a {
+	display: none;
+}
+.paginationjs ul li:before {
+	content:'<';
+	text-align: center;
+}
+.paginationjs ul li:last-child:before {
+	content:'>';
+}
+
+

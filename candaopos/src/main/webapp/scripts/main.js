@@ -266,6 +266,17 @@ var MainPage = {
 
 $(function(){
 	MainPage.init();
+
+
+	$('#J-page').pagination({
+		dataSource: [1, 2, 3, 4, 5, 6, 7],
+		pageSize: 5,
+		showPageNumbers: false,
+		showNavigator: true,
+		callback: function(data, pagination) {
+			console.info(data);
+		}
+	})
 });
 
 
