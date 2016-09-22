@@ -140,7 +140,7 @@
                     </table>
 
 
-                    <div class="contentInfo" style="height: 75px">
+                    <div class="contentInfo" style="height: 75px;position: fixed;bottom: 0px;width: 100%;background: none">
                         <div class="foot-menu">
                             <ul>
                                 <button onclick="refresh()">刷新</button>
@@ -152,7 +152,6 @@
                             </ul>
                             <div class="page print"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
                         </div>
-                        <div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
                     </div>
 
                 </div>
@@ -160,7 +159,9 @@
         </div>
     </div>
 </article>
-
+<footer>
+    <div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+</footer>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="c-mod-fjs" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-pwd-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-phone-dialog" style="overflow: auto;"></div>
@@ -173,9 +174,10 @@
 <script>
 
     $(function () {
-
+        SetBotoomIfon.init();//设置底部信息
+        var aUserid=utils.storage.getter('aUserid')//获取登录用户
         $.ajax({
-            url:'/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/8/',
+            url:'/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/'+aUserid+'/',
             type: "get",
             dataType: "text",
             success: function (data) {

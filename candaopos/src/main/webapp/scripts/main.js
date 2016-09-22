@@ -5,8 +5,6 @@ var MainPage = {
 
 		this.setTables();
 
-		this.setSysInfo();
-
 		this.bindEvent();
 
 		//加载虚拟键盘组件

@@ -29,7 +29,7 @@
 
             <header>
                 <div class="fl">餐道</div>
-                <div class="fr close-win" data-dismiss="modal">返回</div>
+                <div class="fr close-win" data-dismiss="modal" onclick="goBack();">返回</div>
             </header>
             <article style="height: 540px;">
                 <div class="content">

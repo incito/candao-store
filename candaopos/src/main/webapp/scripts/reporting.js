@@ -1,6 +1,6 @@
 
 $(function(){
-    SetBotoomIfon.init();
+    SetBotoomIfon.init();//设置底部信息
     var clickCunt=0
     $("#getItemSellDetail .dataSelect-type div").eq(0).trigger("click")
     var $tabBox = $('.tab-box');
