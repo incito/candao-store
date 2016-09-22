@@ -545,15 +545,27 @@ utils.date = {
 		var year = date.getFullYear();
 		var month = date.getMonth() + 1;
 		var strDate = date.getDate();
+		var hours = date.getHours();
+		var mins = date.getMinutes();
+		var secs = date.getSeconds();
 		if (month >= 1 && month <= 9) {
 			month = "0" + month;
 		}
 		if (strDate >= 0 && strDate <= 9) {
 			strDate = "0" + strDate;
 		}
+		if (hours >= 0 && hours <= 9) {
+			hours = "0" + hours;
+		}
+		if (secs >= 0 && secs <= 9) {
+			secs = "0" + secs;
+		}if (mins >= 0 && mins <= 9) {
+			mins = "0" + mins;
+		}
+
 		var currentdate = year + seperator1 + month + seperator1 + strDate
-			+ " " + date.getHours() + seperator2 + date.getMinutes()
-			+ seperator2 + date.getSeconds();
+			+ " " + hours + seperator2 + mins
+			+ seperator2 + secs;
 		return currentdate;
 	},
 

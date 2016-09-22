@@ -303,3 +303,109 @@ footer .info{
 	background: #FF5803;
 	color: #fff;
 }
+
+
+
+.open-dialog .modal-dialog{
+	width: 600px;
+	height: 360px;
+	margin: 120px auto;
+}
+.open-dialog .modal-body{
+	background: #EAE9E6;
+	box-shadow: 0px 1px 4px 0px rgba(198,198,198,0.50);
+	border-radius: 3px;
+	float: left;
+	padding: 0px;
+}
+.open-dialog .dialog-sm-header{
+	height: 38px;
+}
+.open-dialog .img-close {
+	position: absolute;
+	right: 6px;
+	top: 6px;
+}
+.open-dialog .modal-title{
+	font-size: 16px;
+	color: #FFFFFF;
+	text-align: center;
+	padding-top: 10px;
+}
+.open-dialog .btn-operate .in-btn135{
+	width: 285px;
+	height: 48px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+}
+.open-dialog .btn-operate .in-btn135:hover{
+	background: #F68D70;
+	border-color: #F68D70;
+	opacity: 0.5;
+	color: #fff;
+}
+.open-dialog .btn-operate .in-btn135:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}
+.open-dialog .btn-operate {
+	margin: 13px 0px;
+}
+.open-dialog .modal-body .hori-lf-div{
+	width: 260px;
+	float: left;
+}
+.open-dialog .modal-body .hori-lf-div input{
+	height: 38px;
+	margin-bottom: 4px;
+	padding-left: 85px;
+}
+.open-dialog .modal-body .hori-lf-div input.tableno{
+	padding-left: 50px;
+}
+.open-dialog .modal-body .hori-lf-div input.personnum{
+	padding-left: 95px;
+}
+.hori-lf-div span{
+	position: absolute;
+	font-size: 14px;
+	color: #B0B0B0;
+	margin: 8px 0 0 8px;
+}
+.open-dialog .modal-body .hori-rt-div{
+	width: 310px;
+	float: right;
+}
+.open-dialog .age-type div {
+	width: 139px;
+	height: 48px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+	float: left;
+	margin: auto 2px;
+	text-align: center;
+	padding-top: 12px;
+}
+.open-dialog .age-type{
+	float: left;
+	padding: 0 13px 13px;
+}
+.open-dialog .age-type div{
+	width: 139px;
+	height: 48px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+	float: left;
+	margin: auto 2px;
+	text-align: center;
+	padding-top: 12px
+}
+.open-dialog .age-type div.active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}

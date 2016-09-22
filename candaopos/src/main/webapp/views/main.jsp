@@ -26,7 +26,7 @@
 	var g_isopened = false;
 
 	var g_eatType = "EAT-IN";//堂食
-	var roomtype_prev = 0;
+
 	$(document).ready(function(){
 		var dom =$("#nav-room-types")[0];
 		var user_agent = navigator.userAgent;
@@ -85,178 +85,8 @@
 			$(this).attr("src","../images/close-sm.png");
 		});
 
-		$(".exit-sys").click(function(){
-			window.location = "../views/login.jsp";
-		});
-		$(".menu-tab ul li").click(function(){
-			nowPage = 0;
-			var olddiv = $(".menu-tab ul li.active").attr("loaddiv");
-			$(olddiv).addClass("hide");
-			$(".menu-tab ul li").removeClass("active");
-			$(this).addClass("active");
-			var loaddiv = $(this).attr("loaddiv");
-			$(loaddiv).removeClass("hide");
-			doPage(nowPage);
-		});
-		/*分类向左向右按钮*/
-		$(".rooms-type .nav-type-next").click(function(){
-			var count = $(".rooms-type .nav-types").find( "li").length;
-			if (roomtype_prev < count - 10) {
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev+1).click();
-				roomtype_prev++;
-			}
-		});
-		$(".rooms-type .nav-type-prev").click(function(){
-			if(roomtype_prev>=1){
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
-				roomtype_prev--;
-			}
-		});
-		/**
-		* 分类点击
-		*/
-		$(".rooms-type .nav-types li").click(function() {
-			$(".rooms-type .nav-types li").removeClass("active");
-			$(this).addClass("active");
-		});
-		$("ul#standard-tables li").click(function(){
-			g_eatType = "EAT-IN";
-			var cla = $(this).attr("class");
-			if(cla == "opened"){
-				g_isopened = true;
-				$("#order-dialog").load("../views/order.jsp");
-				$("#order-dialog").modal("show");
-			}else if(cla == "reserved"){
-
-			}else{
-				g_isopened = false;
-				$("#order-dialog").load("../views/order.jsp");
-				$("#order-dialog").modal("show");
-			}
-		});
-		//顶部菜单
-		$(".m-member>ul>li").click(function(){
-			var me = $(this);
-			if(me.hasClass('J-btn-register')) {
-				$("#register-dialog").load("../views/member/register.jsp");
-				$("#register-dialog").modal("show");
-			}
-
-			if(me.hasClass('J-btn-storge')) {
-				window.location.href = '../views/member/storge.jsp';
-			}
-
-			if(me.hasClass('J-btn-memberView')) {
-				window.location.href = './member/view.jsp';
-			}
-		});
-		$(".table-nums>div").click(function(){
-			$(".table-nums>div").removeClass("active");
-			$(this).addClass("active");
-		});
-		$(document).click(function(e){
-			$(".m-member.popover").hide();
-			e.stopPropagation();
-		});
-
-		//底部菜单事件绑定
-		$(".foot-menu li").click(function(e){
-			var me = $(this);
-			if(me.hasClass("J-btn-takeout")){
-				$("#J-takeout-dialog").modal("show");
-				$(".take-out-list li").unbind("click").on("click",  function(){
-					$(".take-out-list li").removeClass("active");
-					$(this).addClass("active");
-				});
-			}
-			if(me.hasClass("member-btns")){
-				//会员
-				$(".m-member.popover").toggle();
-				e.stopPropagation();
-			}
-			if(me.hasClass('J-btn-sys')) {
-				$("#sys-dialog").load("../views/sys.jsp");
-				$("#sys-dialog").modal("show");
-			}
-			if(me.hasClass('J-btn-rep')) {
-				$("#sys-dialog").load("../views/reporting/reporting.jsp");
-				$("#sys-dialog").modal("show");
-			}
-			if(me.hasClass('J-btn-check')) {
-				window.location.href="../views/check/check.jsp";
-
-			}
-			if(me.hasClass('J-btn-checkout')) {
-				var str ='<strong>确定要结业吗？</strong>';
-
-				var alertModal = widget.modal.alert({
-					cls: 'fade in',
-					content:str,
-					width:400,
-					height:500,
-					title: "结业提醒",
-					btnOkTxt: '确定',
-					btnOkCb: function(){
-						$(".modal-alert").modal("hide");
-						$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{"title" : "结业授权"});
-						$("#J-btn-checkout-dialog").modal("show");
-					},
-					btnCancelCb: function(){
-					}
-				})
-
-			}
-			if(me.hasClass('J-btn-clear')) {
-				var str ='<strong>请选择倒班或结业：</strong>'+
-						'<div id="cleardata" class="form-group form-group-base" style="margin-top: 20px">'+
-						'<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" style="margin-right: 5px">清机</button>'+
-						'<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'+
-						'</div>'+
-						'<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
-
-				var alertModal = widget.modal.alert({
-					cls: 'fade in',
-					content:str,
-					width:400,
-					height:500,
-					title: "清机提醒",
-					hasBtns:false,
-				});
-				$("#cleardata button").click(function () {
-					var _this = $(this);
-					if(_this.hasClass("clearAll")){
-						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"清机"});
-						$("#J-btn-clear-dialog").modal("show");
-					}
-					if(_this.hasClass("clearCompletion")){
-						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "结业授权","clearType":"结业"});
-						$("#J-btn-clear-dialog").modal("show");
-					}
-
-				});
-
-			}
-
-		});
 
 
-		$(".page .prev-btn").click(function(){
-			if($(this).hasClass("disabled")){
-				return false;
-			}
-			doPage(nowPage-1);
-		});
-		$(".page .next-btn").click(function(){
-			if($(this).hasClass("disabled")){
-				return false;
-			}
-			doPage(nowPage+1);
-		});
-		doPage(nowPage);
 	});
 	//外带
 	function takeOut(){
@@ -281,7 +111,6 @@
 			};
 		nowPage = page(options);
 	}
-//	document.addEventListener("touchmove", addEvent, false);
 	function addEvent(event){
 			event.preventDefault();
 			event=event || window.event;
@@ -412,10 +241,77 @@
 		</div>
 		<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 	</footer>
+
+	<!-- 开台权限验证 -->
+	<div class="modal fade in open-dialog" data-backdrop="static" style="display: none" id="open-dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">开台</div>
+					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<div style="padding: 13px; float: left;">
+						<div class="hori-lf-div">
+							<div>
+								<span>服务员编号:</span>
+								<input type="text" class="form-control serverName">
+							</div>
+							<div>
+								<span>桌号:</span>
+								<input type="text" class="form-control tableno">
+							</div>
+							<div>
+								<span>就餐人数(男):</span>
+								<input type="text" class="form-control personnum">
+							</div>
+							<div>
+								<span>就餐人数(女):</span>
+								<input type="text" class="form-control personnum">
+							</div>
+							<div>
+								<span>餐具数量:</span>
+								<input type="text" class="form-control">
+							</div>
+						</div>
+						<div class="hori-rt-div">
+							<div class="virtual-keyboard">
+								<ul>
+									<li>1</li><li>2</li><li>3</li>
+								</ul>
+								<ul>
+									<li>4</li><li>5</li><li>6</li>
+								</ul>
+								<ul>
+									<li>7</li><li>8</li><li>9</li>
+								</ul>
+								<ul>
+									<li>.</li><li>0</li><li>←</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="age-type">
+						<div>儿童</div><div>青年</div><div>中年</div><div>老年</div>
+					</div>
+					<div class="btn-operate ">
+						<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+						</button>
+						<button class="btn btn-save in-btn135 J-btn-submit"  type="button">确认开台
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 	<div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 	</div>
+
 	<div class="modal in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
 	</div>
+
 	<!-- 提示用dialog -->
 	<div class="modal fade dialog-sm confirm-dialog in" id="tips-dialog"
 	     data-backdrop="static">
@@ -435,6 +331,7 @@
 	        </div>
 	    </div>
 	</div>
+
 	<!-- 外卖 -->
 	<div class="modal fade default-dialog J-takeout-dialog in " id="J-takeout-dialog"
 	     data-backdrop="static">
@@ -468,6 +365,7 @@
 	        </div>
 	    </div>
 	 </div>
+
 	 <!-- 选择挂账单位 -->
 	<div class="modal fade in default-dialog" id="select-paycompany-dialog"
 	     data-backdrop="static">
