@@ -12,6 +12,7 @@
 <meta name="renderer" content="webkit">
 <title>订单</title>
 <link rel="stylesheet" href="../css/sys.css">
+	<link rel="stylesheet" href="../lib/pagination.css">
 	<script>
 		$(function(){
 			var $tabBox = $('.tab-box');
@@ -58,7 +59,7 @@
 								</div>
 
 								<%--打印机列表--%>
-								<div class="tab-item" style="display: none">
+								<div class="tab-item" id="printList"style="display: none">
 									<table class="table table-bordered table-hover table-list" style="background: #fff">
 										<thead>
 											<tr>
@@ -69,18 +70,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td>1</td>
-												<td>10.66.19.3</td>
-												<td>test-1</td>
-												<td>正常</td>
-											</tr>
-											<tr>
-												<td>2</td>
-												<td>10.66.19.3</td>
-												<td>test-1</td>
-												<td class="text-danger">未连接</td>
-											</tr>
+
 										</tbody>
 									</table>
 								</div>
@@ -104,5 +94,31 @@
 			</div>
 		</div>
 	</div>
+<script>
+	$(function () {
+		getItemSellDetail()
+	})
+	function getItemSellDetail() {//获取打印机列表
+		$.ajax({
+			url:'/newspicyway/pos/printerlist.json',
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				var str="",num=0;
+				for( var i=0;i<data.data.length;i++) {
+				    num=i+1
+					str+='<tr>';
+					str+='   <td width="200">'+num+'</td>';
+					str+='   <td width="276">'+data.data[i].ip+'</td>';
+					str+='   <td width="200">'+data.data[i].name+'</td>';
+					str+='   <td width="200">'+data.data[i].statusTitle+'</td>';
+					str+='</tr>';
+
+				};
+				$("#printList tbody").html(str);
+			},
+		});
+	}
+</script>
 </body>
 </html>

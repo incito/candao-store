@@ -1,5 +1,6 @@
 
 $(function(){
+    SetBotoomIfon.init();//设置底部信息
     var clickCunt=0
     $("#getItemSellDetail .dataSelect-type div").eq(0).trigger("click")
     var $tabBox = $('.tab-box');
@@ -35,6 +36,7 @@ function getItemSellDetail(flag) {//获取品项消费明细
     ladingMore("正在加载");
     var me = $(flag),flag=me.attr("flag");
     me.addClass("active").siblings().removeClass('active')
+    $("#getItemSellDetail tbody").html("");
     $.ajax({
         url:'/newspicyway/padinterface/getItemSellDetail.json',
         type: "get",
@@ -50,11 +52,12 @@ function getItemSellDetail(flag) {//获取品项消费明细
             };
             $('#getItemSellDetail .demo').pagination({
                 dataSource: data.data,
-                pageSize: 10,
+                pageSize: 11,
                 showPageNumbers: false,
                 showNavigator: true,
 
                 callback: function(data, pagination) {
+
                     var str="";
                     for( var i=0;i<data.length;i++) {
                         str+='<tr>';
@@ -79,7 +82,6 @@ function getItemSellDetail(flag) {//获取品项消费明细
 function ItemSellDetailPrint(){//消费品项打印
     var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag");
     ladingMore("正在打印...");
-    console.log(111111)
     $.ajax({
         url:'/newspicyway/print4POS/getItemSellDetail.json',
         type: "get",
@@ -119,4 +121,48 @@ function getTipList(flag) {//获取小费明细
         },
     });
 }
+function TipListPrint(){//服务员小费打印
+    var flag=$("#getTipList .dataSelect-type .active" ).attr("flag");
+    ladingMore("正在打印...");
+    $.ajax({
+        url:'/newspicyway/print4POS/getItemSellDetail.json',
+        type: "get",
+        dataType: "json",
+        data:{"flag":flag},
+        success: function (data) {
+            removeLadingMore();
 
+        },
+    });
+}
+function printBusinessDetail(){//营业数据打印
+    var flag=$("#getTipList .dataSelect-type .active" ).attr("flag");
+    var beginTime=$.trim($(".datetimeStart").val()),endTime=$.trim($(".datetimeEnd").val()),operationname=utils.storage.getter('aUserid');
+    if(beginTime=="" && beginTime==""){
+        var str = '<div><strong >开始和结束日期不能为空</strong></div>'
+        var alertModal = widget.modal.alert({
+            cls: 'fade in',
+            content: str,
+            width: 500,
+            height: 300,
+            btnOkTxt: '确定',
+            btnCancelTxt:"",
+            btnOkCb: function(){
+                $(".modal-alert").modal("hide");
+            },
+
+        });
+        return
+    }
+    ladingMore("正在打印...");
+    $.ajax({
+        url:'/newspicyway/print4POS/printBusinessDetail.json',
+        type: "get",
+        dataType: "json",
+        data:{"beginTime":beginTime,"endTime":endTime,"operationname":operationname},
+        success: function (data) {
+            removeLadingMore();
+
+        },
+    });
+}

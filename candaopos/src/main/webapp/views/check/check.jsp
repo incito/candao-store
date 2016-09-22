@@ -19,10 +19,9 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
     <script src="../../scripts/common.js"></script>
-    <script src="../../scripts/page.js"></script>
-    <script src="../../scripts/main.js"></script>
     <link rel="stylesheet" href="../../css/check.css">
     <link rel="stylesheet" href="../../css/reporting.css">
+    <link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
 
 </head>
 <body>
@@ -65,12 +64,12 @@
                         <div class="print">
                             <div class="form-group form-group-base form-input">
                                 <span class="form-label" style="line-height: 40px">开始时间:</span>
-                                <input value="" name="startDate" type="date" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
+                                <input value="" name="startDate" type="text" id="inpstart" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
                             </div>
 
                             <div class="form-group form-group-base form-input">
                                 <span class="form-label" style="line-height: 40px">结束时间:</span>
-                                <input value="" name="endDate" type="date" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
+                                <input value="" name="endDate" type="text" id="end" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px" autocomplete="off">
                             </div>
                             <div class="check-type print">
                                 <div class="active">查询</div>
@@ -141,7 +140,7 @@
                     </table>
 
 
-                    <div class="contentInfo" style="height: 75px">
+                    <div class="contentInfo" style="height: 75px;position: fixed;bottom: 0px;width: 100%;background: none">
                         <div class="foot-menu">
                             <ul>
                                 <button onclick="refresh()">刷新</button>
@@ -153,7 +152,6 @@
                             </ul>
                             <div class="page print"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
                         </div>
-                        <div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
                     </div>
 
                 </div>
@@ -161,6 +159,9 @@
         </div>
     </div>
 </article>
+<footer>
+    <div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+</footer>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="c-mod-fjs" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-pwd-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-phone-dialog" style="overflow: auto;"></div>
@@ -169,12 +170,14 @@
 
 
 <script src="../../scripts/check.js"></script>
+<script type="text/javascript" src="../../lib/jedate/jedate.min.js"></script>
 <script>
 
     $(function () {
-
+        SetBotoomIfon.init();//设置底部信息
+        var aUserid=utils.storage.getter('aUserid')//获取登录用户
         $.ajax({
-            url:'/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/8/',
+            url:'/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/'+aUserid+'/',
             type: "get",
             dataType: "text",
             success: function (data) {
@@ -234,12 +237,23 @@
             },
 
         });
-
     })
+    var start = {
+                dateCell: '#inpstart',
+                format: 'YYYY-MM-DD hh:mm:ss',
+                minDate: jeDate.now(0), //设定最小日期为当前日期
 
+                maxDate: '2099-06-30 23:59:59', //最大日期}
+    };
+    jeDate(start)
+    var end = {
+        dateCell: '#end',
+        format: 'YYYY-MM-DD hh:mm:ss',
+        minDate: jeDate.now(0), //设定最小日期为当前日期
 
-
-
+        maxDate: '2099-06-30 23:59:59', //最大日期}
+    };
+    jeDate(end)
 </script>
 
 </body>

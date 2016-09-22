@@ -11,19 +11,25 @@
     <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
     <meta name="renderer" content="webkit">
     <title>订单</title>
-    <link rel="stylesheet" href="../css/sys.css">
-    <link rel="stylesheet" href="../css/reporting.css">
-    <link rel="stylesheet" href="../lib/pagination.css">
+    <link rel="stylesheet" href="../../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="../../scripts/jquery-3.1.0.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="../../scripts/common.js"></script>
+    <link rel="stylesheet" href="../../css/sys.css">
+    <link rel="stylesheet" href="../../css/reporting.css">
+    <script type="text/javascript" src="../../lib/jedate/jedate.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
 
 </head>
 <body>
-<div class="modal-dialog main-modal-dialog" style="height: 600px;" id="sys-modal"
-     data-backdrop="static" >
-    <div class="modal-content">
-        <div class="modal-body">
+
             <header>
                 <div class="fl">餐道</div>
-                <div class="fr close-win" data-dismiss="modal">返回</div>
+                <div class="fr close-win" data-dismiss="modal" onclick="goBack();">返回</div>
             </header>
             <article style="height: 540px;">
                 <div class="content">
@@ -47,7 +53,8 @@
                                 <div class="dataSelect-type print" >
                                     <div class="active" onclick="ItemSellDetailPrint()">打印</div>
                                 </div>
-                                <table class="table table-bordered table-hover table-list " style="background: #fff">
+                                <div style="height: 500px;" class="clearfix">
+                                <table class="table table-bordered table-hover table-list " style="background: #fff;margin-bottom: 0px">
                                     <thead>
                                     <tr>
 
@@ -59,9 +66,9 @@
                                     <tbody >
                                     </tbody>
                                 </table>
+                                </div>
                                 <div class="contentInfo">
                                     <div class="foot-menu">
-                                        <div class="reporting-white" ></div>
                                         <div class="reportingInfo" >
                                             <span class="reportingInfo-text" >品项个数：<i></i></span>
                                             <span class="reportingInfo-text" >数量总计：<i></i></span>
@@ -87,6 +94,7 @@
                                 <div class="dataSelect-type print" >
                                     <div class="active">打印</div>
                                 </div>
+                                <div style="height: 500px;" class="clearfix">
                                 <table class="table table-bordered table-hover table-list" style="background: #fff">
                                     <thead>
                                     <tr>
@@ -99,9 +107,9 @@
                                     <tbody>
                                     </tbody>
                                 </table>
+                                    </div>
                                 <div class="contentInfo">
                                     <div class="foot-menu">
-                                        <div class="reporting-white" ></div>
                                         <div class="reportingInfo" >
                                             <span class="reportingInfo-text" >服务员个数：<i></i></span>
                                             <span class="reportingInfo-text" >数量总计：<i></i></span>
@@ -116,24 +124,51 @@
                             <div class="tab-item" style="display: none">
                                 <div class="form-group form-group-base form-input">
                                     <span class="form-label">开始时间:</span>
-                                    <input value="" name="phone"  type="date" class="form-control" autocomplete="off">
+                                    <input value=""  id="datetimeStart"  type=”text” class="form-control datetimeStart" />
                                 </div>
                                 <span style="padding: 0 5px">至</span>
                                 <div class="form-group form-group-base form-input" >
                                     <span class="form-label">结束时间:</span>
-                                    <input value="" name="phone"  type="date" class="form-control" autocomplete="off">
+                                    <input value=""   type="text" class="form-control datetimeEnd"   />
                                 </div>
                                 <div class="dataSelect-type print" >
-                                    <div class="active">打印</div>
+                                    <div class="active" onclick="printBusinessDetail()">打印</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </article>
-        </div>
-    </div>
-</div>
-<script src="../scripts/reporting.js"></script>
+            <footer>
+                <div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+            </footer>
+<script src="../../scripts/reporting.js"></script>
+
+<script>
+
+    var start = {
+        dateCell: '.datetimeStart',//input选择框
+        skinCell:"jedateorange",//橙色风格
+        format: 'YYYY-MM-DD hh:mm:ss',
+        festival:true,//是否显示节日
+        maxDate: jeDate.now(0), //设定最大日期为当前日期
+        choosefun: function(elem,datas){
+            end.minDate = datas; //开始日选好后，重置结束日的最小日期
+        }
+    };
+    jeDate(start)
+    var end = {
+        dateCell:'.datetimeEnd',
+        skinCell:"jedateorange",
+        format: 'YYYY-MM-DD hh:mm:ss',
+        festival:true,//是否显示节日
+        maxDate: jeDate.now(0), //设定最大日期为当前日期
+        choosefun: function(elem,datas){
+            start.maxDate = datas; //将结束日的初始值设定为开始日的最大日期
+        }
+    };
+    jeDate(end)
+</script>
+
 </body>
 </html>

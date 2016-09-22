@@ -144,8 +144,9 @@ var MainPage = {
 				$("#sys-dialog").modal("show");
 			}
 			if(me.hasClass('J-btn-rep')) {
-				$("#sys-dialog").load("../views/reporting/reporting.jsp");
-				$("#sys-dialog").modal("show");
+				/*$("#sys-dialog").load("../views/reporting/reporting.jsp");
+				$("#sys-dialog").modal("show");*/
+				window.location.href="../views/reporting/reporting.jsp";
 			}
 			if(me.hasClass('J-btn-check')) {
 				window.location.href="../views/check/check.jsp";
