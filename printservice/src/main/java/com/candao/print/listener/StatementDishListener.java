@@ -49,7 +49,7 @@ public class StatementDishListener extends AbstractQueueListener {
 				+ "\r\n" + "\r\n");
 
 		writer.write(StringUtils.bSubstring2("厅:" + object.getTableArea(), 10)
-				+ StringUtils.bSubstring2("台号: " + object.getTableNo(), 13) + "\r\n");
+				+ StringUtils.bSubstring2("客位: " + object.getTableNo(), 13) + "\r\n");
 
 		writer.write(StringUtils.bSubstring2("人数:" + getValueMap(ordermap, "custnum"), 10)
 				+ StringUtils.bSubstring2("服务员: " + object.getUserName(), 13) + "\r\n");

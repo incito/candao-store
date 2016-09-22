@@ -86,8 +86,8 @@ public class DishSetListener extends AbstractQueueListener {
         writer.flush();//
         socketOut.write(PrinterConstant.getFdDoubleFont());
 
-        String[] tableName = {object.getTableNo()," ", "人数:" + object.getCustnum()};
-        Integer[] tableLength = {12,1,8};
+        String[] tableName = {object.getTableNo()};
+        Integer[] tableLength = {15};
         String[] table = StringUtils.getLineFeedText(tableName, tableLength);
         if (table != null) {
             for (int i = 0; i < table.length; i++) {

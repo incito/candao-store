@@ -16,7 +16,6 @@
         <result property="tableArea" column="tableArea"/>
         <result property="tableid" column="tableid"/>
         <result property="orderseq" column="orderseq"/>
-        <result property="custnum" column="custnum"/>
     </resultMap>
 
     <resultMap id="DishResultMap" type="com.candao.print.entity.PrintDish">
@@ -63,7 +62,6 @@
 		  customerprinterip,
 		  customerprinterport,
 		  tableArea,
-		  custnum,
 		  tableid,orderseq
     </sql>
     <sql id="BASE_DISH_SELECT">
@@ -725,8 +723,7 @@
 	, customerprinterip
 	, customerprinterport
 	, tableArea,
-	tableid
-	,custnum)
+	tableid)
 
 	VALUES (
 	#{id}
@@ -739,7 +736,6 @@
 	,#{customerPrinterPort}
 	,#{tableArea}
 	,#{tableid}
-	,#{custnum}
 	)
 </insert>
     <update id="updateTimemsg" parameterType="Map">

@@ -78,16 +78,6 @@ public class PrintObj implements Serializable,Cloneable {
     private ResultInfo4Pos item;
     
     private ResultTip4Pos tip;
-
-	public String getCustnum() {
-		return custnum;
-	}
-
-	public void setCustnum(String custnum) {
-		this.custnum = custnum;
-	}
-
-	private String custnum;
     
     private Map<String, Object> posData;
 	

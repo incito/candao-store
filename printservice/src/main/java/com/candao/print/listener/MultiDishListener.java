@@ -84,7 +84,7 @@ public class MultiDishListener extends AbstractQueueListener {
         socketOut.write(template.getBodyFont());
 
         // 居中
-        socketOut.write(template.setAlignLeft());
+        socketOut.write(template.setAlignCenter());
         String[] table = template.getTableMsg(object);
         this.write(writer, table);
         // 左对齐
