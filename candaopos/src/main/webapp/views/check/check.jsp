@@ -11,18 +11,18 @@
     <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
     <meta name="renderer" content="webkit">
     <title>订单</title>
-    <link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script src="../scripts/jquery-3.1.0.min.js"></script>
+    <script src="../../scripts/jquery-3.1.0.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-    <script src="../scripts/common.js"></script>
-    <script src="../scripts/page.js"></script>
-    <script src="../scripts/main.js"></script>
-    <link rel="stylesheet" href="../css/check.css">
-    <link rel="stylesheet" href="../css/reporting.css">
+    <script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="../../scripts/common.js"></script>
+    <script src="../../scripts/page.js"></script>
+    <script src="../../scripts/main.js"></script>
+    <link rel="stylesheet" href="../../css/check.css">
+    <link rel="stylesheet" href="../../css/reporting.css">
 
 </head>
 <body>
@@ -80,7 +80,7 @@
                     <table id="checklist" class="table table-bordered table-hover table-list clear " style="background: #fff">
                         <thead>
                             <tr>
-                                <th>账单号111</th>
+                                <th>账单号</th>
                                 <th>状态</th>
                                 <th>区域</th>
                                 <th>桌号</th>
@@ -168,11 +168,73 @@
 
 
 
-<script src="../scripts/check.js"></script>
+<script src="../../scripts/check.js"></script>
 <script>
 
     $(function () {
-        firstActive();
+
+        $.ajax({
+            url:'/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/8/',
+            type: "get",
+            dataType: "text",
+            success: function (data) {
+                var data=JSON.parse(data.substring(12,data.length-3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+               /* data.OrderJson.sort(function(a,b){
+                    return b.begintime - a.begintime
+                });*/
+                if(data.Data==1){
+                    var str="";
+                    for( var i=0;i<data.OrderJson.length;i++) {
+                        str+='<tr>';
+                        str+='   <td>'+data.OrderJson[i].orderid+'</td>'
+                        var  ordertype='';
+                        switch (data.OrderJson[i].orderstatus+""){
+                            case "0": ordertype="未结"; break;
+                            case "3": ordertype="已结"; break;
+                            default:  ordertype="未知";break;
+                        };
+                        str+='   <td>'+ordertype+'</td>'
+                        str+='   <td>'+data.OrderJson[i].areaname+'</td>'
+                        str+='   <td>'+data.OrderJson[i].tableName+'</td>'
+                        str+='   <td>'+data.OrderJson[i].userid+'</td>'
+                        str+='   <td>'+data.OrderJson[i].begintime+'</td>'
+                        if(data.OrderJson[i].endtime===undefined){
+                            str+='   <td></td>'
+                        }
+                        else{
+                            str+='   <td>'+data.OrderJson[i].endtime+'</td>'
+                        }
+                        str+='   <td>'+data.OrderJson[i].custnum+'</td>'
+                        str+='   <td>'+data.OrderJson[i].dueamount+'</td>'
+                        if(data.OrderJson[i].gzname===undefined){
+                            str+='   <td></td>'
+                        }
+                        else{
+                            str+='   <td>'+data.OrderJson[i].gzname+'</td>'
+                        }
+                        if(data.OrderJson[i].gztele===undefined){
+                            str+='   <td></td>'
+                        }
+                        else{
+                            str+='   <td>'+data.OrderJson[i].gztele+'</td>'
+                        }
+                        if(data.OrderJson[i].gzuser===undefined){
+                            str+='   <td></td>'
+                        }
+                        else{
+                            str+='   <td>'+data.OrderJson[i].gzuser+'</td>'
+                        }
+                        
+                        str+="</tr>";
+
+                    }
+                }
+                $("#checklist tbody").html(str);
+                firstActive();
+            },
+
+        });
+
     })
 
 

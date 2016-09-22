@@ -13,17 +13,8 @@
     <title>订单</title>
     <link rel="stylesheet" href="../css/sys.css">
     <link rel="stylesheet" href="../css/reporting.css">
-    <script>
-        $(function(){
-            var $tabBox = $('.tab-box');
-            $('.J-g-menu li').click(function(){
-                var me = $(this),
-                        idx = me.index();
-                me.addClass('active').siblings().removeClass('active');
-                $tabBox.find('.tab-item').hide().eq(idx).show();
-            })
-        })
-    </script>
+    <link rel="stylesheet" href="../lib/pagination.css">
+
 </head>
 <body>
 <div class="modal-dialog main-modal-dialog" style="height: 600px;" id="sys-modal"
@@ -46,54 +37,52 @@
                     <div class="g-r">
                         <div class="g-r-content tab-box">
                             <%--品项销售明细--%>
-                            <div class="tab-item">
+                            <div class="tab-item" id="getItemSellDetail">
                                 <div class="dataSelect-type">
-                                    <div class="active">今天</div><div>本周</div><div>本月</div><div>上月</div>
+                                    <div class="active" flag="1" onclick="getItemSellDetail(this)">今天</div>
+                                    <div flag="2" onclick="getItemSellDetail(this)">本周</div>
+                                    <div flag="3" onclick="getItemSellDetail(this)">本月</div>
+                                    <div flag="4" onclick="getItemSellDetail(this)">上月</div>
                                 </div>
                                 <div class="dataSelect-type print" >
-                                    <div class="active">打印</div>
+                                    <div class="active" onclick="ItemSellDetailPrint()">打印</div>
                                 </div>
                                 <table class="table table-bordered table-hover table-list " style="background: #fff">
                                     <thead>
                                     <tr>
-                                        <th></th>
+
                                         <th>品项名称</th>
                                         <th>销售数量</th>
                                         <th>销售金额</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>10.66.19.3</td>
-                                        <td>test-1</td>
-                                        <td>正常</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>10.66.19.3</td>
-                                        <td>test-1</td>
-                                        <td>未连接</td>
-                                    </tr>
+                                    <tbody >
                                     </tbody>
                                 </table>
                                 <div class="contentInfo">
                                     <div class="foot-menu">
                                         <div class="reporting-white" ></div>
                                         <div class="reportingInfo" >
-                                            <span class="reportingInfo-text" >品项个数：<i>1</i></span>
-                                            <span class="reportingInfo-text" >数量总计：<i>2</i></span>
-                                            <span class="reportingInfo-text" >金额合计：<i>20.98</i></span>
+                                            <span class="reportingInfo-text" >品项个数：<i></i></span>
+                                            <span class="reportingInfo-text" >数量总计：<i></i></span>
+                                            <span class="reportingInfo-text" >金额合计：<i></i></span>
                                         </div>
-                                        <div class="page print"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
+
+                                        <div class=" print">
+                                            <div  class="paginationjs paginationjs-big demo">
+                                        </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <%--小费统计明细--%>
-                            <div class="tab-item" style="display: none">
+                            <div class="tab-item" id="getTipList" style="display: none">
                                 <div class="dataSelect-type">
-                                    <div class="active">今天</div><div>本周</div><div>本月</div><div>上月</div>
+                                    <div class="active" flag="1" onclick="getTipList(this)">今天</div>
+                                    <div flag="1" onclick="getTipList(this)">本周</div>
+                                    <div flag="1" onclick="getTipList(this)">本月</div>
+                                    <div flag="1" onclick="getTipList(this)">上月</div>
                                 </div>
                                 <div class="dataSelect-type print" >
                                     <div class="active">打印</div>
@@ -108,27 +97,15 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>10.66.19.3</td>
-                                        <td>test-1</td>
-                                        <td>正常</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>10.66.19.3</td>
-                                        <td>test-1</td>
-                                        <td>未连接</td>
-                                    </tr>
                                     </tbody>
                                 </table>
                                 <div class="contentInfo">
                                     <div class="foot-menu">
                                         <div class="reporting-white" ></div>
                                         <div class="reportingInfo" >
-                                            <span class="reportingInfo-text" >服务员个数：<i>1</i></span>
-                                            <span class="reportingInfo-text" >数量总计：<i>2</i></span>
-                                            <span class="reportingInfo-text" >金额合计：<i>20.98</i></span>
+                                            <span class="reportingInfo-text" >服务员个数：<i></i></span>
+                                            <span class="reportingInfo-text" >数量总计：<i></i></span>
+                                            <span class="reportingInfo-text" >金额合计：<i></i></span>
                                         </div>
                                         <div class="page print"><div class="page-btn prev-btn">&#60;</div><span id="curr-page">0</span>/<span id="pages-len">0</span><div class="page-btn next-btn">&#62;</div></div>
                                     </div>
@@ -157,5 +134,6 @@
         </div>
     </div>
 </div>
+<script src="../scripts/reporting.js"></script>
 </body>
 </html>
