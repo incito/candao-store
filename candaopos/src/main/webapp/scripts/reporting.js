@@ -35,6 +35,7 @@ function getItemSellDetail(flag) {//获取品项消费明细
     ladingMore("正在加载");
     var me = $(flag),flag=me.attr("flag");
     me.addClass("active").siblings().removeClass('active')
+    $("#getItemSellDetail tbody").html("");
     $.ajax({
         url:'/newspicyway/padinterface/getItemSellDetail.json',
         type: "get",
@@ -55,6 +56,7 @@ function getItemSellDetail(flag) {//获取品项消费明细
                 showNavigator: true,
 
                 callback: function(data, pagination) {
+
                     var str="";
                     for( var i=0;i<data.length;i++) {
                         str+='<tr>';
@@ -79,7 +81,6 @@ function getItemSellDetail(flag) {//获取品项消费明细
 function ItemSellDetailPrint(){//消费品项打印
     var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag");
     ladingMore("正在打印...");
-    console.log(111111)
     $.ajax({
         url:'/newspicyway/print4POS/getItemSellDetail.json',
         type: "get",
@@ -119,4 +120,17 @@ function getTipList(flag) {//获取小费明细
         },
     });
 }
+function TipListPrint(){//服务员小费打印
+    var flag=$("#getTipList .dataSelect-type .active" ).attr("flag");
+    ladingMore("正在打印...");
+    $.ajax({
+        url:'/newspicyway/print4POS/getItemSellDetail.json',
+        type: "get",
+        dataType: "json",
+        data:{"flag":flag},
+        success: function (data) {
+            removeLadingMore();
 
+        },
+    });
+}

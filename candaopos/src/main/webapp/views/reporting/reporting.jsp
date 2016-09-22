@@ -116,12 +116,12 @@
                             <div class="tab-item" style="display: none">
                                 <div class="form-group form-group-base form-input">
                                     <span class="form-label">开始时间:</span>
-                                    <input value="" name="phone"  type="date" class="form-control" autocomplete="off">
+                                    <input value=""  id="StartData"  type=”datetime” class="form-control" autocomplete="off" />
                                 </div>
                                 <span style="padding: 0 5px">至</span>
                                 <div class="form-group form-group-base form-input" >
                                     <span class="form-label">结束时间:</span>
-                                    <input value="" name="phone"  type="date" class="form-control" autocomplete="off">
+                                    <input value=""   type="datetime" class="form-control" id="EndData"  />
                                 </div>
                                 <div class="dataSelect-type print" >
                                     <div class="active">打印</div>
