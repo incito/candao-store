@@ -10,9 +10,9 @@ $(document).ready(function(){
 		$(this).attr("src",global_path+"/images/close-sm.png");
 	});
 	//未开过台的先开台
-	if(!g_isopened){
-		$("#open-dialog").modal("show");
-	}
+	//if(!g_isopened){
+	//	$("#open-dialog").modal("show");
+	//}
 	
 	//已点菜上一页
 	$(".dish-oper-btns .prev-btn").click(function() {

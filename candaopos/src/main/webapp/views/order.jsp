@@ -289,68 +289,6 @@
 			</div>
 		</div>
 	</div>
-	<!--开台 -->
-	<div class="modal fade in open-dialog" data-backdrop="static" id="open-dialog">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title">开台</div>
-	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
-	            </div>
-	            <div class="modal-body">
-	            	<div style="padding: 13px; float: left;">
-		            	<div class="hori-lf-div">
-		            		<div>
-		            			<span>服务员编号:</span>
-		            			<input type="text" class="form-control">
-		            		</div>
-		            		<div>
-		            			<span>桌号:</span>
-		            			<input type="text" class="form-control tableno">
-		            		</div>
-		            		<div>
-		            			<span>就餐人数(男):</span>
-		            			<input type="text" class="form-control personnum">
-		            		</div>
-		            		<div>
-		            			<span>就餐人数(女):</span>
-		            			<input type="text" class="form-control personnum">
-		            		</div>
-		            		<div>
-		            			<span>餐具数量:</span>
-		            			<input type="text" class="form-control">
-		            		</div>
-		            	</div>
-		            	<div class="hori-rt-div">
-		            		<div class="virtual-keyboard">
-								<ul>
-									<li>1</li><li>2</li><li>3</li>
-								</ul>
-								<ul>
-									<li>4</li><li>5</li><li>6</li>
-								</ul>
-								<ul>
-									<li>7</li><li>8</li><li>9</li>
-								</ul>
-								<ul>
-									<li>.</li><li>0</li><li>←</li>
-								</ul>
-							</div>
-		            	</div>
-	            	</div>
-	            	<div class="age-type">
-	            		<div>儿童</div><div>青年</div><div>中年</div><div>老年</div>
-	            	</div>
-	                <div class="btn-operate ">
-	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
-	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="confirmOpen()">确认开台
-	                    </button>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	</div>
 	<!-- 填写优惠数量 -->
 	<div class="modal fade default-dialog in input-num-dialog" id="coupnum-dialog"
 	     data-backdrop="static">
