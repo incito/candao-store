@@ -28,62 +28,57 @@
 	var g_eatType = "EAT-IN";//堂食
 
 	$(document).ready(function(){
-		var dom =$("#nav-room-types")[0];
-		var user_agent = navigator.userAgent;
-		if(typeof(dom) == 'object'){
-			if(user_agent.indexOf("Firefox")!=-1){// Firefox
-	            dom.addEventListener("DOMMouseScroll",addEvent,!1);
-		    } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
-		        dom.attachEvent("onmousewheel",addEvent,!1);
-		    }else{
-		        dom.addEventListener("mousewheel",addEvent,!1);
-		    }
-		}
-
-		var startX = 0, startY = 0, moveEndX=0, moveEndY=0, X, Y;
-		$("#nav-room-types").on("touchstart", function(e) {
-		    e.preventDefault();
-		    e.stopPropagation();
-		    startX = e.originalEvent.changedTouches[0].pageX,
-		    startY = e.originalEvent.changedTouches[0].pageY;
-		});
-		$("#nav-room-types").on("touchmove", function(e) {
-		    e.preventDefault();
-		    e.stopPropagation();
-		    moveEndX = e.originalEvent.changedTouches[0].pageX,
-		    moveEndY = e.originalEvent.changedTouches[0].pageY,
-		    X = moveEndX - startX,
-		    Y = moveEndY - startY;
-		    var count = $("#nav-room-types").children("li").length;
-		    if ( Math.abs(X) > Math.abs(Y) && X > 0 ) {
-		        if(roomtype_prev > 0){
-		        	$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
-					$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
-					roomtype_prev--;
-		        }
-		    }
-		    else if ( Math.abs(X) > Math.abs(Y) && X < 0 ) {
-				if(count-roomtype_prev>10){
-					$(".rooms-type .nav-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
-					$(".rooms-type .nav-types").find("li").eq(roomtype_prev+1).click();
-					roomtype_prev++;
-				}
-		    }
-		    else if ( Math.abs(Y) > Math.abs(X) && Y > 0) {
-//		        alert("top 2 bottom");
-		    }
-		    else if ( Math.abs(Y) > Math.abs(X) && Y < 0 ) {
-//		        alert("bottom 2 top");
-		    }
-		    else{
-//		        alert("just touch");
-		    }
-		});
-		$("img.img-close").hover(function(){
-		 	$(this).attr("src","../images/close-active.png");
-		},function(){
-			$(this).attr("src","../images/close-sm.png");
-		});
+//		var dom =$("#nav-room-types")[0];
+//		var user_agent = navigator.userAgent;
+//		if(typeof(dom) == 'object'){
+//			if(user_agent.indexOf("Firefox")!=-1){// Firefox
+//	            dom.addEventListener("DOMMouseScroll",addEvent,!1);
+//		    } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
+//		        dom.attachEvent("onmousewheel",addEvent,!1);
+//		    }else{
+//		        dom.addEventListener("mousewheel",addEvent,!1);
+//		    }
+//		}
+//
+//		var startX = 0, startY = 0, moveEndX=0, moveEndY=0, X, Y;
+//		$("#nav-room-types").on("touchstart", function(e) {
+//		    e.preventDefault();
+//		    e.stopPropagation();
+//		    startX = e.originalEvent.changedTouches[0].pageX,
+//		    startY = e.originalEvent.changedTouches[0].pageY;
+//		});
+//		$("#nav-room-types").on("touchmove", function(e) {
+//		    e.preventDefault();
+//		    e.stopPropagation();
+//		    moveEndX = e.originalEvent.changedTouches[0].pageX,
+//		    moveEndY = e.originalEvent.changedTouches[0].pageY,
+//		    X = moveEndX - startX,
+//		    Y = moveEndY - startY;
+//		    var count = $("#nav-room-types").children("li").length;
+//		    if ( Math.abs(X) > Math.abs(Y) && X > 0 ) {
+//		        if(roomtype_prev > 0){
+//		        	$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
+//					$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
+//					roomtype_prev--;
+//		        }
+//		    }
+//		    else if ( Math.abs(X) > Math.abs(Y) && X < 0 ) {
+//				if(count-roomtype_prev>10){
+//					$(".rooms-type .nav-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
+//					$(".rooms-type .nav-types").find("li").eq(roomtype_prev+1).click();
+//					roomtype_prev++;
+//				}
+//		    }
+//		    else if ( Math.abs(Y) > Math.abs(X) && Y > 0) {
+////		        alert("top 2 bottom");
+//		    }
+//		    else if ( Math.abs(Y) > Math.abs(X) && Y < 0 ) {
+////		        alert("bottom 2 top");
+//		    }
+//		    else{
+////		        alert("just touch");
+//		    }
+//		});
 
 
 
@@ -165,7 +160,6 @@
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<ul class="nav-types" id="nav-room-types">
-				<li class="active">全部</li><li>包间 1</li><li>包间2</li><li>包间3</li><li>包间4</li><li>包间5</li><li>包间6</li><li>包间7</li><li>包间8</li><li>包间9</li><li>包间10</li><li>包间11</li><li>包间12</li><li>包间13</li><li>包间14</li><li>包间15</li><li>包间16</li><li>包间17</li><li>包间18</li>
 			</ul>
 			<div class="nav-type-btn nav-type-next">
 				<span class="glyphicon glyphicon-chevron-right"></span>
@@ -173,37 +167,38 @@
 		</div>
 		<div class="content">
 			<ul id="standard-tables" class="standard tables">
-				<li class="opened">110
-					<div class="tb-info tb-status">￥246</div>
-					<div class="tb-info meal-time">12:00</div>
-					<div class="tb-info tb-person">2/2</div>
-				</li>
-				<!--li class="reserved">111<div class="tb-info tb-status">预</div><div class="tb-info tb-person">2人桌</div></li-->
-				<li>外卖台<div class="tb-info tb-person">2人桌</div></li>
-				<li class="opened">贵宾台
-					<div class="tb-info tb-status">￥246</div>
-					<div class="tb-info meal-time">16:00</div>
-					<div class="tb-info tb-person">2/2</div>
-				</li>
-				<li>112<div class="tb-info tb-person">2人桌</div></li><li>113<div class="tb-info tb-person">2人桌</div></li>
-				<li>114<div class="tb-info tb-person">4人桌</div></li><li>115<div class="tb-info tb-person">2人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>
-				<li>116<div class="tb-info tb-person">5人桌</div></li><li>116<div class="tb-info tb-person">6人桌</div></li>
+				<%--<li class="opened">110--%>
+					<%--<div class="tb-info tb-status">￥246</div>--%>
+					<%--<div class="tb-info meal-time">12:00</div>--%>
+					<%--<div class="tb-info tb-person">2/2</div>--%>
+				<%--</li>--%>
+				<%--<!--li class="reserved">111<div class="tb-info tb-status">预</div><div class="tb-info tb-person">2人桌</div></li-->--%>
+				<%--<li>外卖台<div class="tb-info tb-person">2人桌</div></li>--%>
+				<%--<li class="opened">贵宾台--%>
+					<%--<div class="tb-info tb-status">￥246</div>--%>
+					<%--<div class="tb-info meal-time">16:00</div>--%>
+					<%--<div class="tb-info tb-person">2/2</div>--%>
+				<%--</li>--%>
+				<%--<li>112<div class="tb-info tb-person">2人桌</div></li><li>113<div class="tb-info tb-person">2人桌</div></li>--%>
+				<%--<li>114<div class="tb-info tb-person">4人桌</div></li><li>115<div class="tb-info tb-person">2人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
+				<%--<li>116<div class="tb-info tb-person">5人桌</div></li><li>116<div class="tb-info tb-person">6人桌</div></li>--%>
+				<%----%>
 			</ul>
 			<ul id="coffee-tables" class="hide coffee tables">
 				<li>1台<div class="tb-info tb-person">2人桌</div></li><li>2台<div class="tb-info tb-person">2人桌</div></li>
@@ -212,11 +207,14 @@
 		</div>
 	</article>
 	<footer>
-		<div class="table-nums">
-			<div class="total-num active">全部（16）</div><div class="free-num">空闲（10）</div><div>就餐（11）</div>
+		<div class="table-nums J-table-nums">
+			<div class="total-num active all">全部（<span class="num">16</span>）</div>
+			<div class="free-num free">空闲（<span class="num">0</span>）</div>
+			<div class="opened">就餐（<span class="num">0</span>）</div>
 		</div>
 		<div class="foot-menu">
-			<ul class="menu"><li class="J-btn-takeout">外卖</li>
+			<ul class="menu">
+				<li class="J-btn-takeout">外卖</li>
 				<li class="J-btn-check">账单</li>
 				<li class="J-btn-rep">报表</li>
 				<li class="J-btn-clear">清机 / 结业</li>
@@ -230,7 +228,7 @@
 				</div>
 				<li class="J-btn-sys">系统设置</li>
 			</ul>
-			<div class="page" id="J-page"></div>
+			<div class="page" id="J-table-pager"></div>
 		</div>
 		<div class="form-group amount-div">
 			<span class="highlight-color">总金额：</span><span class="highlight-color">1360.999</span>

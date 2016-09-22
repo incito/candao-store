@@ -1,9 +1,15 @@
 
+var CurrentTalbeType ='all';
+var CurrentArea = '-1';//默认为全部
+var TablePager = null;
 
 var MainPage = {
+
 	init: function(){
 
 		this.setTables();
+
+		SetBotoomIfon.init();
 
 		this.bindEvent();
 
@@ -16,7 +22,8 @@ var MainPage = {
 		var dom = {
 			standardTables : $("#standard-tables"),
 			orderDialog : $("#order-dialog"),
-			openDialog : $("#open-dialog"),//开台权限验证弹窗
+			openDialog : $("#open-dialog"),//开台权限验证弹窗,
+			roomTypeNav: $(".rooms-type"),//餐台分类导航
 		};
 
 		/**
@@ -88,29 +95,34 @@ var MainPage = {
 			doPage(nowPage);
 		});
 
-		/*分区分类向左向右按钮*/
+		/*餐台分类事件*/
 		var roomtype_prev = 0;
-		$(".rooms-type .nav-types li").click(function() {
+		var navRoomTypes = $("#nav-room-types");
+
+		dom.roomTypeNav.delegate('li', 'click', function() {
 			var me = $(this);
-			me.find('li').removeClass("active");
+			me.siblings().removeClass("active").end().addClass('active');
 			me.addClass("active");
+			CurrentArea = me.attr('areaid');
+			that.setTables(CurrentTalbeType,me.attr('areaid'));
 		});
-		$(".rooms-type .nav-type-next").click(function(){
-			var count = $(".rooms-type .nav-types").find( "li").length;
+
+		dom.roomTypeNav.delegate('.nav-type-next', 'click', function() {
+			var count = navRoomTypes.find( "li").length;
 			if (roomtype_prev < count - 10) {
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev+1).click();
+				navRoomTypes.find("li").eq(roomtype_prev).css("margin-left", "-10%");
+				navRoomTypes.find("li").eq(roomtype_prev+1).click();
 				roomtype_prev++;
 			}
 		});
-		$(".rooms-type .nav-type-prev").click(function(){
+
+		dom.roomTypeNav.delegate('.nav-type-prev', 'click', function() {
 			if(roomtype_prev>=1){
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).css("margin-left","0");
-				$(".rooms-type .nav-types").find("li").eq(roomtype_prev-1).click();
+				navRoomTypes.find("li").eq(roomtype_prev-1).css("margin-left","0");
+				navRoomTypes.find("li").eq(roomtype_prev-1).click();
 				roomtype_prev--;
 			}
 		});
-
 
 		//底部菜单事件绑定
 		$(".foot-menu li").click(function(e){
@@ -207,19 +219,76 @@ var MainPage = {
 			}
 
 		});
+
 		$(document).click(function(e){
 			$(".m-member.popover").hide();
 			e.stopPropagation();
 		});
 
-		//餐桌数量筛选
-		$(".table-nums>div").click(function(){
-			$(".table-nums>div").removeClass("active");
-			$(this).addClass("active");
+		//设置餐桌统计
+		$(".J-table-nums>div").click(function(){
+			var me = $(this);
+			me.siblings().removeClass("active").end().addClass('active');
+			if(me.hasClass('all')) {
+				that.setTables('all', CurrentArea);
+				CurrentTalbeType = 'all';
+			} else if(me.hasClass('opened')) {
+				that.setTables('opened', CurrentArea);
+				CurrentTalbeType = 'opened';
+			} else {
+				that.setTables('free', CurrentArea);
+				CurrentTalbeType = 'free';
+			}
 		});
 	},
 
-	setTables: function(){
+	/**
+	 * 设置餐桌
+	 * @param type [opened, free, all]
+	 * @param areaid
+     */
+	setTables: function(type,areaid){
+
+		var type = type || CurrentTalbeType;
+		var areaid = areaid || CurrentArea;
+
+		function _getTablesArr(res){
+
+			var isOpend = false;
+			var tablesAll = [];
+			var tablesFree = [];
+			var tablesOpened = [];
+
+			$.each(res, function(key,val){
+				var tmp = '';
+				isOpend = val.status === '0' ? false : true;
+
+				if(areaid === val.areaid || areaid === '-1') {
+					if(isOpend) {
+						tmp = '<li class="opened" areaid="' + val.areaid + '">'+ val.tableNo +
+							'<div class="tb-info tb-status">' + val.fixprice + '</div>' +
+							'<div class="tb-info meal-time">' + val.begintime + '</div> ' +
+							'<div class="tb-info tb-person">' + val.personNum + '</div>' +
+							' </li>';
+
+						tablesOpened.push(tmp);
+					} else {
+						tmp = '<li areaid="' + val.areaid + '">'+ val.tableNo +
+							'<div class="tb-info tb-person">' + val.personNum + '</div>' +
+							' </li>'
+						tablesFree.push(tmp);
+					}
+					tablesAll.push(tmp);
+				}
+			});
+
+			return {
+				all : tablesAll,
+				free : tablesFree,
+				opened : tablesOpened
+			}
+		}
+
 		$.ajax({
 			url: _config.interfaceUrl.GetTableInfoByTableType,
 			method: 'POST',
@@ -229,43 +298,48 @@ var MainPage = {
 			}),
 			dataType:'json',
 			success: function(res){
-				var ret = [];
-				var isOpend = false;
-				$.each(res, function(key,val){
-					isOpend = val.status === '0' ? false : true;
-					if(isOpend) {
-						ret.push('<li class="opened" areaid="' + val.areaid + '">'+ val.tableNo +
-						'<div class="tb-info tb-status">' + val.fixprice + '</div>' +
-						'<div class="tb-info meal-time">' + val.begintime + '</div> ' +
-						'<div class="tb-info tb-person">' + val.personNum + '</div>' +
-						' </li>')
-					} else {
-						ret.push('<li areaid="' + val.areaid + '">'+ val.tableNo +
-						'<div class="tb-info tb-person">' + val.personNum + '</div>' +
-						' </li>')
-					}
+				var tables = _getTablesArr(res);
+				var navRoomTypesArr = [];
+				var navRoomTypes = $('#nav-room-types');
 
-				});
-				$("#standard-tables").html(ret.join(''));
+				//设置餐桌统计
+				$('.J-table-nums').find('.all .num').text(tables.all.length)
+					.end().find('.free .num').text(tables.free.length)
+					.end().find('.opened .num').text(tables.opened.length);
+
+				//设置区域
+				if(navRoomTypes.attr('inited') !== 'true'){
+					navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
+					$.each(res, function(key, val){
+						navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
+					});
+					navRoomTypes.attr('inited', 'true');
+					navRoomTypes.html(utils.array.unique(navRoomTypesArr).join(''));
+				}
+
+				if(tables[type].length == 0) {
+					$('#J-table-pager').html('');
+					$("#standard-tables").html('');
+				} else {
+					//初始化分页
+					TablePager = $('#J-table-pager').pagination({
+						dataSource: tables[type],
+						pageSize: 40,
+						showPageNumbers: false,
+						showNavigator: true,
+						callback: function(data) {
+							$("#standard-tables").html(data.join(''));
+						}
+					});
+				}
 
 			}
 		})
-	}
+	},
 };
 
 $(function(){
 	MainPage.init();
-
-
-	$('#J-page').pagination({
-		dataSource: [1, 2, 3, 4, 5, 6, 7],
-		pageSize: 5,
-		showPageNumbers: false,
-		showNavigator: true,
-		callback: function(data, pagination) {
-			console.info(data);
-		}
-	})
 });
 
 
