@@ -138,7 +138,7 @@ function TipListPrint(){//服务员小费打印
 function printBusinessDetail(){//营业数据打印
     var flag=$("#getTipList .dataSelect-type .active" ).attr("flag");
     var beginTime=$.trim($(".datetimeStart").val()),endTime=$.trim($(".datetimeEnd").val()),operationname=utils.storage.getter('aUserid');
-    if(beginTime=="" && beginTime==""){
+    if(beginTime=="" || beginTime==""){
         var str = '<div><strong >开始和结束日期不能为空</strong></div>'
         var alertModal = widget.modal.alert({
             cls: 'fade in',

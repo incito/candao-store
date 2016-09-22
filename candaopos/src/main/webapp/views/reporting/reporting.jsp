@@ -122,6 +122,7 @@
 
                             <%--营业数据明细--%>
                             <div class="tab-item" style="display: none">
+                                <span>自定义时间</span></br></br>
                                 <div class="form-group form-group-base form-input">
                                     <span class="form-label">开始时间:</span>
                                     <input value=""  id="datetimeStart"  type=”text” class="form-control datetimeStart" />

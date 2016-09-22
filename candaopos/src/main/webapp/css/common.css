@@ -559,5 +559,8 @@ footer{
 .paginationjs ul li:last-child:before {
 	content:'>';
 }
-
+.paginationjs .disabled{
+	color: #999;
+	cursor: auto;
+}
 

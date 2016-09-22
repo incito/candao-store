@@ -38,15 +38,15 @@
 					<div class="content">
 						<div class="g-l J-g-menu">
 							<ul>
-								<li class="active">启动打印复写卡</li>
-								<li>打印机列表<i>i</i></li>
+								<%--<li >启动打印复写卡</li>--%>
+								<li class="active">打印机列表<i>i</i></li>
 								<li>钱箱密码验证</li>
 							</ul>
 						</div>
 						<div class="g-r">
 							<div class="g-r-content tab-box">
 								<%--启动打印复写--%>
-								<div class="tab-item">
+								<%--<div class="tab-item">
 									<div class="item-card">
 										<h3>启动打印复写</h3>
 										<p>打开此功能后，注册会员、会员结账、充值时可以打印会员信息到复写卡上。</p>
@@ -56,10 +56,10 @@
 											<label><i></i></label>
 										</div>
 									</div>
-								</div>
+								</div>--%>
 
 								<%--打印机列表--%>
-								<div class="tab-item" id="printList"style="display: none">
+								<div class="tab-item" id="printList">
 									<table class="table table-bordered table-hover table-list" style="background: #fff">
 										<thead>
 											<tr>
@@ -96,8 +96,43 @@
 	</div>
 <script>
 	$(function () {
-		getItemSellDetail()
+		getItemSellDetail();
+		cashbox.init();
+
 	})
+
+	var cashbox={
+		init: function(){
+
+			this.getcashbox();
+
+			this.setcashbox();
+
+			return {
+				get:this.getcashbox,
+				set:this.setcashbox
+			}
+		},
+		getcashbox: function() {
+			var cashboxtype= utils.storage.getter('cashbox');
+			if(cashboxtype==null || cashboxtype=="0"){
+				$(".switch input").attr("checked",false)
+			}
+			if(cashboxtype=="1"){
+				$(".switch input").attr("checked",true)
+			}
+		},
+		setcashbox: function() {
+			$(".switch input").click(function () {
+				if($(this).prop("checked")==true){
+					utils.storage.setter('cashbox', "1");
+				}
+				else {
+					utils.storage.setter('cashbox', "0");
+				}
+			})
+		},
+	}
 	function getItemSellDetail() {//获取打印机列表
 		$.ajax({
 			url:'/newspicyway/pos/printerlist.json',
