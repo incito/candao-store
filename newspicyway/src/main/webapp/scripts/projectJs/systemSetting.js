@@ -910,10 +910,13 @@ function doGetPadData(){
 
 			//设置logo和pad背景图
 			if(data.backgroudurl !== null && data.backgroudurl !== ''){
-				$("#def_background").attr("src",data.backgroudurl);
+				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.backgroudurl.replace(/\\/g,'/');
+
+				$("#def_background").attr("src",imgUrl);
 			}
 			if(data.logourl !== null && data.logourl !== ''){
-				$("#defaultlogo").attr("src",data.logourl);
+				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.logourl.replace(/\\/g,'/');
+				$("#defaultlogo").attr("src",imgUrl);
 			}
 
 			//会员设置
@@ -1824,7 +1827,7 @@ function adjustpic(){
 
 	$.ajaxFileUpload({
 		fileElementId: [imgname],
-		url: '/padinterface/catImg',
+		url: '/newspicyway/padinterface/catImg',
 		dataType: 'json',
 		contentType:'application/json;charset=UTF-8',
 		data : {
@@ -1843,10 +1846,10 @@ function adjustpic(){
 			 alert(msg);
 			 }*/
 			if(type == "logo"){
-				$("#defaultlogo").attr("src",img_Path+result.image);
+				$("#defaultlogo").attr("src",'/newspicyway/'+result.image);
 				$("#logoUrl").attr("value",result.image);
 			}else if(type == "bg"){
-				$("#def_background").attr("src",img_Path+result.image);
+				$("#def_background").attr("src",'/newspicyway/'+result.image);
 				$("#backgroundUrl").attr("value",result.image);
 			}
 			$("#menuImg-adjust-dialog").modal("hide");

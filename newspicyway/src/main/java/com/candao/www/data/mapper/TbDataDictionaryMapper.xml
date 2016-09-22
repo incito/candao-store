@@ -42,6 +42,30 @@
 	     #{typename},#{datetype},#{begintime},#{endtime}
 	   )
 	</insert>
+	
+    <insert id="insertPadimg" parameterType="com.candao.www.data.model.TbDataDictionary">
+	   insert into t_dictionary (
+	     dictid,
+	     itemid,
+	     itemDesc,
+	     itemSort,
+	     status,
+	     type,typename,
+	     charges_status,
+	     item_value
+	   )values (
+	     #{id},
+	     #{itemid},
+	     #{itemDesc},
+	     #{itemSort},
+	     #{status},
+	     #{type},
+	     #{typename},
+	     #{chargesstatus},
+	     #{itemValue}
+	   )
+	</insert>
+	
 	<insert id="insertDish" parameterType="com.candao.www.data.model.Tdish">
 	   insert into t_dish (
 	     dishid,
@@ -118,6 +142,9 @@
 
             <if test="datetype != null ">
                 date_type=#{datetype},
+            </if>
+            <if test="itemValue!=null">
+            	item_value=#{itemValue}
             </if>
         </set>
         where

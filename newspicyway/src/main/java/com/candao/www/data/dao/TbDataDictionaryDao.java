@@ -26,6 +26,7 @@ public interface TbDataDictionaryDao {
 	public <T, K, V> List<T> find(Map<K, V> params);
 
 	public int insert(TbDataDictionary tbDataDictionary);
+	public int insertPadimg(TbDataDictionary tbDataDictionary);
 	
 	public void insertDish(Tdish dish);
 	
