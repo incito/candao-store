@@ -1341,15 +1341,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public String consumInfo() {
         Map<String, Object> consumInfo = torderMapper.selectConsumInfo();
-        if (null == consumInfo || consumInfo.isEmpty()) {
+        if (null == consumInfo) {
+            consumInfo = new HashMap<>();
+        }
+        if (consumInfo.isEmpty()) {
             consumInfo.put("totalAmount", "0.00");
             consumInfo.put("dueamount", "0.00");
             consumInfo.put("ssamount", "0.00");
             consumInfo.put("custnum", "0");
             consumInfo.put("orderCount", "0");
         } else {
-            for(Map.Entry<String,Object> entry:consumInfo.entrySet()){
-                if(null==entry.getValue()){
+            for (Map.Entry<String, Object> entry : consumInfo.entrySet()) {
+                if (null == entry.getValue()) {
                     entry.setValue(new BigDecimal(0));
                 }
             }
