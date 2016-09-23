@@ -77,7 +77,7 @@ public class LiunxSSHScpclientUtil {
 		FileOutputStream fileout = null;
 		for (String key : strMes.keySet()) {
 			try {
-				byte[] bytesWrite = strMes.get(key).getBytes("utf8");
+				byte[] bytesWrite = strMes.get(key).getBytes("GB2312");
 				fileout = new FileOutputStream(key);
 				fileout.write(bytesWrite);
 				fileout.flush();
