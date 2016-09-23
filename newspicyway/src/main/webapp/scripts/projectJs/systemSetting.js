@@ -1879,6 +1879,7 @@ function saveLOGOImg(){
 		itemValue : imgUrl
 	},function(data){
 		console.log(data);
+		window.location.href = global_Path + '/'+data;
 	});
 }
 
@@ -1900,6 +1901,7 @@ function saveBackgroundImg(){
 		itemValue : imgUrl
 	},function(data){
 		console.log(data);
+		window.location.href = global_Path + '/'+data;
 	});
 }
 
