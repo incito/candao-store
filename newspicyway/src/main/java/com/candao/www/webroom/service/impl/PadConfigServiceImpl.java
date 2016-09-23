@@ -48,24 +48,6 @@ public class PadConfigServiceImpl  implements PadConfigService{
 	}
 	@Override
 	public void  saveorupdateToDic(TbDataDictionary dictionary){
-//		//获取数据库ID
-//		Map<String, String> idsMap=new HashMap<>();
-//		//
-//		PadConfig  padConfig=new PadConfig();
-//		List<Map<String, Object>>   maps = systemServiceImpl.getImgByType(PADIMG);
-//		if(maps!=null && maps.size()>0){
-//			for(Map<String, Object> map:maps){
-//				String itemid=getValue(map, "itemid");
-//				String value = getValue(map, "itemValue");
-//				idsMap.put(itemid, getValue(map, "id"));
-//				if("1".equals(itemid)){//logo图片
-//					padConfig.setLogourl(value);
-//				}else if ("2".equals(itemid)) {//背景图片
-//					padConfig.setBackgroudurl(value);
-//				}
-//			}
-//		}
-		
 		TbDataDictionary tbDataDictionary = tbDataDictionaryDao.get(dictionary.getId());
 		if(tbDataDictionary != null){
 //			pad需要通过chargesstatu来判断是否更新图片，所以如果修改了图片，让该字段的值加1
