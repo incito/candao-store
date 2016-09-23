@@ -1,4 +1,6 @@
 var selectedDishsTop = [];
+var logoImg;
+var bgImg;
 
 $(function() {
 $("#test").click(function(){
@@ -911,14 +913,14 @@ function doGetPadData(){
 			//设置logo和pad背景图
 			if(data.backgroudurl !== null && data.backgroudurl !== ''){
 				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.backgroudurl.replace(/\\/g,'/');
-				$("#backgroundDictid").attr("value",bgImg.dictid);
+				$("#backgroundDictid").attr("value",bgImg && bgImg.dictid);
 				$("#def_background").attr("src",imgUrl);
 				
 			}
 			if(data.logourl !== null && data.logourl !== ''){
 				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.logourl.replace(/\\/g,'/');
 				$("#defaultlogo").attr("src",imgUrl);
-				$("#logoDictid").attr("value",logoImg.dictid);
+				$("#logoDictid").attr("value",logoImg && logoImg.dictid);
 			}
 
 			//会员设置
@@ -1399,24 +1401,16 @@ function initData(data, type){
 	}
 	
 	if(type == null){
-		//console.log();
-		//var imgs = data.PADIMG;
-		//var logoImg;
-		//var bgImg;
-		//$(imgs).each(function(){
-		//	if(this.itemid == 1){
-		//		logoImg = this;
-		//	}
-		//	if(this.itemid == 2){
-		//		bgImg = this;
-		//	}
-		//	if(logoImg != null){
-		//		$("#defaultlogo").attr("src",img_Path + logoImg.item_value);
-		//	}
-		//	if(bgImg != null){
-		//		$("#def_background").attr("src",img_Path + bgImg.item_value);
-		//	}
-		//});
+		var imgs = data.PADIMG;
+
+		$(imgs).each(function(){
+			if(this.itemid == 1){
+				logoImg = this;
+			}
+			if(this.itemid == 2){
+				bgImg = this;
+			}
+		});
 		
 		//一页菜谱显示
 		//var   onepaytypes=data.ONEPAGETYPE;
@@ -1885,7 +1879,6 @@ function saveLOGOImg(){
 		itemValue : imgUrl
 	},function(data){
 		console.log(data);
-		window.location.href = global_Path + '/'+data;
 	});
 }
 
@@ -1907,7 +1900,6 @@ function saveBackgroundImg(){
 		itemValue : imgUrl
 	},function(data){
 		console.log(data);
-		window.location.href = global_Path + '/'+data;
 	});
 }
 
