@@ -172,7 +172,9 @@
 	    itemSort,
 	    status,
 	    type,
-	    typename
+	    typename,
+	    charges_status,
+	    item_value
 	   from t_dictionary
 	   where 
 	    dictid=#{id} 

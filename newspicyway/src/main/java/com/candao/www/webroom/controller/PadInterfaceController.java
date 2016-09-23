@@ -3102,6 +3102,8 @@ public class PadInterfaceController {
 		String realpath = request.getSession().getServletContext().getRealPath("");
 		//实际文件路径
 		String imagelocation = realpath+File.separator+ "upload" + File.separator;
+		createDir(imagelocation);
+		//
 		Map<String, Object> map = new HashMap<String, Object>();
 		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
 		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
@@ -3138,16 +3140,34 @@ public class PadInterfaceController {
 		String inputDir = request.getRealPath("") +fileupload;
 		ImageCompress imageCompress = new ImageCompress();
 		String afterCatImgUrl = "";
-		String imageurl = imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
+		String imageurl="" ;
+		if(imageH<=0||imageW<0){
+			imageurl=fileName;
+		}else{
+			imageurl=imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
+		}
 		if (!"".equals(imageurl)) {
-			 afterCatImgUrl="upload" + File.separator+imageurl;
-			 PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
-			  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
-			  this.delFile(imagelocation);
-			  this.delFile(inputDir+delPathName);
+			  afterCatImgUrl="upload" + File.separator+imageurl;
+			  if(!imageurl.equals(fileName)){
+				  this.delFile(imagelocation);
+			  }
 		}
 		map.put("image", afterCatImgUrl);
 		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	/**
+	 * 设置logo图或背景图
+	 * @return
+	 */
+	@RequestMapping("/setImg")
+	@ResponseBody
+	public String setImg(TbDataDictionary dictionary){
+//		  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
+//		  this.delFile(inputDir+delPathName);
+//		PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
+		 padConfigService.saveorupdateToDic(dictionary);
+		return "system/systemSet";
 	}
 	
 	
@@ -3163,7 +3183,7 @@ public class PadInterfaceController {
 			// 拿到输出流，同时重命名上传的文件
 			FileOutputStream os = new FileOutputStream(imagelocation);
 			// 拿到上传文件的输入流
-			FileInputStream in = (FileInputStream) inuStream;
+			InputStream in =  inuStream;
 
 			// 以写字节的方式写文件
 			int b = 0;
@@ -3181,19 +3201,13 @@ public class PadInterfaceController {
 
 		return 0;
 	}
-	private byte[] getFileBuffer(File file) {
-		byte[] fileByte = null;
-		try {
-			FileInputStream fis = new FileInputStream(file);
-			fileByte = new byte[fis.available()];
-			fis.read(fileByte);
-			fis.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	private void createDir(String path){
+		File file =new File(path);    
+		//如果文件夹不存在则创建    
+		if  (!file .exists()  && !file .isDirectory())      
+		{       
+		    file .mkdirs();    
 		}
-		return fileByte;
 	}
 
 	/**
