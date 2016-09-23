@@ -3141,13 +3141,25 @@ public class PadInterfaceController {
 		String imageurl = imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
 		if (!"".equals(imageurl)) {
 			 afterCatImgUrl="upload" + File.separator+imageurl;
-			 PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
-			  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
 			  this.delFile(imagelocation);
-			  this.delFile(inputDir+delPathName);
+
 		}
 		map.put("image", afterCatImgUrl);
 		return JacksonJsonMapper.objectToJson(map);
+	}
+	
+	/**
+	 * 设置logo图或背景图
+	 * @return
+	 */
+	@RequestMapping("/setImg")
+	@ResponseBody
+	public String setImg(TbDataDictionary dictionary){
+//		  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
+//		  this.delFile(inputDir+delPathName);
+//		PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
+		 padConfigService.saveorupdateToDic(dictionary);
+		return "system/systemSet";
 	}
 	
 	

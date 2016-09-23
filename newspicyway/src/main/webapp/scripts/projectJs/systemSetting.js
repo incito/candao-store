@@ -911,12 +911,14 @@ function doGetPadData(){
 			//设置logo和pad背景图
 			if(data.backgroudurl !== null && data.backgroudurl !== ''){
 				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.backgroudurl.replace(/\\/g,'/');
-
+				$("#backgroundDictid").attr("value",bgImg.dictid);
 				$("#def_background").attr("src",imgUrl);
+				
 			}
 			if(data.logourl !== null && data.logourl !== ''){
 				var imgUrl = 'http://' +window.location.host + global_Path + '/' + data.logourl.replace(/\\/g,'/');
 				$("#defaultlogo").attr("src",imgUrl);
+				$("#logoDictid").attr("value",logoImg.dictid);
 			}
 
 			//会员设置
@@ -1875,7 +1877,7 @@ function saveLOGOImg(){
 		alert("请选择图片");
 		return;
 	}
-	$.post("../system/setImg",{
+	$.post("../padinterface/setImg",{
 		id : dictid,
 		itemid : "1",
 		itemDesc : "PadLOGO图",
@@ -1897,7 +1899,7 @@ function saveBackgroundImg(){
 		alert("请选择图片");
 		return;
 	}
-	$.post("../system/setImg",{
+	$.post("../padinterface/setImg",{
 		id : dictid,
 		itemid : "2",
 		itemDesc : "Pad背景图",

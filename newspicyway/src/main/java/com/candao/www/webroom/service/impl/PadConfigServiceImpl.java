@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.zookeeper.data.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.PadConfigDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
@@ -45,53 +47,44 @@ public class PadConfigServiceImpl  implements PadConfigService{
 		}
 	}
 	@Override
-	public PadConfig saveorupdateToDic(String iupItemid,String imgName){
-		//获取数据库ID
-		Map<String, String> idsMap=new HashMap<>();
-		//
-		PadConfig  padConfig=new PadConfig();
-		List<Map<String, Object>>   maps = systemServiceImpl.getImgByType(PADIMG);
-		if(maps!=null && maps.size()>0){
-			for(Map<String, Object> map:maps){
-				String itemid=getValue(map, "itemid");
-				String value = getValue(map, "itemValue");
-				idsMap.put(itemid, getValue(map, "id"));
-				if("1".equals(itemid)){//logo图片
-					padConfig.setLogourl(value);
-				}else if ("2".equals(itemid)) {//背景图片
-					padConfig.setBackgroudurl(value);
-				}
-			}
-		}
-		TbDataDictionary dictionary = new TbDataDictionary();
-		 dictionary.setId(idsMap.get(iupItemid)==null?IDUtil.getID():idsMap.get(iupItemid));
-		 dictionary.setItemid(iupItemid);
-		 dictionary.setItemDesc(iupItemid.equals("2")?"pad背景图":"padLOGO图");
-		 dictionary.setItemSort(Integer.valueOf(iupItemid));
-		 dictionary.setStatus(1);
-		 dictionary.setType(PADIMG);
-		 dictionary.setTypename("Pad图片");
-		 dictionary.setChargesstatus(iupItemid.equals("2")?"5":"4");
-		 dictionary.setItemValue(imgName);
-		 
-		if(iupItemid.equals("1")){
-			 if(padConfig.getLogourl()==null){
-				 tbDataDictionaryDao.insertPadimg(dictionary);
-			 }else{
-				 int i=tbDataDictionaryDao.update(dictionary);
-				 i++;
-			 }
-			
-		}else {
-			 if(padConfig.getBackgroudurl()==null){
-				 tbDataDictionaryDao.insertPadimg(dictionary);
-			 }else{
-				 tbDataDictionaryDao.update(dictionary);
-			 }
+	public void  saveorupdateToDic(TbDataDictionary dictionary){
+//		//获取数据库ID
+//		Map<String, String> idsMap=new HashMap<>();
+//		//
+//		PadConfig  padConfig=new PadConfig();
+//		List<Map<String, Object>>   maps = systemServiceImpl.getImgByType(PADIMG);
+//		if(maps!=null && maps.size()>0){
+//			for(Map<String, Object> map:maps){
+//				String itemid=getValue(map, "itemid");
+//				String value = getValue(map, "itemValue");
+//				idsMap.put(itemid, getValue(map, "id"));
+//				if("1".equals(itemid)){//logo图片
+//					padConfig.setLogourl(value);
+//				}else if ("2".equals(itemid)) {//背景图片
+//					padConfig.setBackgroudurl(value);
+//				}
+//			}
+//		}
+		
+		TbDataDictionary tbDataDictionary = tbDataDictionaryDao.get(dictionary.getId());
+		if(tbDataDictionary != null){
+//			pad需要通过chargesstatu来判断是否更新图片，所以如果修改了图片，让该字段的值加1
+			String chargesstatu = tbDataDictionary.getChargesstatus();
+			int statu = Integer.parseInt(chargesstatu) + 1;
+			tbDataDictionary.setChargesstatus(String.valueOf(statu));
+			tbDataDictionary.setItemValue(dictionary.getItemValue());
+			 tbDataDictionaryDao.update(tbDataDictionary);
+		}else{
+			dictionary.setId(IDUtil.getID());
+			dictionary.setType("PADIMG");
+			dictionary.setTypename("Pad图片");
+			dictionary.setChargesstatus("1");
+			dictionary.setStatus(1); //可用
+			 tbDataDictionaryDao.insertPadimg(dictionary);
 		}
 		
-		return  padConfig;
 	}
+		
 
 	@Override
 	public PadConfig getconfiginfos() {
