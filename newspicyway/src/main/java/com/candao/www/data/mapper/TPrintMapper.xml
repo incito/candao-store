@@ -136,7 +136,7 @@
 
     <update id="updateByOrderno" parameterType="java.util.Map">
         update t_printobj set
-        <if test="orderno != null">
+        <if test="sourceOrderid != null">
             orderno=#{sourceOrderid},
         </if>
         <if test="username != null">
