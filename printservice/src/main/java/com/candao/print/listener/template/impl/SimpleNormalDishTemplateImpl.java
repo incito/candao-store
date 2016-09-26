@@ -178,7 +178,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
     class Template {
         private Integer[] tableLength;
         private int noteLength;
-        private int speTableLength;
+        private Integer[] speTableLength;
         private Integer[] bodyLength;
         private Integer[] tailLength;
         // private int NoteLength;
@@ -189,21 +189,21 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
                 case 1:
                     this.tableLength = new Integer[]{32,1, 8};
                     this.noteLength = 38;
-                    this.speTableLength = 40;
+                    this.speTableLength = new Integer[]{32,1, 8};
                     this.bodyLength = new Integer[]{24, 7, 8};
                     this.tailLength = new Integer[]{9, 24, 8};
                     break;
                 case 2:
                     this.tableLength = new Integer[]{32,1, 8};
                     this.noteLength = 38;
-                    this.speTableLength = 40;
+                    this.speTableLength = new Integer[]{32,1, 8};
                     this.bodyLength = new Integer[]{24, 7, 8};
                     this.tailLength = new Integer[]{9, 24, 8};
                     break;
                 case 3:
                     this.tableLength = new Integer[]{12,1, 8};
                     this.noteLength = 19;
-                    this.speTableLength = 20;
+                    this.speTableLength = new Integer[]{12,1, 8};
                     this.bodyLength = new Integer[]{11, 4, 4};
                     this.tailLength = new Integer[]{5, 8, 8};
                     break;
@@ -228,7 +228,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
             return this.tailLength;
         }
 
-        public Integer getSpeTableLength() {
+        public Integer[] getSpeTableLength() {
             return this.speTableLength;
         }
 
@@ -252,8 +252,8 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
         String prefixMsg = " (" + subMsg.split("-")[0] + "台送)";
         subMsg = subMsg.split("-")[1];
 
-        String[] tableName = {subTableMsg + subMsg + prefixMsg};
-        Integer[] tableLength = {template.getSpeTableLength()};
+        String[] tableName = {subTableMsg + subMsg + prefixMsg," ","人数:" + obj.getCustnum()};
+        Integer[] tableLength = template.getSpeTableLength();
         String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 
         return table;

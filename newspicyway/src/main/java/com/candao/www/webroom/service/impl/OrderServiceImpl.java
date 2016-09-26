@@ -394,6 +394,12 @@ public class OrderServiceImpl implements OrderService {
         userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
 
         int result = torderMapper.update(order);
+
+        Map<String,Object> param = new HashMap<>();
+        param.put("targetOrderid",order.getOrderid());
+        param.put("custnum",order.getCustnum());
+        tbPrintObjDao.updateByOrderno(param);
+
         if (result > 0) {
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         }

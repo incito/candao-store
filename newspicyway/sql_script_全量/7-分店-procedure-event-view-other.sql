@@ -1252,7 +1252,8 @@ IF v_t_relateorderid IS NULL
 													memberno = ifNUll(v_memberno,v_t_memberno)
 											WHERE orderid = v_orderid;
 
-    
+
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
  
 					 
 IF v_t_orderid!=v_orderid AND v_t_orderid IS NOT NULL THEN
@@ -1303,6 +1304,7 @@ UPDATE t_order
                 WHERE orderid = v_orderid;
  
 
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
                 
 							 
 IF v_t_orderid!=v_orderid AND v_t_orderid IS NOT NULL THEN
@@ -1334,7 +1336,8 @@ ELSE
                     ageperiod = CONCAT(ageperiod,ifnull(v_t_ageperiod,'')),
                     memberno = ifNUll(v_memberno,v_t_memberno)
               WHERE orderid = v_orderid;
- 
+
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
 
             END IF;
           ELSE
@@ -1359,6 +1362,8 @@ ELSE
 																memberno = ifNUll(v_memberno,v_t_memberno)
 												WHERE orderid = v_orderid;
  
+
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
 
           END IF;
 
