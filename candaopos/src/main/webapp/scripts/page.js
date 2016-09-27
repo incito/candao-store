@@ -1,49 +1,6 @@
 var obj;
-var listNum = 14;//Ã¿Ò³ÏÔÊ¾ÌõÊý
-var currPage = 0;//µ±Ç°Ò³
-var pagesLen = 1;//×ÜÒ³Êý
+var listNum = 14;//Ã¿Ò³ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+var currPage = 0;//ï¿½ï¿½Ç°Ò³
+var pagesLen = 1;//ï¿½ï¿½Ò³ï¿½ï¿½
 var pageNum = 0;
-var totleNums;//×ÜÌõÊý
-loadPage = function(options){
-	var settings = $.extend({
-        obj: null, 
-        listNum: 14,
-        currPage: 0, 
-        totleNums: 0,
-        curPageObj: null,
-        pagesLenObj: null,
-        prevBtnObj: null,
-        nextBtnObj: null,
-        callback: null
-    }, options);
-	
-	$obj = $(settings.obj);
-	listNum = settings.listNum;
-	currPage = settings.currPage;
-	totleNums = settings.totleNums;
-	pagesLen = Math.ceil(totleNums/listNum);
-	//ÄÚÈÝ±ä»»  
-	for (var i=0;i<totleNums;i++){  
-		$($obj[i]).addClass("hide");
-	}  
-	for (var i=currPage*listNum;i<(currPage+1)*listNum;i++){ 
-		if($obj[i])
-			$($obj[i]).removeClass("hide");
-	}
-	pageNum = pagesLen==0?0:(currPage+1);
-	$(settings.curPageObj).text(pageNum);
-	$(settings.pagesLenObj).text(pagesLen);
-	if(pageNum == 1 || pageNum == 0){
-		$(settings.prevBtnObj).addClass("disabled");
-	}else{
-		$(settings.prevBtnObj).removeClass("disabled");
-	}
-	if(pageNum < pagesLen){
-		$(settings.nextBtnObj).removeClass("disabled");
-	}else{
-		$(settings.nextBtnObj).addClass("disabled");
-	}
-	if(settings.callback)
-		settings.callback();
-	return currPage;
-};
+var totleNums;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½

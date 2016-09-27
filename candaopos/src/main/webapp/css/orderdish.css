@@ -157,14 +157,14 @@ footer{
 	text-align: center;
 	padding: 10px;
 }
-.search-btns div.search-btn:hover, .search .delsearch-btn:hover, 
+.search-btns div.search-btn:hover, .search .btn-clear:hover, 
 .main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, 
 .default-dialog .taste ul li:hover, #combodish-dialog .btns-div .num-btn:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #ffffff;
 }
-.search-btns div.search-btn:active, .search .delsearch-btn:active, 
+.search-btns div.search-btn:active, .search .btn-clear:active, 
 .main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, 
 .default-dialog .taste ul li:active, #combodish-dialog .btns-div .num-btn:active{
 	background: #FF5803;
@@ -196,7 +196,7 @@ input[type=search] {
 	padding: 13px;
   	color: #515356;
 }
-.search .delsearch-btn{
+.search .btn-clear{
 	height: 42px;
 	width: 90px;
 	float: right;
