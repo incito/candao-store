@@ -563,4 +563,33 @@ footer{
 	color: #999;
 	cursor: auto;
 }
-
+/*
+右下角弹出提示框
+*/
+.rightBottomPop{
+	background:#fff;
+	position:absolute;
+	border:1px solid #e0e0e0;
+	z-index:99;
+}
+.rightBottomPop .rightBottomPop-title{
+	line-height:32px;
+	background:#FF5803;
+	border-bottom:1px solid #e0e0e0;
+	font-size:14px;padding:0 0 0 10px;
+	color: #fff
+}
+.rightBottomPop .rightBottomPop-title_left{
+	float:left;
+}
+.rightBottomPop .rightBottomPop-title_right{
+	float:right;cursor:pointer;
+	font-size:16px;
+	width: 30px;
+	text-align: center;
+ }
+.rightBottomPop .rightBottomPop-content{
+	margin: 50px 10px;
+	text-align: center;
+	font-size: 14px;
+}

@@ -96,24 +96,27 @@
 	</div>
 <script>
 	$(function () {
-		getItemSellDetail();
 		cashbox.init();
-
 	})
 
 	var cashbox={
 		init: function(){
 
-			this.getcashbox();
+			this.getCashbox();
 
-			this.setcashbox();
+			this.setCashbox();
+
+			this.getPrintDetail();
+
 
 			return {
-				get:this.getcashbox,
-				set:this.setcashbox
+				get:this.getCashbox,
+				set:this.setCashbox,
+				getPrint:this.getPrintDetail,
 			}
 		},
-		getcashbox: function() {
+		getCashbox: function() {//获取开钱箱状态
+			var that = this;
 			var cashboxtype= utils.storage.getter('cashbox');
 			if(cashboxtype==null || cashboxtype=="0"){
 				$(".switch input").attr("checked",false)
@@ -122,7 +125,9 @@
 				$(".switch input").attr("checked",true)
 			}
 		},
-		setcashbox: function() {
+		setCashbox: function() {//设置是否开启钱箱 1为开启，0位关闭
+			var that = this;
+
 			$(".switch input").click(function () {
 				if($(this).prop("checked")==true){
 					utils.storage.setter('cashbox', "1");
@@ -132,28 +137,35 @@
 				}
 			})
 		},
-	}
-	function getItemSellDetail() {//获取打印机列表
-		$.ajax({
-			url:'/newspicyway/pos/printerlist.json',
-			type: "get",
-			dataType: "json",
-			success: function (data) {
-				var str="",num=0;
-				for( var i=0;i<data.data.length;i++) {
-				    num=i+1
-					str+='<tr>';
-					str+='   <td width="200">'+num+'</td>';
-					str+='   <td width="276">'+data.data[i].ip+'</td>';
-					str+='   <td width="200">'+data.data[i].name+'</td>';
-					str+='   <td width="200">'+data.data[i].statusTitle+'</td>';
-					str+='</tr>';
+		getPrintDetail: function () {//获取打印机列表
+			var that = this;
+			this.abc("我是ABC")
+			$.ajax({
+				url:'/newspicyway/pos/printerlist.json',
+				type: "get",
+				dataType: "json",
+				success: function (data) {
+					var str="",num=0;
+					for( var i=0;i<data.data.length;i++) {
+						num=i+1
+						str+='<tr>';
+						str+='   <td width="200">'+num+'</td>';
+						str+='   <td width="276">'+data.data[i].ip+'</td>';
+						str+='   <td width="200">'+data.data[i].name+'</td>';
+						str+='   <td width="200">'+data.data[i].statusTitle+'</td>';
+						str+='</tr>';
 
-				};
-				$("#printList tbody").html(str);
-			},
-		});
+					};
+					$("#printList tbody").html(str);
+				},
+			});
+		},
+		abc:function (a) {
+
+
+		}
 	}
+
 </script>
 </body>
 </html>

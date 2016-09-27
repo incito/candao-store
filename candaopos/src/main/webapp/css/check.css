@@ -28,7 +28,7 @@
     float: left;
     padding: 0 14px 13px;
 }
-.keyboard div{
+.keyboard li{
     width: 40px;
     height: 40px;
     background: #FFFFFF;
@@ -39,13 +39,14 @@
     text-align: center;
     padding-top: 12px;
     cursor: pointer;
+    list-style: none;
 }
-.keyboard div:hover ,.check-type div:hover{
+.keyboard li:hover ,.check-type div:hover{
     background: #F68D70;
     opacity: 0.5;
     color: #fff;
 }
-.keyboard div.active,.check-type div.active{
+.keyboard li.active,.check-type div.active{
     background: #FF5803;
     color: #fff;
     opacity: 1
@@ -109,4 +110,7 @@
 }
 .contentInfo .foot-menu ul .disabled{
     color: #999;
+}
+#pagDome .paginationjs{
+    margin-right: 10px;
 }

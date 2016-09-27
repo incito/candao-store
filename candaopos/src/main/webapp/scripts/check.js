@@ -79,19 +79,6 @@ $('.foot-menu button').on('click', function(){
     }
 });
 
-function refresh() {//刷新
-    var s=".check-type div";
-    var ordertype
-    $(s).each (function () {
-        if($(this).hasClass("active")) {
-            ordertype = $(this).attr("ordertype");
-            return false
-        }
-    })
-    orderlist(ordertype);
-    firstActive();
-    return ordertype
-}
 function getOrderNumber() {//获取选中行的账单号
     var s=$("#checklist .tablistActive" );
     var orderNumber=s.find("td").eq(0).text()
@@ -132,43 +119,4 @@ function reason() {//反结原因
 
         $("#selectReason").val($(this).val())
     })
-}
-
-function orderlist(ordertype) {//表格赋值
-    var str="";
-    for( var i=0;i<tableList.length;i++){
-        if(tableList[i].ordertype==ordertype){
-            str+='<tr>';
-            str+='   <td>'+tableList[i].order+'</td>'
-            str+='   <td>'+tableList[i].ordertype+'</td>'
-            str+='   <td>'+tableList[i].address+'</td>'
-            str+='   <td>'+tableList[i].deskNo+'</td>'
-            str+='   <td>'+tableList[i].waiterNo+'</td>'
-            str+='   <td>'+tableList[i].startTime+'</td>'
-            str+='   <td>'+tableList[i].endTime+'</td>'
-            str+='   <td>'+tableList[i].people+'</td>'
-            str+='   <td>'+tableList[i].money+'</td>'
-            str+='   <td>'+tableList[i].orderUnit+'</td>'
-            str+='   <td>'+tableList[i].phone+'</td>'
-            str+='   <td>'+tableList[i].contacts+'</td>'
-            str+="</tr>";
-        }
-        if(ordertype=="") {
-            str+='<tr>';
-            str+='   <td>'+tableList[i].order+'</td>'
-            str+='   <td>'+tableList[i].ordertype+'</td>'
-            str+='   <td>'+tableList[i].address+'</td>'
-            str+='   <td>'+tableList[i].deskNo+'</td>'
-            str+='   <td>'+tableList[i].waiterNo+'</td>'
-            str+='   <td>'+tableList[i].startTime+'</td>'
-            str+='   <td>'+tableList[i].endTime+'</td>'
-            str+='   <td>'+tableList[i].people+'</td>'
-            str+='   <td>'+tableList[i].money+'</td>'
-            str+='   <td>'+tableList[i].orderUnit+'</td>'
-            str+='   <td>'+tableList[i].phone+'</td>'
-            str+='   <td>'+tableList[i].contacts+'</td>'
-            str+="</tr>";
-        }
-    }
-    $("#checklist tbody").html(str);
 }
