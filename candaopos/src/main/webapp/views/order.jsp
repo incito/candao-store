@@ -13,12 +13,74 @@
 <title>订单</title>
 <link rel="stylesheet" href="../css/orderdish.css">
 <link rel="stylesheet" href="../css/order.css">
-<script src="../scripts/page.js"></script>
-<script src="../scripts/order.js"></script>
-<script type="text/javascript">
-</script>
 </head>
 <body>
+	<!-- 开台权限验证 -->
+	<div class="modal fade in open-dialog" data-backdrop="static" style="display: none" id="open-dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">开台</div>
+					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<div style="padding: 13px; float: left;">
+						<div class="hori-lf-div">
+							<div>
+								<span>服务员编号:</span>
+								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control serverName J-server-name">
+							</div>
+							<%--<div>--%>
+							<%--<span>桌号:</span>--%>
+							<%--<input type="text" class="form-control tableno">--%>
+							<%--</div>--%>
+							<div>
+								<span>就餐人数(男):</span>
+								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control personnum J-male-num">
+							</div>
+							<div>
+								<span>就餐人数(女):</span>
+								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control personnum J-female-num">
+							</div>
+							<div>
+								<span>餐具数量:</span>
+								<input type="text" disabled  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control J-tableware-num">
+							</div>
+						</div>
+						<div class="hori-rt-div">
+							<div class="virtual-keyboard">
+								<ul>
+									<li>1</li><li>2</li><li>3</li>
+								</ul>
+								<ul>
+									<li>4</li><li>5</li><li>6</li>
+								</ul>
+								<ul>
+									<li>7</li><li>8</li><li>9</li>
+								</ul>
+								<ul>
+									<li>.</li><li>0</li><li>←</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="age-type">
+						<div>儿童</div><div>青年</div><div>中年</div><div>老年</div>
+					</div>
+					<div class="btn-operate ">
+						<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+						</button>
+						<button class="btn btn-save in-btn135 J-btn-submit"  type="button">确认开台
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="modal-dialog main-modal-dialog" id="order-modal"
 		data-backdrop="static" >
 		<div class="modal-content">
@@ -33,10 +95,10 @@
 						<div class="left-div">
 							<div class="order-info">
 								<div>
-									账单号：<span>E210234782737478</span>
+									账单号：<span class="J-order-id"></span>
 								</div>
 								<div>
-									桌号：<span>002</span>&nbsp;&nbsp;&nbsp;&nbsp;人数：<span>6</span>
+									桌号：<span class="J-table-no"></span>&nbsp;&nbsp;&nbsp;&nbsp;人数：<span class="J-person-no"></span>
 								</div>
 							</div>
 							<div class="dish-sel">
@@ -88,7 +150,7 @@
 							</div>
 							<div class="operate-btns" style="padding-left: 11px;">
 								<div>预结单</div>
-								<div onclick="takeOrder()">点菜</div>
+								<div onclick="Order.takeOrder()">点菜</div>
 								<div>开钱箱</div>
 								<div class="show-more">更多</div>
 							</div>
@@ -256,7 +318,7 @@
 										<li>.</li><li>0</li><li>00</li>
 									</ul>
 									<ul>
-										<li>←</li><li onclick="changeKeyboard('letter')">字母</li><li class="ok-btn">确定</li>
+										<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn">确定</li>
 									</ul>
 								</div>
 								<div class="virtual-keyboard letter-virtual-keyboard hide" id="letter-keyboard">
@@ -273,7 +335,7 @@
 										<li>S</li><li>T</li><li>U</li><li>V</li><li>W</li><li>X</li>
 									</ul>
 									<ul>
-										<li>Y</li><li>Z</li><li>←</li><li onclick="changeKeyboard('num')">数字</li><li class="ok-btn">确定</li>
+										<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn">确定</li>
 									</ul>
 								</div>
 							</div>
@@ -463,5 +525,7 @@
 	        </div>
 	    </div>
 	</div>
+	<script src="../scripts/page.js"></script>
+	<script src="../scripts/order.js"></script>
 </body>
 </html>

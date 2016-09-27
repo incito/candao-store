@@ -1,9 +1,17 @@
 
-var CurrentTalbeType ='all';
-var CurrentArea = '-1';//默认为全部
-var TablePager = null;
+
 
 var MainPage = {
+
+	CurrentTalbeType: 'all',
+	CurrentArea: '-1',//默认为全部
+
+	//全局订单信息
+	orderInfo: {
+		orderId: '',
+		personNo: '0',
+		tableNo: ''
+	},
 
 	init: function(){
 
@@ -18,6 +26,7 @@ var MainPage = {
 	},
 
 	bindEvent: function(){
+
 		var that = this;
 		var dom = {
 			standardTables : $("#standard-tables"),
@@ -25,74 +34,42 @@ var MainPage = {
 			openDialog : $("#open-dialog"),//开台权限验证弹窗,
 			roomTypeNav: $(".rooms-type"),//餐台分类导航
 		};
-
 		/**
 		 * 标准台事件
 		 */
 		dom.standardTables.on('click','li', function(){
-			var cla = $(this).attr("class");
-			if(cla == "opened"){
-				dom.orderDialog.load("../views/order.jsp");
-				dom.orderDialog.modal("show");
-			}else{
-				dom.openDialog.modal("show");
-			}
-		});
+			var me = $(this);
+			var cla = me.attr("class");
+			dom.orderDialog.load("../views/order.jsp");
+			dom.orderDialog.modal('show');
 
-		dom.openDialog.on('click','.J-btn-submit', function(){
-			$.ajax({
-				url: _config.interfaceUrl.VerifyUser,
-				method: 'POST',
-				contentType: "application/json",
-				data: JSON.stringify({
-					loginType: '030101',
-					username: $.trim(dom.openDialog.find('.serverName').val())
-				}),
-				dataType:'json',
-				success: function(res){
-					if(res.code === '0') {
-						var alertModal = widget.modal.alert({
-							cls: 'fade in',
-							content:'<strong>' + '确认开台' + '</strong>',
-							width:500,
-							height:500,
-							btnOkCb: function(){
-								dom.openDialog.modal('hide');
-								alertModal.close();
+			that.orderInfo = {
+				orderId: me.attr('orderid'),
+				personNo: me.attr('personnum'),
+				tableNo: me.attr('tableno')
+			};
 
-								dom.orderDialog.load("../views/order.jsp");
-								dom.orderDialog.modal("show");
-							}
-						});
-					} else {
-						widget.modal.alert({
-							cls: 'fade in',
-							content:'<strong>' + res.msg + '</strong>',
-							width:500,
-							height:500,
-							btnOkTxt: '',
-							btnCancelTxt: '确定'
-						});
-					}
+			setTimeout(function(){
+				if(cla !== "opened"){
+					$("#open-dialog").modal("show");
 				}
-			})
+			}, 100)
 		});
+
 
 		//退出系统
 		$(".exit-sys").click(function(){
 			window.location = "../views/login.jsp";
 		});
 
-		//
+		//标准台和咖啡台切换
 		$(".menu-tab ul li").click(function(){
-			nowPage = 0;
 			var olddiv = $(".menu-tab ul li.active").attr("loaddiv");
 			$(olddiv).addClass("hide");
 			$(".menu-tab ul li").removeClass("active");
 			$(this).addClass("active");
 			var loaddiv = $(this).attr("loaddiv");
 			$(loaddiv).removeClass("hide");
-			doPage(nowPage);
 		});
 
 		/*餐台分类事件*/
@@ -103,8 +80,8 @@ var MainPage = {
 			var me = $(this);
 			me.siblings().removeClass("active").end().addClass('active');
 			me.addClass("active");
-			CurrentArea = me.attr('areaid');
-			that.setTables(CurrentTalbeType,me.attr('areaid'));
+			that.CurrentArea = me.attr('areaid');
+			that.setTables(that.CurrentTalbeType,me.attr('areaid'));
 		});
 
 		dom.roomTypeNav.delegate('.nav-type-next', 'click', function() {
@@ -144,8 +121,6 @@ var MainPage = {
 				$("#sys-dialog").modal("show");
 			}
 			if(me.hasClass('J-btn-rep')) {
-				/*$("#sys-dialog").load("../views/reporting/reporting.jsp");
-				$("#sys-dialog").modal("show");*/
 				window.location.href="../views/reporting/reporting.jsp";
 			}
 			if(me.hasClass('J-btn-check')) {
@@ -230,14 +205,14 @@ var MainPage = {
 			var me = $(this);
 			me.siblings().removeClass("active").end().addClass('active');
 			if(me.hasClass('all')) {
-				that.setTables('all', CurrentArea);
-				CurrentTalbeType = 'all';
+				that.setTables('all', that.CurrentArea);
+				that.CurrentTalbeType = 'all';
 			} else if(me.hasClass('opened')) {
-				that.setTables('opened', CurrentArea);
-				CurrentTalbeType = 'opened';
+				that.setTables('opened', that.CurrentArea);
+				that.CurrentTalbeType = 'opened';
 			} else {
-				that.setTables('free', CurrentArea);
-				CurrentTalbeType = 'free';
+				that.setTables('free', that.CurrentArea);
+				that.CurrentTalbeType = 'free';
 			}
 		});
 	},
@@ -246,11 +221,11 @@ var MainPage = {
 	 * 设置餐桌
 	 * @param type [opened, free, all]
 	 * @param areaid
-     */
+	 */
 	setTables: function(type,areaid){
 
-		var type = type || CurrentTalbeType;
-		var areaid = areaid || CurrentArea;
+		var type = type || this.CurrentTalbeType;
+		var areaid = areaid || this.CurrentArea;
 
 		function _getTablesArr(res){
 
@@ -265,7 +240,7 @@ var MainPage = {
 
 				if(areaid === val.areaid || areaid === '-1') {
 					if(isOpend) {
-						tmp = '<li class="opened" areaid="' + val.areaid + '">'+ val.tableNo +
+						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.personNum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
 							'<div class="tb-info tb-status">' + val.fixprice + '</div>' +
 							'<div class="tb-info meal-time">' + val.begintime + '</div> ' +
 							'<div class="tb-info tb-person">' + val.personNum + '</div>' +
@@ -273,7 +248,7 @@ var MainPage = {
 
 						tablesOpened.push(tmp);
 					} else {
-						tmp = '<li areaid="' + val.areaid + '">'+ val.tableNo +
+						tmp = '<li orderid="'+ val.orderid  + '" personNum="'+ val.personNum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
 							'<div class="tb-info tb-person">' + val.personNum + '</div>' +
 							' </li>'
 						tablesFree.push(tmp);
@@ -298,6 +273,7 @@ var MainPage = {
 			}),
 			dataType:'json',
 			success: function(res){
+
 				var tables = _getTablesArr(res);
 				var navRoomTypesArr = [];
 				var navRoomTypes = $('#nav-room-types');
@@ -322,7 +298,7 @@ var MainPage = {
 					$("#standard-tables").html('');
 				} else {
 					//初始化分页
-					TablePager = $('#J-table-pager').pagination({
+					$('#J-table-pager').pagination({
 						dataSource: tables[type],
 						pageSize: 40,
 						showPageNumbers: false,
@@ -341,7 +317,6 @@ var MainPage = {
 $(function(){
 	MainPage.init();
 });
-
 
 var pay_nowPage = 0;
 function paging(currPage) {

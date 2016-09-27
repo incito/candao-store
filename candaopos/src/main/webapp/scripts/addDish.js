@@ -1,18 +1,130 @@
 var nowPage4 = 0;// 已选择菜品分页
 var nowPage5 = 0;// 待选择菜品分页
 
-var activeinputele;
-var flag_prev = 0;
+
 var dishMap = null;//添加进购物车的菜品
 
 var tastDish = {};
+
+var AddDish = {
+
+	init: function () {
+
+		//设置全局订单信息
+		$("#order-dialog").find('.J-order-id').text(MainPage.orderInfo.orderId)
+			.end().find('.J-table-no').text(MainPage.orderInfo.tableNo)
+			.end().find('.J-person-no').text(MainPage.orderInfo.personNo);
+
+		//搜索键盘初始化
+		widget.keyboard({
+			target: '.search-btns',
+			chirdSelector: 'div'
+		});
+
+		this.renderDishType();
+
+		this.bindEvent();
+	},
+
+	bindEvent: function () {
+		var that = this;
+		/**
+		 * 搜索事件
+		 */
+		$(".J-search .btn-clear").click(function () {
+			$(".search input[type='search']").val("");
+		});
+
+		/**
+		 * 菜品分类事件
+		 * @type {*|jQuery|HTMLElement}
+         */
+		var $dishType = $('.dish-type');
+		var $navDishTypes = $(".nav-dish-types");
+		var flag_prev = 0;
+		$navDishTypes.delegate('li.nav-dish-type', 'click', function () {
+			var me = $(this);
+			me.siblings().removeClass("active").end().addClass("active");
+			that.renderDishes();
+		});
+
+		//菜品分类向左向右按钮
+		$(".nav-dishtype-next").click(function(){
+			var count = $dishType.find( "li.nav-dish-type").length;
+			if (flag_prev < count - 6) {
+				$dishType .find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
+				$dishType .find("li.nav-dish-type").eq(flag_prev+1).click();
+				flag_prev++;
+			}
+		});
+		$(".nav-dishtype-prev").click(function(){
+			if(flag_prev>=1){
+				$dishType.find("li.nav-dish-type").eq(flag_prev-1).css("margin-left","0");
+				$dishType.find("li.nav-dish-type").eq(flag_prev-1).click();
+				flag_prev--;
+			}
+		});
+	},
+
+	//获取菜品分类
+	renderDishType: function () {
+		var that = this
+		$.ajax({
+			url: _config.interfaceUrl.GetDishGroupInfos,
+			method: 'POST',
+			contentType: "application/json",
+			dataType:'json',
+			success: function(res){
+
+				if(res.code === '0') {
+					var htm = '';
+					$.each(res.data, function(k,v){
+						console.log(v);
+						var cla = "";
+						if (k == 0)
+							cla = "active";
+						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"  itemsort="' + v.itemsort + '">' + v.itemdesc + '</li>';
+					});
+					$(".nav-dish-types").html(htm);
+					that.renderDishes();
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + res.msg + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			}
+		});
+
+	},
+	// 通过分类获取菜品信息
+	renderDishes: function () {
+		var that = this
+		$.ajax({
+			url: _config.interfaceUrl.GetAllDishInfos + '/' + utils.storage.getter('aUserid') + '/',
+			method: 'GET',
+			contentType: "application/json",
+			dataType:'json',
+			success: function(res){
+				console.log(res);
+			}
+		});
+	}
+}
+
+
+
 $(document).ready(function(){
+
+
+	AddDish.init();
+
 	dishMap = new utils.HashMap();
-	$("img.img-close").hover(function(){
-	 	$(this).attr("src",global_path+"/images/close-active.png");	 
-	},function(){
-		$(this).attr("src",global_path+"/images/close-sm.png");
-	});
+
 	if(g_eatType == "TAKE-OUT"){
 		//外卖
 		$(".give-dish").addClass("hide");
@@ -22,23 +134,9 @@ $(document).ready(function(){
 		$(".gua-dan").addClass("hide");
 		$(".give-dish").removeClass("hide");
 	}
-	$(".search input[type='search']").focus(function(event){
-        activeinputele = $(this);
-	});
-	//删除搜索条件
-	$(".search .delsearch-btn").click(function(){
-		$(".search input[type='search']").val("");
-	});
-	//搜索条件输入
-	$(".search-btns div").click(function(){
-		var keytext = $(this).text();
-		if(activeinputele != null && activeinputele != undefined){
-			var val = activeinputele.val();
-			val = val + keytext;
-			activeinputele.val(val);
-			activeinputele.focus();
-		}
-	});
+
+
+
 	//上一页
 	$(".oper-div .prev-btn").click(function(){
 		if($(this).hasClass("disabled")){
@@ -67,24 +165,9 @@ $(document).ready(function(){
 		}
 		page5(nowPage5+1);
 	});
-	/*菜品分类向左向右按钮*/
-	$(".nav-dishtype-next").click(function(){
-		var count = $(".nav-dish-types").find( "li.nav-dish-type").length;
-		if (flag_prev < count - 6) {
-			$(".nav-dish-types").find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
-			$(".nav-dish-types").find("li.nav-dish-type").eq(flag_prev+1).click();
-			flag_prev++;
-		}
-	});
-	$(".nav-dishtype-prev").click(function(){
-		if(flag_prev>=1){	
-			$(".nav-dish-types").find("li.nav-dish-type").eq(flag_prev-1).css("margin-left","0");
-			$(".nav-dish-types").find("li.nav-dish-type").eq(flag_prev-1).click();
-			flag_prev--;
-		}
-	});
+
 	page4(0);
-	initDishType();
+	//renderDishType();
 	
 	$("#updatenum-dialog input").focus(function(){
 		activeinputele = $(this);
@@ -120,7 +203,7 @@ function controlBtns(){
 }
 // 已点菜品分页
 function page4(currPage) {
-	nowPage4 = loadPage({
+	nowPage4 = widget.loadPage({
 		obj : "#sel-dish-table tbody tr",
 		listNum : 16,
 		currPage : currPage,
@@ -137,7 +220,7 @@ function page4(currPage) {
 }
 // 菜品分页
 function page5(currPage) {
-	nowPage5 = loadPage({
+	nowPage5 = widget.loadPage({
 		obj : ".dishes-content .dish-info",
 		listNum : 20,
 		currPage : currPage,
@@ -148,127 +231,7 @@ function page5(currPage) {
 		nextBtnObj : "#adddish-modal .main-div .next-btn"
 	});
 }
-// 菜品分类
-function initDishType() {
-	var htm = '';
-	for (var i = 0; i < 20; i++) {
-		var cla = "";
-		if (i == 0)
-			cla = "active";
-		htm += '<li class="nav-dish-type ' + cla + '">分类' + i + '</li>';
-	}
-	$(".nav-dish-types").html(htm);
-	initDishes();
-	$(".nav-dish-types li.nav-dish-type").click(function() {
-		$(".nav-dish-types li.nav-dish-type").removeClass("active");
-		$(this).addClass("active");
-		initDishes();
-	});
-}
-// 通过分类获取菜品信息
-function initDishes() {
-	var htm = '';
-	for (var i = 0; i < 25; i++) {
-		var name = "";
-		var price = 49;
-		var unit = "份";
-		var type = 0;
-		if(i<5){
-			type = 0;
-			name = "无口味菜品"+i;
-		}else if(i<10){
-			type = 1;
-			name = "多口味菜品"+i;
-		}else if(i<15){
-			type = 2;
-			name="套餐类菜品"+i;
-			unit = "套";
-		}else{
-			type = 3;
-			name="鱼锅类菜品"+i;
-		}
-		htm += '<div class="dish-info" dishtype='+type+' dishid="dish-id-' + i + '" dishname="'+name+'" price="'+price+'" unit="'+unit+'">' 
-			+ '<div class="dish-name">' + name
-			+ '</div>' 
-			+ '<hr>' 
-			+ '<div class="dish-price">'+price+'/'+unit+'</div>'
-			+ '</div>';
-	}
-	$(".main-div .dishes-content").html(htm);
-	page5(nowPage5);
-	$(".dishes-content .dish-info").click(function() {
-		var dishid = $(this).attr("dishid");
-		var dishname = $(this).attr("dishname");
-		var price = $(this).attr("price");
-		var dishtype = $(this).attr("dishtype");
-		var unit = $(this).attr("unit");
-		var dish = {
-				dishid: dishid,
-				dishname:dishname,
-				unit:unit,
-				price:price,
-				dishtype:dishtype,
-				dishnum:1,
-				dishnote:""
-		};
-		if(dishtype == "0"){
-			//普通菜品
-			var f = isExist(dishid);
-			if(f){
-				//已存在该菜品
-				var $tr = null;
-				$("#sel-dish-table tbody tr").each(function(){
-					var dishId = $(this).attr("dishid");
-					if(dishId == dishid){
-						$tr = $(this);
-						return;
-					}
-				});
-				var seldish = dishMap.get(dishid);
-				var num = seldish.dishnum;
-				num = parseFloat(num)+1;
-				$tr.find("td.num").text(num);
-				var totalPrice = calTotalPrice(num, dish.price);
-				$tr.find("td.price").text(totalPrice);
-				seldish.dishnum = num;
-				dishMap.put(dishid, seldish);
-				//更新总消费金额
-				updateTotalAmount();
-			}else{
-				addDish(dish);
-			}
-		}else if(dishtype == "1"){
-			//多口味菜品
-			tastDish = dish;
-			initNoteDialog(2);
-		}else if(dishtype == "2"){
-			//套餐
-			$("#combodish-dialog").modal("show");
-			$("#combodish-dialog .num-btns .num-btn").unbind("click").on("click", function(){
-				
-			});
-			
-			$("#combodish-dialog .avoid").unbind("click").on("click", function(){
-				if($(this).hasClass("active")){
-					$(this).removeClass("active");
-				}else{
-					$(this).addClass("active");
-				}
-			});
-		}else if(dishtype == "3"){
-			//鱼锅
-			$("#fishpotdish-dialog").modal("show");
-			$("#fishpotdish-dialog .avoid").unbind("click").on("click", function(){
-				if($(this).hasClass("active")){
-					$(this).removeClass("active");
-				}else{
-					$(this).addClass("active");
-				}
-			});
-		}
-		
-	});
-}
+
 /**
  * 购物车添加菜品
  * @param dish

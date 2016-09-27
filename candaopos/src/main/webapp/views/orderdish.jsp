@@ -29,10 +29,10 @@
 						<div class="left-div">
 							<div class="order-info">
 								<div>
-									账单号：<span>E210234782737478</span>
+									账单号：<span class="J-order-id"></span>
 								</div>
 								<div>
-									桌号：<span>002</span>&nbsp;&nbsp;&nbsp;&nbsp;人数：<span>6</span>
+									桌号：<span class="J-table-no"></span>&nbsp;&nbsp;&nbsp;&nbsp;人数：<span class="J-person-no"></span>
 								</div>
 							</div>
 							<div class="dish-info">
@@ -126,10 +126,10 @@
 								<div class="search-btn">Y</div>
 								<div class="search-btn">Z</div>
 							</div>
-							<div class="form-group search">
+							<div class="form-group search J-search">
 								<span class="glyphicon glyphicon-search"></span> <input
 									type="search" class="form-control" placeholder="输入菜品首字母">
-								<div class="delsearch-btn">C</div>
+								<div class="btn-clear">C</div>
 							</div>
 							<div class="form-group dishes">
 								<div class="dishes-content"></div>
