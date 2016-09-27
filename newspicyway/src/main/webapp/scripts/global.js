@@ -394,6 +394,13 @@ function toBusinessSum(){
 	$("#allSearch").css("visibility","hidden");
 }
 /**
+ * 菜单跳转公共方法
+ */
+function toFrame(src){
+	$(parent.document.all("detail")).attr("src", src);
+	$("#allSearch").css("visibility","hidden");
+}
+/**
  * 设置iframe高度自适应屏幕
  * 暂时没有用
  */

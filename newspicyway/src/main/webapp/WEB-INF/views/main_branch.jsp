@@ -50,11 +50,15 @@
 					<a href="#" class="ky-menu-warning" onclick="toTable()">餐台管理</a>
 				</li>
 				</c:if>
-				  <c:if test="${item.key  == '0305' || item.key=='020101'}">
-				<li>
-					<a href="#" class="ky-menu-danger" onclick="toPrinterManager()">打印管理</a>
-				</li>
-				 </c:if>
+				<c:if test="${item.key  == '0305' || item.key=='020101'}">
+					<li class="ky-dropdown" id="print">
+						<a href="#" class="ky-menu-danger" onclick="toPos()">打印管理</a>
+	 					<ul class="ky-dropdown-menu ky-nav ky-nav-pills ky-dropdown-menu-print">
+	 						<li><a href="#" class="ky-menu-danger ky-menu-print" onclick="toPos()">POS管理</a></li>
+			 				<li><a href="#" class="ky-menu-danger ky-menu-print" onclick="toPrinterManager()">打印机管理</a></li>
+	 					</ul>
+					</li>
+				</c:if>
 			 <c:if test="${item.key  == '0308' || item.key=='020101'}">
 				<li>
 					<a href="#" class="ky-menu-minor" onclick="toPreferterial()">优惠活动</a>
@@ -208,6 +212,9 @@
 <script>
 // $(document.all("detail")).height(document.body.clientHeight-46);
 
+function toPos(){
+	toFrame(global_Path+'/daliyReports/topage?path=printer/posManager');
+}
 /*************进销存 start*********************/
 
 //基础信息
@@ -319,6 +326,9 @@ $(document).ready(function() {
 		//点击任意菜单，取消进销存菜单的选中状态
 		$('.ky-menu-psi').removeClass("ky-menu-erpactive");
 		
+		//点击任意菜单，取消进销存菜单的选中状态
+		$('.ky-menu-print').removeClass("ky-menu-printactive");
+		
 		//改变文本
 		$("#title_p").html(_this.html());
 		//若是报表分析，显示第一个子菜单名称
@@ -333,6 +343,11 @@ $(document).ready(function() {
 		//若是进销存，显示第一个子菜单名称
 		if(_this.parent().attr("id") == "psi"){
 			$("#title_p").html($(".ky-dropdown-menu-erp").find("li").eq(0).find("a").text());
+		}
+		
+		//若是打印管理，显示第一个子菜单名称
+		if(_this.parent().attr("id") == "print"){
+			$("#title_p").html($(".ky-dropdown-menu-print").find("li").eq(0).find("a").text());
 		}
 		
 		//获取当前菜单对应的颜色代码
@@ -390,6 +405,12 @@ $(document).ready(function() {
 			_this.parent().parent().prev("a").addClass("ky-menu-active");
 			$(this).addClass("ky-menu-active");
 		}
+		
+		//判断是否是打印管理二级菜单
+		if(_this.parent().parent().parent().attr("id") == "print"){
+			$('.ky-menu-print').removeClass("ky-menu-printactive");
+			$(this).addClass("ky-menu-printactive");
+		}
 	});
 //	餐台管理
 //	bindEventForsecondMenu("ct");
@@ -399,6 +420,9 @@ $(document).ready(function() {
 	
 	//进销存
 	bindEventForsecondMenu("psi");
+	
+	//打印管理
+	bindEventForsecondMenu("print");
 	
 	$("#allSearch").css("visibility","hidden");
 	
@@ -446,6 +470,16 @@ $(document).ready(function() {
 		if($(this).parent().parent().parent().attr("id") == "psi"){
 			//是否有被选中的进销存菜单
 			if(!$(".ky-menu-psi").hasClass("ky-menu-erpactive")){
+				$(this).parent().parent().prev('a').css({
+					'background-color' : '#E8E7E4',
+					'color' : '#282828'
+				});
+			}
+		}
+		
+		if($(this).parent().parent().parent().attr("id") == "print"){
+			//是否有被选中的进销存菜单
+			if(!$(".ky-menu-print").hasClass("ky-menu-printactive")){
 				$(this).parent().parent().prev('a').css({
 					'background-color' : '#E8E7E4',
 					'color' : '#282828'
