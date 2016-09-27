@@ -655,17 +655,19 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Override
 	public void updatePadData(String attach) {
+		//attacht数据格式[0]orderId,[1]支付金额,[2]优免金额[3]会员号[4]默认值
+		//<attach><![CDATA[H20160926561706011680;0.24;0.06;0;0]]></attach>
 		if(attach!=null){
 			String[] args=attach.split(";");
 			if(args.length>2){
 				Map<String, Object> map=new HashMap<>();
-				map.put("orderno", args[0]);
-				map.put("castmoney", args[1]);
-				map.put("paymoney", args[2]);
+				//castmoney应收=实际支付方式+优惠
 				BigDecimal  b1=new BigDecimal(args[1]);
 				BigDecimal  b2=new BigDecimal(args[2]);
-				BigDecimal  b3= b1.subtract(b2);
-				map.put("youmian", b3);
+				map.put("orderno", args[0]);
+				map.put("castmoney",b1.add(b2));
+				map.put("paymoney", args[1]);
+				map.put("youmian", b2);
 				torderDetailMapper.updateOrderinfo(map);
 			}
 		}
