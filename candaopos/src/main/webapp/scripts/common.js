@@ -372,6 +372,9 @@ widget.keyboard = function(opts){
 					focusIpt.focus();
 					focusIpt.val(focusVal.substring(0,focusVal.length-1));
 				}
+			}else if(keyVal == "C"){
+				focusIpt.val("");
+				focusIpt.focus();
 			}else{
 				focusVal += keyVal;
 				focusIpt.val(focusVal);
@@ -403,6 +406,64 @@ var SetBotoomIfon = {
 			$('.J-sys-info').find('.time').text(utils.date.current());
 		},1000)
 	}
+}
+/**
+ * 右下角弹窗
+ title:"提示信息",
+ content:" ",内容
+ width: 320,宽度
+ height: 200,高度
+ right:5,右边
+ */
+var rightBottomPop ={
+	alert:function (opts) {
+		var that=this
+		//取当前浏览器窗口大小
+		var  windowWidth=$(document).width();
+		var windowHeight=$(document).height();
+		//参数和默认值
+		var defaults = {
+			title:"提示信息",
+			content:" ",
+			width: 320,
+			height: 200,
+			right:5,
+		};
+		var opts = $.extend({},defaults, opts);
+		//弹窗的大小
+		var html="<div class='rightBottomPop' style='width:"+opts.width+"px;height:"+opts.height+"px;bottom:"+(-opts.height)+"px;right:"+opts.right+"px;'>"+
+			"<div class='rightBottomPop-title'>" +
+			"<div class='rightBottomPop-title_left' ><b>"+opts.title+"</b></div>" +
+			"<div class='rightBottomPop-title_right' onclick='rightBottomPop.close(this)'>×</div>" +
+			"<div style='clear:both'></div>"+
+			"</div>" +
+			"<div class='rightBottomPop-content'>" + opts.content+ "</div>"+
+			"</div>"
+		$("body").append(html);
+		var lengthCon=$(".rightBottomPop").length
+		for( var i=0;i<lengthCon;i++){
+			$(".rightBottomPop").eq(i).animate({bottom:i*opts.height},1500);
+			$(".rightBottomPop").eq(i).css("bottom",i*opts.height);
+		}
+		setTimeout(function() {
+			$('.rightBottomPop').remove()
+		}, 10000);
+
+
+	},
+	close:function (a) {
+		$(a).parent().parent().remove();
+		var lengthCon=$(".rightBottomPop").length;
+		if(lengthCon>0){
+			var height=$(".rightBottomPop").css("height");
+			height=height.substring(0,height.length-2)
+			for( var i=0;i<lengthCon;i++){
+				$(".rightBottomPop").eq(i).animate({bottom:i*height},1500);
+				$(".rightBottomPop").eq(i).css("bottom",i*height)
+			}
+		}
+	}
+
 }
 /************
  * 工具类

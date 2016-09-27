@@ -57,7 +57,6 @@ function getItemSellDetail(flag) {//获取品项消费明细
                 showNavigator: true,
 
                 callback: function(data, pagination) {
-
                     var str="";
                     for( var i=0;i<data.length;i++) {
                         str+='<tr>';
