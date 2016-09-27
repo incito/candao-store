@@ -338,18 +338,42 @@ var checkOrder={
         });
     },
     rebackOrder:function () {//反结算
-        $.ajax({
-            /*url:'/newspicyway/print4POS/getMemberSaleInfo/' + aUserid + '/'+orderId+'/',*/
-            url:'/newspicyway/datasnap/rest/TServerMethods1/rebackorder/' + aUserid + '/'+orderId+'/',
-            type: "get",
-            dataType: "text",
-            success: function (data) {
-                data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
-                console.log(data)
-                console.log(data.Data+","+data.Info);
-                alert("1212")
+        var str =
+                '<strong>订单号：'+orderId+'确定反结算吗？</strong>';
+
+        var alertModal = widget.modal.alert({
+            cls: 'fade in',
+            content:str,
+            width:500,
+            height:500,
+            title: "",
+            btnOkTxt: '确定',
+            btnOkCb: function(){
+                _getBackinfo();
+            },
+            btnCancelCb: function(){
+
             }
         });
+        function _getBackinfo() {
+            $.ajax({
+                /*url:'/newspicyway/print4POS/getMemberSaleInfo/' + aUserid + '/'+orderId+'/',*/
+                url:'/newspicyway/datasnap/rest/TServerMethods1/rebackorder/' + aUserid + '/'+orderId+'/',
+                type: "get",
+                dataType: "text",
+                success: function (data) {
+                    data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                    console.log(data)
+                    if(data.Data=="0"){
+                        rightBottomPop.alert({
+                            content:data.Info,
+                        })
+                    }
+                    console.log(data.Data+","+data.Info);
+                }
+            });
+        }
+
     },
     selectTr:function () {
         var that=this;
