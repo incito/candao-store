@@ -62,15 +62,10 @@
     <%
        String title = request.getParameter("title");
        String clearType = request.getParameter("clearType");
-       String reason= request.getParameter("reason");
-       String orderNo=request.getParameter("orderNo");
-
+       String userRightNo= request.getParameter("userRightNo");
+       String cbd=request.getParameter("cbd");
     %>
-    var title = "<%=title%>";
-    var clearType = "<%=clearType%>";
-    var reason="<%=reason%>";
-    var orderNo="<%=orderNo%>";
-
+    var title = "<%=title%>",clearType = "<%=clearType%>",userRightNo="<%=userRightNo%>",callBackFun="<%=cbd%>"
     $("#pagestitle").text(title);
     $(function () {
         impower.int();
@@ -82,7 +77,6 @@
                 target: '.virtual-keyboard-base'
             });
             this.permission();
-            console.log("121212")
         },
         permission:function () {
             var user="",psd=""
@@ -110,11 +104,8 @@
                 });
 
             $(".btnOk").click(function () {
-                $('#c-mod-fjs').modal("hide")
-                $("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
-                $("#order-dialog").modal('show');
-                /*$.ajax({
-                    url: _config.interfaceUrl.AuthorizeLogin,
+                $.ajax({
+                    url: _config.interfaceUrl.AuthorizeLogin,//登录判断
                     method: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify({
@@ -125,29 +116,25 @@
                     }),
                     dataType: "json",
                     success: function (data) {
-                        console.log(data)
-                        if(data.code === '0') {
-                            $.ajax({
-                                url: _config.interfaceUrl.AntiSettlementOrder,//反结算
-                                method: 'POST',
-                                contentType: "application/json",
-                                data: JSON.stringify({
-                                    'reason':reason,
-                                    'orderNo':orderNo,
-                                    'userName':user
-                                }),
-                                dataType: "json",
-                                success:function (data) {
-                                    console.log(data)
-                                    if(data.result==='0'){
-                                        //$("#c-mod-fjs").modal("hide")
-                                        //window.location.href="../orderdish.jsp";
-                                        $("#c-mod-fjs").load("../orderdish.jsp",{"fromType":"1"});
-                                    }
-
-                                }
-                            })
-                        } else {
+                        if(data.code === '0') {//成功登录
+                           var user_right= utils.userRight.get(user,userRightNo);
+                            if(user_right){//验证权限
+                                eval(callBackFun)
+                            }
+                            else {
+                                var str = '<div class="js_Ok" ><br>您没有'+title.substring(0,title.length-2)+'权限</div>';
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content:str,
+                                    width:500,
+                                    height:500,
+                                    title:'',
+                                    btnOkTxt: '确定',
+                                    btnCancelTxt: ''
+                                });
+                            }
+                        }//登录不成功
+                        else {
                             widget.modal.alert({
                                 cls: 'fade in',
                                 content:'<strong>' + data.msg + '</strong>',
@@ -158,7 +145,7 @@
                             });
                         }
                     }
-                });*/
+                });
                 return false//禁止form表单跳转
             })
 

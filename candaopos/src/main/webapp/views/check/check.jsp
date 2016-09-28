@@ -137,7 +137,9 @@
     });
     var aUserid=utils.storage.getter('aUserid')//获取登录用户
 
-
+    function abcd(user) {
+        alert(user)
+    }
 var checkOrder={
         int:function (orderstatus) {
             SetBotoomIfon.init();//设置底部信息
@@ -337,125 +339,157 @@ var checkOrder={
             }
         });
     },
-    rebackOrder:function () {//反结算
-        var reason=""
-        _getOrder();
-        function _getOrder() {//二次确认弹窗
-            var str = '<div class="js_Ok" style="text-align: left;">订单号：<br>'+orderId+'确定反结算吗？</div>';
-            var alertModal = widget.modal.alert({
-                cls: 'fade in',
-                content:str,
-                width:500,
-                height:500,
-                title: "",
-                btnOkTxt: '确定',
-                btnOkCb: function(){
-                    _getBackinfo();
-                    $(".modal-alert,.modal-backdrop").remove();
-                },
-                btnCancelCb: function(){
-                }
-            });
-        };
-        function _getBackinfo() {//获取是否生成清机单
-            $.ajax({
-                /*url:'/newspicyway/datasnap/rest/TServerMethods1/rebackorder/' + aUserid + '/'+orderId+'/',*/
-                url:_config.interfaceUrl.CheckAntiSettleOrder+'' + aUserid + '/'+orderId+'/',
-                type: "get",
-                dataType: "text",
-                success: function (data) {
-                    data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
-                    console.log(data)
-                    if(data.Data=="0"){
-                        _getClear(data.Info)
-                    };
-                    if(data.Data=="1"){
-                        _whyClear()
+    rebackOrder:{//反结算跳转
+            jumpfjs:function(user) {
+                alert(user)
+                $.ajax({
+                 url: _config.interfaceUrl.AntiSettlementOrder,//反结算
+                 method: 'POST',
+                 contentType: "application/json",
+                 data: JSON.stringify({
+                 'reason':reason,
+                 'orderNo':orderNo,
+                 'userName':user
+                 }),
+                 dataType: "json",
+                 success:function (data) {
+                 console.log(data)
+                 if(data.result==='0'){
+                 $('#c-mod-fjs').modal("hide")
+                 $("#order-dialog").modal('show');
+                 $("#c-mod-fjs").load("../orderdish.jsp",{"fromType":"1"});
+                 }
+
+                 }
+                 })
+            },
+        rebackOrder:function () {//反结算
+            var reason="";
+            var that=this
+            _getOrder();
+            function _getOrder() {//二次确认弹窗
+                var str = '<div class="js_Ok" style="text-align: left;">订单号：<br>'+orderId+'确定反结算吗？</div>';
+                var alertModal = widget.modal.alert({
+                    cls: 'fade in',
+                    content:str,
+                    width:500,
+                    height:500,
+                    title: "",
+                    btnOkTxt: '确定',
+                    btnOkCb: function(){
+                        _getBackinfo();
+                        $(".modal-alert,.modal-backdrop").remove();
+                    },
+                    btnCancelCb: function(){
                     }
-                }
-            });
-        };
-        function _getClear(info) {//已经生成清机单不能结业
-            var str = '<div class="js_Ok" ><br>'+info+'</div>';
-            var alertModal = widget.modal.alert({
-                cls: 'fade in',
-                content:str,
-                width:500,
-                height:500,
-                title: "",
-                btnOkTxt: '确定',
-                btnCancelTxt:"",
-                btnOkCb: function(){
-                    $(".modal-alert,.modal-backdrop").remove();
-                },
-                btnCancelCb: function(){
-                }
-            });
-        };
-        function _noChoiceClearReason() {//没有选择反结算原因
-            var str = '<div class="js_Ok" ><br>请选择一个反结算原因</div>';
-
-            var alertModal = widget.modal.alert({
-                cls: 'fade in',
-                content:str,
-                width:500,
-                height:500,
-                title: "",
-                btnOkTxt: '确定',
-                btnCancelTxt:"",
-                btnOkCb: function(){
-                    $(".modal-alert:last,.modal-backdrop:last").remove();
-                },
-                btnCancelCb: function(){
-                }
-            });
-        }
-        function _whyClear() {
-            var str =
-                    '<div class="selectReason" style="text-align: left">'+
-                    '<div class="form-group form-group-base form-input">'+
-                    '   <span class="form-label" style="line-height: 40px">反结原因:</span>'+
-                    '   <input id="selectReason" value="" name="selectReason" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px;width: 250px;" autocomplete="off">'+
-                    '</div><br/>' +
-                    '<label><input name="Fruit" type="radio" value="结错账" />结错账 </label><br/>'+
-                    '<label><input name="Fruit" type="radio" value="用错优惠" />用错优惠 </label><br/>'+
-                    '<label><input name="Fruit" type="radio" value="用错会员" />用错会员 </label><br/>'+
-                    '<label><input name="Fruit" type="radio" value="客人投诉" />客人投诉 </label><br/>'+
-                    '</div>';
-
-            var alertModal = widget.modal.alert({
-                cls: 'fade in',
-                content: str,
-                width: 500,
-                height: 500,
-                title: "请选择反结原因",
-                btnOkTxt: '确定',
-                btnOkCb: function () {
-                    if($("#selectReason").val()==""){
-                        _noChoiceClearReason();
-                        return
+                });
+            };
+            function _getBackinfo() {//获取是否生成清机单
+                $.ajax({
+                    /*url:'/newspicyway/datasnap/rest/TServerMethods1/rebackorder/' + aUserid + '/'+orderId+'/',*/
+                    url:_config.interfaceUrl.CheckAntiSettleOrder+'' + aUserid + '/'+orderId+'/',
+                    type: "get",
+                    dataType: "text",
+                    success: function (data) {
+                        data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                        console.log(data)
+                        if(data.Data=="0"){
+                            _getClear(data.Info)
+                        };
+                        if(data.Data=="1"){
+                            _whyClear()
+                        }
                     }
-                    $(".modal-alert,.modal-backdrop").remove();
-                    $("#c-mod-fjs").load("../check/impower.jsp",{"title" : "反结算授权","reason":reason,"orderNo":orderId});
-                    $("#c-mod-fjs").modal("show");
-                },
-                btnCancelCb: function () {
+                });
+            };
+            function _getClear(info) {//已经生成清机单不能结业
+                var str = '<div class="js_Ok" ><br>'+info+'</div>';
+                var alertModal = widget.modal.alert({
+                    cls: 'fade in',
+                    content:str,
+                    width:500,
+                    height:500,
+                    title: "",
+                    btnOkTxt: '确定',
+                    btnCancelTxt:"",
+                    btnOkCb: function(){
+                        $(".modal-alert,.modal-backdrop").remove();
+                    },
+                    btnCancelCb: function(){
+                    }
+                });
+            };
+            function _noChoiceClearReason() {//没有选择反结算原因
+                var str = '<div class="js_Ok" ><br>请选择一个反结算原因</div>';
 
-                }
-            });
-            //选择给input赋值
-            $(".selectReason input").click(function () {
-                $("#selectReason").val($(this).val());
-                reason=$("#selectReason").val();
-            })
-        }
-        
+                var alertModal = widget.modal.alert({
+                    cls: 'fade in',
+                    content:str,
+                    width:500,
+                    height:500,
+                    title: "",
+                    btnOkTxt: '确定',
+                    btnCancelTxt:"",
+                    btnOkCb: function(){
+                        $(".modal-alert:last,.modal-backdrop:last").remove();
+                    },
+                    btnCancelCb: function(){
+                    }
+                });
+            }
+            function _whyClear() {
+                $.ajax({
+                    url: '../../scripts/config.json',
+                    type:"get",
+                    dataType:'text',
+                    success: function(res){
+                        var res= res.split("*/");//以注释结尾分割
+                        res=JSON.parse(res[1])['ResettlementReason'];//获取反结算原因
+                        res=res.split(";")//以；分割成数值
+                        var     str = '<div class="selectReason" style="text-align: left">'
+                        str+=   '<div class="form-group form-group-base form-input">'
+                        str+='   <span class="form-label" style="line-height: 40px">反结原因:</span>'
+                        str+='   <input id="selectReason" value="" name="selectReason" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px;width: 250px;" autocomplete="off">'
+                        str+= '</div><br/>'
+                        for(var i=0;i<res.length;i++){//反结算原因列表
+                            str+=  '<label><input name="Fruit" type="radio" value='+res[i]+' />'+res[i]+'</label><br/>'
+                        }
+                        str+='</div>';
+                        var alertModal = widget.modal.alert({
+                            cls: 'fade in',
+                            content: str,
+                            width: 500,
+                            height: 500,
+                            title: "请选择反结原因",
+                            btnOkTxt: '确定',
+                            btnOkCb: function () {
+                                if($("#selectReason").val()==""){
+                                    _noChoiceClearReason();
+                                    return
+                                }
+                                $(".modal-alert,.modal-backdrop").remove();
+                                $("#c-mod-fjs").load("../check/impower.jsp",{"title" : "反结算授权","userRightNo":"030203","cbd":"checkOrder.rebackOrder.jumpfjs(user)"});
+                                $("#c-mod-fjs").modal("show");
+                            },
+                            btnCancelCb: function () {
 
+                            }
+                        });
+                        //选择给input赋值
+                        $(".selectReason input").click(function () {
+                            $("#selectReason").val($(this).val());
+                            reason=$("#selectReason").val();
+                        })
+                    }
+                })
+            };
+        },
     },
+
+
     clearing:function () {//收银
        var userRight= utils.userRight.get(aUserid,"030206")
         if(userRight){
-
         }
         else {
             var str = '<div class="js_Ok" ><br>您没有收银权限</div>';
@@ -517,7 +551,7 @@ var checkOrder={
                 that.receipt()
             }
             if(me.hasClass("c-mod-fjs")){//反结算
-                that.rebackOrder()
+                that.rebackOrder.rebackOrder()
             }
             if(me.hasClass("c-mod-js")){//反结算
                 that.clearing()
