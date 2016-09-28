@@ -426,7 +426,7 @@ public class TableServiceImpl implements TableService {
             paramMap.put("targetOrderid", targetOrderId);
             paramMap.put("username", userByjobNum.getName());
             paramMap.put("tableid", sourceTable.get("tableid"));
-            paramMap.put("tableno", "桌号: " + sourceTable.get("tableNo"));
+            paramMap.put("tableno", "台号: " + sourceTable.get("tableNo"));
             paramMap.put("tableArea", sourceTable.get("areaname"));
             if (tbPrintObjDao.updateByOrderno(paramMap) < 1) {
                 throw new Exception("并台时更新t_printobj表的关系失败");

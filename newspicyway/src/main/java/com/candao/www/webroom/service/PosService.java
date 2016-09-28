@@ -1,6 +1,10 @@
 package com.candao.www.webroom.service;
 
 import com.candao.common.utils.AjaxResponse;
+import com.candao.www.data.model.TPrinterDevice;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * POS相关业务
@@ -12,4 +16,12 @@ public interface PosService {
      * @return
      */
     AjaxResponse getPrinterList();
+
+    List<TPrinterDevice> getPOSList(Map param);
+
+    void savePOS(TPrinterDevice tPrinterDevice);
+
+    List<TPrinterDevice> getPOSByParam(Map param);
+
+    void delPOS(Map param);
 }
