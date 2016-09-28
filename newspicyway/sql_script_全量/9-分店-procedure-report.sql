@@ -9345,7 +9345,7 @@ BEGIN
   SELECT
     IFNULL(SUM(payamount), 0.00) INTO v_paidamount
   FROM t_settlement_detail
-  WHERE orderid = pi_orderid AND payway IN (0, 1, 5, 8, 13, 17, 18);
+  WHERE orderid = pi_orderid AND payway IN (0, 1, 5, 8, 13, 17, 18, 30);
 
   SELECT
     IFNULL(SUM(orignalprice), 0.00) INTO v_giveamount
