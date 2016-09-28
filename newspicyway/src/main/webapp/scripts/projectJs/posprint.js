@@ -249,6 +249,7 @@ function delPosPrintBox(e){
  */
 function clickFormAddPrintConfig(){
 	// TODO -------------------------
+	alert("do save");
 	var checkedtables=$("#printer-add-dialog #accordion").find("input[type=checkbox]:checked");
 	selectedPrinters=[];
 	$.each(checkedtables,function(i,obj){
@@ -264,6 +265,7 @@ function clickFormAddPrintConfig(){
 		}
 		selectedPrinters.push(a);
 	});
+	/*
 	$.ajax({
 		type : "post",
 		async : false,
@@ -286,7 +288,7 @@ function clickFormAddPrintConfig(){
 				$("#"+$("#printerid").val()+" #printernameShow").text(substrControl(text,18));
 			}
 		}
-	});
+	});*/
 
 	$("#pos-printConfig-add-dialog").modal("hide");
 
@@ -345,15 +347,17 @@ function initPrinter(){
  */
 function deletePosPrinter(){
 	// TODO -------------------------
+	alert("do delete");
+	/*
 	$.ajax({
 		type : "post",
 		async : false,
 		url : global_Path+"/printerManager/delete/"+$("#printerid").val()+".json",
 		dataType : "json",
 		success : function(result) {
-		window.location.reload();
+			window.location.reload();
 		}
-	});
+	});*/
 }
 function checkedBoxLength(addDialog){
 	findTDid=[];
