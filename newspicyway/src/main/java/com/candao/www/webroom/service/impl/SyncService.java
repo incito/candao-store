@@ -231,7 +231,7 @@ public class SyncService {
                         sbf.append(value).append(",");
                     } else {
                         // 增加单引号转义
-                        String vstr = value.toString().replaceAll("'", "\'");
+                        String vstr = value.toString().replaceAll("'", "\\\\'");
                         sbf.append("'").append(vstr).append("',");
                     }
                 }
