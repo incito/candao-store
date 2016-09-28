@@ -722,6 +722,56 @@ utils.date = {
 
 
 }
-
+/**
+ * utils.userRight.get(username,key)传入参数:用户名称，权限名称;返回 true false
+ */
+utils.userRight={
+     get:function (username, key) {
+		var aUserid=utils.storage.getter('aUserid'),user_rights;//获取缓存用户名称
+     	if(username==aUserid){
+     		user_rights=JSON.parse(utils.storage.getter('user_rights'));
+			if(user_rights[key]=="1"){
+				return true
+			}
+			else {
+				return false
+			}
+		}
+		else {//从服务器获取
+			var resul
+			$.ajax({
+				url: _config.interfaceUrl.GetUserRight,
+				method: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify({
+					username: username
+				}),
+				dataType:'json',
+				async: false,
+				success: function(res){
+					if(res.result === '0') {
+						user_rights=res.rights;
+						if(user_rights[key]=="1"){
+							result=true;
+						}
+						else {
+							result=false
+						}
+					} else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				}
+			})
+			return result
+		}
+	 }
+}
 
 

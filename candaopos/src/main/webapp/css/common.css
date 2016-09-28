@@ -593,3 +593,9 @@ footer{
 	text-align: center;
 	font-size: 14px;
 }
+.js_Ok{
+	font-size: 20px;
+	text-align: center;
+	font-weight:bold ;
+	height: 70px
+}
