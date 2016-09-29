@@ -222,20 +222,21 @@ public class BranchDataSyn {
 			}else{
 				for(int i=0;i<list.size();i++){
 					String date[] = getStartAndEndDate(list.get(i));
-					//查询出上传成功的最后一次值
-					String lastsuccessdate=branchDataSynDao.getLastSuccessDate();
-					SimpleDateFormat  dateformat=new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-					
-					if(lastsuccessdate==null || "".equals(lastsuccessdate)){
-						//判断重复上传
-						long lastuploadtime=dateformat.parse(lastsuccessdate).getTime();
-						long start=dateformat.parse(date[0]).getTime();
-						long end=dateformat.parse(date[1]).getTime();
-						
-						if(start<lastuploadtime&& end<lastuploadtime){//已经上传过
-							continue;
-						}
-					}
+					// TODO: 2016/9/29 逻辑有问题 暂时注释掉
+//					//查询出上传成功的最后一次值
+//					String lastsuccessdate=branchDataSynDao.getLastSuccessDate();
+//					SimpleDateFormat  dateformat=new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+//
+//					if(!org.springframework.util.StringUtils.isEmpty(lastsuccessdate)){
+//						//判断重复上传
+//						long lastuploadtime=dateformat.parse(lastsuccessdate).getTime();
+//						long start=dateformat.parse(date[0]).getTime();
+//						long end=dateformat.parse(date[1]).getTime();
+//
+//						if(start<=lastuploadtime&& end>=lastuploadtime){//已经上传过
+//							continue;
+//						}
+//					}
 					
 					datas = getSynData(tables,date[0],date[1]);
 					// 同步数据到总店
@@ -293,7 +294,7 @@ public class BranchDataSyn {
 		 */
 		private String[] getStartAndEndDate(String date){
 			String[] str = new String[2];
-			str[0] = date + " 00:00:01";
+			str[0] = date + " 00:00:00";
 			str[1] = date + " 23:59:59";
 			return str;
 		}
