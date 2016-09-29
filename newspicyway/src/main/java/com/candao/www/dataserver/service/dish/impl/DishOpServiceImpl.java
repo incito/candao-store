@@ -1,6 +1,7 @@
 package com.candao.www.dataserver.service.dish.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.www.data.dao.TdishDao;
 import com.candao.www.dataserver.mapper.DishMapper;
 import com.candao.www.dataserver.mapper.OperationLogMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -31,6 +32,8 @@ public class DishOpServiceImpl implements DishService {
     private OrderOpMapper orderOpMapper;
     @Autowired
     private OrderOpService orderOpService;
+	@Autowired
+	private TdishDao tdishDao;
 
     @Override
     public String getFoodStatus(String dishId, String dishUnit) {
@@ -38,12 +41,17 @@ public class DishOpServiceImpl implements DishService {
         System.out.println("###################" + dishId + "---" + dishUnit);
         LOGGER.info("###getFoodStatus dishId={},dishUnit={}###", dishId, dishUnit);
         try {
-            Integer status = dishMapper.getFoodStatus(dishId, dishUnit);
-            if (status == null) {
-                responseData.setInfo("0");
-            } else {
-                responseData.setInfo(status + "");
-            }
+//            Integer status = dishMapper.getFoodStatus(dishId, dishUnit);
+//            if (status == null) {
+//                responseData.setInfo("0");
+//            } else {
+//                responseData.setInfo(status + "");
+//            }
+            //采用新的沽清机制，修改人：张继俊，修改时间：2016-09-29
+            Map<String, Object> params = new HashMap<>();
+            params.put("dishid", dishId);
+			String dishStatus = tdishDao.getDishStatus(params);
+			responseData.setInfo(dishStatus);
         } catch (Exception e) {
             responseData.setData("0");
             responseData.setInfo("获取菜品状态异常");
