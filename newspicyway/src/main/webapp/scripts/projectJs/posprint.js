@@ -131,7 +131,6 @@ $(document).ready(function(){
  * 初始化列表
  */
 function initPosList(){
-	$("#print-content").html($("#print-content").find("button"));
 	var obj = {
 			devicetype: 2
 	};
@@ -197,10 +196,17 @@ function editPosPrintBox(e){
 							findTableids.push(item.printerid);
 							findTablenames.push(item.printername);
 						}
+						var a={};
+						a.devicecode=device.devicecode;
+						a.devicename=device.devicename;
+						a.printerid=item.printerid;
+						a.printername=item.printername;
+						a.printerip=item.printerip;
+						selectedPrinters.push(a);
 					});
 				}
 				
-				//打印区域 初始化
+				//配置打印机初始化
 				$("#printer-add-dialog input[type='checkbox']").each(function(){
 					var me = $(this);
 					if(me.prop("checked") === true) {
@@ -214,26 +220,29 @@ function editPosPrintBox(e){
 				if(!jQuery.isEmptyObject(findTableids)){
 					$("#printer-add").text("已选中"+findTableids.length + "个餐台");
 				}
+				showSelectStoreDiv(findTablenames,"#div-printer-add");
 			}
 		}
 	});
-	showSelectStoreDiv(findTablenames,"#div-printer-add");
 }
 /**
  * 保存POS
  */
 function clickFormAddPrintConfig(){
 	var checkedtables=$("#printer-add-dialog #accordion").find("input[type=checkbox]:checked");
-	selectedPrinters=[];
-	$.each(checkedtables,function(i,obj){
-		var a={};
-		a.devicecode=$("#posid").val();
-		a.devicename=$("#posname").val();
-		a.printerid=$(obj).val();
-		a.printername=$(obj).attr("data-title");
-		a.printerip=$(obj).attr("ip");
-		selectedPrinters.push(a);
-	});
+	if(checkedtables != null && checkedtables.length>0){
+		selectedPrinters=[];
+		$.each(checkedtables,function(i,obj){
+			var a={};
+			a.devicecode=$("#posid").val();
+			a.devicename=$("#posname").val();
+			a.printerid=$(obj).val();
+			a.printername=$(obj).attr("data-title");
+			a.printerip=$(obj).attr("ip");
+			selectedPrinters.push(a);
+		});
+	}
+	
 	var options = {
 			deviceid: $("#deviceid").val(),
 			devicecode: $("#posid").val(),
@@ -248,10 +257,13 @@ function clickFormAddPrintConfig(){
 			contentType:'application/json;charset=UTF-8',
 			dataType : "json",
 			data: JSON.stringify(options),
-			success : function(result) {
-				if(result.result == 0){
+			success : function(json) {
+				if(json.result == 0){
 					$("#pos-printConfig-add-dialog").modal("hide");
-					initPosList();
+					window.location.reload();
+				}else{
+					$("#tips-msg").text(json.msg);
+					$("#tips-dialog").modal("show");
 				}
 			}
 		});
@@ -331,7 +343,7 @@ function deletePosPrinter(){
 		success : function(json) {
 			if(json.result == 0){
 				$("#posprint-del-dialog").modal("hide");
-				initPosList();
+				window.location.reload();
 			}
 		}
 	});
