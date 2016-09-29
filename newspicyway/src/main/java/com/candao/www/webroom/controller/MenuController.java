@@ -29,6 +29,7 @@ import com.candao.www.utils.ImageCompress;
 import com.candao.www.utils.SessionUtils;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.MenuGroup;
+import com.candao.www.webroom.service.DishService;
 import com.candao.www.webroom.service.MenuService;
 //*
 @Controller
@@ -38,6 +39,8 @@ public class MenuController {
 	private MenuService menuService;
 	@Autowired
 	FileService  fileService;
+	@Autowired
+	private DishService  dishService;
 	/**  
 	 * 创建菜谱
 	 * @return
@@ -196,39 +199,23 @@ public class MenuController {
 	@ResponseBody
 	public ModelAndView updateDishStatus(@RequestBody Map<String, Object> params) throws IOException{
 		ModelAndView mav=new ModelAndView();
-		boolean flag=menuService.updateDishStatus(params);
-		if (flag) {
-			mav.addObject("message", "1");
-//			StringBuffer str=new StringBuffer(Constant.TS_URL);
+		try{
+			short code = 1;//1:菜品估清
+			String dishid = String.valueOf(params.get("dishid"));
 			if("1".equals(String.valueOf(params.get("status")))){
-//				str.append(Constant.MessageType.msg_1003+"/"+params.get("dishid"));
-//				System.out.println("菜品估清推送："+str.toString());
-				menuService.notifyDishStatus(String.valueOf(params.get("dishid")), (short)1);	//1:菜品估清
+				dishService.dishSellOut(params);
 			}else{
-//				str.append(Constant.MessageType.msg_1007+"/"+params.get("dishid"));
-//				System.out.println("菜品取消估清推送："+str.toString());
-				menuService.notifyDishStatus(String.valueOf(params.get("dishid")), (short)2);	//2:取消估清
+				code = 2;//2:取消估清
+				dishService.dishRevertSellOut(params);
 			}
-//			new Thread(new TsThread(str.toString())).run();
-//			URL urlobj = new URL(str.toString());
-//			URLConnection urlconn = urlobj.openConnection();
-//			urlconn.connect();
-//			InputStream myin = urlconn.getInputStream();
-//			BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-//			String content = reader.readLine();
-//			JSONObject object = JSONObject.fromObject(content.trim());
-//			List<Map<String,Object>> resultList = (List<Map<String, Object>>) object.get("result");
-//			//根据返回中的一个状态判断是否发送成功
-//			if("1".equals(String.valueOf(resultList.get(0).get("Data")))){
-//				mav.addObject("message", "1");
-//			}else{
-//				mav.addObject("message", "0");
-//			}
-		} else {
+			menuService.notifyDishStatus(dishid, code);	
+			mav.addObject("message", "1");
+		} catch(Exception e) {
 			mav.addObject("message", "0");
 		}
 		return mav;
 	}
+	
 //	public class TsThread extends Thread{
 //		   String  str ;
 //		   public TsThread(String  str){

@@ -191,7 +191,7 @@
   </select>
  <select id="getMenuDishDetailById" resultMap="findResultMap" parameterType="map">
    <if test="flag=='1'.toString()">
-   select DISTINCT d.dishNo,d.dishid,t.dishname,t.dishintroduction,d.abbrdesc,d.imagetitle,t.status ,d.image  
+   select DISTINCT d.dishNo,d.dishid,t.dishname,t.dishintroduction,d.abbrdesc,d.imagetitle,d.image  
    </if>
    <if test="flag=='2'.toString()">
    select distinct b.itemDesc 

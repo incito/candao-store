@@ -84,5 +84,11 @@ public interface TdishDao {
 	public List<Map<String, Object>> comfirmDelDish(Map<String, Object> map);
 
 	public void updateDishNum(String orderId);
+
+	public void dishSellOut(Map<String, Object> params);
+
+	public void dishRevertSellOut(Map<String, Object> params);
+
+	public String getDishStatus(Map<String, Object> params);
 	
 }
