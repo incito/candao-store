@@ -104,7 +104,7 @@
     insert into t_printer_deviceprinter (id, devicecode, devicename, 
       printerid, printername,printerip)
     values (#{id,jdbcType=VARCHAR}, #{devicecode,jdbcType=VARCHAR}, #{devicename,jdbcType=VARCHAR}, 
-      #{printerid,jdbcType=VARCHAR}, #{printername,jdbcType=VARCHAR}), #{printerip,jdbcType=VARCHAR})
+      #{printerid,jdbcType=VARCHAR}, #{printername,jdbcType=VARCHAR}, #{printerip,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.candao.www.data.model.TPrinterDeviceprinter">
     insert into t_printer_deviceprinter
