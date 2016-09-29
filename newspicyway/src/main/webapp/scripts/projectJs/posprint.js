@@ -1,17 +1,14 @@
 var selectedPrinters=[];
 var findTableids=[];
 var findTablenames=[];
-var getAreaslistTag=[];
-var areaidListStatus0=[];
-var areaidListStatus1=[];
 var findTDid=[];
 var findTDname=[];
+var operate="add";
 
 $(document).ready(function(){
 	$("input").keyup(function(){
 		  $(this).next(".error").text("");
 	});
-
 	initPosList();
 	$("#add-form-posprintConfig").validate({
 		submitHandler : function(form) {
@@ -27,6 +24,7 @@ $(document).ready(function(){
 	});
 	/*新增POS机弹出框*/
 	$("#pos-printConfig-add").click(function(){
+		operate = "add";
 		initPrinter();
 		$(".modal-title").text("新增POS");
 		$("#pos-printConfig-add-dialog").modal("show");
@@ -51,13 +49,15 @@ $(document).ready(function(){
 		$("printer-add-dialog #accordion").html("数据正在加载中......");
 		
 		//解析获取到的打印机数据
-		// TODO -------------------------
-		var html="";
-		for(var i=0; i< 50; i++){
-			html +=" <label class='checkbox-inline col-xs-3'><input type='checkbox' id='table_"
-				+ i+"'  value='"+i+"' data-title='打印机"+i
-				+"' code='"+i+"'><span>"+substrControl("打印机"+i,12)+"</span></label>";
-		}
+		$.getJSON(global_Path+"/printerManager/find.json", function(result){
+			console.log(result);
+			var html="";
+			$.each(result, function(i, printer){
+				html +=" <label class='checkbox-inline col-xs-3'><input type='checkbox' id='table_"
+					+ printer.printerid+"' ip='"+printer.ipaddress+"' value='"+printer.printerid+"' data-title='"
+					+ printer.printername + "'><span>"
+					+ substrControl(printer.printername,12)+"</span></label>";
+			});
 			$("#printer-add-dialog #accordion .panel-body").html(html);
 			$("#printer-add-dialog #accordion").children(":first").find(".panel-collapse").addClass("in");
 			
@@ -104,6 +104,7 @@ $(document).ready(function(){
 				$("#table_"+obj).click();
 			});
 			checkedBoxLength("#printer-add-dialog #table-count");
+		});
 	});
 	
 	/*打印配置内容添加*/
@@ -122,20 +123,6 @@ $(document).ready(function(){
 		findTableids=findTDid;
 		findTablenames=findTDname;
 		
-		var checkedAreas=$("#printer-add-dialog #accordion").find(".panel-heading img");
-		getAreaslistTag=[];
-		areaidListStatus0=[];
-		areaidListStatus1=[];
-		$.each(checkedAreas,function(i,obj){
-			if($(obj).attr("alt")==1||$(obj).attr("alt")==2){
-				getAreaslistTag.push($(obj).parent().siblings().children(":first").text());
-				areaidListStatus0.push($(obj).parent().parent().attr("id").split("_")[1]);
-				
-			}
-			if($(obj).attr("alt")==2){
-				areaidListStatus1.push($(obj).parent().parent().attr("id").split("_")[1]);
-			}
-		});
 		$("#printer-add-dialog").modal("hide");
 		showSelectStoreDiv(findTablenames,"#div-printer-add");
 	});
@@ -144,33 +131,30 @@ $(document).ready(function(){
  * 初始化列表
  */
 function initPosList(){
-	// TODO -------------------------
+	// TODO TEST -------------------------
+	$("#print-content").html($("#print-content").find("button"));
+	var obj = {
+			devicetype: 2
+	};
 	$.ajax({
 		type:"post",
 		async:false,
-		url : global_Path+"/printerManager/find.json",
+		url : global_Path+"/pos/getlist.json",
 		contentType:'application/json;charset=UTF-8',
 		dataType : "json",
-		success : function(result) {
-			$.each(result, function(i,val){
-				$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.printerid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow">'+substrControl(val.printername,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
-			});
+		data: JSON.stringify(obj),
+		success : function(json) {
+			if(json.result == 0){
+				var data = json.data;
+				if(data != null && data != ""){
+					$.each(data.list, function(i, val){
+						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
+					});
+				}
+			}
 		}
 	});
 }
-/**
- * 将数组中的value转换为int
- * @param key
- * @returns
- */
-function keyValueToInt(key){
-	var newKey = [];
-	for(var i=0; i<key.length; i++){
-		newKey.push(parseInt(key[i]));
-	}
-	return newKey.sort();
-}
-//-------------------------------------------------------------------------------------------------------
 /**
  * 显示删除标签
  */
@@ -186,53 +170,109 @@ function displayPrintDel(e){
  * @param e
  */
 function editPosPrintBox(e){
-	// TODO -------------------------
+	operate  ="edit";
 	$(".modal-title").text("编辑POS");
 	initPrinter();
 	$("#pos-printConfig-add-dialog").modal("show");
+	var obj = {
+			deviceid: $(e).attr("id")
+	};
 	$.ajax({
 		type : "post",
 		async : false,
-		url : global_Path+"/printerManager/findById/"+$(e).attr("id")+".json",
+		url : global_Path+"/pos/getposbyid.json",
+		contentType:'application/json;charset=UTF-8',
 		dataType : "json",
-		success : function(result) {
-			$("#printerid").val(result.printerid);
-
-			$("#posid").val(result.printername);
-			$("#posname").val(result.ipaddress);
-			$.each( result.areaslistTag, function(i,item){
-				areaidListStatus0.push(item.areaid);
-				getAreaslistTag.push(item.areaname);
-				if(item.status==1){
-					areaidListStatus1.push(item.areaid);
+		data: JSON.stringify(obj),
+		success : function(json) {
+			if(json.result == 0){
+				var data = json.data;
+				var list = data.list;
+				if(list != null && list.length>0){
+					var device = list[0];
+					$("#deviceid").val(device.deviceid);
+					$("#posid").val(device.devicecode);
+					$("#posname").val(device.devicename);
+					$.each( device.printers, function(i,item){
+						if(findTableids.indexOf(item.printerid)==-1){
+							findTableids.push(item.printerid);
+							findTablenames.push(item.printername);
+						}
+					});
 				}
-			});
-			$.each( result.tbPrinterAreaList, function(i,item){
-				if(findTableids.indexOf(item.tableid)==-1){
-					findTableids.push(item.tableid);
-					findTablenames.push(item.tableName);
+				
+				//打印区域 初始化
+				$("#printer-add-dialog input[type='checkbox']").each(function(){
+					var me = $(this);
+					if(me.prop("checked") === true) {
+						me.prop({"checked":false});
+					}
+				});
+				$.each(findTableids, function(key,obj) {
+					$("#table_"+obj).click();
+				});
+
+				if(!jQuery.isEmptyObject(findTableids)){
+					$("#printer-add").text("已选中"+findTableids.length + "个餐台");
 				}
-			});
-
-			//打印区域 初始化
-			$("#printer-add-dialog input[type='checkbox']").each(function(){
-				var me = $(this);
-				if(me.prop("checked") === true) {
-					me.prop({"checked":false});
-				}
-			});
-			$.each(findTableids, function(key,obj) {
-				$("#table_"+obj).click();
-			});
-
-
-			if(!jQuery.isEmptyObject(findTableids)){
-				$("#printer-add").text("已选中"+findTableids.length + "个餐台");
-
 			}
 		}
 	});
 	showSelectStoreDiv(findTablenames,"#div-printer-add");
+}
+/**
+ * 保存POS
+ */
+function clickFormAddPrintConfig(){
+	// TODO TEST -------------------------
+	var checkedtables=$("#printer-add-dialog #accordion").find("input[type=checkbox]:checked");
+	selectedPrinters=[];
+	$.each(checkedtables,function(i,obj){
+		var a={};
+		a.devicecode=$("#posid").val();
+		a.devicename=$("#posname").val();
+		a.printerid=$(obj).val();
+		a.printername=$(obj).attr("data-title");
+		a.printerip=$(obj).attr("ip");
+		selectedPrinters.push(a);
+	});
+	var options = {
+			deviceid: $("#deviceid").val(),
+			devicecode: $("#posid").val(),
+			devicename: $("#posname").val(),
+			printers: selectedPrinters
+	};
+	$.ajax({
+		type : "post",
+		async : false,
+		url: global_Path+"/pos/save.json",
+		contentType:'application/json;charset=UTF-8',
+		dataType : "json",
+		data: JSON.stringify(options),
+		success : function(result) {
+			if(result.result == 0){
+				$("#pos-printConfig-add-dialog").modal("hide");
+				initPosList();
+			}
+		}
+	});
+}
+/**
+ * 初始化dialog控件
+ */
+function initPrinter(){
+	$("#deviceid").val("");
+	$("#posid").val("");
+	$("#posname").val("");
+	$("#posid").removeClass("error");
+	$("#posname").removeClass("error");
+	$("#printer-add").val("");
+	$("#printer-add").html('<i class="icon-plus-sign"></i>');
+	selectedPrinters=[];
+	findTableids=[];
+	findTablenames=[];
+	$(".error").text("");
+	$(".popover").remove();
 
 }
 /**
@@ -241,57 +281,42 @@ function editPosPrintBox(e){
  */
 function delPosPrintBox(e){
 	$("#posprint-del-dialog").modal("show");
-	$("#printerid").val($(e).parent().attr("id"));
+	$("#deviceid").val($(e).parent().attr("id"));
 
 }
 /**
- * 保存POS
+ * 确定删除POS机配置
  */
-function clickFormAddPrintConfig(){
-	// TODO -------------------------
-	alert("do save");
-	var checkedtables=$("#printer-add-dialog #accordion").find("input[type=checkbox]:checked");
-	selectedPrinters=[];
-	$.each(checkedtables,function(i,obj){
-		var a={};
-		a.areaid=$(obj).parent().parent().parent().attr("id").split("_")[1];
-		a.printerid=$("#printerid").val();
-		a.tableid=$(obj).val();
-		var imgAlt = $(obj).parents(".panel").find("img").attr("alt");
-		if(imgAlt=="2"){
-			a.status=1;
-		}else if(imgAlt=="0"||imgAlt=="1"){
-			a.status=0;
-		}
-		selectedPrinters.push(a);
-	});
-	/*
+function deletePosPrinter(){
+	var obj = {
+			deviceid: $("#deviceid").val()
+	};
 	$.ajax({
 		type : "post",
 		async : false,
-		url: global_Path+"/printerManager/save.json",
+		url : global_Path+"/pos/deleteposbyid.json",
+		contentType:'application/json;charset=UTF-8',
 		dataType : "json",
-		data :{
-			printerid:$("#printerid").val(),
-			posid:$("#posid").val(),
-			posname:$("#posname").val()
-		},
-		success : function(result) {
-			$("#printerid").val(result.printerid);
-			var text = $("#posname").val();
-			if(result.maessge=="添加成功"){
-				var html = '<div id='+result.printerid+' class="print-detail-box" onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)">';
-					html +='<p class="print-img"><img src="../images/print.png"></p>';
-					html += '<p id="printernameShow">'+substrControl(text,18)+'</p><i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>';
-				$("#pos-printConfig-add").before(html);
-			}else if(result.maessge=="修改成功"){
-				$("#"+$("#printerid").val()+" #printernameShow").text(substrControl(text,18));
+		data: JSON.stringify(obj),
+		success : function(json) {
+			if(json.result == 0){
+				$("#posprint-del-dialog").modal("hide");
+				initPosList();
 			}
 		}
-	});*/
-
-	$("#pos-printConfig-add-dialog").modal("hide");
-
+	});
+}
+/**
+ * 将数组中的value转换为int
+ * @param key
+ * @returns
+ */
+function keyValueToInt(key){
+	var newKey = [];
+	for(var i=0; i<key.length; i++){
+		newKey.push(parseInt(key[i]));
+	}
+	return newKey.sort();
 }
 function substrControl(dishTitle,titleLength){
 	dishTitleLength="";
@@ -305,8 +330,6 @@ function substrControl(dishTitle,titleLength){
 			return dishTitle.substr(0,i-1)+"...";
 		}
 	}
-
-
 }
 //中文字符判断
 function getStrLength(str) {
@@ -322,43 +345,7 @@ function getStrLength(str) {
     }
     return reLen;
 }
-/**
- * 初始化dialog控件
- */
-function initPrinter(){
-	$("#printerid").val("");
-	$("#posid").val("");
-	$("#posname").val("");
-	$("#posid").removeClass("error");
-	$("#posname").removeClass("error");
-	$("#printer-add").val("");
-	$("#printer-add").html('<i class="icon-plus-sign"></i>');
-	selectedPrinters=[];
-	findTableids=[];
-	getAreaslistTag=[];
-	areaidListStatus0=[];
-	areaidListStatus1=[];
-	$(".error").text("");
-	$(".popover").remove();
 
-}
-/**
- * 确定删除POS机配置
- */
-function deletePosPrinter(){
-	// TODO -------------------------
-	alert("do delete");
-	/*
-	$.ajax({
-		type : "post",
-		async : false,
-		url : global_Path+"/printerManager/delete/"+$("#printerid").val()+".json",
-		dataType : "json",
-		success : function(result) {
-			window.location.reload();
-		}
-	});*/
-}
 function checkedBoxLength(addDialog){
 	findTDid=[];
 	findTDname=[];
@@ -388,7 +375,6 @@ function findTableAndDish(addDialog){
 	list.push(tablenameAndDishnameList);
 	return list;
 }
-
 //鼠标停留按钮显示已选择div
 function showSelectStoreDiv(branchnames,selectType){
 	if(branchnames.length > 0){

@@ -45,7 +45,7 @@
 				<div class="modal-body">
 					<form action="" id="add-form-posprintConfig" method="post"
 						class="form-horizontal " name="">
-						<input type="hidden" id="printerid" name="printerid" />
+						<input type="hidden" id="deviceid" name="deviceid" />
 						<div class="form-group">
 							<label class="col-xs-5 control-label "><span
 								class="required-span">*</span>POS ID：</label>
