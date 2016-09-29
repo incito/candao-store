@@ -154,7 +154,7 @@ public class PosServiceImpl implements PosService {
     public void validateByCode(Map param, boolean isUpdate) {
         Assert.notEmpty(param);
         TPrinterDeviceExample example = new TPrinterDeviceExample();
-        example.or().andDevice(param).andDevicestatusEqualTo(0).andDevicetypeEqualTo(2);
+        example.or().andDevicecodeEqualTo((param.get("devicecode") == null ? "" : param.get("devicecode")).toString()).andDevicestatusEqualTo(0).andDevicetypeEqualTo(2);
         List<TPrinterDevice> list = tPrinterDeviceMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(list)) {
             if (!isUpdate) {

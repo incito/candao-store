@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -126,7 +127,7 @@ public class PosController {
             if (!object.containsKey("devicecode"))
                 return getResponseMsg(null, "参数格式错误！", false);
             //判断新增还是修改
-            boolean flag = object.containsKey("deviceid") ? true : false;
+            boolean flag = object.containsKey("deviceid") && !StringUtils.isEmpty(object.getString("deviceid")) ? true : false;
             posService.validateByCode(object, flag);
             return getResponseMsg(null, "校验成功", true);
         } catch (Exception e) {
