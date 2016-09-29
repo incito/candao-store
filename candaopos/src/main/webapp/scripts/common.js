@@ -421,6 +421,7 @@ widget.keyboard = function(opts){
 	}
 
 	function _bindEvent (){
+		doc.undelegate(opts.target + ' ' + opts.chirdSelector,'click');
 		doc.delegate(opts.target + ' ' + opts.chirdSelector,'click', function(){
 			var me = $(this);
 			if(focusIpt === null || me.hasClass('btn-action')) return false;
@@ -442,7 +443,7 @@ widget.keyboard = function(opts){
 				focusIpt.focus();
 			}
 		});
-
+		doc.undelegate('input[type=text],input[type=password],input[type=search]','focus');
 		doc.delegate('input[type=text],input[type=password],input[type=search]','focus', function(){
 			focusIpt = $(this);
 		});
@@ -738,7 +739,7 @@ utils.userRight={
 			}
 		}
 		else {//从服务器获取
-			var resul
+			var result
 			$.ajax({
 				url: _config.interfaceUrl.GetUserRight,
 				method: 'POST',
@@ -773,5 +774,31 @@ utils.userRight={
 		}
 	 }
 }
-
+/**
+ * utils.getUrl.get(name)传入参数:要获取参数的名称
+ */
+utils.getUrl={//获取浏览器参数
+	get:function (name) {
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null)return  unescape(r[2]); return null;
+	}
+}
+/**
+ * utils.getUrl.get()//打印清机单
+ */
+utils.reprintClear={//打印清机单
+	get:function () {
+		var posId=utils.storage.getter('posid'),jsorder=" ";
+		$.ajax({
+			url:_config.interfaceUrl.PrintClearMachine+'/'+ utils.storage.getter('aUserid') + '+/'+jsorder+'/'+utils.storage.getter('posid')+'/',
+			type: "get",
+			success: function (data) {
+				rightBottomPop.alert({
+					content:"清机单打印完成",
+				})
+			}
+		});
+	}
+}
 

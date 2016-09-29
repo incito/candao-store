@@ -148,32 +148,76 @@ var MainPage = {
 
 			}
 			if(me.hasClass('J-btn-clear')) {
-				var str ='<strong>请选择倒班或结业：</strong>'+
-					'<div id="cleardata" class="form-group form-group-base" style="margin-top: 20px">'+
-					'<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" style="margin-right: 5px">倒班</button>'+
-					'<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'+
-					'</div>'+
-					'<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
+				var aUserid=utils.storage.getter('aUserid'),orderLength=0,str//获取登录用户
+				/*$.ajax({
+					url: _config.interfaceUrl.QueryOrderInfo+''+ aUserid + '/',
+					type: "get",
+					async: false,
+					dataType: "text",
+					success: function (data) {
+						data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+						var arry = [];
+						for (var i = 0; i < data.OrderJson.length; i++) {
+							if (data.OrderJson[i].orderstatus == 0) {
+								arry.push(data.OrderJson[i])
+							}
+						}
+						orderLength=arry.length
+					}
+				});*/
 
-				var alertModal = widget.modal.alert({
+					var str ='<strong>请选择倒班或结业：</strong>'
+					str+='<div id="clearchoose" class="form-group form-group-base" style="margin-top: 20px">'
+					if(utils.userRight.get(aUserid,"030204")){//判断清机权限
+						str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll"  style="margin-right: 5px">倒班</button>'
+					}
+					else {
+						str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" disabled="disabled" style="margin-right: 5px;color: #999; background: #E8E8E8">倒班</button>'
+					}
+					if(orderLength>0){//判断账单未结业数量
+						str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" style="color: #999; background: #E8E8E8">结业</button>'
+						str+='</div>'
+						str+='<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
+					}
+					else {
+						str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'
+						str+='</div>'
+					}
+				widget.modal.alert({
 					cls: 'fade in',
 					content:str,
 					width:400,
 					height:500,
-					title: "清机提醒",
+					title: "",
 					hasBtns:false,
 				});
-				$("#cleardata button").click(function () {
+				$("#clearchoose button").click(function () {
+					$(".modal-alert:last,.modal-backdrop:last").remove();
 					var _this = $(this);
 					if(_this.hasClass("clearAll")){
-						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"倒班"});
-						$("#J-btn-clear-dialog").modal("show");
+						$(".modal-alert:last,.modal-backdrop:last").remove();
+						$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{'title':'清机授权','usernameDisble':'1','cbd':'MainPage.clearAll()','userRightNo':'030204'});
+						$("#J-btn-checkout-dialog").modal("show");
 					}
-					if(_this.hasClass("clearCompletion")){
-						$(".modal-alert").modal("hide");
-						$("#J-btn-clear-dialog").load("../views/check/impower.jsp",{"title" : "清机授权","clearType":"结业"});
-						$("#J-btn-clear-dialog").modal("show");
+					if(_this.hasClass("clearCompletion")){//结业
+
+						var str ='<strong>确定要结业吗？</strong>';
+						 widget.modal.alert({
+							cls: 'fade in',
+							content:str,
+							width:400,
+							height:500,
+							title: "结业提醒",
+							btnOkTxt: '确定',
+							btnOkCb: function(){
+								$(".modal-alert:last,.modal-backdrop:last").remove();
+								MainPage.checkout()
+								/*$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{"title" : "结业授权"});
+								$("#J-btn-checkout-dialog").modal("show");*/
+							},
+							btnCancelCb: function(){
+							}
+						})
 					}
 
 				});
@@ -312,6 +356,150 @@ var MainPage = {
 			}
 		})
 	},
+	/**
+	 * 清机
+	 */
+	clearAll:function () {
+		$("#J-btn-checkout-dialog").modal('hide')
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<strong>清机中，请稍后</strong>',
+			width:500,
+			height:500,
+			hasBtns:false,
+		});
+		$.ajax({
+			url: _config.interfaceUrl.Clearner+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('fullname')+'/',
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				$(".modal-alert:last,.modal-backdrop:last").remove();
+				data=JSON.parse(data.result[0])
+				if(data.Data === '0') {//清机失败
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + data.Info + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '确定',
+						btnCancelTxt: ''
+					});
+				}
+				else {//清机成功
+					utils.reprintClear.get()//打印清机单
+					window.location = "../views/login.jsp";
+				}
+			}
+		});
+	},
+	/*结业清机*/
+	clearAllcheckOut:function () {
+		$("#J-btn-checkout-dialog").modal('hide')
+		var that=this;
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<strong>清机中，请稍后</strong>',
+			width:500,
+			height:500,
+			hasBtns:false,
+		});
+		$.ajax({
+			url: _config.interfaceUrl.Clearner+''+$.trim($('#user').val())+'/'+utils.storage.getter('checkout_fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				data=JSON.parse(data.result[0])
+				if(data.Data === '0') {//清机失败
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + data.Info + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '确定',
+						btnCancelTxt: ''
+					});
+				}
+				else {//清机成功
+					utils.reprintClear.get()//打印清机单
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					var Uncleandata=that.getFindUncleanPosList();
+					var arrylength=Uncleandata.LocalArry.length-1;
+					var LocalArry=Uncleandata.LocalArry;
+					var OtherArry=Uncleandata.OtherArry
+					if(Uncleandata.LocalArry.length>0){
+						$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{'title':'清机授权','userNmae':Uncleandata.LocalArry[arrylength].username,'usernameDisble':'2','cbd':'MainPage.clearAllcheckOut()','userRightNo':'030204'});
+						$("#J-btn-checkout-dialog").modal('show')
+					}
+					if(Uncleandata.LocalArry.length==0&&Uncleandata.OtherArry.length>0){
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>还有其他POS机未清机,<br><br>请到其他POS机上先清机</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '重试',
+							btnCancelTxt: ''
+						});
+					}
+
+
+				}
+			}
+		});
+	},
+	checkout:function () {
+		var that=this;
+		var Uncleandata=that.getFindUncleanPosList();
+		var arrylength=Uncleandata.LocalArry.length-1;
+		var LocalArry=Uncleandata.LocalArry
+		if(Uncleandata.LocalArry.length>0){
+			$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{'title':'清机授权','userNmae':Uncleandata.LocalArry[arrylength].username,'usernameDisble':'2','cbd':'MainPage.clearAllcheckOut()','userRightNo':'030204'});
+			$("#J-btn-checkout-dialog").modal('show')
+		}
+		if(Uncleandata.LocalArry.length==0&&Uncleandata.OtherArry.length>0){
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>还有其他POS机未清机,<br><br>请到其他POS机上先清机</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '重试',
+				btnCancelTxt: ''
+			});
+		}
+
+
+	},
+	getFindUncleanPosList:function () {
+		var findUncleanPosList ,LocalArry=[],OtherArry=[]
+		$.ajax({
+			url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
+			type: "get",
+			async:false,
+			dataType: "text",
+			success: function (data) {
+				findUncleanPosList=JSON.parse(data)
+				console.log(findUncleanPosList.detail)
+				console.log(findUncleanPosList.result)
+				if(findUncleanPosList.result==='0'){
+					LocalArry=[];//本机数组集合
+					OtherArry=[];//其他pos登录集合
+					for(var i=0;i<findUncleanPosList.detail.length;i++){
+						if(findUncleanPosList.detail[i].ipaddress==utils.storage.getter('ipaddress')){
+							LocalArry.push(findUncleanPosList.detail[i])
+						}
+						else {
+							OtherArry.push(findUncleanPosList.detail[i])
+						}
+					}
+				}
+			}
+		});
+		return{
+			findUncleanPosList:findUncleanPosList,
+			LocalArry:LocalArry,
+			OtherArry:OtherArry,
+		}
+	}
 };
 
 $(function(){

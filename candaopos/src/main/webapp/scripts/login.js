@@ -48,7 +48,7 @@ var Login = {
                 data: JSON.stringify({
                     username: $.trim(dom.user.val()),
                     password: hex_md5($.trim(dom.pwd.val())),
-                    macAddress: '96121CBC21EF02256E9C5F2E602C5441',
+                    macAddress: utils.storage.getter('ipaddress'),//IP地址
                     loginType: '030201'
                 }),
                 dataType:'json',
@@ -58,11 +58,23 @@ var Login = {
                         utils.storage.setter('fullname', res.data.fullname);
                         utils.storage.setter('loginTime', res.data.loginTime);
                         utils.storage.setter('aUserid', dom.user.val());
-
                         that.setUserRight(dom.user.val());
-
-                        $("#change_val").val("");
-                        $("#thechange-dialog").modal("show");
+                        var user_right= utils.userRight.get(user,'030206');
+                            $.ajax({//验证零找金
+                                url: _config.interfaceUrl.PettyCashInput+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('ipaddress')+'/0/0/',
+                                type: "get",
+                                dataType: "text",
+                                success: function (data) {
+                                    var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                                    if(data.Data=='0'){
+                                        $("#change_val").val("");
+                                        $("#thechange-dialog").modal("show");
+                                    }
+                                    else {
+                                        window.location = "../views/main.jsp";
+                                    }
+                                }
+                            });
 
                     } else {
                         widget.modal.alert({
@@ -177,7 +189,19 @@ var Login = {
     },
 
     toMain: function(){
-        window.location = "../views/main.jsp";
+        $.ajax({
+            url: _config.interfaceUrl.PettyCashInput+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('ipaddress')+'/'+$.trim($('#change_val').val())+'/1/',
+            type: "get",
+            dataType: "text",
+            success: function (data) {
+                var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                if(data.Data=='1'){
+                    window.location = "../views/main.jsp";
+                    $("#thechange-dialog").modal("hide");
+                }
+            }
+        });
+
     },
 
     keyUp: function(o){

@@ -599,3 +599,16 @@ footer{
 	font-weight:bold ;
 	height: 70px
 }
+#permission .disabled{
+	 color: #999;
+ }
+#permission .btn-default:hover {
+	color: #fff;
+	background: #F68D70;
+	opacity: 0.5;
+}
+#permission button:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #fff;
+}

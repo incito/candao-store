@@ -19,6 +19,7 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
     <script src="../../scripts/common.js"></script>
+    <script src="../../lib/md5.js"></script>
     <link rel="stylesheet" href="../../css/check.css">
     <link rel="stylesheet" href="../../css/reporting.css">
     <link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
@@ -209,8 +210,6 @@ var checkOrder={
                     }
                     data = arry
                 }
-                ;
-                ;
 
                 var orderNo = $.trim($("#orderNo").val())
                 var deskNo = $.trim($("#deskNo").val())
@@ -303,18 +302,7 @@ var checkOrder={
         that.getOrderdata.getData();
         that.getOrderlist(orderstatus)
     },
-    reprintClear:function () {//重印清机单
-        var posId='001',jsorder=" ";
-        $.ajax({
-            url:_config.interfaceUrl.PrintClearMachine+'/'+ aUserid + '+/'+jsorder+'/001/',
-            type: "get",
-            success: function (data) {
-                rightBottomPop.alert({
-                    content:"清机单打印完成",
-                })
-            }
-        });
-    },
+
     reprintCheck:function () {//重印账单
         $.ajax({
             /*url:'/newspicyway/print4POS/getOrderInfo'/' + aUserid + '/'+orderId+'/2/'',*/
@@ -542,7 +530,7 @@ var checkOrder={
                 that.refreshOrderlist();
             }
             if(me.hasClass("reprintClear")){//重印清机单
-                that.reprintClear();
+                utils.reprintClear.get()
             }
             if(me.hasClass("reprintCheck")){//重印账单
                 that.reprintCheck()

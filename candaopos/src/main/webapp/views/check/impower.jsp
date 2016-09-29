@@ -10,7 +10,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
     <meta name="renderer" content="webkit">
-    <script src="../../lib/md5.js"></script>
     <title>修改基本信息</title>
 </head>
 <body>
@@ -27,7 +26,7 @@
                     <form action="" >
                         <div class="form-group form-group-base">
                             <span class="form-label">员工编号:</span>
-                            <input value=""id="user" name="uesr"  type="text" class="form-control" autocomplete="off">
+                            <input value=""id="user"  name="uesr"  type="text" class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group form-group-base">
                             <span class="form-label">权限密码:</span>
@@ -64,10 +63,25 @@
        String clearType = request.getParameter("clearType");
        String userRightNo= request.getParameter("userRightNo");
        String cbd=request.getParameter("cbd");
+       String usernameDisble=request.getParameter("usernameDisble");
+       String user_Nmae=request.getParameter("userNmae");
     %>
-    var title = "<%=title%>",clearType = "<%=clearType%>",userRightNo="<%=userRightNo%>",callBackFun="<%=cbd%>"
-    $("#pagestitle").text(title);
+    var title = "<%=title%>",clearType = "<%=clearType%>",userRightNo="<%=userRightNo%>",callBackFun="<%=cbd%>",usernameDisble="<%=usernameDisble%>",user_Nmae="<%=user_Nmae%>";
+    var  usernameData;
     $(function () {
+        $('#user').removeAttr('readonly').val('');
+        $("#pagestitle").text(title);
+        if(usernameDisble==1){
+            $('#user').attr('readonly','readonly').val(utils.storage.getter('aUserid'))
+        }
+        else if(usernameDisble==2){//结业清机
+            $('#user').attr('readonly','readonly').val(user_Nmae)
+
+        }
+
+        else {
+            $('#user').removeAttr('readonly').val('');
+        }
         impower.int();
     });
     var impower={
@@ -111,11 +125,14 @@
                     data: JSON.stringify({
                         username:user ,
                         password: hex_md5(psd),
-                        macAddress: '96121CBC21EF02256E9C5F2E602C5441',
+                        macAddress: utils.storage.getter('ipaddress'),//Ip地址
                         loginType: '030201'
                     }),
                     dataType: "json",
                     success: function (data) {
+                        var checkout_fullname=data.data.fullname;
+                        utils.storage.setter("checkout_fullname",checkout_fullname);
+                        console.log(data)
                         if(data.code === '0') {//成功登录
                            var user_right= utils.userRight.get(user,userRightNo);
                             if(user_right){//验证权限
