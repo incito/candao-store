@@ -258,7 +258,7 @@
       <if test="deviceip != null">
         deviceip = #{deviceip,jdbcType=VARCHAR},
       </if>
-      NOW(),
+        modifiedtime = NOW(),
       <if test="deviceowner != null">
         deviceowner = #{deviceowner,jdbcType=VARCHAR},
       </if>
@@ -276,7 +276,7 @@
       devicestatus = #{devicestatus,jdbcType=INTEGER},
       devicetype = #{devicetype,jdbcType=INTEGER},
       deviceip = #{deviceip,jdbcType=VARCHAR},
-      NOW(),
+      modifiedtime = NOW(),
       deviceowner = #{deviceowner,jdbcType=VARCHAR},
       devicegroup = #{devicegroup,jdbcType=VARCHAR}
     where deviceid = #{deviceid,jdbcType=VARCHAR}

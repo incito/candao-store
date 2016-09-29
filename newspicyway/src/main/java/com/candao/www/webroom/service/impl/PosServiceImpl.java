@@ -72,11 +72,11 @@ public class PosServiceImpl implements PosService {
     public void savePOS(TPrinterDevice tPrinterDevice) {
         if (tPrinterDevice == null)
             throw new RuntimeException("POS不能为空！");
-        TPrinterDeviceExample example = new TPrinterDeviceExample();
-        example.or().andDevicecodeEqualTo(tPrinterDevice.getDevicecode());
-        List<TPrinterDevice> temp = tPrinterDeviceMapper.selectByExample(example);
+//        TPrinterDeviceExample example = new TPrinterDeviceExample();
+//        example.or().andDevicecodeEqualTo(tPrinterDevice.getDevicecode());
+//        List<TPrinterDevice> temp = tPrinterDeviceMapper.selectByExample(example);
 
-        if (CollectionUtils.isEmpty(temp)) {
+        if (StringUtils.isEmpty(tPrinterDevice.getDeviceid())) {
             //新增
             tPrinterDevice.setDeviceid(UUID.randomUUID().toString());
             tPrinterDevice.setDevicestatus(0);
@@ -86,30 +86,32 @@ public class PosServiceImpl implements PosService {
             deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
             //新增中间表
             savePOSPrinter(tPrinterDevice.getPrinters());
-        } else if (temp.size() == 1) {
+        } else {
             //修改
-            tPrinterDevice.setDeviceid(temp.get(0).getDeviceid());
+            TPrinterDevice list = tPrinterDeviceMapper.selectByPrimaryKey(tPrinterDevice.getDeviceid());
+
+            if (list == null)
+                throw new RuntimeException("不存在该pos");
+
             tPrinterDeviceMapper.updateByPrimaryKey(tPrinterDevice);
             //删除中间表
             deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
             //新增中间表
             savePOSPrinter(tPrinterDevice.getPrinters());
-        } else {
-            throw new RuntimeException("数据库中POS code有重复数据！");
         }
     }
 
     @Override
     public List<TPrinterDevice> getPOSByParam(Map param) {
-        Assert.notEmpty(param,"参数不能为空！");
+        Assert.notEmpty(param, "参数不能为空！");
         //0 启用
-        param.put("devicestatus",0);
+        param.put("devicestatus", 0);
         //2 POS
-        param.put("devicetype",2);
+        param.put("devicetype", 2);
         TPrinterDeviceExample example = new TPrinterDeviceExample();
         example.or().andDevice(param);
         List<TPrinterDevice> tPrinterDevices = tPrinterDeviceMapper.selectByExample(example);
-        if (!CollectionUtils.isEmpty(tPrinterDevices)){
+        if (!CollectionUtils.isEmpty(tPrinterDevices)) {
             for (TPrinterDevice it : tPrinterDevices) {
                 TPrinterDeviceprinterExample example1 = new TPrinterDeviceprinterExample();
                 example.or().andDevicecodeEqualTo(it.getDevicecode());
@@ -121,11 +123,11 @@ public class PosServiceImpl implements PosService {
 
     @Override
     public void delPOS(Map param) {
-        Assert.notEmpty(param,"参数不能为空！");
+        Assert.notEmpty(param, "参数不能为空！");
         TPrinterDeviceExample example = new TPrinterDeviceExample();
         example.or().andDevice(param);
         List<TPrinterDevice> tPrinterDevices = tPrinterDeviceMapper.selectByExample(example);
-        if (CollectionUtils.isEmpty(tPrinterDevices) || tPrinterDevices.size() != 1){
+        if (CollectionUtils.isEmpty(tPrinterDevices) || tPrinterDevices.size() != 1) {
             throw new RuntimeException("打印机不存在或者重复");
         }
         example.clear();
@@ -133,7 +135,7 @@ public class PosServiceImpl implements PosService {
         TPrinterDevice temp = new TPrinterDevice();
         //1 删除
         temp.setDevicestatus(1);
-        tPrinterDeviceMapper.updateByExampleSelective(temp,example);
+        tPrinterDeviceMapper.updateByExampleSelective(temp, example);
         deletePOSPrinterByCode(tPrinterDevices.get(0).getDevicecode().toString());
     }
 
