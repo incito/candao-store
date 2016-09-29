@@ -8,6 +8,7 @@ import com.candao.www.data.model.TPrinterDeviceprinter;
 import com.candao.www.data.model.TPrinterDeviceprinterExample;
 import com.candao.www.data.pos.TPrinterDeviceMapper;
 import com.candao.www.data.pos.TPrinterDeviceprinterMapper;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.printer.v2.PrinterStatusManager;
 import com.candao.www.webroom.service.PosService;
 import org.apache.commons.collections.MapUtils;
@@ -128,6 +129,16 @@ public class PosServiceImpl implements PosService {
         tPrinterDeviceMapper.updateByExampleSelective(temp,example);
         deletePOSPrinterByCode(param.get("posid").toString());
     }
+
+    @Override
+    public void delPOSPrinter(String printerid) {
+        if (StringUtil.isEmpty(printerid))
+            return;
+        TPrinterDeviceprinterExample example = new TPrinterDeviceprinterExample();
+        example.or().andPrinteridEqualTo(printerid);
+        tPrinterDeviceprinterMapper.deleteByExample(example);
+    }
+
 
     private int deletePOSPrinterByCode(String code) {
         int count = 0;

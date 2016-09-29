@@ -23,5 +23,15 @@ public interface PosService {
 
     List<TPrinterDevice> getPOSByParam(Map param);
 
+    /**
+     * 删除POS
+     * @param param
+     */
     void delPOS(Map param);
+
+    /**
+     * 删除POS、打印机中间表
+     * @param printerid
+     */
+    void delPOSPrinter(String printerid);
 }
