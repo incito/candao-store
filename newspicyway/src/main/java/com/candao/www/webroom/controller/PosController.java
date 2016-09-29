@@ -125,7 +125,9 @@ public class PosController {
             JSONObject object = JSON.parseObject(json);
             if (!object.containsKey("devicecode"))
                 return getResponseMsg(null, "参数格式错误！", false);
-            posService.validateByCode(object);
+            //判断新增还是修改
+            boolean flag = object.containsKey("deviceid") ? true : false;
+            posService.validateByCode(object, flag);
             return getResponseMsg(null, "校验成功", true);
         } catch (Exception e) {
             e.printStackTrace();

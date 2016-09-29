@@ -12,10 +12,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.fastjson.JSONObject;
+import com.candao.www.data.model.*;
+import com.candao.www.data.pos.TPrinterDeviceMapper;
+import com.candao.www.data.pos.TPrinterDeviceprinterMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.permit.service.UserService;
 
+import com.candao.www.spring.SpringContext;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -34,10 +41,6 @@ import com.candao.print.entity.ResultTip4Pos;
 import com.candao.print.entity.SettlementInfo4Pos;
 import com.candao.print.entity.TipItem;
 import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.data.model.TbTable;
-import com.candao.www.data.model.Tinvoice;
-import com.candao.www.data.model.User;
-import com.candao.www.spring.SpringContext;
 import com.candao.www.utils.CloneUtil;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.InvoiceService;
@@ -63,6 +66,8 @@ public class Print4POSServiceImpl implements Print4POSService {
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,
             new ArrayBlockingQueue<Runnable>(5000));
 
+    private Log log = LogFactory.getLog(this.getClass());
+
     // private Print4POSProcedure print4POSProcedure;
     @Autowired
     TbPrinterManagerDao tbPrinterManagerDao;
@@ -83,9 +88,13 @@ public class Print4POSServiceImpl implements Print4POSService {
     @Autowired
     @Qualifier("t_userService")
     private UserService userService;
+    @Autowired
+    private TPrinterDeviceMapper tPrinterDeviceMapper;
+    @Autowired
+    private TPrinterDeviceprinterMapper tPrinterDeviceprinterMapper;
 
     @Override
-    public void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception {
+    public void print(List<SettlementInfo4Pos> settlementInfos, String printType, String deviceid) throws Exception {
         if (CollectionUtils.isEmpty(settlementInfos) || StringUtils.isEmpty(printType)) {
             return;
         }
@@ -131,11 +140,12 @@ public class Print4POSServiceImpl implements Print4POSService {
         // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
+        params.put("deviceid", deviceid);
         sendToPrint(params, obj);
     }
 
     @Override
-    public void printClearMachine(List<SettlementInfo4Pos> settlementInfos) throws Exception {
+    public void printClearMachine(List<SettlementInfo4Pos> settlementInfos, String posId) throws Exception {
         if (CollectionUtils.isEmpty(settlementInfos)) {
             return;
         }
@@ -146,11 +156,12 @@ public class Print4POSServiceImpl implements Print4POSService {
         // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
+        params.put("deviceid", posId);
         sendToPrint(params, obj);
     }
 
     @Override
-    public void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos) throws Exception {
+    public void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos, String deviceid) throws Exception {
         if (CollectionUtils.isEmpty(settlementInfos)) {
             return;
         }
@@ -170,24 +181,52 @@ public class Print4POSServiceImpl implements Print4POSService {
             obj.setSettlementInfo4Pos(settlementInfo4Pos);
             Map<String, Object> params = new HashMap<>();
             params.put("printertype", "10");
+            params.put("deviceid", deviceid);
             sendToPrint(params, obj);
         }
     }
 
-    private void sendToPrint(Map<String, Object> param, PrintObj obj) throws Exception{
+    private void sendToPrint(Map<String, Object> param, PrintObj obj) throws Exception {
         // TODO
-        if (param == null) {
+        if (MapUtils.isEmpty(param)) {
             return;
         }
-        List<Map<String, Object>> res = tbPrinterManagerDao.find(param);
-        if (CollectionUtils.isEmpty(res)) {
-            return;
+        if (param.containsKey("deviceid")) {
+            TPrinterDeviceExample example = new TPrinterDeviceExample();
+            example.or().andDevicecodeEqualTo(param.get("deviceid").toString()).andDevicestatusEqualTo(0).andDevicetypeEqualTo(2);
+            List<TPrinterDevice> list = tPrinterDeviceMapper.selectByExample(example);
+            if (CollectionUtils.isEmpty(list))
+                throw new RuntimeException("查找不到该POS对应的记录");
+            if (list.size() > 1)
+                throw new RuntimeException("该POS记录有多条");
+            TPrinterDeviceprinterExample example1 = new TPrinterDeviceprinterExample();
+            example.or().andDevicecodeEqualTo(list.get(0).getDevicecode());
+            List<TPrinterDeviceprinter> list1 = tPrinterDeviceprinterMapper.selectByExample(example1);
+            if (CollectionUtils.isEmpty(list1)) {
+                log.error("------>该POS机没有配置打印机");
+                throw new RuntimeException("该POS机没有配置打印机");
+            }
+            List<Map> ipAddress = JSON.parseArray(JSON.toJSONString(list1), Map.class);
+            doSend(ipAddress, obj);
+        } else {
+            List<Map> res = tbPrinterManagerDao.find(param);
+            if (CollectionUtils.isEmpty(res)) {
+                log.error("------>没有配置POS打印机");
+                throw new RuntimeException("没有配置POS打印机");
+            }
+            doSend(res, obj);
         }
+
+    }
+
+    private void doSend(List<Map> res, PrintObj obj) throws Exception {
+        if (CollectionUtils.isEmpty(res))
+            return;
         for (int i = 0; i < res.size(); i++) {
             Map<String, Object> map = res.get(i);
-            PrintObj tempObj = (PrintObj) CloneUtil.clone(obj,-1);
+            PrintObj tempObj = (PrintObj) CloneUtil.clone(obj, -1);
             tempObj.setPrinterid(String.valueOf(map.get("printerid")));
-            tempObj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress")));
+            tempObj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress") == null ? map.get("printerip") : map.get("ipaddress")));
             Print4POSProcedure print4POSProcedure = (Print4POSProcedure) SpringContext
                     .getBean(Print4POSProcedure.class);
             print4POSProcedure.setSource(tempObj);
@@ -196,7 +235,7 @@ public class Print4POSServiceImpl implements Print4POSService {
     }
 
     @Override
-    public void printItemSellDetail(ResultInfo4Pos resultInfo4Pos) throws Exception {
+    public void printItemSellDetail(ResultInfo4Pos resultInfo4Pos, String deviceid) throws Exception {
         if (resultInfo4Pos == null) {
             return;
         }
@@ -226,6 +265,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
+        params.put("deviceid", deviceid);
         sendToPrint(params, obj);
     }
 
@@ -236,7 +276,7 @@ public class Print4POSServiceImpl implements Print4POSService {
     }
 
     @Override
-    public void printTip(ResultTip4Pos resultInfo4Pos) throws Exception {
+    public void printTip(ResultTip4Pos resultInfo4Pos, String deviceid) throws Exception {
         if (resultInfo4Pos == null) {
             return;
         }
@@ -266,6 +306,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
+        params.put("deviceid", deviceid);
         sendToPrint(params, obj);
     }
 
@@ -294,6 +335,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
+        params.put("deviceid", map.get("deviceid"));
         sendToPrint(params, obj);
     }
 
@@ -311,6 +353,7 @@ public class Print4POSServiceImpl implements Print4POSService {
             obj.setPosData(temp);
             Map<String, Object> params = new HashMap<>();
             params.put("printertype", "10");
+            params.put("deviceid", map.get("deviceid"));
             sendToPrint(params, obj);
         }
     }
@@ -367,6 +410,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         // TODO
         Map<String, Object> param = new HashMap<>();
         param.put("printertype", "10");
+        param.put("deviceid", map.get("deviceid"));
         sendToPrint(param, obj);
     }
 
@@ -434,11 +478,11 @@ public class Print4POSServiceImpl implements Print4POSService {
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
                         String[] value = {resolveNullType(prefer.get("menuAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
-                                stringAdd(resolveNullType(prefer.get("toalFreeAmount")),resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
+                                stringAdd(resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
-                            	//只有为0时才不显示
+                                //只有为0时才不显示
                                 if (StringUtils.isEmpty(value[i])
                                         || 0 == new BigDecimal(value[i]).compareTo(new BigDecimal(0))) {
                                     continue;
@@ -486,6 +530,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // TODO
                     param.clear();
                     param.put("printertype", "10");
+                    param.put("deviceid", params[3]);
                     sendToPrint(param, obj);
 //                    // 更新打印数量
 //                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));

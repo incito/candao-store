@@ -14,6 +14,7 @@ import java.util.Map;
 public interface PosService {
     /**
      * 获取打印机列表及状态
+     *
      * @return
      */
     AjaxResponse getPrinterList();
@@ -26,15 +27,17 @@ public interface PosService {
 
     /**
      * 删除POS
+     *
      * @param param
      */
     void delPOS(Map param);
 
     /**
      * 删除POS、打印机中间表
+     *
      * @param printerid
      */
     void delPOSPrinter(String printerid);
 
-    void validateByCode(Map object);
+    void validateByCode(Map object, boolean isUpdate);
 }

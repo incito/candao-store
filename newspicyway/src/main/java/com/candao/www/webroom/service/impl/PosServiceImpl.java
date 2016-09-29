@@ -72,33 +72,35 @@ public class PosServiceImpl implements PosService {
     public void savePOS(TPrinterDevice tPrinterDevice) {
         if (tPrinterDevice == null)
             throw new RuntimeException("POS不能为空！");
-//        TPrinterDeviceExample example = new TPrinterDeviceExample();
-//        example.or().andDevicecodeEqualTo(tPrinterDevice.getDevicecode());
-//        List<TPrinterDevice> temp = tPrinterDeviceMapper.selectByExample(example);
 
         if (StringUtils.isEmpty(tPrinterDevice.getDeviceid())) {
+            //校验
+            Map<String, Object> param = new HashMap<>();
+            param.put("devicecode", tPrinterDevice.getDevicecode());
+            validateByCode(param, false);
             //新增
             tPrinterDevice.setDeviceid(UUID.randomUUID().toString());
             tPrinterDevice.setDevicestatus(0);
             tPrinterDevice.setDevicetype(2);
             tPrinterDeviceMapper.insertSelective(tPrinterDevice);
-            //删除中间表
-            deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
-            //新增中间表
-            savePOSPrinter(tPrinterDevice.getPrinters());
         } else {
+            //校验
+            Map<String, Object> param = new HashMap<>();
+            param.put("devicecode", tPrinterDevice.getDevicecode());
+            param.put("deviceid", tPrinterDevice.getDeviceid());
+            validateByCode(param, true);
             //修改
             TPrinterDevice list = tPrinterDeviceMapper.selectByPrimaryKey(tPrinterDevice.getDeviceid());
 
-            if (list == null)
+            if (list == null || list.getDevicestatus() == 1)
                 throw new RuntimeException("不存在该pos");
 
-            tPrinterDeviceMapper.updateByPrimaryKey(tPrinterDevice);
-            //删除中间表
-            deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
-            //新增中间表
-            savePOSPrinter(tPrinterDevice.getPrinters());
+            tPrinterDeviceMapper.updateByPrimaryKeySelective(tPrinterDevice);
         }
+        //删除中间表
+        deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
+        //新增中间表
+        savePOSPrinter(tPrinterDevice.getPrinters());
     }
 
     @Override
@@ -114,7 +116,7 @@ public class PosServiceImpl implements PosService {
         if (!CollectionUtils.isEmpty(tPrinterDevices)) {
             for (TPrinterDevice it : tPrinterDevices) {
                 TPrinterDeviceprinterExample example1 = new TPrinterDeviceprinterExample();
-                example.or().andDevicecodeEqualTo(it.getDevicecode());
+                example1.or().andDevicecodeEqualTo(it.getDevicecode());
                 it.setPrinters(tPrinterDeviceprinterMapper.selectByExample(example1));
             }
         }
@@ -125,10 +127,10 @@ public class PosServiceImpl implements PosService {
     public void delPOS(Map param) {
         Assert.notEmpty(param, "参数不能为空！");
         TPrinterDeviceExample example = new TPrinterDeviceExample();
-        example.or().andDevice(param);
+        example.or().andDevice(param).andDevicestatusEqualTo(0).andDevicetypeEqualTo(2);
         List<TPrinterDevice> tPrinterDevices = tPrinterDeviceMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(tPrinterDevices) || tPrinterDevices.size() != 1) {
-            throw new RuntimeException("打印机不存在或者重复");
+            throw new RuntimeException("POS不存在或者重复");
         }
         example.clear();
         example.or().andDevice(param);
@@ -149,16 +151,20 @@ public class PosServiceImpl implements PosService {
     }
 
     @Override
-    public void validateByCode(Map param) {
+    public void validateByCode(Map param, boolean isUpdate) {
         Assert.notEmpty(param);
-
         TPrinterDeviceExample example = new TPrinterDeviceExample();
-        example.or().andDevice(param);
+        example.or().andDevice(param).andDevicestatusEqualTo(0).andDevicetypeEqualTo(2);
         List<TPrinterDevice> list = tPrinterDeviceMapper.selectByExample(example);
-        if (!CollectionUtils.isEmpty(list))
-            throw new RuntimeException("设备码重复");
+        if (!CollectionUtils.isEmpty(list)) {
+            if (!isUpdate) {
+                throw new RuntimeException("设备码重复");
+            } else {
+                if (list.size() != 1 || !list.get(0).getDeviceid().equals(param.get("deviceid")))
+                    throw new RuntimeException("设备码重复");
+            }
+        }
     }
-
 
     private int deletePOSPrinterByCode(String code) {
         int count = 0;
