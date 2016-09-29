@@ -162,5 +162,29 @@
 		</div>
 		<!-- /.modal-dialog -->
 	</div>
+	<!--提示弹出框-->
+	<div class="modal fade dialog-sm in" data-backdrop="static"
+		id="tips-dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="dialog-sm-header">
+						<span>提示</span> <img src="../images/close-sm.png"
+							class="img-close" data-dismiss="modal">
+					</div>
+					<form action="" method="post" class="form-horizontal " name="">
+						<div class="dialog-sm-info">
+							<p class="p1">
+								<span id="tips-msg"></span>
+							</p>
+						</div>
+						<div class="btn-operate">
+							<button class="btn btn-save" type="button"  data-dismiss="modal">确认</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

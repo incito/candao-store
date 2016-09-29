@@ -131,7 +131,6 @@ $(document).ready(function(){
  * 初始化列表
  */
 function initPosList(){
-	// TODO TEST -------------------------
 	$("#print-content").html($("#print-content").find("button"));
 	var obj = {
 			devicetype: 2
@@ -224,7 +223,6 @@ function editPosPrintBox(e){
  * 保存POS
  */
 function clickFormAddPrintConfig(){
-	// TODO TEST -------------------------
 	var checkedtables=$("#printer-add-dialog #accordion").find("input[type=checkbox]:checked");
 	selectedPrinters=[];
 	$.each(checkedtables,function(i,obj){
@@ -242,20 +240,52 @@ function clickFormAddPrintConfig(){
 			devicename: $("#posname").val(),
 			printers: selectedPrinters
 	};
+	if(validateCode()){
+		$.ajax({
+			type : "post",
+			async : false,
+			url: global_Path+"/pos/save.json",
+			contentType:'application/json;charset=UTF-8',
+			dataType : "json",
+			data: JSON.stringify(options),
+			success : function(result) {
+				if(result.result == 0){
+					$("#pos-printConfig-add-dialog").modal("hide");
+					initPosList();
+				}
+			}
+		});
+	}
+}
+
+/**
+ * 验证devicecode
+ */
+function validateCode(){
+	var obj = {
+			deviceid: $("#deviceid").val(),
+			devicecode: $("#posid").val()
+	};
+	var f = false;
 	$.ajax({
-		type : "post",
+		type: "post",
 		async : false,
-		url: global_Path+"/pos/save.json",
+		url : global_Path+"/pos/validateposcode.json",
 		contentType:'application/json;charset=UTF-8',
 		dataType : "json",
-		data: JSON.stringify(options),
-		success : function(result) {
-			if(result.result == 0){
-				$("#pos-printConfig-add-dialog").modal("hide");
-				initPosList();
+		data: JSON.stringify(obj),
+		success : function(json) {
+			console.log(json);
+			if(json.result == 1){
+				$("#tips-msg").text(json.msg);
+				$("#tips-dialog").modal("show");
+				f = false;
+			}else{
+				f = true;
 			}
 		}
 	});
+	return f;
 }
 /**
  * 初始化dialog控件
