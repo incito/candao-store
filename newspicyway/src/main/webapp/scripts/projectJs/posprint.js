@@ -149,6 +149,9 @@ function initPosList(){
 						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
 					});
 				}
+			}else{
+				$("#tips-msg").text(json.msg);
+				$("#tips-dialog").modal("show");
 			}
 		}
 	});
@@ -221,6 +224,9 @@ function editPosPrintBox(e){
 					$("#printer-add").text("已选中"+findTableids.length + "个餐台");
 				}
 				showSelectStoreDiv(findTablenames,"#div-printer-add");
+			}else{
+				$("#tips-msg").text(json.msg);
+				$("#tips-dialog").modal("show");
 			}
 		}
 	});
@@ -344,6 +350,9 @@ function deletePosPrinter(){
 			if(json.result == 0){
 				$("#posprint-del-dialog").modal("hide");
 				window.location.reload();
+			}else{
+				$("#tips-msg").text(json.msg);
+				$("#tips-dialog").modal("show");
 			}
 		}
 	});
