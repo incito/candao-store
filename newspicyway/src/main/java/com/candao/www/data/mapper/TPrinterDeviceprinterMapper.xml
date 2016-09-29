@@ -68,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, devicecode, devicename, printerid, printername
+    id, devicecode, devicename, printerid, printername,printerip
   </sql>
   <select id="selectByExample" parameterType="com.candao.www.data.model.TPrinterDeviceprinterExample" resultMap="BaseResultMap">
     select

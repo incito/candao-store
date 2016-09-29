@@ -200,7 +200,7 @@ public class Print4POSServiceImpl implements Print4POSService {
             if (list.size() > 1)
                 throw new RuntimeException("该POS记录有多条");
             TPrinterDeviceprinterExample example1 = new TPrinterDeviceprinterExample();
-            example.or().andDevicecodeEqualTo(list.get(0).getDevicecode());
+            example1.or().andDevicecodeEqualTo(list.get(0).getDevicecode());
             List<TPrinterDeviceprinter> list1 = tPrinterDeviceprinterMapper.selectByExample(example1);
             if (CollectionUtils.isEmpty(list1)) {
                 log.error("------>该POS机没有配置打印机");
