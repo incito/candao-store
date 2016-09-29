@@ -1,5 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.candao.common.utils.AjaxResponse;
 import com.candao.print.service.PrinterService;
 import com.candao.www.data.model.TPrinterDevice;
@@ -123,11 +124,17 @@ public class PosServiceImpl implements PosService {
         Assert.notEmpty(param,"参数不能为空！");
         TPrinterDeviceExample example = new TPrinterDeviceExample();
         example.or().andDevice(param);
+        List<TPrinterDevice> tPrinterDevices = tPrinterDeviceMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(tPrinterDevices) || tPrinterDevices.size() != 1){
+            throw new RuntimeException("打印机不存在或者重复");
+        }
+        example.clear();
+        example.or().andDevice(param);
         TPrinterDevice temp = new TPrinterDevice();
         //1 删除
         temp.setDevicestatus(1);
         tPrinterDeviceMapper.updateByExampleSelective(temp,example);
-        deletePOSPrinterByCode(param.get("posid").toString());
+        deletePOSPrinterByCode(tPrinterDevices.get(0).getDevicecode().toString());
     }
 
     @Override
@@ -137,6 +144,17 @@ public class PosServiceImpl implements PosService {
         TPrinterDeviceprinterExample example = new TPrinterDeviceprinterExample();
         example.or().andPrinteridEqualTo(printerid);
         tPrinterDeviceprinterMapper.deleteByExample(example);
+    }
+
+    @Override
+    public void validateByCode(Map param) {
+        Assert.notEmpty(param);
+
+        TPrinterDeviceExample example = new TPrinterDeviceExample();
+        example.or().andDevice(param);
+        List<TPrinterDevice> list = tPrinterDeviceMapper.selectByExample(example);
+        if (!CollectionUtils.isEmpty(list))
+            throw new RuntimeException("设备码重复");
     }
 
 

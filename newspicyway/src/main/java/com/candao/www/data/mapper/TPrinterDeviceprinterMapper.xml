@@ -7,6 +7,7 @@
     <result column="devicename" jdbcType="VARCHAR" property="devicename" />
     <result column="printerid" jdbcType="VARCHAR" property="printerid" />
     <result column="printername" jdbcType="VARCHAR" property="printername" />
+    <result column="printerip" jdbcType="VARCHAR" property="printerip" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -101,9 +102,9 @@
   </delete>
   <insert id="insert" parameterType="com.candao.www.data.model.TPrinterDeviceprinter">
     insert into t_printer_deviceprinter (id, devicecode, devicename, 
-      printerid, printername)
+      printerid, printername,printerip)
     values (#{id,jdbcType=VARCHAR}, #{devicecode,jdbcType=VARCHAR}, #{devicename,jdbcType=VARCHAR}, 
-      #{printerid,jdbcType=VARCHAR}, #{printername,jdbcType=VARCHAR})
+      #{printerid,jdbcType=VARCHAR}, #{printername,jdbcType=VARCHAR}), #{printerip,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.candao.www.data.model.TPrinterDeviceprinter">
     insert into t_printer_deviceprinter
@@ -123,6 +124,9 @@
       <if test="printername != null">
         printername,
       </if>
+      <if test="printerip != null">
+        printerip,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -139,6 +143,9 @@
       </if>
       <if test="printername != null">
         #{printername,jdbcType=VARCHAR},
+      </if>
+      <if test="printerip != null">
+        #{printerip,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -166,6 +173,9 @@
       <if test="record.printername != null">
         printername = #{record.printername,jdbcType=VARCHAR},
       </if>
+      <if test="record.printerip != null">
+        printerip = #{record.printerip,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -177,7 +187,8 @@
       devicecode = #{record.devicecode,jdbcType=VARCHAR},
       devicename = #{record.devicename,jdbcType=VARCHAR},
       printerid = #{record.printerid,jdbcType=VARCHAR},
-      printername = #{record.printername,jdbcType=VARCHAR}
+      printername = #{record.printername,jdbcType=VARCHAR},
+      printerip = #{record.printerip,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -197,6 +208,9 @@
       <if test="printername != null">
         printername = #{printername,jdbcType=VARCHAR},
       </if>
+      <if test="printerip != null">
+        printerip = #{printerip,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -205,7 +219,8 @@
     set devicecode = #{devicecode,jdbcType=VARCHAR},
       devicename = #{devicename,jdbcType=VARCHAR},
       printerid = #{printerid,jdbcType=VARCHAR},
-      printername = #{printername,jdbcType=VARCHAR}
+      printername = #{printername,jdbcType=VARCHAR},
+      printerip = #{printerip,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

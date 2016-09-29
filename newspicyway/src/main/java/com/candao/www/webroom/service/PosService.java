@@ -1,5 +1,6 @@
 package com.candao.www.webroom.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.candao.common.utils.AjaxResponse;
 import com.candao.www.data.model.TPrinterDevice;
 
@@ -34,4 +35,6 @@ public interface PosService {
      * @param printerid
      */
     void delPOSPrinter(String printerid);
+
+    void validateByCode(Map object);
 }

@@ -11,6 +11,8 @@ public class TPrinterDeviceprinter {
 
     private String printername;
 
+    private String printerip;
+
     public String getId() {
         return id;
     }
@@ -49,5 +51,13 @@ public class TPrinterDeviceprinter {
 
     public void setPrintername(String printername) {
         this.printername = printername == null ? null : printername.trim();
+    }
+
+    public String getPrinterip() {
+        return printerip;
+    }
+
+    public void setPrinterip(String printerip) {
+        this.printerip = printerip;
     }
 }

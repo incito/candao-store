@@ -85,9 +85,8 @@ public class PosController {
             if (StringUtil.isEmpty(json))
                 return getResponseMsg(null, "参数不能为空！", false);
             JSONObject object = JSON.parseObject(json);
-            if (!object.containsKey("posid"))
+            if (!object.containsKey("deviceid"))
                 return getResponseMsg(null, "参数格式错误！", false);
-            object.put("devicecode",object.get("posid"));
             List<TPrinterDevice> res = posService.getPOSByParam(object);
             Map temp = new HashMap();
             temp.put("list", res);
@@ -106,14 +105,31 @@ public class PosController {
             if (StringUtil.isEmpty(json))
                 return getResponseMsg(null, "参数不能为空！", false);
             JSONObject object = JSON.parseObject(json);
-            if (!object.containsKey("posid"))
+            if (!object.containsKey("deviceid"))
                 return getResponseMsg(null, "参数格式错误！", false);
-            object.put("devicecode",object.get("posid"));
             posService.delPOS(object);
             return getResponseMsg(null, "删除成功！", true);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("删除失败", e);
+            return getResponseMsg(null, e.getMessage(), false);
+        }
+    }
+
+    @RequestMapping("/validateposcode")
+    @ResponseBody
+    public String validatePOSCode(@RequestBody String json) {
+        try {
+            if (StringUtil.isEmpty(json))
+                return getResponseMsg(null, "参数不能为空！", false);
+            JSONObject object = JSON.parseObject(json);
+            if (!object.containsKey("devicecode"))
+                return getResponseMsg(null, "参数格式错误！", false);
+            posService.validateByCode(object);
+            return getResponseMsg(null, "校验成功", true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("校验失败，设备码重复", e);
             return getResponseMsg(null, e.getMessage(), false);
         }
     }

@@ -2723,6 +2723,7 @@ CREATE TABLE `t_printer_deviceprinter` (
   `devicename` varchar(50) DEFAULT NULL COMMENT '设备名称',
   `printerid` varchar(50) DEFAULT NULL COMMENT '打印机IP',
   `printername` varchar(50) DEFAULT NULL COMMENT '打印机名称',
+  `printerip` varchar(50) DEFAULT NULL COMMENT '打印机ip',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
 
