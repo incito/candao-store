@@ -2183,6 +2183,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
     }
 
+	@Override
+	public int deleteordreDetailByOrderid(String orderid) {
+		return torderDetailMapper.delete(orderid);
+	}
+
     /**
      * 退菜使用的更新退菜的表和下单的明细表
      *
@@ -2691,4 +2696,5 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private TbTableDao tableDao;
     @Autowired
     private UserDao userDao;
+
 }

@@ -69,4 +69,10 @@ public interface OrderService {
 	public String updateOrderwaiter(Torder order);
 	//咖啡模式加菜
 	public String createChildOrderid(String tableNo) throws Exception;
+	   /**
+     * 获取当前消费信息
+     *
+     * @return
+     */
+    public String consumInfo();
 }

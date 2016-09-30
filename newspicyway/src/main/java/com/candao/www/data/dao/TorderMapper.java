@@ -78,4 +78,5 @@ public interface TorderMapper {
 	 * @param orderId
      */
 	public Torder lock(String orderId);
+	public <K, V> Map<K, V> selectConsumInfo();
 }

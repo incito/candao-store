@@ -1,5 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
@@ -79,8 +80,8 @@ public class OrderServiceImpl implements OrderService {
     private NotifyService notifyService;
     @Autowired
     private OrderOpService orderOpService;
-	@Autowired
-	private TorderDetailPreferentialDao detailPreferentialDao;
+    @Autowired
+    private TorderDetailPreferentialDao detailPreferentialDao;
     @Autowired
     private CaleTableAmountMapper caleTableAmountMapper;
     @Autowired
@@ -89,8 +90,6 @@ public class OrderServiceImpl implements OrderService {
     DataDictionaryService dataDictionaryService;
     @Autowired
     private OrderMapper orderMapper;
-	@Autowired
-	private TorderDetailPreferentialService torderDetailPreferentialService;
 
     @Override
     public int saveOrder(Torder order) {
@@ -176,202 +175,196 @@ public class OrderServiceImpl implements OrderService {
             return JacksonJsonMapper.objectToJson(mapRet);
         }
 
-            if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
-                // logger.error("开台失败！ 查找不到桌台");
-                mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台");
-                return JacksonJsonMapper.objectToJson(mapRet);
-            }
-            if (!"0".equals(String.valueOf(resultMap.get(0).get("status")))) {
-                logger.error("开台失败，桌台状态不对！0");
-                // mapRet.put("result", "1");
-                mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
-                return JacksonJsonMapper.objectToJson(mapRet);
-            }
-            // 1.预定桌子
-
-            // boolean bTable = tableService.updateStatus(tTable);
-            // if(!bTable){
+        if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
+            // logger.error("开台失败！ 查找不到桌台");
+            mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台");
+            return JacksonJsonMapper.objectToJson(mapRet);
+        }
+        if (!"0".equals(String.valueOf(resultMap.get(0).get("status")))) {
+            logger.error("开台失败，桌台状态不对！0");
             // mapRet.put("result", "1");
-            // return JacksonJsonMapper.objectToJson(mapRet);
-            // }
+            mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
+            return JacksonJsonMapper.objectToJson(mapRet);
+        }
+        // 1.预定桌子
 
-            // 2.生成订单号码 正在下单
-            // String orderId = IdentifierUtils.getId().generate().toString();
-            String tableId = String.valueOf(resultMap.get(0).get("tableid"));
+        // boolean bTable = tableService.updateStatus(tTable);
+        // if(!bTable){
+        // mapRet.put("result", "1");
+        // return JacksonJsonMapper.objectToJson(mapRet);
+        // }
 
-            int shiftid = 0;
+        // 2.生成订单号码 正在下单
+        // String orderId = IdentifierUtils.getId().generate().toString();
+        String tableId = String.valueOf(resultMap.get(0).get("tableid"));
 
-            String currentTime = DateUtils.getCurrentTime();
+        int shiftid = 0;
 
-            List<Map<String, Object>> listDict = dictionaryDao.getDatasByType("BIZPERIODDATE");
-            if (listDict == null || listDict.size() == 0) {
-                shiftid = 0;
-            } else {
-                for (Map<String, Object> mapWorkDay : listDict) {
+        String currentTime = DateUtils.getCurrentTime();
 
-                    if (mapWorkDay.get("itemid") == null) {
-                        continue;
-                    }
-                    String itemId = (String) mapWorkDay.get("itemid");
-                    String data_type = (String) mapWorkDay.get("datetype");
-                    String begin_time = (String) mapWorkDay.get("begintime");
-                    String end_time = (String) mapWorkDay.get("endtime");
+        List<Map<String, Object>> listDict = dictionaryDao.getDatasByType("BIZPERIODDATE");
+        if (listDict == null || listDict.size() == 0) {
+            shiftid = 0;
+        } else {
+            for (Map<String, Object> mapWorkDay : listDict) {
 
-                    currentTime = currentTime.replaceAll(":", "");
-                    begin_time = begin_time.replaceAll(":", "");
-                    end_time = end_time.replaceAll(":", "");
+                if (mapWorkDay.get("itemid") == null) {
+                    continue;
+                }
+                String itemId = (String) mapWorkDay.get("itemid");
+                String data_type = (String) mapWorkDay.get("datetype");
+                String begin_time = (String) mapWorkDay.get("begintime");
+                String end_time = (String) mapWorkDay.get("endtime");
 
-                    // 0 午市
-                    if ("0".equals(itemId)) {
-                        // T today N next day
-                        if ("T".equalsIgnoreCase(data_type)) {
+                currentTime = currentTime.replaceAll(":", "");
+                begin_time = begin_time.replaceAll(":", "");
+                end_time = end_time.replaceAll(":", "");
 
-                            if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
-                                shiftid = 0;
-                            } else if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) >= 0) {
-                                shiftid = 1;
-                            }
-                        } else if ("N".equalsIgnoreCase(data_type)) {
-                            if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
+                // 0 午市
+                if ("0".equals(itemId)) {
+                    // T today N next day
+                    if ("T".equalsIgnoreCase(data_type)) {
+
+                        if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
+                            shiftid = 0;
+                        } else if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) >= 0) {
+                            shiftid = 1;
+                        }
+                    } else if ("N".equalsIgnoreCase(data_type)) {
+                        if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
+                            shiftid = 0;
+                        } else {
+                            if (currentTime.compareTo(begin_time) < 0 && currentTime.compareTo(end_time) <= 0) {
                                 shiftid = 0;
                             } else {
-                                if (currentTime.compareTo(begin_time) < 0 && currentTime.compareTo(end_time) <= 0) {
-                                    shiftid = 0;
-                                } else {
-                                    shiftid = 1;
-                                }
+                                shiftid = 1;
                             }
                         }
-                    } else if ("1".equals(itemId)) {
-                        // 1 晚市
-                        // T today N next day
-                        if ("T".equalsIgnoreCase(data_type)) {
+                    }
+                } else if ("1".equals(itemId)) {
+                    // 1 晚市
+                    // T today N next day
+                    if ("T".equalsIgnoreCase(data_type)) {
 
-                            if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
+                        if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
+                            shiftid = 1;
+                        } else {
+                            shiftid = 0;
+                        }
+                    } else if ("N".equalsIgnoreCase(data_type)) {
+                        if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
+                            shiftid = 1;
+                        } else {
+                            if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) >= 0) {
                                 shiftid = 1;
                             } else {
                                 shiftid = 0;
-                            }
-                        } else if ("N".equalsIgnoreCase(data_type)) {
-                            if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) <= 0) {
-                                shiftid = 1;
-                            } else {
-                                if (currentTime.compareTo(begin_time) > 0 && currentTime.compareTo(end_time) >= 0) {
-                                    shiftid = 1;
-                                } else {
-                                    shiftid = 0;
-                                }
                             }
                         }
                     }
                 }
-
             }
 
-            String orderId = torderMapper.getPrimaryKey();
-            String orderIdDate = "H" + DateUtils.toOrderIdString(new Date());
-            Torder toder = torderMapper.getMaxOrderNum(orderIdDate);
-            // 使用了最大客户数返回的最大订单数
-            int maxOrderNum = toder.getCustnum();
-            Torder order = new Torder();
-            order.setTableids(tableId);
-            order.setOrderid(orderId);
-            order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
-            order.setChildNum(tOrder.getChildNum() == null ? 0 : tOrder.getChildNum());
-            order.setCurrenttableid(tableId);
-            order.setCustnum((tOrder.getManNum() == null ? 0 : tOrder.getManNum())
-                    + (tOrder.getWomanNum() == null ? 0 : tOrder.getWomanNum()));
-            order.setManNum(tOrder.getManNum() == null ? 0 : tOrder.getManNum());
-            order.setSpecialrequied(tOrder.getSpecialrequied());
-            order.setUserid(tOrder.getUsername());
-            order.setWomanNum(tOrder.getWomanNum() == null ? 0 : tOrder.getWomanNum());
-            order.setBranchid(Integer.valueOf(PropertiesUtils.getValue("current_branch_id")));
-            // 根据数据字典配置 得出早市还是晚市
-            order.setShiftid(shiftid);
-            order.setAgeperiod(tOrder.getAgeperiod());
-            order.setMeid(tOrder.getMeid());
-            order.setOrderNum(maxOrderNum);
-            order.setIsFree(tOrder.getIsFree());
-            order.setNumOfMeals(tOrder.getNumOfMeals());
-            torderMapper.insert(order);
+        }
 
-            TbTable tTable = new TbTable();
-            tTable.setTableid(tableId);
-            tTable.setOrderid(orderId);
-            // 判断餐台类型
-            // 外卖，咖啡外卖不更改餐台状态
+        String orderId = torderMapper.getPrimaryKey();
+        String orderIdDate = "H" + DateUtils.toOrderIdString(new Date());
+        Torder toder = torderMapper.getMaxOrderNum(orderIdDate);
+        // 使用了最大客户数返回的最大订单数
+        int maxOrderNum = toder.getCustnum();
+        Torder order = new Torder();
+        order.setTableids(tableId);
+        order.setOrderid(orderId);
+        order.setOrderstatus(Constant.ORDERSTATUS.ORDER_STATUS);
+        order.setChildNum(tOrder.getChildNum() == null ? 0 : tOrder.getChildNum());
+        order.setCurrenttableid(tableId);
+        order.setCustnum((tOrder.getManNum() == null ? 0 : tOrder.getManNum())
+                + (tOrder.getWomanNum() == null ? 0 : tOrder.getWomanNum()));
+        order.setManNum(tOrder.getManNum() == null ? 0 : tOrder.getManNum());
+        order.setSpecialrequied(tOrder.getSpecialrequied());
+        order.setUserid(tOrder.getUsername());
+        order.setWomanNum(tOrder.getWomanNum() == null ? 0 : tOrder.getWomanNum());
+        order.setBranchid(Integer.valueOf(PropertiesUtils.getValue("current_branch_id")));
+        // 根据数据字典配置 得出早市还是晚市
+        order.setShiftid(shiftid);
+        order.setAgeperiod(tOrder.getAgeperiod());
+        order.setMeid(tOrder.getMeid());
+        order.setOrderNum(maxOrderNum);
+        order.setIsFree(tOrder.getIsFree());
+        order.setNumOfMeals(tOrder.getNumOfMeals());
+        torderMapper.insert(order);
 
-            if (StringUtils.isEmpty(tableType) || (!Constant.TABLETYPE.TAKEOUT.equals(tableType)
-                    && !Constant.TABLETYPE.TAKEOUT_COFFEE.equals(tableType))) {
+        TbTable tTable = new TbTable();
+        tTable.setTableid(tableId);
+        tTable.setOrderid(orderId);
+        // 判断餐台类型
+        // 外卖，咖啡外卖不更改餐台状态
 
-                tTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
-            } else {
-                tTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
-            }
-            tableService.updateStatus(tTable);
+        if (StringUtils.isEmpty(tableType) || (!Constant.TABLETYPE.TAKEOUT.equals(tableType)
+                && !Constant.TABLETYPE.TAKEOUT_COFFEE.equals(tableType))) {
 
-            // 设定用户排序数量限定
-            // String user_order_num =
-            // PropertiesUtils.getValue("user_order_num");
-            //// int orderNum = 0;
-            // if(user_order_num != null){
-            // orderNum = Integer.parseInt(user_order_num);
-            // }
-            // 查询当前t_user 表最大的排序数目
-            // select max(ordernum) from t_user
-            // TbUser tbUser = userService.findById(tOrder.getUsername());
+            tTable.setStatus(Constant.TABLESTATUS.EAT_STATUS);
+        } else {
+            tTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
+        }
+        tableService.updateStatus(tTable);
 
-            User tbUser = userService.findMaxOrderNum();
+        // 设定用户排序数量限定
+        // String user_order_num =
+        // PropertiesUtils.getValue("user_order_num");
+        //// int orderNum = 0;
+        // if(user_order_num != null){
+        // orderNum = Integer.parseInt(user_order_num);
+        // }
+        // 查询当前t_user 表最大的排序数目
+        // select max(ordernum) from t_user
+        // TbUser tbUser = userService.findById(tOrder.getUsername());
 
-            userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
+        User tbUser = userService.findMaxOrderNum();
 
-            // if(tbUser != null && (tbUser.getOrderNum() == 0 ||
-            // tbUser.getOrderNum() < orderNum)){
-            //// if( tbUser.getOrdernum() < orderNum){
-            // userService.updateUserOrderNum(tOrder.getUsername(),tbUser.getOrderNum());
-            //// }
-            // }
+        userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
 
-            TbDataDictionary dd = datadictionaryService.findById("backpsd");
-            TbDataDictionary vipaddress = datadictionaryService.findById("vipaddress");
-            TbDataDictionary locktime = datadictionaryService.findById("locktime");
-            TbDataDictionary delaytime = datadictionaryService.findById("delaytime");
+        // if(tbUser != null && (tbUser.getOrderNum() == 0 ||
+        // tbUser.getOrderNum() < orderNum)){
+        //// if( tbUser.getOrdernum() < orderNum){
+        // userService.updateUserOrderNum(tOrder.getUsername(),tbUser.getOrderNum());
+        //// }
+        // }
 
-            Map<String, Object> result = new HashMap<>();
-            // result.put("result", "0");
-            result.put("orderid", orderId);
-            result.put("backpsd", dd == null ? "" : dd.getItemid());// 退菜密码
+        TbDataDictionary dd = datadictionaryService.findById("backpsd");
+        TbDataDictionary vipaddress = datadictionaryService.findById("vipaddress");
+        TbDataDictionary locktime = datadictionaryService.findById("locktime");
+        TbDataDictionary delaytime = datadictionaryService.findById("delaytime");
 
-            result.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址
-            result.put("locktime", locktime == null ? "" : locktime.getItemid()); // 屏保锁屏时间
-            result.put("delaytime", delaytime == null ? "" : delaytime.getItemid()); // 屏保停留时间
-            // 添加日志
-            // Tworklog tworklog = new Tworklog();
-            // tworklog.setWorkid(UUID.randomUUID().toString());
-            // List<Map<String, Object>> list =
-            // datadictionaryService.getDatasByType("WORKTYPE");
-            // for(int i=0;i<list.size();i++){
-            // if(list.get(i).get("itemDesc").equals("开桌")){
-            // tworklog.setWorktype(list.get(i).get("itemid").toString());
-            // };
-            // }
-            // tworklog.setUserid(tOrder.getUsername());
-            // tworklog.setBegintime(new Date());
-            // tworklog.setEndtime(new Date());
-            // tworklog.setIpaddress("127.0.0.1");
-            // tworklog.setStatus(1);
-            // tworklog.setTableid(tOrder.getTableNo());
-            // workLogService.saveLog(tworklog);
+        Map<String, Object> result = new HashMap<>();
+        // result.put("result", "0");
+        result.put("orderid", orderId);
+        result.put("backpsd", dd == null ? "" : dd.getItemid());// 退菜密码
 
-            // 开台前清空当前台的操作日记
-            toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());
-            //删除优惠的脏数据
-			Map<String, Object> params=new HashMap<>();
-			params.put("orderid", orderId);
-			params.put("clear", "1");
-			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
-			
-            mapRet = ReturnMap.getSuccessMap(result);
+        result.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址
+        result.put("locktime", locktime == null ? "" : locktime.getItemid()); // 屏保锁屏时间
+        result.put("delaytime", delaytime == null ? "" : delaytime.getItemid()); // 屏保停留时间
+        // 添加日志
+        // Tworklog tworklog = new Tworklog();
+        // tworklog.setWorkid(UUID.randomUUID().toString());
+        // List<Map<String, Object>> list =
+        // datadictionaryService.getDatasByType("WORKTYPE");
+        // for(int i=0;i<list.size();i++){
+        // if(list.get(i).get("itemDesc").equals("开桌")){
+        // tworklog.setWorktype(list.get(i).get("itemid").toString());
+        // };
+        // }
+        // tworklog.setUserid(tOrder.getUsername());
+        // tworklog.setBegintime(new Date());
+        // tworklog.setEndtime(new Date());
+        // tworklog.setIpaddress("127.0.0.1");
+        // tworklog.setStatus(1);
+        // tworklog.setTableid(tOrder.getTableNo());
+        // workLogService.saveLog(tworklog);
+
+        // 开台前清空当前台的操作日记
+        toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());
+        mapRet = ReturnMap.getSuccessMap(result);
         return JacksonJsonMapper.objectToJson(mapRet);
     }
 
@@ -394,12 +387,6 @@ public class OrderServiceImpl implements OrderService {
         userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
 
         int result = torderMapper.update(order);
-
-        Map<String,Object> param = new HashMap<>();
-        param.put("targetOrderid",order.getOrderid());
-        param.put("custnum",order.getCustnum());
-        tbPrintObjDao.updateByOrderno(param);
-
         if (result > 0) {
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         }
@@ -714,8 +701,8 @@ public class OrderServiceImpl implements OrderService {
         // TODO Auto-generated method stub
         boolean flag = true;
         Map<String, Object> mapRet = new HashMap<String, Object>();
-       String orderid=(String) params.get("orderId");
-        if (orderid != null&&!orderid.trim().isEmpty()) {
+        String orderid = (String) params.get("orderId");
+        if (orderid != null && !orderid.trim().isEmpty()) {
             if (orderid != null && !"".equals(orderid)) {
 
                 params.put("orderid", orderid);
@@ -1218,13 +1205,13 @@ public class OrderServiceImpl implements OrderService {
         Map<String, Object> outresultMap = new HashMap<>();
         List<Map<String, Object>> resultMapList = torderDetailMapper.findOrderByInfo(orderid);
         if (resultMapList != null && !resultMapList.isEmpty()) {
-        	List<Object> tipMapList = torderDetailMapper.findOrderByTip(orderid);
+            List<Object> tipMapList = torderDetailMapper.findOrderByTip(orderid);
             Map<String, Object> resultMap = resultMapList.get(0);
-            Map<String, Object>  tipMap=!tipMapList.isEmpty()?( Map<String, Object>)tipMapList.get(0):null;
+            Map<String, Object> tipMap = !tipMapList.isEmpty() ? (Map<String, Object>) tipMapList.get(0) : null;
             outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
             outresultMap.put("orderStatus", resultMap.get("orderstatus"));
             outresultMap.put("tableStatus", resultMap.get("status"));
-            outresultMap.put("isFree", (Boolean)resultMap.get("isfree")?"1":"0");
+            outresultMap.put("isFree", (Boolean) resultMap.get("isfree") ? "1" : "0");
             outresultMap.put("numOfMeals", resultMap.get("num_of_meals"));
             outresultMap.put("customerNumber", resultMap.get("custnum"));
             outresultMap.put("womanNum", resultMap.get("womanNum"));
@@ -1239,8 +1226,8 @@ public class OrderServiceImpl implements OrderService {
             outresultMap.put("fullName", resultMap.get("userid"));
             outresultMap.put("waiterName", resultMap.get("name"));
             //小费相关
-            outresultMap.put("tipWaiterNum",tipMap!=null?tipMap.get("waiter_number"):"");
-            outresultMap.put("tipWaiterName",tipMap!=null? tipMap.get("name"):"");
+            outresultMap.put("tipWaiterNum", tipMap != null ? tipMap.get("waiter_number") : "");
+            outresultMap.put("tipWaiterName", tipMap != null ? tipMap.get("name") : "");
             /** 预打印 **/
             int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
             outresultMap.put("befprintcount", printcount + 1);
@@ -1294,6 +1281,7 @@ public class OrderServiceImpl implements OrderService {
             setMap.put("subtype", branchDataSyn.getActivity().getSubType());
             setMap.put("preferentialNum", "1");
             setMap.put("dishid", branchDataSyn.getDishid());
+            setMap.put("unit", branchDataSyn.getUnit());
             setMap.put("preferentialAmt", operPreferentialResult.getAmount().toString());
             setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
             setMap.put("updateId", branchDataSyn.getId());
@@ -1307,7 +1295,7 @@ public class OrderServiceImpl implements OrderService {
             calALLAmout(setMap, operPreferentialResult);
         }
 
-        StrategyFactory.INSTANCE.calcAmount(detailPreferentialDao,caleTableAmountMapper, orderid, dataDictionaryService,
+        StrategyFactory.INSTANCE.calcAmount(detailPreferentialDao, caleTableAmountMapper, orderid, dataDictionaryService,
                 operPreferentialResult, orderMapper, orderOpMapper, (String) params.get("itemid"));
         return operPreferentialResult;
     }
@@ -1351,4 +1339,31 @@ public class OrderServiceImpl implements OrderService {
         calALLAmout(setMap, operPreferentialResult);
     }
 
+    @Override
+    public String consumInfo() {
+        Map<String, Object> consumInfo = torderMapper.selectConsumInfo();
+        if (null == consumInfo) {
+            consumInfo = new HashMap<>();
+        }
+        if (consumInfo.isEmpty()) {
+            consumInfo.put("totalAmount", "0.00");
+            consumInfo.put("dueamount", "0.00");
+            consumInfo.put("ssamount", "0.00");
+            consumInfo.put("custnum", "0");
+            consumInfo.put("orderCount", "0");
+        } else {
+            for (Map.Entry<String, Object> entry : consumInfo.entrySet()) {
+                if (null == entry.getValue()) {
+                    entry.setValue(new BigDecimal(0));
+                }
+            }
+            BigDecimal dueamount = (BigDecimal) consumInfo.get("dueamount");
+            BigDecimal ssamount = (BigDecimal) consumInfo.get("ssamount");
+            BigDecimal totalAmount = dueamount.add(ssamount);
+            consumInfo.put("totalAmount", totalAmount.setScale(2, BigDecimal.ROUND_DOWN).toString());
+            consumInfo.put("dueamount", dueamount.setScale(2, BigDecimal.ROUND_DOWN).toString());
+            consumInfo.put("ssamount", ssamount.setScale(2, BigDecimal.ROUND_DOWN).toString());
+        }
+        return JSON.toJSONString(ReturnMap.getSuccessMap(consumInfo));
+    }
 }
