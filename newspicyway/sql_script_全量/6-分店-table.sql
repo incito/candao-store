@@ -2691,6 +2691,7 @@ CREATE TABLE `t_order_detail_preferential` (
   `toalFreeAmount` decimal(10,4) DEFAULT NULL COMMENT '优免总金额',
   `toalDebitAmount` decimal(10,4) DEFAULT NULL COMMENT '挂账总金额',
   `insertime` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '当前插入时间',
+  `unit` varchar(50) DEFAULT NULL COMMENT '菜品单位',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
