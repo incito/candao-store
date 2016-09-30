@@ -55,7 +55,7 @@ $(document).ready(function(){
 			$.each(result, function(i, printer){
 				html +=" <label class='checkbox-inline col-xs-3'><input type='checkbox' id='table_"
 					+ printer.printerid+"' ip='"+printer.ipaddress+"' value='"+printer.printerid+"' data-title='"
-					+ printer.printername + "'><span>"
+					+ printer.printername + "'><span title='"+printer.printername+"'>"
 					+ substrControl(printer.printername,12)+"</span></label>";
 			});
 			$("#printer-add-dialog #accordion .panel-body").html(html);
@@ -146,7 +146,7 @@ function initPosList(){
 				var data = json.data;
 				if(data != null && data != ""){
 					$.each(data.list, function(i, val){
-						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
+						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
 					});
 				}
 			}else{
