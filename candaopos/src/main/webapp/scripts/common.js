@@ -95,7 +95,7 @@ _config.interfaceUrl = {
 	GetDishStatus: "/newspicyway/datasnap/rest/TServerMethods1/getFoodStatus/", <!--获取菜品的状态，是否估清-->
 	GetFavorable: "/newspicyway/datasnap/rest/TServerMethods1/getFavorale/", <!--获取优惠信息-->
 	Clearner: "/newspicyway/datasnap/rest/TServerMethods1/clearMachine/", <!--清机-->
-	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业-->
+	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业不需要传递参数-->
 	SaveCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/saveOrderPreferential/", <!--保存优惠券信息-->
 	GetSavedCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderCouponList/", <!--获取保存的优惠券信息-->
 	BroadcastMsg: "/newspicyway/datasnap/rest/TServerMethods1/broadcastmsg/", <!--广播消息-->
@@ -799,6 +799,44 @@ utils.reprintClear={//打印清机单
 				})
 			}
 		});
+	}
+}
+utils.clearLocalStorage={
+	clear:function (key) {//清除传递的指定
+		if(key==undefined){
+			localStorage.clear();
+		}
+		else {
+			for(var i in key){
+				utils.storage.remove(key[i])
+			}
+		}
+
+	},
+	clearSelect:function () {//清除固定的缓存
+		var clearLocal={
+				'aUserid':'aUserid',
+				'branch_branchcode':'branch_branchcode',
+				'branch_branchid':'branch_branchid',
+				'branch_branchaddress':'branch_branchaddress',
+			    'branch_branchname':'branch_branchname',
+			    'branch_id':'branch_id',
+			    'branch_insertime':'branch_insertime',
+			    'branch_managerid':'branch_managerid',
+			    'branch_managername':'branch_managername',
+			    'branch_managertel':'branch_managertel',
+			    'branch_padversion':'branch_padversion',
+			    'branch_serverversion':'branch_serverversion',
+			    'branch_tenantid':'branch_tenantid',
+			    'branch_updatetime':'branch_updatetime',
+			    'checkout_fullname':'checkout_fullname',
+			    'fullname':'fullname',
+			    'loginTime':'loginTime',
+			    'user_rights':'user_rights',
+			}
+		for(var i in clearLocal){
+			utils.storage.remove(clearLocal[i])
+		}
 	}
 }
 
