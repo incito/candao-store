@@ -2728,6 +2728,16 @@ CREATE TABLE `t_printer_deviceprinter` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
 
+DROP TABLE IF EXISTS `t_dish_sellout`;
+CREATE TABLE `t_dish_sellout` (
+  `id` int(50) NOT NULL AUTO_INCREMENT,
+  `dishid` varchar(50) DEFAULT NULL,
+  `dishunit` varchar(255) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `createtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- 
 -- Enable foreign keys
 -- 
