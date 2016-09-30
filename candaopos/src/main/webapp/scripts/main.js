@@ -1,17 +1,9 @@
 
 
-
 var MainPage = {
 
 	CurrentTalbeType: 'all',
 	CurrentArea: '-1',//默认为全部
-
-	//全局订单信息
-	orderInfo: {
-		orderId: '',
-		personNo: '0',
-		tableNo: ''
-	},
 
 	init: function(){
 
@@ -40,22 +32,19 @@ var MainPage = {
 		dom.standardTables.on('click','li', function(){
 			var me = $(this);
 			var cla = me.attr("class");
-			dom.orderDialog.load("../views/order.jsp");
-			dom.orderDialog.modal('show');
-
-			that.orderInfo = {
-				orderId: me.attr('orderid'),
-				personNo: me.attr('personnum'),
-				tableNo: me.attr('tableno')
+			var data = {
+				orderid: me.attr('orderid'),
+				personnum: me.attr('personnum'),
+				tableno: me.attr('tableno')
 			};
-
-			setTimeout(function(){
+			dom.orderDialog.load("../views/order.jsp",data,function(){
+				dom.orderDialog.modal('show');
 				if(cla !== "opened"){
 					$("#open-dialog").modal("show");
 				}
-			}, 100)
-		});
+			});
 
+		});
 
 		//退出系统
 		$(".exit-sys").click(function(){
@@ -283,6 +272,9 @@ var MainPage = {
 					.end().find('.free .num').text(tables.free.length)
 					.end().find('.opened .num').text(tables.opened.length);
 
+
+
+
 				//设置区域
 				if(navRoomTypes.attr('inited') !== 'true'){
 					navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
@@ -305,13 +297,14 @@ var MainPage = {
 						showNavigator: true,
 						callback: function(data) {
 							$("#standard-tables").html(data.join(''));
+							//$("#standard-tables").find('li').eq(0).trigger('click');
 						}
 					});
 				}
 
 			}
 		})
-	},
+	}
 };
 
 $(function(){
@@ -344,7 +337,7 @@ function selPayCompany(){
 		$(".paycompany-content ul li").removeClass("active");
 		$(this).addClass("active");
 	});
-	
+
 	//�ѵ����һҳ
 	$("#select-paycompany-dialog .prev-btn").unbind("click").on("click", function(){
 		if ($(this).hasClass("disabled")) {
