@@ -62,7 +62,7 @@
 								class="required-span">*</span>POS 名称：</label>
 							<div class="col-xs-7">
 								<input type="text" value="" class="form-control  required"
-									name="posname" id="posname"> 
+									name="posname" id="posname" maxlength="15"> 
 								<font color="red" id="posname_tip" class="error"></font>
 							</div>
 						</div>
