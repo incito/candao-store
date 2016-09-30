@@ -103,12 +103,12 @@
 </style>
 <script type="text/javascript">
 	$.ajax({
-		url: _config.interfaceUrl.RestaurantOpened + '\/\/192.168.10.54\/0\/',
+		url: _config.interfaceUrl.RestaurantOpened + '//'+utils.storage.getter('ipaddress')+'/0/',
 		method: 'GET',
 		dataType:'text',
 		success: function(res){
 			var res = JSON.parse(res.substring(12,res.length-3));
-			if(res.Data === '0') {
+			if(res.Data === '1') {//开业
 				window.location = "../views/login.jsp";
 			}
 		},

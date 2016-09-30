@@ -23,16 +23,16 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <form action="">
+                    <form action="" >
                         <div class="form-group form-group-base">
                             <span class="form-label">员工编号:</span>
-                            <input value="" name="uesr"  type="text" class="form-control" autocomplete="off">
+                            <input value=""id="user"  name="uesr"  type="text" class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group form-group-base">
                             <span class="form-label">权限密码:</span>
-                            <input value="" name="psd"  type="text" class="form-control" autocomplete="off">
+                            <input value="" id="psd" name="psd"  type="password" class="form-control" autocomplete="off">
                         </div>
-                        <div class="virtual-keyboard-base">
+                        <div class="virtual-keyboard-base" style="overflow: auto;">
                             <ul>
                                 <li>1</li><li>2</li><li>3</li>
                             </ul>
@@ -43,12 +43,12 @@
                                 <li>7</li><li>8</li><li>9</li>
                             </ul>
                             <ul>
-                                <li>.</li><li>0</li><li>←</li>
+                                <li>.</li><li>0</li><li class="clearLength">←</li>
                             </ul>
                         </div>
-                        <div class="form-group form-group-base">
-                            <button class="btn-default btn-lg btn-base btn-base-flex2">取消</button>
-                            <button class="btn-default btn-lg btn-base btn-base-flex2">确定</button>
+                        <div class="form-group form-group-base" id="permission" style="margin-top: 10px">
+                            <button class="btn-default btn-lg btn-base btn-base-flex2" data-dismiss="modal">取消</button>
+                            <button class="btn-default btn-lg btn-base btn-base-flex2 btnOk disabled" disabled="disabled">确定</button>
                         </div>
                     </form>
                 </div>
@@ -61,11 +61,113 @@
     <%
        String title = request.getParameter("title");
        String clearType = request.getParameter("clearType");
+       String userRightNo= request.getParameter("userRightNo");
+       String cbd=request.getParameter("cbd");
+       String usernameDisble=request.getParameter("usernameDisble");
+       String user_Nmae=request.getParameter("userNmae");
+    %>
+    var title = "<%=title%>",clearType = "<%=clearType%>",userRightNo="<%=userRightNo%>",callBackFun="<%=cbd%>",usernameDisble="<%=usernameDisble%>",user_Nmae="<%=user_Nmae%>";
+    var  usernameData;
+    $(function () {
+        $('#user').removeAttr('readonly').val('');
+        $("#pagestitle").text(title);
+        if(usernameDisble==1){
+            $('#user').attr('disabled','disabled').val(utils.storage.getter('aUserid'))
+        }
+        else if(usernameDisble==2){//结业清机
+            $('#user').attr('disabled','disabled').val(user_Nmae)
 
-%>
-    var title = "<%=title%>";
-    var clearType = "<%=clearType%>";
-    $("#pagestitle").text(title)
+        }
+
+        else {
+            $('#user').removeAttr('readonly').val('');
+        }
+        impower.int();
+    });
+    var impower={
+        int:function () {
+            //加载虚拟键盘组件
+            widget.keyboard({
+                target: '.virtual-keyboard-base'
+            });
+            this.permission();
+        },
+        permission:function () {
+            var user="",psd=""
+            var that=this;
+            function notNull() {
+                 user=$.trim($("#user").val()),psd=$.trim($("#psd").val())
+                if(user!=""&& psd!=""){
+                    $('#permission .btnOk').removeAttr("disabled").removeClass("disabled")
+                }
+                else {
+                    $('#permission .btnOk').attr("disabled","disabled").addClass("disabled")
+                }
+            };
+                $('#user,#psd').on('input propertychange focus', function() {
+                    notNull();
+                });
+                $(".clearLength").click(function () {
+                    setTimeout(function () {
+                        user=$.trim($("#user").val()),psd=$.trim($("#psd").val());
+                        if(user==""||psd==""){
+                            $('#permission .btnOk').attr("disabled","disabled").addClass("disabled")
+                        }
+                    },100)
+
+                });
+
+            $(".btnOk").click(function () {
+                $.ajax({
+                    url: _config.interfaceUrl.AuthorizeLogin,//登录判断
+                    method: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        username:user ,
+                        password: hex_md5(psd),
+                        macAddress: utils.storage.getter('ipaddress'),//Ip地址
+                        loginType: '030201'
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        var checkout_fullname=data.data.fullname;
+                        utils.storage.setter("checkout_fullname",checkout_fullname);//结业清机用户名
+                        if(data.code === '0') {//成功登录
+                           var user_right= utils.userRight.get(user,userRightNo);
+                            if(user_right){//验证权限
+                                eval(callBackFun)
+                            }
+                            else {
+                                var str = '<div class="js_Ok" ><br>您没有'+title.substring(0,title.length-2)+'权限</div>';
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content:str,
+                                    width:500,
+                                    height:500,
+                                    title:'',
+                                    btnOkTxt: '确定',
+                                    btnCancelTxt: ''
+                                });
+                            }
+                        }//登录不成功
+                        else {
+                            widget.modal.alert({
+                                cls: 'fade in',
+                                content:'<strong>' + data.msg + '</strong>',
+                                width:500,
+                                height:500,
+                                btnOkTxt: '',
+                                btnCancelTxt: '确定'
+                            });
+                        }
+                    }
+                });
+                return false//禁止form表单跳转
+            })
+
+        }
+
+    }
 </script>
 </body>
 </html>

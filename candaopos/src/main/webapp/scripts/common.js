@@ -83,7 +83,7 @@ _config.interfaceUrl = {
 	GetDishStatus: "/newspicyway/datasnap/rest/TServerMethods1/getFoodStatus/", <!--获取菜品的状态，是否估清-->
 	GetFavorable: "/newspicyway/datasnap/rest/TServerMethods1/getFavorale/", <!--获取优惠信息-->
 	Clearner: "/newspicyway/datasnap/rest/TServerMethods1/clearMachine/", <!--清机-->
-	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业-->
+	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业不需要传递参数-->
 	SaveCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/saveOrderPreferential/", <!--保存优惠券信息-->
 	GetSavedCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderCouponList/", <!--获取保存的优惠券信息-->
 	BroadcastMsg: "/newspicyway/datasnap/rest/TServerMethods1/broadcastmsg/", <!--广播消息-->
@@ -446,6 +446,7 @@ widget.keyboard = function(opts){
 	}
 
 	function _bindEvent (){
+		doc.undelegate(opts.target + ' ' + opts.chirdSelector,'click');
 		doc.delegate(opts.target + ' ' + opts.chirdSelector,'click', function(){
 			var me = $(this);
 			if(focusIpt === null || me.hasClass('btn-action')) return false;
@@ -469,7 +470,7 @@ widget.keyboard = function(opts){
 
 			opts.cb && opts.cb();
 		});
-
+		doc.undelegate('input[type=text],input[type=password],input[type=search]','focus');
 		doc.delegate('input[type=text],input[type=password],input[type=search]','focus', function(){
 			focusIpt = $(this);
 		});
@@ -749,6 +750,120 @@ utils.date = {
 
 
 }
+/**
+ * utils.userRight.get(username,key)传入参数:用户名称，权限名称;返回 true false
+ */
+utils.userRight={
+     get:function (username, key) {
+		var aUserid=utils.storage.getter('aUserid'),user_rights;//获取缓存用户名称
+     	if(username==aUserid){
+     		user_rights=JSON.parse(utils.storage.getter('user_rights'));
+			if(user_rights[key]=="1"){
+				return true
+			}
+			else {
+				return false
+			}
+		}
+		else {//从服务器获取
+			var result
+			$.ajax({
+				url: _config.interfaceUrl.GetUserRight,
+				method: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify({
+					username: username
+				}),
+				dataType:'json',
+				async: false,
+				success: function(res){
+					if(res.result === '0') {
+						user_rights=res.rights;
+						if(user_rights[key]=="1"){
+							result=true;
+						}
+						else {
+							result=false
+						}
+					} else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				}
+			})
+			return result
+		}
+	 }
+}
+/**
+ * utils.getUrl.get(name)传入参数:要获取参数的名称
+ */
+utils.getUrl={//获取浏览器参数
+	get:function (name) {
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null)return  unescape(r[2]); return null;
+	}
+}
+/**
+ * utils.getUrl.get()//打印清机单
+ */
+utils.reprintClear={//打印清机单
+	get:function () {
+		var posId=utils.storage.getter('posid'),jsorder=" ";
+		$.ajax({
+			url:_config.interfaceUrl.PrintClearMachine+'/'+ utils.storage.getter('aUserid') + '+/'+jsorder+'/'+utils.storage.getter('posid')+'/',
+			type: "get",
+			success: function (data) {
+				rightBottomPop.alert({
+					content:"清机单打印完成",
+				})
+			}
+		});
+	}
+}
+utils.clearLocalStorage={
+	clear:function (key) {//清除传递的指定
+		if(key==undefined){
+			localStorage.clear();
+		}
+		else {
+			for(var i in key){
+				utils.storage.remove(key[i])
+			}
+		}
 
-
+	},
+	clearSelect:function () {//清除固定的缓存
+		var clearLocal={
+				'aUserid':'aUserid',
+				'branch_branchcode':'branch_branchcode',
+				'branch_branchid':'branch_branchid',
+				'branch_branchaddress':'branch_branchaddress',
+			    'branch_branchname':'branch_branchname',
+			    'branch_id':'branch_id',
+			    'branch_insertime':'branch_insertime',
+			    'branch_managerid':'branch_managerid',
+			    'branch_managername':'branch_managername',
+			    'branch_managertel':'branch_managertel',
+			    'branch_padversion':'branch_padversion',
+			    'branch_serverversion':'branch_serverversion',
+			    'branch_tenantid':'branch_tenantid',
+			    'branch_updatetime':'branch_updatetime',
+			    'checkout_fullname':'checkout_fullname',
+			    'fullname':'fullname',
+			    'loginTime':'loginTime',
+			    'user_rights':'user_rights',
+			}
+		for(var i in clearLocal){
+			utils.storage.remove(clearLocal[i])
+		}
+	}
+}
 

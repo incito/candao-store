@@ -20,6 +20,7 @@
 <script src="../scripts/common.js"></script>
 <script src="../scripts/page.js"></script>
 <script src="../scripts/main.js"></script>
+	<script src="../lib/md5.js"></script>
 <script type="text/javascript">
 	var nowPage = 0;
 	var g_isopened = false;

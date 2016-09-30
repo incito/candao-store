@@ -10,11 +10,10 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>点菜</title>
-<link rel="stylesheet" href="../css/orderdish.css">
-<script src="../scripts/page.js"></script>
-<script src="../scripts/addDish.js"></script>
-<script type="text/javascript">
-</script>
+<link class="csslink" rel="stylesheet">
+<script  class="javaScript" ></script>
+<script class="javaScript" ></script>
+
 </head>
 <body>
 	<div class="modal-dialog main-modal-dialog" id="adddish-modal" data-backdrop="static" >
@@ -171,7 +170,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('clear-confirm-dialog')">
+	                <img id="pagtype" src="../images/close-sm.png" class="img-close" onclick="closeConfirm('clear-confirm-dialog')">
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -571,5 +570,22 @@
 	        </div>
 	    </div>
 	 </div>
+	<script  type="text/javascript">
+		<%
+           String fromType = request.getParameter("fromType");
+        %>
+		var fromType = "<%=fromType%>";
+		if(fromType=="1"){
+			$('.csslink').attr('href','../../css/orderdish.css');
+			$('.javaScript').eq(0).attr('src','../../scripts/page.js')
+			$('.javaScript').eq(1).attr('src','../../scripts/addDish.js')
+		}
+		else {
+			$('.csslink').attr('href','../css/orderdish.css');
+			$('.javaScript').eq(0).attr('src','../scripts/page.js')
+			$('.javaScript').eq(1).attr('src','../scripts/addDish.js')
+		}
+
+	</script>
 </body>
 </html>
