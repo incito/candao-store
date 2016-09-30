@@ -8240,7 +8240,7 @@ BEGIN -- 返回字段说明如下
 END$$
 DELIMITER ;
 
---服务员销售统计表 start--
+-- 服务员销售统计表 start --
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS p_report_fwyxstjb$$
@@ -8386,7 +8386,9 @@ BEGIN
 END$$
 
 DELIMITER ;
---服务员销售统计表 end--
+-- 服务员销售统计表 end --
+
+DELIMITER $$
 
  DROP PROCEDURE IF EXISTS p_report_gzxxmxb$$
  CREATE DEFINER=`root`@`%` PROCEDURE `p_report_gzxxmxb`(IN  pi_branchid INT(11),
