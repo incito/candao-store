@@ -15,30 +15,30 @@
 }
 .left-div .discount-total-amount{
 	font-size: 14px;
-  	color: #FF5803;
-  	padding: 0 30px;
-  	margin-top: 8px;
+	color: #FF5803;
+	padding: 0 30px;
+	margin-top: 8px;
 }
 .left-div .discount-hr{
 	position: absolute;
-  	width: 2px;
-  	height: 15px;
-  	background: #FF5803;
-  	margin: 2px 20px;
+	width: 2px;
+	height: 15px;
+	background: #FF5803;
+	margin: 2px 20px;
 }
 .left-div .operate-btns div{
 	width: 70px;
-  	height: 42px;
-  	background: #F6F6F6;
-  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
-  	border-radius: 3px;
-  	text-align: center;
-  	display: inline-block;
-  	font-size: 14px;
-  	color: #040404;
-  	padding-top: 10px;
-  	margin-left: 5px;
-  	cursor: pointer;
+	height: 42px;
+	background: #F6F6F6;
+	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+	text-align: center;
+	display: inline-block;
+	font-size: 14px;
+	color: #040404;
+	padding-top: 10px;
+	margin-left: 5px;
+	cursor: pointer;
 }
 .left-div .operate-btns div:hover{
 	background: #F68D70;
@@ -54,7 +54,7 @@
 	height: 240px;
 }
 .main-div .preferentials{
-  	height: 240px;
+	height: 240px;
 }
 .main-div .preferentials .preferentials-content{
 	width: 92%;
@@ -67,8 +67,8 @@
 	box-shadow: 0px 1px 0px 0px #B1B1B1;
 	border-radius: 3px;
 	float: left;
-  	margin-right: 5px;
-  	margin-bottom: 5px;
+	margin-right: 5px;
+	margin-bottom: 5px;
 	padding: 10px 5px 7px;
 	color: #515356;
 	text-align: center;
@@ -77,25 +77,25 @@
 .main-div .tab-payment ul li{
 	float: left;
 	text-align: center;
-  	padding: 12px 0;
+	padding: 12px 0;
 	position: relative;
 	font-size: 14px;
-  	color: #111111;
-  	width: 12%;
-  	height: 45px;
-  	font-weight: bold;
-  	margin: 2px 10px;
-  	cursor: pointer;
+	color: #111111;
+	width: 12%;
+	height: 45px;
+	font-weight: bold;
+	margin: 2px 10px;
+	cursor: pointer;
 }
 .main-div .tab-payment ul li.active{
 	color: #FF5803;
-  	font-size: 16px;
-  	padding: 6px 0;
-  	border-bottom: 3px solid #FF5803;
+	font-size: 16px;
+	padding: 6px 0;
+	border-bottom: 3px solid #FF5803;
 }
 .main-div .pay-div{
 	width: 100%;
-  	padding-top: 10px;
+	padding-top: 10px;
 }
 .main-div .pay-div .paytype-input{
 	width: 50%;
@@ -106,8 +106,8 @@
 	position: absolute;
 	margin-left: 10px;
 	font-size: 14px;
-  	color: #A6A6A6;
- 	margin-top: 10px;
+	color: #A6A6A6;
+	margin-top: 10px;
 }
 .paytype-input input {
 	width: 260px;
@@ -115,25 +115,25 @@
 	padding-left: 70px;
 }
 .cash span{
-  	font-size: 16px;
+	font-size: 16px;
 }
 .cash input{
 	height: 90px;
-  	width: 260px;
-  	padding-left: 60px;
-  	font-size: 60px;
-  	text-align: right;
+	width: 260px;
+	padding-left: 60px;
+	font-size: 60px;
+	text-align: right;
 }
 .cash .the-change-div{
-	color: #FF5803; 
-	font-weight: bold;  
-	padding-left: 10px; 
+	color: #FF5803;
+	font-weight: bold;
+	padding-left: 10px;
 	font-size: 18px;
 }
 .cash .the-change-span{
-	margin-top: -2px; 
-	margin-left: 30px; 
-	color: #FF5803; 
+	margin-top: -2px;
+	margin-left: 30px;
+	color: #FF5803;
 	font-size: 18px;
 }
 .membership-card input.card-number{
@@ -142,19 +142,19 @@
 }
 .pay-div .btn{
 	margin-left: 6px;
-  	width: 84px;
-  	height: 38px;
-  	background: #FFFFFF;
-  	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
-  	border-radius: 3px;
-  	font-size: 14px;
+	width: 84px;
+	height: 38px;
+	background: #FFFFFF;
+	box-shadow: 0px -1px 1px 0px rgba(237,237,237,0.50), 0px 1px 0px 0px #CFCFCF;
+	border-radius: 3px;
+	font-size: 14px;
 	color: #000000;
 	text-align: center;
-  	padding-top: 10px;
-  	cursor: pointer;
+	padding-top: 10px;
+	cursor: pointer;
 }
 .membership-card .register-btn{
-  	margin-left: 176px;
+	margin-left: 176px;
 }
 .pay-div .btn:hover {
 	background: #F68D70;
@@ -187,11 +187,11 @@
 }
 .main-div .num-virtual-keyboard ul li {
 	width: 92px;
-  	font-size: 16px;
+	font-size: 16px;
 }
 .main-div .letter-virtual-keyboard ul li{
 	width: 44px;
-  	font-size: 16px;
+	font-size: 16px;
 }
 
 .hori-lf-div span{
@@ -217,30 +217,30 @@
 
 .more-oper{
 	position: absolute;
-  	width: 90px;
-  	bottom: 46px;
-  	right: 10px;
-  	border: 1px solid #EFEFEB;
-  	background: #F6F6F6;
+	width: 90px;
+	bottom: 46px;
+	right: 10px;
+	border: 1px solid #EFEFEB;
+	background: #F6F6F6;
 }
 .more-oper ul li{
 	width: 98%;
-  	height: 40px;
-  	text-align: center;
-  	padding-top: 12px;
-  	background: #ffffff;
-  	margin: 2px auto;
-  	border-radius: 4px;
+	height: 40px;
+	text-align: center;
+	padding-top: 12px;
+	background: #ffffff;
+	margin: 2px auto;
+	border-radius: 4px;
 }
 .input-num-dialog .modal-dialog {
-  	width: 340px;
+	width: 340px;
 }
 .input-num-dialog .modal-title{
 	text-align: center;
 }
 #coupnum-dialog .coupname{
 	color: #FF5803;
-  	font-size: 16px;
+	font-size: 16px;
 }
 #backfood-dialog .form-group input.padding-left{
 	padding-left: 120px;
@@ -250,9 +250,9 @@
 }
 .bank-icon img{
 	border: 3px solid gray;
-  	display: inline-block;
-  	width: 240px;
-  	margin: 10px 5px;
+	display: inline-block;
+	width: 240px;
+	margin: 10px 5px;
 }
 .bank-icon img.active{
 	border: 3px solid #FF5803;
@@ -266,13 +266,13 @@
 }
 .paycompany-content ul li{
 	list-style: none;
-  	height: 45px;
-  	padding: 12px;
-  	font-size: 16px;
-  	padding-left: 50px;
-  	color: #333333;
-  	cursor: pointer;
-  	font-weight: bold;
+	height: 45px;
+	padding: 12px;
+	font-size: 16px;
+	padding-left: 50px;
+	color: #333333;
+	cursor: pointer;
+	font-weight: bold;
 }
 .paycompany-content ul li:hover{
 	opacity: 0.5;
@@ -288,5 +288,60 @@
 }
 #select-paycompany-dialog .page{
 	float: left;
-  	display: inline-block;
+	display: inline-block;
 }
+.pay-total  {
+	overflow: hidden;
+	padding:10px;
+	background: #ccc;
+	padding: 5px 10px!important;
+	width: 100%;
+}
+.pay-total li {
+	float:left;
+	font-size:14px;
+	margin-right:10px;
+	color:#fff;
+}
+.give-dish-list {
+	width: 100%;
+	overflow: hidden;
+	padding:0;
+	clear:both;
+	margin-top:10px;
+}
+
+.give-dish-list li {
+	list-style: none;
+	width: 132px;
+	height: 48px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	border-radius: 3px;
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	padding: 10px 5px 7px;
+	color: #515356;
+	text-align: center;
+	font-size: 14px;
+	position: relative;
+	cursor: pointer;
+}
+
+.give-dish-list li.selected {
+	color: #fff;
+	background-color: #FF5803;
+	border-color: #FF5803;
+}
+
+.give-dish-list li span.dishname {
+}
+.give-dish-list li span.info {
+	position: absolute;
+	bottom: 5px;
+	left: 0;
+	text-align: right;
+	padding-right: 5px;
+}
+

@@ -4,16 +4,17 @@ var nowPage3 = 0;// 待选优惠分页
 var pref_prev = 0;
 
 
+
+
 var Order = {
 
 	init: function () {
 
 		this.initPreferentialType();
-		this.bindEvent();
 
-		$("#order-dialog").find('.J-order-id').text(MainPage.orderInfo.orderId)
-			.end().find('.J-table-no').text(MainPage.orderInfo.tableNo)
-			.end().find('.J-person-no').text(MainPage.orderInfo.personNo);
+		this.initOrder();
+
+		this.bindEvent();
 	},
 
 
@@ -24,6 +25,7 @@ var Order = {
 			orderDialog : $("#order-dialog"),
 			openDialog : $("#open-dialog"),//开台权限验证弹窗
 			addDishDialog : $("#adddish-dialog"),//点菜弹窗
+			giveDishDialog : $("#givedish-dialog"),//赠菜弹窗
 		};
 
 		/**
@@ -76,7 +78,7 @@ var Order = {
 					method: 'POST',
 					contentType: "application/json",
 					data: JSON.stringify({
-						tableNo: MainPage.orderInfo.tableNo,
+						tableNo: $('input[name=tableno]').val(),
 						ageperiod: (function(){
 							var str = '';
 							dom.openDialog.find('.age-type>div').each(function(){
@@ -97,9 +99,8 @@ var Order = {
 							console.log(res.data);
 							dom.openDialog.modal('hide');
 
+							$('input[name=tableno]').val(res.data.orderid)
 							//设置订单信息
-							MainPage.orderInfo.orderId = res.data.orderid;
-
 							that.takeOrder();
 
 						} else {
@@ -121,6 +122,107 @@ var Order = {
 		/**
 		 * 优惠操作
 		 */
+		dom.orderDialog.delegate(".nav-pref-types li.nav-pref-type",'click', function () {
+			var me = $(this);
+			me.siblings().removeClass("active").end().addClass("active");
+			that.initPreferential(me.attr('preid'));
+		});
+
+		//优惠-赠菜
+		dom.giveDishDialog.delegate('li', 'click', function(){
+			var me = $(this);
+			var num = parseInt(me.attr('num'), 10);
+			var sel = parseInt(me.attr('sel') || 0, 10);
+			if(sel === num) {
+				me.removeClass('selected');
+				sel = 0;
+			} else {
+				me.addClass('selected');
+				sel++;
+			}
+			me.attr('sel',sel);
+			me.find('.sel').text(sel);
+		});
+
+		// 选中已选优惠
+		dom.orderDialog.delegate("#sel-preferential-table tbody tr", "click", function () {
+			var me = $(this);
+			me.siblings().removeClass("active").end().addClass("active");
+		});
+
+		//添加优惠
+		dom.orderDialog.delegate(".preferential-info",'click', function () {
+			var me = $(this);
+			var name = me.attr('name');
+			var type = me.attr('type');
+			var sub_type = me.attr('sub_type');
+			var discount = me.attr('discount');
+			var free_reason = me.attr('free_reason')
+			var $coupnumDialog = $('#coupnum-dialog');
+			var $givedishDialog = $('#givedish-dialog');
+
+			that.manageUsePref.set({
+				"preferentialid": me.attr('preferential'),
+				"disrate": discount === '' ? '0.0' : discount,//折扣
+				"type": type,//类型
+				"sub_type": sub_type === '' ? null : sub_type,//子类型  优惠券信息
+
+				//"preferentialAmt": "0.00",//总优惠
+				//"toalFreeAmount": "0.00",//优免
+				//"toalDebitAmount": "0.00",//挂账
+				//"toalDebitAmountMany": "0.00",//挂账多收
+				//"adjAmout": "0.00",//优免调整
+
+				"preferentialNum": "1",//优惠卷张数 “xx,xx,xx”,
+				"preferentialAmout": "0",//手动输入优惠金额
+				"isCustom": "0",//是否是用户自己输入
+
+				"dishid": "",//赠菜卷“xx,xx,xx”,
+				"unit": "" //“xx,xx,xx”,
+			});
+
+			//根据不同优惠券,弹出不同modal
+			if(type === '05' || type=== '03'){
+				//团购 || 代金券, 输入数量
+				$coupnumDialog.addClass('coupnum-num');
+				$coupnumDialog.find('.coupname').text(name);
+				$coupnumDialog.find('.inpt-span').text('使用数量');
+				$coupnumDialog.modal('show');
+
+			} else if(type === '07' && free_reason === '1'){
+				//手工 输入折扣率
+				$coupnumDialog.addClass('coupnum-cus-discount');
+				$coupnumDialog.find('.inpt-span').text('折扣率');
+				$coupnumDialog.modal('show');
+			} else if(type === '07' && free_reason === '2') {
+				//手工 输入金额(优免)
+				$coupnumDialog.addClass('coupnum-cus-free');
+				$coupnumDialog.find('.inpt-span').text('优免');
+				$coupnumDialog.modal('show');
+			} else if(type === '07' && free_reason === '0') {
+				//手工 选择赠菜
+				$givedishDialog.addClass('coupum-cus-give');
+				$givedishDialog.modal('show');
+
+			} else {
+				//确认框
+				var alert = widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>确定使用' + name + '?</strong>',
+					width:500,
+					height:500,
+					btnOkCb: function(){
+						alert.close();
+						that.addPref(this);
+					}
+				});
+			}
+
+			return false;
+
+		});
+
+
 		/*优惠分类向左向右按钮*/
 		$(".nav-pretype-next").click(function(){
 			var count = $(".nav-pref-types").find( "li.nav-pref-type").length;
@@ -190,7 +292,7 @@ var Order = {
 
 	//点菜
 	takeOrder: function(){
-		var addDishDialog = $("#order-dialog")
+		var addDishDialog = $("#adddish-dialog")
 		addDishDialog.load("../views/orderdish.jsp");
 		addDishDialog.modal("show");
 	},
@@ -201,112 +303,272 @@ var Order = {
 
 	//加载优惠分类
 	initPreferentialType: function () {
+		var ret = [];
 		var that = this;
-
-
-		//$.ajax({
-		//	url: _config.interfaceUrl.GetCouponInfos,
-		//	method: 'POST',
-		//	contentType: "application/json",
-		//	data: JSON.stringify({
-		//		tableType: [1,0,5]
-		//	}),
-		//	dataType:'json',
-		//	success: function(res){
-        //
-		//		var tables = _getTablesArr(res);
-		//		var navRoomTypesArr = [];
-		//		var navRoomTypes = $('#nav-room-types');
-        //
-		//		//设置餐桌统计
-		//		$('.J-table-nums').find('.all .num').text(tables.all.length)
-		//			.end().find('.free .num').text(tables.free.length)
-		//			.end().find('.opened .num').text(tables.opened.length);
-        //
-		//		//设置区域
-		//		if(navRoomTypes.attr('inited') !== 'true'){
-		//			navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
-		//			$.each(res, function(key, val){
-		//				navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
-		//			});
-		//			navRoomTypes.attr('inited', 'true');
-		//			navRoomTypes.html(utils.array.unique(navRoomTypesArr).join(''));
-		//		}
-        //
-		//		if(tables[type].length == 0) {
-		//			$('#J-table-pager').html('');
-		//			$("#standard-tables").html('');
-		//		} else {
-		//			//初始化分页
-		//			TablePager = $('#J-table-pager').pagination({
-		//				dataSource: tables[type],
-		//				pageSize: 40,
-		//				showPageNumbers: false,
-		//				showNavigator: true,
-		//				callback: function(data) {
-		//					$("#standard-tables").html(data.join(''));
-		//				}
-		//			});
-		//		}
-        //
-		//	}
-		//});
-
-
-		var htm = '';
-		for (var i = 0; i < 20; i++) {
+		$.each(_config.preferential, function(k,v){
 			var cla = "";
-			if (i == 0)
+			if (k  === '05') {
 				cla = "active";
-			htm += '<li class="nav-pref-type ' + cla + '">优惠' + i + '</li>';
-		}
-		$(".nav-pref-types").html(htm);
-		that.initPreferential();
-		$(".nav-pref-types li.nav-pref-type").click(function () {
-			$(".nav-pref-types li.nav-pref-type").removeClass("active");
-			$(this).addClass("active");
-			that.initPreferential();
+			}
+			ret.push('<li class="nav-pref-type ' + cla + '" preid="'+ k + '">' + v + '</li>');
 		});
+
+
+		$(".nav-pref-types").html(ret.join(''));
+		that.initPreferential();
 	},
 	//通过分类获取优惠券信息
-	initPreferential: function () {
-		var htm = '';
-		for (var i = 0; i < 20; i++) {
-			htm += '<div class="preferential-info" dishid="dish-id-' + i
-				+ '" prefname="优惠活动' + i + '" price="49">'
-				+ '<div class="dish-name">优惠活动' + i + '</div>' + '</div>';
+	initPreferential: function (id) {
+		if(arguments.length < 1) {
+			id = '05';
 		}
-		$(".main-div .preferentials-content").html(htm);
-		page3(nowPage3);
-		$(".preferentials-content .preferential-info").click(function () {
-			$("#pref-name").val($(this).attr("prefname"));
-			$("#pref-price").val($(this).attr("price"));
-			$("#coupnum-dialog").modal("show");
-		});
+
+		$.ajax({
+			url: _config.interfaceUrl.GetCouponInfos,
+			method: 'POST',
+			async: true,
+			contentType: "application/json",
+			dataType:'json',
+			data: JSON.stringify({
+				machineno:"96121CBC21EF02256E9C5F2E602C5441",
+				userid: utils.storage.getter('aUserid'),
+				orderid:'0',
+				typeid: id
+			}),
+			success: function(res) {
+				console.log(res);
+				var htm = '';
+				$.each(res, function(k, v){
+					htm += '<div class="preferential-info"' +
+						' type="' + v.type + '"' +
+						' free_reason="' + v.free_reason + '"' +
+						' preferential="' + v.preferential + '"' +
+						' name="' + v.name + '"' +
+						' discount="' + v.discount + '"' +
+						' sub_type="' + v.sub_type + '"' +
+						' type_name="' + v.type_name + '" >'
+						+ '<div class="dish-name">' + v.name + '</div>' + '</div>';
+				});
+				$(".main-div .preferentials-content").html(htm);
+
+				widget.loadPage({
+					obj : ".preferentials-content .preferential-info",
+					listNum : 16,
+					currPage : currPage,
+					totleNums : $(".preferentials-content .preferential-info").length,
+					curPageObj : "#order-modal #curr-page3",
+					pagesLenObj : "#order-modal #pages-len3",
+					prevBtnObj : "#order-modal .main-div .prev-btn",
+					nextBtnObj : "#order-modal .main-div .next-btn"
+				});
+			}
+		})
 	},
+
 	/**
 	 * 添加优惠
 	 */
-	addPref: function () {
-		var tr = "";
-		var name = $("#pref-name").val();
-		var price = $("#pref-price").val();
-		var num = $("#pref-num").val();
-		if (num == null || num == "") {
-			num = 1;
-		}
-		tr = "<tr><td>" + name + "</td><td>" + num + "</td><td>" + price
-			+ "</td></tr>";
+	addPref: function (target) {
+		var that = this;
 
-		$("#sel-preferential-table tbody").prepend(tr);
-		page2(nowPage2);
-		$("#coupnum-dialog").modal("hide");
-		// 选中已选优惠
-		$("#sel-preferential-table tbody tr").unbind("click").on("click", function () {
-			$("#sel-preferential-table tbody tr").removeClass("selected");
-			$(this).addClass("selected");
+		if(arguments.length > 0) {
+			var targetModal = $(target).closest('.modal');
+			var val = targetModal.find('.J-pref-ipt').val();
+
+			if(targetModal.hasClass('coupnum-num')) {
+				//输入优惠券数量
+				that.manageUsePref.set({
+					preferentialNum:val
+				});
+			} else if(targetModal.hasClass('coupnum-cus-discount')) {
+				//手动输入折扣
+				that.manageUsePref.set({
+					isCustom: '1',
+					disrate: val
+				});
+			} else if(targetModal.hasClass('coupnum-cus-free')) {
+				//手动输入优免
+				that.manageUsePref.set({
+					isCustom: '1',
+					preferentialAmout: val
+				});
+			} else if(targetModal.hasClass('coupnum-cus-give')) {
+				var $giveDishDialog = $('#givedish-dialog');
+				var $li = $giveDishDialog.find('li');
+				var preferentialNum = [];
+				var dishid = [];
+				var unit = [];
+				var updateGiveData = [];
+
+				$.each($li, function(){
+					var me = $(this);
+					var sel = parseInt(me.attr('sel'), 10);
+					var num = parseInt(me.attr('num'), 10);
+
+					if(me.hasClass('selected')) {
+						preferentialNum.push(sel);
+						dishid.push(me.attr('dishid'));
+						unit.push(me.attr('unit'));
+					}
+
+					//如果当前还有可以赠送的菜
+					if(num != sel) {
+						updateGiveData.push({
+							dishnum:  num - sel,
+							dishid: me.attr('dishid'),
+							dishname: me.find('.dishname').text(),
+							dishunit: me.attr('unit'),
+						})
+					}
+				});
+
+				//手动输入赠菜
+				that.manageUsePref.set({
+					isCustom: '1',
+					"preferentialNum": preferentialNum.join(''),//优惠卷张数 “xx,xx,xx”,
+					"dishid": dishid.join(''),//赠菜卷“xx,xx,xx”,
+					"unit": unit.join('') //“xx,xx,xx”,
+				});
+
+				//更新可选赠菜数据
+				//that.updateGiveDishInfo(data);
+			} else {
+
+			}
+		}
+		$.ajax({
+			url: _config.interfaceUrl.CalcDiscountAmount,
+			method: 'POST',
+			async: true,
+			contentType: "application/json",
+			dataType:'json',
+			data: JSON.stringify(that.manageUsePref.get()),
+			success: function(res){
+				if(res.code === '0') {
+					console.log(res);
+					var tr = '';
+					that.updateTotal(res.data);
+					//设置优惠回传值
+					$.each(res.data.detailPreferentials, function(k, v){
+						tr += "<tr><td>" + v.activity.name + "</td><td>" + 1 + "</td><td>" + v.deAmount + "</td></tr>";
+					});
+
+					$("#sel-preferential-table tbody").prepend(tr);
+					$("#coupnum-dialog").modal("hide");
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + res.msg + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			}
+		})
+	},
+
+	/**
+	 * 更新赠菜信息
+	 */
+	updateGiveDishInfo: function(data){
+
+		$.ajax({
+			url: _config.interfaceUrl.GivePrefer,
+			method: 'POST',
+			async: true,
+			contentType: "application/json",
+			dataType:'json',
+			data: JSON.stringify({
+				orderId: $('input[name=orderid]').val()
+			}),
+			success: function(res){
+
+			}
+		})
+		var htm = '';
+		$.each(data, function(k,v){
+			var dishnum = parseInt(v.dishnum, 10).toFixed(0);
+			htm += "<li dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + dishnum + "'>" +
+				"<span class='dishname'>" + v.dishname + "</span>" +
+				"<span class='info'><span class='sel'>0</span>/<span class='num'>" + dishnum + "</span></span>" +
+				"</li>";
+		})
+		$('#givedish-dialog .give-dish-list').prepend(htm);
+	},
+
+	/**
+	 * 更新统计信息
+	 * @param data
+     */
+	updateTotal: function(data){
+		var that = this;
+		var toalFreeAmount = data.toalFreeAmount;
+		var toalDebitAmount = data.toalDebitAmount;
+		var toalDebitAmountMany = data.toalDebitAmountMany;
+		var adjAmout = data.adjAmout;
+		var payamount = data.payamount;
+		var originalOrderAmount = data.originalOrderAmount;
+		var amount = data.amount;
+
+
+		//设置统计
+		$('#discount-amount').text(amount);
+		$('#amount').text(originalOrderAmount);
+		$('#should-amount').text(payamount);
+		$('#cash input').val(payamount);
+		var totalHtml = '<ul class="pay-total"> ' +
+			'<li style="' + (parseInt(toalDebitAmount, 10) === 0 && 'display:none;')  + '">挂账:' + toalDebitAmount + '</li> ' +
+			'<li style="' + (parseInt(toalFreeAmount, 10)  === 0 && 'display:none;')  + '">优免:' + toalFreeAmount + '</li> ' +
+			'<li style="' + (parseInt(adjAmout, 10)  === 0 && 'display:none;')  + '">优免调整:' + adjAmout + '</li> ' +
+			'<li style="' + (parseInt(toalDebitAmountMany, 10)  === 0 && 'display:none;')  + '">挂账多收:' + toalDebitAmountMany + '</span></li> ' +
+			'<li style="' + (parseInt(payamount, 10)  === 0 && 'display:none;')  + '">现金:' + payamount + '</li> ' +
+			'</ul>';
+		$('.pay-div').after(totalHtml);
+
+		//设置优惠回传值
+		that.manageUsePref.set({
+			"preferentialAmt": amount,//总优惠
+			"toalFreeAmount": toalFreeAmount,//优免
+			"toalDebitAmount": toalDebitAmount,//挂账
+			"toalDebitAmountMany": toalDebitAmountMany,//挂账多收
+			"adjAmout": adjAmout,//优免调整
 		});
 	},
+
+	/*
+	* 管理每次使用优惠信息接口
+	* */
+	manageUsePref: (function(){
+		var orderId = $('input[name=orderid]').val();
+		var prefInfoCache = {
+			"orderid": orderId
+		}
+
+		var _init = function(obj){
+			_set(obj);
+		};
+
+		var _set = function(obj){
+			prefInfoCache = $.extend({}, prefInfoCache, obj);
+		};
+
+		var _get = function(key){
+			if(arguments.length > 0) {
+				return prefInfoCache[key]
+			} else {
+				return prefInfoCache;
+			}
+		};
+		return {
+			set: _set,
+			get: _get,
+			init: _init
+		}
+	})(),
+
+
 	/**
 	 * 优惠购物车操作
 	 */
@@ -319,6 +581,91 @@ var Order = {
 			$("#clear-pref").addClass("disabled");
 		}
 
+	},
+
+	initOrder: function () {
+		var that = this;
+		$.ajax({
+			url: _config.interfaceUrl.GetOrderInfo,
+			method: 'POST',
+			contentType: "application/json",
+			data: JSON.stringify({
+				orderid: $('input[name=orderid]').val()
+			}),
+			dataType:'json',
+			async: false,
+			success: function(res){
+				if(res.code === '0') {
+
+					that.updateTotal(res.data.preferentialInfo);
+
+					//已经选择菜品
+					var tr = '';
+
+					$.each(res.data.rows, function(k,v){
+						tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "'><td class='dishname'>" + v.dishname + "</td><td class='unit'>" + v.dishnum +"</td><td class='num'>" + v.dishunit +"</td><td class='orderprice'>" + v.orderprice + "</td></tr>";
+					});
+					$("#order-dish-table tbody").prepend(tr);
+
+					that.updateGiveDishInfo(res.data.rows);
+
+					widget.loadPage({
+						obj : "#order-dish-table tbody tr",
+						listNum : 6,
+						currPage : currPage,
+						totleNums : $("#order-dish-table tbody tr").length,
+						curPageObj : "#order-modal #curr-page1",
+						pagesLenObj : "#order-modal #pages-len1",
+						prevBtnObj : "#order-modal .dish-oper-btns .prev-btn",
+						nextBtnObj : "#order-modal .dish-oper-btns .next-btn",
+						callback : function() {
+							$("#order-dish-table tbody tr").removeClass("selected");
+							$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
+								"selected");
+						}
+					});
+
+					//初始化已经使用的优惠
+					if(res.data.preferentialInfo.detailPreferentials.length > 0) {
+						var htm ='';
+						$.each(res.data.preferentialInfo.detailPreferentials, function(k,v){
+							htm += "<tr><td>" + v.activity.name + "</td><td>1</td><td>" + v.deAmount + "</td></tr>";
+						});
+						$("#sel-preferential-table tbody").prepend(htm);
+					}
+					widget.loadPage({
+						obj : "#sel-preferential-table tbody tr",
+						listNum : 6,
+						currPage : currPage,
+						totleNums : $("#sel-preferential-table tbody tr").length,
+						curPageObj : ".preferential-oper-btns .page-info span:first",
+						pagesLenObj : ".preferential-oper-btns .page-info span:last",
+						prevBtnObj : ".preferential-oper-btns .prev-btn",
+						nextBtnObj : ".preferential-oper-btns .next-btn",
+						callback : function() {
+							$("#order-dish-table tbody tr").removeClass("selected");
+							$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
+								"selected");
+						}
+					});
+
+
+
+
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + res.msg + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			}
+
+		});
+		//trClickEvent();
 	}
 };
 
@@ -338,50 +685,52 @@ $(document).ready(function(){
 	//	$("#open-dialog").modal("show");
 	//}
 
-	//已点菜上一页
-	$(".dish-oper-btns .prev-btn").click(function() {
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		page1(nowPage1 - 1);
-	});
-	//已点菜下一页
-	$(".dish-oper-btns .next-btn").click(function() {
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		page1(nowPage1 + 1);
-	});
+	////已点菜上一页
+	//$(".dish-oper-btns .prev-btn").click(function() {
+	//	if ($(this).hasClass("disabled")) {
+	//		return false;
+	//	}
+	//	page1(nowPage1 - 1);
+	//});
+	////已点菜下一页
+	//$(".dish-oper-btns .next-btn").click(function() {
+	//	if ($(this).hasClass("disabled")) {
+	//		return false;
+	//	}
+	//	page1(nowPage1 + 1);
+	//});
+
+
 	//已选优惠上一页
-	$(".preferential-oper-btns .prev-btn").click(
-			function() {
-				if ($(this).hasClass("disabled")) {
-					return false;
-				}
-				page2(nowPage2 - 1);
-			});
-	//已选优惠下一页
-	$(".preferential-oper-btns .next-btn").click(
-			function() {
-				if ($(this).hasClass("disabled")) {
-					return false;
-				}
-				page2(nowPage2 + 1);
-			});
-	//优惠上一页
-	$(".main-div .prev-btn").click(function() {
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		page3(nowPage3 - 1);
-	});
-	//优惠下一页
-	$(".main-div .next-btn").click(function() {
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		page3(nowPage3 + 1);
-	});
+	//$(".preferential-oper-btns .prev-btn").click(
+	//		function() {
+	//			if ($(this).hasClass("disabled")) {
+	//				return false;
+	//			}
+	//			page2(nowPage2 - 1);
+	//		});
+	////已选优惠下一页
+	//$(".preferential-oper-btns .next-btn").click(
+	//		function() {
+	//			if ($(this).hasClass("disabled")) {
+	//				return false;
+	//			}
+	//			page2(nowPage2 + 1);
+	//		});
+	////优惠上一页
+	//$(".main-div .prev-btn").click(function() {
+	//	if ($(this).hasClass("disabled")) {
+	//		return false;
+	//	}
+	//	page3(nowPage3 - 1);
+	//});
+	////优惠下一页
+	//$(".main-div .next-btn").click(function() {
+	//	if ($(this).hasClass("disabled")) {
+	//		return false;
+	//	}
+	//	page3(nowPage3 + 1);
+	//});
 
 	$(".tab-payment ul li").click(function(){
 		$(".tab-payment ul li").removeClass("active");
@@ -393,7 +742,7 @@ $(document).ready(function(){
 	});
 
 	//initPreferentialType();
-	initOrderDish();
+
 
 	$(document).click(function(e){
 		$(".more-oper").addClass("hide");
@@ -498,18 +847,18 @@ function page2(currPage) {
 	Order.controlOperBtns();
 }
 // 优惠分页
-function page3(currPage) {
-	nowPage3 = widget.loadPage({
-		obj : ".preferentials-content .preferential-info",
-		listNum : 16,
-		currPage : currPage,
-		totleNums : $(".preferentials-content .preferential-info").length,
-		curPageObj : "#order-modal #curr-page3",
-		pagesLenObj : "#order-modal #pages-len3",
-		prevBtnObj : "#order-modal .main-div .prev-btn",
-		nextBtnObj : "#order-modal .main-div .next-btn"
-	});
-}
+//function page3(currPage) {
+//	nowPage3 = widget.loadPage({
+//		obj : ".preferentials-content .preferential-info",
+//		listNum : 16,
+//		currPage : currPage,
+//		totleNums : $(".preferentials-content .preferential-info").length,
+//		curPageObj : "#order-modal #curr-page3",
+//		pagesLenObj : "#order-modal #pages-len3",
+//		prevBtnObj : "#order-modal .main-div .prev-btn",
+//		nextBtnObj : "#order-modal .main-div .next-btn"
+//	});
+//}
 
 function trClickEvent(){
 	// 选中已点菜品
@@ -518,49 +867,8 @@ function trClickEvent(){
 		$(this).addClass("selected");
 	});
 }
-function initOrderDish() {
-	for (var i = 0; i < 3; i++) {
-		var tr = "";
-		tr = "<tr dishid='dish-id-"+i+"' price=49><td class='dishname'>菜品" + i + "</td><td class='num'>1</td><td class='price'>49</td></tr>";
 
-		$("#order-dish-table tbody").prepend(tr);
-	}
-	page1(0);
-	trClickEvent();
-}
-// 优惠分类
-//function initPreferentialType() {
-//	var htm = '';
-//	for (var i = 0; i < 20; i++) {
-//		var cla = "";
-//		if (i == 0)
-//			cla = "active";
-//		htm += '<li class="nav-pref-type ' + cla + '">优惠' + i + '</li>';
-//	}
-//	$(".nav-pref-types").html(htm);
-//	initPreferential();
-//	$(".nav-pref-types li.nav-pref-type").click(function() {
-//		$(".nav-pref-types li.nav-pref-type").removeClass("active");
-//		$(this).addClass("active");
-//		initPreferential();
-//	});
-//}
-// 通过分类获取优惠券信息
-//function initPreferential() {
-//	var htm = '';
-//	for (var i = 0; i < 20; i++) {
-//		htm += '<div class="preferential-info" dishid="dish-id-' + i
-//				+ '" prefname="优惠活动' + i + '" price="49">'
-//				+ '<div class="dish-name">优惠活动' + i + '</div>' + '</div>';
-//	}
-//	$(".main-div .preferentials-content").html(htm);
-//	page3(nowPage3);
-//	$(".preferentials-content .preferential-info").click( function() {
-//		$("#pref-name").val($(this).attr("prefname"));
-//		$("#pref-price").val($(this).attr("price"));
-//		$("#coupnum-dialog").modal("show");
-//	});
-//}
+
 ///**
 // * 添加优惠
 // */

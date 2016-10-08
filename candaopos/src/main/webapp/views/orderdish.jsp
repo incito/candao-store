@@ -60,7 +60,7 @@
 									全单备注：<span id="order-note"></span>
 								</div>
 							</div>
-							
+
 						</div>
 						<div class="oper-div">
 							<div class="btns">
@@ -200,7 +200,7 @@
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
-	                    <p class="p1">餐台【<span id="tableno">002</span>】确定下单吗？
+	                    <p class="p1">餐台【<span class="tableno">002</span>】确定下单吗？
 	                    </p>
 	                </div>
 	                <div class="btn-operate  ">
@@ -369,6 +369,7 @@
 	        </div>
 	    </div>
 	</div>
+
 	<!-- 输入赠菜原因 -->
 	<div class="modal fade default-dialog input-dialog in " id="reasoninput-dialog"
 	     data-backdrop="static">
@@ -410,7 +411,7 @@
 	            		<!-- 仅存在一个分类中-->
 		            	<div class="dishname" id="dishname">套餐</div>
 		            	<div class="combo-group">
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4> 
+		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
 		            		<div class="form-group">
 		            			<div class="col-xs-7">开胃三拼(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
@@ -423,27 +424,27 @@
 		            			<div class="col-xs-7">水晶猪耳(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
 		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4> 
+		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
 		            		<div class="form-group">
 		            			<div class="col-xs-7">开胃三拼(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
 		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4> 
+		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
 		            		<div class="form-group">
 		            			<div class="col-xs-7">开胃三拼(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
 		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4> 
+		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
 		            		<div class="form-group">
 		            			<div class="col-xs-7">开胃三拼(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
 		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4> 
+		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
 		            		<div class="form-group">
 		            			<div class="col-xs-7">开胃三拼(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
 		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4> 
+		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
 		            		<div class="form-group">
 		            			<div class="col-xs-7">开胃三拼(例)</div>
 		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
@@ -478,7 +479,7 @@
 		                    </button>
 		                </div>
 	            	</div>
-	                
+
 	            </div>
 	        </div>
 	    </div>
@@ -504,7 +505,7 @@
 	                    <div class="fishpot">
 		            		<h6 style="font-weight: bold; font-size: 16px">锅底</h6>
 	                    	<div class="form-group"><div class="col-xs-7 fish">锅底</div></div>
-	                    	
+
 	                    	<h6 style="font-weight: bold; font-size: 16px">鱼</h6>
 	                    	<div class="form-group">
 	                    		<div class="col-xs-7 fish">小小鱼</div>

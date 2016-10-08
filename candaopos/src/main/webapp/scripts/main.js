@@ -6,13 +6,6 @@ var MainPage = {
 	CurrentTalbeType: 'all',
 	CurrentArea: '-1',//默认为全部
 
-	//全局订单信息
-	orderInfo: {
-		orderId: '',
-		personNo: '0',
-		tableNo: ''
-	},
-
 	init: function(){
 
 		this.setTables();
@@ -37,30 +30,26 @@ var MainPage = {
 		/**
 		 * 标准台事件
 		 */
-		dom.standardTables.on('click','li', function(){
+		dom.standardTables.on('click','li', function() {
 			var me = $(this);
 			var cla = me.attr("class");
-			dom.orderDialog.load("../views/order.jsp");
-			dom.orderDialog.modal('show');
-
-			that.orderInfo = {
-				orderId: me.attr('orderid'),
-				personNo: me.attr('personnum'),
-				tableNo: me.attr('tableno')
+			var data = {
+				orderid: me.attr('orderid'),
+				personnum: me.attr('personnum'),
+				tableno: me.attr('tableno')
 			};
-
-			setTimeout(function(){
-				if(cla !== "opened"){
+			dom.orderDialog.load("../views/order.jsp", data, function () {
+				dom.orderDialog.modal('show');
+				if (cla !== "opened") {
 					$("#open-dialog").modal("show");
 				}
-			}, 100)
+			});
 		});
 
 
 		//退出系统
 		$(".exit-sys").click(function(){
 			window.location = "../views/login.jsp";
-			utils.clearLocalStorage.clearSelect();
 		});
 
 		//标准台和咖啡台切换
@@ -349,12 +338,198 @@ var MainPage = {
 						showNavigator: true,
 						callback: function(data) {
 							$("#standard-tables").html(data.join(''));
+							//$("#standard-tables").find('li').eq(0).trigger('click');
 						}
 					});
 				}
 
 			}
 		})
+	},
+	/**
+	 * 清机
+	 */
+	clearAll:function () {
+		$("#J-btn-checkout-dialog").modal('hide')
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<strong>清机中，请稍后</strong>',
+			width:500,
+			height:500,
+			hasBtns:false,
+		});
+		$.ajax({
+			url: _config.interfaceUrl.Clearner+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('fullname')+'/',
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				$(".modal-alert:last,.modal-backdrop:last").remove();
+				data=JSON.parse(data.result[0])
+				if(data.Data === '0') {//清机失败
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + data.Info + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '确定',
+						btnCancelTxt: ''
+					});
+				}
+				else {//清机成功
+					utils.reprintClear.get()//打印清机单
+					window.location = "../views/login.jsp";
+				}
+			}
+		});
+	},
+	/*结业清机*/
+	clearAllcheckOut:function () {
+		var that=this
+		$("#J-btn-checkout-dialog").modal('hide')
+		var that=this;
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<strong>清机中，请稍后</strong>',
+			width:500,
+			height:500,
+			hasBtns:false,
+		});
+		$.ajax({
+			url: _config.interfaceUrl.Clearner+''+$.trim($('#user').val())+'/'+utils.storage.getter('checkout_fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				data=JSON.parse(data.result[0])
+				if(data.Data === '0') {//清机失败
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + data.Info + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '确定',
+						btnCancelTxt: ''
+					});
+				}
+				else {//清机成功
+					utils.reprintClear.get()//打印清机单
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					that.checkout()
+				}
+			}
+		});
+	},
+	checkout:function () {
+		var that=this;
+		var Uncleandata=that.getFindUncleanPosList();
+		var arrylength=Uncleandata.LocalArry.length-1;
+		var LocalArry=Uncleandata.LocalArry;
+		if(Uncleandata.LocalArry.length>0){
+			$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{'title':'清机授权','userNmae':Uncleandata.LocalArry[arrylength].username,'usernameDisble':'2','cbd':'MainPage.clearAllcheckOut()','userRightNo':'030204'});
+			$("#J-btn-checkout-dialog").modal('show')
+		}
+		if(Uncleandata.LocalArry.length==0&&Uncleandata.OtherArry.length>0){
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>还有其他POS机未清机,<br><br>请到其他POS机上先清机</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '重试',
+				btnCancelTxt: '',
+			    btnOkCb:function () {
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					that.checkout()
+			     }
+			});
+		}
+		if(Uncleandata.findUncleanPosList.detail.length=='0'){
+			$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{'title':'结业授权','cbd':'MainPage.checkoutCallback()','userRightNo':'030205'});
+			$("#J-btn-checkout-dialog").modal('show')
+		}
+
+
+	},
+	checkoutCallback:function () {//结业回调
+		$.ajax({
+			url: _config.interfaceUrl.EndWork,//不需要传递参数
+			type: "get",
+			dataType:'text',
+			success: function (data) {
+				$("#J-btn-checkout-dialog").modal('hide')
+				var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+				if(data.Data=='1'){
+					/*$.ajax({
+						url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
+						type: "get",
+						dataType:'text',
+						data:{
+							'synkey':'candaosynkey'
+						},
+						success: function (data) {
+							console.log(data)
+						},
+						error:function (data) {
+							console.log(data)
+							alert("1111")
+						}
+					});*/
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>'+data.Info+',即将退出程序</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '确定',
+						btnCancelTxt: '',
+						btnOkCb:function () {
+							$(".modal-alert:last,.modal-backdrop:last").remove();
+							window.location = '../views/openpage.jsp?ipaddress='+utils.storage.getter('ipaddress')+'&posid='+utils.storage.getter('posid');
+							utils.clearLocalStorage.clearSelect();
+						}
+					});
+				}
+				else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>'+data.Info+'</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '确定',
+						btnCancelTxt: ''
+					});
+				}
+			}
+		});
+	},
+	getFindUncleanPosList:function () {//获取未清机数据列表
+		var findUncleanPosList ,LocalArry=[],OtherArry=[]
+		$.ajax({
+			url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
+			type: "get",
+			async:false,
+			dataType: "text",
+			success: function (data) {
+				findUncleanPosList=JSON.parse(data)
+				/*console.log(findUncleanPosList.detail)
+				console.log(findUncleanPosList.result)*/
+				if(findUncleanPosList.result==='0'){
+					LocalArry=[];//本机数组集合
+					OtherArry=[];//其他pos登录集合
+					for(var i=0;i<findUncleanPosList.detail.length;i++){
+						if(findUncleanPosList.detail[i].ipaddress==utils.storage.getter('ipaddress')){
+							LocalArry.push(findUncleanPosList.detail[i])
+						}
+						else {
+							OtherArry.push(findUncleanPosList.detail[i])
+						}
+					}
+				}
+			}
+		});
+		return{
+			findUncleanPosList:findUncleanPosList,
+			LocalArry:LocalArry,
+			OtherArry:OtherArry,
+		}
 	},
 	/**
 	 * 清机
