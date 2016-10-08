@@ -1,6 +1,7 @@
 var OpenPage = {
 	init: function(){
 		this.bindEvent();
+        this.isYesterdayEndWork();
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
 		var posid=utils.getUrl.get("posid")//设置posid参数到缓存
 		if(ipaddress!=null ||posid!=null){
@@ -25,7 +26,6 @@ var OpenPage = {
 		});
 	},
     open:function () {
-
         $.ajax({
             url: _config.interfaceUrl.RestaurantOpened + ''+$.trim($('#manager_num').val())+'/'+$.trim($('#perm_pwd').val())+'/'+utils.storage.getter('ipaddress')+'/1/',
             method: 'GET',
@@ -57,6 +57,43 @@ var OpenPage = {
                     btnCancelTxt: '确定'
                 });
             }
+        })
+    },
+    isYesterdayEndWork:function () {//昨天是否结业
+        $.ajax({
+            url: _config.interfaceUrl.CheckTheLastEndWork,
+            method: 'GET',
+            dataType:'json',
+            success: function(res){
+                if(res['result'] === '0') {//昨天已经结业返回成功
+                    if(res['detail']){//昨天已经结业
+
+                    }
+                    else {//昨天没有结业
+
+                    }
+                }
+                else {
+                    /*widget.modal.alert({
+                        cls: 'fade in',
+                        content:'<strong>'+res.Info+'</strong>',
+                        width:500,
+                        height:500,
+                        btnOkTxt: '确定',
+                        btnCancelTxt: ''
+                    });*/
+                }
+            },
+            /*error: function(){
+                widget.modal.alert({
+                    cls: 'fade in',
+                    content:'<strong>获取当日结业信息失败</strong>',
+                    width:500,
+                    height:500,
+                    btnOkTxt: '',
+                    btnCancelTxt: '确定'
+                });
+            }*/
         })
     }
 };

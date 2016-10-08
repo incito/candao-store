@@ -130,7 +130,6 @@ var MainPage = {
 			}
 			if(me.hasClass('J-btn-checkout')) {
 				var str ='<strong>确定要结业吗？</strong>';
-
 				var alertModal = widget.modal.alert({
 					cls: 'fade in',
 					content:str,
@@ -176,7 +175,7 @@ var MainPage = {
 						str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" disabled="disabled" style="margin-right: 5px;color: #999; background: #E8E8E8">倒班</button>'
 					}
 					if(orderLength>0){//判断账单未结业数量
-						str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" style="color: #999; background: #E8E8E8">结业</button>'
+						str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" disabled="disabled" style="color: #999; background: #E8E8E8">结业</button>'
 						str+='</div>'
 						str+='<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
 					}
@@ -201,7 +200,6 @@ var MainPage = {
 						$("#J-btn-checkout-dialog").modal("show");
 					}
 					if(_this.hasClass("clearCompletion")){//结业
-
 						var str ='<strong>确定要结业吗？</strong>';
 						 widget.modal.alert({
 							cls: 'fade in',
@@ -219,6 +217,7 @@ var MainPage = {
 							btnCancelCb: function(){
 							}
 						})
+
 					}
 
 				});
