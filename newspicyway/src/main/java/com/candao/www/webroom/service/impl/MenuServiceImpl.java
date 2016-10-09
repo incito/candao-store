@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 
 @Service
 public class MenuServiceImpl implements MenuService {
+	@Autowired
+	private TdishDao tdishDao;
     @Autowired
     private TmenuBranchDao tmenuBranchDao;
     @Autowired
@@ -592,7 +594,12 @@ public class MenuServiceImpl implements MenuService {
         // TODO Auto-generated method stub
         Map<String, Object> map = new HashMap<String, Object>();
         params.put("flag", "1");
-        map.put("dish", tmenuDao.getMenuDishDetailById(params));
+        List<Map<String, Object>> menuDish = tmenuDao.getMenuDishDetailById(params);
+        String status = tdishDao.getDishStatus(params); //查询是否为沽清状态
+        for (Map<String, Object> map2 : menuDish) {
+			map2.put("status", status);
+		}
+		map.put("dish", menuDish);
         params.put("flag", "2");
         map.put("columnList", tmenuDao.getMenuDishDetailById(params));
         params.put("flag", "3");
@@ -654,4 +661,5 @@ public class MenuServiceImpl implements MenuService {
         int expireSeconds = 4 * 60 * 60;
         msgForwardService.broadCastMsg4Netty(msgId, msgData, expireSeconds, false);
     }
+    
 }

@@ -114,7 +114,7 @@ public class NormalDishListener extends AbstractQueueListener {
         } else {
 
             //居中
-            socketOut.write(template.setAlignCenter());
+            socketOut.write(template.setAlignLeft());
             String[] table = template.getTableMsg(object);
             this.write(writer, table);
             //左对齐
@@ -136,6 +136,22 @@ public class NormalDishListener extends AbstractQueueListener {
         for (PrintDish it : object.getpDish()) {
             it.setDishName(StringUtils.split2(it.getDishName(), "#"));
             it.setDishUnit(StringUtils.split2(it.getDishUnit(), "#"));
+            //忌口国际化，厨打单只打中文
+            String newSperequire = "";
+            String sperequire = it.getSperequire();
+            String[] split = sperequire.split(";");
+            for (String spe : split) {
+            	if(spe == null || spe.isEmpty()){
+            		continue;
+            	}
+            	newSperequire += StringUtils.split2(spe, "#") + ";";
+			}
+            if(!newSperequire.isEmpty()){
+            	newSperequire = newSperequire.substring(0, newSperequire.length() - 1);
+            }else{
+            	newSperequire = sperequire;
+            }
+			it.setSperequire(newSperequire);
         }
 
 

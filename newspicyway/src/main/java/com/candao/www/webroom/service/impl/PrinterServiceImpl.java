@@ -3,6 +3,7 @@ package com.candao.www.webroom.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.webroom.service.PosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,9 @@ import com.candao.www.data.dao.TbPrinterDao;
 public class PrinterServiceImpl implements PrinterService {
 @Autowired
   private TbPrinterDao tbPrinterDao;
+	@Autowired
+	private PosService posService;
+
 	@Override
 	public Page<Map<String, Object>> grid(Map<String, Object> params, int current, int pagesize) {
 		return tbPrinterDao.page(params, current, pagesize);
@@ -51,6 +55,9 @@ public class PrinterServiceImpl implements PrinterService {
 	}
 	@Override
 	public boolean deleteById(String id) {
+		//删除POS打印机映射表
+		posService.delPOSPrinter(id);
+
 		return tbPrinterDao.delete(id)>0;
 	}
 	 

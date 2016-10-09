@@ -2,6 +2,7 @@ package com.candao.www.dataserver.service.order.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.DateUtils;
+import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.dataserver.constants.PrintType;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -36,6 +37,9 @@ public class OrderOpServiceImpl implements OrderOpService {
     private TorderDetailPreferentialService torderDetailPreferentialService;
     @Autowired
     private TableMapper tableMapper;
+
+    @Autowired
+    TbPrintObjDao tbPrintObjDao;
 
     @Override
     @Transactional
@@ -329,10 +333,16 @@ public class OrderOpServiceImpl implements OrderOpService {
         LOGGER.info("###cancelOrder userId={} orderId={} tableNo={}###", userId, orderId, tableNo);
         ResponseJsonData responseJsonData = new ResponseJsonData();
         try {
+        	//删除订单的优惠信息
             Map<String, Object> params = new HashMap<>();
             params.put("orderid", orderId);
             params.put("clear", "1");
             torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+            //删除打印主表的数据,防止后续开台的订单号一样，打印单数据错乱
+            Map<String, Object> map2 = new HashMap<>();
+            map2.put("orderno", orderId);
+            tbPrintObjDao.deletePrintObj(map2);
+            //删除订单数据
             orderMapper.deleteByOrderId(orderId);
             tableMapper.clearTable(tableNo, orderId);
 

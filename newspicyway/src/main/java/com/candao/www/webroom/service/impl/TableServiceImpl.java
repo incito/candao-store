@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.candao.www.data.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,6 @@ import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.dao.UserDao;
-import com.candao.www.data.model.TbDataDictionary;
-import com.candao.www.data.model.TbTable;
-import com.candao.www.data.model.ToperationLog;
-import com.candao.www.data.model.Tworklog;
-import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
@@ -44,6 +40,7 @@ import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 import com.candao.www.webroom.service.WorkLogService;
+import org.springframework.util.StringUtils;
 
 @Service
 public class TableServiceImpl implements TableService {
@@ -354,6 +351,9 @@ public class TableServiceImpl implements TableService {
             logger.error("合并账单失败");
             throw new Exception("合并账单失败");
         }
+
+        updatePrintObj(sourceOrderId);
+
         //记录并台日志
         if (!toperationLogService.save(toperationLog)) {
             logger.error("向t_operation_log表记录并台日志失败");
@@ -364,6 +364,17 @@ public class TableServiceImpl implements TableService {
 
         return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(resultmap));
 
+    }
+
+    private void updatePrintObj(String orderid) {
+        if (!StringUtils.hasText(orderid))
+            return;
+        Torder torder = torderMapper.get(orderid);
+        Map<String, Object> param = new HashMap<>();
+        param.put("targetOrderid", orderid);
+        param.put("custnum", torder.getCustnum());
+        //TODO
+        tbPrintObjDao.updateByOrderno(param);
     }
 
     /**
@@ -415,7 +426,7 @@ public class TableServiceImpl implements TableService {
             paramMap.put("targetOrderid", targetOrderId);
             paramMap.put("username", userByjobNum.getName());
             paramMap.put("tableid", sourceTable.get("tableid"));
-            paramMap.put("tableno", "桌号: " + sourceTable.get("tableNo"));
+            paramMap.put("tableno", "台号: " + sourceTable.get("tableNo"));
             paramMap.put("tableArea", sourceTable.get("areaname"));
             if (tbPrintObjDao.updateByOrderno(paramMap) < 1) {
                 throw new Exception("并台时更新t_printobj表的关系失败");

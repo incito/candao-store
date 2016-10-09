@@ -214,8 +214,8 @@ public class Constant {
 		
 		public static final String DISCARDDISHNAME_ABBR = "(退)";
 		
-		public static final String READYNAME = "备菜单";
-		public static final String READY_ABBR = "(备菜)";
+		public static final String READYNAME = "等叫";
+		public static final String READY_ABBR = "(等叫)";
 		
 		public static final String NOWDISHNAME = "起菜单";
 		

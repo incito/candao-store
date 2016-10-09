@@ -727,4 +727,13 @@ from t_dish t ,t_basicdata tb where t.source=tb.id and t.status=1 and t.dishtype
 	  )
   </update>
   
+    <select id="getSellOut" resultType="java.lang.Integer">
+    	select count(1) from t_dish_sellout where dishid = #{dishid}
+    </select>
+    <insert id="insertSellOut">
+    	insert into t_dish_sellout(dishid) values(#{dishid})
+    </insert>
+    <delete id="deleteSellOut">
+    	delete from t_dish_sellout where dishid = #{dishid}
+    </delete>
 </mapper>

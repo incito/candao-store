@@ -17,8 +17,7 @@ import com.candao.common.utils.DateUtils;
  */
 public class DateTimeUtils {
 
-
-
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 	/**
 	 * 两个时间段相隔天数计算
@@ -329,5 +328,73 @@ public class DateTimeUtils {
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
 		return "";
+	}
+
+	/**
+	 * 按照指定的格式，将日期类型对象转换成字符串，例如：yyyy-MM-dd,yyyy/MM/dd,yyyy/MM/dd hh:mm:ss
+	 *
+	 * @param date
+	 * @param pattern 格式
+	 * @return
+	 */
+	public static String formatDate(Date date, String pattern) {
+		if (date == null) {
+			return null;
+		}
+		SimpleDateFormat formater = new SimpleDateFormat(pattern);
+		return formater.format(date);
+	}
+
+	/**
+	 * 按照yyyy-MM-dd格式，将日期类型对象转换成字符串
+	 *
+	 * @param date
+	 * @param pattern
+	 *            格式
+	 * @return
+	 */
+	public static String formatDate(Date date) {
+		if (date == null) {
+			return "";
+		}
+		return dateFormat.format(date);
+	}
+
+	/**
+	 * 按照指定的格式，将字符串转换成日期类型对象，例如：yyyy-MM-dd,yyyy/MM/dd,yyyy/MM/dd hh:mm:ss
+	 *
+	 * @param dateStr
+	 * @param pattern
+	 * @return
+	 */
+	public static Date parseDate(String dateStr, String pattern) {
+		if (StringUtils.isEmpty(dateStr)) {
+			return null;
+		}
+		SimpleDateFormat formater = new SimpleDateFormat(pattern);
+		try {
+			return formater.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 将字符串（yyyy-MM-dd）解析成日期
+	 *
+	 * @param dateStr
+	 * @return
+	 */
+	public static Date parseDate(String dateStr) {
+		if (StringUtils.isEmpty(dateStr)) {
+			return null;
+		}
+		try {
+			return dateFormat.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

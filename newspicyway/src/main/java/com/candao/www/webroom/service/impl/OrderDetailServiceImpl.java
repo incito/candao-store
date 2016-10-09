@@ -627,7 +627,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             String areaName = StringUtils.isEmpty(tableInfo.get("areaname")) ? "" : tableInfo.get("areaname").toString();
             printObj.setTableArea(areaName);
             printObj.setTableid(order.getCurrenttableid());
-            printObj.setCustnum(String.valueOf(order.getCustnum() == null ? "" : order.getCustnum()));
+            Map<String,Object> res = orderService.findOrderById(order.getOrderid());
+            printObj.setCustnum(String.valueOf(res.get("custnum") == null ? "" : res.get("custnum")));
             tbPrintObjDao.insertPrintObj(printObj);
             result.put("isAdd", "false");
         } else {
@@ -789,6 +790,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         object.setTableNo(printObj.getTableNo());
                         object.setPrinterid(printer.getPrinterid());
                         object.setPrintName(printObj.getPrintName());
+                        object.setCustnum(printObj.getCustnum());
 
                         List<PrintDish> printDishList = new ArrayList<>();
 
@@ -2181,6 +2183,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
     }
 
+	@Override
+	public int deleteordreDetailByOrderid(String orderid) {
+		return torderDetailMapper.delete(orderid);
+	}
+
     /**
      * 退菜使用的更新退菜的表和下单的明细表
      *
@@ -2689,4 +2696,5 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private TbTableDao tableDao;
     @Autowired
     private UserDao userDao;
+
 }

@@ -559,7 +559,7 @@
                     orderstatus = 0 AND begintime>=(select inserttime from t_open_log limit 1)
             UNION ALL
             SELECT
-                    0,ssamount,custnum,count(1)
+                    0,ssamount,custnum,1
             FROM
                     t_order
             WHERE
