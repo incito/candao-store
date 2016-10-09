@@ -1208,7 +1208,7 @@ function initPrinter(){
 
 }
 function getPrintBillTag(){
-	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},/*{'value':'3','printBillName':'预结单'},*/{'value':'4','printBillName':'前台退菜单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'},{'value':'10','printBillName':'POS单据'}];
+	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},/*{'value':'3','printBillName':'预结单'},*/{'value':'4','printBillName':'前台退菜单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'},{'value':'10','printBillName':'POS单据'},{'value':'11','printBillName':'微信在线支付'}];
 
 
 			$.each(result, function(i,val){
@@ -1235,23 +1235,33 @@ function printerBillChange(text){
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").removeClass("hidden");
 		$("#print-groupdishes").removeClass("hidden");
+		$("#print-note").addClass("hidden");
 	}else if(text ==='2')
 	{
 		$("#print-font").removeClass("hidden");
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").addClass("hidden");
 	}else if(text ==='4')
 	{
 		$("#print-font").removeClass("hidden");
 		$("#print-area").addClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").addClass("hidden");
+	}else if(text === '10'){
+		$("#print-font").addClass("hidden");
+		$("#print-area").addClass("hidden");
+		$("#print-dishes").addClass("hidden");
+		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").removeClass("hidden");
 	}else{
 		$("#print-font").addClass("hidden");
 		$("#print-area").addClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").addClass("hidden");
 	}
 }
 function check_same_printerName(){

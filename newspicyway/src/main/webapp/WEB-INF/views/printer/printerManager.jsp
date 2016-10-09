@@ -97,6 +97,14 @@
 								</select>
 							</div>
 						</div>
+						<div class="form-group hidden" id="print-note">
+							<label class="col-xs-10 " style="text-align:left;padding-left:35px">POS单据</label>
+                            <div class="col-xs-10" style="width: 100%;">
+							<div>
+								预结单、结账单、会员消费客户联和商户联、重印客用单、清机单、发票单、会员储值客户联和商户联、品项销售、小费统计、营业数据明细
+							</div>
+                                </div>
+						</div>
 						<!--已选择内容的样式-->
 					 	<div class="form-group" id="print-area">
 							<label class="col-xs-5 control-label "><span class="required-span">*</span>打印区域：</label>
