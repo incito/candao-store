@@ -15,6 +15,15 @@
 <link rel="stylesheet" href="../css/order.css">
 </head>
 <body>
+
+<%
+	String orderid = request.getParameter("orderid");
+	String personnum = request.getParameter("personnum");
+	String tableno = request.getParameter("tableno");
+%>
+<input type="hidden" value="<%=orderid%>" name="orderid">
+<input type="hidden" value="<%=personnum%>" name="personnum">
+<input type="hidden" value="<%=tableno%>" name="tableno">
 	<!-- 开台权限验证 -->
 	<div class="modal fade in open-dialog" data-backdrop="static" style="display: none" id="open-dialog">
 		<div class="modal-dialog">
@@ -95,10 +104,10 @@
 						<div class="left-div">
 							<div class="order-info">
 								<div>
-									账单号：<span class="J-order-id"></span>
+									账单号：<span class="J-order-id"><%=orderid%></span>
 								</div>
 								<div>
-									桌号：<span class="J-table-no"></span>&nbsp;&nbsp;&nbsp;&nbsp;人数：<span class="J-person-no"></span>
+									桌号：<span class="J-table-no"><%=tableno%></span>&nbsp;&nbsp;&nbsp;&nbsp;人数：<span class="J-person-no"><%=personnum%></span>
 								</div>
 							</div>
 							<div class="dish-sel">
@@ -106,9 +115,10 @@
 									id="order-dish-table">
 									<thead>
 										<tr>
-											<th width="60%">菜品名称</th>
+											<th width="40%">菜品名称</th>
 											<th width="20%">数量</th>
-											<th>金额</th>
+											<th>单位</th>
+											<th>小计</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -118,7 +128,7 @@
 							<div>
 								<hr class="lf-hr">
 								<div class="total-amount">
-									消费：￥<span id="amount">548.00</span>
+									消费：￥<span id="amount">0.00</span>
 									<div class="tip"><hr class="lf-hr">小费：￥<span id="tip-amount">0.00</span></div>
 								</div>
 							</div>
@@ -145,7 +155,7 @@
 							<div>
 								<hr class="lf-hr">
 								<div class="total-amount">
-									应收：￥<span id="should-amount">548</span>
+									应收：￥<span id="should-amount">0.00</span>
 								</div>
 							</div>
 							<div class="operate-btns" style="padding-left: 11px;">
@@ -351,24 +361,29 @@
 			</div>
 		</div>
 	</div>
-	<!-- 填写优惠数量 -->
+	<!-- 填写优惠信息设置 -->
 	<div class="modal fade default-dialog in input-num-dialog" id="coupnum-dialog"
 	     data-backdrop="static">
 	    <div class="modal-dialog">
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">优惠券</div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('coupnum-dialog')">
+	                <img src="../images/close-sm.png" class="img-close"  onclick="closeConfirm('coupnum-dialog')">
 	            </div>
 	            <div class="modal-body">
-	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
+	                	<input type="hidden" id="preferential">
+	                	<input type="hidden" id="pref-disrate">
+	                	<input type="hidden" id="pref-type">
+						<input type="hidden" id="pref-num">
+
 	                	<input type="hidden" id="pref-name">
 	                	<input type="hidden" id="pref-price">
-	                    <div class="form-group coupname"><span id="coup-name">团购券</span></div>
+
+	                    <div class="form-group coupname">团购券</div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">使用数量:</span>
-	                    	<input type="text" class="form-control padding-left" id="pref-num">
+	                    	<input type="text"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   class="form-control J-pref-ipt padding-left">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -385,15 +400,41 @@
 							</ul>
 						</div>
 	                </div>
-	                <div class="btn-operate  ">
+	                <div class="btn-operate">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('coupnum-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="addPref()">确认
+	                    <button class="btn btn-save in-btn135"  type="button" onclick="Order.addPref(this)">确认
 	                    </button>
 	                </div>
 	            </div>
 	        </div>
 	    </div>
+	</div>
+
+	<!-- 赠菜 -->
+	<div class="modal fade default-dialog in coupnum-cus-give" id="givedish-dialog"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">赠菜</div>
+					<img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('givedish-dialog')">
+				</div>
+				<div class="modal-body">
+					<div class="dialog-sm-info">
+						请选择赠菜:
+					</div>
+					<ul class="give-dish-list">
+					</ul>
+					<div class="btn-operate  ">
+						<button class="btn btn-cancel in-btn135" onclick="closeConfirm('givedish-dialog')" type="button">取消
+						</button>
+						<button class="btn btn-save in-btn135" onclick="Order.addPref(this)" type="button" >确认
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<!-- 退菜 -->
 	 <div class="modal fade default-dialog in " id="backfood-dialog"
@@ -414,7 +455,7 @@
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backfood-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="doBack()">确认
+	                    <button class="btn btn-save in-btn135" type="button">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -448,6 +489,47 @@
 	        </div>
 	    </div>
 	 </div>
+	<!-- 退菜数量 -->
+	<div class="modal fade default-dialog in input-num-dialog" id="backfoodnum-dialog"
+	 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">退菜</div>
+					<img src="../images/close-sm.png" class="img-close"  onclick="closeConfirm('coupnum-dialog')">
+				</div>
+				<div class="modal-body">
+					<div class="dialog-sm-info">
+						<div class="form-group">
+							<span class="inpt-span">退菜数量:</span>
+							<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"    class="form-control padding-left">
+						</div>
+						<div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+					</div>
+					<div class="btn-operate">
+						<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('coupnum-dialog')">取消
+						</button>
+						<button class="btn btn-save in-btn135"  type="button">确认
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="backfood-right" style="overflow: auto;"></div>
 	 <!-- 称重-->
 	<div class="modal fade in default-dialog input-num-dialog" id="weight-dialog"
 	     data-backdrop="static">

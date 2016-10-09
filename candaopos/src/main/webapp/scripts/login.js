@@ -19,7 +19,7 @@ var Login = {
 
         this.setDefaultLoginForm();
 
-        this.getBranchInfo();
+        //this.getBranchInfo();
     },
 
     bindEvent: function(){
@@ -54,12 +54,13 @@ var Login = {
                 dataType:'json',
                 success: function(res){
                     if(res.code === '0') {
-
                         utils.storage.setter('fullname', res.data.fullname);
                         utils.storage.setter('loginTime', res.data.loginTime);
                         utils.storage.setter('aUserid', dom.user.val());
                         that.setUserRight(dom.user.val());
-                        var user_right= utils.userRight.get(user,'030206');
+                        that.getBranchInfo();
+                        var iSuserRight=utils.userRight.get($.trim(dom.user.val()),'030206');
+                        if(iSuserRight){//验证是否有收银权限，iSuserRight为true时验证零找金，false直接跳转登录页面
                             $.ajax({//验证零找金
                                 url: _config.interfaceUrl.PettyCashInput+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('ipaddress')+'/0/0/',
                                 type: "get",
@@ -75,6 +76,11 @@ var Login = {
                                     }
                                 }
                             });
+                        }
+                        else {
+                            window.location = "../views/main.jsp";
+                        }
+
 
                     } else {
                         widget.modal.alert({
@@ -132,6 +138,7 @@ var Login = {
                 username: username
             }),
             dataType:'json',
+            async: false,
             success: function(res){
                 if(res.result === '0') {
                     utils.storage.setter('user_rights', JSON.stringify(res.rights));
@@ -155,6 +162,7 @@ var Login = {
             url: _config.interfaceUrl.GetBranchInfo,
             method: 'GET',
             type: 'json',
+            async: false,
             success: function(res){
                 if(res.code === '0') {
                     $.each(res.data,function(k,v){

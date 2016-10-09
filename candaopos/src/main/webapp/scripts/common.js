@@ -2,13 +2,13 @@ $(document).ready(function(){
 	// Copyright 2014-2015 Twitter, Inc.
 	// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
 	if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
-	  var msViewportStyle = document.createElement('style');
-	  msViewportStyle.appendChild(
-	    document.createTextNode(
-	      '@-ms-viewport{width:auto!important}'
-	    )
-	  );
-	  document.querySelector('head').appendChild(msViewportStyle);
+		var msViewportStyle = document.createElement('style');
+		msViewportStyle.appendChild(
+			document.createTextNode(
+				'@-ms-viewport{width:auto!important}'
+			)
+		);
+		document.querySelector('head').appendChild(msViewportStyle);
 	}
 });
 
@@ -18,19 +18,6 @@ function goBack(){
 	window.history.back(-1);
 }
 
-
-//Array.prototype.indexOf = function(val) {
-//    for (var i = 0; i < this.length; i++) {
-//        if (this[i] == val) return i;
-//    }
-//    return -1;
-//};
-//Array.prototype.remove = function(val) {
-//    var index = this.indexOf(val);
-//    if (index > -1) {
-//        this.splice(index, 1);
-//    }
-//};
 /************
  * 配置项
  * basePath
@@ -42,6 +29,7 @@ _config.projectName = 'pos';
 _config.basePath = '/newspicyway/pos/';
 _config.interfaceUrl = {
 	AuthorizeLogin: "/newspicyway/padinterface/login.json", <!--授权登录-->
+	GivePrefer: "/newspicyway/padinterface/givePrefer.json", <!--获取已经使用的赠菜-->
 	GetUserRight: "/newspicyway/padinterface/userrights.json", <!--获取用户权限-->
 	GetAllTableInfos: "/newspicyway/padinterface/querytables.json", <!--获取所有餐桌信息-->
 	GetSystemSetData: "/newspicyway/padinterface/getSystemSetData.json", <!--获取系统设置-->
@@ -95,7 +83,7 @@ _config.interfaceUrl = {
 	GetDishStatus: "/newspicyway/datasnap/rest/TServerMethods1/getFoodStatus/", <!--获取菜品的状态，是否估清-->
 	GetFavorable: "/newspicyway/datasnap/rest/TServerMethods1/getFavorale/", <!--获取优惠信息-->
 	Clearner: "/newspicyway/datasnap/rest/TServerMethods1/clearMachine/", <!--清机-->
-	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业-->
+	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业不需要传递参数-->
 	SaveCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/saveOrderPreferential/", <!--保存优惠券信息-->
 	GetSavedCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderCouponList/", <!--获取保存的优惠券信息-->
 	BroadcastMsg: "/newspicyway/datasnap/rest/TServerMethods1/broadcastmsg/", <!--广播消息-->
@@ -140,6 +128,18 @@ _config.interfaceUrl = {
 	VipCheckCard: "/member/memberManager/byUserTouse.json", <!--判断会员实体卡-->
 	VipChangePsw: "/member/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
 	GetCouponList: "/member/preferential/posPreferentialList", <!--获取优惠列表-->
+};
+//优惠分类
+_config.preferential = {
+	'05': '团购',
+	'01': '特价',
+	'02': '折扣',
+	'03': '代金券',
+	'04': '礼品券',
+	'88': '会员',
+	'00': '其他优惠',
+	'08': '合作单位',
+	'-1': '不常用'
 };
 
 
@@ -303,7 +303,6 @@ widget.modal = function () {
 				$modal.find('.cancel').bind('click', function(){
 					ops.btnCancelCb && ops.btnCancelCb.call(this);
 					_close(modalId);
-
 				})
 			}
 		}
@@ -364,34 +363,59 @@ widget.loadPage = function(options){
 		callback: null
 	}, options);
 
+	var doc = $(document);
 	var $obj = $(settings.obj);
 	var listNum = settings.listNum;
 	var currPage = settings.currPage;
 	var totleNums = settings.totleNums;
 	var pagesLen = Math.ceil(totleNums / listNum);
 
-	for (var i = 0; i < totleNums; i++) {
-		$($obj[i]).addClass("hide");
-	}
-	for (var i = currPage * listNum; i < (currPage + 1) * listNum; i++) {
-		if ($obj[i]) $($obj[i]).removeClass("hide");
-	}
 
-	pageNum = pagesLen == 0 ? 0 : (currPage + 1);
 
-	$(settings.curPageObj).text(pageNum);
-	$(settings.pagesLenObj).text(pagesLen);
+	var goToPage = function(currPage){
+		for (var i = 0; i < totleNums; i++) {
+			$($obj[i]).addClass("hide");
+		}
+		for (var i = currPage * listNum; i < (currPage + 1) * listNum; i++) {
+			if ($obj[i]) $($obj[i]).removeClass("hide");
+		}
+		pageNum = pagesLen == 0 ? 0 : (currPage + 1);
 
-	if (pageNum == 1 || pageNum == 0) {
-		$(settings.prevBtnObj).addClass("disabled");
-	} else {
-		$(settings.prevBtnObj).removeClass("disabled");
-	}
-	if (pageNum < pagesLen) {
-		$(settings.nextBtnObj).removeClass("disabled");
-	} else {
-		$(settings.nextBtnObj).addClass("disabled");
-	}
+		$(settings.curPageObj).text(pageNum);
+		$(settings.pagesLenObj).text(pagesLen);
+
+
+
+		if (pageNum == 1 || pageNum == 0) {
+			$(settings.prevBtnObj).addClass("disabled");
+		} else {
+			$(settings.prevBtnObj).removeClass("disabled");
+		}
+		if (pageNum < pagesLen) {
+			$(settings.nextBtnObj).removeClass("disabled");
+		} else {
+			$(settings.nextBtnObj).addClass("disabled");
+		}
+	};
+
+	goToPage(currPage);
+
+
+	doc.undelegate(settings.prevBtnObj, 'click');
+	doc.undelegate(settings.nextBtnObj, 'click');
+	doc.delegate(settings.prevBtnObj, 'click', function(){
+		if($(this).hasClass("disabled")){
+			return false;
+		}
+		goToPage(--currPage)
+	});
+
+	doc.delegate(settings.nextBtnObj, 'click', function(){
+		if($(this).hasClass("disabled")){
+			return false;
+		}
+		goToPage(++currPage)
+	});
 
 	settings.callback && settings.callback();
 
@@ -406,7 +430,8 @@ widget.loadPage = function(options){
 widget.keyboard = function(opts){
 	var defautlopts = {
 		target: '.virtual-keyboard',
-		chirdSelector: 'li'
+		chirdSelector: 'li',
+		cb: $.noop
 	};
 	var doc = $(document);
 	var opts = $.extend({},defautlopts, opts);
@@ -415,7 +440,7 @@ widget.keyboard = function(opts){
 
 
 	function _init(){
-	 	focusIpt = null;
+		focusIpt = null;
 		$target.attr('keyboard-type', opts.type);
 		_bindEvent();
 	}
@@ -434,7 +459,7 @@ widget.keyboard = function(opts){
 					focusIpt.focus();
 					focusIpt.val(focusVal.substring(0,focusVal.length-1));
 				}
-			}else if(keyVal == "C"){
+			}else if(keyVal == "btn-clear"){
 				focusIpt.val("");
 				focusIpt.focus();
 			}else{
@@ -442,6 +467,8 @@ widget.keyboard = function(opts){
 				focusIpt.val(focusVal);
 				focusIpt.focus();
 			}
+
+			opts.cb && opts.cb();
 		});
 		doc.undelegate('input[type=text],input[type=password],input[type=search]','focus');
 		doc.delegate('input[type=text],input[type=password],input[type=search]','focus', function(){
@@ -739,7 +766,7 @@ utils.userRight={
 			}
 		}
 		else {//从服务器获取
-			var result
+			var result = null;
 			$.ajax({
 				url: _config.interfaceUrl.GetUserRight,
 				method: 'POST',
@@ -769,7 +796,7 @@ utils.userRight={
 						});
 					}
 				}
-			})
+			});
 			return result
 		}
 	 }
@@ -799,6 +826,44 @@ utils.reprintClear={//打印清机单
 				})
 			}
 		});
+	}
+}
+utils.clearLocalStorage={
+	clear:function (key) {//清除传递的指定
+		if(key==undefined){
+			localStorage.clear();
+		}
+		else {
+			for(var i in key){
+				utils.storage.remove(key[i])
+			}
+		}
+
+	},
+	clearSelect:function () {//清除固定的缓存
+		var clearLocal={
+				'aUserid':'aUserid',
+				'branch_branchcode':'branch_branchcode',
+				'branch_branchid':'branch_branchid',
+				'branch_branchaddress':'branch_branchaddress',
+			    'branch_branchname':'branch_branchname',
+			    'branch_id':'branch_id',
+			    'branch_insertime':'branch_insertime',
+			    'branch_managerid':'branch_managerid',
+			    'branch_managername':'branch_managername',
+			    'branch_managertel':'branch_managertel',
+			    'branch_padversion':'branch_padversion',
+			    'branch_serverversion':'branch_serverversion',
+			    'branch_tenantid':'branch_tenantid',
+			    'branch_updatetime':'branch_updatetime',
+			    'checkout_fullname':'checkout_fullname',
+			    'fullname':'fullname',
+			    'loginTime':'loginTime',
+			    'user_rights':'user_rights',
+			}
+		for(var i in clearLocal){
+			utils.storage.remove(clearLocal[i])
+		}
 	}
 }
 

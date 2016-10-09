@@ -17,7 +17,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="fl" id="pagestitle" ></div>
-            <div class="fr close-win" data-dismiss="modal">x</div>
+            <div class="fr close-win">x</div>
         </div>
         <div class="modal-body">
 
@@ -72,10 +72,10 @@
         $('#user').removeAttr('readonly').val('');
         $("#pagestitle").text(title);
         if(usernameDisble==1){
-            $('#user').attr('readonly','readonly').val(utils.storage.getter('aUserid'))
+            $('#user').attr('disabled','disabled').val(utils.storage.getter('aUserid'))
         }
         else if(usernameDisble==2){//结业清机
-            $('#user').attr('readonly','readonly').val(user_Nmae)
+            $('#user').attr('disabled','disabled').val(user_Nmae)
 
         }
 
@@ -131,8 +131,7 @@
                     dataType: "json",
                     success: function (data) {
                         var checkout_fullname=data.data.fullname;
-                        utils.storage.setter("checkout_fullname",checkout_fullname);
-                        console.log(data)
+                        utils.storage.setter("checkout_fullname",checkout_fullname);//结业清机用户名
                         if(data.code === '0') {//成功登录
                            var user_right= utils.userRight.get(user,userRightNo);
                             if(user_right){//验证权限
