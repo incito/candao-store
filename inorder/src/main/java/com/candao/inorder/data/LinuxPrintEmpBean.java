@@ -15,6 +15,8 @@ public class LinuxPrintEmpBean {
 	private String menuNum;
 	private String menuName;
 	private String fileName;
+	//做法
+	private String doMethod;
 
 	public LinuxPrintEmpBean(String printQname, String tableNum, String empName, String cover, String checkNum,
 			String date, String time, String menuNum, String menuName) {
@@ -108,5 +110,13 @@ public class LinuxPrintEmpBean {
 
 	public void setMenuName(String menuName) {
 		this.menuName = menuName;
+	}
+
+	public String getDoMethod() {
+		return doMethod;
+	}
+
+	public void setDoMethod(String doMethod) {
+		this.doMethod = doMethod;
 	}
 }

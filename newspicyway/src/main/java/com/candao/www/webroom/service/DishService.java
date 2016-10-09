@@ -141,4 +141,15 @@ public interface DishService {
 
 	public void updateDishNum(String orderId);
 
+	/**
+	 * 菜品沽清
+	 * @param params
+	 */
+	public void dishSellOut(Map<String, Object> params);
+	
+	/**
+	 * 取消沽清
+	 * @param params
+	 */
+	public void dishRevertSellOut(Map<String, Object> params);
 }

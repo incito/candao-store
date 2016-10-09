@@ -1,7 +1,9 @@
 //package com.candao.www.webroom.jiwang.service;
 //
 //import java.io.IOException;
+//import java.math.BigDecimal;
 //import java.util.ArrayList;
+//import java.util.Collection;
 //import java.util.Date;
 //import java.util.HashMap;
 //import java.util.List;
@@ -30,7 +32,6 @@
 //import com.candao.inorder.pojo.TblMenu;
 //import com.candao.inorder.pojo.TblPrintqueue;
 //import com.candao.inorder.pojo.TblStation;
-//import com.candao.inorder.service.InorderCheckTableService;
 //import com.candao.inorder.utils.CommonUtil;
 //import com.candao.inorder.utils.CustomerContextHolder;
 //import com.candao.inorder.utils.DataSourceInstances;
@@ -38,6 +39,7 @@
 //import com.candao.inorder.utils.print.PrintQueueUtil;
 //import com.candao.www.data.dao.TbTableDao;
 //import com.candao.www.data.dao.TdishDao;
+//import com.candao.www.data.model.Tdish;
 //import com.candao.www.data.model.TorderDetail;
 //import com.candao.www.webroom.model.Order;
 //import com.candao.www.webroom.service.impl.OrderDetailServiceImpl;
@@ -48,7 +50,7 @@
 // *
 // */
 //
-//
+//@Service
 //public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 //	private Logger logger = LoggerFactory.getLogger(InorderOrderDeatilServiceImpl.class);
 //	/** 订单信息 **/
@@ -72,8 +74,6 @@
 //
 //	@Autowired
 //	private TbTableDao tbTableDao;
-//	@Autowired
-//	private InorderCheckTableService checktableservice;
 //
 //	@Autowired
 //	private TdishDao tdishDao;
@@ -112,18 +112,43 @@
 //		String nextCheckNo = startCheckNO.length() == currentCheckNo.length()
 //				? currentCheckNo + currentCheckNo.substring(currentCheckNo.length() - 1, currentCheckNo.length())
 //				: currentCheckNo;
+//		// 获取吉旺的Itiem(解决相同ID的问题)
+//		List<String> ids = getDishIds(orders.getRows());
+//		
+//		//
+//		Map<String, String> canDaoToInorderMap=new HashMap<>();
+//		List<String> dishForItems = new ArrayList<>();
+//		// 多规格集合dish dishNO关系(餐道系统对于吉旺系统)
+//		Map<String, String> candaoDishMap = new HashMap<>();
+//		//所有餐道对于吉旺关系餐刀dishID-itemNO
+//		for(String dishId:ids){
+//			Tdish tdish = tdishDao.get(dishId);
+//			
+//			if(tdish!=null){
+//				// 判断是否为多规格菜品
+//				if (tdish.getUnit().contains("/")) {
+//					// 多规格菜品另算
+//					candaoDishMap.put(tdish.getDishid(), tdish.getDishno());
+//				}
+//				dishForItems.add(tdish.getDishno());
+//				canDaoToInorderMap.put(tdish.getDishid(), tdish.getDishno());
+//			}
+//		}
+//		//吉旺开台操作 点菜操作
 //		if (inorderTable == null) {
 //			inorderTable = addCheck(Integer.valueOf(outLet), DateUtils.parse(date), station.getStation(), nextCheckNo,
 //					orders, Integer.valueOf((String) resultMap.get(0).get("areaname")));
 //			if (inorderTable != null) {
-//				result = addItemStatus(orders, inorderTable);
+//				result = addItemStatus(orders, inorderTable, dishForItems, candaoDishMap,canDaoToInorderMap);
 //				station.setCurrentcheckno(Integer.valueOf(nextCheckNo) + 1);
 //				stationDao.updateStation(station);
 //			}
 //			// 成功过后更新订单表
 //		} else {
-//			result = addItemStatus(orders, inorderTable);
+//			result = addItemStatus(orders, inorderTable, dishForItems, candaoDishMap,canDaoToInorderMap);
 //		}
+//		
+//		//吉旺更新餐台操作
 //		if (result != null) {
 //			inorderTable.setChecktot((double) result.get("allItemtot"));
 //			inorderTable.setItemtot((double) result.get("allItemtot"));
@@ -131,7 +156,8 @@
 //
 //			Map<String, String> printMap;
 //			try {
-//				printMap = printMenu(orders, inorderTable.getCheck());
+//				//吉旺打印
+//				printMap = printMenu(orders, inorderTable.getCheck(), dishForItems,canDaoToInorderMap,candaoDishMap);
 //
 //				PrintQueueUtil.getInstance().addQueue(printMap);
 //			} catch (IOException e) {
@@ -147,36 +173,54 @@
 //	@Autowired
 //	private InorderPrintQueueDao printQueueDao;
 //
+//	/**
+//	 * 
+//	 * @param order
+//	 * @param checkNum
+//	 * @param dishForItems 
+//	 * @param dishForItems 
+//	 * @param candaoDishMap
+//	 * @return
+//	 * @throws IOException
+//	 */
 //	@SuppressWarnings("static-access")
-//	private Map<String, String> printMenu(Order order, String checkNum) throws IOException {
+//	private Map<String, String> printMenu(Order order, String checkNum, List<String> dishForItems, 
+//				Map<String, String> canDaoToInorderMap, Map<String, String> candaoDishMap)
+//			throws IOException {
 //
 //		// 相同类型打印为一组
 //		CustomerContextHolder.setCustomerType(DataSourceInstances.DATA_INORDER);
 //		Map<String, TblPrintqueue> printALLMap = printQueueDao.queryPritQueueALL();
 //		CustomerContextHolder.setCustomerType(DataSourceInstances.DATA_POSSERVER);
-//		TblEmployee emloyee = employeeDao.queryForEmpNo("14");
+//		
 //
-//		Map<String, TorderDetail> orderDetailMap = getOderDetailMap(order);
-//		// 查询菜品详情表
-//		List<TblMenu> menus = menDao.queryMeun(orderDetailMap.keySet().toArray());
+//		Map<String, TorderDetail> orderDetailMap = getOderDetailMap(order,canDaoToInorderMap);
+//		// 查询菜品详情表（吉旺）
+//		List<TblMenu> menus = menDao.queryMeun(dishForItems.toArray(new String[dishForItems.size()]));
+//		HashMap<String, TblMenu> mapTblMenu=new HashMap<>();
+//		for(TblMenu menu:menus){
+//			mapTblMenu.put(menu.getItem(), menu);
+//		}
 //		// 对打印信息分区 分域
 //		Map<String, List<LinuxPrintEmpBean>> printMes = new HashMap<String, List<LinuxPrintEmpBean>>();
-//		for (TblMenu menu : menus) {
-//			// 获取4个区的打印
+//	  //獲取訂單數據
+//	    List<TorderDetail>  details = order.getRows();
+//	    for(TorderDetail detail:details){
+//	    	// 获取4个区的打印
+//	    	TblMenu menu=mapTblMenu.get(canDaoToInorderMap.get(detail.getDishid()));
 //			String q1 = menu.getPrintq1();
 //			String q2 = menu.getPrintq2();
 //			String q3 = menu.getPrintq3();
 //			String q4 = menu.getPrintq4();
+//			//吉旺用户名称
+//			TblEmployee emloyee = employeeDao.queryForEmpNo(orderDetailMap.get(menu.getItem()).getUserName());
+//				/** 点菜的名称 **/
+//			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes,  menu, q1, checkNum,candaoDishMap,detail.getDishnum(),detail.getDishunit());
+//			setPrintMes(emloyee, printALLMap,  order.getCurrenttableid(), printMes,  menu, q2, checkNum,candaoDishMap,detail.getDishnum(),detail.getDishunit());
+//			setPrintMes(emloyee, printALLMap,  order.getCurrenttableid(), printMes,  menu, q3, checkNum,candaoDishMap,detail.getDishnum(),detail.getDishunit());
+//			setPrintMes(emloyee, printALLMap,  order.getCurrenttableid(), printMes,  menu, q4, checkNum,candaoDishMap,detail.getDishnum(),detail.getDishunit());
 //
-//			/** 当前菜品个数 **/
-//			String menuNum = orderDetailMap.get(menu.getItem()).getDishnum();
-//			/** 点菜的名称 **/
-//			setPrintMes(emloyee, printALLMap, order, printMes, menuNum, menu.getNames3(), q1, checkNum);
-//			setPrintMes(emloyee, printALLMap, order, printMes, menuNum, menu.getNames3(), q2, checkNum);
-//			setPrintMes(emloyee, printALLMap, order, printMes, menuNum, menu.getNames3(), q3, checkNum);
-//			setPrintMes(emloyee, printALLMap, order, printMes, menuNum, menu.getNames3(), q4, checkNum);
-//
-//		}
+//	    }
 //		// 封装成数据流
 //		Map<String, String> printMesBytes = new HashMap<String, String>();
 //		// 获取挂载磁盘路径
@@ -190,6 +234,15 @@
 //						empBean.getCheckNum(), empBean.getDate(), empBean.getTime(), empBean.getMenuNum(),
 //						empBean.getMenuName());
 //				buffer.append(tempPrintMes);
+//				if(empBean.getDoMethod()==null){
+//					buffer.append("\r\n");
+//					buffer.append("^,Xfullcut 		|**Cut Paper**");
+//				}else{
+//					buffer.append("F4,AL		|  ");
+//					buffer.append(empBean.getDoMethod());
+//					buffer.append("\r\n");
+//					buffer.append("^,Xfullcut 		|**Cut Paper**");
+//				}
 //			}
 //			printMesBytes.put(diskPath + CommonUtil.getPrintFileName(key, PropertiesUtils.getValue("station")),
 //					buffer.toString());
@@ -197,35 +250,45 @@
 //		return printMesBytes;
 //	}
 //
+//
 //	/**
 //	 * 
 //	 * @param order
+//	 * @param canDaoToInorderMap 
 //	 * @return 返回订单与订单号的关系
 //	 */
-//	private Map<String, TorderDetail> getOderDetailMap(Order order) {
+//	private Map<String, TorderDetail> getOderDetailMap(Order order, Map<String, String> canDaoToInorderMap) {
 //		Map<String, TorderDetail> dishIdToDetail = new HashMap<>();
 //		for (TorderDetail detail : order.getRows()) {
-//			dishIdToDetail.put(detail.getDishid(), detail);
+//			dishIdToDetail.put(canDaoToInorderMap.get(detail.getDishid()), detail);
 //		}
 //		return dishIdToDetail;
 //	}
 //
-//	private void setPrintMes(TblEmployee emloyee, Map<String, TblPrintqueue> printALLMap, Order order,
-//			Map<String, List<LinuxPrintEmpBean>> printMes, String menuNum, String menuName, String queueNo,
-//			String checkNum) throws IOException {
+//	private void setPrintMes(TblEmployee emloyee, Map<String, TblPrintqueue> printALLMap, String  tableid,
+//			Map<String, List<LinuxPrintEmpBean>> printMes,  TblMenu menu, String queueNo,
+//			String checkNum, Map<String, String> candaoDishMap,String dishNum,String dishUnit) throws IOException {
+//		
+//		
+//		/** 当前菜品个数 **/
 //		if (!queueNo.trim().equals("0")) {
-//			LinuxPrintEmpBean beanq2 = new LinuxPrintEmpBean(
-//					CommonUtil.getFomartGBK(printALLMap.get(queueNo).getNames3()), order.getCurrenttableid(),
+//			LinuxPrintEmpBean empBean = new LinuxPrintEmpBean(
+//					CommonUtil.getFomartGBK(printALLMap.get(queueNo).getNames3()),tableid,
 //					CommonUtil.getFomartGBK(emloyee.getShortname3()), String.valueOf("5"), checkNum,
-//					CommonUtil.yearMonthFomart(), CommonUtil.dateTimeFomart(), menuNum,
-//					CommonUtil.getFomartGBK(menuName));
+//					CommonUtil.yearMonthFomart(), CommonUtil.dateTimeFomart(), dishNum,
+//					CommonUtil.getFomartGBK(menu.getName3()));
+//			// 判断是是否是有多规格菜品
+//			if( candaoDishMap.values().contains(menu.getItem())){
+//				empBean.setDoMethod("*"+dishUnit);
+//			  }
+//			
 //			if (!printMes.containsKey(queueNo)) {
 //				List<LinuxPrintEmpBean> beans = new ArrayList<LinuxPrintEmpBean>();
-//				beans.add(beanq2);
+//				beans.add(empBean);
 //				printMes.put(queueNo, beans);
 //			} else {
 //				List<LinuxPrintEmpBean> beans = printMes.get(queueNo);
-//				beans.add(beanq2);
+//				beans.add(empBean);
 //				printMes.put(queueNo, beans);
 //			}
 //		}
@@ -277,10 +340,14 @@
 //	 * 
 //	 * @param orders
 //	 * @param checkInfo
+//	 * @param candaoDishMap
+//	 * @param canDaoToInorderMap 
 //	 * @param inorderTable
 //	 * @return 返回下单状态 返回当前菜单价格总和
 //	 */
-//	private Map<String, Object> addItemStatus(Order orders, TblCheck checkInfo) {
+//	@SuppressWarnings("unchecked")
+//	private Map<String, Object> addItemStatus(Order orders, TblCheck checkInfo, List<String> inorderItems,
+//			Map<String, String> candaoDishMap, Map<String, String> canDaoToInorderMap) {
 //		// 返回状态以及总金额
 //		Map<String, Object> result = new HashMap<String, Object>();
 //		// 加菜操作,获取所有菜品列表
@@ -290,47 +357,14 @@
 //			double alltRvItemtot = 0;
 //			/** 营业时间 **/
 //			int priodo = checkPeriodDao.queryCurrentPeriod().getPeriodno();
-//			// 查询菜品个数
-//			Map<String, String> queryItemParams = new HashMap<String, String>();
-//			queryItemParams.put("check", checkInfo.getCheck());
-//			queryItemParams.put("date", DateUtils.toString(checkInfo.getDate()));
-//			int maxItemInx = itemDao.queryItemInx(queryItemParams) == null ? 0
-//					: Integer.valueOf(itemDao.queryItemInx(queryItemParams));
-//			// 查询菜品详情表
-//			List<TblMenu> menus = menDao.queryMeun(getOderDetailMap(orders).keySet().toArray());
-//			List<TblItem> items = new ArrayList<TblItem>();
-//			for (int inx = 0; inx < menus.size(); inx++) {
-//				maxItemInx++;
-//				TblMenu tblMenu = menus.get(inx);
-//				TblItem tblItem = new TblItem(checkInfo.getDate(), Integer.valueOf(checkInfo.getCheck()),
-//						checkInfo.getOutlet(), maxItemInx, tblMenu.getItem());
-//				tblItem.setClone(tblMenu);
-//				tblItem.setOgnprice(tblMenu.getItemprice1());// 原始菜品价格
-//				tblItem.setPrice(tblMenu.getItemprice1());// 实际菜品价格（不能确定数据来源）
-//				tblItem.setItemtot(tblMenu.getItemprice1());
-//				tblItem.setRvitemtot(tblMenu.getItemprice1());
-//				tblItem.setUnitqty(1.0);// 不能确定数据来源
-//				Double dishNum = Double.valueOf(orders.getRows().get(inx).getDishnum());
-//				tblItem.setQty(dishNum);// 不能确定数据来源
-//				allItemtot = allItemtot + (dishNum * tblMenu.getItemprice1());
-//				alltRvItemtot = alltRvItemtot + (dishNum * tblMenu.getItemprice1());
-//				tblItem.setOrdertime(new Date());
-//				tblItem.setOrderstation(checkInfo.getOpenstation());
-//				tblItem.setOrderemp(Integer.valueOf(orders.getRows().get(inx).getUserName()));
-//
-//				/** 现在不支持套餐 所以默认为0 **/
-//				tblItem.setParentitemidx(0);
-//				tblItem.setChildcount(0);
-//				tblItem.setType(1);
-//
-//				tblItem.setIsprintoncheck("0");
-//				tblItem.setPrintstatus(4);
-//				tblItem.setPricelevel(1);
-//				tblItem.setModimethod(-1);
-//
-//				tblItem.setLastmodifiedtime(new Date());
-//				items.add(tblItem);
-//			}
+//			// 保存数据
+//			List<TblItem> items = new ArrayList<>();
+//			// 单一菜品
+//			Map<String, Object> singleMap = createCheckItem(checkInfo,
+//					inorderItems.toArray(new String[inorderItems.size()]), orders, candaoDishMap,canDaoToInorderMap);
+//			items.addAll((Collection<? extends TblItem>) singleMap.get("items"));
+//			allItemtot += ((double) singleMap.get("allItemtot"));
+//			alltRvItemtot += ((double) singleMap.get("alltRvItemtot"));
 //			int restatus = itemDao.addbatchItem(items);
 //			result.put("addStatus", restatus);
 //			result.put("allItemtot", allItemtot);
@@ -338,6 +372,92 @@
 //		}
 //		return result;
 //
+//	}
+//
+//	/**
+//	 * 
+//	 * @param checkInfo
+//	 *            订单信息
+//	 * @param inorderItems
+//	 *            吉旺item
+//	 * @param orders
+//	 *            餐到订单信息
+//	 * @param canDaoToInorderMap 
+//	 * @param items
+//	 *            返回数据
+//	 * @param unitFlg
+//	 *            true 多规格 false 单品
+//	 */
+//	private Map<String, Object> createCheckItem(TblCheck checkInfo, String ids[],Order orders, 
+//			Map<String, String> candaoDishMap, Map<String, String> canDaoToInorderMap) {
+//		double allItemtot = 0;
+//		double alltRvItemtot = 0;
+//		List<TblItem> items = new ArrayList<TblItem>();
+//
+//		Map<String, String> queryItemParams = new HashMap<String, String>();
+//		queryItemParams.put("check", checkInfo.getCheck());
+//		queryItemParams.put("date", DateUtils.toString(checkInfo.getDate()));
+//		int maxItemInx = itemDao.queryItemInx(queryItemParams) == null ? 0
+//				: Integer.valueOf(itemDao.queryItemInx(queryItemParams));
+//		
+//		//吉旺menu对应餐道数关系
+//		Map<String, TblMenu> mapTblMenu=new HashMap<>();
+//		List<TblMenu> menus = menDao.queryMeun(ids);
+//		for(TblMenu menu:menus){
+//			mapTblMenu.put(menu.getItem(), menu);
+//		}
+//		//添加Item
+//		     List<TorderDetail> rowList = orders.getRows();
+//		for (int inx = 0; inx < rowList.size(); inx++) {
+//			maxItemInx++;
+//			TorderDetail detail=rowList.get(inx);
+//			TblMenu tblMenu =  mapTblMenu.get(canDaoToInorderMap.get(detail.getDishid()));
+//			
+//			TblItem tblItem = new TblItem(checkInfo.getDate(), Integer.valueOf(checkInfo.getCheck()),
+//					checkInfo.getOutlet(), maxItemInx, tblMenu.getItem());
+//			tblItem.setClone(tblMenu);
+//			// 取值如果是多规格取餐道数据
+//			String candaoDishId = candaoDishMap.get(detail.getDishid());
+//			if (candaoDishId == null) {
+//				tblItem.setOgnprice(tblMenu.getItemprice1());// 原始菜品价格
+//				tblItem.setPrice(tblMenu.getItemprice1());// 实际菜品价格（不能确定数据来源）
+//				tblItem.setItemtot(tblMenu.getItemprice1());
+//				tblItem.setRvitemtot(tblMenu.getItemprice1());
+//			} else {
+//				BigDecimal orderprice = detail.getOrderprice();
+//				tblItem.setOgnprice(orderprice.doubleValue());// 原始菜品价格
+//				tblItem.setPrice(orderprice.doubleValue());// 实际菜品价格（不能确定数据来源）
+//				tblItem.setItemtot(orderprice.doubleValue());
+//				tblItem.setRvitemtot(orderprice.doubleValue());
+//			}
+//
+//			tblItem.setUnitqty(1.0);// 不能确定数据来源
+//			Double dishNum = Double.valueOf(detail.getDishnum());
+//			tblItem.setQty(dishNum);// 不能确定数据来源
+//			allItemtot = allItemtot + (dishNum * tblMenu.getItemprice1());
+//			alltRvItemtot = alltRvItemtot + (dishNum * tblMenu.getItemprice1());
+//			tblItem.setOrdertime(new Date());
+//			tblItem.setOrderstation(checkInfo.getOpenstation());
+//			tblItem.setOrderemp(Integer.valueOf(detail.getUserName()));
+//
+//			/** 现在不支持套餐 所以默认为0 **/
+//			tblItem.setParentitemidx(0);
+//			tblItem.setChildcount(0);
+//			tblItem.setType(1);
+//
+//			tblItem.setIsprintoncheck("0");
+//			tblItem.setPrintstatus(4);
+//			tblItem.setPricelevel(1);
+//			tblItem.setModimethod(-1);
+//
+//			tblItem.setLastmodifiedtime(new Date());
+//			items.add(tblItem);
+//		}
+//		Map<String, Object> resultMap = new HashMap<>();
+//		resultMap.put("allItemtot", allItemtot);
+//		resultMap.put("alltRvItemtot", alltRvItemtot);
+//		resultMap.put("items", items);
+//		return resultMap;
 //	}
 //
 //	private List<String> getDishIds(List<TorderDetail> orderDetails) {

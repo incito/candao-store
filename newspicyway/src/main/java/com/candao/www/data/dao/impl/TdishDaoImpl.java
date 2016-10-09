@@ -178,7 +178,22 @@ public class TdishDaoImpl implements TdishDao {
 	public void updateDishNum(String orderId) {
 		  dao.update(PREFIX + ".updateDishNum",orderId);
 	}
-	  
-	
+
+	@Override
+	public String getDishStatus(Map<String, Object> params) {
+		Object findOne = dao.get(PREFIX + ".getSellOut", params);
+		return (findOne != null && Integer.parseInt(findOne.toString()) > 0) ? "1" : "0";
+	}
+
+	@Override
+	public void dishSellOut(Map<String, Object> params) {
+		dao.insert(PREFIX + ".insertSellOut",params);
+		
+	}
+
+	@Override
+	public void dishRevertSellOut(Map<String, Object> params) {
+		dao.delete(PREFIX + ".deleteSellOut",params);
+	}
 
 }

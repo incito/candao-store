@@ -9,15 +9,15 @@ import com.candao.print.entity.SettlementInfo4Pos;
 
 public interface Print4POSService {
 
-	void print(List<SettlementInfo4Pos> settlementInfos, String printType) throws Exception;
+	void print(List<SettlementInfo4Pos> settlementInfos, String printType, String deviceid) throws Exception;
 
-	void printClearMachine(List<SettlementInfo4Pos> settlementInfos) throws Exception;
+	void printClearMachine(List<SettlementInfo4Pos> settlementInfos, String posId) throws Exception;
 
-	void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos) throws Exception;
+	void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos, String deviceid) throws Exception;
 
-	void printItemSellDetail(ResultInfo4Pos resultInfo4Pos) throws Exception;
+	void printItemSellDetail(ResultInfo4Pos resultInfo4Pos, String deviceid) throws Exception;
 
-	void printTip(ResultTip4Pos resultInfo4Pos) throws Exception;
+	void printTip(ResultTip4Pos resultInfo4Pos, String deviceid) throws Exception;
 
 	void printInvoice(Map<String, Object> map) throws Exception;
 

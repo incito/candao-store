@@ -1,4 +1,4 @@
-/* 閹垫挸宓冪粻锛勬倞閺嶅嘲绱�*/
+/* 闁瑰灚鎸稿畵鍐不閿涘嫭鍊為柡宥呭槻缁憋拷*/
 body{
 	font-family:Microsoft Yahei;
 }
@@ -60,7 +60,7 @@ body{
 	cursor: pointer;
 }
 
-/* 濞ｈ濮為幍鎾冲祪闁板秶鐤嗗鐟板毉濡楋拷*/
+/* 婵烇綀顕ф慨鐐哄箥閹惧啿绁梺鏉跨Ф閻ゅ棗顕ｉ悷鏉挎瘔婵℃鎷� **/
 .printConfig-add-dialog .modal-header{
 	padding:3px 20px;
 	font-size: 16px;
@@ -92,7 +92,7 @@ body{
 }
 #print-area button,
 #print-dishes button{
-	width:170px;
+	width:175px;
 	border-radius: 0px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -101,8 +101,8 @@ body{
 	margin: 0 0 0 0;
  
 }
-/* 閹垫挸宓冮懣婊冩惂閿涘本澧﹂崡鏉垮隘閸╃喎鑴婇崙鐑橆攱 */
-/* 濞ｈ濮炲鍙夋箒閼挎粌鎼х拠銉ュ瀻缁拷*/
+/* 闁瑰灚鎸稿畵鍐嚕濠婂啯鎯傞柨娑樻湰婢э箓宕￠弶鍨殬闁糕晝鍠庨懘濠囧礄閻戞﹩鏀�*/
+/* 婵烇綀顕ф慨鐐差啅閸欏绠掗柤鎸庣矊閹佳呮嫚閵夈儱鐎荤紒顐嫹 **/
 .ky-print-empty{
 	float: right;
 	margin-top: 0;
@@ -123,7 +123,7 @@ body{
 	font-size: 14px;
 }
 .ky-print-content input[type="checkbox"]{
-	margin-top:0px;
+/*	margin-top:0px;*/
 }
 .ky-print-title{
 	font-size:16px;
@@ -174,6 +174,9 @@ li{
 
 #printernameShow{
 	width:80px;
+	text-overflow: ellipsis;
+  	white-space: nowrap;
+  	overflow: hidden;
 }
 .modal-title{
 	font-size:16px;

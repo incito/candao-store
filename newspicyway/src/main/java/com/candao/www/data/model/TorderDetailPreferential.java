@@ -22,6 +22,8 @@ public class TorderDetailPreferential implements Serializable {
 	private int isGroup;
 	private int isUse;
 	private Date insertime;
+	/**菜品单位*/
+	private String unit="";
 	/***
 	 * 优免金额
 	 */
@@ -64,6 +66,31 @@ public class TorderDetailPreferential implements Serializable {
 		this.isUse = isUse;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * 订单优惠关系ID
+	 * @param orderid
+	 * 订单ID
+	 * @param dishid
+	 * 菜品ID
+	 * @param preferential
+	 * 优惠
+	 * @param deAmount
+	 * 折扣钱
+	 * @param dishNum
+	 * 菜品优惠个数
+	 * @param isGroup
+	 * 是否是全局优化
+	 * @param isUse
+	 * 是否使用
+	 * @param discount
+	 * 折扣
+	 * @param isCustom
+	 * 优惠交易类型
+	 * @param insertime
+	 * 插入时间
+	 */
 	public TorderDetailPreferential(String id, String orderid, String dishid, String preferential, BigDecimal deAmount,
 			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom,Date insertime) {
 		this.orderid = orderid;
@@ -205,6 +232,14 @@ public class TorderDetailPreferential implements Serializable {
 
 	public void setToalDebitAmountMany(BigDecimal toalDebitAmountMany) {
 		this.toalDebitAmountMany = toalDebitAmountMany;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 }

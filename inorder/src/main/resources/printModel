@@ -1,3 +1,4 @@
+
 ^,Xinit		|**Init Printer **
 L2,F5,AL	|%s
 ^,Xred_color|**Change to Red Color**
@@ -7,7 +8,6 @@ L2,F1,AL	|员工:%s
 L2,F1,AL	|人数:%s     单据:%s
 L2,F1,AL			|日期:%s   时间:%s
 F1,AL		|----------------------------------------
-		
+	
 ^,Xblack_color|**Change to black Color**
 F4,AL		|%s  %s
-^,Xfullcut 		|**Cut Paper**

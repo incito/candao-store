@@ -200,4 +200,5 @@ public class TbOrderDaoImpl implements TorderMapper {
 	public <K, V> Map<K, V> selectConsumInfo() {
 		return dao.get(PREFIX + ".selectConsumInfo", null);
 	}
+
 }

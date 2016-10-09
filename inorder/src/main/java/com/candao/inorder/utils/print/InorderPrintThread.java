@@ -18,7 +18,6 @@ public class InorderPrintThread implements Runnable {
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-			System.out.println(PrintQueueUtil.getInstance().getPrinMesQueue().size());
 			synchronized (PrintQueueUtil.getInstance().getPrinMesQueue()) {
 				while (PrintQueueUtil.getInstance().getPrinMesQueue().isEmpty()) {
 					try {
@@ -29,7 +28,6 @@ public class InorderPrintThread implements Runnable {
 						PrintQueueUtil.getInstance().getPrinMesQueue().notifyAll();
 					}
 				}
-				System.out.println("进来");
 	             Map<String, String> strMes = PrintQueueUtil.getInstance().getPrinMesQueue().poll();
 				PrintQueueUtil.getInstance().getPrinMesQueue().notifyAll();
 				LiunxSSHScpclientUtil.getInstance().upPrintFile(strMes);

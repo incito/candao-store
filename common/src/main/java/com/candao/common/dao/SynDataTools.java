@@ -408,7 +408,7 @@ public class SynDataTools {
 		    	retStr = "id";
 		    	break;
 		    case "t_nodeclass":	
-		    	retStr = "id";
+		    	retStr = "classNo";
 		    	break;
 		    case "t_order_history":	
 		    	retStr = "orderid";

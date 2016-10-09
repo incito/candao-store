@@ -1244,6 +1244,8 @@ CREATE TABLE t_order (
   gzuser VARCHAR(20) DEFAULT NULL,
   invoice_id VARCHAR(50) DEFAULT NULL,
   gift_status CHAR(2) DEFAULT '0',
+  isfree TINYINT(1) DEFAULT 0 COMMENT '是否餐具需要收费0不收费1收费',
+  num_of_meals INT(2) DEFAULT 0 COMMENT '用餐人数 pad专用',
   PRIMARY KEY (orderid),
   INDEX IX_t_order_begintime (branchid, begintime)
 )
@@ -1503,7 +1505,9 @@ CREATE TABLE t_order_history (
   gztele varchar(20) DEFAULT NULL,
   gzuser varchar(20) DEFAULT NULL,
   invoice_id varchar(50) DEFAULT NULL,
-  gift_status char(2) DEFAULT '0'
+  gift_status char(2) DEFAULT '0',
+  isfree TINYINT(1) DEFAULT 0 COMMENT '是否餐具需要收费0不收费1收费',
+  num_of_meals INT(2) DEFAULT 0 COMMENT '用餐人数 pad专用'
 )
 ENGINE = INNODB
 CHARACTER SET utf8
@@ -1903,6 +1907,7 @@ CREATE TABLE t_printobj (
   tableArea VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   tableid VARCHAR(255) DEFAULT NULL,
   orderseq INT(11) DEFAULT NULL,
+  custnum VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (id)
 )
 ENGINE = INNODB
@@ -2686,8 +2691,53 @@ CREATE TABLE `t_order_detail_preferential` (
   `toalFreeAmount` decimal(10,4) DEFAULT NULL COMMENT '优免总金额',
   `toalDebitAmount` decimal(10,4) DEFAULT NULL COMMENT '挂账总金额',
   `insertime` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '当前插入时间',
+  `unit` varchar(50) DEFAULT NULL COMMENT '菜品单位',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for `t_printer_device`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_printer_device`;
+CREATE TABLE `t_printer_device` (
+  `deviceid` varchar(50) NOT NULL,
+  `devicecode` varchar(50) NOT NULL COMMENT '设备编码 唯一',
+  `devicename` varchar(50) DEFAULT NULL COMMENT '设备名称',
+  `devicearea` varchar(50) DEFAULT NULL COMMENT '设备所属区域',
+  `devicestatus` int(11) DEFAULT NULL COMMENT '设备状态',
+  `devicetype` int(11) DEFAULT NULL COMMENT '设备类型',
+  `deviceip` varchar(50) DEFAULT NULL COMMENT '设备IP',
+  `inserttime` datetime DEFAULT NULL COMMENT '插入时间',
+  `modifiedtime` datetime DEFAULT NULL COMMENT '修改时间',
+  `deviceowner` varchar(50) DEFAULT NULL COMMENT '设备所属',
+  `devicegroup` varchar(50) DEFAULT NULL COMMENT '设备所属组',
+  PRIMARY KEY (`deviceid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
+
+-- ----------------------------
+-- Table structure for `t_printer_deviceprinter`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_printer_deviceprinter`;
+CREATE TABLE `t_printer_deviceprinter` (
+  `id` varchar(50) NOT NULL COMMENT '设备主键',
+  `devicecode` varchar(50) DEFAULT NULL COMMENT '设备编码 唯一',
+  `devicename` varchar(50) DEFAULT NULL COMMENT '设备名称',
+  `printerid` varchar(50) DEFAULT NULL COMMENT '打印机IP',
+  `printername` varchar(50) DEFAULT NULL COMMENT '打印机名称',
+  `printerip` varchar(50) DEFAULT NULL COMMENT '打印机ip',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
+
+DROP TABLE IF EXISTS `t_dish_sellout`;
+CREATE TABLE `t_dish_sellout` (
+  `id` int(50) NOT NULL AUTO_INCREMENT,
+  `dishid` varchar(50) DEFAULT NULL,
+  `dishunit` varchar(255) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `createtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- 
 -- Enable foreign keys
 -- 

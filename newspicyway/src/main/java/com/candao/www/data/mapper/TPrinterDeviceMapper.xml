@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.data.pos.TPrinterDeviceMapper">
+  <resultMap id="BaseResultMap" type="com.candao.www.data.model.TPrinterDevice">
+    <id column="deviceid" jdbcType="VARCHAR" property="deviceid" />
+    <result column="devicecode" jdbcType="VARCHAR" property="devicecode" />
+    <result column="devicename" jdbcType="VARCHAR" property="devicename" />
+    <result column="devicearea" jdbcType="VARCHAR" property="devicearea" />
+    <result column="devicestatus" jdbcType="INTEGER" property="devicestatus" />
+    <result column="devicetype" jdbcType="INTEGER" property="devicetype" />
+    <result column="deviceip" jdbcType="VARCHAR" property="deviceip" />
+    <result column="inserttime" jdbcType="TIMESTAMP" property="inserttime" />
+    <result column="modifiedtime" jdbcType="TIMESTAMP" property="modifiedtime" />
+    <result column="deviceowner" jdbcType="VARCHAR" property="deviceowner" />
+    <result column="devicegroup" jdbcType="VARCHAR" property="devicegroup" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    deviceid, devicecode, devicename, devicearea, devicestatus, devicetype, deviceip, 
+    inserttime, modifiedtime, deviceowner, devicegroup
+  </sql>
+  <select id="selectByExample" parameterType="com.candao.www.data.model.TPrinterDeviceExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_printer_device
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_printer_device
+    where deviceid = #{deviceid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_printer_device
+    where deviceid = #{deviceid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.candao.www.data.model.TPrinterDeviceExample">
+    delete from t_printer_device
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.candao.www.data.model.TPrinterDevice">
+    insert into t_printer_device (deviceid, devicecode, devicename, 
+      devicearea, devicestatus, devicetype, 
+      deviceip, inserttime, modifiedtime, 
+      deviceowner, devicegroup)
+    values (#{deviceid,jdbcType=VARCHAR}, #{devicecode,jdbcType=VARCHAR}, #{devicename,jdbcType=VARCHAR}, 
+      #{devicearea,jdbcType=VARCHAR}, #{devicestatus,jdbcType=INTEGER}, #{devicetype,jdbcType=INTEGER}, 
+      #{deviceip,jdbcType=VARCHAR}, NOW(), #{modifiedtime,jdbcType=TIMESTAMP},
+      #{deviceowner,jdbcType=VARCHAR}, #{devicegroup,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.candao.www.data.model.TPrinterDevice">
+    insert into t_printer_device
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="deviceid != null">
+        deviceid,
+      </if>
+      <if test="devicecode != null">
+        devicecode,
+      </if>
+      <if test="devicename != null">
+        devicename,
+      </if>
+      <if test="devicearea != null">
+        devicearea,
+      </if>
+      <if test="devicestatus != null">
+        devicestatus,
+      </if>
+      <if test="devicetype != null">
+        devicetype,
+      </if>
+      <if test="deviceip != null">
+        deviceip,
+      </if>
+        inserttime,
+      <if test="deviceowner != null">
+        deviceowner,
+      </if>
+      <if test="devicegroup != null">
+        devicegroup,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="deviceid != null">
+        #{deviceid,jdbcType=VARCHAR},
+      </if>
+      <if test="devicecode != null">
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="devicename != null">
+        #{devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="devicearea != null">
+        #{devicearea,jdbcType=VARCHAR},
+      </if>
+      <if test="devicestatus != null">
+        #{devicestatus,jdbcType=INTEGER},
+      </if>
+      <if test="devicetype != null">
+        #{devicetype,jdbcType=INTEGER},
+      </if>
+      <if test="deviceip != null">
+        #{deviceip,jdbcType=VARCHAR},
+      </if>
+        NOW(),
+      <if test="deviceowner != null">
+        #{deviceowner,jdbcType=VARCHAR},
+      </if>
+      <if test="devicegroup != null">
+        #{devicegroup,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.candao.www.data.model.TPrinterDeviceExample" resultType="java.lang.Long">
+    select count(*) from t_printer_device
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_printer_device
+    <set>
+      <if test="record.deviceid != null">
+        deviceid = #{record.deviceid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.devicecode != null">
+        devicecode = #{record.devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.devicename != null">
+        devicename = #{record.devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.devicearea != null">
+        devicearea = #{record.devicearea,jdbcType=VARCHAR},
+      </if>
+      <if test="record.devicestatus != null">
+        devicestatus = #{record.devicestatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.devicetype != null">
+        devicetype = #{record.devicetype,jdbcType=INTEGER},
+      </if>
+      <if test="record.deviceip != null">
+        deviceip = #{record.deviceip,jdbcType=VARCHAR},
+      </if>
+        modifiedtime = NOW(),
+      <if test="record.deviceowner != null">
+        deviceowner = #{record.deviceowner,jdbcType=VARCHAR},
+      </if>
+      <if test="record.devicegroup != null">
+        devicegroup = #{record.devicegroup,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_printer_device
+    set deviceid = #{record.deviceid,jdbcType=VARCHAR},
+      devicecode = #{record.devicecode,jdbcType=VARCHAR},
+      devicename = #{record.devicename,jdbcType=VARCHAR},
+      devicearea = #{record.devicearea,jdbcType=VARCHAR},
+      devicestatus = #{record.devicestatus,jdbcType=INTEGER},
+      devicetype = #{record.devicetype,jdbcType=INTEGER},
+      deviceip = #{record.deviceip,jdbcType=VARCHAR},
+      modifiedtime = NOW(),
+      deviceowner = #{record.deviceowner,jdbcType=VARCHAR},
+      devicegroup = #{record.devicegroup,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.candao.www.data.model.TPrinterDevice">
+    update t_printer_device
+    <set>
+      <if test="devicecode != null">
+        devicecode = #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="devicename != null">
+        devicename = #{devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="devicearea != null">
+        devicearea = #{devicearea,jdbcType=VARCHAR},
+      </if>
+      <if test="devicestatus != null">
+        devicestatus = #{devicestatus,jdbcType=INTEGER},
+      </if>
+      <if test="devicetype != null">
+        devicetype = #{devicetype,jdbcType=INTEGER},
+      </if>
+      <if test="deviceip != null">
+        deviceip = #{deviceip,jdbcType=VARCHAR},
+      </if>
+        modifiedtime = NOW(),
+      <if test="deviceowner != null">
+        deviceowner = #{deviceowner,jdbcType=VARCHAR},
+      </if>
+      <if test="devicegroup != null">
+        devicegroup = #{devicegroup,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where deviceid = #{deviceid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.candao.www.data.model.TPrinterDevice">
+    update t_printer_device
+    set devicecode = #{devicecode,jdbcType=VARCHAR},
+      devicename = #{devicename,jdbcType=VARCHAR},
+      devicearea = #{devicearea,jdbcType=VARCHAR},
+      devicestatus = #{devicestatus,jdbcType=INTEGER},
+      devicetype = #{devicetype,jdbcType=INTEGER},
+      deviceip = #{deviceip,jdbcType=VARCHAR},
+      modifiedtime = NOW(),
+      deviceowner = #{deviceowner,jdbcType=VARCHAR},
+      devicegroup = #{devicegroup,jdbcType=VARCHAR}
+    where deviceid = #{deviceid,jdbcType=VARCHAR}
+  </update>
+</mapper>

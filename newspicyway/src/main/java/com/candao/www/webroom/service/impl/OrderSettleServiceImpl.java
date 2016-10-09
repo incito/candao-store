@@ -500,11 +500,9 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			if (againSettleNums == null || againSettleNums.equals("0")) {
 				// 插入反结算 主记录，先判断是否有会员消费虚增
 				Double inflated = settlementMapper.getMemberInflated(orderId);
-//				inflated= inflated==null?0:inflated;
-					settlementMapper.insertSettlementHistory(orderId,
-							settlementInfo.getReason(), 1,
-							userInfo.get("name")+"("+settlementInfo.getUserName()+")", inflated);
-		
+				settlementMapper.insertSettlementHistory(orderId,
+						settlementInfo.getReason(), 1,
+						userInfo.get("name")+"("+settlementInfo.getUserName()+")", inflated);
 			} else {
 				// 如果不是第一次反结算，修改反结算表反结算次数字段，每反结算一次加1
 				int nums = Integer.parseInt(againSettleNums) + 1;
@@ -655,17 +653,19 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Override
 	public void updatePadData(String attach) {
+		//attacht数据格式[0]orderId,[1]支付金额,[2]优免金额[3]会员号[4]默认值
+		//<attach><![CDATA[H20160926561706011680;0.24;0.06;0;0]]></attach>
 		if(attach!=null){
 			String[] args=attach.split(";");
 			if(args.length>2){
 				Map<String, Object> map=new HashMap<>();
-				map.put("orderno", args[0]);
-				map.put("castmoney", args[1]);
-				map.put("paymoney", args[2]);
+				//castmoney应收=实际支付方式+优惠
 				BigDecimal  b1=new BigDecimal(args[1]);
 				BigDecimal  b2=new BigDecimal(args[2]);
-				BigDecimal  b3= b1.subtract(b2);
-				map.put("youmian", b3);
+				map.put("orderno", args[0]);
+				map.put("castmoney",b1.add(b2));
+				map.put("paymoney", args[1]);
+				map.put("youmian", b2);
 				torderDetailMapper.updateOrderinfo(map);
 			}
 		}

@@ -2,15 +2,21 @@ package com.candao.www.webroom.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.zookeeper.data.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.candao.common.utils.IdentifierUtils;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.PadConfigDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
+import com.candao.www.data.model.TbDataDictionary;
+import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.webroom.model.PadConfig;
 import com.candao.www.webroom.service.PadConfigService;
 import com.candao.www.weixin.dao.WeixinDao;
@@ -40,21 +46,42 @@ public class PadConfigServiceImpl  implements PadConfigService{
 			return padConfigDao.insert(padConfig);
 		}
 	}
+	@Override
+	public void  saveorupdateToDic(TbDataDictionary dictionary){
+		TbDataDictionary tbDataDictionary = tbDataDictionaryDao.get(dictionary.getId());
+		if(tbDataDictionary != null){
+//			pad需要通过chargesstatu来判断是否更新图片，所以如果修改了图片，让该字段的值加1
+			String chargesstatu = tbDataDictionary.getChargesstatus();
+			int statu = Integer.parseInt(chargesstatu) + 1;
+			tbDataDictionary.setChargesstatus(String.valueOf(statu));
+			tbDataDictionary.setItemValue(dictionary.getItemValue());
+			 tbDataDictionaryDao.update(tbDataDictionary);
+		}else{
+			dictionary.setId(IDUtil.getID());
+			dictionary.setType("PADIMG");
+			dictionary.setTypename("Pad图片");
+			dictionary.setChargesstatus("1");
+			dictionary.setStatus(1); //可用
+			 tbDataDictionaryDao.insertPadimg(dictionary);
+		}
+		
+	}
+		
 
 	@Override
 	public PadConfig getconfiginfos() {
 		PadConfig  padConfig=new PadConfig();
 		padConfig=padConfigDao.getconfiginfos();
 		List<Map<String, Object>>   maps = systemServiceImpl.getImgByType(PADIMG);
-		String urlprexx=PropertiesUtils.getValue(FASTDFSURL);
+//		String urlprexx=PropertiesUtils.getValue(FASTDFSURL);
 		if(maps!=null && maps.size()>0){
 			for(Map<String, Object> map:maps){
 				String itemid=getValue(map, "itemid");
 				String value = getValue(map, "itemValue");
 				if("1".equals(itemid)){//logo图片
-					padConfig.setLogourl(urlprexx+value);
+					padConfig.setLogourl(value);
 				}else if ("2".equals(itemid)) {//背景图片
-					padConfig.setBackgroudurl(urlprexx+value);
+					padConfig.setBackgroudurl(value);
 				}
 			}
 		}

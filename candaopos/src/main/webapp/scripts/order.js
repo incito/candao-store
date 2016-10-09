@@ -1,10 +1,4 @@
-var nowPage1 = 0;// 已选择菜品分页
-var nowPage2 = 0;// 已选择优惠分页
-var nowPage3 = 0;// 待选优惠分页
 var pref_prev = 0;
-
-
-
 
 var Order = {
 
@@ -12,7 +6,7 @@ var Order = {
 
 		this.initPreferentialType();
 
-		this.initOrder();
+		this.updateOrder();
 
 		this.bindEvent();
 	},
@@ -119,6 +113,28 @@ var Order = {
 			});
 		});
 
+
+		//退菜
+		$("#back-dish").click(function(){
+			backFood(0);
+		});
+		$('#backfood-dialog .btn-save').click(function(){
+			$('#backfoodnum-dialog').modal('show');
+		});
+
+		$('#backfoodnum-dialog .btn-save').click(function(){
+			$('#backfood-right').load("./check/impower.jsp",{"title" : "退菜权限","userRightNo":"030102","cbd":"checkOrder.rebackOrder.jumpfjs(user)"});
+			$('#backfood-right').modal('show');
+		});
+
+		//验证退菜权限
+
+
+		//称重
+		$("#weigh-dish").click(function(){
+			$("#weight-dialog").modal("show");
+		});
+
 		/**
 		 * 优惠操作
 		 */
@@ -144,10 +160,10 @@ var Order = {
 			me.find('.sel').text(sel);
 		});
 
-		// 选中已选优惠
-		dom.orderDialog.delegate("#sel-preferential-table tbody tr", "click", function () {
+		//选中已选优惠
+		dom.orderDialog.delegate("#sel-preferential-table tbody tr, #order-dish-table tbody tr", "click", function () {
 			var me = $(this);
-			me.siblings().removeClass("active").end().addClass("active");
+			me.siblings().removeClass("selected").end().addClass("selected");
 		});
 
 		//添加优惠
@@ -202,8 +218,11 @@ var Order = {
 			} else if(type === '07' && free_reason === '0') {
 				//手工 选择赠菜
 				$givedishDialog.addClass('coupum-cus-give');
-				$givedishDialog.modal('show');
 
+				//更新可选赠菜信息
+				that.updateGiveDishInfo(function(){
+					$givedishDialog.modal('show');
+				});
 			} else {
 				//确认框
 				var alert = widget.modal.alert({
@@ -222,6 +241,50 @@ var Order = {
 
 		});
 
+		//删除或清空优惠
+		$('#del-pref,#clear-pref').click(function(){
+			var me = $(this);
+			var target = $('#sel-preferential-table tbody tr.selected');
+			var isClear = me.attr('id') === 'clear-pref';
+			if(me.hasClass('disabled')) return false;
+			$.ajax({
+				url: _config.interfaceUrl.DelPreferential,
+				method: 'POST',
+				async: true,
+				contentType: "application/json",
+				dataType:'json',
+				data: JSON.stringify({
+					clear: isClear ? '1' : '0',
+					DetalPreferentiald : target.attr('preid'),
+					orderid: target.attr('orderid')
+				}),
+				success: function(res){
+					if(res.code === '0') {
+
+						//更新结算信息
+						that.updateTotal(res.data.preferentialInfo);
+
+						//更新已选优惠
+						that.updateSelectedPref(res.data.detailPreferentials);
+
+						if(isClear) {//如果是清空
+							target.parents('tbody tr').remove();
+						} else {
+							me.remove();
+						}
+					} else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				}
+			})
+		});
 
 		/*优惠分类向左向右按钮*/
 		$(".nav-pretype-next").click(function(){
@@ -313,10 +376,10 @@ var Order = {
 			ret.push('<li class="nav-pref-type ' + cla + '" preid="'+ k + '">' + v + '</li>');
 		});
 
-
 		$(".nav-pref-types").html(ret.join(''));
 		that.initPreferential();
 	},
+
 	//通过分类获取优惠券信息
 	initPreferential: function (id) {
 		if(arguments.length < 1) {
@@ -370,7 +433,9 @@ var Order = {
 	 */
 	addPref: function (target) {
 		var that = this;
+		//var updateGiveData = [];
 
+		//debugger;
 		if(arguments.length > 0) {
 			var targetModal = $(target).closest('.modal');
 			var val = targetModal.find('.J-pref-ipt').val();
@@ -398,7 +463,7 @@ var Order = {
 				var preferentialNum = [];
 				var dishid = [];
 				var unit = [];
-				var updateGiveData = [];
+
 
 				$.each($li, function(){
 					var me = $(this);
@@ -412,28 +477,23 @@ var Order = {
 					}
 
 					//如果当前还有可以赠送的菜
-					if(num != sel) {
-						updateGiveData.push({
-							dishnum:  num - sel,
-							dishid: me.attr('dishid'),
-							dishname: me.find('.dishname').text(),
-							dishunit: me.attr('unit'),
-						})
-					}
+					//if(num != sel) {
+					//	updateGiveData.push({
+					//		dishnum:  num - sel,
+					//		dishid: me.attr('dishid'),
+					//		dishname: me.find('.dishname').text(),
+					//		dishunit: me.attr('unit'),
+					//	})
+					//}
 				});
 
 				//手动输入赠菜
 				that.manageUsePref.set({
 					isCustom: '1',
-					"preferentialNum": preferentialNum.join(''),//优惠卷张数 “xx,xx,xx”,
-					"dishid": dishid.join(''),//赠菜卷“xx,xx,xx”,
-					"unit": unit.join('') //“xx,xx,xx”,
+					"preferentialNum": preferentialNum.join(','),//优惠卷张数 “xx,xx,xx”,
+					"dishid": dishid.join(','),//赠菜卷“xx,xx,xx”,
+					"unit": unit.join(',') //“xx,xx,xx”,
 				});
-
-				//更新可选赠菜数据
-				//that.updateGiveDishInfo(data);
-			} else {
-
 			}
 		}
 		$.ajax({
@@ -446,15 +506,14 @@ var Order = {
 			success: function(res){
 				if(res.code === '0') {
 					console.log(res);
-					var tr = '';
-					that.updateTotal(res.data);
-					//设置优惠回传值
-					$.each(res.data.detailPreferentials, function(k, v){
-						tr += "<tr><td>" + v.activity.name + "</td><td>" + 1 + "</td><td>" + v.deAmount + "</td></tr>";
-					});
 
-					$("#sel-preferential-table tbody").prepend(tr);
-					$("#coupnum-dialog").modal("hide");
+
+					that.updateTotal(res.data);
+					//更新已选优惠
+					that.updateSelectedPref(res.data.detailPreferentials);
+
+					$("#coupnum-dialog,#givedish-dialog").modal("hide");
+
 				} else {
 					widget.modal.alert({
 						cls: 'fade in',
@@ -472,30 +531,113 @@ var Order = {
 	/**
 	 * 更新赠菜信息
 	 */
-	updateGiveDishInfo: function(data){
-
-		$.ajax({
-			url: _config.interfaceUrl.GivePrefer,
-			method: 'POST',
-			async: true,
-			contentType: "application/json",
-			dataType:'json',
-			data: JSON.stringify({
-				orderId: $('input[name=orderid]').val()
+	updateGiveDishInfo: function(cb){
+		$.when(
+			$.ajax({
+				url: _config.interfaceUrl.GetOrderInfo,
+				method: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify({
+					orderid: $('input[name=orderid]').val()
+				}),
+				dataType:'json'
 			}),
-			success: function(res){
+			$.ajax({
+				url: _config.interfaceUrl.GivePrefer,
+				method: 'POST',
+				async: true,
+				contentType: "application/json",
+				dataType:'json',
+				data: JSON.stringify({
+					orderId: $('input[name=orderid]').val()
+				})
+			})
+		).then(function(res1, res2){
+			var data = res1[0].data.rows;
+			//debugger;
+			if(res1[0].code === '0' && res2[0].code === '0') {
+				var htm = '';
+				$.each(data, function(k,v){
+					var dishnum = parseInt(v.dishnum, 10);
+					$.each(res2[0].data, function(key, value){
+						var left = dishnum - parseInt(value.count, 10);
+						if(value.dishid === v.dishid) {
+							v.dishnum = left;
+						}
+					});
+				});
+				console.log(data);
+				$.each(data, function(k,v){
+					var cls = v.dishnum > 0 ? '' : 'display:none';
+					htm += "<li style='" + cls + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
+						"<span class='dishname'>" + v.dishname + "</span>" +
+						"<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
+						"</li>";
+				});
 
+				$('#givedish-dialog .give-dish-list').html(htm);
+
+				cb && cb();
 			}
-		})
-		var htm = '';
-		$.each(data, function(k,v){
-			var dishnum = parseInt(v.dishnum, 10).toFixed(0);
-			htm += "<li dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + dishnum + "'>" +
-				"<span class='dishname'>" + v.dishname + "</span>" +
-				"<span class='info'><span class='sel'>0</span>/<span class='num'>" + dishnum + "</span></span>" +
-				"</li>";
-		})
-		$('#givedish-dialog .give-dish-list').prepend(htm);
+			else {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>' + res1.msg + ' ' + res2.msg + '</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+			}
+		},function(){
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>接口错误</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+		});
+	},
+
+	/**
+	 * 更新已选优惠
+	 */
+	updateSelectedPref: function(data){
+		var tr = '';
+		var $body = $("#sel-preferential-table tbody");
+		//设置优惠回传值
+		$.each(data, function(k, v){
+			tr += "<tr preid='" + v.id + "' orderid='" + v.orderid + "'><td>" + v.activity.name + "</td><td>" + 1 + "</td><td>" + v.deAmount + "</td></tr>";
+		});
+		$("#sel-preferential-table tbody").prepend(tr);
+		widget.loadPage({
+			obj : "#sel-preferential-table tbody tr",
+			listNum : 6,
+			currPage : currPage,
+			totleNums : $body.find('tr').length,
+			curPageObj : ".preferential-oper-btns .page-info span:first",
+			pagesLenObj : ".preferential-oper-btns .page-info span:last",
+			prevBtnObj : ".preferential-oper-btns .prev-btn",
+			nextBtnObj : ".preferential-oper-btns .next-btn",
+			callback : function() {
+				$body.find('tr').removeClass("selected");
+				$body.find('tr').not(".hide").eq(0).addClass(
+					"selected");
+			}
+		});
+
+		/**
+		 * 优惠购物车按钮
+		 */
+		if ($body.find("tr.selected").length > 0) {
+			$("#del-pref").removeClass("disabled");
+			$("#clear-pref").removeClass("disabled");
+		} else {
+			$("#del-pref").addClass("disabled");
+			$("#clear-pref").addClass("disabled");
+		}
 	},
 
 	/**
@@ -537,9 +679,9 @@ var Order = {
 		});
 	},
 
-	/*
+	/**
 	* 管理每次使用优惠信息接口
-	* */
+	*/
 	manageUsePref: (function(){
 		var orderId = $('input[name=orderid]').val();
 		var prefInfoCache = {
@@ -568,22 +710,10 @@ var Order = {
 		}
 	})(),
 
-
 	/**
-	 * 优惠购物车操作
+	 * 更新订单信息
 	 */
-	controlOperBtns: function () {
-		if ($("#sel-preferential-table tbody tr.selected").length > 0) {
-			$("#del-pref").removeClass("disabled");
-			$("#clear-pref").removeClass("disabled");
-		} else {
-			$("#del-pref").addClass("disabled");
-			$("#clear-pref").addClass("disabled");
-		}
-
-	},
-
-	initOrder: function () {
+	updateOrder: function () {
 		var that = this;
 		$.ajax({
 			url: _config.interfaceUrl.GetOrderInfo,
@@ -601,57 +731,33 @@ var Order = {
 
 					//已经选择菜品
 					var tr = '';
+					var $body = $("#order-dish-table tbody");
 
 					$.each(res.data.rows, function(k,v){
-						tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "'><td class='dishname'>" + v.dishname + "</td><td class='unit'>" + v.dishnum +"</td><td class='num'>" + v.dishunit +"</td><td class='orderprice'>" + v.orderprice + "</td></tr>";
+						tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "'><td class='dishname'>" + v.dishname + "</td><td class='unit'>" + v.dishnum +"</td><td class='num'>" + v.dishunit +"</td><td class='orderprice'>" + v.orderprice*v.dishnum + "</td></tr>";
 					});
-					$("#order-dish-table tbody").prepend(tr);
-
-					that.updateGiveDishInfo(res.data.rows);
+					$body.prepend(tr);
 
 					widget.loadPage({
 						obj : "#order-dish-table tbody tr",
 						listNum : 6,
 						currPage : currPage,
-						totleNums : $("#order-dish-table tbody tr").length,
+						totleNums : $body.find('tr').length,
 						curPageObj : "#order-modal #curr-page1",
 						pagesLenObj : "#order-modal #pages-len1",
 						prevBtnObj : "#order-modal .dish-oper-btns .prev-btn",
 						nextBtnObj : "#order-modal .dish-oper-btns .next-btn",
 						callback : function() {
-							$("#order-dish-table tbody tr").removeClass("selected");
-							$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
+							$body.find('tr').removeClass("selected");
+							$body.find('tr').not(".hide").eq(0).addClass(
 								"selected");
 						}
 					});
 
 					//初始化已经使用的优惠
 					if(res.data.preferentialInfo.detailPreferentials.length > 0) {
-						var htm ='';
-						$.each(res.data.preferentialInfo.detailPreferentials, function(k,v){
-							htm += "<tr><td>" + v.activity.name + "</td><td>1</td><td>" + v.deAmount + "</td></tr>";
-						});
-						$("#sel-preferential-table tbody").prepend(htm);
+						that.updateSelectedPref(res.data.preferentialInfo.detailPreferentials);
 					}
-					widget.loadPage({
-						obj : "#sel-preferential-table tbody tr",
-						listNum : 6,
-						currPage : currPage,
-						totleNums : $("#sel-preferential-table tbody tr").length,
-						curPageObj : ".preferential-oper-btns .page-info span:first",
-						pagesLenObj : ".preferential-oper-btns .page-info span:last",
-						prevBtnObj : ".preferential-oper-btns .prev-btn",
-						nextBtnObj : ".preferential-oper-btns .next-btn",
-						callback : function() {
-							$("#order-dish-table tbody tr").removeClass("selected");
-							$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
-								"selected");
-						}
-					});
-
-
-
-
 				} else {
 					widget.modal.alert({
 						cls: 'fade in',
@@ -665,7 +771,6 @@ var Order = {
 			}
 
 		});
-		//trClickEvent();
 	}
 };
 
@@ -752,24 +857,8 @@ $(document).ready(function(){
 		$(".more-oper").removeClass("hide");
 		e.stopPropagation();
 	});
-	//退菜
-	$("#back-dish").click(function(){
-		backFood(0);
-	});
-	//称重
-	$("#weigh-dish").click(function(){
-		$("#weight-dialog").modal("show");
-	});
-	//删除购物车优惠
-	$("#del-pref").click(function(){
-		$("#sel-preferential-table tbody tr.selected").remove();
-		page2(nowPage2);
-	});
+
 	//清空购物车优惠
-	$("#clear-pref").click(function(){
-		$("#sel-preferential-table tbody tr").remove();
-		page2(0);
-	});
 });
 /**
  * 选择银行
@@ -810,42 +899,42 @@ function backFood(type){
 	});
 }
 // 已点菜品分页
-function page1(currPage) {
-	nowPage1 = widget.loadPage({
-		obj : "#order-dish-table tbody tr",
-		listNum : 6,
-		currPage : currPage,
-		totleNums : $("#order-dish-table tbody tr").length,
-		curPageObj : "#order-modal #curr-page1",
-		pagesLenObj : "#order-modal #pages-len1",
-		prevBtnObj : "#order-modal .dish-oper-btns .prev-btn",
-		nextBtnObj : "#order-modal .dish-oper-btns .next-btn",
-		callback : function() {
-			$("#order-dish-table tbody tr").removeClass("selected");
-			$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
-					"selected");
-		}
-	});
-}
+//function page1(currPage) {
+//	nowPage1 = widget.loadPage({
+//		obj : "#order-dish-table tbody tr",
+//		listNum : 6,
+//		currPage : currPage,
+//		totleNums : $("#order-dish-table tbody tr").length,
+//		curPageObj : "#order-modal #curr-page1",
+//		pagesLenObj : "#order-modal #pages-len1",
+//		prevBtnObj : "#order-modal .dish-oper-btns .prev-btn",
+//		nextBtnObj : "#order-modal .dish-oper-btns .next-btn",
+//		callback : function() {
+//			$("#order-dish-table tbody tr").removeClass("selected");
+//			$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
+//					"selected");
+//		}
+//	});
+//}
 // 已选优惠分页
-function page2(currPage) {
-	nowPage2 = widget.loadPage({
-		obj : "#sel-preferential-table tbody tr",
-		listNum : 6,
-		currPage : currPage,
-		totleNums : $("#sel-preferential-table tbody tr").length,
-		curPageObj : "#order-modal #curr-page2",
-		pagesLenObj : "#order-modal #pages-len2",
-		prevBtnObj : "#order-modal .preferential-oper-btns .prev-btn",
-		nextBtnObj : "#order-modal .preferential-oper-btns .next-btn",
-		callback : function() {
-			$("#sel-preferential-table tbody tr").removeClass("selected");
-			$("#sel-preferential-table tbody tr").not(".hide").eq(0).addClass(
-					"selected");
-		}
-	});
-	Order.controlOperBtns();
-}
+//function page2(currPage) {
+//	nowPage2 = widget.loadPage({
+//		obj : "#sel-preferential-table tbody tr",
+//		listNum : 6,
+//		currPage : currPage,
+//		totleNums : $("#sel-preferential-table tbody tr").length,
+//		curPageObj : "#order-modal #curr-page2",
+//		pagesLenObj : "#order-modal #pages-len2",
+//		prevBtnObj : "#order-modal .preferential-oper-btns .prev-btn",
+//		nextBtnObj : "#order-modal .preferential-oper-btns .next-btn",
+//		callback : function() {
+//			$("#sel-preferential-table tbody tr").removeClass("selected");
+//			$("#sel-preferential-table tbody tr").not(".hide").eq(0).addClass(
+//					"selected");
+//		}
+//	});
+//	Order.controlOperBtns();
+//}
 // 优惠分页
 //function page3(currPage) {
 //	nowPage3 = widget.loadPage({
@@ -860,13 +949,13 @@ function page2(currPage) {
 //	});
 //}
 
-function trClickEvent(){
-	// 选中已点菜品
-	$("#order-dish-table tbody tr").click(function() {
-		$("#order-dish-table tbody tr").removeClass("selected");
-		$(this).addClass("selected");
-	});
-}
+//function trClickEvent(){
+//	// 选中已点菜品
+//	$("#order-dish-table tbody tr").click(function() {
+//		$("#order-dish-table tbody tr").removeClass("selected");
+//		$(this).addClass("selected");
+//	});
+//}
 
 
 ///**

@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
@@ -46,42 +48,35 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
 
 		// 将菜单表转换为菜品编号(key):菜品交易详情（Value）
-		Map<String, TorderDetail> orderDetailMap = new HashMap<>();
+		Set<String> orderDetailSet=new HashSet<>();
 		for (TorderDetail detail : orderDetailList) {
-			orderDetailMap.put(detail.getDishid(), detail);
+			String key=detail.getDishid()+detail.getDishunit();
+			orderDetailSet.add(key);
 		}
-
 		// 获取特价券 不参与折扣的菜品。并放入map
 		Map<String, Object> noDisMap = new HashMap<>();
 		noDisMap.put("discountId", preferentialid);
 		noDisMap.put("orderDetail", orderDetailList);
 		List<TbNoDiscountDish> noDiscountDishlist = tbDiscountTicketsDao.getNoDiscountDishsByDish(noDisMap);
 		// 用map方式存放不参与折扣的菜品
-		Map<String, String> noDiscountDishMap = new HashMap<>();
+		Set<String> noDiscountDishSet=new HashSet<>();
 		// 根据不优惠的菜品获取菜品库的菜品信息
 		for (TbNoDiscountDish t : noDiscountDishlist) {
-			// 处理套餐，处理组合如果套餐不再优惠中，那么套餐菜品一样不享受优惠
-			Tdish tdish = tdishDao.get(t.getDish());
-			if (tdish.getDishtype() == 1 && orderDetailMap.containsKey(t.getDish())) {
-				List<Tdish> tdishList = tbDiscountTicketsDao.getDishidList(t.getDish());
+			String dishID=t.getDish();
+			String dishUnit=t.getUnit();
+			// 处理鱼锅
+			Tdish tdish = tdishDao.get(dishID);
+			if (tdish.getDishtype() == 1 &&  orderDetailSet.contains(dishID+dishUnit)) {
+				List<Tdish> tdishList = tbDiscountTicketsDao.getDishidList(dishID);
 				if (tdishList.size() > 0) {
 					for (Tdish dish : tdishList) {
-						noDiscountDishMap.put(dish.getDishid(), dish.getDishid());
+						noDiscountDishSet.add(dish.getDishid());
 					}
 				}
 			}
-			noDiscountDishMap.put(t.getDish(), t.getDish());
+			noDiscountDishSet.add(dishID+dishUnit);
 		}
-
-		/** 当前订单使用优惠记录 **/
-		Map<String, TorderDetailPreferential> preferInfoMap = new HashMap<>();
-		for (TorderDetailPreferential detailPreferential : orderDetailPreferentialDao.queryDetailPreBy(orderid)) {
-			preferInfoMap.put(detailPreferential.getDishid(), detailPreferential);
-
-		}
-
 		// 4.遍历账单的菜品，如果输入不进行折扣的菜品，则不处理。否则，认为是需要计算优惠。
-		String nd = null;
 		BigDecimal orignalprice = null;
 		BigDecimal amount = new BigDecimal(0); // 最终优惠金额
 		// 菜品原价
@@ -90,8 +85,8 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		double tempDishNum = 0;
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		for (TorderDetail d : orderDetailList) {
-			nd = noDiscountDishMap.get(d.getDishid());
-			if (null == nd) {
+			String key=d.getDishid()+d.getDishunit();
+			if (!noDiscountDishSet.contains(key)) {
 				// 如果在不优惠的列表中没有找到这个菜品，则认为这个菜品是可以优惠打折的。
 				// 判断价格，如果菜品价格存在null的问题，
 				if (null != d.getOrderprice()) {
