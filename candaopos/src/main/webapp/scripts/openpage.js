@@ -62,7 +62,7 @@ var OpenPage = {
 };
 
 function toLogin(){
-OpenPage.open()
+    OpenPage.open()
 }
 
 

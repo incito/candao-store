@@ -383,7 +383,7 @@
 	                    <div class="form-group coupname">团购券</div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">使用数量:</span>
-	                    	<input type="text"  class="form-control J-pref-ipt padding-left">
+	                    	<input type="text"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   class="form-control J-pref-ipt padding-left">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -412,7 +412,7 @@
 	</div>
 
 	<!-- 赠菜 -->
-	<div class="modal fade default-dialog in coupum-cus-give" id="givedish-dialog"
+	<div class="modal fade default-dialog in coupnum-cus-give" id="givedish-dialog"
 		 data-backdrop="static">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -455,7 +455,7 @@
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backfood-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="doBack()">确认
+	                    <button class="btn btn-save in-btn135" type="button">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -489,6 +489,47 @@
 	        </div>
 	    </div>
 	 </div>
+	<!-- 退菜数量 -->
+	<div class="modal fade default-dialog in input-num-dialog" id="backfoodnum-dialog"
+	 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">退菜</div>
+					<img src="../images/close-sm.png" class="img-close"  onclick="closeConfirm('coupnum-dialog')">
+				</div>
+				<div class="modal-body">
+					<div class="dialog-sm-info">
+						<div class="form-group">
+							<span class="inpt-span">退菜数量:</span>
+							<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"    class="form-control padding-left">
+						</div>
+						<div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+					</div>
+					<div class="btn-operate">
+						<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('coupnum-dialog')">取消
+						</button>
+						<button class="btn btn-save in-btn135"  type="button">确认
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="backfood-right" style="overflow: auto;"></div>
 	 <!-- 称重-->
 	<div class="modal fade in default-dialog input-num-dialog" id="weight-dialog"
 	     data-backdrop="static">

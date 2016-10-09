@@ -29,7 +29,7 @@ _config.projectName = 'pos';
 _config.basePath = '/newspicyway/pos/';
 _config.interfaceUrl = {
 	AuthorizeLogin: "/newspicyway/padinterface/login.json", <!--授权登录-->
-	GivePrefer: "/newspicyway/padinterface/givePrefer.json", <!--授权登录-->
+	GivePrefer: "/newspicyway/padinterface/givePrefer.json", <!--获取已经使用的赠菜-->
 	GetUserRight: "/newspicyway/padinterface/userrights.json", <!--获取用户权限-->
 	GetAllTableInfos: "/newspicyway/padinterface/querytables.json", <!--获取所有餐桌信息-->
 	GetSystemSetData: "/newspicyway/padinterface/getSystemSetData.json", <!--获取系统设置-->
@@ -766,7 +766,7 @@ utils.userRight={
 			}
 		}
 		else {//从服务器获取
-			var result
+			var result = null;
 			$.ajax({
 				url: _config.interfaceUrl.GetUserRight,
 				method: 'POST',
@@ -796,7 +796,7 @@ utils.userRight={
 						});
 					}
 				}
-			})
+			});
 			return result
 		}
 	 }

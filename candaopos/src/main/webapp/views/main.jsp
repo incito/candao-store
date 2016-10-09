@@ -383,5 +383,8 @@
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;"></div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-checkout-dialog" style="overflow: auto;"></div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-clear-dialog" style="overflow: auto;"></div>
+
+
+
 </body>
 </html>
