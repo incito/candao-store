@@ -842,7 +842,7 @@ public class PadInterfaceController {
                 retPSI = new HttpRequestor().doPost(url, dataMap);
             } catch (Exception e) {
                 logger.error("--->", e);
-                e.printStackTrace();
+                return Constant.PSIERROR;
             }
             @SuppressWarnings("unchecked")
             Map<String, String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
