@@ -78,7 +78,21 @@ var Login = {
                             });
                         }
                         else {
-                            window.location = "../views/main.jsp";
+                            if(utils.storage.getter('isYesterdayEndWork')==='1'){
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content:'<div style="text-align: center;font-size: 20px;font-weight:bold ">请登录收银员账号，以便餐台结账。</div>',
+                                    title:'',
+                                    width:500,
+                                    height:500,
+                                    btnOkTxt: '确定',
+                                    btnCancelTxt: '',
+                                });
+                            }
+                            else {
+                                window.location = "../views/main.jsp";
+                            }
+
                         }
 
 

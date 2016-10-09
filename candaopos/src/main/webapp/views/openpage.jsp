@@ -18,6 +18,7 @@
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../scripts/common.js"></script>
+	<script src="../lib/md5.js"></script>
 <style type="text/css">
 	article{
 		background: #FFFFFF;
@@ -109,7 +110,7 @@
 		success: function(res){
 			var res = JSON.parse(res.substring(12,res.length-3));
 			if(res.Data === '1') {//开业
-				window.location = "../views/login.jsp";
+				//window.location = "../views/login.jsp";
 			}
 		},
 		error: function(){
@@ -126,7 +127,10 @@
 </script>
 </head>
 <body>
-	<article>
+	<div id="logoBG" style="position:absolute; left:0px; top:0px; width:100%; height:100%">
+		<img src="../images/logo_bg.png" width="100%" height="100%"/>
+	</div>
+	<article id="openTo" style="display: none">
 		<div class="content">
 			<div class="font">财源滚滚，生意兴隆</div>
 			<div style="text-align: center; margin-top: 8%;">
@@ -178,7 +182,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="../scripts/common.js"></script>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-checkout-dialog" style="overflow: auto;"></div>
 	<script src="../scripts/openpage.js"></script>
 </body>
 </html>
