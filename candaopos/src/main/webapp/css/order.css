@@ -1,3 +1,9 @@
+.hr {
+	margin:10px 0;
+}
+header,footer {
+	position: static;
+}
 .left-div .dish-sel{
 	height: 250px;
 }
@@ -54,7 +60,7 @@
 	height: 240px;
 }
 .main-div .preferentials{
-	height: 240px;
+	height: 180px;
 }
 .main-div .preferentials .preferentials-content{
 	width: 92%;
@@ -208,11 +214,18 @@
 	background: #F68D70;
 	opacity: 0.5;
 	color: #fff;
+	cursor: pointer;
 }
 .more-oper ul li:active {
 	background: #FF5803;
 	opacity: 1;
 	color: #fff;
+}
+
+.more-oper ul li.disabled ,.more-oper ul li.disabled:active,.more-oper ul li.disabled:hover {
+	color:#ccc;
+	pointer-events: none;
+	cursor: default;
 }
 
 .more-oper{

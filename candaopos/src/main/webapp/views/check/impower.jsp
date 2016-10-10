@@ -14,10 +14,10 @@
 </head>
 <body>
 <div class="modal-dialog" style="width: 340px;">
-    <div class="modal-content">
+    <div class="modal-content" style="height: auto;">
         <div class="modal-header">
             <div class="fl" id="pagestitle" ></div>
-            <div class="fr close-win">x</div>
+            <div class="fr close-win" data-dismiss="modal">x</div>
         </div>
         <div class="modal-body">
 

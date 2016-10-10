@@ -59,7 +59,7 @@ _config.interfaceUrl = {
 	GetBranchInfo: "/newspicyway/padinterface/getbranchinfo.json", <!--获取分店店铺信息-->
 	MemberLogin: "/newspicyway/member/MemberLogin.json", <!--餐道会员登入-->
 	MemberLogout: "/newspicyway/member/MemberLogout.json", <!--餐道会员登出-->
-	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--添加会员消费信息-->
+	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--添加会员消op费信息-->
 	ClearTable: "/newspicyway/padinterface/cleantable.json", <!--清台-->
 	ClearTableCf: "/newspicyway/padinterface/cleanTableSimply.json", <!--咖啡模式的清台-->
 	AntiSettlementOrder: "/newspicyway/padinterface/rebacksettleorder.json", <!--反结算账单-->
@@ -76,6 +76,7 @@ _config.interfaceUrl = {
 	GetTipMoney: "/newspicyway/tip/tipListByTime.json", <!--获取小费总额-->
 	RestaurantOpened: "/newspicyway/datasnap/rest/TServerMethods1/OpenUp/", <!--店铺开业，分查询是否开业和开业-->
 	PettyCashInput: "/newspicyway/datasnap/rest/TServerMethods1/InputTellerCash/", <!--零找金，分查询是否输入过零找金和输入零找金-->
+	onsumInfo: "/newspicyway/padinterface/consumInfo.json", <!--零头不处理-->
 	GetTableDishInfos: "/newspicyway/datasnap/rest/TServerMethods1/GetOrder/", <!--获取餐桌菜单上的所有菜品信息-->
 	GetTableDishInfoByOrderId: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderByOrderid/", <!--获取餐桌菜单上的所有菜品信息-->
 	GetDinnerWareInfo: "/newspicyway/datasnap/rest/TServerMethods1/getCJFood/", <!--获取餐具的数据-->
@@ -585,6 +586,14 @@ utils.array = {
 		return n;
 	}
 };
+utils.object = {
+	isEmptyObject: function(obj){
+		for (var key in obj) {
+			return false
+		}
+		return true
+	}
+}
 /**
  * Map
  */

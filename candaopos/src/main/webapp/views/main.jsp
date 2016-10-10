@@ -244,6 +244,73 @@
 
 	</div>
 
+	<!-- 开台权限验证 -->
+	<div class="modal fade in open-dialog" data-backdrop="static" style="display: none" id="open-dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">开台</div>
+					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<div style="padding: 13px; float: left;">
+						<div class="hori-lf-div">
+							<div>
+								<span>服务员编号:</span>
+								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control serverName J-server-name">
+							</div>
+							<%--<div>--%>
+							<%--<span>桌号:</span>--%>
+							<%--<input type="text" class="form-control tableno">--%>
+							<%--</div>--%>
+							<div>
+								<span>就餐人数(男):</span>
+								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control personnum J-male-num">
+							</div>
+							<div>
+								<span>就餐人数(女):</span>
+								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control personnum J-female-num">
+							</div>
+							<div>
+								<span>餐具数量:</span>
+								<input type="text" disabled  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control J-tableware-num">
+							</div>
+						</div>
+						<div class="hori-rt-div">
+							<div class="virtual-keyboard">
+								<ul>
+									<li>1</li><li>2</li><li>3</li>
+								</ul>
+								<ul>
+									<li>4</li><li>5</li><li>6</li>
+								</ul>
+								<ul>
+									<li>7</li><li>8</li><li>9</li>
+								</ul>
+								<ul>
+									<li>.</li><li>0</li><li>←</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="age-type">
+						<div>儿童</div><div>青年</div><div>中年</div><div>老年</div>
+					</div>
+					<div class="btn-operate ">
+						<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+						</button>
+						<button class="btn btn-save in-btn135 J-btn-submit"  type="button">确认开台
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal in main-dialog" data-backdrop="static" id="adddish-dialog" style="overflow: auto;">
 	</div>
 	<!-- 提示用dialog -->
@@ -383,8 +450,5 @@
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="register-dialog" style="overflow: auto;"></div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-checkout-dialog" style="overflow: auto;"></div>
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-clear-dialog" style="overflow: auto;"></div>
-
-
-
 </body>
 </html>

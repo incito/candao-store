@@ -9,6 +9,7 @@ var Order = {
 		this.updateOrder();
 
 		this.bindEvent();
+
 	},
 
 
@@ -16,7 +17,7 @@ var Order = {
 
 		var that = this;
 		var dom = {
-			orderDialog : $("#order-dialog"),
+			order : $("#order"),
 			openDialog : $("#open-dialog"),//开台权限验证弹窗
 			addDishDialog : $("#adddish-dialog"),//点菜弹窗
 			giveDishDialog : $("#givedish-dialog"),//赠菜弹窗
@@ -114,31 +115,130 @@ var Order = {
 		});
 
 
-		//退菜
+		/**
+		 * 退菜
+		 */
+
 		$("#back-dish").click(function(){
-			backFood(0);
+			$("#backfood-dialog").find('.avoid').removeClass('active');
+			$("#backfood-reason").val('');
+			$("#backfood-dialog").modal("show");
+			$("#backfood-dialog .avoid").unbind("click").on("click", function(){
+				if($(this).hasClass("active")){
+					$(this).removeClass("active");
+				}else{
+					$(this).addClass("active");
+				}
+			});
 		});
+
 		$('#backfood-dialog .btn-save').click(function(){
+			$("#backfood-dialog").modal('hide');
 			$('#backfoodnum-dialog').modal('show');
+			$('#backfoodnum-dialog').find('input[type=text]').focus();
 		});
 
 		$('#backfoodnum-dialog .btn-save').click(function(){
-			$('#backfood-right').load("./check/impower.jsp",{"title" : "退菜权限","userRightNo":"030102","cbd":"checkOrder.rebackOrder.jumpfjs(user)"});
+			var dishNum = parseFloat($('#order-dish-table tr.selected .num').text());
+			var backDishNum = parseFloat($('#backDishNumIpt').val());
+			if(backDishNum > dishNum) {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>输入的数量不能超过:' + dishNum + '</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+				return false;
+			}
+			$("#backfoodnum-dialog").modal('hide');
+			$('#backfood-right').load("./check/impower.jsp",{"title" : "退菜权限","userRightNo":"030102","cbd":"Order.backDish(0)"});
 			$('#backfood-right').modal('show');
 		});
 
-		//验证退菜权限
+		$("#backfood-reason").click(function(){
+			var reason = $("#backfood-reason").val();
+			$("#backreasoninput-dialog").modal("show");
+			$("#backreason-inp").val(reason);
+			$("#backreasoninput-dialog").modal("show");
+			$("#backreason-inp").focus();
+		});
 
+		var count = 20;
+		$("#backreason-inp").keyup(function(){
+			var value = $("#backreason-inp").val();
+			var c = count;
+			if(value != null && value != ""){
+				c = count-value.length;
+			}
+			if(c <=0){
+				c = 0;
+			}
+			$("#backreason-count").text(c);
+
+			if(value != null && value != ""){
+				$(".clear-btn").removeClass("disabled");
+			}else{
+				$(".clear-btn").addClass("disabled");
+			}
+		});
+
+		//清空输入的退菜原因
+		$("#backreasoninput-dialog .clear-btn").click(function(){
+			$("#backreason-inp").val("");
+			$(".clear-btn").addClass("disabled");
+		});
+
+		//改变退菜原因
+		$("#backreasoninput-dialog .btn-save").click(function(){
+			var reason = $("#backreason-inp").val();
+			$("#backfood-reason").val(reason);
+			$("#backreasoninput-dialog").modal("hide");
+		});
 
 		//称重
 		$("#weigh-dish").click(function(){
+			$('#weight-num').val('');
 			$("#weight-dialog").modal("show");
+		});
+
+		$("#weight-dialog .btn-save").click(function(){
+			var $target = $("#order-dish-table tr.selected");
+			var params = {
+				"orderId": $('[name=orderid]').val(),
+				"dishid": $target.attr('dishid'),
+				"primarykey": $target.attr('primarykey'),
+				"dishnum": $.trim($('#weight-num').val())
+			};
+			$.ajax({
+				url: _config.interfaceUrl.UpdateDishWeigh,
+				method: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify(params),
+				dataType:'json',
+				success: function(res){
+					if(res.code === '0') {
+						$("#weight-dialog").modal('hide');
+						that.updateOrder();
+					} else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				}
+			})
 		});
 
 		/**
 		 * 优惠操作
 		 */
-		dom.orderDialog.delegate(".nav-pref-types li.nav-pref-type",'click', function () {
+		dom.order.delegate(".nav-pref-types li.nav-pref-type",'click', function () {
 			var me = $(this);
 			me.siblings().removeClass("active").end().addClass("active");
 			that.initPreferential(me.attr('preid'));
@@ -160,14 +260,23 @@ var Order = {
 			me.find('.sel').text(sel);
 		});
 
-		//选中已选优惠
-		dom.orderDialog.delegate("#sel-preferential-table tbody tr, #order-dish-table tbody tr", "click", function () {
+		//选中已选优惠或菜品
+		dom.order.delegate("#sel-preferential-table tbody tr, #order-dish-table tbody tr", "click", function () {
 			var me = $(this);
+			var $btnWeigh = $('#weigh-dish')
 			me.siblings().removeClass("selected").end().addClass("selected");
+
+			if(me.parents('table').attr('id') === 'order-dish-table') {
+				if(me.attr('dishstatus') === '1') {
+					$btnWeigh.removeClass('disabled');
+				} else {
+					$btnWeigh.addClass('disabled');
+				}
+			}
 		});
 
 		//添加优惠
-		dom.orderDialog.delegate(".preferential-info",'click', function () {
+		dom.order.delegate(".preferential-info",'click', function () {
 			var me = $(this);
 			var name = me.attr('name');
 			var type = me.attr('type');
@@ -305,40 +414,154 @@ var Order = {
 
 	},
 
-	//切换小键盘
-	changeKeyboard: function (type) {
-		if (type == "num") {
-			$("#num-keyboard").removeClass("hide");
-			$("#letter-keyboard").addClass("hide");
-		} else if (type == "letter") {
-			$("#num-keyboard").addClass("hide");
-			$("#letter-keyboard").removeClass("hide");
+	//type:1 预结单, 3:客用单
+	printPay: function(type){
+		$.ajax({
+			url: _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/001',
+			method: 'POST',
+			contentType: "application/json",
+			dataType:'json',
+			success: function(res){
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>' + (res.msg === '' ? '预结单打印完毕' : res.msg) + '</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+			}
+		});
+	},
+
+	//开钱箱
+	openCash: function(){
+		$.ajax({
+			url: _config.interfaceUrl.OpenCash,
+			method: 'POST',
+			contentType: "application/json",
+			dataType:'json',
+			success: function(res){
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>' + (res.msg === '' ? '打开钱箱成功' : res.msg) + '</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+			}
+		});
+	},
+
+	//抹零不处理
+	consumInfo: function(){
+		var that = this;
+		var $moneyWipeAmount =  $('.pay-total .moneyWipeAmount');
+		var moneyWipeAmount =  $moneyWipeAmount.text();
+		var $target = $('.paytype-input input[type=text]');
+		if($moneyWipeAmount.length === 0 || moneyWipeAmount === '0') return false;
+		$moneyWipeAmount.parents('li').remove();
+		$target.val((parseFloat($target.val()) + parseFloat(moneyWipeAmount)).toFixed(2));
+	},
+
+	//取消订单
+	cancelOrder: function(){
+		var $target = $('#order-dish-table tbody');
+
+		if($target.find('tr').length > 0) {
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>只能取消空账单</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+		} else {
+			$.ajax({
+				url: _config.interfaceUrl.ClearTable,
+				method: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify({
+					tableNo: $('[name=tableno]').val()
+				}),
+				dataType:'json',
+				success: function(res){
+					if(res.code === '0') {
+						$('#order').modal('hide');
+					}
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + res.msg + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			});
 		}
 	},
 
-	//验证用户
-	verifyUser: function(serverName, cb){
+	//退菜 0:单个 1:整单
+	backDish: function(type){
+		var that = this;
+		var $target = $("#order-dish-table tr.selected");
+		var tableId = $('[name=tableno]').val();
+		var userId = $('#user').val();
+		var orderNo = $('[name=orderid]').val();
+		var params = {};
+
+		var discardReason = (function(){
+			var str = '';
+			$('#backfood-dialog .avoid.active').each(function(){
+				str += $(this).text();
+			});
+			str += $.trim($('#backfood-reason').val());
+			return str.substring(0, str.length - 1);
+		})();
+
+
+
+		if(type === 0) {
+			params = {
+				"operationType": 2,
+				"primarykey": $target.attr('primarykey'),
+				"sequence": 999999,
+				"userName": utils.storage.getter('pos_aUserid'),
+				"dishunit": $target.attr('unit'),
+				"dishNum": $('#backDishNumIpt').val(),
+				"dishtype": $target.attr('dishtype'),
+				"dishNo": $target.attr('dishid'),
+				"actionType": "0",
+				"currenttableid": tableId,
+				"discardReason": discardReason,
+				"discardUserId": userId,
+				"orderNo": orderNo
+			};
+		} else {
+			params = {
+				"actionType": "1",
+				"currenttableid": tableId,
+				"discardReason": discardReason,
+				"discardUserId": userId,
+				"orderNo": orderNo
+			}
+		}
+
 		$.ajax({
-			url: _config.interfaceUrl.VerifyUser,
+			url: _config.interfaceUrl.BackDish,
 			method: 'POST',
 			contentType: "application/json",
-			data: JSON.stringify({
-				loginType: '030101',
-				username: serverName
-			}),
+			data: JSON.stringify(params),
 			dataType:'json',
 			success: function(res){
 				if(res.code === '0') {
-					var alertModal = widget.modal.alert({
-						cls: 'fade in',
-						content:'<strong>' + '确认开台' + '</strong>',
-						width:500,
-						height:500,
-						btnOkCb: function(){
-							alertModal.close();
-							cb && cb();
-						}
-					});
+					$("#backfood-right").modal('hide');
+					$("#backfood-right .modal-dialog").remove();
+
+					that.updateOrder();
 				} else {
 					widget.modal.alert({
 						cls: 'fade in',
@@ -350,7 +573,19 @@ var Order = {
 					});
 				}
 			}
-		})
+		});
+
+	},
+
+	//切换小键盘
+	changeKeyboard: function (type) {
+		if (type == "num") {
+			$("#num-keyboard").removeClass("hide");
+			$("#letter-keyboard").addClass("hide");
+		} else if (type == "letter") {
+			$("#num-keyboard").addClass("hide");
+			$("#letter-keyboard").removeClass("hide");
+		}
 	},
 
 	//点菜
@@ -648,12 +883,12 @@ var Order = {
 		var that = this;
 		var toalFreeAmount = data.toalFreeAmount;
 		var toalDebitAmount = data.toalDebitAmount;
+		var moneyWipeAmount = data.moneyWipeAmount;
 		var toalDebitAmountMany = data.toalDebitAmountMany;
 		var adjAmout = data.adjAmout;
 		var payamount = data.payamount;
 		var originalOrderAmount = data.originalOrderAmount;
 		var amount = data.amount;
-
 
 		//设置统计
 		$('#discount-amount').text(amount);
@@ -663,6 +898,7 @@ var Order = {
 		var totalHtml = '<ul class="pay-total"> ' +
 			'<li style="' + (parseInt(toalDebitAmount, 10) === 0 && 'display:none;')  + '">挂账:' + toalDebitAmount + '</li> ' +
 			'<li style="' + (parseInt(toalFreeAmount, 10)  === 0 && 'display:none;')  + '">优免:' + toalFreeAmount + '</li> ' +
+			'<li  style="' + (parseFloat(moneyWipeAmount) === 0 && 'display:none;')  + '">抹零:<span class="moneyWipeAmount">' + moneyWipeAmount + '</span></li> ' +
 			'<li style="' + (parseInt(adjAmout, 10)  === 0 && 'display:none;')  + '">优免调整:' + adjAmout + '</li> ' +
 			'<li style="' + (parseInt(toalDebitAmountMany, 10)  === 0 && 'display:none;')  + '">挂账多收:' + toalDebitAmountMany + '</span></li> ' +
 			'<li style="' + (parseInt(payamount, 10)  === 0 && 'display:none;')  + '">现金:' + payamount + '</li> ' +
@@ -727,16 +963,24 @@ var Order = {
 			success: function(res){
 				if(res.code === '0') {
 
+					if(utils.object.isEmptyObject(res.data)) return false;
+
 					that.updateTotal(res.data.preferentialInfo);
 
 					//已经选择菜品
 					var tr = '';
 					var $body = $("#order-dish-table tbody");
 
-					$.each(res.data.rows, function(k,v){
-						tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "'><td class='dishname'>" + v.dishname + "</td><td class='unit'>" + v.dishnum +"</td><td class='num'>" + v.dishunit +"</td><td class='orderprice'>" + v.orderprice*v.dishnum + "</td></tr>";
-					});
-					$body.prepend(tr);
+					if(res.data.rows.length > 0) {
+						$.each(res.data.rows, function(k,v){
+							tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + v.dishname + "</td><td class='num'>" + v.dishnum +"</td><td class='unit'>" + v.dishunit +"</td><td class='orderprice'>" + (v.dishstatus === '0' ? v.orderprice*v.dishnum : '待称重') + "</td></tr>";
+						});
+						$('#back-dish, #backDishAll, #reprintOrder').removeClass('disabled');
+					} else {
+						$('#back-dish, #backDishAll, #reprintOrder').addClass('disabled');
+					}
+
+					$body.html(tr);
 
 					widget.loadPage({
 						obj : "#order-dish-table tbody tr",
@@ -757,6 +1001,8 @@ var Order = {
 					//初始化已经使用的优惠
 					if(res.data.preferentialInfo.detailPreferentials.length > 0) {
 						that.updateSelectedPref(res.data.preferentialInfo.detailPreferentials);
+					} else {
+
 					}
 				} else {
 					widget.modal.alert({
@@ -884,20 +1130,13 @@ function cancelOrder(){
 	$("#tips-dialog #tips-msg").text("只能取消空账单！");
 	$("#tips-dialog").modal("show");
 }
-/**
- * 退菜
- * @param type： 0：单个退菜；1:整单退菜
- */
-function backFood(type){
-	$("#backfood-dialog").modal("show");
-	$("#backfood-dialog .avoid").unbind("click").on("click", function(){
-		if($(this).hasClass("active")){
-			$(this).removeClass("active");
-		}else{
-			$(this).addClass("active");
-		}
-	});
-}
+///**
+// * 退菜
+// * @param type： 0：单个退菜；1:整单退菜
+// */
+//function backFood(type){
+//
+//}
 // 已点菜品分页
 //function page1(currPage) {
 //	nowPage1 = widget.loadPage({
@@ -1002,54 +1241,8 @@ function confirmOpen() {
 	$("#adddish-dialog").load("../views/orderdish.jsp");
 	$("#adddish-dialog").modal("show");
 }
-/**
- * 退菜
- */
-function inputBackReason(){
-	$("#backreasoninput-dialog").modal("show");
-}
-var count = 20;
-function inputBackReason(){
-	var reason = $("#backfood-reason").val();
-	$("#backreason-inp").val(reason);
-	$("#backreasoninput-dialog").modal("show");
-	$("#backreason-inp").focus();
-}
-function changeBackReaCount(){
-	var value = $("#backreason-inp").val();
-	var c = count;
-	if(value != null && value != ""){
-		c = count-value.length;
-	}
-	if(c <=0){
-		c = 0;
-	}
-	$("#backreason-count").text(c);
-	contrlClearBtn(value);
-}
-function changeBackReason(){
-	var reason = $("#backreason-inp").val();
-	$("#backfood-reason").val(reason);
-	$("#backreasoninput-dialog").modal("hide");
-}
-/**
- * 清空输入的退菜原因
- */
-function clearBackReasonInput(){
-	$("#backreason-inp").val("");
-	contrlClearBtn("");
-}
-/**
- * 控制清空按钮
- * @param value
- */
-function contrlClearBtn(value){
-	if(value != null && value != ""){
-		$(".clear-btn").removeClass("disabled");
-	}else{
-		$(".clear-btn").addClass("disabled");
-	}
-}
+
+
 //关闭dialog
 function closeConfirm(dialogId) {
 	$("#" + dialogId).modal("hide");

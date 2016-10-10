@@ -23,7 +23,6 @@ var MainPage = {
 		var that = this;
 		var dom = {
 			standardTables : $("#standard-tables"),
-			orderDialog : $("#order-dialog"),
 			openDialog : $("#open-dialog"),//开台权限验证弹窗,
 			roomTypeNav: $(".rooms-type"),//餐台分类导航
 		};
@@ -33,16 +32,111 @@ var MainPage = {
 		dom.standardTables.on('click','li', function() {
 			var me = $(this);
 			var cla = me.attr("class");
-			var data = {
-				orderid: me.attr('orderid'),
-				personnum: me.attr('personnum'),
-				tableno: me.attr('tableno')
-			};
-			dom.orderDialog.load("../views/order.jsp", data, function () {
-				dom.orderDialog.modal('show');
-				if (cla !== "opened") {
-					$("#open-dialog").modal("show");
-				}
+
+			me.siblings().removeClass('selected').end().addClass('selected');
+			//var data = {
+			//	orderid: me.attr('orderid'),
+			//	personnum: me.attr('personnum'),
+			//	tableno: me.attr('tableno')
+			//};
+
+			if (cla !== "opened") {
+				$("#open-dialog").modal("show");
+				return false;
+			}
+			window.location.href = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + me.attr('tableno');
+            //
+			//dom.orderDialog.load("../views/order.jsp", data, function () {
+			//	dom.orderDialog.modal('show');
+			//
+			//});
+		});
+
+		/**
+		 * 开启服务员权限验证
+		 */
+		dom.openDialog.on('click', '.age-type>div', function(){
+			var me = $(this);
+			me.toggleClass('active');
+		});
+
+		dom.openDialog.on('change', '.J-male-num, .J-female-num', function(){
+			var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
+			var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
+			$('.J-tableware-num').val(parseInt(maleNum,10) + parseInt(femailNum,10))
+		});
+
+		dom.openDialog.on('click','.J-btn-submit', function(){
+			var serverName = dom.openDialog.find('.J-server-name').val();
+			var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
+			var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
+
+			if(parseInt(maleNum,10) + parseInt(femailNum,10) < 1) {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>请输入就餐人数</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '确定',
+					btnCancelTxt: ''
+				});
+				return false;
+			}
+
+			if(serverName === undefined || serverName === '') {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>请输入服务员编号</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '确定',
+					btnCancelTxt: ''
+				});
+				return false;
+			}
+
+			//验证用户权限,然后开台
+			that.verifyUser(serverName, function(){
+				var $target = dom.standardTables.find('li.selected');
+				$.ajax({
+					url: _config.interfaceUrl.OpenTable,
+					method: 'POST',
+					contentType: "application/json",
+					data: JSON.stringify({
+						tableNo: $target.attr('tableno'),
+						ageperiod: (function(){
+							var str = '';
+							dom.openDialog.find('.age-type>div').each(function(){
+								var me = $(this);
+								if(me.hasClass('active')){
+									str += me.index()+1;
+								}
+							});
+							return str;
+						})(),
+						username: serverName,
+						manNum: maleNum,
+						womanNum: femailNum
+					}),
+					dataType:'json',
+					success: function(res){
+						if(res.code === '0') {
+							dom.openDialog.modal('hide');
+							debugger;
+							window.location.href = "../views/order.jsp?orderid=" + $target.attr('orderid') + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno');
+						} else {
+							widget.modal.alert({
+								cls: 'fade in',
+								content:'<strong>' + res.msg + '</strong>',
+								width:500,
+								height:500,
+								btnOkTxt: '',
+								btnCancelTxt: '确定'
+							});
+						}
+					}
+				})
+
 			});
 		});
 
@@ -249,6 +343,43 @@ var MainPage = {
 				that.CurrentTalbeType = 'free';
 			}
 		});
+	},
+
+	//验证用户
+	verifyUser: function(serverName, cb){
+		$.ajax({
+			url: _config.interfaceUrl.VerifyUser,
+			method: 'POST',
+			contentType: "application/json",
+			data: JSON.stringify({
+				loginType: '030101',
+				username: serverName
+			}),
+			dataType:'json',
+			success: function(res){
+				if(res.code === '0') {
+					var alertModal = widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + '确认开台' + '</strong>',
+						width:500,
+						height:500,
+						btnOkCb: function(){
+							alertModal.close();
+							cb && cb();
+						}
+					});
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + res.msg + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			}
+		})
 	},
 
 	/**
