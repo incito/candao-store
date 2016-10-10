@@ -1419,6 +1419,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     //退菜不合并打印;稍后上菜不合并打印;送礼的菜不合并打印;
                     boolean isRefund = Constant.DISHBILLNAME.DISCARDDISHNAME_ABBR.equals(printObj.getAbbrbillName());
                     boolean gift = isGiftDish(pd);
+                    if (gift)
+                        resolveSpecCustNum(printObj, pd);
                     if (!isRefund && pd.getIslatecooke() != 1 && !gift) {
                         String groupSequence = getDishGroupSequence(pd, tbPrinter);
                         if (groupSequence != null) {
@@ -1527,6 +1529,35 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         if (refundDish == 1) {
             printdishware(listPrint, printObj, map0);
         }
+    }
+
+
+    private PrintObj resolveSpecCustNum(PrintObj tartget,PrintDish printDish) {
+        Object[] temp = {tartget, printDish};
+        Assert.noNullElements(temp, "参数错误！");
+
+        String special = printDish.getSperequire();
+        String[] arraySpec = special.split(",");
+        //目标台号
+        String subMsg = "";
+        for (String spec : arraySpec) {
+            if (!spec.contains("[")) {
+                continue;
+            } else {
+                subMsg = spec.substring(1, spec.length() - 1);
+                break;
+            }
+        }
+        subMsg = subMsg.split("-")[1];
+        if (!StringUtils.isEmpty(subMsg)) {
+            TbTable table = tableDao.getByTableNO(subMsg);
+            if (table!= null){
+                Map<String ,Object> order = torderMapper.findOne(table.getOrderid());
+                tartget.setTargetCustNum(order.get("custnum") == null ? "" : String.valueOf(order.get("custnum")));
+            }
+        }
+
+        return tartget;
     }
 
     /**

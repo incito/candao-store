@@ -252,7 +252,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
         String prefixMsg = " (" + subMsg.split("-")[0] + "台送)";
         subMsg = subMsg.split("-")[1];
 
-        String[] tableName = {subTableMsg + subMsg + prefixMsg," ","人数:" + obj.getCustnum()};
+        String[] tableName = {subTableMsg + subMsg + prefixMsg," ","人数:" + obj.getTargetCustNum()};
         Integer[] tableLength = template.getSpeTableLength();
         String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 
