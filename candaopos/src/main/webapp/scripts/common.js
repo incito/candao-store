@@ -10,6 +10,20 @@ $(document).ready(function(){
 		);
 		document.querySelector('head').appendChild(msViewportStyle);
 	}
+    $(document).bind("ajaxSend", function () {
+        utils.lading.lading('正在加载…')
+    }).bind("ajaxComplete", function () {
+      utils.lading.remove();
+    }).bind('ajaxError',function () {
+        widget.modal.alert({
+            cls: 'fade in',
+            content:'<strong>数据加载失败，请稍后重试</strong>',
+            width:500,
+            height:500,
+            btnOkTxt: '',
+            btnCancelTxt: '确定'
+        });
+    });
 });
 
 
