@@ -23,7 +23,6 @@
     <link rel="stylesheet" href="../../css/reporting.css">
     <script type="text/javascript" src="../../lib/jedate/jedate.min.js"></script>
     <link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
-
 </head>
 <body>
 

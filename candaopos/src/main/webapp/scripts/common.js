@@ -866,4 +866,20 @@ utils.clearLocalStorage={
 		}
 	}
 }
+utils.lading ={
+	lading:function (msg) {
+		var str='<div class="lading-shade" ></div><div class="spinner">'+
+			'<div class="rect1"></div>'+
+			'<div class="rect2"></div>'+
+			'<div class="rect3"></div>'+
+			'<div class="rect4"></div>'+
+			'<div class="rect5"></div>'+
+			'<p>'+msg+'</p>'
+			'</div>';
+		$('body').append(str);
+	},
+	remove:function () {
+		$('.lading-shade,.spinner').remove();
+	}
+}
 

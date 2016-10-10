@@ -102,29 +102,6 @@
   		margin-top: 20px;
   	}
 </style>
-<script type="text/javascript">
-	$.ajax({
-		url: _config.interfaceUrl.RestaurantOpened + '//'+utils.storage.getter('ipaddress')+'/0/',
-		method: 'GET',
-		dataType:'text',
-		success: function(res){
-			var res = JSON.parse(res.substring(12,res.length-3));
-			if(res.Data === '1') {//开业
-				//window.location = "../views/login.jsp";
-			}
-		},
-		error: function(){
-			widget.modal.alert({
-				cls: 'fade in',
-				content:'<strong>获取当日结业信息失败</strong>',
-				width:500,
-				height:500,
-				btnOkTxt: '',
-				btnCancelTxt: '确定'
-			});
-		}
-	})
-</script>
 </head>
 <body>
 	<div id="logoBG" style="position:absolute; left:0px; top:0px; width:100%; height:100%">

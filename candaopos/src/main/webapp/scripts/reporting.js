@@ -18,22 +18,9 @@ $(function(){
     });
 
 })
-function ladingMore(msg) {//加载信息提示框
-    var str = '<div style="height: 100px;"><strong >'+msg+'</strong></div>'
-    var alertModal = widget.modal.alert({
-        cls: 'fade in',
-        content: str,
-        width: 500,
-        height: 500,
-        hasBtns:false,
 
-    });
-}
-function removeLadingMore(){//移除信息加载提示框
-    $(".modal-alert").modal("hide");
-}
 function getItemSellDetail(flag) {//获取品项消费明细
-    ladingMore("正在加载");
+    utils.lading.lading('正在加载...');
     var me = $(flag),flag=me.attr("flag");
     me.addClass("active").siblings().removeClass('active')
     $("#getItemSellDetail tbody").html("");
@@ -43,7 +30,7 @@ function getItemSellDetail(flag) {//获取品项消费明细
         dataType: "json",
         data:{"flag":flag},
         success: function (data) {
-            removeLadingMore();
+            utils.lading.remove();
             var total=data.data.length,count=0,sum=0;
             for( var i=0;i<total;i++) {
                 count+=Number(data.data[i].dishCount);
@@ -80,14 +67,14 @@ function getItemSellDetail(flag) {//获取品项消费明细
 
 function ItemSellDetailPrint(){//消费品项打印
     var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag");
-    ladingMore("正在打印...");
+    utils.lading.lading('正在打印...');
     $.ajax({
         url:'/newspicyway/print4POS/getItemSellDetail.json',
         type: "get",
         dataType: "json",
-        data:{"flag":flag},
+        data:{"flag":flag,'deviceid':utils.storage.getter('posid')},
         success: function (data) {
-            removeLadingMore();
+            utils.lading.remove()
 
         },
     });
@@ -122,15 +109,14 @@ function getTipList(flag) {//获取小费明细
 }
 function TipListPrint(){//服务员小费打印
     var flag=$("#getTipList .dataSelect-type .active" ).attr("flag");
-    ladingMore("正在打印...");
+    utils.lading.lading('正在打印...');
     $.ajax({
         url:'/newspicyway/print4POS/getItemSellDetail.json',
         type: "get",
         dataType: "json",
-        data:{"flag":flag},
+        data:{"flag":flag,'deviceid':utils.storage.getter('posid')},
         success: function (data) {
-            removeLadingMore();
-
+          utils.lading.remove()
         },
     });
 }
@@ -153,14 +139,14 @@ function printBusinessDetail(){//营业数据打印
         });
         return
     }
-    ladingMore("正在打印...");
+    utils.lading.lading("正在打印...");
     $.ajax({
         url:'/newspicyway/print4POS/printBusinessDetail.json',
         type: "get",
         dataType: "json",
-        data:{"beginTime":beginTime,"endTime":endTime,"operationname":operationname},
+        data:{"beginTime":beginTime,"endTime":endTime,"operationname":operationname,'deviceid':utils.storage.getter('posid')},
         success: function (data) {
-            removeLadingMore();
+            utils.lading.remove()
 
         },
     });
