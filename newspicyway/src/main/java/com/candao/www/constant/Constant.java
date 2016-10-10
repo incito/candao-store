@@ -313,6 +313,10 @@ public class Constant {
      * 内部优免
      */
     public static final String INNERFREE = "08";
+    /**
+     * 雅座代金优惠
+     */
+    public static final String YAZUOFREE="300";
 	  
 	}
 	
