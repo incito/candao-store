@@ -1,5 +1,6 @@
 var OpenPage = {
 	init: function(){
+	    this.isOpen();
 		this.bindEvent();
         this.isYesterdayEndWork();
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
