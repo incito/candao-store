@@ -2092,7 +2092,7 @@ BEGIN
 
 
      SELECT
-        CONCAT('桌号:', ' ', IFNULL(tableno, '')) INTO v_tableno
+        CONCAT('台号:', ' ', IFNULL(tableno, '')) INTO v_tableno
       FROM t_tablearea ta,
            t_table tb
       WHERE tb.areaid = ta.areaid
