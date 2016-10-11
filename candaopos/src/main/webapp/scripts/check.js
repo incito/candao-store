@@ -1,4 +1,4 @@
-var orderdata='',orderId=''
+var orderdata='',orderId='',rebackOrderReason=''
 $(function () {
 
     checkOrder.int("");
@@ -168,38 +168,46 @@ var checkOrder={
 
     reprintCheck:function () {//重印账单
         $.ajax({
-            /*url:'/newspicyway/print4POS/getOrderInfo'/' + aUserid + '/'+orderId+'/2/'',*/
-            url:_config.interfaceUrl.PrintPay+'/' + aUserid + '/'+orderId+'/2/',
+            url:_config.interfaceUrl.PrintPay+'/' + aUserid + '/'+orderId+'/2/'+utils.storage.getter('posid')+'/',
             type: "get",
             success: function (data) {
-                rightBottomPop.alert({
-                    content:"结账单打印完成",
-                })
+                if(data.result=='0'){
+                    rightBottomPop.alert({
+                        content:"结账单打印完成",
+                    })
+                }
+                else {
+                    utils.printError.alert('结账单打印失败，请稍后重试')
+                }
+
             }
         });
     },
     receipt:function () {//会员交易凭条
         $.ajax({
-            /*url:'/newspicyway/print4POS/getMemberSaleInfo/' + aUserid + '/'+orderId+'/',*/
-            url:_config.interfaceUrl.PrintMemberSale+'/' + aUserid + '/'+orderId+'/',
+            url:_config.interfaceUrl.PrintMemberSale+'/' + aUserid + '/'+orderId+'/'+utils.storage.getter('posid')+'/',
             type: "get",
             success: function (data) {
-                rightBottomPop.alert({
-                    content:"交易凭条打印完成",
-                })
+                if(data.result=='0'){
+                    rightBottomPop.alert({
+                        content:"交易凭条打印完成",
+                    })
+                }
+                else {
+                    utils.printError.alert('交易凭条打印失败，请稍后重试')
+                }
             }
         });
     },
     rebackOrder:{//反结算跳转
         jumpfjs:function(user) {
-            alert(user)
             $.ajax({
                 url: _config.interfaceUrl.AntiSettlementOrder,//反结算
                 method: 'POST',
                 contentType: "application/json",
                 data: JSON.stringify({
-                    'reason':reason,
-                    'orderNo':orderNo,
+                    'reason':rebackOrderReason,
+                    'orderNo':orderId,
                     'userName':user
                 }),
                 dataType: "json",
@@ -208,14 +216,13 @@ var checkOrder={
                     if(data.result==='0'){
                         $('#c-mod-fjs').modal("hide")
                         $("#order-dialog").modal('show');
-                        $("#c-mod-fjs").load("../orderdish.jsp",{"fromType":"1"});
+                        $("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
                     }
 
                 }
             })
         },
         rebackOrder:function () {//反结算
-            var reason="";
             var that=this
             _getOrder();
             function _getOrder() {//二次确认弹窗
@@ -237,7 +244,6 @@ var checkOrder={
             };
             function _getBackinfo() {//获取是否生成清机单
                 $.ajax({
-                    /*url:'/newspicyway/datasnap/rest/TServerMethods1/rebackorder/' + aUserid + '/'+orderId+'/',*/
                     url:_config.interfaceUrl.CheckAntiSettleOrder+'' + aUserid + '/'+orderId+'/',
                     type: "get",
                     dataType: "text",
@@ -264,7 +270,6 @@ var checkOrder={
                     btnOkTxt: '确定',
                     btnCancelTxt:"",
                     btnOkCb: function(){
-                        $(".modal-alert,.modal-backdrop").remove();
                     },
                     btnCancelCb: function(){
                     }
@@ -329,18 +334,18 @@ var checkOrder={
                         //选择给input赋值
                         $(".selectReason input").click(function () {
                             $("#selectReason").val($(this).val());
-                            reason=$("#selectReason").val();
+                            rebackOrderReason=$("#selectReason").val();
                         })
                     }
                 })
             };
         },
     },
-
-
-    clearing:function () {//收银
-        var userRight= utils.userRight.get(aUserid,"030206")
+    clearing:function () {//结算
+        var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
         if(userRight){
+            $("#order-dialog").modal('show');
+            $("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
         }
         else {
             var str = '<div class="js_Ok" ><br>您没有收银权限</div>';
@@ -361,7 +366,7 @@ var checkOrder={
             $(this).addClass("tablistActive").siblings("tr").removeClass("tablistActive");
             var orderstatus=$.trim($(this).attr("orderstatus")) ,memberno=$(this).attr("memberno");
             orderId= $.trim($(this).attr("orderid"))
-            console.log(memberno+","+orderId+","+orderstatus)
+           // console.log(memberno+","+orderId+","+orderstatus)
             if(memberno !=undefined){//判断是否存在会员登录
                 $(".receipt").removeAttr("disabled").removeClass("disabled");
             }

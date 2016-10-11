@@ -44,19 +44,18 @@
                             <%--品项销售明细--%>
                             <div class="tab-item" id="getItemSellDetail">
                                 <div class="dataSelect-type">
-                                    <div class="active" flag="1" onclick="getItemSellDetail(this)">今天</div>
-                                    <div flag="2" onclick="getItemSellDetail(this)">本周</div>
-                                    <div flag="3" onclick="getItemSellDetail(this)">本月</div>
-                                    <div flag="4" onclick="getItemSellDetail(this)">上月</div>
+                                    <div class="active" flag="1" onclick="reporting.getItemSellDetail(this)">今天</div>
+                                    <div flag="2" onclick="reporting.getItemSellDetail(this)">本周</div>
+                                    <div flag="3" onclick="reporting.getItemSellDetail(this)">本月</div>
+                                    <div flag="4" onclick="reporting.getItemSellDetail(this)">上月</div>
                                 </div>
                                 <div class="dataSelect-type print" >
-                                    <div class="active" onclick="ItemSellDetailPrint()">打印</div>
+                                    <div class="active" onclick="reporting.PrintItemSell()">打印</div>
                                 </div>
                                 <div style="height: 500px;" class="clearfix">
                                 <table class="table table-bordered table-hover table-list " style="background: #fff;margin-bottom: 0px">
                                     <thead>
                                     <tr>
-
                                         <th>品项名称</th>
                                         <th>销售数量</th>
                                         <th>销售金额</th>
@@ -85,19 +84,18 @@
                             <%--小费统计明细--%>
                             <div class="tab-item" id="getTipList" style="display: none">
                                 <div class="dataSelect-type">
-                                    <div class="active" flag="1" onclick="getTipList(this)">今天</div>
-                                    <div flag="1" onclick="getTipList(this)">本周</div>
-                                    <div flag="1" onclick="getTipList(this)">本月</div>
-                                    <div flag="1" onclick="getTipList(this)">上月</div>
+                                    <div class="active" flag="1" onclick="reporting.getTipList(this)">今天</div>
+                                    <div flag="1" onclick="reporting.getTipList(this)">本周</div>
+                                    <div flag="1" onclick="reporting.getTipList(this)">本月</div>
+                                    <div flag="1" onclick="reporting.getTipList(this)">上月</div>
                                 </div>
                                 <div class="dataSelect-type print" >
-                                    <div class="active">打印</div>
+                                    <div class="active" onclick="reporting.TipListPrint()">打印</div>
                                 </div>
                                 <div style="height: 500px;" class="clearfix">
                                 <table class="table table-bordered table-hover table-list" style="background: #fff">
                                     <thead>
                                     <tr>
-                                        <th></th>
                                         <th>服务员</th>
                                         <th>小费次数</th>
                                         <th>小费金额</th>
@@ -132,7 +130,7 @@
                                     <input value=""   type="text" class="form-control datetimeEnd"   />
                                 </div>
                                 <div class="dataSelect-type print" >
-                                    <div class="active" onclick="printBusinessDetail()">打印</div>
+                                    <div class="active" onclick="reporting.printBusinessDetail()">打印</div>
                                 </div>
                             </div>
                         </div>
@@ -145,7 +143,6 @@
 <script src="../../scripts/reporting.js"></script>
 
 <script>
-
     var start = {
         dateCell: '.datetimeStart',//input选择框
         skinCell:"jedateorange",//橙色风格

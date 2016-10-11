@@ -11,17 +11,15 @@
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
 	<title>会员查询</title>
-	<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
-	<link rel="stylesheet" href="../css/common.css">
-	<link rel="stylesheet" href="../css/main.css">
+	<link rel="stylesheet" href="../../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/common.css">
+	<link rel="stylesheet" href="../../css/main.css">
 	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-	<script src="../scripts/jquery-3.1.0.min.js"></script>
+	<script src="../../scripts/jquery-3.1.0.min.js"></script>
 	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-	<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-	<script src="../scripts/common.js"></script>
-	<script src="../scripts/page.js"></script>
-	<script src="../scripts/main.js"></script>
-	<link rel="stylesheet" href="../css/member.css">
+	<script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+	<script src="../../scripts/common.js"></script>
+	<link rel="stylesheet" href="../../css/member.css">
 </head>
 <body>
 
@@ -35,7 +33,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="form-group form-group-base search-box mt20" >
-					<input value="" name="name"  type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
+					<input value="" name="name" id="cardno"  type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
 					<button class="btn-base btn-yellow btn-base-sm btn-search">搜索</button>
 				</div>
 			</div>
@@ -43,8 +41,8 @@
 
 		<div class="block-shadow block-radius ">
 			<ul class="member-info-list">
-				<li>卡号：<span>827375738</span></li>
-				<li>手机号码：<span>827375738</span></li>
+				<li>卡号：<span class="member_card">827375738</span></li>
+				<li>手机号码：<span class="m">827375738</span></li>
 				<li>姓名：<span>张晓东</span></li>
 				<li>会员卡等级：<span>储值卡</span></li>
 				<li>生日：<span>87/02/09</span></li>
@@ -85,67 +83,42 @@
 		</div>
 	</div>
 </article>
-<footer class="footer-min">
-	<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+<footer>
+	<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 </footer>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-base-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-pwd-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-phone-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-cancellation-dialog" style="overflow: auto;"></div>
+<script src="../../scripts/member.js"></script>
 <script>
 	$(function(){
+		//加载虚拟键盘组件
+		widget.keyboard({
+			target: '.virtual-keyboard-base'
+		});
 		$('.member-op-list li').on('click', function(){
 			var me = $(this);
 			if(me.hasClass('J-modify-base')) {
-				$("#modify-base-dialog").load("../views/member/modifyBase.jsp");
+				$("#modify-base-dialog").load("../member/modifyBase.jsp");
 				$("#modify-base-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-modify-phone')) {
-				$("#modify-phone-dialog").load("../views/member/modifyPhone.jsp");
+				$("#modify-phone-dialog").load("../member/modifyPhone.jsp");
 				$("#modify-phone-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-modify-pwd')) {
-				$("#modify-pwd-dialog").load("../views/member/modifyPwd.jsp");
+				$("#modify-pwd-dialog").load("../member/modifyPwd.jsp");
 				$("#modify-pwd-dialog").modal("show");
 			}
 
 			if(me.hasClass('J-cancellation')) {
-				$("#modify-cancellation-dialog").load("../views/member/cancellation.jsp");
+				$("#modify-cancellation-dialog").load("../member/cancellation.jsp");
 				$("#modify-cancellation-dialog").modal("show");
 			}
 		});
-
-
-		var tpl =
-					'<strong>上传营业数据失败，请重新上传！失败原因：</strong><br/><br/>' +
-					'<i>您可以选择“重新上传”立即重传或者点击“关闭”按钮<i/>';
-
-		var alertModal = widget.modal.alert({
-			cls: 'fade in',
-			content:tpl,
-			width:500,
-			height:500,
-			btnOkTxt: '重新上传',
-			btnOkCb: function(){
-				alert('okCb');
-			},
-			btnCancelCb: function(){
-				alert('cancelCb');
-			}
-		});
-
-
-//		setTimeout(function(){
-//			alertModal.hide();
-//		},2000)
-//
-//		setTimeout(function(){
-//			alertModal.show();
-//		},3000)
-
-
 	})
 </script>
 </body>

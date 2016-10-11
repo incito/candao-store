@@ -685,3 +685,10 @@ footer{
 		   -webkit-transform: scaleY(1.0);
 	   }
 }
+/*打印机异常*/
+.printAbnormal .modal-body{
+	padding: 20px 20px;
+	text-align: left;
+	font-size: 14px;
+
+}

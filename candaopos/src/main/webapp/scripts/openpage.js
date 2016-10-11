@@ -3,6 +3,7 @@ var OpenPage = {
 	    this.isOpen();
 		this.bindEvent();
         this.isYesterdayEndWork();
+        this.configJson();
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
 		var posid=utils.getUrl.get("posid")//设置posid参数到缓存
 		if(ipaddress!=null ||posid!=null){
@@ -316,6 +317,24 @@ var OpenPage = {
             LocalArry:LocalArry,
             OtherArry:OtherArry,
         }
+    },
+    /*获取会员配置地址*/
+    configJson:function () {
+        $.ajax({
+            url: _config.interfaceUrl.GetMemberAddress,
+            type:"get",
+            dataType:'text',
+            success: function(res){
+                var res=JSON.parse(res);
+                utils.storage.setter('vipType',res.data.viptype)//会员地址状态
+                if(res.data.viptype==='1'){//viptype 1为餐道会员 2为雅坐会员
+                    utils.storage.setter('memberAddress',res.data.vipcandaourl)
+                }
+                if(res.data.viptype==='2'){
+                    utils.storage.setter('memberAddress',res.data.vipotherurl)
+                }
+            }
+        })
     }
 };
 
