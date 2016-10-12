@@ -190,7 +190,7 @@
 					<!-- 银行卡支付 -->
 					<div class="paytype-input bank-card hide" id="bank-card">
 						<div class="form-group" style="display: inline-flex;">
-							<input type="text" class="form-control bank-type" placeholder="银行类型" disabled="disabled">
+							<input type="text" class="form-control bank-type" name="banktype" placeholder="银行类型" disabled="disabled">
 							<button class="btn selbank-btn J-bank-sel">选择银行</button>
 						</div>
 						<div class="form-group">
@@ -207,7 +207,7 @@
 						 id="membership-card">
 						<div class="form-group" style="display: inline-flex;">
 							<input type="text" class="form-control card-number" placeholder="卡号">
-							<button class="btn login-btn">登录</button>
+							<button class="btn login-btn disabled">登录</button>
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
@@ -229,7 +229,7 @@
 					<div class="paytype-input this-card hide" id="this-card">
 						<div class="form-group" style="display: inline-flex;">
 							<input type="text" class="form-control payment-unit" placeholder="挂账单位" disabled="disabled">
-							<button class="btn sel-btn" onclick="selPayCompany()">选择</button>
+							<button class="btn sel-btn J-selCompany" >选择</button>
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
@@ -272,7 +272,7 @@
 							<li>.</li><li>0</li><li>00</li>
 						</ul>
 						<ul>
-							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn">确定</li>
+							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
 						</ul>
 					</div>
 					<div class="virtual-keyboard letter-virtual-keyboard hide" id="letter-keyboard">
@@ -525,23 +525,11 @@
 	            <div class="modal-body">
 	            	<div style="font-size: 20px;font-weight: bold;">请选择银行</div>
 	            	<div class="bank-icon">
-	            		<img alt="" src="../images/bank/1.png">
-	            		<img alt="" src="../images/bank/2.png">
-	            		<img alt="" src="../images/bank/3.png">
-	            		<img alt="" src="../images/bank/4.png">
-	            		<img alt="" src="../images/bank/5.png">
-	            		<img alt="" src="../images/bank/6.png">
-	            		<img alt="" src="../images/bank/7.png">
-	            		<img alt="" src="../images/bank/8.png">
-	            		<img alt="" src="../images/bank/9.png">
-	            		<img alt="" src="../images/bank/10.png">
-	            		<img alt="" src="../images/bank/11.png">
-	            		<img class="active" alt="" src="../images/bank/0.png">
 	            	</div>
 	                <div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('select-bank-dialog')">取消
+	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+	                    <button class="btn btn-save in-btn135" id="" type="button">确认
 	                    </button>
 	                </div>
 	            </div>

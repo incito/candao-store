@@ -995,23 +995,23 @@ utils.printAbnormal={
 	}
 
 }
-var setTentimes=utils.storage.getter('setTentimes')
-if(setTentimes==null){
-	setTentimes=10*60*1000
-}
-setInterval(function () {
-	if(setTentimes>0){
-		setTentimes =setTentimes-1000
-		utils.storage.setter('setTentimes',setTentimes);
-		//console.log(utils.storage.getter('setTentimes'))
-	}
-	if(setTentimes==0 && $("#printAbnormal").length<1){
-		var hrefLink=document.location.href;
-		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
-
-		}else {
-			utils.printAbnormal.int();
-		}
-	}
-},1000);
+//var setTentimes=utils.storage.getter('setTentimes')
+//if(setTentimes==null){
+//	setTentimes=10*60*1000
+//}
+//setInterval(function () {
+//	if(setTentimes>0){
+//		setTentimes =setTentimes-1000
+//		utils.storage.setter('setTentimes',setTentimes);
+//		//console.log(utils.storage.getter('setTentimes'))
+//	}
+//	if(setTentimes==0 && $("#printAbnormal").length<1){
+//		var hrefLink=document.location.href;
+//		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+//
+//		}else {
+//			utils.printAbnormal.int();
+//		}
+//	}
+//},1000);
 

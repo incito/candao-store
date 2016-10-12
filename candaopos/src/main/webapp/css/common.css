@@ -620,7 +620,7 @@ footer{
 	height: 100%;
 	z-index:9990;
 	background-color:#000;
-	opacity:0.15;
+	opacity:0.45;
 	position: fixed;
 }
 .spinner {

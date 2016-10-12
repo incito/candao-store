@@ -1,5 +1,12 @@
 var pref_prev = 0;
 
+var consts = {
+	orderid: $('input[name=orderid]').val(),
+	tableno: $('input[name=tableno]').val(),
+	personnum: $('input[name=personnum]').val(),
+	moneyWipeAmount: 0//抹零
+};
+
 var Order = {
 
 	init: function () {
@@ -9,6 +16,10 @@ var Order = {
 		this.updateOrder();
 
 		this.bindEvent();
+
+		this.renderBankList();
+
+		this.renderPayCompany();
 
 		widget.keyboard();
 
@@ -23,6 +34,7 @@ var Order = {
 			openDialog : $("#open-dialog"),//开台权限验证弹窗
 			addDishDialog : $("#adddish-dialog"),//点菜弹窗
 			giveDishDialog : $("#givedish-dialog"),//赠菜弹窗
+			membershipCard : $('#membership-card'),//赠菜弹窗
 		};
 
 		/**
@@ -75,7 +87,7 @@ var Order = {
 					method: 'POST',
 					contentType: "application/json",
 					data: JSON.stringify({
-						tableNo: $('input[name=tableno]').val(),
+						tableNo: consts.tableno,
 						ageperiod: (function(){
 							var str = '';
 							dom.openDialog.find('.age-type>div').each(function(){
@@ -433,12 +445,97 @@ var Order = {
 
 		$('.J-bank-sel').click(function(){
 			$("#select-bank-dialog").modal("show");
-		})
+		});
 
-		$('.bank-icon img').click(function(){
+		$('.bank-icon').delegate('img','click', function(){
 			var me = $(this);
 			me.siblings().removeClass('active').end().addClass('active');
-		})
+		});
+
+		$('#select-bank-dialog .btn-save').click(function(){
+			var target = $('.bank-icon img.active');
+			$('input[name=banktype]').val(target.prop('alt'));
+			$('#select-bank-dialog').modal('hide');
+		});
+
+		//挂账单位
+		$('.J-selCompany').click(function(){
+			$("#select-paycompany-dialog ").modal("show");
+		});
+
+		$('.bank-icon').delegate('img','click', function(){
+			var me = $(this);
+			me.siblings().removeClass('active').end().addClass('active');
+		});
+
+		$('#select-paycompany-dialog .btn-save').click(function(){
+			var target = $('.bank-icon img.active');
+			$('input[name=banktype]').val(target.prop('alt'));
+			$('#select-bank-dialog').modal('hide');
+		});
+		/**
+		 * 会员操作
+		 */
+		dom.membershipCard.find('.card-number').bind('input propertychange focus', function(){
+			var me = $(this);
+			if(me.val().length > 0) {
+				dom.membershipCard.find('.login-btn').removeClass('disabled')
+			} else {
+				dom.membershipCard.find('.login-btn').addClass('disabled')
+			}
+		});
+
+		dom.membershipCard.find('.login-btn').click(function () {
+			$.ajax({
+				//url: utils.storage.getter('memberAddress') + '/datasnap/rest/TServerMethods1/QueryBalance/15208158540/',//雅座
+				//url: utils.storage.getter('memberAddress') + _config.interfaceUrl.QueryCanDao + '.json',//餐道
+				url: utils.storage.getter('memberAddress') + _config.interfaceUrl.MemberLogin,//餐道
+				method: 'POST',
+				contentType: "application/json; charset=utf-8",
+				dataType: 'json',
+				//data: JSON.stringify({
+				//	"cardno": "15208158540",
+				//	"password": "",
+				//	"branch_id": utils.storage.getter('branch_id'),
+				//	"securityCode": ""
+				//}),
+				data: JSON.stringify({
+					"moblie": "15208158540",
+					"orderid": consts.orderid,
+				})
+			}).then(function (res) {
+				console.log(res);
+			})
+		});
+	},
+
+	//挂账单位
+	renderPayCompany: function(){
+		var payCompany = utils.storage.getter('payCompany');
+		var htm = '';
+
+		if(payCompany !== null) {
+			$.each(JSON.parse(payCompany), function(){
+				var me = $(this)[0];
+				htm += '<img alt="'+ me.itemDesc + '" itemDesc="'+ me.itemDesc + '"  src="../images/bank/' + me.itemid +'.png">'
+			})
+
+			//$('.bank-icon').html(htm);
+		}
+	},
+
+	//银行列表
+	renderBankList: function(){
+		var banklist = utils.storage.getter('banklist');
+		var htm = '';
+
+		if(banklist !== null) {
+			$.each(JSON.parse(banklist), function(){
+				var me = $(this)[0];
+				htm += '<img alt="'+ me.itemDesc + '" itemDesc="'+ me.itemDesc + '"  src="../images/bank/' + me.itemid +'.png">'
+			});
+			$('.bank-icon').html(htm);
+		}
 	},
 
 	//type:1 预结单, 3:客用单
@@ -623,7 +720,7 @@ var Order = {
 
 	//点菜
 	takeOrder: function(){
-		var url = "../views/orderdish.jsp?orderid=" + $('input[name=orderid]').val() + '&personnum=' + $('input[name=personnum]').val() + '&tableno=' + $('input[name=tableno]').val();
+		var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno;
 		window.location.href = encodeURI(encodeURI(url));
 	},
 
@@ -805,7 +902,7 @@ var Order = {
 				method: 'POST',
 				contentType: "application/json",
 				data: JSON.stringify({
-					orderid: $('input[name=orderid]').val()
+					orderid: consts.orderid
 				}),
 				dataType:'json'
 			}),
@@ -816,7 +913,7 @@ var Order = {
 				contentType: "application/json",
 				dataType:'json',
 				data: JSON.stringify({
-					orderId: $('input[name=orderid]').val()
+					orderId: consts.orderid
 				})
 			})
 		).then(function(res1, res2){
@@ -882,7 +979,7 @@ var Order = {
 		var $body = $("#sel-preferential-table tbody");
 		//设置优惠回传值
 		$.each(data, function(k, v){
-			tr += "<tr preid='" + v.id + "' orderid='" + v.orderid + "'><td>" + v.activity.name + "</td><td>" + 1 + "</td><td>" + v.deAmount + "</td></tr>";
+			tr += "<tr preid='" + v.id + "' orderid='" + v.orderid + "' coupondetailid='"+ v.coupondetailid + "'><td class='name'>" + v.activity.name + "</td><td class='num'>" + 1 + "</td><td class='amount'>" + v.deAmount + "</td></tr>";
 		});
 		$("#sel-preferential-table tbody").prepend(tr);
 		widget.loadPage({
@@ -928,6 +1025,9 @@ var Order = {
 		var originalOrderAmount = data.menuAmount;
 		var amount = data.amount;
 
+
+		consts.moneyWipeAmount =  moneyWipeAmount;
+
 		//设置统计
 		$('#discount-amount').text(amount);
 		$('#amount').text(originalOrderAmount);
@@ -955,18 +1055,12 @@ var Order = {
 		});
 	},
 
-	/**
-	 * 更新支付信息
-	 */
-	updatePayInfo: function(){
-
-	},
 
 	/**
 	* 管理每次使用优惠信息接口
 	*/
 	manageUsePref: (function(){
-		var orderId = $('input[name=orderid]').val();
+		var orderId = consts.orderid;
 		var prefInfoCache = {
 			"orderid": orderId
 		}
@@ -1003,7 +1097,7 @@ var Order = {
 			method: 'POST',
 			contentType: "application/json",
 			data: JSON.stringify({
-				orderid: $('input[name=orderid]').val()
+				orderid: consts.orderid
 			}),
 			dataType:'json',
 			async: false,
@@ -1072,104 +1166,132 @@ var Order = {
 	doSettlement: function(){
 		widget.modal.alert({
 			cls: 'fade in',
-			content:'<strong>桌号:[' + $('input[name=tableno]').val() + ']确认现在结算?</strong>',
+			content:'<strong>桌号:[' + consts.tableno + ']确认现在结算?</strong>',
 			width:500,
 			height:500,
 			btnOkTxt: '重试',
 			btnCancelTxt: '',
 			btnOkCb: function () {
+				var rows = (function(){
+					var result = [{
+						"payWay": "0",
+						"payAmount": 0.0,
+						"memerberCardNo": "",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}, {
+						"payWay": "1",
+						"payAmount": 0.0,
+						"memerberCardNo": "0",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}, {
+						"payWay": "8",
+						"payAmount": 0.0,
+						"memerberCardNo": "15208158540",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}, {
+						"payWay": "11",
+						"payAmount": 0.0,
+						"memerberCardNo": "15208158540",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}, {
+						"payWay": "18",
+						"payAmount": 0.0,
+						"memerberCardNo": "",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}, {
+						"payWay": "17",
+						"payAmount": 0.0,
+						"memerberCardNo": "",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}, {
+						"payWay": "13",
+						"payAmount": 0.0,
+						"memerberCardNo": "",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					}];
+
+
+
+
+
+					//抹零
+					result.push({
+						"payWay": "7",
+						"payAmount": parseFloat(consts.moneyWipeAmount).toFixed(2),
+						"memerberCardNo": "",
+						"bankCardNo": "",
+						"couponnum": "0",
+						"couponid": "",
+						"coupondetailid": ""
+					});
+
+					//优惠相关
+					$('#sel-preferential-table tbody tr').each(function(){
+						var me = $(this);
+
+						result.push({
+							"payWay": "6",
+							"payAmount": me.find('.amount').text(),
+							"memerberCardNo": "",
+							"bankCardNo": me.find('.name').text(),
+							"couponnum": me.find('.num').text(),
+							"couponid": me.attr('coupondetailid'),
+							"coupondetailid": me.attr('coupondetailid')
+						});
+
+						//团购类优惠券挂账
+						//if(1){
+						//	result.push({
+						//		"payWay": "6",
+						//		"payAmount": me.find('.amount').text(),
+						//		"memerberCardNo": "",
+						//		"bankCardNo": me.find('.name').text(),
+						//		"couponnum": me.find('.num').text(),
+						//		"couponid": me.attr('coupondetailid'),
+						//		"coupondetailid": me.attr('coupondetailid')
+						//	})
+						//} else {
+						//
+						//}
+					});
+
+					return result;
+				})();
+
+
+
 				$.ajax({
 					url: _config.interfaceUrl.PayTheBill,
 					method: 'POST',
 					contentType: "application/json",
 					dataType: 'json',
 					data: JSON.stringify({
-							"payDetail": [{
-								"payWay": "0",
-								"payAmount": 113.00,
-								"memerberCardNo": "",
-								"bankCardNo": "",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": ""
-							}, {
-								"payWay": "1",
-								"payAmount": 10.0,
-								"memerberCardNo": "5",
-								"bankCardNo": "213123123",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": ""
-							}, {
-								"payWay": "8",
-								"payAmount": 0.0,
-								"memerberCardNo": "15208158540",
-								"bankCardNo": "",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": ""
-							}, {
-								"payWay": "11",
-								"payAmount": 0.0,
-								"memerberCardNo": "15208158540",
-								"bankCardNo": "",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": ""
-							}, {
-								"payWay": "18",
-								"payAmount": 14.0,
-								"memerberCardNo": "",
-								"bankCardNo": "1111",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": ""
-							}, {
-								"payWay": "17",
-								"payAmount": 12.0,
-								"memerberCardNo": "",
-								"bankCardNo": "1113313313",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": ""
-							}, {
-								"payWay": "13",
-								"payAmount": 12.0,
-								"memerberCardNo": "",
-								"bankCardNo": "IBM-只能挂账",
-								"couponnum": "0",
-								"couponid": "",
-								"coupondetailid": "5d1afcc828ec4a8494aca7e3c315cffc"
-							}, {
-								"payWay": "6",
-								"payAmount": 9.00,
-								"memerberCardNo": "",
-								"bankCardNo": "手工减免",
-								"couponnum": "1",
-								"couponid": "791eeac502aa4878b9b68b7f7aafd509",
-								"coupondetailid": "791eeac502aa4878b9b68b7f7aafd509"
-							}, {
-								"payWay": "6",
-								"payAmount": 32.00,
-								"memerberCardNo": "",
-								"bankCardNo": "手工赠菜",
-								"couponnum": "1",
-								"couponid": "a2a4e39d8ba84e29aab6526d9783e953",
-								"coupondetailid": "a2a4e39d8ba84e29aab6526d9783e953"
-							}, {
-								"payWay": "6",
-								"payAmount": 32.00,
-								"memerberCardNo": "",
-								"bankCardNo": "手工赠菜",
-								"couponnum": "1",
-								"couponid": "a2a4e39d8ba84e29aab6526d9783e953",
-								"coupondetailid": "a2a4e39d8ba84e29aab6526d9783e953"
-							}], "userName": "003", "orderNo": "H20161011561706011857"
+							"payDetail": rows, "userName": utils.storage.getter('aUserid'), "orderNo": consts.orderid
 						}
 					),
 					success: function (res) {
-
-
+						//debugger;
 					}
 				});
 			}

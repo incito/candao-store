@@ -5,6 +5,7 @@ var MainPage = {
 
 	CurrentTalbeType: 'all',
 	CurrentArea: '-1',//默认为全部
+	CurrentSelectedTable: '',
 
 	init: function(){
 
@@ -34,7 +35,8 @@ var MainPage = {
 		dom.standardTables.on('click','li', function() {
 			var me = $(this);
 			var cla = me.attr("class");
-			me.siblings().removeClass('selected').end().addClass('selected');
+
+			that.CurrentSelectedTable = me;
 
 			if (cla !== "opened") {
 				$("#open-dialog").modal("show");
@@ -89,7 +91,7 @@ var MainPage = {
 
 			//验证用户权限,然后开台
 			that.verifyUser(serverName, function(){
-				var $target = dom.standardTables.find('li.selected');
+				var $target = that.CurrentSelectedTable;
 				$.ajax({
 					url: _config.interfaceUrl.OpenTable,
 					method: 'POST',
@@ -115,12 +117,11 @@ var MainPage = {
 						if(res.code === '0') {
 							var url = "../views/order.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')
 							dom.openDialog.modal('hide');
-							debugger;
 							window.location.href = encodeURI(encodeURI(url));
 						} else {
 							widget.modal.alert({
 								cls: 'fade in',
-								content:'<strong>' + (res.msg.length === 0 && '接口错误') + '</strong>',
+								content:'<strong>' + res.msg + '</strong>',
 								width:500,
 								height:500,
 								btnOkTxt: '',
@@ -323,7 +324,10 @@ var MainPage = {
 		var running  = true;
 		setTimeout(function(){
 			$.when(
-				$.get(_config.interfaceUrl.ConsumInfo)
+				$.ajax({
+					url: _config.interfaceUrl.ConsumInfo,
+					global: false
+				})
 			).then(function(res){
 				if(res.code === '0') {
 					$('.custnum').text(res.data.custnum);
@@ -397,6 +401,7 @@ var MainPage = {
 
 		var type = type || this.CurrentTalbeType;
 		var areaid = areaid || this.CurrentArea;
+		var isYesterdayEndWork = utils.storage.getter('isYesterdayEndWork') === '1' ? false : true;
 
 		function _getTablesArr(res){
 
@@ -446,7 +451,7 @@ var MainPage = {
 
 						tablesOpened.push(tmp);
 					} else {
-						tmp = '<li orderid="'+ val.orderid  + '" personNum="'+ val.personNum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
+						tmp = '<li class="'+ (!isYesterdayEndWork && 'reserved') + '" orderid="'+ val.orderid  + '" personNum="'+ val.personNum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
 							'<div class="tb-info tb-person">' + val.personNum + '人桌</div>' +
 							' </li>'
 						tablesFree.push(tmp);
@@ -466,6 +471,7 @@ var MainPage = {
 			url: _config.interfaceUrl.GetTableInfoByTableType,
 			method: 'POST',
 			contentType: "application/json",
+			global: false,
 			data: JSON.stringify({
 				tableType: [1,0,5]
 			}),
