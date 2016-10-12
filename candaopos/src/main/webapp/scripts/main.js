@@ -8,6 +8,8 @@ var MainPage = {
 
 	init: function(){
 
+		this.timeTask();
+
 		this.setTables();
 
 		SetBotoomIfon.init();
@@ -23,7 +25,6 @@ var MainPage = {
 		var that = this;
 		var dom = {
 			standardTables : $("#standard-tables"),
-			orderDialog : $("#order-dialog"),
 			openDialog : $("#open-dialog"),//开台权限验证弹窗,
 			roomTypeNav: $(".rooms-type"),//餐台分类导航
 		};
@@ -33,16 +34,102 @@ var MainPage = {
 		dom.standardTables.on('click','li', function() {
 			var me = $(this);
 			var cla = me.attr("class");
-			var data = {
-				orderid: me.attr('orderid'),
-				personnum: me.attr('personnum'),
-				tableno: me.attr('tableno')
-			};
-			dom.orderDialog.load("../views/order.jsp", data, function () {
-				dom.orderDialog.modal('show');
-				if (cla !== "opened") {
-					$("#open-dialog").modal("show");
-				}
+			me.siblings().removeClass('selected').end().addClass('selected');
+
+			if (cla !== "opened") {
+				$("#open-dialog").modal("show");
+				return false;
+			}
+			var url = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + me.attr('tableno');
+			window.location.href = encodeURI(encodeURI(url));
+		});
+
+		/**
+		 * 开启服务员权限验证
+		 */
+		dom.openDialog.on('click', '.age-type>div', function(){
+			var me = $(this);
+			me.toggleClass('active');
+		});
+
+		dom.openDialog.on('change', '.J-male-num, .J-female-num', function(){
+			var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
+			var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
+			$('.J-tableware-num').val(parseInt(maleNum,10) + parseInt(femailNum,10))
+		});
+
+		dom.openDialog.on('click','.J-btn-submit', function(){
+			var serverName = dom.openDialog.find('.J-server-name').val();
+			var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
+			var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
+
+			if(parseInt(maleNum,10) + parseInt(femailNum,10) < 1) {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>请输入就餐人数</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '确定',
+					btnCancelTxt: ''
+				});
+				return false;
+			}
+
+			if(serverName === undefined || serverName === '') {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>请输入服务员编号</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '确定',
+					btnCancelTxt: ''
+				});
+				return false;
+			}
+
+			//验证用户权限,然后开台
+			that.verifyUser(serverName, function(){
+				var $target = dom.standardTables.find('li.selected');
+				$.ajax({
+					url: _config.interfaceUrl.OpenTable,
+					method: 'POST',
+					contentType: "application/json",
+					data: JSON.stringify({
+						tableNo: $target.attr('tableno'),
+						ageperiod: (function(){
+							var str = '';
+							dom.openDialog.find('.age-type>div').each(function(){
+								var me = $(this);
+								if(me.hasClass('active')){
+									str += me.index()+1;
+								}
+							});
+							return str;
+						})(),
+						username: serverName,
+						manNum: maleNum,
+						womanNum: femailNum
+					}),
+					dataType:'json',
+					success: function(res){
+						if(res.code === '0') {
+							var url = "../views/order.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')
+							dom.openDialog.modal('hide');
+							debugger;
+							window.location.href = encodeURI(encodeURI(url));
+						} else {
+							widget.modal.alert({
+								cls: 'fade in',
+								content:'<strong>' + (res.msg.length === 0 && '接口错误') + '</strong>',
+								width:500,
+								height:500,
+								btnOkTxt: '',
+								btnCancelTxt: '确定'
+							});
+						}
+					}
+				})
+
 			});
 		});
 
@@ -230,6 +317,77 @@ var MainPage = {
 		});
 	},
 
+	//定时任务
+	timeTask: function(){
+		var that = this;
+		var running  = true;
+		setTimeout(function(){
+			$.when(
+				$.get(_config.interfaceUrl.ConsumInfo)
+			).then(function(res){
+				if(res.code === '0') {
+					$('.custnum').text(res.data.custnum);
+					$('.dueamount').text(res.data.dueamount);
+					$('.orderCount').text(res.data.orderCount);
+					$('.ssamount').text(res.data.ssamount);
+					$('.totalAmount').text(res.data.totalAmount);
+					that.setTables();
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + (res.msg === '' ? '接口错误' : res.msg) + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			});
+
+			if (running){
+				setTimeout(arguments.callee, 5000);
+			}
+
+		}, 50);
+	},
+
+	//验证用户
+	verifyUser: function(serverName, cb){
+		$.ajax({
+			url: _config.interfaceUrl.VerifyUser,
+			method: 'POST',
+			contentType: "application/json",
+			data: JSON.stringify({
+				loginType: '030101',
+				username: serverName
+			}),
+			dataType:'json',
+			success: function(res){
+				if(res.code === '0') {
+					var alertModal = widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + '确认开台' + '</strong>',
+						width:500,
+						height:500,
+						btnOkCb: function(){
+							alertModal.close();
+							cb && cb();
+						}
+					});
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>' + res.msg + '</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
+			}
+		})
+	},
+
 	/**
 	 * 设置餐桌
 	 * @param type [opened, free, all]
@@ -246,23 +404,50 @@ var MainPage = {
 			var tablesAll = [];
 			var tablesFree = [];
 			var tablesOpened = [];
+			var time = '';
 
 			$.each(res, function(key,val){
 				var tmp = '';
 				isOpend = val.status === '0' ? false : true;
-
 				if(areaid === val.areaid || areaid === '-1') {
 					if(isOpend) {
-						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.personNum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
-							'<div class="tb-info tb-status">' + val.fixprice + '</div>' +
-							'<div class="tb-info meal-time">' + val.begintime + '</div> ' +
-							'<div class="tb-info tb-person">' + val.personNum + '</div>' +
+						time = '';
+						var hm = (new Date().getTime() - (new Date(val.begintime.replace(new RegExp("-","gm"),"/"))).getTime());//得到毫秒数
+
+						//计算出相差天数
+						var days=Math.floor(hm/(24*3600*1000));
+						//计算出小时数
+						var leave1=hm%(24*3600*1000);    //计算天数后剩余的毫秒数
+						var hours=Math.floor(leave1/(3600*1000));//计算相差分钟数
+						var leave2=leave1%(3600*1000);       //计算小时数后剩余的毫秒数
+						var minutes=Math.floor(leave2/(60*1000));
+
+						if(hours === 0) {
+							time += '00:'
+						} else if(hours > 10) {
+							time += hours + ':'
+						} else {
+							time += '0' + hours + ':'
+						}
+
+						if(minutes === 0) {
+							time += '00'
+						} else if(minutes > 10) {
+							time += minutes
+						} else {
+							time += '0' + minutes
+						}
+
+						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.custnum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
+							'<div class="tb-info tb-status">￥' + (val.amount === '' ? '0' : val.amount) + '</div>' +
+							'<div class="tb-info meal-time">' + time + '</div> ' +
+							'<div class="tb-info tb-person">' + val.custnum + '/' + val.personNum + '</div>' +
 							' </li>';
 
 						tablesOpened.push(tmp);
 					} else {
 						tmp = '<li orderid="'+ val.orderid  + '" personNum="'+ val.personNum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
-							'<div class="tb-info tb-person">' + val.personNum + '</div>' +
+							'<div class="tb-info tb-person">' + val.personNum + '人桌</div>' +
 							' </li>'
 						tablesFree.push(tmp);
 					}
@@ -318,7 +503,6 @@ var MainPage = {
 						showNavigator: true,
 						callback: function(data) {
 							$("#standard-tables").html(data.join(''));
-							//$("#standard-tables").find('li').eq(0).trigger('click');
 						}
 					});
 				}
@@ -517,59 +701,59 @@ $(function(){
 	MainPage.init();
 });
 
-var pay_nowPage = 0;
-function paging(currPage) {
-	var o = $(".tab-div ul li.active").attr("loaddiv") + " li";
-	nowPage = loadPage({
-		obj : o,
-		listNum : 40,
-		currPage : currPage,
-		totleNums : $(o).length,
-		curPageObj : "#curr-page",
-		pagesLenObj : "#pages-len",
-		prevBtnObj : ".page .prev-btn",
-		nextBtnObj : ".page .next-btn"
-	});
-}
-
-function page(options) {
-	return loadPage(options);
-}
-function selPayCompany(){
-	pay_nowPage = 0;
-	payPage(0);
-	$("#select-paycompany-dialog").modal("show");
-	$(".paycompany-content ul li").unbind("click").on("click", function(){
-		$(".paycompany-content ul li").removeClass("active");
-		$(this).addClass("active");
-	});
-	
-	//�ѵ����һҳ
-	$("#select-paycompany-dialog .prev-btn").unbind("click").on("click", function(){
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		payPage(pay_nowPage - 1);
-	});
-	//�ѵ����һҳ
-	$("#select-paycompany-dialog .next-btn").unbind("click").on("click", function(){
-		if ($(this).hasClass("disabled")) {
-			return false;
-		}
-		payPage(pay_nowPage + 1);
-	});
-}
-function payPage(currPage) {
-	pay_nowPage = loadPage({
-		obj : ".paycompany-content ul li",
-		listNum : 8,
-		currPage : currPage,
-		totleNums : $(".paycompany-content ul li").length,
-		curPageObj : "#select-paycompany-dialog #pay-curr-page",
-		pagesLenObj : "#select-paycompany-dialog #pay-pages-len",
-		prevBtnObj : "#select-paycompany-dialog .prev-btn",
-		nextBtnObj : "#select-paycompany-dialog .next-btn",
-		callback : function() {
-		}
-	});
-}
+//var pay_nowPage = 0;
+//function paging(currPage) {
+//	var o = $(".tab-div ul li.active").attr("loaddiv") + " li";
+//	nowPage = loadPage({
+//		obj : o,
+//		listNum : 40,
+//		currPage : currPage,
+//		totleNums : $(o).length,
+//		curPageObj : "#curr-page",
+//		pagesLenObj : "#pages-len",
+//		prevBtnObj : ".page .prev-btn",
+//		nextBtnObj : ".page .next-btn"
+//	});
+//}
+//
+//function page(options) {
+//	return loadPage(options);
+//}
+//function selPayCompany(){
+//	pay_nowPage = 0;
+//	payPage(0);
+//	$("#select-paycompany-dialog").modal("show");
+//	$(".paycompany-content ul li").unbind("click").on("click", function(){
+//		$(".paycompany-content ul li").removeClass("active");
+//		$(this).addClass("active");
+//	});
+//
+//	//�ѵ����һҳ
+//	$("#select-paycompany-dialog .prev-btn").unbind("click").on("click", function(){
+//		if ($(this).hasClass("disabled")) {
+//			return false;
+//		}
+//		payPage(pay_nowPage - 1);
+//	});
+//	//�ѵ����һҳ
+//	$("#select-paycompany-dialog .next-btn").unbind("click").on("click", function(){
+//		if ($(this).hasClass("disabled")) {
+//			return false;
+//		}
+//		payPage(pay_nowPage + 1);
+//	});
+//}
+//function payPage(currPage) {
+//	pay_nowPage = loadPage({
+//		obj : ".paycompany-content ul li",
+//		listNum : 8,
+//		currPage : currPage,
+//		totleNums : $(".paycompany-content ul li").length,
+//		curPageObj : "#select-paycompany-dialog #pay-curr-page",
+//		pagesLenObj : "#select-paycompany-dialog #pay-pages-len",
+//		prevBtnObj : "#select-paycompany-dialog .prev-btn",
+//		nextBtnObj : "#select-paycompany-dialog .next-btn",
+//		callback : function() {
+//		}
+//	});
+//}

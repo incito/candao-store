@@ -11,9 +11,9 @@ $(document).ready(function(){
 		document.querySelector('head').appendChild(msViewportStyle);
 	}
     $(document).bind("ajaxSend", function () {
-        utils.lading.lading('正在加载…')
+        utils.loading.open('正在加载…')
     }).bind("ajaxComplete", function () {
-      utils.lading.remove();
+      utils.loading.remove();
     }).bind('ajaxError',function () {
         widget.modal.alert({
             cls: 'fade in',
@@ -73,7 +73,7 @@ _config.interfaceUrl = {
 	GetBranchInfo: "/newspicyway/padinterface/getbranchinfo.json", <!--获取分店店铺信息-->
 	MemberLogin: "/newspicyway/member/MemberLogin.json", <!--餐道会员登入-->
 	MemberLogout: "/newspicyway/member/MemberLogout.json", <!--餐道会员登出-->
-	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--添加会员消费信息-->
+	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--添加会员消op费信息-->
 	ClearTable: "/newspicyway/padinterface/cleantable.json", <!--清台-->
 	ClearTableCf: "/newspicyway/padinterface/cleanTableSimply.json", <!--咖啡模式的清台-->
 	AntiSettlementOrder: "/newspicyway/padinterface/rebacksettleorder.json", <!--反结算账单-->
@@ -90,6 +90,7 @@ _config.interfaceUrl = {
 	GetTipMoney: "/newspicyway/tip/tipListByTime.json", <!--获取小费总额-->
 	RestaurantOpened: "/newspicyway/datasnap/rest/TServerMethods1/OpenUp/", <!--店铺开业，分查询是否开业和开业-->
 	PettyCashInput: "/newspicyway/datasnap/rest/TServerMethods1/InputTellerCash/", <!--零找金，分查询是否输入过零找金和输入零找金-->
+	ConsumInfo: "/newspicyway/padinterface/consumInfo.json", <!-- 统计信息 -->
 	GetTableDishInfos: "/newspicyway/datasnap/rest/TServerMethods1/GetOrder/", <!--获取餐桌菜单上的所有菜品信息-->
 	GetTableDishInfoByOrderId: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderByOrderid/", <!--获取餐桌菜单上的所有菜品信息-->
 	GetDinnerWareInfo: "/newspicyway/datasnap/rest/TServerMethods1/getCJFood/", <!--获取餐具的数据-->
@@ -522,7 +523,7 @@ var SetBotoomIfon = {
  */
 var rightBottomPop ={
 	alert:function (opts) {
-		var that=this
+		var that=this;
 		//取当前浏览器窗口大小
 		var  windowWidth=$(document).width();
 		var windowHeight=$(document).height();
@@ -553,8 +554,6 @@ var rightBottomPop ={
 		setTimeout(function() {
 			$('.rightBottomPop').remove()
 		}, 10000);
-
-
 	},
 	close:function (a) {
 		$(a).parent().parent().remove();
@@ -600,6 +599,31 @@ utils.array = {
 		return n;
 	}
 };
+utils.object = {
+	isEmptyObject: function(obj){
+		for (var key in obj) {
+			return false
+		}
+		return true
+	}
+};
+utils.string = {
+	buffer: function(){
+		function StringBuffer() {
+			this.__strings__ = new Array();
+		}
+		StringBuffer.prototype.append = function (str) {
+			this.__strings__.push(str);
+			return this;    //方便链式操作
+		};
+		StringBuffer.prototype.toString = function () {
+			return this.__strings__.join("");
+		};
+		return new StringBuffer();
+	}
+};
+
+
 /**
  * Map
  */
@@ -656,7 +680,7 @@ utils.HashMap = function(){
 	 */
 	this.remove=function(key){
 		if(this.containsKey(key)&&(delete obj[key])){
-			this.keys.remove(key);
+			length--;
 		}
 	};
 
@@ -888,8 +912,8 @@ utils.clearLocalStorage={
 		}
 	}
 }
-utils.lading ={
-	lading:function (msg) {
+utils.loading ={
+	open:function (msg) {
 		var str='<div class="lading-shade" ></div><div class="spinner">'+
 			'<div class="rect1"></div>'+
 			'<div class="rect2"></div>'+

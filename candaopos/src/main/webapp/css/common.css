@@ -621,6 +621,7 @@ footer{
 	z-index:9990;
 	background-color:#000;
 	opacity:0.15;
+	position: fixed;
 }
 .spinner {
 	width: 150px;
