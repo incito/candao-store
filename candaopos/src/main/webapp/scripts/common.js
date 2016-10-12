@@ -973,7 +973,7 @@ utils.printAbnormal={
 }
 var setTentimes=utils.storage.getter('setTentimes')
 if(setTentimes==null){
-	setTentimes=60*1000
+	setTentimes=10*60*1000
 }
 setInterval(function () {
 	if(setTentimes>0){

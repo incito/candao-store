@@ -1,9 +1,8 @@
 var OpenPage = {
 	init: function(){
-	    this.isOpen();
-		this.bindEvent();
         this.isYesterdayEndWork();
         this.configJson();
+		this.bindEvent();
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
 		var posid=utils.getUrl.get("posid")//设置posid参数到缓存
 		if(ipaddress!=null ||posid!=null){
@@ -95,6 +94,7 @@ var OpenPage = {
                     if(res['detail']){//昨天已经结业
                         $("#openTo").show();
                         utils.storage.setter('isYesterdayEndWork','1');//设置昨天是否结业状态0为已结业，1为未结业；
+                        that.isOpen();
                     }
                     else {//昨天没有结业
                         utils.storage.setter('isYesterdayEndWork','1');//设置昨天是否结业状态0为已结业，1为未结业；
@@ -323,6 +323,7 @@ var OpenPage = {
         $.ajax({
             url: _config.interfaceUrl.GetMemberAddress,
             type:"get",
+            async:false,
             dataType:'text',
             success: function(res){
                 var res=JSON.parse(res);

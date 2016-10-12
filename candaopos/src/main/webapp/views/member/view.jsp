@@ -41,15 +41,15 @@
 
 		<div class="block-shadow block-radius ">
 			<ul class="member-info-list">
-				<li>卡号：<span class="member_card">827375738</span></li>
-				<li>手机号码：<span class="m">827375738</span></li>
-				<li>姓名：<span>张晓东</span></li>
-				<li>会员卡等级：<span>储值卡</span></li>
-				<li>生日：<span>87/02/09</span></li>
-				<li>性别：<span>女</span></li>
-				<li>余额：<span>88.00</span></li>
-				<li>积分：<span>88</span></li>
-				<li>卡状态：<span>正常</span></li>
+				<li>卡号：<span class="member_card"></span></li>
+				<li>手机号码：<span class="member_mobile"></span></li>
+				<li>姓名：<span class="member_nanme"></span></li>
+				<li>会员卡等级：<span class="member_level_name"></span></li>
+				<li>生日：<span class="member_birthday"></span></li>
+				<li>性别：<span class="member_gender"></span></li>
+				<li>余额：<span class="member_StoreCardBalance"></span></li>
+				<li>积分：<span class="member_IntegralOverall"></span></li>
+				<li>卡状态：<span class="member_status"></span></li>
 			</ul>
 		</div>
 
