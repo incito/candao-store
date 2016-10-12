@@ -24,9 +24,9 @@ $(document).ready(function(){
             btnCancelTxt: '确定'
         });
     });
+
+
 });
-
-
 
 function goBack(){
 	window.history.back(-1);
@@ -143,6 +143,7 @@ _config.interfaceUrl = {
 	VipCheckCard: "/member/memberManager/byUserTouse.json", <!--判断会员实体卡-->
 	VipChangePsw: "/member/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
 	GetCouponList: "/member/preferential/posPreferentialList", <!--获取优惠列表-->
+    GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
 };
 //优惠分类
 _config.preferential = {
@@ -859,9 +860,14 @@ utils.reprintClear={//打印清机单
 			url:_config.interfaceUrl.PrintClearMachine+'/'+ utils.storage.getter('aUserid') + '+/'+jsorder+'/'+utils.storage.getter('posid')+'/',
 			type: "get",
 			success: function (data) {
-				rightBottomPop.alert({
-					content:"清机单打印完成",
-				})
+                if(data.result=='0'){
+                    rightBottomPop.alert({
+                        content:"清机单打印完成",
+                    })
+                }
+                else {
+                    utils.printError.alert('清机单打印失败，请稍后重试')
+                }
 			}
 		});
 	}
@@ -898,6 +904,8 @@ utils.clearLocalStorage={
 			    'fullname':'fullname',
 			    'loginTime':'loginTime',
 			    'user_rights':'user_rights',
+			    'setTentimes':'setTentimes',
+			    'tenTimes':'tenTimes'
 			}
 		for(var i in clearLocal){
 			utils.storage.remove(clearLocal[i])
@@ -920,4 +928,90 @@ utils.loading ={
 		$('.lading-shade,.spinner').remove();
 	}
 }
+utils.printError={//打印失败
+    alert:function (msg) {
+        widget.modal.alert({
+            cls: 'fade in',
+            content:'<strong>'+msg+'</strong>',
+            width:500,
+            height:500,
+            btnOkTxt: '',
+            btnCancelTxt: '确定'
+        });
+    }
+}
+/*打印机异常*/
+utils.printAbnormal={
+	int:function () {
+		this.get();
+	},
+	get:function () {//获取打印机列表
+		var that = this,timedata='';
+		$.ajax({
+			url:'/newspicyway/pos/printerlist.json',
+			type: "get",
+			dataType: "json",
+			async:false,
+			global: false,
+			success: function (data) {
+				var arry=[];
+				for( var i=0;i<data.data.length;i++) {
+					if(data.data[i].status!='1'){
+						arry.push(data.data[i])
+					}
+				};
+				if(arry.length>0){
+					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
+						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
+					if($("#printAbnormal").length<1){
+						widget.modal.alert({
+							cls: 'fade in printAbnormal',
+							content:str,
+							title:'',
+							width:300,
+							height:400,
+							btnOkTxt: '',
+							btnCancelTxt: '确定',
+							btnCancelCb:function () {
+								if($('.printAbnormalinput').prop("checked")==true){
+									that.set(10*60*1000)
+								}
+								else {
+									that.set(60*1000)
+								}
+							}
+						});
+					}
+					$('.printAbnormal .modal-header span').hide()
+				}
+
+			},
+		});
+
+	},
+	set:function (time) {
+		var that=this,timeLeft=time;//这里设定的时间是;
+		setTentimes=time
+	}
+
+}
+var setTentimes=utils.storage.getter('setTentimes')
+if(setTentimes==null){
+	setTentimes=60*1000
+}
+setInterval(function () {
+	if(setTentimes>0){
+		setTentimes =setTentimes-1000
+		utils.storage.setter('setTentimes',setTentimes);
+		//console.log(utils.storage.getter('setTentimes'))
+	}
+	if(setTentimes==0 && $("#printAbnormal").length<1){
+		var hrefLink=document.location.href;
+		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+
+		}else {
+			utils.printAbnormal.int();
+		}
+	}
+},1000);
 

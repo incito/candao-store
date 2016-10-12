@@ -12,7 +12,6 @@
 <meta name="renderer" content="webkit">
 <title>订单</title>
 <link rel="stylesheet" href="../css/sys.css">
-	<link rel="stylesheet" href="../lib/pagination.css">
 	<script>
 		$(function(){
 			var $tabBox = $('.tab-box');
@@ -73,6 +72,9 @@
 
 										</tbody>
 									</table>
+										<div class="foot-menu" style="position: fixed;bottom: 0px;width: 70px;right: 40px;">
+											<div class=""  style="margin-right: 10px;background: #fff;height: 40px; line-height:40px;border-radius: 5px;width: 100%;text-align: center">刷新(<span id="show"></span>)</div>
+										</div>
 								</div>
 
 								<%--打印机列表--%>
@@ -108,6 +110,8 @@
 
 			this.getPrintDetail();
 
+			this.abc()
+
 
 			return {
 				get:this.getCashbox,
@@ -139,12 +143,13 @@
 		},
 		getPrintDetail: function () {//获取打印机列表
 			var that = this;
-			this.abc("我是ABC")
 			$.ajax({
 				url:'/newspicyway/pos/printerlist.json',
 				type: "get",
 				dataType: "json",
+				global: false,
 				success: function (data) {
+					//console.log(data)
 					var str="",num=0;
 					for( var i=0;i<data.data.length;i++) {
 						num=i+1
@@ -154,18 +159,29 @@
 						str+='   <td width="200">'+data.data[i].name+'</td>';
 						str+='   <td width="200">'+data.data[i].statusTitle+'</td>';
 						str+='</tr>';
-
 					};
 					$("#printList tbody").html(str);
 				},
 			});
 		},
-		abc:function (a) {
-
-
+		abc:function () {
+			var that=this, timeLeft = 10 * 1000;//这里设定的时间是10秒;
+			countTime();
+			function countTime(){
+				if(timeLeft == 0){
+					timeLeft = 10 * 1000;
+					that.getPrintDetail()
+				}
+				var startMinutes = parseInt(timeLeft / (60 * 1000), 10);
+				var startSec = parseInt((timeLeft - startMinutes * 60 * 1000)/1000);
+				timeLeft = timeLeft - 1000;
+				setTimeout(function () {
+					countTime();
+				},1000);
+				$('#show').text(startSec);
+			}
 		}
 	}
-
 </script>
 </body>
 </html>

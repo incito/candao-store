@@ -137,6 +137,7 @@ var MainPage = {
 		//退出系统
 		$(".exit-sys").click(function(){
 			window.location = "../views/login.jsp";
+			utils.clearLocalStorage.clearSelect()
 		});
 
 		//标准台和咖啡台切换
