@@ -1,28 +1,32 @@
-var nowPage4 = 0;// 已选择菜品分页
-var nowPage5 = 0;// 待选择菜品分页
-
 
 var dishMap = null;//添加进购物车的菜品
 
+var g_eatType = "EAT-IN";
+
 var tastDish = {};
+
+var dom = {
+	addDishModal : $("#adddish"),
+	searchBtn: $("#adddish").find('input[type=search]'),
+	selDishable : $("#sel-dish-table")
+};
+
+var consts = {
+	orderid: $('input[name=orderid]').val(),
+	tableno: $('input[name=tableno]').val(),
+	personnum: $('input[name=personnum]').val(),
+};
 
 var AddDish = {
 
 	//所有菜品缓存数据
 	dishesData: [],
 
-	dom: {
-		addDishModal : $("#adddish-modal"),
-		searchBtn: $("#adddish-modal").find('input[type=search]'),
-		selDishable : $("#sel-dish-table")
-	},
-
 	init: function () {
-
 		//设置全局订单信息
-		$("#order-dialog").find('.J-order-id').text($('input[name=orderid]').val())
-			.end().find('.J-table-no').text($('input[name=tableno]').val())
-			.end().find('.J-person-no').text($('input[name=personnum]').val());
+		$(".order-info").find('.J-order-id').text(consts.orderid)
+			.end().find('.J-table-no').text(consts.tableno)
+			.end().find('.J-person-no').text(consts.personnum);
 
 		//搜索键盘初始化
 		widget.keyboard({
@@ -37,6 +41,7 @@ var AddDish = {
 
 	bindEvent: function () {
 		var that = this;
+
 		/**
 		 * 菜品分类事件
 		 * @type {*|jQuery|HTMLElement}
@@ -70,19 +75,19 @@ var AddDish = {
 		/**
 		 * 菜品搜索事件
 		 */
-		that.dom.searchBtn.bind('input propertychange focus', function(){
+		dom.searchBtn.bind('input propertychange focus', function(){
 			that.renderDishes($('.nav-dish-types li.active').attr('itemid'), $(this).val());
 		});
 
-		that.dom.addDishModal.find('.btn-clear').click(function(){
-			that.dom.searchBtn.val('');
+		dom.addDishModal.find('.btn-clear').click(function(){
+			dom.searchBtn.val('');
 			that.renderDishes($('.nav-dish-types li.active').attr('itemid'));
 		});
 
 		/**
 		 * 菜品选择
 		 */
-		that.dom.addDishModal.delegate((".dishes-content .dish-info"), 'click', function () {
+		dom.addDishModal.delegate((".dishes-content .dish-info"), 'click', function () {
 			var me = $(this);
 			var dish = {
 				dishid: me.attr("dishid"),
@@ -93,67 +98,103 @@ var AddDish = {
 				dishnum: 1,
 				dishnote: ""
 			};
-			if (dish.dishtype == "0") {
-				//普通菜品
-				var f = isExist(dish.dishid);
-				if (f) {
-					//已存在该菜品
-					var $tr = null;
-					$("#sel-dish-table tbody tr").each(function () {
-						var dishId = $(this).attr("dishid");
-						if (dishId == dish.dishid) {
-							$tr = $(this);
-							return;
+
+			$.ajax({
+				url: _config.interfaceUrl.GetDishStatus + '/' + dish.dishid + '/',
+				method: 'POST',
+				contentType: "application/json",
+				dataType:'text',
+				data: JSON.stringify({
+					dishUnit: dish.unit
+				})
+			}).then(function(res){
+				var result = JSON.parse(res.substring(12, res.length-3));
+
+				if(result.Data === '1') {//接口返回成功
+					if(result.Info === '0') {//菜品状态正常
+						if (dish.dishtype == "0") {
+							//普通菜品
+							var f = isExist(dish.dishid);
+							if (f) {
+								//已存在该菜品
+								var $tr = null;
+								dom.selDishable.find('tbody tr').each(function () {
+									var dishId = $(this).attr("dishid");
+									if (dishId == dish.dishid) {
+										$tr = $(this);
+										return;
+									}
+								});
+								var seldish = dishMap.get(dish.dishid);
+								var num = seldish.dishnum;
+								num = parseFloat(num) + 1;
+								$tr.find("td.num").text(num);
+								var totalPrice = calTotalPrice(num, dish.price);
+								$tr.find("td.price").text(totalPrice);
+								seldish.dishnum = num;
+								dishMap.put(dish.dishid, seldish);
+
+								//更新总消费金额
+								updateTotalAmount();
+
+							} else {
+								that.addDish(dish);
+							}
+						} else if (dish.dishtype == "1") {
+							//多口味菜品
+							tastDish = dish;
+							initNoteDialog(2);
+						} else if (dish.dishtype == "2") {
+							//套餐
+							$("#combodish-dialog").modal("show");
+							$("#combodish-dialog .num-btns .num-btn").unbind("click").on("click", function () {
+
+							});
+
+							$("#combodish-dialog .avoid").unbind("click").on("click", function () {
+								if ($(this).hasClass("active")) {
+									$(this).removeClass("active");
+								} else {
+									$(this).addClass("active");
+								}
+							});
+						} else if (dish.dishtype == "3") {
+							//鱼锅
+							$("#fishpotdish-dialog").modal("show");
+							$("#fishpotdish-dialog .avoid").unbind("click").on("click", function () {
+								if ($(this).hasClass("active")) {
+									$(this).removeClass("active");
+								} else {
+									$(this).addClass("active");
+								}
+							});
 						}
-					});
-					var seldish = dishMap.get(dish.dishid);
-					var num = seldish.dishnum;
-					num = parseFloat(num) + 1;
-					$tr.find("td.num").text(num);
-					var totalPrice = calTotalPrice(num, dish.price);
-					$tr.find("td.price").text(totalPrice);
-					seldish.dishnum = num;
-					dishMap.put(dish.dishid, seldish);
-					//更新总消费金额
-					updateTotalAmount();
+					} else {
+						//菜品沽清
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>菜品沽清</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
 				} else {
-
-					that.addDish(dish);
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<strong>获取菜品状态失败!</strong>',
+						width:500,
+						height:500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
 				}
-			} else if (dish.dishtype == "1") {
-				//多口味菜品
-				tastDish = dish;
-				initNoteDialog(2);
-			} else if (dish.dishtype == "2") {
-				//套餐
-				$("#combodish-dialog").modal("show");
-				$("#combodish-dialog .num-btns .num-btn").unbind("click").on("click", function () {
-
-				});
-
-				$("#combodish-dialog .avoid").unbind("click").on("click", function () {
-					if ($(this).hasClass("active")) {
-						$(this).removeClass("active");
-					} else {
-						$(this).addClass("active");
-					}
-				});
-			} else if (dish.dishtype == "3") {
-				//鱼锅
-				$("#fishpotdish-dialog").modal("show");
-				$("#fishpotdish-dialog .avoid").unbind("click").on("click", function () {
-					if ($(this).hasClass("active")) {
-						$(this).removeClass("active");
-					} else {
-						$(this).addClass("active");
-					}
-				});
-			}
-
+			});
 		});
 
 		// 选中已点菜品
-		that.dom.addDishModal.delegate("#sel-dish-table tbody tr",'click', function() {
+		dom.addDishModal.delegate("#sel-dish-table tbody tr",'click', function() {
 			$(this).siblings().removeClass("selected").end().addClass("selected");
 		});
 	},
@@ -193,8 +234,8 @@ var AddDish = {
 				}
 			}
 		});
-
 	},
+
 	/**
 	 * 渲染菜品信息
 	 * @param id	菜品分类id
@@ -202,40 +243,39 @@ var AddDish = {
      */
 	renderDishes: function (id, key) {
 		var that = this;
-		var htm = '';
-		var searchKey = !key ? $.trim(that.dom.searchBtn.val()) : key;
+		var searchKey = !key ? $.trim(dom.searchBtn.val()) : key;
 
 		if(that.dishesData.length > 0) {//从缓存中获取数据
+			var oBuffer = new utils.string.buffer();
 			$.each(that.dishesData, function(k, v){
 				if(v.source === id && (v.py.indexOf(searchKey.toUpperCase()) !== -1)) {
-					htm += '<div class="dish-info" dishtype=' + v.dishtype + ' dishid="' + v.dishid + '" py="' + v.py + '" dishname="' + v.title + '" price="' + v.price + '" unit="' + v.unit + '">'
+					oBuffer.append('<div class="dish-info" dishtype=' + v.dishtype + ' dishid="' + v.dishid + '" py="' + v.py + '" dishname="' + v.title + '" price="' + v.price + '" unit="' + v.unit + '">'
 						+ '<div class="dish-name">' + v.title
 						+ '</div>'
 						+ '<hr>'
 						+ '<div class="dish-price">' + v.price + '/' + v.unit + '</div>'
-						+ '</div>';
+						+ '</div>');
 				}
 
 			});
 
-			$(".main-div .dishes-content").html(htm);
+			$(".main-div .dishes-content").html(oBuffer.toString());
 
 			widget.loadPage({
 				obj : ".dishes-content .dish-info",
 				listNum : 20,
-				currPage : currPage || 0,
+				currPage : 0,
 				totleNums : $(".dishes-content .dish-info").length,
-				curPageObj : "#adddish-modal #curr-page1",
-				pagesLenObj : "#adddish-modal #pages-len1",
-				prevBtnObj : "#adddish-modal .main-div .prev-btn",
-				nextBtnObj : "#adddish-modal .main-div .next-btn"
+				curPageObj : "#adddish #curr-page1",
+				pagesLenObj : "#adddish #pages-len1",
+				prevBtnObj : "#adddish .main-div .prev-btn",
+				nextBtnObj : "#adddish .main-div .next-btn"
 			});
 		} else {//同步获取数据(打开点菜界面时)
 
 			$.ajax({
 				url: _config.interfaceUrl.GetAllDishInfos + '/' + utils.storage.getter('aUserid') + '/',
 				method: 'GET',
-				async: false,
 				contentType: "application/json",
 				dataType:'text',
 				success: function(res){
@@ -262,7 +302,6 @@ var AddDish = {
 		}
 
 	},
-
 
 	/**
 	 * 购物车添加菜品
@@ -315,12 +354,12 @@ var AddDish = {
 		widget.loadPage({
 			obj : "#sel-dish-table tbody tr",
 			listNum : 16,
-			currPage : currPage || 0,
+			currPage : 0,
 			totleNums : $("#sel-dish-table tbody tr").length,
-			curPageObj : "#adddish-modal #curr-page",
-			pagesLenObj : "#adddish-modal #pages-len",
-			prevBtnObj : "#adddish-modal .oper-div .prev-btn",
-			nextBtnObj : "#adddish-modal .oper-div .next-btn",
+			curPageObj : "#adddish #curr-page",
+			pagesLenObj : "#adddish #pages-len",
+			prevBtnObj : "#adddish .oper-div .prev-btn",
+			nextBtnObj : "#adddish .oper-div .next-btn",
 			callback : function() {
 				$("#sel-dish-table tbody tr").removeClass("selected");
 				$("#sel-dish-table tbody tr").not(".hide").eq(0).addClass("selected");
@@ -531,7 +570,7 @@ function doNote(){
 			tastDish.dishnote = note;
 			tastDish.taste = $("#note-dialog #taste ul li.active").text().trim();
 			tastDish.dish_avoids = dish_avoids;
-			this.addDish(tastDish);
+			AddDish.addDish(tastDish);
 		}
 	}
 	$("#note-dialog").modal("hide");
@@ -578,6 +617,7 @@ function contrlClearBtn(value){
 		$(".clear-btn").addClass("disabled");
 	}
 }
+
 /**
  * 修改菜品数量对话框
  */
@@ -634,7 +674,7 @@ function reduct(){
 		//如果数量小于1，则删除本条
 		$tr.remove();
 		dishMap.remove(dishid);
-		page4(nowPage4);
+		//page4(nowPage4);
 		controlBtns();
 	}else{
 		totalNum = parseFloat(totalNum) - 1;
@@ -697,7 +737,7 @@ function doClear() {
 // 下单
 function placeOrder() {
 	var modal = $("#placeorder-confirm-dialog");
-	modal.find('.tableno').text(MainPage.orderInfo.tableNo);
+	modal.find('.tableno').text(consts.tableno);
 	$("#placeorder-confirm-dialog").modal("show");
 }
 /**
@@ -705,9 +745,7 @@ function placeOrder() {
  */
 function doPlaceOrder() {
 
-	doOrder(0,function(){
-		alert('下单成功');
-	})
+	doOrder(0)
 }
 
 /**
@@ -723,29 +761,29 @@ function doOrder(type,cb){
 			var me = $(this);
 			var price = parseInt(me.attr('price'), 10).toFixed(1);
 			var dishtype = parseInt(me.attr('dishtype'), 10);
-			debugger;
+			var dishid = parseInt(me.attr('dishtype'), 10);
 			rows.push(
 				{
 					"printtype": '0',
-					"pricetype": '0',
-					"orderprice": price,
-					"orignalprice": price,
+					"pricetype": '0',//0：普通 1：赠菜
+					"orderprice": price, //菜品价格
+					"orignalprice": price,//菜品单价
 					"dishid": me.attr('dishid'),
 					"userName": utils.storage.getter('pos_aUserid'),
 					"dishunit": me.attr('unit'),
-					"orderid": MainPage.orderInfo.orderId,
+					"orderid": consts.orderid,
 					"dishtype": dishtype,//0：单品 1：鱼锅 2：套餐
 					"orderseq": "1",
 					"dishnum": parseInt(me.find('.num').text(), 10).toFixed(1),
-					"sperequire": me.attr('note'),
-					"primarykey": "2faf5781-ea18-4b68-aefa-f5e7fc20ca14",
+					"sperequire": me.attr('note'), //忌口信息
+					"primarykey": getUuid(),
 					"dishstatus": "0",//0：已称重或者不称重 1:未称重
-					"ispot": 0,
-					"taste": null,
-					"freeuser": null,
-					"freeauthorize": null,
-					"freereason": null,
-					"dishes": null
+					"ispot": 0, //0:非锅底 1:锅底
+					"taste": null,// 点菜口味/临时菜的菜名
+					"freeuser": null, // 赠菜人/收银员工号
+					"freeauthorize": null, //赠菜授权人工号
+					"freereason": null, //赠菜原因
+					"dishes": null //套餐中的子菜品
 				}
 			)
 		});
@@ -764,35 +802,25 @@ function doOrder(type,cb){
 					"dishid": me.attr('dishid'),
 					"userName": utils.storage.getter('pos_aUserid'),
 					"dishunit": me.attr('unit'),
-					"orderid": MainPage.orderInfo.orderId,
+					"orderid": consts.orderid,
 					"dishtype": dishtype,//0：单品 1：鱼锅 2：套餐
 					"orderseq": "1",
 					"dishnum": parseInt(me.find('.num').text(), 10).toFixed(1),
 					"sperequire": me.attr('note'),
-					"primarykey": "2faf5781-ea18-4b68-aefa-f5e7fc20ca14",
+					"primarykey": getUuid(),
 					"dishstatus": "0",//0：已称重或者不称重 1:未称重
 					"ispot": 0,
 					"taste": null,
 					"freeuser": utils.storage.getter('pos_aUserid'),
-					"freeauthorize": null,
-					"freereason": null,
+					"freeauthorize": $('#user').val(),
+					"freereason": $("#givefood-reason").val(''),
 					"dishes": null
 				}
 			)
 		});
 	}
 
-	console.log({
-		"currenttableid": MainPage.orderInfo.tableNo,
-		"globalsperequire": $('#order-note').attr('note'),
-		"orderid": MainPage.orderInfo.orderId,
-		"operationType": 1,
-		"sequence": 1,
-		"rows": rows
-	});
-
-
-
+	debugger;
 
 	$.ajax({
 		url: _config.interfaceUrl.OrderDish,
@@ -800,17 +828,17 @@ function doOrder(type,cb){
 		contentType: "application/json",
 		dataType:'json',
 		data:JSON.stringify({
-			"currenttableid": MainPage.orderInfo.tableNo,
+			"currenttableid": consts.tableno,
 			"globalsperequire": $('#order-note').text(),
-			"orderid": MainPage.orderInfo.orderId,
+			"orderid": consts.orderid,
 			"operationType": 1,
 			"sequence": 1,
 			"rows": rows
 		}),
 		success: function(res){
 			if(res.code === '0') {
-				refreshOrder();
 				cb && cb();
+				goToOrder();
 			}
 			widget.modal.alert({
 				cls: 'fade in',
@@ -823,27 +851,27 @@ function doOrder(type,cb){
 		}
 	});
 }
-
-/**
- * 刷新订单
- */
-function refreshOrder(){
-	if(dishMap != null && dishMap.size()>0){
-		var keys = dishMap.keySet();
-		$.each(keys, function(i, key){
-			var dish = dishMap.get(key);
-			var totalPrice = calTotalPrice(dish.dishnum, dish.price);
-			var tr = "<tr dishid='"+dish.dishid+"' price="+dish.price+">"
-				+ "<td class='dishname' name='"+dish.dishname+"' note='"+dish.dishnote+"'>"+dish.dishname+"</td>"
-				+ "<td class='num'>"+dish.dishnum+"</td>"
-				+ "<td class='price'>"+totalPrice+"</td>"
-				+ "</tr>";
-			$("#order-dish-table tbody").append(tr);
-		});
-		page1(nowPage1);
-		trClickEvent();
-	}
-}
+//
+///**
+// * 刷新订单
+// */
+//function refreshOrder(){
+//	if(dishMap != null && dishMap.size()>0){
+//		var keys = dishMap.keySet();
+//		$.each(keys, function(i, key){
+//			var dish = dishMap.get(key);
+//			var totalPrice = calTotalPrice(dish.dishnum, dish.price);
+//			var tr = "<tr dishid='"+dish.dishid+"' price="+dish.price+">"
+//				+ "<td class='dishname' name='"+dish.dishname+"' note='"+dish.dishnote+"'>"+dish.dishname+"</td>"
+//				+ "<td class='num'>"+dish.dishnum+"</td>"
+//				+ "<td class='price'>"+totalPrice+"</td>"
+//				+ "</tr>";
+//			$("#order-dish-table tbody").append(tr);
+//		});
+//		page1(nowPage1);
+//		trClickEvent();
+//	}
+//}
 
 /**
  * 挂单
@@ -855,14 +883,22 @@ function guadan(){
  * 赠菜
  */
 function giveFood() {
+	$("#givefood-reason").val('');
 	$("#givefood-dialog").modal("show");
 }
 /**
  * 赠菜操作  调接口
  */
-function doGive(){
-	$("#givefood-dialog").modal("hide");
+function doGiveRight(){
+	$("#givefood-dialog").modal('hide');
+	$('#givefood-right').load("./check/impower.jsp",{"title" : "赠菜授权","userRightNo":"030207","cbd":"doGive()"});
+	$('#givefood-right').modal('show');
 }
+
+function doGive(){
+	doOrder(1);
+}
+
 var count = 20;
 function inputReason(){
 	var reason = $("#givefood-reason").val();
@@ -915,13 +951,31 @@ function page4(currPage) {
 		listNum : 16,
 		currPage : currPage,
 		totleNums : $("#sel-dish-table tbody tr").length,
-		curPageObj : "#adddish-modal #curr-page",
-		pagesLenObj : "#adddish-modal #pages-len",
-		prevBtnObj : "#adddish-modal .oper-div .prev-btn",
-		nextBtnObj : "#adddish-modal .oper-div .next-btn",
+		curPageObj : "#adddish #curr-page",
+		pagesLenObj : "#adddish #pages-len",
+		prevBtnObj : "#adddish .oper-div .prev-btn",
+		nextBtnObj : "#adddish .oper-div .next-btn",
 		callback : function() {
 			$("#sel-dish-table tbody tr").removeClass("selected");
 			$("#sel-dish-table tbody tr").not(".hide").eq(0).addClass("selected");
 		}
 	});
+}
+
+//关闭dialog
+function closeConfirm(dialogId) {
+	$("#" + dialogId).modal("hide");
+}
+
+
+function getUuid(){
+	var len=32;//32长度
+	var radix=16;//16进制
+	var chars='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');var uuid=[],i;radix=radix||chars.length;if(len){for(i=0;i<len;i++)uuid[i]=chars[0|Math.random()*radix];}else{var r;uuid[8]=uuid[13]=uuid[18]=uuid[23]='-';uuid[14]='4';for(i=0;i<36;i++){if(!uuid[i]){r=0|Math.random()*16;uuid[i]=chars[(i==19)?(r&0x3)|0x8:r];}}}
+	return uuid.join('');
+}
+
+function goToOrder(){
+	var url = "../views/order.jsp?orderid=" + $('input[name=orderid]').val() + '&personnum=' + $('input[name=personnum]').val() + '&tableno=' + $('input[name=tableno]').val();
+	window.location.href = encodeURI(encodeURI(url));
 }

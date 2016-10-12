@@ -10,6 +10,8 @@ var Order = {
 
 		this.bindEvent();
 
+		widget.keyboard();
+
 	},
 
 
@@ -114,7 +116,6 @@ var Order = {
 			});
 		});
 
-
 		/**
 		 * 退菜
 		 */
@@ -152,6 +153,19 @@ var Order = {
 				});
 				return false;
 			}
+
+			if($('#backDishNumIpt').val() === '' || backDishNum === 0) {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<strong>请输入正确的数量</strong>',
+					width:500,
+					height:500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+				return false;
+			}
+
 			$("#backfoodnum-dialog").modal('hide');
 			$('#backfood-right').load("./check/impower.jsp",{"title" : "退菜权限","userRightNo":"030102","cbd":"Order.backDish(0)"});
 			$('#backfood-right').modal('show');
@@ -379,7 +393,7 @@ var Order = {
 						if(isClear) {//如果是清空
 							target.parents('tbody tr').remove();
 						} else {
-							me.remove();
+							target.remove();
 						}
 					} else {
 						widget.modal.alert({
@@ -412,12 +426,25 @@ var Order = {
 			}
 		});
 
+
+		/**
+		 * 银行选择
+		 */
+
+		$('.J-bank-sel').click(function(){
+			$("#select-bank-dialog").modal("show");
+		})
+
+		$('.bank-icon img').click(function(){
+			var me = $(this);
+			me.siblings().removeClass('active').end().addClass('active');
+		})
 	},
 
 	//type:1 预结单, 3:客用单
 	printPay: function(type){
 		$.ajax({
-			url: _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/001',
+			url: _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/' + utils.storage.getter('posid'),
 			method: 'POST',
 			contentType: "application/json",
 			dataType:'json',
@@ -437,14 +464,17 @@ var Order = {
 	//开钱箱
 	openCash: function(){
 		$.ajax({
-			url: _config.interfaceUrl.OpenCash,
+			url: _config.interfaceUrl.OpenCash + '/127.0.0.1/',
 			method: 'POST',
 			contentType: "application/json",
 			dataType:'json',
 			success: function(res){
+				if(res.result[0] === '1') {//成功
+
+				}
 				widget.modal.alert({
 					cls: 'fade in',
-					content:'<strong>' + (res.msg === '' ? '打开钱箱成功' : res.msg) + '</strong>',
+					content:'<strong>' + (res.Info === undefined ? '打开钱箱成功' : res.Info) + '</strong>',
 					width:500,
 					height:500,
 					btnOkTxt: '',
@@ -488,17 +518,19 @@ var Order = {
 				}),
 				dataType:'json',
 				success: function(res){
+					debugger;
 					if(res.code === '0') {
-						$('#order').modal('hide');
+						window.location.href = './main.jsp'
+					} else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
 					}
-					widget.modal.alert({
-						cls: 'fade in',
-						content:'<strong>' + res.msg + '</strong>',
-						width:500,
-						height:500,
-						btnOkTxt: '',
-						btnCancelTxt: '确定'
-					});
 				}
 			});
 		}
@@ -506,6 +538,7 @@ var Order = {
 
 	//退菜 0:单个 1:整单
 	backDish: function(type){
+		debugger;
 		var that = this;
 		var $target = $("#order-dish-table tr.selected");
 		var tableId = $('[name=tableno]').val();
@@ -590,9 +623,8 @@ var Order = {
 
 	//点菜
 	takeOrder: function(){
-		var addDishDialog = $("#adddish-dialog")
-		addDishDialog.load("../views/orderdish.jsp");
-		addDishDialog.modal("show");
+		var url = "../views/orderdish.jsp?orderid=" + $('input[name=orderid]').val() + '&personnum=' + $('input[name=personnum]').val() + '&tableno=' + $('input[name=tableno]').val();
+		window.location.href = encodeURI(encodeURI(url));
 	},
 
 	/**
@@ -652,7 +684,7 @@ var Order = {
 				widget.loadPage({
 					obj : ".preferentials-content .preferential-info",
 					listNum : 16,
-					currPage : currPage,
+					currPage : 0,
 					totleNums : $(".preferentials-content .preferential-info").length,
 					curPageObj : "#order-modal #curr-page3",
 					pagesLenObj : "#order-modal #pages-len3",
@@ -804,10 +836,13 @@ var Order = {
 				console.log(data);
 				$.each(data, function(k,v){
 					var cls = v.dishnum > 0 ? '' : 'display:none';
-					htm += "<li style='" + cls + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
-						"<span class='dishname'>" + v.dishname + "</span>" +
-						"<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
-						"</li>";
+					if( parseInt(v.orderprice, 10) > 0 ){
+						htm += "<li style='" + cls + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
+							"<span class='dishname'>" + v.dishname + "</span>" +
+							"<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
+							"</li>";
+					}
+
 				});
 
 				$('#givedish-dialog .give-dish-list').html(htm);
@@ -834,6 +869,9 @@ var Order = {
 				btnCancelTxt: '确定'
 			});
 		});
+
+
+
 	},
 
 	/**
@@ -850,7 +888,7 @@ var Order = {
 		widget.loadPage({
 			obj : "#sel-preferential-table tbody tr",
 			listNum : 6,
-			currPage : currPage,
+			currPage : 0,
 			totleNums : $body.find('tr').length,
 			curPageObj : ".preferential-oper-btns .page-info span:first",
 			pagesLenObj : ".preferential-oper-btns .page-info span:last",
@@ -887,7 +925,7 @@ var Order = {
 		var toalDebitAmountMany = data.toalDebitAmountMany;
 		var adjAmout = data.adjAmout;
 		var payamount = data.payamount;
-		var originalOrderAmount = data.originalOrderAmount;
+		var originalOrderAmount = data.menuAmount;
 		var amount = data.amount;
 
 		//设置统计
@@ -895,6 +933,8 @@ var Order = {
 		$('#amount').text(originalOrderAmount);
 		$('#should-amount').text(payamount);
 		$('#cash input').val(payamount);
+
+		$('.pay-total').remove();
 		var totalHtml = '<ul class="pay-total"> ' +
 			'<li style="' + (parseInt(toalDebitAmount, 10) === 0 && 'display:none;')  + '">挂账:' + toalDebitAmount + '</li> ' +
 			'<li style="' + (parseInt(toalFreeAmount, 10)  === 0 && 'display:none;')  + '">优免:' + toalFreeAmount + '</li> ' +
@@ -913,6 +953,13 @@ var Order = {
 			"toalDebitAmountMany": toalDebitAmountMany,//挂账多收
 			"adjAmout": adjAmout,//优免调整
 		});
+	},
+
+	/**
+	 * 更新支付信息
+	 */
+	updatePayInfo: function(){
+
 	},
 
 	/**
@@ -985,7 +1032,7 @@ var Order = {
 					widget.loadPage({
 						obj : "#order-dish-table tbody tr",
 						listNum : 6,
-						currPage : currPage,
+						currPage : 0,
 						totleNums : $body.find('tr').length,
 						curPageObj : "#order-modal #curr-page1",
 						pagesLenObj : "#order-modal #pages-len1",
@@ -1017,6 +1064,116 @@ var Order = {
 			}
 
 		});
+	},
+
+	/**
+	 * 结账
+	 */
+	doSettlement: function(){
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<strong>桌号:[' + $('input[name=tableno]').val() + ']确认现在结算?</strong>',
+			width:500,
+			height:500,
+			btnOkTxt: '重试',
+			btnCancelTxt: '',
+			btnOkCb: function () {
+				$.ajax({
+					url: _config.interfaceUrl.PayTheBill,
+					method: 'POST',
+					contentType: "application/json",
+					dataType: 'json',
+					data: JSON.stringify({
+							"payDetail": [{
+								"payWay": "0",
+								"payAmount": 113.00,
+								"memerberCardNo": "",
+								"bankCardNo": "",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": ""
+							}, {
+								"payWay": "1",
+								"payAmount": 10.0,
+								"memerberCardNo": "5",
+								"bankCardNo": "213123123",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": ""
+							}, {
+								"payWay": "8",
+								"payAmount": 0.0,
+								"memerberCardNo": "15208158540",
+								"bankCardNo": "",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": ""
+							}, {
+								"payWay": "11",
+								"payAmount": 0.0,
+								"memerberCardNo": "15208158540",
+								"bankCardNo": "",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": ""
+							}, {
+								"payWay": "18",
+								"payAmount": 14.0,
+								"memerberCardNo": "",
+								"bankCardNo": "1111",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": ""
+							}, {
+								"payWay": "17",
+								"payAmount": 12.0,
+								"memerberCardNo": "",
+								"bankCardNo": "1113313313",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": ""
+							}, {
+								"payWay": "13",
+								"payAmount": 12.0,
+								"memerberCardNo": "",
+								"bankCardNo": "IBM-只能挂账",
+								"couponnum": "0",
+								"couponid": "",
+								"coupondetailid": "5d1afcc828ec4a8494aca7e3c315cffc"
+							}, {
+								"payWay": "6",
+								"payAmount": 9.00,
+								"memerberCardNo": "",
+								"bankCardNo": "手工减免",
+								"couponnum": "1",
+								"couponid": "791eeac502aa4878b9b68b7f7aafd509",
+								"coupondetailid": "791eeac502aa4878b9b68b7f7aafd509"
+							}, {
+								"payWay": "6",
+								"payAmount": 32.00,
+								"memerberCardNo": "",
+								"bankCardNo": "手工赠菜",
+								"couponnum": "1",
+								"couponid": "a2a4e39d8ba84e29aab6526d9783e953",
+								"coupondetailid": "a2a4e39d8ba84e29aab6526d9783e953"
+							}, {
+								"payWay": "6",
+								"payAmount": 32.00,
+								"memerberCardNo": "",
+								"bankCardNo": "手工赠菜",
+								"couponnum": "1",
+								"couponid": "a2a4e39d8ba84e29aab6526d9783e953",
+								"coupondetailid": "a2a4e39d8ba84e29aab6526d9783e953"
+							}], "userName": "003", "orderNo": "H20161011561706011857"
+						}
+					),
+					success: function (res) {
+
+
+					}
+				});
+			}
+		})
 	}
 };
 
@@ -1106,30 +1263,9 @@ $(document).ready(function(){
 
 	//清空购物车优惠
 });
-/**
- * 选择银行
- */
-function selectBank(){
-	$("#select-bank-dialog").modal("show");
-	$(".bank-icon img").unbind("click").on("click", function(){
-		$(".bank-icon img").removeClass("active");
-		$(this).addClass("active");
-	});
-}
-/**
- * 重印客用单
- */
-function reprint(){
-	$("#tips-dialog #tips-msg").text("客用单打印完成！");
-	$("#tips-dialog").modal("show");
-}
-/**
- * 取消订单
- */
-function cancelOrder(){
-	$("#tips-dialog #tips-msg").text("只能取消空账单！");
-	$("#tips-dialog").modal("show");
-}
+
+
+
 ///**
 // * 退菜
 // * @param type： 0：单个退菜；1:整单退菜

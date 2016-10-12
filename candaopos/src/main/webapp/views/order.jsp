@@ -27,7 +27,7 @@
 <%
 	String orderid = request.getParameter("orderid");
 	String personnum = request.getParameter("personnum");
-	String tableno = request.getParameter("tableno");
+	String tableno =  java.net.URLDecoder.decode(request.getParameter("tableno") , "UTF-8");
 %>
 <input type="hidden" value="<%=orderid%>" name="orderid">
 <input type="hidden" value="<%=personnum%>" name="personnum">
@@ -36,7 +36,7 @@
 		data-backdrop="static" >
 		<header>
 			<div class="fl">餐道</div>
-			<div class="fr close-win" onclick="goBack();">关闭</div>
+			<div class="fr close-win" onclick="window.location.href = './main.jsp'">关闭</div>
 		</header>
 		<div class="content">
 			<input type="hidden" id="isopened" value="">
@@ -191,7 +191,7 @@
 					<div class="paytype-input bank-card hide" id="bank-card">
 						<div class="form-group" style="display: inline-flex;">
 							<input type="text" class="form-control bank-type" placeholder="银行类型" disabled="disabled">
-							<button class="btn selbank-btn" onclick="selectBank()">选择银行</button>
+							<button class="btn selbank-btn J-bank-sel">选择银行</button>
 						</div>
 						<div class="form-group">
 							<span>银行卡号:</span>
@@ -289,7 +289,7 @@
 							<li>S</li><li>T</li><li>U</li><li>V</li><li>W</li><li>X</li>
 						</ul>
 						<ul>
-							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn">确定</li>
+							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
 						</ul>
 					</div>
 				</div>
@@ -520,7 +520,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title">餐道</div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('select-bank-dialog')">
+	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
 	            </div>
 	            <div class="modal-body">
 	            	<div style="font-size: 20px;font-weight: bold;">请选择银行</div>
@@ -548,7 +548,7 @@
 	        </div>
 	    </div>
 	</div>
-	<script src="../scripts/page.js"></script>
+	<script type="text/javascript" src="../lib/md5.js"></script>
 	<script src="../scripts/order.js"></script>
 </body>
 </html>

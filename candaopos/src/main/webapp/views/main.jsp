@@ -18,7 +18,6 @@
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../scripts/common.js"></script>
-<script src="../scripts/page.js"></script>
 <script src="../scripts/main.js"></script>
 	<script src="../lib/md5.js"></script>
 <script type="text/javascript">
@@ -231,11 +230,11 @@
 			<div class="page" id="J-table-pager"></div>
 		</div>
 		<div class="form-group amount-div">
-			<span class="highlight-color">总金额：</span><span class="highlight-color">1360.999</span>
-			<span>&nbsp;&nbsp;已结金额：</span><span>1360.999</span>
-			<span>&nbsp;&nbsp;未结金额：</span><span>0</span>
-			<span>&nbsp;&nbsp;人数：</span><span>100</span>
-			<span>&nbsp;&nbsp;已结单数：</span><span>100</span>
+			<span class="highlight-color">总金额：</span><span class="highlight-color totalAmount">0</span>
+			<span>&nbsp;&nbsp;未结金额：</span><span class="dueamount">0</span>
+			<span>&nbsp;&nbsp;已结单数：</span><span class="orderCount">0</span>
+			<span>&nbsp;&nbsp;已结金额：</span><span class="ssamount">0</span>
+			<span>&nbsp;&nbsp;累计就餐人数：</span><span class="custnum">0</span>
 		</div>
 		<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 	</footer>
