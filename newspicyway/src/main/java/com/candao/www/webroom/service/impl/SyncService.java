@@ -1,11 +1,14 @@
 package com.candao.www.webroom.service.impl;
 
-import com.candao.common.utils.HttpUtils;
-import com.candao.common.utils.JacksonJsonMapper;
-import com.candao.common.utils.PropertiesUtils;
-import com.candao.www.data.dao.TtemplateDishUnitlDao;
-import com.candao.www.data.model.TtemplateDishUnit;
-import com.candao.www.spring.SpringContext;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +22,14 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.candao.common.utils.HttpUtils;
+import com.candao.common.utils.JacksonJsonMapper;
+import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.data.dao.TdishDao;
+import com.candao.www.data.dao.TtemplateDishUnitlDao;
+import com.candao.www.data.model.Tdish;
+import com.candao.www.data.model.TtemplateDishUnit;
+import com.candao.www.spring.SpringContext;
 
 /**
  * 门店与总店数据同步功能
@@ -40,7 +43,8 @@ public class SyncService {
     private SqlSessionFactory sessionFactory;
 
     public static final Logger logger = LoggerFactory.getLogger(SyncService.class);
-
+    @Autowired
+   	private TdishDao tdishDao;
     @Autowired
     private TtemplateDishUnitlDao ttemplateDishUnitlDao;
 
@@ -109,6 +113,7 @@ public class SyncService {
     }
 
 
+
     /**
      * 保存数据
      *
@@ -128,17 +133,36 @@ public class SyncService {
             stmt = connection.createStatement();
 
 
-            // 循环处理多张表
-            for (Map.Entry<String, List<Map<String, Object>>> entry : tables.entrySet()) {
-                if ("t_dictionary".equalsIgnoreCase(entry.getKey()))
-                    stmt.addBatch("DELETE FROM t_dictionary WHERE `type` IN ('SPECIAL','DISHSTATUS')");
-                else
-                    stmt.addBatch("DELETE FROM " + entry.getKey());
-
-                String dml = createSql(entry.getKey(), entry.getValue(), connection);
-                if (StringUtils.hasText(dml))
-                    stmt.addBatch(dml);
-            }
+			// 循环处理多张表
+			for (Map.Entry<String, List<Map<String, Object>>> entry : tables.entrySet()) {
+				//字典表不需要从总店同步
+				if(!"t_dictionary".equalsIgnoreCase(entry.getKey())){
+					if ("t_template_dishunit".equalsIgnoreCase(entry.getKey())) {
+						//套餐表不去除餐具信息
+						stmt.addBatch("DELETE FROM t_template_dishunit WHERE id NOT IN('DISHES_98')");
+					} else if ("t_dish".equalsIgnoreCase(entry.getKey())) {
+						//不去除餐具信息
+						stmt.addBatch("DELETE FROM t_dish WHERE dishid NOT IN('DISHES_98')");
+					} 
+					else {
+						stmt.addBatch("DELETE FROM " + entry.getKey());
+					}
+					String dml = createSql(entry.getKey(), entry.getValue(), connection);
+					if (StringUtils.hasText(dml)){
+						stmt.addBatch(dml);
+					}
+					//菜品的人气是门店本地数据，需要备份及恢复
+					if("t_dish".equalsIgnoreCase(entry.getKey())){
+						List<Tdish> findAllDish = tdishDao.findAllDish();
+						for (Tdish tdish : findAllDish) {
+							if(tdish.getOrderNum() != null){
+								String sql = "update t_dish set orderNum = " + Integer.parseInt(tdish.getOrderNum()) + " where dishid = '" + tdish.getDishid() + "';";
+								stmt.addBatch(sql);
+							}
+						}
+					}
+				}
+			}
             // 持久化
             stmt.executeBatch();
             transactionManager.commit(status);
@@ -179,13 +203,13 @@ public class SyncService {
     		return null;
     	}
 
-        StringBuffer sbf = new StringBuffer("insert into " + tableName + "(");
+        StringBuffer sbf = new StringBuffer("insert ignore  into " + tableName + "(");
 
         try (ResultSet rs = connection.getMetaData().getColumns(null, null, tableName, "%")) {
             List<String> columns = new ArrayList<>();
             while (rs.next()) {
                 columns.add(rs.getString("COLUMN_NAME"));
-            }
+            } 
 
             Assert.notEmpty(columns);
 
@@ -203,7 +227,9 @@ public class SyncService {
                     } else if (value instanceof Number) {
                         sbf.append(value).append(",");
                     } else {
-                        sbf.append("'").append(value).append("',");
+                        // 增加单引号转义
+                        String vstr = value.toString().replaceAll("'", "\\\\'");
+                        sbf.append("'").append(vstr).append("',");
                     }
                 }
                 sbf.delete(sbf.length() - 1, sbf.length()).append("),");
@@ -217,5 +243,5 @@ public class SyncService {
 
         return sbf.toString();
     }
-
+    
 }
