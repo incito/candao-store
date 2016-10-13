@@ -307,13 +307,19 @@ function clickFormAddPrintConfig(){
 			selectedPrinters.push(a);
 		});
 	}
-	
 	var options = {
 			deviceid: $("#deviceid").val(),
 			devicecode: $("#posid").val(),
 			devicename: $("#posname").val(),
 			printers: selectedPrinters
 	};
+	//added by caicai
+	if (selectedPrinters != null && selectedPrinters.length>0){
+		$.each(selectedPrinters,function (i,obj) {
+			obj.devicecode = $("#posid").val();
+			obj.devicename = $("#posname").val();
+		});
+	}
 	if(validateCode()){
 		$.ajax({
 			type : "post",
