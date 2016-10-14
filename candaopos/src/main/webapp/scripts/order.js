@@ -4,7 +4,17 @@ var consts = {
 	orderid: $('input[name=orderid]').val(),
 	tableno: $('input[name=tableno]').val(),
 	personnum: $('input[name=personnum]').val(),
-	moneyWipeAmount: 0//抹零
+	moneyWipeAmount: 0, //抹零
+	vipType: utils.storage.getter('vipType')
+};
+
+var dom = {
+	order : $("#order"),
+	openDialog : $("#open-dialog"),//开台权限验证弹窗
+	addDishDialog : $("#adddish-dialog"),//点菜弹窗
+	giveDishDialog : $("#givedish-dialog"),//赠菜弹窗
+	membershipCard : $('#membership-card'),//赠菜弹窗,
+	selCompanyDialog: $('#selCompany-dialog')
 };
 
 var Order = {
@@ -23,19 +33,19 @@ var Order = {
 
 		widget.keyboard();
 
+		//搜索键盘初始化
+		widget.keyboard({
+			target: '.search-btns',
+			chirdSelector: 'div'
+		});
+
 	},
 
 
 	bindEvent: function () {
 
 		var that = this;
-		var dom = {
-			order : $("#order"),
-			openDialog : $("#open-dialog"),//开台权限验证弹窗
-			addDishDialog : $("#adddish-dialog"),//点菜弹窗
-			giveDishDialog : $("#givedish-dialog"),//赠菜弹窗
-			membershipCard : $('#membership-card'),//赠菜弹窗
-		};
+
 
 		/**
 		 * 开启服务员权限验证
@@ -458,11 +468,6 @@ var Order = {
 			$('#select-bank-dialog').modal('hide');
 		});
 
-		//挂账单位
-		$('.J-selCompany').click(function(){
-			$("#select-paycompany-dialog ").modal("show");
-		});
-
 		$('.bank-icon').delegate('img','click', function(){
 			var me = $(this);
 			me.siblings().removeClass('active').end().addClass('active');
@@ -473,6 +478,113 @@ var Order = {
 			$('input[name=banktype]').val(target.prop('alt'));
 			$('#select-bank-dialog').modal('hide');
 		});
+
+		/**
+		 * 合作单位 挂账
+		 */
+
+		dom.selCompanyDialog.find('[type=search]').bind('input propertychange focus', function(){
+			that.renderPayCompany($.trim($(this).val()));
+		});
+
+		dom.selCompanyDialog.find('.btn-clear').click(function(){
+			dom.selCompanyDialog.find('[type=search]').val('');
+			that.renderPayCompany();
+
+		});
+
+		$('.J-selCompany').click(function(){
+			dom.selCompanyDialog.modal('show');
+		});
+
+		dom.selCompanyDialog.delegate('li','click', function(){
+			var me = $(this);
+			me.addClass('selected').siblings().removeClass('selected');
+		});
+
+		dom.selCompanyDialog.find('.btn-save').click(function(){
+			var $target = dom.selCompanyDialog.find('li.selected');
+
+			if($target.length === 0) {
+				widget.modal.alert({
+					content:'<strong>请选择挂账单位</strong>',
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+				return;
+			}
+			$('.payment-unit').val($target.text());
+			$('.debitAmount').attr({
+				'preferential': $target.attr('preferential'),
+				'cname': $target.text()
+			});
+
+			dom.selCompanyDialog.modal('hide');
+		});
+
+
+		/**
+		 * 支付方式金额修改
+		 */
+
+		$('.pay-div .J-pay-val').bind('input propertychange focus', function(){
+			var me = $(this);
+			var type = me.attr('iptType');
+			var $paytotal = $('.pay-total');
+			var shouldAmount = parseFloat($("#should-amount").text());
+			var iptVal = parseFloat(me.val()).toFixed(2);
+			var giveChange = parseFloat(iptVal - shouldAmount).toFixed(2);
+			var isGiveChange= giveChange > 0 ? true : false;
+			var totalOtherPay = (function(){
+				var total = 0;
+				$('.pay-div .J-pay-val').each(function(){
+					var $me = $(this);
+					if($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'cash' ){
+						total += parseFloat($me.val());
+					}
+				});
+				return total;
+			})();
+
+			if (!this.value.match(/^[\+\-]?\d*?\.?\d*?$/)) this.value = this.t_value; else this.t_value = this.value;
+
+			var target = $paytotal.find('.' + me.attr('iptType'));
+			if(iptVal > 0) {
+				target.find('span').text(iptVal);
+				target.removeClass('hide');
+			} else {
+				target.find('span').text('');
+				target.addClass('hide');
+			}
+
+			if(type === 'cash') {
+				if(iptVal > 0) {
+					$paytotal.find('.payamount').find('span').text(iptVal);
+					$paytotal.find('.payamount').removeClass('hide');
+					if(isGiveChange) {
+						$paytotal.find('.giveChange span').text(giveChange);
+						$paytotal.find('.giveChange').removeClass('hide');
+					} else {
+						$paytotal.find('.giveChange span').text('0.00');
+						$paytotal.find('.giveChange').addClass('hide');
+					}
+				} else {
+					$paytotal.find('.payamount').find('span').text('0.00');
+					$paytotal.find('.payamount ,.giveChange').addClass('hide');
+				}
+			} else {
+				if(totalOtherPay >= shouldAmount) {//其他支付大于应收
+					$('#cash .J-pay-val').val('0');
+					$paytotal.find('.payamount,.giveChange').find('span').text('0.00');
+					$paytotal.find('.payamount ,.giveChange').addClass('hide');
+				} else {
+					$('#cash .J-pay-val').val(shouldAmount - totalOtherPay);
+					$paytotal.find('.payamount').find('span').text(shouldAmount - totalOtherPay);
+					$paytotal.find('.payamount').removeClass('hide');
+				}
+			}
+		});
+
 		/**
 		 * 会员操作
 		 */
@@ -485,44 +597,173 @@ var Order = {
 			}
 		});
 
+		//登录或登出
 		dom.membershipCard.find('.login-btn').click(function () {
-			$.ajax({
-				//url: utils.storage.getter('memberAddress') + '/datasnap/rest/TServerMethods1/QueryBalance/15208158540/',//雅座
-				//url: utils.storage.getter('memberAddress') + _config.interfaceUrl.QueryCanDao + '.json',//餐道
-				url: utils.storage.getter('memberAddress') + _config.interfaceUrl.MemberLogin,//餐道
-				method: 'POST',
-				contentType: "application/json; charset=utf-8",
-				dataType: 'json',
-				//data: JSON.stringify({
-				//	"cardno": "15208158540",
-				//	"password": "",
-				//	"branch_id": utils.storage.getter('branch_id'),
-				//	"securityCode": ""
-				//}),
-				data: JSON.stringify({
-					"moblie": "15208158540",
-					"orderid": consts.orderid,
-				})
-			}).then(function (res) {
-				console.log(res);
-			})
+			var me = $(this);
+			var isLoginBtn = !me.hasClass('btn-login-out');
+			var cardNumber = dom.membershipCard.find('.card-number').val();
+
+			if(isLoginBtn) {//登录
+				if(consts.vipType === '1') {//餐道会员
+					$.when(
+						$.ajax({
+							url: utils.storage.getter('memberAddress') + _config.interfaceUrl.QueryCanDao,
+							method: 'POST',
+							contentType: "application/json; charset=utf-8",
+							dataType: 'json',
+							data: JSON.stringify({
+								"branch_id": utils.storage.getter('branch_id'),
+								"cardno": cardNumber,
+								"password": '',
+								"securityCode": ''
+							})
+						}),
+						$.ajax({
+							url: _config.interfaceUrl.MemberLogin,
+							method: 'POST',
+							contentType: "application/json; charset=utf-8",
+							dataType: 'json',
+							data: JSON.stringify({
+								"moblie": cardNumber,
+								"orderid": consts.orderid,
+							})
+						})
+						)
+						.then(function(res1, res2){
+							//查询
+							var res1 = res1[0];
+							if(res1.Retcode === '0') {
+								$('#StoreCardBalance').text(res1.StoreCardBalance + '(' + res1.CardLevel + ')');
+								$('#IntegralOverall').text(res1.IntegralOverall);
+								me.text('退出');
+								me.addClass('btn-login-out');
+
+								rightBottomPop.alert({
+									title:"提示信息",
+									content:res1.RetInfo,
+									width: 320,
+									height: 200,
+									right:5
+								});
+							} else {
+								widget.modal.alert({
+									cls: 'fade in',
+									content:'<strong>' + res1.RetInfo + '</strong>',
+									width:500,
+									height:500,
+									btnOkTxt: '',
+									btnCancelTxt: '确定'
+								});
+							}
+
+							//登录
+							var res2 = res1[0];
+							if(res2.code === '0') {
+								rightBottomPop.alert({
+									title:"提示信息",
+									content:res2.msg,
+									width: 320,
+									height: 200,
+									right:5
+								});
+							} else {
+								widget.modal.alert({
+									cls: 'fade in',
+									content:'<strong>' + res2.msg + '</strong>',
+									width:500,
+									height:500,
+									btnOkTxt: '',
+									btnCancelTxt: '确定'
+								});
+							}
+						});
+				} else {//雅座
+					//url =utils.storage.getter('memberAddress') + '/datasnap/rest/TServerMethods1/QueryBalance/' + cardNumber +'/';
+					//$.ajax({
+					//	url: url,
+					//	method: 'POST',
+					//	contentType: "application/json; charset=utf-8",
+					//	dataType: 'json',
+					//}).then(function (res) {
+					//	console.log(res);
+					//})
+				}
+			} else {//登出
+				if(consts.vipType === '1') {//餐道会员
+					$.ajax({
+						url: _config.interfaceUrl.MemberLogout,
+						method: 'POST',
+						contentType: "application/json; charset=utf-8",
+						dataType: 'json',
+						data: JSON.stringify({
+							"moblie": cardNumber,
+							"orderid": consts.orderid,
+						})
+					}).then(function(res){
+						if(res.code === '0') {
+							rightBottomPop.alert({
+								title:"提示信息",
+								content:res.msg,
+								width: 320,
+								height: 200,
+								right:5
+							});
+							$('#StoreCardBalance').text('');
+							$('#IntegralOverall').text('');
+							me.text('登录');
+							me.removeClass('btn-login-out');
+						} else {
+							widget.modal.alert({
+								cls: 'fade in',
+								content:'<strong>' + res.msg + '</strong>',
+								width:500,
+								height:500,
+								btnOkTxt: '',
+								btnCancelTxt: '确定'
+							});
+						}
+					})
+				}
+			}
+
+
 		});
 	},
 
 	//挂账单位
-	renderPayCompany: function(){
+	renderPayCompany: function(key){
 		var payCompany = utils.storage.getter('payCompany');
-		var htm = '';
-
+		var ret = [];
+		var searchKey = !key ? $.trim(dom.selCompanyDialog.find('[type=search]').val()) : key;
 		if(payCompany !== null) {
-			$.each(JSON.parse(payCompany), function(){
-				var me = $(this)[0];
-				htm += '<img alt="'+ me.itemDesc + '" itemDesc="'+ me.itemDesc + '"  src="../images/bank/' + me.itemid +'.png">'
-			})
+			$.each(JSON.parse(payCompany), function(k, v){
+				//debugger;
+				if(v.name_first_letter.indexOf(searchKey.toUpperCase()) !== -1) {
+					ret.push('<li py="' + v.name_first_letter + '" preferential="' + v.preferential + '">' + v.name  + '</li>');
+				}
+			});
 
-			//$('.bank-icon').html(htm);
+			if(ret.length < 11) {
+				$('#J-company-pager').html('');
+				$('.campany-icon').html(ret.join(''));
+			} else {
+				$('#J-company-pager').pagination({
+					dataSource: ret,
+					pageSize: 10,
+					showPageNumbers: false,
+					showNavigator: true,
+					callback: function(data) {
+						$('.campany-icon').html(data.join(''));
+					}
+				});
+			}
+
+
+
+
 		}
 	},
+
 
 	//银行列表
 	renderBankList: function(){
@@ -584,7 +825,7 @@ var Order = {
 	//抹零不处理
 	consumInfo: function(){
 		var that = this;
-		var $moneyWipeAmount =  $('.pay-total .moneyWipeAmount');
+		var $moneyWipeAmount =  $('.pay-total .moneyWipeAmount span');
 		var moneyWipeAmount =  $moneyWipeAmount.text();
 		var $target = $('.paytype-input input[type=text]');
 		if($moneyWipeAmount.length === 0 || moneyWipeAmount === '0') return false;
@@ -902,7 +1143,9 @@ var Order = {
 				method: 'POST',
 				contentType: "application/json",
 				data: JSON.stringify({
-					orderid: consts.orderid
+					orderid: consts.orderid,
+					itemid: 1,
+					tableNo: consts.tableno
 				}),
 				dataType:'json'
 			}),
@@ -1024,7 +1267,7 @@ var Order = {
 		var payamount = data.payamount;
 		var originalOrderAmount = data.menuAmount;
 		var amount = data.amount;
-
+		var totalHtml = '<ul class="pay-total"> ';
 
 		consts.moneyWipeAmount =  moneyWipeAmount;
 
@@ -1035,14 +1278,24 @@ var Order = {
 		$('#cash input').val(payamount);
 
 		$('.pay-total').remove();
-		var totalHtml = '<ul class="pay-total"> ' +
-			'<li style="' + (parseInt(toalDebitAmount, 10) === 0 && 'display:none;')  + '">挂账:' + toalDebitAmount + '</li> ' +
-			'<li style="' + (parseInt(toalFreeAmount, 10)  === 0 && 'display:none;')  + '">优免:' + toalFreeAmount + '</li> ' +
-			'<li  style="' + (parseFloat(moneyWipeAmount) === 0 && 'display:none;')  + '">抹零:<span class="moneyWipeAmount">' + moneyWipeAmount + '</span></li> ' +
-			'<li style="' + (parseInt(adjAmout, 10)  === 0 && 'display:none;')  + '">优免调整:' + adjAmout + '</li> ' +
-			'<li style="' + (parseInt(toalDebitAmountMany, 10)  === 0 && 'display:none;')  + '">挂账多收:' + toalDebitAmountMany + '</span></li> ' +
-			'<li style="' + (parseInt(payamount, 10)  === 0 && 'display:none;')  + '">现金:' + payamount + '</li> ' +
-			'</ul>';
+
+		totalHtml += '<li class="' + (parseInt(toalDebitAmount, 10) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账:<span>' + toalDebitAmount + '</span></li> ';
+		totalHtml += '<li class="' + (parseInt(toalFreeAmount, 10) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免:<span>' + toalFreeAmount + '</span></li> ';
+		totalHtml += '<li class="' + (parseInt(moneyWipeAmount, 10) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零:<span>' + moneyWipeAmount + '</span></li> ';
+		totalHtml += '<li class="' + (parseInt(adjAmout, 10) !== 0 ? '' : 'hide') + ' adjAmout">优免调整:<span>' + adjAmout + '</span></li> ';
+		totalHtml += '<li class="' + (parseInt(toalDebitAmountMany, 10) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收:<span>' + toalDebitAmountMany + '</span></li> ';
+		totalHtml += '<li class="' + (parseInt(payamount, 10) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金:<span>' + payamount + '</span></li> ';
+
+		totalHtml += '<li class="hide giveChange">找零:<span></span></li> ';
+		totalHtml += '<li class="hide bank" payway="1">银行卡:<span></span></li> ';
+		totalHtml += '<li class="hide member-cash" payway="8">会员消费:<span></span></li> ';
+		totalHtml += '<li class="hide member-jf" payway="8">会员积分:<span></span></li> ';
+		totalHtml += '<li class="hide debitAmount" payway="5">挂账支付:<span></span></li> ';
+		totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
+		totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
+
+		totalHtml += '</ul>';
+
 		$('.pay-div').after(totalHtml);
 
 		//设置优惠回传值
@@ -1053,6 +1306,14 @@ var Order = {
 			"toalDebitAmountMany": toalDebitAmountMany,//挂账多收
 			"adjAmout": adjAmout,//优免调整
 		});
+	},
+
+	/**
+	 * 更新支付方式信息
+	 * @param data
+     */
+	updatePayTypeInfo: function(data){
+
 	},
 
 

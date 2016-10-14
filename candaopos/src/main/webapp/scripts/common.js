@@ -125,7 +125,7 @@ _config.interfaceUrl = {
 	PrintBusinessDetail: "/newspicyway/print4POS/printBusinessDetail.json", <!--打印营业报表明细-->
 	PrintInvoice: "/newspicyway/print4POS/printInvoice.json", <!--打印发票单-->
 	<!--云接口-->
-	QueryCanDao: "/member/memberManager/findByParams", <!--餐道会员查询-->
+	QueryCanDao: "/member/memberManager/findByParams.json", <!--餐道会员查询-->
 	StorageCanDao: "/member/deal/StoreCardToNewPos.json", <!--餐道会员储值-->
 	ModifyPwdCanDao: "/member/memberManager/MemberEdit.json", <!--修改密码-->
 	SendVerifyCode: "/member/memberManager/sendAccountByMobile", <!--发送验证码-->

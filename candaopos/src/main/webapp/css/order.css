@@ -358,3 +358,87 @@ header,footer {
 	padding-right: 5px;
 }
 
+
+.search{
+	position: relative;
+}
+input[type=search] {
+	width: 83%;
+	background: #FFFFFF;
+	border: 1px solid #DBDBDB;
+	border-radius: 3px;
+	padding-left: 40px;
+	height: 43px;
+	float: left;
+}
+.search .glyphicon-search{
+	position: absolute;
+	padding: 13px;
+	color: #515356;
+}
+.search .btn-clear{
+	height: 42px;
+	width: 90px;
+	float: right;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	border-radius: 3px;
+	color: #1F1F1F;
+	text-align: center;
+	padding: 10px;
+}
+.search-btns div.search-btn{
+	width: 42px;
+	height: 42px;
+	float: left;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	border-radius: 2px;
+	margin-left: 3px;
+	margin-bottom: 3px;
+	font-size: 14px;
+	color: #1F1F1F;
+	text-align: center;
+	padding: 10px;
+}
+.search-btns div.search-btn:hover, .search .btn-clear:hover{
+	background: #F68D70;
+	opacity: 0.5;
+	color: #ffffff;
+}
+.search-btns div.search-btn:active, .search .btn-clear:active{
+	background: #FF5803;
+	opacity: 1;
+	color: #ffffff;
+}
+.campany-icon {
+	overflow: hidden;
+	min-height: 150px;
+}
+.campany-icon li {
+	list-style: none;
+	display: inline-block;
+	margin-right:5px;
+	padding:0px 10px;
+	background: #FFFFFF;
+	border-radius: 2px;
+	cursor: pointer;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	width: 120px;
+	overflow: hidden;
+	height: 30px;
+	line-height: 30px;
+	text-overflow:ellipsis;white-space:nowrap;overflow:hidden;
+	text-align: center;
+}
+
+.campany-icon li.selected {
+	background: #FF5803;
+	box-shadow: 0px 1px 0px 0px #C64300;
+	border-radius: 3px;
+	color: #FFFFFF;
+}
+
+.campany-icon li + li {
+	margin:0;
+}
