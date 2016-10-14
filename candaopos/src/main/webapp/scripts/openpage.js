@@ -5,7 +5,6 @@ var OpenPage = {
         this.saveConfigInfo();
 
 		this.bindEvent();
-
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
 		var posid=utils.getUrl.get("posid")//设置posid参数到缓存
 		if(ipaddress!=null ||posid!=null){
@@ -159,16 +158,6 @@ var OpenPage = {
                     });*/
                 }
             },
-            /*error: function(){
-                widget.modal.alert({
-                    cls: 'fade in',
-                    content:'<strong>获取当日结业信息失败</strong>',
-                    width:500,
-                    height:500,
-                    btnOkTxt: '',
-                    btnCancelTxt: '确定'
-                });
-            }*/
         })
     },
     /*结业清机*/
@@ -299,8 +288,6 @@ var OpenPage = {
             dataType: "text",
             success: function (data) {
                 findUncleanPosList=JSON.parse(data)
-                /*console.log(findUncleanPosList.detail)
-                 console.log(findUncleanPosList.result)*/
                 if(findUncleanPosList.result==='0'){
                     LocalArry=[];//本机数组集合
                     OtherArry=[];//其他pos登录集合
@@ -325,19 +312,19 @@ var OpenPage = {
     /*保存配置信息*/
     saveConfigInfo:function () {
         //获取会员配置地址
+
         $.ajax({
             url: _config.interfaceUrl.GetMemberAddress,
             type:"get",
             dataType:'text',
-            success: function(res1){
-                var res1=JSON.parse(res1);
-                utils.storage.setter('vipType',res1.data.viptype)//会员地址状态
-                if(res1.data.viptype==='1'){//viptype 1为餐道会员 2为雅坐会员
-                    utils.storage.setter('memberAddress',res1.data.vipcandaourl)
+            success: function(res){
+                var res=JSON.parse(res);
+                var member={
+                    'vipcandaourl':res.data.vipcandaourl,//餐道
+                    'vipotherurl':res.data.vipotherurl//雅座
                 }
-                if(res1.data.viptype==='2'){
-                    utils.storage.setter('memberAddress',res1.data.vipotherurl)
-                }
+                utils.storage.setter('vipType',res.data.viptype)//会员地址状态 viptype 1为餐道会员 2为雅坐会员
+                utils.storage.setter('memberAddress',JSON.stringify(member))//设置会员地址
             }
         });
 

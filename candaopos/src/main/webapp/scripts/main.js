@@ -282,8 +282,9 @@ var MainPage = {
 			}
 
 			if(me.hasClass('J-btn-register')) {
-				$("#register-dialog").load("../views/member/register.jsp");
-				$("#register-dialog").modal("show");
+				window.location.href = '../views/member/register.jsp';
+				/*$("#register-dialog").load("../views/member/register.jsp");
+				$("#register-dialog").modal("show");*/
 			}
 
 			if(me.hasClass('J-btn-storge')) {
