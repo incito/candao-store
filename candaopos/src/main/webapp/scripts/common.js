@@ -136,6 +136,7 @@ _config.interfaceUrl = {
 	SaleCanDao: "/member/deal/MemberSale.json", <!--餐道会员会员消费-->
 	VoidSaleCanDao: "/member/deal/VoidSale.json", <!--餐道会员取消消费-->
 
+	CancelLossCanDao: "/member/deal/UnCardLose", <!--餐道会员会员挂失-->
 	VipChangeCardNum: "/member/rest/memberCardService/cardNoByModify", <!--修改会员卡号-->
 	VipChangeInfo: "/member/rest/memberService/memberEditService", <!--修改会员基本信息-->
 	VipQuery: "/member/rest/memberCardService/getCardNoByMobile", <!--会员查询(一户多卡)-->
@@ -996,8 +997,8 @@ utils.printAbnormal={
 
 }
 var setTentimes=utils.storage.getter('setTentimes')
-if(setTentimes==null){
-	setTentimes=10*60*1000
+if(setTentimes==null||setTentimes==0){
+	setTentimes=60*1000
 }
 setInterval(function () {
 	if(setTentimes>0){
@@ -1006,12 +1007,13 @@ setInterval(function () {
 		//console.log(utils.storage.getter('setTentimes'))
 	}
 	if(setTentimes==0 && $("#printAbnormal").length<1){
-		var hrefLink=document.location.href;
-		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+		    setTentimes=60*1000
+			var hrefLink=document.location.href;
+			if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
 
-		}else {
-			utils.printAbnormal.int();
-		}
+			}else {
+				utils.printAbnormal.int();
+			}
 	}
 },1000);
 

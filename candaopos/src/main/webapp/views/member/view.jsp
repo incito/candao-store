@@ -20,6 +20,8 @@
 	<script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 	<script src="../../scripts/common.js"></script>
 	<link rel="stylesheet" href="../../css/member.css">
+	<script type="text/javascript" src="../../lib/jedate/jedate.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
 </head>
 <body>
 
@@ -33,7 +35,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="form-group form-group-base search-box mt20" >
-					<input value="" name="name" id="cardno"  type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
+					<input value="" name="name" id="Member_cardno"  type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
 					<button class="btn-base btn-yellow btn-base-sm btn-search">搜索</button>
 				</div>
 			</div>
@@ -60,7 +62,8 @@
 			<li class="J-modify-pwd">修改消费密码</li>
 			<li>修改卡号</li>
 			<li class="J-modify-phone">修改手机号</li>
-			<li>会员挂失</li>
+			<li class="J-modify-lost" >会员挂失</li>
+			<li class="J-modify-cancellost" style="display: none">解除挂失</li>
 			<li class="J-cancellation">会员注销</li>
 		</ul>
 
@@ -97,29 +100,9 @@
 		widget.keyboard({
 			target: '.virtual-keyboard-base'
 		});
-		$('.member-op-list li').on('click', function(){
-			var me = $(this);
-			if(me.hasClass('J-modify-base')) {
-				$("#modify-base-dialog").load("../member/modifyBase.jsp");
-				$("#modify-base-dialog").modal("show");
-			}
 
-			if(me.hasClass('J-modify-phone')) {
-				$("#modify-phone-dialog").load("../member/modifyPhone.jsp");
-				$("#modify-phone-dialog").modal("show");
-			}
-
-			if(me.hasClass('J-modify-pwd')) {
-				$("#modify-pwd-dialog").load("../member/modifyPwd.jsp");
-				$("#modify-pwd-dialog").modal("show");
-			}
-
-			if(me.hasClass('J-cancellation')) {
-				$("#modify-cancellation-dialog").load("../member/cancellation.jsp");
-				$("#modify-cancellation-dialog").modal("show");
-			}
-		});
 	})
+
 </script>
 </body>
 </html>

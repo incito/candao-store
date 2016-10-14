@@ -93,7 +93,7 @@ var OpenPage = {
                 if(res['result'] === '0') {//昨天已经结业返回成功
                     if(res['detail']){//昨天已经结业
                         $("#openTo").show();
-                        utils.storage.setter('isYesterdayEndWork','1');//设置昨天是否结业状态0为已结业，1为未结业；
+                        utils.storage.setter('isYesterdayEndWork','0');//设置昨天是否结业状态0为已结业，1为未结业；
                         that.isOpen();
                     }
                     else {//昨天没有结业
@@ -327,13 +327,12 @@ var OpenPage = {
             dataType:'text',
             success: function(res){
                 var res=JSON.parse(res);
-                utils.storage.setter('vipType',res.data.viptype)//会员地址状态
-                if(res.data.viptype==='1'){//viptype 1为餐道会员 2为雅坐会员
-                    utils.storage.setter('memberAddress',res.data.vipcandaourl)
+                var member={
+                    'vipcandaourl':res.data.vipcandaourl,//餐道
+                    'vipotherurl':res.data.vipotherurl//雅座
                 }
-                if(res.data.viptype==='2'){
-                    utils.storage.setter('memberAddress',res.data.vipotherurl)
-                }
+                utils.storage.setter('vipType',res.data.viptype)//会员地址状态 viptype 1为餐道会员 2为雅坐会员
+                utils.storage.setter('memberAddress',JSON.stringify(member))//设置会员地址
             }
         })
     }

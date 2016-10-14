@@ -342,6 +342,7 @@ var checkOrder={
         },
     },
     clearing:function () {//结算
+        debugger
         var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
         if(userRight){
             $("#order-dialog").modal('show');
