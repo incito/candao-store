@@ -117,7 +117,7 @@ public class BusinessController {
     public String clearMachine(@PathVariable String userId, @PathVariable String userName, @PathVariable String ip, @PathVariable String posId, @PathVariable String authorizer) {
         logger.info("###REQUEST### BusinessController clearMachine userId={} userName={} ip={} posId={} authorizer={}", userId, userName, ip, posId, authorizer);
         String result = businessService.clearMachine(userId, userName, ip, posId, authorizer);
-        result = "{\"result\":[\"" + StringEscapeUtils.escapeJava(result) + "\"]}";
+        result = "{\"result\":[\"" + result + "\"]}";
         logger.info("###RESPONSE### BusinessController clearMachine response={}", result);
         return result;
     }
