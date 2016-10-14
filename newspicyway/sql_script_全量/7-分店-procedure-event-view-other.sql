@@ -38,29 +38,14 @@ AS
 --
 -- Definition for view v_revenuepayway
 --
-DROP VIEW IF EXISTS v_revenuepayway CASCADE $$
+CREATE OR REPLACE SQL SECURITY DEFINER
+VIEW `v_payway` AS
+select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `itemDesc`,`d`.`itemSort` AS `itemSort`,`d`.`status` AS `status`,`d`.`type` AS `type`,`d`.`typename` AS `typename`,`d`.`charges_status` AS `chargeStatus`,`ps`.`status` AS `isshow`,`ps`.`sort` AS `self_sort` from (`t_dictionary` `d` left join `t_payway_set` `ps` on((`d`.`itemid` = `ps`.`item_id`))) where (`d`.`type` = 'PAYWAY')$$
+
 CREATE OR REPLACE SQL SECURITY INVOKER
-VIEW v_revenuepayway
+VIEW `v_revenuepayway`
 AS
-SELECT t_dictionary.dictid AS dictid
-     , t_dictionary.itemid AS itemid
-     , t_dictionary.itemDesc AS itemDesc
-     , t_dictionary.itemSort AS itemSort
-     , t_dictionary.status AS status
-     , t_dictionary.type AS type
-     , t_dictionary.typename AS typename
-     , t_dictionary.begin_time AS begin_time
-     , t_dictionary.end_time AS end_time
-     , t_dictionary.charges_status AS charges_status
-     , t_dictionary.member_price AS member_price
-     , t_dictionary.price AS price
-     , t_dictionary.date_type AS date_type
-     , t_dictionary.item_value AS item_value
-FROM
-  t_dictionary
-WHERE
-  ((t_dictionary.itemid IN ('0', '1', '5', '8', '13', '17', '18', '30'))
-  AND (t_dictionary.type = 'PAYWAY')) $$
+select `v_payway`.`dictid` AS `dictid`,`v_payway`.`itemid` AS `itemid`,`v_payway`.`itemDesc` AS `itemDesc`,`v_payway`.`itemSort` AS `itemSort`,`v_payway`.`status` AS `status`,`v_payway`.`type` AS `type`,`v_payway`.`typename` AS `typename`,`v_payway`.`chargeStatus` AS `chargeStatus`,`v_payway`.`isshow` AS `isshow`,`v_payway`.`self_sort` AS `self_sort` from `v_payway` where (`v_payway`.`chargeStatus` = 1)$$
 
 --
 -- Definition for view v_t_p_preferential_activity

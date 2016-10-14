@@ -1,6 +1,7 @@
 package com.candao.www.webroom.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.candao.common.dto.ResultDto;
 import com.candao.common.enums.ResultMessage;
 import com.candao.common.exception.AuthException;
@@ -92,36 +93,37 @@ public class PadInterfaceController {
     private final String NO_GIFT = "0";
 
 
-	@RequestMapping("/consumInfo")
-	@ResponseBody
-	public String consumInfo(){
-		try {
-			return orderService.consumInfo();
-		}catch (Exception e){
-			logger.error("--->",e);
-			return JSON.toJSONString(ReturnMap.getFailureMap());
-		}
-	}
-	/**
-	 * ti 菜品分类接口，全部页菜品数据获取
-	 *
-	 * @return json 数据，包括分类的菜品
-	 * @author zhao
-	 */
-	@RequestMapping("/getalldishtype")
-	public void getAllDishType(HttpServletRequest request, HttpServletResponse response) {
-		List<Map<String, Object>> list = dishTypeService.getAllDishAndDishType("0");
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("rows", list);
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
-		try {
-			response.reset();
-			response.setHeader("Content-Type", "application/json");
-			response.setContentType("text/json;charset=UTF-8");
-			OutputStream stream = response.getOutputStream();
-			stream.write(wholeJsonStr.getBytes("UTF-8"));
-			stream.flush();
-			stream.close();
+    @RequestMapping("/consumInfo")
+    @ResponseBody
+    public String consumInfo() {
+        try {
+            return orderService.consumInfo();
+        } catch (Exception e) {
+            logger.error("--->", e);
+            return JSON.toJSONString(ReturnMap.getFailureMap());
+        }
+    }
+
+    /**
+     * ti 菜品分类接口，全部页菜品数据获取
+     *
+     * @return json 数据，包括分类的菜品
+     * @author zhao
+     */
+    @RequestMapping("/getalldishtype")
+    public void getAllDishType(HttpServletRequest request, HttpServletResponse response) {
+        List<Map<String, Object>> list = dishTypeService.getAllDishAndDishType("0");
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("rows", list);
+        String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+        try {
+            response.reset();
+            response.setHeader("Content-Type", "application/json");
+            response.setContentType("text/json;charset=UTF-8");
+            OutputStream stream = response.getOutputStream();
+            stream.write(wholeJsonStr.getBytes("UTF-8"));
+            stream.flush();
+            stream.close();
 
         } catch (Exception ex) {
             logger.error("--->", ex);
@@ -687,33 +689,33 @@ public class PadInterfaceController {
         }
         String cleantable = orderDetailService.cleantable(table);
 
-		return cleantable;
-	}
-	
-	@RequestMapping("/inoderCleanTable")
-	@ResponseBody
-	public String inoderCleanTable(@RequestBody Table table, HttpServletRequest reqeust){
-		TJsonRecord record = new TJsonRecord();
-		record.setJson(JacksonJsonMapper.objectToJson(table));
-		record.setPadpath("cleantable");
-		jsonRecordService.insertJsonRecord(record);
-		
+        return cleantable;
+    }
 
-		//清台
-		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-		
-		//整单退菜
-		orderDetailService.deleteordreDetailByOrderid(tbTable.getOrderid());
-		if (tbTable != null) {
-			Map<String, Object> params = new HashMap<>();
-			params.put("orderid", tbTable.getOrderid());
-			params.put("clear", "1");
-			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
-		}
-		String cleantable = orderDetailService.cleantable(table);
+    @RequestMapping("/inoderCleanTable")
+    @ResponseBody
+    public String inoderCleanTable(@RequestBody Table table, HttpServletRequest reqeust) {
+        TJsonRecord record = new TJsonRecord();
+        record.setJson(JacksonJsonMapper.objectToJson(table));
+        record.setPadpath("cleantable");
+        jsonRecordService.insertJsonRecord(record);
 
-		return cleantable;
-	}
+
+        //清台
+        TbTable tbTable = tableService.findByTableNo(table.getTableNo());
+
+        //整单退菜
+        orderDetailService.deleteordreDetailByOrderid(tbTable.getOrderid());
+        if (tbTable != null) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("orderid", tbTable.getOrderid());
+            params.put("clear", "1");
+            torderDetailPreferentialService.deleteDetilPreFerInfo(params);
+        }
+        String cleantable = orderDetailService.cleantable(table);
+
+        return cleantable;
+    }
 
     /**
      * 咖啡模式清台
@@ -847,8 +849,8 @@ public class PadInterfaceController {
             @SuppressWarnings("unchecked")
             Map<String, String> retMap = JacksonJsonMapper.jsonToObject(retPSI, Map.class);
             if (retMap == null || "1".equals(retMap.get("code"))) {// 调用进销存失败,给用户提示
-				/*
-				 * SettlementInfo info = new SettlementInfo();
+                /*
+                 * SettlementInfo info = new SettlementInfo();
 				 * info.setOrderNo(settlementInfo.getOrderNo());
 				 * orderSettleService.rebackSettleOrder(settlementInfo); return
 				 * Constant.FAILUREMSG;
@@ -3084,150 +3086,181 @@ public class PadInterfaceController {
         }
         return JacksonJsonMapper.objectToJson(map);
 
-	}
-	
-	/**
-	 * 上传log背景
-	 * pad背景
-	 * @param request
-	 * @param x
-	 * @param y
-	 * @param h
-	 * @param w
-	 * @return
-	 * @throws FileNotFoundException 
-	 * 
-	 */
-	@RequestMapping("/catImg")
-	@ResponseBody
-	public String catImg(HttpServletRequest request,@RequestParam("x") String x,@RequestParam("y") String y,
-			@RequestParam("h") String h,@RequestParam("w") String w) throws FileNotFoundException{
-		
-		//上传文件跟路径
-		String realpath = request.getSession().getServletContext().getRealPath("");
-		//实际文件路径
-		String imagelocation = realpath+File.separator+ "upload" + File.separator;
-		createDir(imagelocation);
-		//
-		Map<String, Object> map = new HashMap<String, Object>();
-		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
-		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
-		MultipartFile file ;
-		if(fileMap.get("logoimg") == null){
-			file = fileMap.get("backgroundimg");
-			map.put("type", "bg");
-		}else{
-			file = fileMap.get("logoimg");
-			map.put("type", "logo");
-		}
-		String fileName = null;
-		if (!file.isEmpty()) {
-			 fileName = file.getOriginalFilename();
-			imagelocation= imagelocation+fileName;
-			try {
-				//存储数据到字典
-				  this.fileupload(file.getInputStream(),imagelocation);
-			} catch (Exception e) {
-				logger.error("图片上传失败"+e.getMessage(), "");
-				e.printStackTrace();
-				return JacksonJsonMapper.objectToJson(map);
-			}
-		}
+    }
 
-		int imageX = Math.round(Float.valueOf(x == null || x == "" ? "0" : x));
-		int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
-		int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
-		int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
-		
-		
-		String fileupload=File.separator+ "upload" + File.separator;
+    /**
+     * 上传log背景
+     * pad背景
+     *
+     * @param request
+     * @param x
+     * @param y
+     * @param h
+     * @param w
+     * @return
+     * @throws FileNotFoundException
+     */
+    @RequestMapping("/catImg")
+    @ResponseBody
+    public String catImg(HttpServletRequest request, @RequestParam("x") String x, @RequestParam("y") String y,
+                         @RequestParam("h") String h, @RequestParam("w") String w) throws FileNotFoundException {
 
-		String inputDir = request.getRealPath("") +fileupload;
-		ImageCompress imageCompress = new ImageCompress();
-		String afterCatImgUrl = "";
-		String imageurl="" ;
-		if(imageH<=0||imageW<0){
-			imageurl=fileName;
-		}else{
-			imageurl=imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
-		}
-		if (!"".equals(imageurl)) {
-			  afterCatImgUrl="upload" + File.separator+imageurl;
-			  if(!imageurl.equals(fileName)){
-				  this.delFile(imagelocation);
-			  }
-		}
-		map.put("image", afterCatImgUrl);
-		return JacksonJsonMapper.objectToJson(map);
-	}
-	
-	/**
-	 * 设置logo图或背景图
-	 * @return
-	 */
-	@RequestMapping("/setImg")
-	@ResponseBody
-	public String setImg(TbDataDictionary dictionary){
+        //上传文件跟路径
+        String realpath = request.getSession().getServletContext().getRealPath("");
+        //实际文件路径
+        String imagelocation = realpath + File.separator + "upload" + File.separator;
+        createDir(imagelocation);
+        //
+        Map<String, Object> map = new HashMap<String, Object>();
+        MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
+        MultipartFile file;
+        if (fileMap.get("logoimg") == null) {
+            file = fileMap.get("backgroundimg");
+            map.put("type", "bg");
+        } else {
+            file = fileMap.get("logoimg");
+            map.put("type", "logo");
+        }
+        String fileName = null;
+        if (!file.isEmpty()) {
+            fileName = file.getOriginalFilename();
+            imagelocation = imagelocation + fileName;
+            try {
+                //存储数据到字典
+                this.fileupload(file.getInputStream(), imagelocation);
+            } catch (Exception e) {
+                logger.error("图片上传失败" + e.getMessage(), "");
+                e.printStackTrace();
+                return JacksonJsonMapper.objectToJson(map);
+            }
+        }
+
+        int imageX = Math.round(Float.valueOf(x == null || x == "" ? "0" : x));
+        int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
+        int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
+        int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
+
+
+        String fileupload = File.separator + "upload" + File.separator;
+
+        String inputDir = request.getRealPath("") + fileupload;
+        ImageCompress imageCompress = new ImageCompress();
+        String afterCatImgUrl = "";
+        String imageurl = "";
+        if (imageH <= 0 || imageW < 0) {
+            imageurl = fileName;
+        } else {
+            imageurl = imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
+        }
+        if (!"".equals(imageurl)) {
+            afterCatImgUrl = "upload" + File.separator + imageurl;
+            if (!imageurl.equals(fileName)) {
+                this.delFile(imagelocation);
+            }
+        }
+        map.put("image", afterCatImgUrl);
+        return JacksonJsonMapper.objectToJson(map);
+    }
+
+    /**
+     * 设置logo图或背景图
+     *
+     * @return
+     */
+    @RequestMapping("/setImg")
+    @ResponseBody
+    public String setImg(TbDataDictionary dictionary) {
 //		  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
 //		  this.delFile(inputDir+delPathName);
 //		PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
-		 padConfigService.saveorupdateToDic(dictionary);
-		return "system/systemSet";
-	}
-	
-	
-	private void delFile(String fileName){
-		File file = new File(fileName);
-		if(file.exists()){
-			file.delete();
-		}
-	}
-	
-	private int fileupload(InputStream inuStream, String imagelocation) {
-		try {
-			// 拿到输出流，同时重命名上传的文件
-			FileOutputStream os = new FileOutputStream(imagelocation);
-			// 拿到上传文件的输入流
-			InputStream in =  inuStream;
+        padConfigService.saveorupdateToDic(dictionary);
+        return "system/systemSet";
+    }
 
-			// 以写字节的方式写文件
-			int b = 0;
-			while ((b = in.read()) != -1) {
-				os.write(b);
-			}
-			os.flush();
-			os.close();
-			in.close();
-			// 保存成功
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 1;
-		}
+    /**
+     * 获取支付方式
+     *
+     * @return
+     */
+    @RequestMapping("/getPayways")
+    @ResponseBody
+    public String getPayways() {
+        return JSON.toJSONString(ReturnMap.getSuccessMap(paywayService.getPayways()));
+    }
 
-		return 0;
-	}
-	private void createDir(String path){
-		File file =new File(path);    
-		//如果文件夹不存在则创建    
-		if  (!file .exists()  && !file .isDirectory())      
-		{       
-		    file .mkdirs();    
-		}
-	}
+    /**
+     * 保存自定义支付方式
+     *
+     * @return
+     */
+    @RequestMapping("/savePayway")
+    @ResponseBody
+    public String savePayway(@RequestBody String body) {
+        List<Map<String, Object>> payways = JSON.parseObject(body, List.class);
+        Map result;
+        try {
+            paywayService.savePayways(payways);
+            result = ReturnMap.getSuccessMap();
+        } catch (Exception e) {
+            logger.error("->", e);
+            result = ReturnMap.getFailureMap();
+        }
+        return JSON.toJSONString(result);
+    }
 
-	/**
-	 * 0成功 1失败
-	 *
-	 * @param commonsMultipartFile
-	 * @param imagelocation
-	 * @return
-	 */
-	private int fileupload(CommonsMultipartFile commonsMultipartFile, String imagelocation) {
-		try {
-			// 拿到输出流，同时重命名上传的文件
-			FileOutputStream os = new FileOutputStream(imagelocation);
-			// 拿到上传文件的输入流
-			FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();
+    private void delFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    private int fileupload(InputStream inuStream, String imagelocation) {
+        try {
+            // 拿到输出流，同时重命名上传的文件
+            FileOutputStream os = new FileOutputStream(imagelocation);
+            // 拿到上传文件的输入流
+            InputStream in = inuStream;
+
+            // 以写字节的方式写文件
+            int b = 0;
+            while ((b = in.read()) != -1) {
+                os.write(b);
+            }
+            os.flush();
+            os.close();
+            in.close();
+            // 保存成功
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private void createDir(String path) {
+        File file = new File(path);
+        //如果文件夹不存在则创建
+        if (!file.exists() && !file.isDirectory()) {
+            file.mkdirs();
+        }
+    }
+
+    /**
+     * 0成功 1失败
+     *
+     * @param commonsMultipartFile
+     * @param imagelocation
+     * @return
+     */
+    private int fileupload(CommonsMultipartFile commonsMultipartFile, String imagelocation) {
+        try {
+            // 拿到输出流，同时重命名上传的文件
+            FileOutputStream os = new FileOutputStream(imagelocation);
+            // 拿到上传文件的输入流
+            FileInputStream in = (FileInputStream) commonsMultipartFile.getInputStream();
 
             // 以写字节的方式写文件
             int b = 0;
@@ -3390,34 +3423,36 @@ public class PadInterfaceController {
     @Autowired
     private MessageInstrumentService messageInstrumentService;
 
-	@Autowired
-	private CallWaiterService callWaiterService;
-	@Autowired
-	private InvoiceService invoiceService;
-	@Autowired
-	private GiftLogService giftService;
-	@Autowired
-	private TbUserInstrumentDao tbUserInstrumentDao;
-	@Autowired
-	TorderMapper torderMapper;
-	@Autowired
-	TsettlementMapper tsettlementMapper;
-	@Autowired
-	private CallWaiterService callService;
-	@Autowired
-	private TtellerCashDao tellerCashService;
-	@Autowired
-	private TbBranchDao tbBranchDao;
-	@Autowired
-	private SystemServiceImpl systemServiceImpl;
-	@Autowired
-	private PadConfigService padConfigService;
-	@Autowired
-	private TorderDetailPreferentialService torderDetailPreferentialService;
-	@Autowired
-	private OrderOpService orderOpService;
-	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
+    @Autowired
+    private CallWaiterService callWaiterService;
+    @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
+    private GiftLogService giftService;
+    @Autowired
+    private TbUserInstrumentDao tbUserInstrumentDao;
+    @Autowired
+    TorderMapper torderMapper;
+    @Autowired
+    TsettlementMapper tsettlementMapper;
+    @Autowired
+    private CallWaiterService callService;
+    @Autowired
+    private TtellerCashDao tellerCashService;
+    @Autowired
+    private TbBranchDao tbBranchDao;
+    @Autowired
+    private SystemServiceImpl systemServiceImpl;
+    @Autowired
+    private PadConfigService padConfigService;
+    @Autowired
+    private TorderDetailPreferentialService torderDetailPreferentialService;
+    @Autowired
+    private PaywayService paywayService;
+    @Autowired
+    private OrderOpService orderOpService;
+    private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 
-	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
+    private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
 
 }
