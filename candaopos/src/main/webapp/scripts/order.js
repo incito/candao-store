@@ -527,6 +527,17 @@ var Order = {
 		 * 支付方式金额修改
 		 */
 
+		$('.pay-div .J-pay-name').bind('input propertychange focus', function(){
+			var me = $(this);
+			var iptVal = me.val();
+			var $parent = me.parents('.paytype-input');
+			if(iptVal.length > 0) {
+				$parent.find('.J-pay-val,.J-pay-pwd').removeAttr('disabled');
+			} else {
+				$parent.find('.J-pay-val, .J-pay-pwd').attr('disabled','disabled');
+			}
+		});
+
 		$('.pay-div .J-pay-val').bind('input propertychange focus', function(){
 			var me = $(this);
 			var type = me.attr('iptType');
@@ -725,8 +736,6 @@ var Order = {
 					})
 				}
 			}
-
-
 		});
 	},
 
@@ -737,7 +746,6 @@ var Order = {
 		var searchKey = !key ? $.trim(dom.selCompanyDialog.find('[type=search]').val()) : key;
 		if(payCompany !== null) {
 			$.each(JSON.parse(payCompany), function(k, v){
-				//debugger;
 				if(v.name_first_letter.indexOf(searchKey.toUpperCase()) !== -1) {
 					ret.push('<li py="' + v.name_first_letter + '" preferential="' + v.preferential + '">' + v.name  + '</li>');
 				}
@@ -1425,6 +1433,21 @@ var Order = {
 	 * 结账
 	 */
 	doSettlement: function(){
+
+
+		var totalOtherPay = (function(){
+			var total = 0;
+			$('.pay-div .J-pay-val').each(function(){
+				var $me = $(this);
+				if($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'cash' ){
+					total += parseFloat($me.val());
+				}
+			});
+			return total;
+		})();
+
+		//if()
+
 		widget.modal.alert({
 			cls: 'fade in',
 			content:'<strong>桌号:[' + consts.tableno + ']确认现在结算?</strong>',

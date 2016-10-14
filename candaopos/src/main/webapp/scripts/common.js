@@ -443,6 +443,8 @@ widget.loadPage = function(options){
  * @param opts
  * @returns {*}
  */
+
+var focusIpt;
 widget.keyboard = function(opts){
 	var defautlopts = {
 		target: '.virtual-keyboard',
@@ -451,12 +453,11 @@ widget.keyboard = function(opts){
 	};
 	var doc = $(document);
 	var opts = $.extend({},defautlopts, opts);
-	var focusIpt;
+
 	var $target = $(opts.target);
 
 
 	function _init(){
-		focusIpt = null;
 		$target.attr('keyboard-type', opts.type);
 		_bindEvent();
 	}
