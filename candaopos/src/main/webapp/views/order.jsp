@@ -181,7 +181,7 @@
 					<div class="paytype-input cash" id="cash">
 						<div class="form-group">
 							<span>金额：</span>
-							<input type="text" class="form-control">
+							<input type="text" class="form-control J-pay-val" iptType="cash">
 						</div>
 						<div class="form-group the-change-div">
 							找零：<span class="the-change-span">0.00</span>
@@ -195,11 +195,11 @@
 						</div>
 						<div class="form-group">
 							<span>银行卡号:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control">
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control J-pay-val"  iptType="bank">
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
@@ -211,19 +211,19 @@
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control  J-pay-val" iptType="member-cash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control J-pay-val" iptType="member-jf" >
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
 							<input type="text" class="form-control" >
 						</div>
 						<!--div class="form-group"><button class="btn register-btn">注册</button></div-->
-						<div class="form-group" style="color: #FF5803;">储值金额：</div>
-						<div class="form-group" style="color: #FF5803;">积分余额：</div>
+						<div class="form-group" style="color: #FF5803;">储值金额：<b id="StoreCardBalance"></b></div>
+						<div class="form-group" style="color: #FF5803;">积分余额：<b id="IntegralOverall"></b></div>
 					</div>
 					<!-- 挂账支付 -->
 					<div class="paytype-input this-card hide" id="this-card">
@@ -233,7 +233,7 @@
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control J-pay-val" iptType="debitAmount" >
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
@@ -244,7 +244,7 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control J-pay-val" iptType="alipay">
 						</div>
 					</div>
 					<!-- 微信支付 -->
@@ -255,7 +255,7 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control J-pay-val" ipttype="wpay" >
 						</div>
 					</div>
 					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
@@ -536,6 +536,64 @@
 	        </div>
 	    </div>
 	</div>
+
+	<!-- 挂账单位 -->
+	<div class="modal fade in default-dialog" id="selCompany-dialog"
+		 data-backdrop="static">
+		<div class="modal-dialog" style="width: 800px;">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">挂账单位</div>
+					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<div class="form-group search-btns">
+						<div class="search-btn">A</div>
+						<div class="search-btn">B</div>
+						<div class="search-btn">C</div>
+						<div class="search-btn">D</div>
+						<div class="search-btn">E</div>
+						<div class="search-btn">F</div>
+						<div class="search-btn">G</div>
+						<div class="search-btn">H</div>
+						<div class="search-btn">I</div>
+						<div class="search-btn">J</div>
+						<div class="search-btn">K</div>
+						<div class="search-btn">L</div>
+						<div class="search-btn">M</div>
+						<div class="search-btn">N</div>
+						<div class="search-btn">O</div>
+						<div class="search-btn">P</div>
+						<div class="search-btn">Q</div>
+						<div class="search-btn">R</div>
+						<div class="search-btn">S</div>
+						<div class="search-btn">T</div>
+						<div class="search-btn">U</div>
+						<div class="search-btn">V</div>
+						<div class="search-btn">W</div>
+						<div class="search-btn">X</div>
+						<div class="search-btn">Y</div>
+						<div class="search-btn">Z</div>
+					</div>
+					<div class="form-group search J-search">
+						<span class="glyphicon glyphicon-search"></span> <input type="search" class="form-control" placeholder="输入首字母">
+						<div class="btn-clear">C</div>
+					</div>
+					<ul class="campany-icon clearfix">
+					</ul>
+					<div class="page" id="J-company-pager"></div>
+					<div class="btn-operate  ">
+						<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+						</button>
+						<button class="btn btn-save in-btn135"  type="button">确认
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 	<script type="text/javascript" src="../lib/md5.js"></script>
 	<script src="../scripts/order.js"></script>
 </body>
