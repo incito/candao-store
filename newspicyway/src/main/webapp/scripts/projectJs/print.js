@@ -1200,6 +1200,10 @@ function initPrinter(){
 	dishTypeIdListTag=[];
 	$("#print-area").removeClass("hidden");
 	$("#print-dishes").removeClass("hidden");
+	//added by caicai 修改默认显示
+	$("#print-font").removeClass("hidden");
+	$("#print-note").addClass("hidden");
+
 	clearGroup();
 	initGroupDiv();
 	$("#print-groupdishes").addClass("hidden");
