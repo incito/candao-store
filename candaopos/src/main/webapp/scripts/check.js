@@ -1,6 +1,6 @@
-var orderdata='',orderId='',rebackOrderReason=''
-$(function () {
+var orderdata='',orderId='',rebackOrderReason='',cheackorderParameter=null;
 
+$(function () {
     checkOrder.int("");
 });
 var aUserid=utils.storage.getter('aUserid')//获取登录用户
@@ -37,7 +37,7 @@ var checkOrder={
 
     },
     getOrderlist:function (orderstatus ) {
-        var that=this ,data="";
+        var that=this ,data=null;
         $("#checklist tbody,#pagDome").html("");
         filtrateDatd();
         function filtrateDatd() {//数据筛选
@@ -84,7 +84,7 @@ var checkOrder={
                         }
                     }
                     data = arry;
-                    console.log(data)
+                    //console.log(data)
                 }
 
             }
@@ -95,20 +95,21 @@ var checkOrder={
             showPageNumbers: false,
             showNavigator: true,
             callback: function(data, pagination) {
+                //console.log(data)
                 var str="";
                 for( var i=0;i<data.length;i++) {
 
                     if(data[i].memberno){//判断是否是会员登录
-                        str+='<tr orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' memberno='+data[i].memberno+'>';
+                        str+='<tr orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' memberno='+data[i].memberno+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
                     }
                     else {
-                        str+='<tr orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+'>';
+                        str+='<tr orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
                     }
                     str+='   <td>'+data[i].orderid+'</td>'
                     var  ordertype='';
-                    switch (data[i].orderstatus+""){
-                        case "0": ordertype="未结"; break;
-                        case "3": ordertype="已结"; break;
+                    switch (data[i].orderstatus){
+                        case 0: ordertype="未结"; break;
+                        case 3: ordertype="已结"; break;
                         default:  ordertype="未知";break;
                     };
                     str+='   <td>'+ordertype+'</td>'
@@ -212,11 +213,24 @@ var checkOrder={
                 }),
                 dataType: "json",
                 success:function (data) {
-                    console.log(data)
+                    //console.log(data)
                     if(data.result==='0'){
-                        $('#c-mod-fjs').modal("hide")
-                        $("#order-dialog").modal('show');
-                        $("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
+                        $('#c-mod-fjs').modal("hide");
+                        var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1'
+                        window.location.href=encodeURI(encodeURI(_url));
+
+                        //$("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
+                    }
+                    else {
+                        $('#c-mod-fjs').modal("hide");
+                        widget.modal.alert({
+                            cls: 'fade in',
+                            content:'<strong>反结算失败，请稍后再试</strong>',
+                            width:500,
+                            height:500,
+                            btnOkTxt: '',
+                            btnCancelTxt: '确定'
+                        });
                     }
 
                 }
@@ -249,7 +263,7 @@ var checkOrder={
                     dataType: "text",
                     success: function (data) {
                         data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
-                        console.log(data)
+                       // console.log(data)
                         if(data.Data=="0"){
                             _getClear(data.Info)
                         };
@@ -342,31 +356,45 @@ var checkOrder={
         },
     },
     clearing:function () {//结算
-        debugger
-        var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
-        if(userRight){
-            $("#order-dialog").modal('show');
-            $("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
+        var that=this,
+            str = '<div class="js_Ok" style="text-align: left;">订单号：<br>'+cheackorderParameter.orderId+'确定结算吗？</div>',
+         alertModal = widget.modal.alert({
+            cls: 'fade in',
+            content:str,
+            width:500,
+            height:500,
+            title: "",
+            btnOkTxt: '确定',
+            btnOkCb: function(){
+                $(".modal-alert,.modal-backdrop").remove();
+                _clearingOk();
+            },
+            btnCancelCb: function(){
+            }
+        });
+        function _clearingOk() {
+            var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
+            if(userRight){
+                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1'
+                window.location.href=encodeURI(encodeURI(_url));
+            }
+            else {
+                that.errorAlert('您没有收银权限')
+            }
         }
-        else {
-            var str = '<div class="js_Ok" ><br>您没有收银权限</div>';
-            widget.modal.alert({
-                cls: 'fade in',
-                content:str,
-                width:500,
-                height:500,
-                title:'',
-                btnOkTxt: '确定',
-                btnCancelTxt: ''
-            });
-        }
+
     },
     selectTr:function () {
         var that=this;
         $("body").on("click","#checklist tr" ,function(){//点击tr变色
             $(this).addClass("tablistActive").siblings("tr").removeClass("tablistActive");
             var orderstatus=$.trim($(this).attr("orderstatus")) ,memberno=$(this).attr("memberno");
-            orderId= $.trim($(this).attr("orderid"))
+            orderId= $.trim($(this).attr("orderid"));
+            cheackorderParameter={
+                'orderId':orderId,
+                'personnum':$.trim($(this).attr("personnum")),
+                'tableno':$.trim($(this).attr("tableno"))
+            }
            // console.log(memberno+","+orderId+","+orderstatus)
             if(memberno !=undefined){//判断是否存在会员登录
                 $(".receipt").removeAttr("disabled").removeClass("disabled");
@@ -415,5 +443,15 @@ var checkOrder={
             }
         })
 
+    },
+    errorAlert:function (msg) {
+        widget.modal.alert({
+            cls: 'fade in',
+            content:'<strong>'+msg+'</strong>',
+            width:500,
+            height:500,
+            btnOkTxt: '',
+            btnCancelTxt: '确定'
+        });
     },
 }

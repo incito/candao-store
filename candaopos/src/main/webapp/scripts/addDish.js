@@ -820,7 +820,6 @@ function doOrder(type,cb){
 		});
 	}
 
-	debugger;
 
 	$.ajax({
 		url: _config.interfaceUrl.OrderDish,

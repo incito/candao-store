@@ -70,8 +70,14 @@
 		return false//禁止表单提交
 	})
 	$('#modify-phone-dialog .btn-sendMsg').click(function () {
-		if(member.isPhoneNo($.trim($('#newphone').val()))===true){
-			member.sendVerifyCode($.trim($('#newphone').val()));
+		var phone=$.trim($('#newphone').val())
+		if(member.isPhoneNo(phone)===true){
+			if(member.isPhoneRepeat(phone)===true){
+				member.sendVerifyCode(phone);
+			}
+			else{
+				member.errorAlert('该手机号码已注册，请重新输入手机号码')
+			}
 		}
 		else {
 			member.errorAlert('请输入正确的手机号码')

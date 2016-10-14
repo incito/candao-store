@@ -1,7 +1,7 @@
 $(function () {
     member.int()
 })
-var loadMember=null,memberAddress=JSON.parse(utils.storage.getter('memberAddress'))
+var loadMember=null,memberAddress=JSON.parse(utils.storage.getter('memberAddress'));
 var member={
     int:function () {
         SetBotoomIfon.init()//设置底部信息
@@ -11,9 +11,7 @@ var member={
     },
     /*餐绑定操作按钮*/
     bindEvent:function () {
-        var that=this,
-            member_card=$('.member_card').text(),//卡号
-            member_mobile=$('.member_mobile').text()//手机号
+        var that=this;
         $('.virtual-keyboard-ok,.btn-search').click(function () {
             that.memberSearch();
         });
@@ -111,15 +109,21 @@ var member={
         });
     },
     /*会员查询*/
-    memberSearch:function () {
-        var memberCardno=$.trim($('#Member_cardno').val()),that=this;
+    memberSearch:function (msg) {
+        var memberCardno='',that=this
         that.clearInfo();
+        if (msg){
+            memberCardno=msg;
+        }
+        else {
+            memberCardno=$.trim($('#Member_cardno').val())
+        }
         if(memberCardno==''){
             that.errorAlert('查询信息不能为空');
             return
         }
         $.ajax({
-         url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.VipQuery,
+         url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipQuery,
          method: 'POST',
          contentType: "application/json",
          dataType:'json',
@@ -130,9 +134,35 @@ var member={
          }),
          success: function(res){
              var gender,status;
+             console.log(res)
              if(res.retcode==0){
+                 if(res.result.length>1){
+                     var chooseNo=null
+                     var str=' <div class="coupon-cnt">';
+                     for(var i=0 ;i<res.result.length;i++){
+                         str+='<div class="memberChoose-item">'+res.result[i].MCard+'</div>';
+                     }
 
-
+                         str+='</div>';
+                     widget.modal.alert({
+                         cls: 'fade in memberChoose',
+                         content:str,
+                         width:520,
+                         height:500,
+                         title:'请选择会员卡',
+                         btnOkTxt: '确定',
+                         btnCancelTxt: '取消',
+                         btnOkCb:function () {
+                             $(".modal-alert:last,.modal-backdrop:last").remove();
+                             that.memberSearch(chooseNo);
+                         }
+                     });
+                     $('body').on('click','.memberChoose-item',function () {
+                         $(this).addClass('memberChoose-active').siblings('.memberChoose-item').removeClass('memberChoose-active');
+                         chooseNo= $(this).text()
+                     })
+                     return false
+                 }
                  loadMember=res;
                  $('.member_card').text(res.result[0].MCard).attr('card_type',res.result[0].card_type)//卡号
                  $('.member_mobile').text(res.mobile)//手机号
@@ -166,7 +196,6 @@ var member={
              if (res.retcode==1){
                  that.errorAlert('会员查询错：'+res.retInfo)
              }
-            console.log(res)
          }
          })
 
@@ -174,7 +203,7 @@ var member={
     /*充值优惠列表*/
     GetCouponList:function () {
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.GetCouponList+'.json',
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.GetCouponList+'.json',
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -193,7 +222,7 @@ var member={
     sendVerifyCode:function (msg) {
         var that=this
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.SendVerifyCode,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.SendVerifyCode,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -226,7 +255,7 @@ var member={
             return false
         }
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.VipChangeInfo,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -257,7 +286,7 @@ var member={
             gender=$('.radio-box input:checked').val(),
             that=this;
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.VipChangeInfo,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -315,7 +344,7 @@ var member={
             return false
         }
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.VipChangeInfo,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -342,7 +371,7 @@ var member={
         var that=this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.ReportLossCanDao,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.ReportLossCanDao,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -367,7 +396,7 @@ var member={
         var that=this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.CancelLossCanDao,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.CancelLossCanDao,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -392,7 +421,7 @@ var member={
         var that=this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.CancelCanDao,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.CancelCanDao,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -451,7 +480,7 @@ var member={
             return false
         };
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.RegistCanDao,
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.RegistCanDao,
             method: 'POST',
             contentType: "application/json",
             dataType:'json',
@@ -510,7 +539,7 @@ var member={
     isPhoneRepeat:function (phone) {
         var isPhoneRepeat=null
         $.ajax({
-            url:utils.storage.getter('memberAddress')+ _config.interfaceUrl.MobileRepeatCheck+'.json',
+            url:memberAddress.vipcandaourl+ _config.interfaceUrl.MobileRepeatCheck+'.json',
             async: false,
             method: 'POST',
             contentType: "application/json",
