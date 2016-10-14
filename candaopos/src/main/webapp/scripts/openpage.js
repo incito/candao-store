@@ -1,7 +1,9 @@
 var OpenPage = {
 	init: function(){
         this.isYesterdayEndWork();
-        this.configJson();
+
+        this.saveConfigInfo();
+
 		this.bindEvent();
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
 		var posid=utils.getUrl.get("posid")//设置posid参数到缓存
@@ -312,29 +314,106 @@ var OpenPage = {
                 }
             }
         });
-        return{
+        return {
             findUncleanPosList:findUncleanPosList,
             LocalArry:LocalArry,
             OtherArry:OtherArry,
         }
     },
-    /*获取会员配置地址*/
-    configJson:function () {
+
+    /*保存配置信息*/
+    saveConfigInfo:function () {
+        //获取会员配置地址
         $.ajax({
             url: _config.interfaceUrl.GetMemberAddress,
             type:"get",
-            async:false,
             dataType:'text',
-            success: function(res){
-                var res=JSON.parse(res);
-                var member={
-                    'vipcandaourl':res.data.vipcandaourl,//餐道
-                    'vipotherurl':res.data.vipotherurl//雅座
+            success: function(res1){
+                var res1=JSON.parse(res1);
+                utils.storage.setter('vipType',res1.data.viptype)//会员地址状态
+                if(res1.data.viptype==='1'){//viptype 1为餐道会员 2为雅坐会员
+                    utils.storage.setter('memberAddress',res1.data.vipcandaourl)
                 }
-                utils.storage.setter('vipType',res.data.viptype)//会员地址状态 viptype 1为餐道会员 2为雅坐会员
-                utils.storage.setter('memberAddress',JSON.stringify(member))//设置会员地址
+                if(res1.data.viptype==='2'){
+                    utils.storage.setter('memberAddress',res1.data.vipotherurl)
+                }
             }
-        })
+        });
+
+        //银行信息
+        $.get(_config.interfaceUrl.GetAllBankInfo).then(function(res){
+            utils.storage.setter('banklist', JSON.stringify(res));
+        });
+
+        //门店信息
+        $.get(_config.interfaceUrl.GetBranchInfo).then(function(res){
+            if(res.code === '0') {
+                $.each(res.data,function(k,v){
+                    utils.storage.setter('branch_' + k, v);
+                })
+            } else {
+                widget.modal.alert({
+                    cls: 'fade in',
+                    content:'<strong>' + res.msg + '</strong>',
+                    width:500,
+                    height:500,
+                    btnOkTxt: '',
+                    btnCancelTxt: '确定'
+                });
+            }
+        });
+
+        //零头信息
+        $.ajax({
+            url: _config.interfaceUrl.GetSystemSetData,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({
+                    type: 'ROUNDING'
+                }
+            )
+        }).then(function(res){
+            utils.storage.setter('ROUNDING', JSON.stringify(res.rows));
+        });
+
+        //忌口
+        $.ajax({
+            url: _config.interfaceUrl.GetSystemSetData,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({
+                    type: 'JI_KOU_SPECIAL'
+                }
+            )
+        }).then(function(res){
+            utils.storage.setter('JI_KOU_SPECIAL', JSON.stringify(res.rows));
+        });
+
+        //餐具
+        $.ajax({
+            url: _config.interfaceUrl.GetSystemSetData,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({
+                    type: 'DISHES'
+                }
+            )
+        }).then(function(res){
+            utils.storage.setter('DISHES', JSON.stringify(res.rows));
+        });
+
+        //挂账单位
+        $.ajax({
+            url: _config.interfaceUrl.GetAllOnCpyAccountInfo,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+        }).then(function(res){
+            utils.storage.setter('payCompany', JSON.stringify(res));
+        });
     }
 };
 
