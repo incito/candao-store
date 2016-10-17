@@ -815,10 +815,15 @@ public class PadInterfaceController {
 			 */
             notifyService.notifySettleOrder(orderid);
             /* } */
-            return psicallback;
+              //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
+             //在此处转换
+        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
+        	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
+            return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
         } else {
-            logger.error("结算失败，result :" + result);
-            return Constant.FAILUREMSG;
+        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
+            logger.error("结算失败，result :" + map.get("mes"));
+            return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
         }
     }
 
@@ -894,10 +899,15 @@ public class PadInterfaceController {
 
         if ("0".equals(result)) {
             logger.info("结算成功，调用进销存接口");
-            return psicallback(settlementInfo, 0);
+            String psicallback = psicallback(settlementInfo, 0);
+            //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以在此处转换
+        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
+        	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
+        	 return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
         } else {
-            logger.error("结算失败，result :" + result);
-            return Constant.FAILUREMSG;
+            Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
+            logger.error("结算失败，result :" + map.get("mes"));
+            return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
         }
     }
 

@@ -205,7 +205,7 @@ function initPosList(){
 				var data = json.data;
 				if(data != null && data != ""){
 					$.each(data.list, function(i, val){
-						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
+						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+' title = ' + val.devicename + ' onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
 					});
 				}
 			}else{
@@ -307,13 +307,19 @@ function clickFormAddPrintConfig(){
 			selectedPrinters.push(a);
 		});
 	}
-	
 	var options = {
 			deviceid: $("#deviceid").val(),
 			devicecode: $("#posid").val(),
 			devicename: $("#posname").val(),
 			printers: selectedPrinters
 	};
+	//added by caicai
+	if (selectedPrinters != null && selectedPrinters.length>0){
+		$.each(selectedPrinters,function (i,obj) {
+			obj.devicecode = $("#posid").val();
+			obj.devicename = $("#posname").val();
+		});
+	}
 	if(validateCode()){
 		$.ajax({
 			type : "post",
