@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+    <bean id="runMeTask" class="com.candao.www.bossstore.quartzJob.RunMeTask" />
+    <bean id="runCurrMonTask" class="com.candao.www.bossstore.quartzJob.RunCurrMonTask" />
+    <bean id="runFlowDataTask" class="com.candao.www.bossstore.quartzJob.RunFlowDataTask" />
+    <bean id="runTableTask" class="com.candao.www.bossstore.quartzJob.RunTableTask" />
+    <bean id="runTableDetailTask" class="com.candao.www.bossstore.quartzJob.RunTableDetailTask" />
+    <bean id="runOnDutyManagerTask" class="com.candao.www.bossstore.quartzJob.RunOnDutyManagerTask"/>
+    <bean id="serviceTask" class="com.candao.www.bossstore.quartzJob.RunServiceTask"/>
+    <bean id="tableOrderTask" class="com.candao.www.bossstore.quartzJob.RunTableOrderTask"/>
+	<bean id="runMeJob" class="com.candao.www.bossstore.quartzJob.RunMeJob">
+		<property name="runMeTask" ref="runMeTask"></property>
+		<property name="runCurrMonTask" ref="runCurrMonTask"></property>
+		<property name="runFlowDataTask" ref="runFlowDataTask"></property>
+		<property name="runTableTask" ref="runTableTask"></property>
+		<property name="runTableDetailTask" ref="runTableDetailTask"></property>
+		<property name="runOnDutyManagerTask" ref="runOnDutyManagerTask"></property>
+		<property name="serviceTask" ref="serviceTask"></property>
+		<property name="tableOrderTask" ref="tableOrderTask"></property>
+	</bean>
+
+    <bean id="runMeJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="runMeJob" />
+        </property>
+        <property name="targetMethod">
+            <value>executeInternal</value>
+        </property>
+    </bean>
+
+    <bean id="bCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+
+        <property name="jobDetail" ref="runMeJobDetail" />
+        <!--<property name="cronExpression" value="0 0/2 * * * ?" />-->
+        <property name="cronExpression" value="0 0/2 * * * ?" />
+    </bean>
+    
+    <bean name="schedule" lazy-init="true" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="bCronTrigger" />
+            </list>
+        </property>
+    </bean>
+</beans>
