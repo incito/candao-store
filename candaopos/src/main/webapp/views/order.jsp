@@ -195,31 +195,31 @@
 						</div>
 						<div class="form-group">
 							<span>银行卡号:</span>
-							<input type="text" class="form-control">
+							<input type="text" class="form-control J-pay-name">
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" class="form-control J-pay-val"  iptType="bank">
+							<input type="text" disabled class="form-control J-pay-val"  iptType="bank">
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
 					<div class="paytype-input membership-card hide"
 						 id="membership-card">
 						<div class="form-group" style="display: inline-flex;">
-							<input type="text" class="form-control card-number" placeholder="卡号">
+							<input type="text" class="form-control card-number J-pay-name" placeholder="卡号">
 							<button class="btn login-btn disabled">登录</button>
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" class="form-control  J-pay-val" iptType="member-cash">
+							<input type="text" disabled class="form-control  J-pay-val" iptType="member-cash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" class="form-control J-pay-val" iptType="member-jf" >
+							<input type="text" disabled class="form-control J-pay-val" iptType="member-jf" >
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
-							<input type="text" class="form-control" >
+							<input type="text" disabled class="form-control J-pay-pwd" >
 						</div>
 						<!--div class="form-group"><button class="btn register-btn">注册</button></div-->
 						<div class="form-group" style="color: #FF5803;">储值金额：<b id="StoreCardBalance"></b></div>
@@ -228,34 +228,34 @@
 					<!-- 挂账支付 -->
 					<div class="paytype-input this-card hide" id="this-card">
 						<div class="form-group" style="display: inline-flex;">
-							<input type="text" class="form-control payment-unit" placeholder="挂账单位" disabled="disabled">
+							<input type="text" class="form-control payment-unit J-pay-name" placeholder="挂账单位" disabled="disabled">
 							<button class="btn sel-btn J-selCompany" >选择</button>
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
-							<input type="text" class="form-control J-pay-val" iptType="debitAmount" >
+							<input type="text" disabled class="form-control J-pay-val" iptType="debitAmount" >
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
 					<div class="paytype-input pay-treasure hide" id="pay-treasure">
 						<div class="form-group">
 							<span>支付宝:</span>
-							<input type="text" class="form-control" >
+							<input type="text" class="form-control J-pay-name" >
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" class="form-control J-pay-val" iptType="alipay">
+							<input type="text"  disabled class="form-control J-pay-val" iptType="alipay">
 						</div>
 					</div>
 					<!-- 微信支付 -->
 					<div class="paytype-input wechat-pay hide" id="wechat-pay">
 						<div class="form-group">
 							<span>微信号:</span>
-							<input type="text" class="form-control" >
+							<input type="text"  class="form-control J-pay-name" >
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" class="form-control J-pay-val" ipttype="wpay" >
+							<input type="text" disabled class="form-control J-pay-val" ipttype="wpay" >
 						</div>
 					</div>
 					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
@@ -275,6 +275,7 @@
 							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
 						</ul>
 					</div>
+
 					<div class="virtual-keyboard letter-virtual-keyboard hide" id="letter-keyboard">
 						<ul>
 							<li>A</li><li>B</li><li>C</li><li>D</li><li>E</li><li>F</li>
@@ -547,7 +548,7 @@
 					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
 				</div>
 				<div class="modal-body">
-					<div class="form-group search-btns">
+					<div class="form-group search-btns ">
 						<div class="search-btn">A</div>
 						<div class="search-btn">B</div>
 						<div class="search-btn">C</div>
