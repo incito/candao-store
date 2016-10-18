@@ -11,18 +11,22 @@ $(document).ready(function(){
 		document.querySelector('head').appendChild(msViewportStyle);
 	}
     $(document).bind("ajaxSend", function () {
-        utils.loading.open('正在加载…')
+			utils.loading.open('正在加载…')
+
     }).bind("ajaxComplete", function () {
       utils.loading.remove();
     }).bind('ajaxError',function () {
-        widget.modal.alert({
-            cls: 'fade in',
-            content:'<strong>数据加载失败，请稍后重试</strong>',
-            width:500,
-            height:500,
-            btnOkTxt: '',
-            btnCancelTxt: '确定'
-        });
+    	if($('.errorAlert').length<0){
+			widget.modal.alert({
+				cls: 'fade in errorAlert',
+				content:'<strong>数据加载失败，请稍后重试</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+		}
+
     });
 
 
@@ -145,6 +149,8 @@ _config.interfaceUrl = {
 	VipChangePsw: "/member/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
 	GetCouponList: "/member/preferential/posPreferentialList", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
+
+	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
 };
 //优惠分类
 _config.preferential = {
@@ -915,15 +921,17 @@ utils.clearLocalStorage={
 }
 utils.loading ={
 	open:function (msg) {
-		var str='<div class="lading-shade" ></div><div class="spinner">'+
-			'<div class="rect1"></div>'+
-			'<div class="rect2"></div>'+
-			'<div class="rect3"></div>'+
-			'<div class="rect4"></div>'+
-			'<div class="rect5"></div>'+
-			'<p>'+msg+'</p>'
+			var str='<div class="lading-shade" ></div><div class="spinner">'+
+				'<div class="rect1"></div>'+
+				'<div class="rect2"></div>'+
+				'<div class="rect3"></div>'+
+				'<div class="rect4"></div>'+
+				'<div class="rect5"></div>'+
+				'<p>'+msg+'</p>'
 			'</div>';
-		$('body').append(str);
+		if($('.spinner').length<1){
+			$('body').append(str);
+		}
 	},
 	remove:function () {
 		$('.lading-shade,.spinner').remove();
@@ -1016,4 +1024,44 @@ setInterval(function () {
 			}
 	}
 },1000);
+/*多张会员卡选择
+* 传入参数为对象
+* {'data':data,传入卡号列表['卡号一','卡号二']
+* 'callback':回调方法，如果回调方法需要再次调用查询会员卡号，回调方法的参数名必须为'chooseNo'}
+* */
+utils.chooseMember={
+	choose:function (msg) {
+		var chooseNo=null
+		var str=' <div class="coupon-cnt">';
+		for(var i=0 ;i<msg.data.length;i++){
+			str+='<div class="memberChoose-item">'+msg.data[i]+'</div>';
+		}
+		str+='</div>';
+		widget.modal.alert({
+			cls: 'fade in memberChoose',
+			content:str,
+			width:520,
+			height:500,
+			title:'请选择会员卡',
+			btnOkTxt: '确定',
+			btnCancelTxt: '取消',
+			btnOkCb:function () {
+				if($('.memberChoose-active').length<1){
+					utils.printError.alert('请选择会员卡号')
+				}
+				else {
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					eval(msg.callback)
+				}
+
+			}
+		});
+		$('body').on('click','.memberChoose-item',function () {
+			$(this).addClass('memberChoose-active').siblings('.memberChoose-item').removeClass('memberChoose-active');
+			chooseNo= $(this).text()
+		});
+	}
+}
+
+
 

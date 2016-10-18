@@ -100,7 +100,6 @@
 		widget.keyboard({
 			target: '.virtual-keyboard-base'
 		});
-
 	})
 
 </script>
