@@ -154,29 +154,6 @@
 .pay-type-cnt .btn-yellow {
 	margin-right:15px;
 }
-/*会员选择*/
-.memberChoose .modal-body{
-	padding: 20px 10px;
-	text-align: center;
-}
-.memberChoose-item {
-	width: 242px;
-	height: 48px;
-	line-height: 48px;
-	text-align: center;
-	font-size: 14px;
-	color: #515356;
-	border: 1px solid #DBDBDB;
-	border-radius: 3px;
-	margin: 8px 4px;
-	cursor: pointer;
-	float: left;
-}
-.memberChoose-active{
-	background: #FF5803;
-	color: #fff;
-	border: 1px solid #FF5803;
-}
 .btn-sendMsg{
 	width: 74px;
 }
