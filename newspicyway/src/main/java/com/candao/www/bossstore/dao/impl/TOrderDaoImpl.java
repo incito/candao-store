@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.candao.common.dao.DaoSupport;
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.bossstore.dao.TOrderDao;
-import com.candao.www.bossstore.util.PropertiesUtil;
 @Repository
 public class TOrderDaoImpl implements TOrderDao{
 	@Autowired
@@ -40,7 +40,7 @@ public class TOrderDaoImpl implements TOrderDao{
 
 	@Override
 	public List<Map<String, Object>> getFlowData(Map<String, Object> params) {
-		params.put("branchId", PropertiesUtil.getValue("branchId"));
+		params.put("branchId", PropertiesUtils.getValue("current_branch_id"));
 		return daoSupport.find(PREFIX+".getFlowData", params);
 	}
 
@@ -105,7 +105,7 @@ public class TOrderDaoImpl implements TOrderDao{
 	@Override
 	public Object getCouponsTopOne(Map<String, Object> params) {
         Object[] result = new Object[2];
-        params.put("branchId", PropertiesUtil.getValue("branchId"));
+        params.put("branchId", PropertiesUtils.getValue("current_branch_id"));
         params.put("result", "@result");
 		List<Map<String, Object>> list = daoSupport.find(PREFIX+".getCouponsTopOne", params);
         Double maxShouldAmount = 0d;

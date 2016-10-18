@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.bossstore.dao.TUserDao;
-import com.candao.www.bossstore.util.PropertiesUtil;
 
 import net.sf.json.JSONObject;
 
@@ -30,7 +30,7 @@ public class UserService {
      */
     public JSONObject getOnDutyManagerInfo() {
 		Map<String,String> params = new HashMap<String,String>();
-		params.put("branchId", PropertiesUtil.getValue("branchId"));
+		params.put("branchId", PropertiesUtils.getValue("current_branch_id"));
         Map<String,String> openUser = tUserDao.getOpenUser(params);
        /* if (openUser != null) {
             Object[] objects = (Object[]) openUser;

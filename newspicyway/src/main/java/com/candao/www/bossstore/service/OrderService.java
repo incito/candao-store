@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.bossstore.dao.TOrderDao;
 import com.candao.www.bossstore.dao.TTableDao;
 import com.candao.www.bossstore.util.DateTimeUtils;
 import com.candao.www.bossstore.util.DateUtils;
-import com.candao.www.bossstore.util.PropertiesUtil;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -50,7 +50,7 @@ public class OrderService {
      */
     public JSONArray getCurrMonDataByDay() {
     	
-        String branchId = PropertiesUtil.getValue("branchId");
+        String branchId = PropertiesUtils.getValue("current_branch_id");
 
         JSONArray array = new JSONArray();
         // 获取当月的天数列表
@@ -174,7 +174,7 @@ public class OrderService {
         
         JSONArray orders = new JSONArray();
         	
-        String branchId = PropertiesUtil.getValue("branchId");
+        String branchId = PropertiesUtils.getValue("current_branch_id");
 
         Calendar calendar = Calendar.getInstance();
         
@@ -340,7 +340,7 @@ public class OrderService {
         String mouth = today.substring(0,7);
         //拼凑当年的第一天
         String fristday = today.substring(0,4)+"-01-01 00:00:00";
-        String branchId = PropertiesUtil.getValue("branchId");
+        String branchId = PropertiesUtils.getValue("current_branch_id");
         //查询所有的投诉的服务信息
         Map<String,String> params = new HashMap<String,String>();
         params.put("beginTime", fristday);
@@ -600,7 +600,7 @@ public class OrderService {
      * @return
      */
     public JSONArray getCurrDayTableDetail() {
-    	String branchId = PropertiesUtil.getValue("branchId");
+    	String branchId = PropertiesUtils.getValue("current_branch_id");
     	Map<String,Object> params = new HashMap<String,Object>();
     	params.put("branchId", branchId);
         List<Object[]> orders = tOrderDao.getCurrDayOrders(params);
@@ -675,7 +675,7 @@ public class OrderService {
      * @return
      */
     public JSONObject getTableOrderData() {
-    	String branchId = PropertiesUtil.getValue("branchId");
+    	String branchId = PropertiesUtils.getValue("current_branch_id");
     	Map<String,Object> params = new HashMap<String,Object>();
     	params.put("branchId", branchId);
         List<Object[]> orders = tOrderDao.getCurrDayOrders(params);

@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.bossstore.protocol.ClientInfo;
 import com.candao.www.bossstore.service.OrderService;
 import com.candao.www.bossstore.util.HttpUtils;
-import com.candao.www.bossstore.util.PropertiesUtil;
 
 import net.sf.json.JSONObject;
 
@@ -31,13 +31,13 @@ public class RunTableOrderTask {
 
     public void cuttingpayment() throws IOException {
         ClientInfo clientInfo = new ClientInfo();
-        clientInfo.setBranchId(PropertiesUtil.getValue("branchId"));
+        clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
         clientInfo.setCommand("order");
         clientInfo.setRequestType("syncTableOrder");
         clientInfo.setData(orderService.getTableOrderData().toString());
         logger.info("统计当天所有的桌子的订单信息数据查询："+orderService.getTableOrderData().toString());
         JSONObject requestObject = JSONObject.fromObject(clientInfo);
-        String link = PropertiesUtil.getValue("cloudLink");
+        String link = PropertiesUtils.getValue("cloudLink");
         HttpUtils.getHttpPost(link, requestObject);
         logger.info(requestObject.toString());
         System.out.println(">>>>>>>>>"+requestObject.toString());
