@@ -32,7 +32,7 @@ public class StoreInterfaceController {
     @RequestMapping(value = "/getUserRights/{aUserID}/", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String getUserRights(@PathVariable("aUserID") String aUserID) {
-        return JSON.toJSONString(JSON.toJSONString(new ResultData(JSON.toJSONString(new ResponseData()))));
+        return JSON.toJSONString(JSON.toJSONString(new ResultData(new ResponseData())));
     }
 
     @RequestMapping(value = "/getClearMachineData/{aUserid}/{jsorder}/{posid}/", produces = {"application/json;charset=UTF-8"})

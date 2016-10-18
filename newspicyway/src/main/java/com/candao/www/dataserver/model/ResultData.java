@@ -9,17 +9,17 @@ import java.util.List;
  * Created by ytq on 2016/4/14.
  */
 public class ResultData {
-    private List<String> result = new ArrayList<>();
+    private List<Object> result = new ArrayList<>();
 
-    public ResultData(String resultData) {
+    public ResultData(Object resultData) {
         result.add(resultData);
     }
 
-    public List<String> getResult() {
+    public List<Object> getResult() {
         return result;
     }
 
-    public void setResult(List<String> result) {
+    public void setResult(List<Object> result) {
         this.result = result;
     }
 
