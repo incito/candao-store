@@ -19,6 +19,20 @@ var MainPage = {
 
 		//加载虚拟键盘组件
 		widget.keyboard();
+
+		/*雅座会员餐道会员切换 1为餐道会员；2为雅座会员*/
+		if(utils.storage.getter('vipType')=='1'){
+			var str='<li class="J-btn-storge">会员储值</li>'+
+				    '<li class="J-btn-register">会员注册</li>'+
+				    '<li class="J-btn-memberView">会员查询</li>'
+			$('.arrowMember').html(str)
+		}
+		if(utils.storage.getter('vipType')=='2'){
+			var str='<li class="J-btn-storge">会员储值</li>'+
+				'<li class="J-btn-register">会员激活</li>'+
+				'<li class="J-btn-memberView">会员查询</li>'
+			$('.arrowMember').html(str)
+		}
 	},
 
 	bindEvent: function(){
@@ -181,7 +195,7 @@ var MainPage = {
 		});
 
 		//底部菜单事件绑定
-		$(".foot-menu li").click(function(e){
+		$('footer').on('click','.foot-menu li',function(e){
 			var me = $(this);
 			if(me.hasClass("J-btn-takeout")){
 				$("#J-takeout-dialog").modal("show");
@@ -281,20 +295,34 @@ var MainPage = {
 
 			}
 
-			if(me.hasClass('J-btn-register')) {
-				window.location.href = '../views/member/register.jsp';
+			if(me.hasClass('J-btn-register')) {//会员注册
+				if(utils.storage.getter('vipType')=='1'){
+					window.location.href = '../views/member/register.jsp';
+				}
+				if(utils.storage.getter('vipType')=='2'){
+					window.location.href = '../views/member/yaRegister.jsp';
+				}
 				/*$("#register-dialog").load("../views/member/register.jsp");
 				$("#register-dialog").modal("show");*/
 			}
 
-			if(me.hasClass('J-btn-storge')) {
-				window.location.href = '../views/member/storge.jsp';
+			if(me.hasClass('J-btn-storge')) {//会员储值
+				if(utils.storage.getter('vipType')=='1'){
+					window.location.href = '../views/member/storge.jsp';
+				}
+				if(utils.storage.getter('vipType')=='2'){
+					window.location.href = '../views/member/yaRecharge.jsp';
+				}
 			}
 
-			if(me.hasClass('J-btn-memberView')) {
-				window.location.href = './member/view.jsp';
+			if(me.hasClass('J-btn-memberView')) {//会员查询
+				if(utils.storage.getter('vipType')=='1'){
+					window.location.href = './member/view.jsp';
+				}
+				if(utils.storage.getter('vipType')=='2'){
+					window.location.href = '../views/member/yaStorge.jsp';
+				}
 			}
-
 		});
 
 		$(document).click(function(e){

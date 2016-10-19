@@ -142,7 +142,7 @@
 				return false
 			}
 			else {
-				member.countDown();
+				member.countDown(60);
 				member.sendVerifyCode(moblie);
 			}
 

@@ -3,55 +3,62 @@ $(function () {
     member.int();
     ya_Member.int();
 })
-var loadMember=null,memberAddress=JSON.parse(utils.storage.getter('memberAddress'));
-var member={
-    int:function () {
+var loadMember = null, memberAddress = JSON.parse(utils.storage.getter('memberAddress'));
+var member = {
+    int: function () {
         this.bindEvent();
     },
     /*餐绑定操作按钮*/
-    bindEvent:function () {
-        var that=this;
+    bindEvent: function () {
+        var that = this;
         var $dishType = $('.coupon-box');
         var flag_prev = 0;
         $('.virtual-keyboard-ok,.btn-search').click(function () {
             that.memberSearch();
         });
-        $('.member-op-list li').on('click', function(){
+        $('.member-op-list li').on('click', function () {
             var me = $(this);
-            if(me.hasClass('J-modify-base')) {
-                if (that.isClick()){
+            if (me.hasClass('J-modify-base')) {
+                if (that.isClick()) {
                     $("#modify-base-dialog").load("../member/modifyBase.jsp");
                     $("#modify-base-dialog").modal("show");
                 }
             }
 
-            if(me.hasClass('J-modify-phone')) {
-                if (that.isClick()){
+            if (me.hasClass('J-modify-phone')) {
+                if (that.isClick()) {
                     $("#modify-phone-dialog").load("../member/modifyPhone.jsp");
                     $("#modify-phone-dialog").modal("show");
                 }
             }
 
-            if(me.hasClass('J-modify-pwd')) {
-                if(that.isClick()){
+            if (me.hasClass('J-modify-pwd')) {
+                if (that.isClick()) {
                     $("#modify-pwd-dialog").load("../member/modifyPwd.jsp");
                     $("#modify-pwd-dialog").modal("show");
                 }
             }
 
-            if(me.hasClass('J-cancellation')) {
-                if(that.isClick()){
-                    var status=$.trim($('.member_status').attr('status'));
-                    if(status==1){
-                       var member_card=$.trim($('.member_card').text());
+            if(me.hasClass('J-modify-storge')){
+                if (that.isClick()) {
+                    var _url='../member/storge.jsp?cardMember=' +$.trim($('.member_card').text()) + '&referer=1';
+                    window.location.href=encodeURI(encodeURI(_url));
+                }
+            }
+
+            if (me.hasClass('J-cancellation')) {
+                if (that.isClick()) {
+                    var status = $.trim($('.member_status').attr('status'));
+                    if (status == 1) {
+                        var member_card = $.trim($('.member_card').text());
                         widget.modal.alert({
                             cls: 'fade in',
-                            content:'<strong>确定要注销'+member_card+'吗？</strong>',
-                            width:500,
-                            height:500,
+                            content: '<strong>确定要注销' + member_card + '吗？</strong>',
+                            width: 500,
+                            height: 500,
                             btnOkTxt: '确定',
                             btnCancelTxt: '取消',
-                            btnOkCb:function () {
+                            btnOkCb: function () {
                                 that.memberDelete(member_card);
                             }
                         });
@@ -60,23 +67,23 @@ var member={
                 }
             }
 
-            if(me.hasClass('J-modify-lost')){
-                if(that.isClick()){
-                    var card_type=$.trim($('.member_card').attr('card_type'));
-                    if(card_type!='1'){
+            if (me.hasClass('J-modify-lost')) {
+                if (that.isClick()) {
+                    var card_type = $.trim($('.member_card').attr('card_type'));
+                    if (card_type != '1') {
                         that.errorAlert('该会员还没有绑定实体卡，不能挂失');
                         return false
                     }
                     else {
-                        var member_card=$.trim($('.member_card').text());
+                        var member_card = $.trim($('.member_card').text());
                         widget.modal.alert({
                             cls: 'fade in',
-                            content:'<strong>确定要挂失 '+member_card+'吗？</strong>',
-                            width:500,
-                            height:500,
+                            content: '<strong>确定要挂失 ' + member_card + '吗？</strong>',
+                            width: 500,
+                            height: 500,
                             btnOkTxt: '确定',
                             btnCancelTxt: '取消',
-                            btnOkCb:function () {
+                            btnOkCb: function () {
                                 that.memberlost(member_card);
                             }
                         });
@@ -84,23 +91,23 @@ var member={
                 }
             }
 
-            if(me.hasClass('J-modify-cancellost')){
-                if(that.isClick()){
-                    var card_type=$.trim($('.member_card').attr('card_type'));
-                    if(card_type!='1'){
+            if (me.hasClass('J-modify-cancellost')) {
+                if (that.isClick()) {
+                    var card_type = $.trim($('.member_card').attr('card_type'));
+                    if (card_type != '1') {
                         that.errorAlert('该会员还没有绑定实体卡，不能解除挂失');
                         return false
                     }
                     else {
-                        var member_card=$.trim($('.member_card').text());
+                        var member_card = $.trim($('.member_card').text());
                         widget.modal.alert({
                             cls: 'fade in',
-                            content:'<strong>确定要解除挂失 '+member_card+'吗？</strong>',
-                            width:500,
-                            height:500,
+                            content: '<strong>确定要解除挂失 ' + member_card + '吗？</strong>',
+                            width: 500,
+                            height: 500,
                             btnOkTxt: '确定',
                             btnCancelTxt: '取消',
-                            btnOkCb:function () {
+                            btnOkCb: function () {
                                 that.memberCancel(member_card);
                             }
                         });
@@ -109,12 +116,12 @@ var member={
             }
         });
         //充值优惠向左向右按钮
-        $(".coupon-box .next").click(function(){
-            var count = $dishType.find( ".coupon-List .coupon-item").length;
+        $(".coupon-box .next").click(function () {
+            var count = $dishType.find(".coupon-List .coupon-item").length;
             if (flag_prev < count - 8) {
-                $dishType .find(".coupon-item").eq(flag_prev).css({'margin-left': '-142px'}).hide();
+                $dishType.find(".coupon-item").eq(flag_prev).css({'margin-left': '-142px'}).hide();
                 flag_prev++;
-                if(flag_prev==count - 8){
+                if (flag_prev == count - 8) {
                     $(".coupon-box .next").addClass('unclick');
                     $(".coupon-box .prev").removeClass('unclick');
 
@@ -122,11 +129,11 @@ var member={
 
             }
         });
-        $(".coupon-box .prev").click(function(){
-            if(flag_prev>=1){
-                $dishType.find(".coupon-item").eq(flag_prev-1).css({'margin-left': '2px'}).show();
+        $(".coupon-box .prev").click(function () {
+            if (flag_prev >= 1) {
+                $dishType.find(".coupon-item").eq(flag_prev - 1).css({'margin-left': '2px'}).show();
                 flag_prev--;
-                if(flag_prev==0){
+                if (flag_prev == 0) {
                     $(".coupon-box .prev").addClass('unclick');
                     $(".coupon-box .next").removeClass('unclick');
                 }
@@ -134,9 +141,11 @@ var member={
             }
 
         });
-        /*选择优惠*/{}
-        $('.coupon-box').on('click','.coupon-item', function(){
-            if($(this).hasClass('active')){
+        /*选择优惠*/
+        {
+        }
+        $('.coupon-box').on('click', '.coupon-item', function () {
+            if ($(this).hasClass('active')) {
                 $(this).removeClass('active')
             }
             else {
@@ -146,98 +155,113 @@ var member={
         })
     },
     /*会员查询*/
-    memberSearch:function (msg) {
-        var memberCardno='',that=this
+    memberSearch: function (msg) {
+        var memberCardno = '', that = this
         that.clearInfo();
-        if (msg){
-            memberCardno=msg;
+        if (msg) {
+            memberCardno = msg;
         }
         else {
-            memberCardno=$.trim($('#Member_cardno').val())
+            memberCardno = $.trim($('#Member_cardno').val())
         }
-        if(memberCardno==''){
+        if (memberCardno == '') {
             that.errorAlert('查询信息不能为空');
             return
         }
         $.ajax({
-         url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipQuery,
-         method: 'POST',
-         contentType: "application/json",
-         dataType:'json',
-         data:JSON.stringify({
-         securityCode: '',
-         branch_id: utils.storage.getter('branch_id'),
-         cardno:memberCardno
-         }),
-         success: function(res){
-             var gender,status;
-             //console.log(res)
-             if(res.retcode==0){
-                 if(res.result.length>1){
-                     var memberCard=[];
-                     for(var i=0;i<res.result.length;i++){
-                         memberCard.push(res.result[i].MCard)
-                     }
-                     utils.chooseMember.choose({
-                         'data':memberCard,'callback':'member.memberSearch(chooseNo)'
-                     })
-                     return false
-                 }
-                 loadMember=res;
-                 $('.member_card').text(res.result[0].MCard).attr('card_type',res.result[0].card_type)//卡号
-                 $('.member_mobile').text(res.mobile)//手机号
-                 $('.member_nanme').text(res.name)//姓名
-                 $('.member_level_name').text(res.result[0].level_name)//会员卡等级名称
-                 $('.member_birthday').text((res.birthday).substring(0,res.birthday.length-8))//生日
-                 switch (res.gender){
-                     case 0 :gender='男';break;
-                     case 1 :gender='女'; break;
-                     default : gender='未知'; break;
-                 }
-                 $('.member_gender').text(gender)//性别
-                 $('.member_StoreCardBalance').text(res.result[0].StoreCardBalance)//余额
-                 $('.member_IntegralOverall').text(res.result[0].IntegralOverall)//会员积分
-                 switch (res.result[0].status){
-                     case 0 :status='注销';break;
-                     case 1 :status='正常'; break;
-                     case 2 :status='挂失'; break;
-                     default : status='未知'; break;
-                 }
-                 $('.member_status').text(status).attr('status',res.result[0].status)//会员卡状态
-                 if(res.result[0].status==2 && res.result[0].card_type=='1'){
-                     $('.J-modify-cancellost').show();
-                     $('.J-modify-lost').hide();
-                 }
-                 if(res.result[0].status==1){
-                     $('.J-modify-lost').show();
-                     $('.J-modify-cancellost').hide();
-                 }
-             }
-             if (res.retcode==1){
-                 that.errorAlert('会员查询错：'+res.retInfo)
-             }
-         }
-         })
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipQuery,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({
+                securityCode: '',
+                branch_id: utils.storage.getter('branch_id'),
+                cardno: memberCardno
+            }),
+            success: function (res) {
+                var gender, status;
+                //console.log(res)
+                if (res.retcode == 0) {
+                    if (res.result.length > 1) {
+                        var memberCard = [];
+                        for (var i = 0; i < res.result.length; i++) {
+                            memberCard.push(res.result[i].MCard)
+                        }
+                        utils.chooseMember.choose({
+                            'data': memberCard, 'callback': 'member.memberSearch(chooseNo)'
+                        })
+                        return false
+                    }
+                    loadMember = res;
+                    $('.member_card').text(res.result[0].MCard).attr('card_type', res.result[0].card_type)//卡号
+                    $('.member_mobile').text(res.mobile)//手机号
+                    $('.member_nanme').text(res.name)//姓名
+                    $('.member_level_name').text(res.result[0].level_name)//会员卡等级名称
+                    $('.member_birthday').text((res.birthday).substring(0, res.birthday.length - 8))//生日
+                    switch (res.gender) {
+                        case 0 :
+                            gender = '男';
+                            break;
+                        case 1 :
+                            gender = '女';
+                            break;
+                        default :
+                            gender = '未知';
+                            break;
+                    }
+                    $('.member_gender').text(gender)//性别
+                    $('.member_StoreCardBalance').text(res.result[0].StoreCardBalance)//余额
+                    $('.member_IntegralOverall').text(res.result[0].IntegralOverall)//会员积分
+                    switch (res.result[0].status) {
+                        case 0 :
+                            status = '注销';
+                            break;
+                        case 1 :
+                            status = '正常';
+                            break;
+                        case 2 :
+                            status = '挂失';
+                            break;
+                        default :
+                            status = '未知';
+                            break;
+                    }
+                    $('.member_status').text(status).attr('status', res.result[0].status)//会员卡状态
+                    if (res.result[0].status == 2 && res.result[0].card_type == '1') {
+                        $('.J-modify-cancellost').show();
+                        $('.J-modify-lost').hide();
+                    }
+                    if (res.result[0].status == 1) {
+                        $('.J-modify-lost').show();
+                        $('.J-modify-cancellost').hide();
+                    }
+                }
+                if (res.retcode == 1) {
+                    that.errorAlert('会员查询错：' + res.retInfo)
+                }
+            }
+        })
 
     },
     /*充值优惠列表*/
-    getCouponList:function () {
+    getCouponList: function () {
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.GetCouponList+'.json',
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.GetCouponList + '.json',
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 branch_id: utils.storage.getter('branch_id'),
-                current:'',
-                pageSize:''
+                current: '',
+                pageSize: ''
             }),
-            success: function(res){
-                var str='';
-                for( var i=0;i<res.datas.length;i++){
-                    str+='<div class="coupon-item" presentValue="'+res.datas[i].presentValue+'" dealValue="'+res.datas[i].dealValue+'">'+res.datas[i].name+'</div>'
+            success: function (res) {
+                //console.log(res)
+                var str = '';
+                for (var i = 0; i < res.datas.length; i++) {
+                    str += '<div class="coupon-item" preferentialid="' + res.datas[i].id + '" presentValue="' + res.datas[i].presentValue + '" dealValue="' + res.datas[i].dealValue + '">' + res.datas[i].name + '</div>'
                 }
-                if(res.datas.length>8){
+                if (res.datas.length > 8) {
                     $(".coupon-box .next").removeClass('unclick')
                 }
                 $('.coupon-List').html(str)
@@ -246,20 +270,20 @@ var member={
     },
 
     /*发送验证嘛*/
-    sendVerifyCode:function (msg) {
-        var that=this
+    sendVerifyCode: function (msg) {
+        var that = this
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.SendVerifyCode,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.SendVerifyCode,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
-                mobile:msg
+            dataType: 'json',
+            data: JSON.stringify({
+                mobile: msg
             }),
-            success: function(res){
+            success: function (res) {
                 console.log(res)
-                if(res.Retcode==0){
-                    valicode=res.valicode
+                if (res.Retcode == 0) {
+                    valicode = res.valicode
                 }
                 else {
                     that.errorAlert(res.RetInfo)
@@ -268,70 +292,69 @@ var member={
         })
     },
     /*修改手机号码*/
-    changephone:function () {
-        var that=this,
-            newphone=$.trim($('#newphone').val()),
-            oldphone=$.trim($('#oldphone').val()),
-            phoneCode=$.trim($('#phoneCode').val());
-        if(that.isPhoneNo(newphone)===false){
+    changephone: function () {
+        var that = this,
+            newphone = $.trim($('#newphone').val()),
+            oldphone = $.trim($('#oldphone').val()),
+            phoneCode = $.trim($('#phoneCode').val());
+        if (that.isPhoneNo(newphone) === false) {
             that.errorAlert('请输入正确的手机号码');
             return false
         }
-        if(phoneCode!=valicode ||phoneCode==''){
+        if (phoneCode != valicode || phoneCode == '') {
             that.errorAlert('请输入正确的验证嘛');
             return false
         }
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipChangeInfo,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
-                mobile:oldphone,
-                new_mobile:newphone
+                mobile: oldphone,
+                new_mobile: newphone
             }),
-            success: function(res){
-                if(res.retcode==0){
+            success: function (res) {
+                if (res.retcode == 0) {
                     $('#modify-phone-dialog').modal('hide').html('');
                     that.errorAlert('修改手机号码成功')
                 }
-                if(res.retcode==1){
+                if (res.retcode == 1) {
                     that.errorAlert(res.retInfo)
                 }
-                console.log(res)
+                //console.log(res)
             }
         })
 
     },
     /*修改会员基本信息*/
-    changebaseInfo:function () {
-        var birthday=$.trim($('.base_memberbirthday').val()),
-            name=$.trim( $('.base_membername_input').val()),
-            mobile=$.trim($('.base_memberphone').text()),
-            gender=$('.radio-box input:checked').val(),
-            that=this;
+    changebaseInfo: function () {
+        var birthday = $.trim($('.base_memberbirthday').val()),
+            name = $.trim($('.base_membername_input').val()),
+            mobile = $.trim($('.base_memberphone').text()),
+            gender = $('.radio-box input:checked').val(),
+            that = this;
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipChangeInfo,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 branch_id: utils.storage.getter('branch_id'),
-                mobile:mobile,
-                name:name,
-                gender:gender,
-                birthday:birthday
+                mobile: mobile,
+                name: name,
+                gender: gender,
+                birthday: birthday
             }),
-            success: function(res){
-                debugger
-                console.log(res)
-                if(res.retcode==0){
+            success: function (res) {
+                //console.log(res)
+                if (res.retcode == 0) {
                     $('#modify-base-dialog').modal('hide').html('');
                     that.errorAlert('修改会员基本信息成功')
                 }
-                if(res.retcode==1){
+                if (res.retcode == 1) {
                     that.errorAlert(res.retInfo)
                 }
 
@@ -339,126 +362,126 @@ var member={
         })
     },
     /*设置会员基本信息*/
-    setBaseinfo:function () {
+    setBaseinfo: function () {
         $('.base_membercard').text(loadMember.result[0].MCard)//卡号
         $('.base_memberphone').text(loadMember.mobile)//手机
         $('.base_membernanme').text(loadMember.name)//姓名
         $('.base_membername_input').val(loadMember.name)//姓名
-        $('.base_memberbirthday').val((loadMember.birthday).substring(0,loadMember.birthday.length-8))//卡号
+        $('.base_memberbirthday').val((loadMember.birthday).substring(0, loadMember.birthday.length - 8))//卡号
         $('.radio-box input').each(function () {
-            if(loadMember.gender==$(this).val()){
-                $(this).attr('checked',true)
+            if (loadMember.gender == $(this).val()) {
+                $(this).attr('checked', true)
             }
         })
     },
     /*修改会员消费密码*/
-    changePassword:function () {
-        var that=this,
-            mobile=$.trim($('#changPsd').val()),
-            password=$.trim($('#newPsd').val()),
-            Rpassword=$.trim($('#rnewPsd').val()),
-            phoneCode=$.trim($('#phoneCode').val());
-        if(phoneCode!=valicode ||phoneCode==''){
+    changePassword: function () {
+        var that = this,
+            mobile = $.trim($('#changPsd').val()),
+            password = $.trim($('#newPsd').val()),
+            Rpassword = $.trim($('#rnewPsd').val()),
+            phoneCode = $.trim($('#phoneCode').val());
+        if (phoneCode != valicode || phoneCode == '') {
             that.errorAlert('请输入正确的验证嘛');
             return false
         }
-        if(that.isNumber(password)===false || that.isNumber(Rpassword)===false){
+        if (that.isNumber(password) === false || that.isNumber(Rpassword) === false) {
             that.errorAlert('只能输入六位数字的密码');
             return false
         }
-        if(password!=Rpassword){
+        if (password != Rpassword) {
             that.errorAlert('两次输入的密码不一致，请重新输入');
             return false
         }
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.VipChangeInfo,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
-                mobile:mobile,
-                password:Rpassword
+                mobile: mobile,
+                password: Rpassword
             }),
-            success: function(res){
-                if(res.retcode==0){
+            success: function (res) {
+                if (res.retcode == 0) {
                     $('#modify-pwd-dialog').modal('hide').html('');
                     that.errorAlert('修改消费密码成功')
                 }
-                if(res.retcode==1){
+                if (res.retcode == 1) {
                     that.errorAlert(res.retInfo)
                 }
-                console.log(res)
+                //console.log(res)
             }
         })
     },
     /*挂失会员卡*/
-    memberlost:function (member_card) {
-        var that=this;
+    memberlost: function (member_card) {
+        var that = this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.ReportLossCanDao,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.ReportLossCanDao,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
-                branch_id:utils.storage.getter('branch_id'),
-                cardno:member_card,
-                FMemo:'',
+            dataType: 'json',
+            data: JSON.stringify({
+                branch_id: utils.storage.getter('branch_id'),
+                cardno: member_card,
+                FMemo: '',
             }),
-            success: function(res){
+            success: function (res) {
                 //console.log(res)
-                if(res.Retcode==0){
-                    that.errorAlert('挂失会员卡'+member_card+'成功')
+                if (res.Retcode == 0) {
+                    that.errorAlert('挂失会员卡' + member_card + '成功')
                 }
                 else {
-                    that.errorAlert('挂失会员卡'+member_card+'失败')
+                    that.errorAlert('挂失会员卡' + member_card + '失败')
                 }
             }
         })
     },
     /*解除会员挂失*/
-    memberCancel:function (member_card) {
-        var that=this;
+    memberCancel: function (member_card) {
+        var that = this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.CancelLossCanDao,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.CancelLossCanDao,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
-                branch_id:utils.storage.getter('branch_id'),
-                cardno:member_card,
-                FMemo:'',
+            dataType: 'json',
+            data: JSON.stringify({
+                branch_id: utils.storage.getter('branch_id'),
+                cardno: member_card,
+                FMemo: '',
             }),
-            success: function(res){
-                console.log(res)
-                if(res.Retcode==0){
-                    that.errorAlert('挂失会员卡'+member_card+'成功')
+            success: function (res) {
+                //console.log(res)
+                if (res.Retcode == 0) {
+                    that.errorAlert('挂失会员卡' + member_card + '成功')
                 }
                 else {
-                    that.errorAlert('挂失会员卡'+member_card+'失败')
+                    that.errorAlert('挂失会员卡' + member_card + '失败')
                 }
             }
         })
     },
     /*会员注销*/
-    memberDelete:function (member_card) {
-        var that=this;
+    memberDelete: function (member_card) {
+        var that = this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.CancelCanDao,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.CancelCanDao,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
-                branch_id:utils.storage.getter('branch_id'),
-                cardno:member_card
+            dataType: 'json',
+            data: JSON.stringify({
+                branch_id: utils.storage.getter('branch_id'),
+                cardno: member_card
             }),
-            success: function(res){
-                if(res.Retcode==0){
-                    that.errorAlert('注销'+member_card+'成功')
+            success: function (res) {
+                if (res.Retcode == 0) {
+                    that.errorAlert('注销' + member_card + '成功')
                 }
                 else {
                     that.errorAlert(res.RetInfo)
@@ -468,63 +491,65 @@ var member={
 
     },
     /*会员注册*/
-    register:function () {
-        var that=this,
-            moblie=$.trim($('#phone').val()),
-            phoneCode=$.trim($('#phoneCode').val()),
-            gender=$.trim($('#gender input:checked').val()),
-            birthday=$.trim($('#birthday').val()),
-            psd=$.trim($('#psd').val()),
-            rpsd=$.trim($('#rpsd').val()),
-            name=$.trim($('#nmae').val());
+    register: function () {
+        var that = this,
+            moblie = $.trim($('#phone').val()),
+            phoneCode = $.trim($('#phoneCode').val()),
+            gender = $.trim($('#gender input:checked').val()),
+            birthday = $.trim($('#birthday').val()),
+            psd = $.trim($('#psd').val()),
+            rpsd = $.trim($('#rpsd').val()),
+            name = $.trim($('#nmae').val());
 
-        if(that.isPhoneNo(moblie)===false){
-            that.errorAlert('请输入正确的手机号码');
-            return false
-        };
-        if(that.isPhoneRepeat(moblie)===false){
+        if (that.isPhoneNo(moblie) === false) {
             that.errorAlert('请输入正确的手机号码');
             return false
         }
-        if(phoneCode==''||phoneCode!=valicode){
+        ;
+        if (that.isPhoneRepeat(moblie) === false) {
+            that.errorAlert('请输入正确的手机号码');
+            return false
+        }
+        if (phoneCode == '' || phoneCode != valicode) {
             that.errorAlert('请输入正确的验证嘛');
             return false
         }
-        if(name==''){
+        if (name == '') {
             that.errorAlert('请输入姓名');
             return false
         }
-        if(birthday==''){
+        if (birthday == '') {
             that.errorAlert('请选择生日');
             return false
         }
-        if(that.isNumber(psd)===false ||that.isNumber(rpsd)===false){
+        if (that.isNumber(psd) === false || that.isNumber(rpsd) === false) {
             that.errorAlert('只能输入六位数字的密码');
             return false
         }
-        if(psd!=rpsd){
+        if (psd != rpsd) {
             that.errorAlert('两次输入的密码不一致，请重新输入');
             return false
-        };
+        }
+        ;
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.RegistCanDao,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.RegistCanDao,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
-                mobile:moblie,
-                cardno:'',
-                password:rpsd,
-                name:name,
-                gender:gender,
-                birthday:birthday,
-                channel:'1',
-                branch_addr:utils.storage.getter('branch_branchaddress')
+                mobile: moblie,
+                cardno: '',
+                password: rpsd,
+                name: name,
+                gender: gender,
+                birthday: birthday,
+                channel: '1',
+                branch_addr: utils.storage.getter('branch_branchaddress')
             }),
-            success: function(res){
-                if(res.Retcode==0){
+            success: function (res) {
+                if (res.Retcode == 0) {
                     that.errorAlert('注册会员成功');
                     $('#phone').val('');
                     $('#phoneCode').val('');
@@ -533,7 +558,7 @@ var member={
                     $('#rpsd').val('')
                     $('#nmae').val('');
                 }
-                if(res.Retcode==1){
+                if (res.Retcode == 1) {
                     that.errorAlert(res.retInfo)
                 }
                 //console.log(res)
@@ -541,60 +566,126 @@ var member={
         })
     },
     /*会员储值*/
-    stored_value:function (msg) {
-        var that=this,
-            cardno=null,
-            ChargeType=$.trim($('.pay-type-select .active').attr('ChargeType')),
-            Amount=$.trim($('#rechargeMoney').val());
-        if(msg){
-            cardno=msg
+    stored_value: function (msg) {
+        var that = this,
+            cardno = null,//卡号
+            ChargeType = $.trim($('.pay-type-select .active').attr('ChargeType')),//支付类型
+            Amount = $.trim($('#rechargeMoney').val()),//充值金额
+            preferential_id=$.trim($('.coupon-List .active').attr('preferentialid')),//优惠券ID
+            giveValue=$.trim($('.giveMoney').text())//赠送金额
+
+        if (msg) {
+            cardno = msg
         }
         else {
-            cardno=$.trim($('#rechargeMoblie').val());
-            if(cardno==''){
+            cardno = $.trim($('#rechargeMoblie').val());
+            if (cardno == '') {
                 that.errorAlert('手机号码或卡号不能为空，请检查');
                 return false
             }
         }
-        if(that.ismoney(Amount)===false){
+        if (that.ismoney(Amount) === false) {
             that.errorAlert('充值金额为空或格式不正确');
             return false
         }
+        if(preferential_id){
+            preferential_id=preferential_id
+        }
+        else {
+            preferential_id=''
+        }
         /*会员卡是否存在*/
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.QueryCanDao,
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipQuery,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
-                cardno:cardno,
-                password:'',
+                cardno: cardno
             }),
-            success: function(res){
-                if(res.Retcode==0){
-                    if(res.CardList.length>1){
-                        var memberCard=[];
-                        for(var i=0;i<res.CardList.length;i++){
-                            memberCard.push(res.CardList[i].cardno)
+            success: function (res) {
+                if (res.retcode == 0) {
+                    if (res.result.length > 1) {
+                        var memberCard = [];
+                        for (var i = 0; i < res.result.length; i++) {
+                            memberCard.push(res.result[i].MCard)
                         }
                         utils.chooseMember.choose({
-                            'data':memberCard,'callback':'member.stored_value(chooseNo)'
+                            'data': memberCard, 'callback': 'member.stored_value(chooseNo)'
                         })
                         return false
-                    };
+                    }
+                    savevale()
                 }
-                if(res.Retcode==1){
-                    that.errorAlert(res.RetInfo);
+                if (res.retcode == 1) {
+                    that.errorAlert(res.retInfo);
                 }
             }
-        })
+        });
+        function savevale() {
+            $.ajax({
+                url:memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
+                method: 'POST',
+                contentType: "application/json",
+                dataType: 'json',
+                data:JSON.stringify({
+                    'Serial':utils.storage.getter('branch_id'),
+                    'branch_id':utils.storage.getter('branch_id'),
+                    'cardno':cardno,
+                    'Amount':Amount,
+                    'TransType':0,
+                    'ChargeType':ChargeType,
+                    'preferential_id':preferential_id,
+                    'giveValue':giveValue,
+                    'securityCode':'',
+                }),
+                success: function (res) {
+                    //console.log(res)
+                    if(res.Retcode=='0'){
+                        utils.openCash();//弹钱箱
+                        rightBottomPop.alert({
+                            content:'会员充值成功,<br>交易流水号:'+res.TraceCode+'',
+                        });
+                        $.ajax({
+                            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipQuery,
+                            method: 'POST',
+                            contentType: "application/json",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                securityCode: '',
+                                branch_id: utils.storage.getter('branch_id'),
+                                cardno: cardno
+                            }),
+                            success: function (data) {
+                                //console.log(data)
+                                if (data.retcode == 0) {
+                                     ya_Member.print({
+                                         'pzh':res.TraceCode,//交易流水号
+                                         'cardno':data.result[0].MCard,//卡号
+                                         'storedBalance':data.result[0].StoreCardBalance,//余额
+                                        'storedPoint':data.result[0].IntegralOverall ,//积分余额
+                                        'storedAmount':Amount//充值金额
+                                    })
+                                }
+                                if (res.retcode == 1) {
+                                    that.errorAlert(data.retInfo);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        utils.printError.alert(res.RetInfo)
+                    }
+                }
+            });
+        }
     },
     /*是否点击*/
-    isClick:function () {
-        var member_card=$.trim($('.member_card').text()),member_mobile=$.trim($('.member_mobile').text())
-        if(member_card!=''||member_mobile!=''){
+    isClick: function () {
+        var member_card = $.trim($('.member_card').text()), member_mobile = $.trim($('.member_mobile').text())
+        if (member_card != '' || member_mobile != '') {
             return true
         }
         else {
@@ -602,83 +693,82 @@ var member={
         }
     },
     /*输入的是否为金额*/
-    ismoney:function (money) {
-        var pattern= /^[0-9]+(\.[0-9]{2})?$/;
-        pattern.lastIndex=0;//正则开始为0
+    ismoney: function (money) {
+        var pattern = /^[0-9]+(\.[0-9]{2})?$/;
+        pattern.lastIndex = 0;//正则开始为0
         return pattern.test(money);
     },
     /*验证是否手机号*/
-    isPhoneNo:function (phone) {
+    isPhoneNo: function (phone) {
         var pattern = /^1[34578]\d{9}$/;
-        pattern.lastIndex=0;//正则开始为0
+        pattern.lastIndex = 0;//正则开始为0
         return pattern.test(phone);
     },
     /*密码只能输入数字*/
-    isNumber:function (number) {
-        var isNumber=/^\d{6}$/;
-        isNumber.lastIndex=0;//正则开始为0
+    isNumber: function (number) {
+        var isNumber = /^\d{6}$/;
+        isNumber.lastIndex = 0;//正则开始为0
         return isNumber.test(number);
     },
     /*验证手机号是否重复*/
-    isPhoneRepeat:function (phone) {
-        var isPhoneRepeat=null
+    isPhoneRepeat: function (phone) {
+        var isPhoneRepeat = null
         $.ajax({
-            url:memberAddress.vipcandaourl+ _config.interfaceUrl.MobileRepeatCheck+'.json',
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.MobileRepeatCheck + '.json',
             async: false,
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            data:JSON.stringify({
+            dataType: 'json',
+            data: JSON.stringify({
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
-                mobile:phone,
+                mobile: phone,
             }),
-            success: function(res){
-                console.log(res)
-                if(res.Retcode==0){
-                    isPhoneRepeat=true
+            success: function (res) {
+                //console.log(res)
+                if (res.Retcode == 0) {
+                    isPhoneRepeat = true
                 }
-                if(res.Retcode==1){
-                    isPhoneRepeat=false
+                if (res.Retcode == 1) {
+                    isPhoneRepeat = false
                 }
             }
         })
         return isPhoneRepeat
     },
     /*60s倒计时*/
-    countDown:function (msg) {
-
-        var msgId='.btn-sendMsg',startSec='发送';
-        $(msgId).attr('disabled', true).css({'background':'#f6f6f6','color':'#000'});
-        var that=this, timeLeft = msg*1000;//这里设定的时间是10秒;
+    countDown: function (msg) {
+        var msgId = '.btn-sendMsg', startSec = '发送';
+        $(msgId).attr('disabled', true).css({'background': '#f6f6f6', 'color': '#000'});
+        var that = this, timeLeft = msg * 1000;//这里设定的时间是10秒;
         countTime();
-        function countTime(){
-            if(timeLeft ==0){
-                $(msgId).attr('disabled', false).css({'background':'#FF5803','color':'#fff'}).text('发送');
+        function countTime() {
+            if (timeLeft == 0) {
+                $(msgId).attr('disabled', false).css({'background': '#FF5803', 'color': '#fff'}).text('发送');
             }
             else {
-                startSec  = parseInt(timeLeft/1000);
-                timeLeft=timeLeft-1000;
-                timer=setTimeout(function () {
+                startSec = parseInt(timeLeft / 1000);
+                timeLeft = timeLeft - 1000;
+                timer = setTimeout(function () {
                     countTime();
-                },1000);
+                }, 1000);
                 $(msgId).text(startSec);
             }
         }
 
 
     },
-    errorAlert:function (msg) {
+    errorAlert: function (msg) {
         widget.modal.alert({
             cls: 'fade in',
-            content:'<strong>'+msg+'</strong>',
-            width:500,
-            height:500,
+            content: '<strong>' + msg + '</strong>',
+            width: 500,
+            height: 500,
             btnOkTxt: '',
             btnCancelTxt: '确定'
         });
     },
-    clearInfo:function () {
+    clearInfo: function () {
         $('.member_card').text('')//卡号
         $('.member_mobile').text('')//手机号
         $('.member_nanme').text('')//姓名
@@ -690,49 +780,297 @@ var member={
         $('.member_status').text('')//会员卡状态
     }
 }
-var ya_Member={
-    int:function () {
+var ya_Member = {
+    int: function () {
         this.bindEvent();
     },
     /*雅座会员绑定操作按钮*/
-    bindEvent:function () {
-        var that=this;
-        $('.ya_btn .btnOk').click(function () {
-            that.ya_memberSearch()
+    bindEvent: function () {
+        var that = this;
+        $('.ya-btn-query').click(function () {
+            if($(this).text()=='退出'){
+                that.ya_loginOut()
+            }
+            else {
+                that.ya_recharge()
+            }
+
         })
     },
     /*雅座会员查询*/
-    ya_memberSearch:function (msg) {
-        var that=this,
-            ya_memberNumber=$.trim($('.ya_cardNumber').val()),
-            memberNumber=null;
-        if(msg){
-            memberNumber=msg
-        }else {
-            memberNumber=ya_memberNumber;
+    ya_memberSearch: function (msg) {
+        var that = this,
+            ya_memberNumber = $.trim($('.ya_cardNumber').val()),
+            memberNumber = null;
+        if (msg) {
+            memberNumber = msg
+        } else {
+            memberNumber = ya_memberNumber;
         }
         $.ajax({
-            url:memberAddress.vipotherurl+ _config.interfaceUrl.Yafindmember+''+memberNumber+'/',
+            url: memberAddress.vipotherurl + _config.interfaceUrl.Yafindmember + '' + memberNumber + '/',
             method: 'POST',
             contentType: "application/json",
-            dataType:'json',
-            success: function(res){
-                if(res.Data==0){
-                    member.errorAlert('雅座会员查询失败：'+res.Info)
+            dataType: 'json',
+            success: function (res) {
+                //console.log(res)
+                if (res.Data == 0) {
+                    member.errorAlert('雅座会员查询失败：' + res.Info)
                 }
-                if(res.Data==1){
-                    var memberCardlength=res.pszTrack2.split(',');
-                    if(memberCardlength.length>1){
+                if (res.Data == 1) {
+                    var memberCardlength = res.pszTrack2.split(',');
+                    if (memberCardlength.length > 1) {
                         utils.chooseMember.choose(
-                            { 'data':memberCardlength,'callback':'ya_Member.ya_memberSearch(chooseNo);$(".ya_cardNumber").val(chooseNo)'}
-                            )
+                            {
+                                'data': memberCardlength,
+                                'callback': 'ya_Member.ya_memberSearch(chooseNo);$(".ya_cardNumber").val(chooseNo)'
+                            }
+                        )
                         return false
                     }
-                    $('.ya_balance').val(res.psStoredCardsBalance/100);
-                    $('.ya_point').val(res.psIntegralOverall/100)
+                    $('.ya_balance').val(res.psStoredCardsBalance / 100);
+                    $('.ya_point').val(res.psIntegralOverall / 100);
+                    if (res.psTicketInfo == '') {
+                        $('.discount_yaList').html('')
+                        return false
+                    }
+                    var couponsList = res.psTicketInfo.split(';'), shtml = '';
+                    for (var i = 0; i < couponsList.length; i++) {
+                        shtml += '<div class="discount-info">' +
+                            '<div class="dish-name">' + couponsList[i].split('|')[3] + '</div>' +
+                            '<hr>' +
+                            '<div class="dish-price dish-price-border">' + couponsList[i].split('|')[1] / 100 + '元</div>' +
+                            '<div class="dish-price">' + couponsList[i].split('|')[4] + '张</div>' +
+                            '</div>';
+                    }
+                    $('.discount_yaList').html(shtml)
                 }
-                console.log(res)
             }
         })
     },
+    /*雅座储值*/
+    ya_recharge: function (msg) {
+        var that = this,
+            cardNumber = $.trim(($('.ya_memberNumber').val())),
+            memberNumber = null;
+        if (cardNumber == '') {
+            member.errorAlert('会员卡号不能为空，请输入正取的会员卡号');
+            return false
+        }
+        ;
+        if (msg) {
+            memberNumber = msg
+        } else {
+            memberNumber = cardNumber;
+        }
+        $.ajax({
+            url: memberAddress.vipotherurl + _config.interfaceUrl.Yafindmember + '' + memberNumber + '/',
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            success: function (res) {
+                //console.log(res)
+                if (res.Data == 0) {
+                    member.errorAlert('雅座会员查询失败：' + res.Info)
+                }
+                if (res.Data == 1) {
+                    var memberCardlength = res.pszTrack2.split(',');
+                    if (memberCardlength.length > 1) {
+                        utils.chooseMember.choose(
+                            {
+                                'data': memberCardlength,
+                                'callback': 'ya_Member.ya_recharge(chooseNo);$(".ya_memberNumber").val(chooseNo)'
+                            }
+                        )
+                        return false
+                    }
+                    $('.ya-btn-query').text('退出');
+                    $('.ya_memberNumber').attr('disabled', true);
+                    $('.ya-Stored-value').attr('disabled', false);
+                    $('.ya_cardInfo').show();
+                    $('.ya_cardInfo .ya_balance').text(res.psStoredCardsBalance / 100);
+                    $('.ya_cardInfo .ya_point').text(res.psIntegralOverall / 100);
+                }
+            }
+        })
+    },
+    /*雅座会员储值保存*/
+    ya_rechargeSave: function () {
+        var that = this,
+            str,
+            cardNumber = $.trim(($('.ya_memberNumber').val())),//会员卡号
+            pszAmount = $.trim($('.ya-Stored-value').val()),//储值金额
+            paytype = $.trim($('.pay-type-select .active').attr('ChargeType'));//'0位现金，1为银行卡'
+        if (member.ismoney(pszAmount) === false) {
+            member.errorAlert('充值金额为空或格式不正确');
+            return false
+        }
+        str = '<strong>您确定给会员号“' + cardNumber + '”<br>储值“' + pszAmount + '”元吗？</strong>'
+        widget.modal.alert({
+            cls: 'fade in ya_rechargeSave',
+            content: str,
+            width: 500,
+            height: 500,
+            btnOkTxt: '确定',
+            btnCancelTxt: '取消',
+            btnOkCb:function () {
+                $(".modal-alert:last,.modal-backdrop:last").remove();
+                saveBtn();
+            }
+        });
+        function saveBtn() {
+            $.ajax({
+                url: memberAddress.vipotherurl + _config.interfaceUrl.Yarecharge + '' + utils.storage.getter('aUserid') + '/' + cardNumber + '/' + pszAmount + '/' + that.ya_formatDate(new Date(), "yyyyMMddHHmmssffff") + '/0/' + paytype + '/',
+                method: 'get',
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (res) {
+                    //console.log(res)
+                    if (res.Data == 0) {
+                        member.errorAlert(res.Info)
+                    }
+                    if (res.Data == 1) {
+                        //member.errorAlert('充值成功');
+                        utils.openCash();//弹钱箱
+                        rightBottomPop.alert({
+                            content:'会员充值成功,<br>交易流水号:'+res.pszTrace+'',
+                        });
+                        $.ajax({
+                            url: memberAddress.vipotherurl + _config.interfaceUrl.Yafindmember + '' + res.pszPan + '/',
+                            method: 'POST',
+                            contentType: "application/json",
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.Data == 0) {
+                                    member.errorAlert('雅座会员查询失败：' + res.Info)
+                                }
+                                if (data.Data == 1) {
+                                    that.print({
+                                        'pzh':res.pszTrace,
+                                        'cardno':res.pszPan,
+                                        'storedBalance':res.psStoreCardBalance/100,
+                                        'storedPoint':data.psIntegralOverall / 100,
+                                        'storedAmount':pszAmount
+                                    })
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        };
+
+    },
+    /*雅座会员退出登录*/
+    ya_loginOut:function () {
+        $('.ya-btn-query').text('查询');
+        $('.ya_memberNumber').attr('disabled', false).val('');
+        $('.ya-Stored-value').attr('disabled', true).val('');
+        $('.ya_cardInfo').hide();
+        $('.ya_cardInfo .ya_balance').text('');
+        $('.ya_cardInfo .ya_point').text('');
+    },
+    /*雅座会员注册激活*/
+    ya_Register:function () {
+        var that=this,
+            ya_pad=$.trim($('.ya_pad').val()),
+            ya_Register=$.trim($('.ya_Register').val()),
+            ya_phone=$.trim($('.ya_phone').val());
+        if(member.isNumber(ya_pad)===false){
+            member.errorAlert('只能输入六位数字的密码');
+            return false
+        }
+        if(member.isPhoneNo(ya_phone)===false){
+            member.errorAlert('请输入正确的手机号码');
+            return false
+        }
+        str = '<strong>您确定激活卡号“' + ya_Register + '”给手机号“' + ya_phone + '”吗？</strong>'
+        widget.modal.alert({
+            cls: 'fade in ya_rechargeSave',
+            content: str,
+            width: 500,
+            height: 500,
+            btnOkTxt: '确定',
+            btnCancelTxt: '取消',
+            btnOkCb:function () {
+                $(".modal-alert:last,.modal-backdrop:last").remove();
+                regMsg();
+            }
+        });
+        function regMsg() {
+            $.ajax({
+                url: memberAddress.vipotherurl + _config.interfaceUrl.YaCardActive + '' + ya_Register + '/' + ya_pad + '/' + ya_phone + '/',
+                method: 'GET',
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (res) {
+                    if (res.Data == 0) {
+                        member.errorAlert('雅座会员激活失败：' + res.Info)
+                    }
+                    if (res.Data == 1) {
+                        member.errorAlert('雅座会员激活成功')
+                    }
+                }
+            })
+        }
+
+    },
+    /*充值成功后打印详情*/
+    print:function (msg) {
+        $.ajax({
+            url:_config.interfaceUrl.PrintMemberStore,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data:JSON.stringify({
+                'cardno':msg.cardno,
+                'memberTitle':utils.storage.getter('branch_branchname'),
+                'pzh':msg.pzh,//交易号
+                'date':ya_Member.ya_formatDate(new Date(), "yyyy-MM-dd"),
+                'time':ya_Member.ya_formatDate(new Date(), "HH:mm:ss"),
+                'storeName':utils.storage.getter('branch_branchname'),
+                'storedBalance':msg.storedAmount,//充值金额
+                'storedAmount':msg.storedBalance,//充值后余额
+                'storedPoint':msg.storedPoint,//充值后积分余额
+                'deviceid':utils.storage.getter('posid')
+            }),
+            success: function (res) {
+                //console.log(res)
+                if(res.result=='0'){
+                    rightBottomPop.alert({
+                        content:"会员充值详情打印完成",
+                    })
+                }
+                else {
+                    utils.printError.alert('会员充值详情打印失败，请稍后重试')
+                }
+            }
+        });
+    },
+    /*时间格式化为201610181432350103*/
+    ya_formatDate: function (date, format) {
+        if (!date) return;
+        if (!format) format = "yyyy-MM-dd";
+        switch (typeof date) {
+            case "string":
+                date = new Date(date.replace(/-/, "/"));
+                break;
+            case "number":
+                date = new Date(date);
+                break;
+        }
+        if (!date instanceof Date) return;
+        var dict = {
+            "yyyy": date.getFullYear(),
+            "MM": ("" + (date.getMonth() + 101)).substr(1),
+            "dd": ("" + (date.getDate() + 100)).substr(1),
+            "HH": ("" + (date.getHours() + 100)).substr(1),
+            "mm": ("" + (date.getMinutes() + 100)).substr(1),
+            "ss": ("" + (date.getSeconds() + 100)).substr(1),
+            "ffff": ("" + (date.getMilliseconds() + 10000)).substr(1),//毫秒
+        };
+        return format.replace(/(yyyy|MM?|dd?|HH?|ss?|mm?|ffff?)/g, function () {
+            return dict[arguments[0]];
+        });
+    }
 }

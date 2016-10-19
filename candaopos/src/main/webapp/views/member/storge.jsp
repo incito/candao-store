@@ -61,13 +61,13 @@
 				<div class="form-group form-group-nor" >
 					<span class="form-label">手机号/会员卡号:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd" placeholder="输入手机号/会员卡号" id="rechargeMoblie" type="text" class="form-control"  >
+						<input value="" name="repwd" placeholder="输入手机号/会员卡号" id="rechargeMoblie"  type="text" class="form-control"  >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
 					<span class="form-label">充值金额:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd" id="rechargeMoney" placeholder="100.00" type="text" class="form-control" >
+						<input value="" name="repwd" id="rechargeMoney"  placeholder="100.00" type="text" class="form-control" >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
@@ -77,7 +77,7 @@
 					</div>
 				</div>
 				<button class="btn-base btn-yellow btn-base-sm btn-Save">确定充值</button>
-				<button class="btn-base btn-base-sm ">取消</button>
+				<button class="btn-base btn-base-sm "onclick="goBack();">取消</button>
 			</div>
 		</div>
 
@@ -127,7 +127,14 @@
 		else {
 			$('.giveMoney').text(0)
 		}
-	})
+	});
+	var getUrlcardMember=utils.getUrl.get('cardMember');
+	if(getUrlcardMember){
+		$('#rechargeMoblie').val(getUrlcardMember).attr('readonly',true)
+	}
+	else {
+		$('#rechargeMoblie').val('').attr('readonly',false)
+	}
 </script>
 </body>
 </html>

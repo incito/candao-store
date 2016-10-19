@@ -150,7 +150,11 @@ _config.interfaceUrl = {
 	GetCouponList: "/member/preferential/posPreferentialList", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
 
+
+    /*雅座接口*/
 	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
+	Yarecharge:'/datasnap/rest/TServerMethods1/StoreCardDeposit/',<!--雅座会员储值-->
+	YaCardActive:'/datasnap/rest/TServerMethods1/CardActive/',<!--雅座会员激活-->
 };
 //优惠分类
 _config.preferential = {
@@ -1060,6 +1064,31 @@ utils.chooseMember={
 		$('body').on('click','.memberChoose-item',function () {
 			$(this).addClass('memberChoose-active').siblings('.memberChoose-item').removeClass('memberChoose-active');
 			chooseNo= $(this).text()
+		});
+	}
+}
+/*弹钱箱
+* 只有utils.storage.getter('cashbox')=='1'时才开启*/
+utils.openCash=function () {
+	if(utils.storage.getter('cashbox')=='1'){
+		$.ajax({
+			url: _config.interfaceUrl.OpenCash + '/127.0.0.1/',
+			method: 'POST',
+			contentType: "application/json",
+			dataType: 'json',
+			success: function (res) {
+				if (res.result[0] === '1') {//成功
+
+				}
+				widget.modal.alert({
+					cls: 'fade in',
+					content: '<strong>' + (res.Info === undefined ? '打开钱箱成功' : res.Info) + '</strong>',
+					width: 500,
+					height: 500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+			}
 		});
 	}
 }

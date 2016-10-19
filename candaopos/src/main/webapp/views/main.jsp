@@ -220,8 +220,8 @@
 				<!--li class="J-btn-checkout">结业</li-->
 				<li class="member-btns">会员</li>
 				<div class="m-member popover fade top in">
-					<div class="arrow" style="left: 50%;"></div>
-					<ul><li class="J-btn-storge">会员储值</li>
+					<div class="arrow " style="left: 50%;"></div>
+					<ul class="arrowMember"><li class="J-btn-storge">会员储值</li>
 					<li class="J-btn-register">会员注册</li>
 					<li class="J-btn-memberView">会员查询</li></ul>
 				</div>
