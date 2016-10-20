@@ -178,6 +178,7 @@ var widget = widget || {};
  *  - `vertical` {Boolean} 默认true
  *  - `cls` {String} 为modal添加样式,多个用空格分开
  *  - `hasBtns` {Boolean} 是否有按钮 默认为true
+ *  - `hasFooter` {Boolean} 是否有footer 默认为true
  *  - `btnOkTxt` {String} ok按钮文字 为''时,不显示
  *  - `btnCancelTxt` {String} cancle按钮文字 为''时,不显示
  *  - `btnOkCb` {Function} ok按钮回调
@@ -248,6 +249,8 @@ widget.modal = function () {
 	};
 
 
+
+
 	var _getId = function () {
 		var date = new Date();
 		return 'mdl' + date.valueOf();
@@ -273,6 +276,7 @@ widget.modal = function () {
 			btnOkTxt: '确定',
 			vertical: true,
 			onReady: null,
+			hasFooter: true,
 			btnOkCb: function(){
 				_close(modalId);
 			},
@@ -310,8 +314,14 @@ widget.modal = function () {
 				$modal.find('.ok').remove();
 			} else {
 				$modal.find('.ok').bind('click', function(){
+					if($(this).hasClass('disabled')) return false;
 					ops.btnOkCb && ops.btnOkCb.call(this);
 				})
+			}
+
+
+			if(!ops.hasFooter) {
+				$modal.find('.modal-footer').remove();
 			}
 
 			if(ops.btnCancelTxt === ''){
@@ -496,6 +506,84 @@ widget.keyboard = function(opts){
 	};
 	return _init()
 };
+
+/**
+ * textarea输入modal
+ * @returns {{show}}
+ */
+widget.textAreaModal = function(opts){
+	var modalIns = null;
+	var note_count = 20;
+	var doc = $(document);
+
+	var defautlopts = {
+		title: '请输入原因',
+		cls: 'textareaModal default-dialog',
+		note: '',
+		taregt: null,
+		cb: null
+	};
+	var opts = $.extend({},defautlopts, opts);
+
+	doc.undelegate('.textareaModal .btn-save','click');
+	doc.delegate('.textareaModal .btn-save','click', function(){
+		if(opts.cb === null) {
+			opts.target.val($('.textareaModal .J-textarea').val());
+			modalIns.close();
+		}
+	});
+
+	doc.undelegate('.textareaModal .J-textarea','keyup');
+	doc.delegate('.textareaModal .J-textarea','keyup', function(){
+		var me = $(this);
+		var value = me.val();
+		var c = note_count;
+		if(value != null && value != ""){
+			c = note_count-value.length;
+		}
+		if(c <=0){
+			c = 0;
+		}
+		$(".J-count").text(c);
+	});
+
+	doc.undelegate('.textareaModal .J-clear','click');
+	doc.delegate('.textareaModal .J-clear','click', function(){
+		$('.textareaModal .J-textarea').val('');
+		$('.J-count').text(note_count);
+	});
+
+	doc.delegate('.textareaModal .btn-cancel ','click', function(){
+		modalIns.close();
+	});
+
+	var html = '<div class="fl ">其他退菜原因：</div>' +
+		'<div class="fr">还可以输入<span class="J-count">20</span>字</div>' +
+		'<textarea class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
+		'<div class="btn-operate  ">' +
+		'<button class="btn in-btn135 clear-btn J-clear" style="float: left;" type="button">清空</button>' +
+			'<div style="text-align: right;">' +
+				'<button class="btn btn-cancel in-btn135" type="button" >取消</button>' +
+				'<button class="btn btn-save in-btn135 ml5" type="button">确认</button>' +
+			'</div>' +
+		'</div>';
+
+	return {
+		show: function(){
+			modalIns = widget.modal.alert({
+				cls: opts.cls,
+				content:html,
+				width:600,
+				height:500,
+				btnOkTxt: '',
+				hasFooter: false,
+				btnCancelTxt: ''
+			});
+		}
+	}
+}
+
+
 /**
  * 设置底部Info
  * @param opts
@@ -576,17 +664,17 @@ var rightBottomPop ={
  ************/
 var utils = utils || {};
 utils.array = {
-	indexOf : function(val) {
-		for (var i = 0; i < this.length; i++) {
-			if (this[i] == val) return i;
+	indexOf : function(ret,val) {
+		for (var i = 0; i < ret.length; i++) {
+			if (ret[i] == val) return i;
 		}
 		return -1;
 	},
 
-	remove: function(val) {
-		var index = this.indexOf(val);
+	remove: function(ret, val) {
+		var index = ret.indexOf(val);
 		if (index > -1) {
-			this.splice(index, 1);
+			ret.splice(index, 1);
 		}
 	},
 
@@ -943,78 +1031,78 @@ utils.printError={//打印失败
     }
 }
 /*打印机异常*/
-utils.printAbnormal={
-	int:function () {
-		this.get();
-	},
-	get:function () {//获取打印机列表
-		var that = this,timedata='';
-		$.ajax({
-			url:'/newspicyway/pos/printerlist.json',
-			type: "get",
-			dataType: "json",
-			async:false,
-			global: false,
-			success: function (data) {
-				var arry=[];
-				for( var i=0;i<data.data.length;i++) {
-					if(data.data[i].status!='1'){
-						arry.push(data.data[i])
-					}
-				};
-				if(arry.length>0){
-					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
-						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
-					if($("#printAbnormal").length<1){
-						widget.modal.alert({
-							cls: 'fade in printAbnormal',
-							content:str,
-							title:'',
-							width:300,
-							height:400,
-							btnOkTxt: '',
-							btnCancelTxt: '确定',
-							btnCancelCb:function () {
-								if($('.printAbnormalinput').prop("checked")==true){
-									that.set(10*60*1000)
-								}
-								else {
-									that.set(60*1000)
-								}
-							}
-						});
-					}
-					$('.printAbnormal .modal-header span').hide()
-				}
-
-			},
-		});
-
-	},
-	set:function (time) {
-		var that=this,timeLeft=time;//这里设定的时间是;
-		setTentimes=time
-	}
-
-}
-var setTentimes=utils.storage.getter('setTentimes')
-if(setTentimes==null||setTentimes==0){
-	setTentimes=60*1000
-}
-setInterval(function () {
-	if(setTentimes>0){
-		setTentimes =setTentimes-1000
-		utils.storage.setter('setTentimes',setTentimes);
-		//console.log(utils.storage.getter('setTentimes'))
-	}
-	if(setTentimes==0 && $("#printAbnormal").length<1){
-		    setTentimes=60*1000
-			var hrefLink=document.location.href;
-			if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
-
-			}else {
-				utils.printAbnormal.int();
-			}
-	}
-},1000);
+//utils.printAbnormal={
+//	int:function () {
+//		this.get();
+//	},
+//	get:function () {//获取打印机列表
+//		var that = this,timedata='';
+//		$.ajax({
+//			url:'/newspicyway/pos/printerlist.json',
+//			type: "get",
+//			dataType: "json",
+//			async:false,
+//			global: false,
+//			success: function (data) {
+//				var arry=[];
+//				for( var i=0;i<data.data.length;i++) {
+//					if(data.data[i].status!='1'){
+//						arry.push(data.data[i])
+//					}
+//				};
+//				if(arry.length>0){
+//					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
+//						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
+//					if($("#printAbnormal").length<1){
+//						widget.modal.alert({
+//							cls: 'fade in printAbnormal',
+//							content:str,
+//							title:'',
+//							width:300,
+//							height:400,
+//							btnOkTxt: '',
+//							btnCancelTxt: '确定',
+//							btnCancelCb:function () {
+//								if($('.printAbnormalinput').prop("checked")==true){
+//									that.set(10*60*1000)
+//								}
+//								else {
+//									that.set(60*1000)
+//								}
+//							}
+//						});
+//					}
+//					$('.printAbnormal .modal-header span').hide()
+//				}
+//
+//			},
+//		});
+//
+//	},
+//	set:function (time) {
+//		var that=this,timeLeft=time;//这里设定的时间是;
+//		setTentimes=time
+//	}
+//
+//}
+//var setTentimes=utils.storage.getter('setTentimes')
+//if(setTentimes==null||setTentimes==0){
+//	setTentimes=60*1000
+//}
+//setInterval(function () {
+//	if(setTentimes>0){
+//		setTentimes =setTentimes-1000
+//		utils.storage.setter('setTentimes',setTentimes);
+//		//console.log(utils.storage.getter('setTentimes'))
+//	}
+//	if(setTentimes==0 && $("#printAbnormal").length<1){
+//		    setTentimes=60*1000
+//			var hrefLink=document.location.href;
+//			if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+//
+//			}else {
+//				utils.printAbnormal.int();
+//			}
+//	}
+//},1000);
 
