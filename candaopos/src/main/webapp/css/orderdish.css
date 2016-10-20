@@ -417,6 +417,10 @@ input[type=search] {
 	float: left;
 	width: 100%;
 }
+.default-dialog  .form-group .inpt-span{
+	position: absolute;
+	margin:10px;
+}
 .default-dialog .avoid{
 	float: left;
   	width: 100px;

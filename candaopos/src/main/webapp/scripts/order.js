@@ -1741,6 +1741,13 @@ var Order = {
                     success: function (res) {
                         if(res.result === '0') {
                             window.location.href = './main.jsp';
+                        } else {
+                            utils.loading.remove();
+                            widget.modal.alert({
+                                content:'<strong>结账失败,请稍后重试</strong>',
+                                btnOkTxt: '确定',
+                                btnCancelTxt: ''
+                            });
                         }
                     }
                 });

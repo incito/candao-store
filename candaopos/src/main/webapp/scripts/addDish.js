@@ -798,14 +798,14 @@ var AddDish = {
 			};
 
 			if(type === 0) {
-				row = $.extend(obj,{
+				row = $.extend(row,{
 					"freeuser": null, // 赠菜人/收银员工号
 					"freeauthorize": null, //赠菜授权人工号
 					"freereason": null, //赠菜原因
 					"dishes": null //套餐中的子菜品
 				})
 			} else {
-				row = $.extend(obj,{
+				row = $.extend(row,{
 					"freeuser": utils.storage.getter('pos_aUserid'),
 					"freeauthorize": $('#user').val(),
 					"freereason": $("#givefood-reason").val(''),
