@@ -104,7 +104,7 @@ public class OrderService {
         List<Map<String, Object>> daypxData = tOrderDao.getpxBusinessData(params);
         if(daypxData!=null&&daypxData.size()>0){
         	 float pxnum = 0;
-        	 String pxname = "";
+        	 String pxname = "品项";
         	 for(Map<String, Object> pxmap : daypxData){
         		 if(!pxmap.containsKey("showtype")||!pxmap.get("showtype").toString().equals("0")){
         			 continue;
@@ -120,12 +120,15 @@ public class OrderService {
         	 }
         	 object.put("itemName", pxname);//品项top1名称
              object.put("itemShouldAmount", pxnum);//品项top1数量
+        }else{
+        	object.put("itemName", "品项");//品项top1名称
+            object.put("itemShouldAmount", 0);//品项top1数量
         }
         //优惠
         List<Map<String, Object>> dayyhData = tOrderDao.getyhBusinessData(params);
         if(dayyhData!=null&&dayyhData.size()>0){
         	float shouldamount = 0.0f;
-        	String name = "";
+        	String name = "优惠";
         	for(Map<String,Object> info : dayyhData){
         		if(info.containsKey("shouldamount")){
         			float ampunt = partFlaot(info.get("shouldamount").toString());
@@ -137,6 +140,9 @@ public class OrderService {
         	}
         	 object.put("couponName", name);//优惠top1名称
              object.put("couponShouldAmount", shouldamount);//优惠top1数量
+        }else{
+        	object.put("couponName", "优惠");//优惠top1名称
+            object.put("couponShouldAmount", 0);//优惠top1数量
         }
         //午市
         params.put("xslx", 0);
@@ -154,9 +160,10 @@ public class OrderService {
         params.put("xslx", -1);
         List<Map<String, Object>> tcData = tOrderDao.gettcBusinessData(params);
         if(tcData!=null&&tcData.size()>0){
-        	float sum = 0;
+        	Integer sum = 0;
         	for(Map<String, Object> map : tcData){
-        		float temp = map.containsKey("num")?partFlaot(map.get("num").toString()):0.0f;
+        		String num = map.containsKey("num")?map.get("num").toString():null;
+        		Integer temp = num!=null?Integer.valueOf(num.substring(0,num.indexOf("."))):0;
         		sum += temp;
         	}
         	object.put("returnDishAmount", sum);//营业数据统计(退菜数）
@@ -171,6 +178,7 @@ public class OrderService {
      */
         
         public JSONArray getBusinessDataByMon() {
+        	System.out.println("获取月：");
         
         JSONArray orders = new JSONArray();
         	
@@ -272,6 +280,8 @@ public class OrderService {
             Object[] couponsTopArr = (Object[]) couponsTop;
             allDay.put("couponName", couponsTopArr[0]);
             allDay.put("couponShouldAmount", couponsTopArr[1]); // 份数
+        }else{
+        	allDay.put("couponName","优惠");
         }
 
         // 品项top1
@@ -279,6 +289,8 @@ public class OrderService {
             Object[] itemTopArr = (Object[]) itemTop;
             allDay.put("itemName", itemTopArr[0]);
             allDay.put("itemShouldAmount", itemTopArr[1]);
+        }else{
+        	allDay.put("itemName","");
         }
 
         // 退菜数
@@ -569,7 +581,7 @@ public class OrderService {
             Integer personNum = (Integer) list.get(i)[0];
             BigDecimal inUseNum = (BigDecimal) list.get(i)[1];
             BigDecimal totalNum = (BigDecimal) list.get(i)[2];
-            if (personNum > 6 && personNum < 13) {// 8 -12 人处理
+            /*if (personNum > 6 && personNum < 13) {// 8 -12 人处理
                 moreThanEightInUse += inUseNum.intValue();
                 moreThanEightTotal += totalNum.intValue();
 
@@ -577,16 +589,21 @@ public class OrderService {
                 map.put("personNum", list.get(i)[0]);
                 map.put("inUse", list.get(i)[1]);
                 map.put("total", list.get(i)[2]);
-            }
+                map.put("tabletype", list.get(i)[3]);
+            }*/
+            map.put("personNum", list.get(i)[0]);
+            map.put("inUse", list.get(i)[1]);
+            map.put("total", list.get(i)[2]);
+            map.put("tabletype", list.get(i)[3]);
             totalCount += totalNum.intValue();
             totalInUse += inUseNum.intValue();
             resultList.add(map);
         }
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("personNum", "moreThanEight");
+        /*map.put("personNum", "moreThanEight");
         map.put("inUse", moreThanEightInUse);
         map.put("total", moreThanEightTotal);
-        resultList.add(map);
+        resultList.add(map);*/
         map = new HashMap<String, Object>();
         map.put("personNum", "all");
         map.put("inUse", totalInUse);
@@ -630,6 +647,7 @@ public class OrderService {
     	Object temp = tOrderDao.getShouldAmountByOrderId(params);
         resultMap.put("shouldAmount",temp == null ? 0 :temp);
         resultMap.put("realPersonNum", detail[2]);
+        resultMap.put("tabletype", detail[4]);
         String temp1 = detail[1]==null?"":detail[1].toString();
         params.put("orderId", temp1);
         List<Object[]> cominfo = tOrderDao.getOrderCom(params);

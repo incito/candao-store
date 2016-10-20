@@ -47,13 +47,14 @@ public class TOrderDaoImpl implements TOrderDao{
 	@Override
 	public List<Object[]> getCurrDayOrders(Map<String, Object> params) {
 		List<Object[]> result = new ArrayList<Object[]>();
-		Object[] objects = new Object[4];
 		List<Map<String,Object>> list = daoSupport.find(PREFIX+".getCurrDayOrders", params);
 		for(Map<String,Object> map:list){
+			Object[] objects = new Object[5];
 			objects[0] = map.get("beginTime");
 			objects[1] = map.get("orderId");
 			objects[2] = map.get("realPersonNum");
 			objects[3] = map.get("tableIds");
+			objects[4] = map.get("tableType");
 			result.add(objects);
 		}
 		return result;

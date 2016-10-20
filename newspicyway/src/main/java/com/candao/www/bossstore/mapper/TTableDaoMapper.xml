@@ -4,10 +4,13 @@
 <mapper namespace="com.candao.www.bossstore.dao.TTableDao">
 	 <!-- 查询所有的用户信息-->
 	<select id="queryTablesStatus"  resultType="java.util.Map">
-	    select t.personNum as personNum,sum(case when t.STATUS = 1 then 1 else 0 end) as inUse ,sum(1) as total
+	    select t.personNum as personNum,
+	   	 	sum(case when t.STATUS = 1 then 1 else 0 end) as inUse ,
+	    	sum(1) as total,
+	    	t.tabletype as tableType
 	    from t_table t
 	    where t.status != 5 and t.tabletype not in(2,3)
-	    group by t.personNum
+	    group by t.tabletype
 	</select>
 	<select id="queryService" resultType="java.util.Map" parameterType="java.util.Map">
 		SELECT m.userid as userId,
