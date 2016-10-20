@@ -128,7 +128,8 @@
 		}
 	};
 	jeDate(start);
-	var valicode=null;
+	var valicode=null ,timer;
+	clearTimeout(timer)//清除60S倒计时
 	$('.btn-save').click(function () {
 		member.register();
 		return false//禁止表单提交
@@ -141,6 +142,7 @@
 				return false
 			}
 			else {
+				member.countDown(60);
 				member.sendVerifyCode(moblie);
 			}
 

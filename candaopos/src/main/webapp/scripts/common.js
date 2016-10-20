@@ -11,18 +11,22 @@ $(document).ready(function(){
 		document.querySelector('head').appendChild(msViewportStyle);
 	}
     $(document).bind("ajaxSend", function () {
-        utils.loading.open('正在加载…')
+			utils.loading.open('正在加载…')
+
     }).bind("ajaxComplete", function () {
       utils.loading.remove();
     }).bind('ajaxError',function () {
-        widget.modal.alert({
-            cls: 'fade in',
-            content:'<strong>数据加载失败，请稍后重试</strong>',
-            width:500,
-            height:500,
-            btnOkTxt: '',
-            btnCancelTxt: '确定'
-        });
+    	if($('.errorAlert').length<0){
+			widget.modal.alert({
+				cls: 'fade in errorAlert',
+				content:'<strong>数据加载失败，请稍后重试</strong>',
+				width:500,
+				height:500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+		}
+
     });
 
 
@@ -145,6 +149,12 @@ _config.interfaceUrl = {
 	VipChangePsw: "/member/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
 	GetCouponList: "/member/preferential/posPreferentialList", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
+
+
+    /*雅座接口*/
+	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
+	Yarecharge:'/datasnap/rest/TServerMethods1/StoreCardDeposit/',<!--雅座会员储值-->
+	YaCardActive:'/datasnap/rest/TServerMethods1/CardActive/',<!--雅座会员激活-->
 };
 //优惠分类
 _config.preferential = {
@@ -178,7 +188,6 @@ var widget = widget || {};
  *  - `vertical` {Boolean} 默认true
  *  - `cls` {String} 为modal添加样式,多个用空格分开
  *  - `hasBtns` {Boolean} 是否有按钮 默认为true
- *  - `hasFooter` {Boolean} 是否有footer 默认为true
  *  - `btnOkTxt` {String} ok按钮文字 为''时,不显示
  *  - `btnCancelTxt` {String} cancle按钮文字 为''时,不显示
  *  - `btnOkCb` {Function} ok按钮回调
@@ -1004,15 +1013,17 @@ utils.clearLocalStorage={
 }
 utils.loading ={
 	open:function (msg) {
-		var str='<div class="lading-shade" ></div><div class="spinner">'+
-			'<div class="rect1"></div>'+
-			'<div class="rect2"></div>'+
-			'<div class="rect3"></div>'+
-			'<div class="rect4"></div>'+
-			'<div class="rect5"></div>'+
-			'<p>'+msg+'</p>'
+			var str='<div class="lading-shade" ></div><div class="spinner">'+
+				'<div class="rect1"></div>'+
+				'<div class="rect2"></div>'+
+				'<div class="rect3"></div>'+
+				'<div class="rect4"></div>'+
+				'<div class="rect5"></div>'+
+				'<p>'+msg+'</p>'
 			'</div>';
-		$('body').append(str);
+		if($('.spinner').length<1){
+			$('body').append(str);
+		}
 	},
 	remove:function () {
 		$('.lading-shade,.spinner').remove();
@@ -1031,78 +1042,143 @@ utils.printError={//打印失败
     }
 }
 /*打印机异常*/
-//utils.printAbnormal={
-//	int:function () {
-//		this.get();
-//	},
-//	get:function () {//获取打印机列表
-//		var that = this,timedata='';
-//		$.ajax({
-//			url:'/newspicyway/pos/printerlist.json',
-//			type: "get",
-//			dataType: "json",
-//			async:false,
-//			global: false,
-//			success: function (data) {
-//				var arry=[];
-//				for( var i=0;i<data.data.length;i++) {
-//					if(data.data[i].status!='1'){
-//						arry.push(data.data[i])
-//					}
-//				};
-//				if(arry.length>0){
-//					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
-//						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
-//					if($("#printAbnormal").length<1){
-//						widget.modal.alert({
-//							cls: 'fade in printAbnormal',
-//							content:str,
-//							title:'',
-//							width:300,
-//							height:400,
-//							btnOkTxt: '',
-//							btnCancelTxt: '确定',
-//							btnCancelCb:function () {
-//								if($('.printAbnormalinput').prop("checked")==true){
-//									that.set(10*60*1000)
-//								}
-//								else {
-//									that.set(60*1000)
-//								}
-//							}
-//						});
-//					}
-//					$('.printAbnormal .modal-header span').hide()
-//				}
-//
-//			},
-//		});
-//
-//	},
-//	set:function (time) {
-//		var that=this,timeLeft=time;//这里设定的时间是;
-//		setTentimes=time
-//	}
-//
-//}
-//var setTentimes=utils.storage.getter('setTentimes')
-//if(setTentimes==null||setTentimes==0){
-//	setTentimes=60*1000
-//}
-//setInterval(function () {
-//	if(setTentimes>0){
-//		setTentimes =setTentimes-1000
-//		utils.storage.setter('setTentimes',setTentimes);
-//		//console.log(utils.storage.getter('setTentimes'))
-//	}
-//	if(setTentimes==0 && $("#printAbnormal").length<1){
-//		    setTentimes=60*1000
-//			var hrefLink=document.location.href;
-//			if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
-//
-//			}else {
-//				utils.printAbnormal.int();
-//			}
-//	}
-//},1000);
+utils.printAbnormal={
+	int:function () {
+		this.get();
+	},
+	get:function () {//获取打印机列表
+		var that = this,timedata='';
+		$.ajax({
+			url:'/newspicyway/pos/printerlist.json',
+			type: "get",
+			dataType: "json",
+			async:false,
+			global: false,
+			success: function (data) {
+				var arry=[];
+				for( var i=0;i<data.data.length;i++) {
+					if(data.data[i].status!='1'){
+						arry.push(data.data[i])
+					}
+				};
+				if(arry.length>0){
+					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
+						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
+					if($("#printAbnormal").length<1){
+						widget.modal.alert({
+							cls: 'fade in printAbnormal',
+							content:str,
+							title:'',
+							width:300,
+							height:400,
+							btnOkTxt: '',
+							btnCancelTxt: '确定',
+							btnCancelCb:function () {
+								if($('.printAbnormalinput').prop("checked")==true){
+									that.set(10*60*1000)
+								}
+								else {
+									that.set(60*1000)
+								}
+							}
+						});
+					}
+					$('.printAbnormal .modal-header span').hide()
+				}
+
+			},
+		});
+
+	},
+	set:function (time) {
+		var that=this,timeLeft=time;//这里设定的时间是;
+		setTentimes=time
+	}
+
+}
+var setTentimes=utils.storage.getter('setTentimes')
+if(setTentimes==null||setTentimes==0){
+	setTentimes=60*1000
+}
+setInterval(function () {
+	if(setTentimes>0){
+		setTentimes =setTentimes-1000
+		utils.storage.setter('setTentimes',setTentimes);
+		//console.log(utils.storage.getter('setTentimes'))
+	}
+	if(setTentimes==0 && $("#printAbnormal").length<1){
+		    setTentimes=60*1000
+			var hrefLink=document.location.href;
+			if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+
+			}else {
+				utils.printAbnormal.int();
+			}
+	}
+},1000);
+/*多张会员卡选择
+* 传入参数为对象
+* {'data':data,传入卡号列表['卡号一','卡号二']
+* 'callback':回调方法，如果回调方法需要再次调用查询会员卡号，回调方法的参数名必须为'chooseNo'}
+* */
+utils.chooseMember={
+	choose:function (msg) {
+		var chooseNo=null
+		var str=' <div class="coupon-cnt">';
+		for(var i=0 ;i<msg.data.length;i++){
+			str+='<div class="memberChoose-item">'+msg.data[i]+'</div>';
+		}
+		str+='</div>';
+		widget.modal.alert({
+			cls: 'fade in memberChoose',
+			content:str,
+			width:520,
+			height:500,
+			title:'请选择会员卡',
+			btnOkTxt: '确定',
+			btnCancelTxt: '取消',
+			btnOkCb:function () {
+				if($('.memberChoose-active').length<1){
+					utils.printError.alert('请选择会员卡号')
+				}
+				else {
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					eval(msg.callback)
+				}
+
+			}
+		});
+		$('body').on('click','.memberChoose-item',function () {
+			$(this).addClass('memberChoose-active').siblings('.memberChoose-item').removeClass('memberChoose-active');
+			chooseNo= $(this).text()
+		});
+	}
+}
+/*弹钱箱
+* 只有utils.storage.getter('cashbox')=='1'时才开启*/
+utils.openCash=function () {
+	if(utils.storage.getter('cashbox')=='1'){
+		$.ajax({
+			url: _config.interfaceUrl.OpenCash + '/127.0.0.1/',
+			method: 'POST',
+			contentType: "application/json",
+			dataType: 'json',
+			success: function (res) {
+				if (res.result[0] === '1') {//成功
+
+				}
+				widget.modal.alert({
+					cls: 'fade in',
+					content: '<strong>' + (res.Info === undefined ? '打开钱箱成功' : res.Info) + '</strong>',
+					width: 500,
+					height: 500,
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+			}
+		});
+	}
+}
+
+
 

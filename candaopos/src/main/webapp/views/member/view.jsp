@@ -56,7 +56,7 @@
 		</div>
 
 		<ul class="member-op-list">
-			<li><a href="./storge.jsp">会员储值</a></li>
+			<li class="J-modify-storge">会员储值</li>
 			<li>新增实体卡</li>
 			<li  class="J-modify-base">修改基本信息</li>
 			<li class="J-modify-pwd">修改消费密码</li>
@@ -100,7 +100,6 @@
 		widget.keyboard({
 			target: '.virtual-keyboard-base'
 		});
-
 	})
 
 </script>

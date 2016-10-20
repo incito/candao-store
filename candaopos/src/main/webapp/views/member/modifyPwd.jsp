@@ -66,16 +66,30 @@
 	</div>
 </div>
 <script>
-	var valicode=null;
+	var valicode=null ,timer;
+	clearTimeout(timer)//清除60S倒计时
 	$('#modify-pwd-dialog #changPsd').val(loadMember.mobile)
 	$('#modify-pwd-dialog .btn-changSave').click(function () {
 		member.changePassword();
 		return false//禁止表单提交
 	})
 	$('#modify-pwd-dialog .btn-sendMsg').click(function () {
-		member.sendVerifyCode($.trim($('#changPsd').val()));
+		var phone=$.trim($('#changPsd').val())
+		if(member.isPhoneNo(phone)===true){
+			member.countDown(60);
+			member.sendVerifyCode(phone);
+		}
+		else {
+			member.errorAlert('请输入正确的手机号码')
+		}
 		return false//禁止表单提交
 	})
+	/*$('.close-win').click(function () {
+		$('#modify-pwd-dialog').modal('hide');
+		clearTimeout(timer)//清除60S倒计时
+		$('#modify-pwd-dialog').html('')
+	})*/
+
 </script>
 </body>
 </html>

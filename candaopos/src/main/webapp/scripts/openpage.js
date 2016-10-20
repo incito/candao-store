@@ -11,6 +11,13 @@ var OpenPage = {
 			utils.storage.setter("ipaddress",ipaddress);
 			utils.storage.setter("posid",posid)
 		}
+		if(utils.storage.getter('cashbox')){
+            utils.storage.setter('cashbox',utils.storage.getter('cashbox'))//钱箱状态设置已设置状态
+        }
+        else {
+            utils.storage.setter('cashbox','0')//钱箱状态设置默认为0
+        }
+
 	},
 
 	bindEvent: function(){

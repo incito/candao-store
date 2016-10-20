@@ -39,39 +39,18 @@
 			</div>
 		</div>
 
-		<div class="block-shadow block-radius " style="display: none">
-			<ul class="member-info-list">
-				<li>卡号：<span>827375738</span></li>
-				<li>手机号码：<span>827375738</span></li>
-				<li>姓名：<span>张晓东</span></li>
-				<li>会员卡等级：<span>储值卡</span></li>
-				<li>生日：<span>87/02/09</span></li>
-				<li>性别：<span>女</span></li>
-				<li>余额：<span>88.00</span></li>
-				<li>积分：<span>88</span></li>
-				<li>卡状态：<span>正常</span></li>
-			</ul>
-		</div>
-
 		<div class="coupon-box">
-			<div class="prev">&lt;</div>
-			<div class="coupon-cnt">
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
+			<div class="prev unclick">&lt;</div>
+			<div class="coupon-cnt coupon-List" style="height: 116px;overflow:hidden;">
+				<%--优惠列表list--%>
 			</div>
-			<div class="next">&gt;</div>
+			<div class="next unclick">&gt;</div>
 		</div>
 
 		<div class="pay-type-select">
 			<ul class="cnt">
-				<li class="active">现金</li>
-				<li>银行卡</li>
+				<li class="active" ChargeType="0">现金</li>
+				<li ChargeType="1">银行卡</li>
 			</ul>
 		</div>
 
@@ -82,23 +61,23 @@
 				<div class="form-group form-group-nor" >
 					<span class="form-label">手机号/会员卡号:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd"  type="password" class="form-control" autocomplete="off">
+						<input value="" name="repwd" placeholder="输入手机号/会员卡号" id="rechargeMoblie"  type="text" class="form-control"  >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
-					<span class="form-label">赠送金额:</span>
+					<span class="form-label">充值金额:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd"  type="password" class="form-control" autocomplete="off">
+						<input value="" name="repwd" id="rechargeMoney"  placeholder="100.00" type="text" class="form-control" >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
 					<span class="form-label">赠送:</span>
-					<div class="form-group-info">
+					<div class="form-group-info giveMoney">
 						0
 					</div>
 				</div>
-				<button class="btn-base btn-yellow btn-base-sm">确定重置</button>
-				<button class="btn-base btn-base-sm ">取消</button>
+				<button class="btn-base btn-yellow btn-base-sm btn-Save">确定充值</button>
+				<button class="btn-base btn-base-sm "onclick="goBack();">取消</button>
 			</div>
 		</div>
 
@@ -122,9 +101,40 @@
 		</div>
 	</div>
 </article>
-<footer class="footer-min">
-	<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+<footer>
+	<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 </footer>
 <script type="text/javascript" src="../../scripts/member.js"></script>
+<script>
+	//加载虚拟键盘组件
+	widget.keyboard({
+		target: '.virtual-keyboard-base'
+	});
+	member.getCouponList();
+	$('.pay-type-select li').click(function () {
+		$(this).addClass('active').siblings('li').removeClass('active');
+	});
+	$('.btn-Save').click(function () {
+		member.stored_value()
+	})
+	$('#rechargeMoney').on('input propertychange', function(){
+		var rechargeMoney=$.trim($('#rechargeMoney').val());
+		var presentvalue=$.trim($('.coupon-List .active').attr('presentvalue'));//赠送比例
+		var dealvalue=$.trim($('.coupon-List .active').attr('dealvalue'));//满多少赠送
+		if(member.ismoney(rechargeMoney)===true && presentvalue!=''&& dealvalue!=''){
+			$('.giveMoney').text(parseInt(rechargeMoney/dealvalue)*presentvalue)
+		}
+		else {
+			$('.giveMoney').text(0)
+		}
+	});
+	var getUrlcardMember=utils.getUrl.get('cardMember');
+	if(getUrlcardMember){
+		$('#rechargeMoblie').val(getUrlcardMember).attr('readonly',true)
+	}
+	else {
+		$('#rechargeMoblie').val('').attr('readonly',false)
+	}
+</script>
 </body>
 </html>

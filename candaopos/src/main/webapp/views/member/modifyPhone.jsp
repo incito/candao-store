@@ -63,7 +63,8 @@
 	</div>
 </div>
 <script>
-	var valicode=null;
+	var valicode=null ,timer;
+	clearTimeout(timer)//清除60S倒计时
 	$('#modify-phone-dialog #oldphone').val(loadMember.mobile)
 	$('#modify-phone-dialog .btn-changSave').click(function () {
 		member.changephone();
@@ -73,6 +74,7 @@
 		var phone=$.trim($('#newphone').val())
 		if(member.isPhoneNo(phone)===true){
 			if(member.isPhoneRepeat(phone)===true){
+				member.countDown(60);
 				member.sendVerifyCode(phone);
 			}
 			else{
@@ -84,6 +86,11 @@
 		}
 		return false//禁止表单提交
 	})
+	/*$('.close-win').click(function () {
+		$('#modify-phone-dialog').modal('hide');
+		clearTimeout(timer)//清除60S倒计时
+		$('#modify-phone-dialog').html('')
+	})*/
 </script>
 </body>
 </html>
