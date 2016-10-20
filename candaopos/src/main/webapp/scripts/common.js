@@ -258,6 +258,8 @@ widget.modal = function () {
 	};
 
 
+
+
 	var _getId = function () {
 		var date = new Date();
 		return 'mdl' + date.valueOf();
@@ -283,6 +285,7 @@ widget.modal = function () {
 			btnOkTxt: '确定',
 			vertical: true,
 			onReady: null,
+			hasFooter: true,
 			btnOkCb: function(){
 				_close(modalId);
 			},
@@ -320,8 +323,14 @@ widget.modal = function () {
 				$modal.find('.ok').remove();
 			} else {
 				$modal.find('.ok').bind('click', function(){
+					if($(this).hasClass('disabled')) return false;
 					ops.btnOkCb && ops.btnOkCb.call(this);
 				})
+			}
+
+
+			if(!ops.hasFooter) {
+				$modal.find('.modal-footer').remove();
 			}
 
 			if(ops.btnCancelTxt === ''){
@@ -506,6 +515,84 @@ widget.keyboard = function(opts){
 	};
 	return _init()
 };
+
+/**
+ * textarea输入modal
+ * @returns {{show}}
+ */
+widget.textAreaModal = function(opts){
+	var modalIns = null;
+	var note_count = 20;
+	var doc = $(document);
+
+	var defautlopts = {
+		title: '请输入原因',
+		cls: 'textareaModal default-dialog',
+		note: '',
+		taregt: null,
+		cb: null
+	};
+	var opts = $.extend({},defautlopts, opts);
+
+	doc.undelegate('.textareaModal .btn-save','click');
+	doc.delegate('.textareaModal .btn-save','click', function(){
+		if(opts.cb === null) {
+			opts.target.val($('.textareaModal .J-textarea').val());
+			modalIns.close();
+		}
+	});
+
+	doc.undelegate('.textareaModal .J-textarea','keyup');
+	doc.delegate('.textareaModal .J-textarea','keyup', function(){
+		var me = $(this);
+		var value = me.val();
+		var c = note_count;
+		if(value != null && value != ""){
+			c = note_count-value.length;
+		}
+		if(c <=0){
+			c = 0;
+		}
+		$(".J-count").text(c);
+	});
+
+	doc.undelegate('.textareaModal .J-clear','click');
+	doc.delegate('.textareaModal .J-clear','click', function(){
+		$('.textareaModal .J-textarea').val('');
+		$('.J-count').text(note_count);
+	});
+
+	doc.delegate('.textareaModal .btn-cancel ','click', function(){
+		modalIns.close();
+	});
+
+	var html = '<div class="fl ">其他退菜原因：</div>' +
+		'<div class="fr">还可以输入<span class="J-count">20</span>字</div>' +
+		'<textarea class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
+		'<div class="btn-operate  ">' +
+		'<button class="btn in-btn135 clear-btn J-clear" style="float: left;" type="button">清空</button>' +
+			'<div style="text-align: right;">' +
+				'<button class="btn btn-cancel in-btn135" type="button" >取消</button>' +
+				'<button class="btn btn-save in-btn135 ml5" type="button">确认</button>' +
+			'</div>' +
+		'</div>';
+
+	return {
+		show: function(){
+			modalIns = widget.modal.alert({
+				cls: opts.cls,
+				content:html,
+				width:600,
+				height:500,
+				btnOkTxt: '',
+				hasFooter: false,
+				btnCancelTxt: ''
+			});
+		}
+	}
+}
+
+
 /**
  * 设置底部Info
  * @param opts
@@ -586,17 +673,17 @@ var rightBottomPop ={
  ************/
 var utils = utils || {};
 utils.array = {
-	indexOf : function(val) {
-		for (var i = 0; i < this.length; i++) {
-			if (this[i] == val) return i;
+	indexOf : function(ret,val) {
+		for (var i = 0; i < ret.length; i++) {
+			if (ret[i] == val) return i;
 		}
 		return -1;
 	},
 
-	remove: function(val) {
-		var index = this.indexOf(val);
+	remove: function(ret, val) {
+		var index = ret.indexOf(val);
 		if (index > -1) {
-			this.splice(index, 1);
+			ret.splice(index, 1);
 		}
 	},
 

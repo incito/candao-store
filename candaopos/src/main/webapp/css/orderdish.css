@@ -146,6 +146,22 @@ footer{
 	border-bottom: 3px solid #FF5803;
 }
 
+.main-div .nav-types li b {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: #FF580A;
+	color: #fff;
+	font-size: 12px;
+	border-radius: 100%;
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+	font-weight: normal;
+	text-align: center;
+	display: none;
+}
+
 .search-btns div.search-btn{
 	width: 43px;
 	height: 43px;
@@ -169,11 +185,22 @@ footer{
 }
 .search-btns div.search-btn:active, .search .btn-clear:active, 
 .main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, 
-.default-dialog .taste ul li:active, #combodish-dialog .btns-div .num-btn:active{
+.default-dialog .taste ul li.active, #combodish-dialog .btns-div .num-btn:active{
 	background: #FF5803;
 	opacity: 1;
 	color: #ffffff;
 }
+.fishpot-dialog .modal-body {
+	text-align: left;
+}
+.fishpot-dialog span.inpt-span {
+	position: absolute;
+	font-size: 16px;
+	color: #B0B0B0;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
 .main-div>div{
 	position: relative;
 	float: left;
@@ -390,6 +417,10 @@ input[type=search] {
 	float: left;
 	width: 100%;
 }
+.default-dialog  .form-group .inpt-span{
+	position: absolute;
+	margin:10px;
+}
 .default-dialog .avoid{
 	float: left;
   	width: 100px;
@@ -479,18 +510,11 @@ input[type=search] {
 	height: 36px;
 	float: right;
 }
-.default-dialog .dialog-sm-info span.inpt-span {
-  	position: absolute;
-  	font-size: 16px;
-  	color: #B0B0B0;
-  	padding-top: 10px;
-  	padding-left: 10px;
-}
 .default-dialog .form-group input.padding-left{
 	height: 40px;
 	padding-left: 90px;
 }
-#fishpotdish-dialog .fishpot .form-group .col-xs-7{
+.fishpot .form-group .col-xs-7{
 	width: 320px;
   	height: 45px;
   	text-align: center;
@@ -500,20 +524,21 @@ input[type=search] {
   	color: #ffffff;
   	font-size: 16px;
 }
-#fishpotdish-dialog .fishpot .form-group .num-oper{
+.fishpot .form-group .num-oper{
 	float: right;
 	text-align: right;
 }
 .fishpot .form-group .num-oper .num-inp{
-	width: 40px;
+	width: 50px;
 	height: 40px;
 	display: inline-block;
+	text-align: center;
 }
 .fishpot .form-group .num-oper .num-oper-btn{
 	width: 40px;
 	display: inline-block;
 }
-#fishpotdish-dialog .btn-operate  {
+.btn-operate  {
 	text-align: right;
 }
 .guadan-dialog .inpt-span{

@@ -74,25 +74,25 @@
 			</div>
 			<div class="oper-div">
 				<div class="btns">
-					<button class="btn oper-btn prev-btn">
+					<button class="btn oper-btn prev-btn disabled">
 						<span class="glyphicon glyphicon-chevron-up"></span>
 					</button>
 					<div class="page-info">
 						<span id="curr-page">0</span>/<span id="pages-len">0</span>
 					</div>
-					<button class="btn oper-btn next-btn">
+					<button class="btn oper-btn next-btn disabled">
 						<span class="glyphicon glyphicon-chevron-down"></span>
 					</button>
-					<button class="btn oper-btn disabled" onclick="add()">
+					<button class="btn oper-btn disabled" onclick="AddDish.addByBtn()">
 						<span class="glyphicon glyphicon-plus"></span>
 					</button>
-					<button class="btn oper-btn disabled" onclick="reduct()">
+					<button class="btn oper-btn disabled" onclick="AddDish.reductByBtn()">
 						<span class="glyphicon glyphicon-minus"></span>
 					</button>
-					<button class="btn oper-btn disabled" onclick="updateNum()">
+					<button class="btn oper-btn disabled" onclick="AddDish.updateNum()">
 						<span>数量</span>
 					</button>
-					<button class="btn oper-btn disabled" onclick="singleNote()">
+					<button class="btn oper-btn disabled" onclick="AddDish.initNoteDialog(0);">
 						<span>备注</span>
 					</button>
 				</div>
@@ -156,10 +156,10 @@
 				</div>
 				<div class="main-oper-btns">
 					<button class="btn disabled gua-dan hide" onclick="guadan()">挂单</button>
-					<button class="btn disabled give-dish" onclick="giveFood()">赠菜</button>
-					<button class="btn disabled" onclick="allNote()">全单备注</button>
-					<button class="btn disabled" onclick="clearSelected()">清空</button>
-					<button class="btn disabled place-order" onclick="placeOrder()">下单</button>
+					<button class="btn disabled give-dish" onclick="AddDish.giveFood()">赠菜</button>
+					<button class="btn disabled" onclick="AddDish.initNoteDialog(1)">全单备注</button>
+					<button class="btn disabled" onclick="AddDish.clearSelected()">清空</button>
+					<button class="btn disabled place-order" onclick="AddDish.placeOrder()">下单</button>
 				</div>
 			</div>
 		</div>
@@ -169,56 +169,6 @@
 				<span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span>
 			</div>
 		</footer>
-	</div>
-	<!-- 清空确认框 -->
-	<div class="modal fade dialog-sm confirm-dialog in " id="clear-confirm-dialog"
-	     data-backdrop="static">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title"></div>
-	                <img id="pagtype" src="../images/close-sm.png" class="img-close" onclick="closeConfirm('clear-confirm-dialog')">
-	            </div>
-	            <div class="modal-body">
-	            	<!-- 仅存在一个分类中-->
-	                <div class="dialog-sm-info">
-	                    <p class="p1">确定要清空已选菜品吗？
-	                    </p>
-	                </div>
-	                <div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('clear-confirm-dialog')">取消
-	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="doClear()">确认
-	                    </button>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<!-- 下单确认框 -->
-	<div class="modal fade dialog-sm confirm-dialog in " id="placeorder-confirm-dialog"
-	     data-backdrop="static">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title"></div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('placeorder-confirm-dialog')">
-	            </div>
-	            <div class="modal-body">
-	            	<!-- 仅存在一个分类中-->
-	                <div class="dialog-sm-info">
-	                    <p class="p1">餐台【<span class="tableno">002</span>】确定下单吗？
-	                    </p>
-	                </div>
-	                <div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('placeorder-confirm-dialog')">取消
-	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" data-dismiss="modal" onclick="doPlaceOrder()">确认
-	                    </button>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
 	</div>
 	<!-- 更新购物车单个菜品数量 -->
 	<div class="modal fade default-dialog in " id="updatenum-dialog"
@@ -232,11 +182,10 @@
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
-	                	<input type="hidden" id="dish-id" value="">
-	                    <div class="form-group dishname">菜品名称：<span id="dish-name"></span></div>
+	                    <div class="form-group dishname">菜品名称：<span class="dish-name"></span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">菜品数量:</span>
-	                    	<input type="text" class="form-control padding-left" id="num">
+	                    	<input type="text" class="form-control padding-left J-num">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -256,7 +205,7 @@
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135"  type="button" onclick="doUpdateNum()">确认
+	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doUpdateNum()">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -275,22 +224,19 @@
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
-	                	<input type="hidden" id="dish-id" value="">
-	                	<input type="hidden" id="note-type" value="">
-	                	<input type="hidden" id="dish-type" value="">
-	                    <div id="dish-info"><p class="p1"><span id="note-dishname"></span> <span id="note-price" style="margin-left: 100px;">0</span>元</p></div>
-	                    <div id="taste" class="taste">
+	                    <div class="dish-info"><p class="p1"><span id="note-dishname"></span> <span id="note-price" style="margin-left: 100px;">0</span>元</p></div>
+	                    <div class="taste">
 	                    	<h6>选择口味</h6>
 	                    	<ul><li>口味1</li><li>口味2</li><li>口味3</li><li>口味4</li></ul>
 	                    </div>
 	               		<h6>忌口</h6>
 	               		<div class="form-group"><div class="avoid">少辣</div><div class="avoid">少盐</div></div>
-	               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" id="dish-note" class="form-control padding-left" onclick="inputNote()"></div>
+	               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" id="dish-note" class="form-control padding-left" onclick='widget.textAreaModal({ target: $(this), note: $(this).val() }).show();'></div>
 	                </div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('note-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="doNote()">确认
+	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doNote()">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -324,7 +270,7 @@
 		            		<div class="btn-operate ">
 			                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('guadan-dialog')" >取消
 			                    </button>
-			                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认挂单
+			                    <button class="btn btn-save in-btn135"  type="button" onclick="">确认挂单
 			                    </button>
 	                		</div>
 		            	</div>
@@ -361,47 +307,18 @@
 	            <div class="modal-body">
 	                <div class="dialog-sm-info">
 	               		<h6>赠菜原因</h6>
-	               		<div class="form-group"><span class="inpt-span">其他赠菜原因：</span><input type="text" id="givefood-reason" class="form-control padding-left" onclick="inputReason()"></div>
+	               		<div class="form-group"><span class="inpt-span">其他赠菜原因：</span><input type="text" id="givefood-reason" class="form-control padding-left" onclick="AddDish.inputReason()"></div>
 	                </div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('givefood-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135"  type="button" onclick="doGiveRight()">确认
+	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doGiveRight()">确认
 	                    </button>
 	                </div>
 	            </div>
 	        </div>
 	    </div>
 	</div>
-
-	<!-- 输入赠菜原因 -->
-	<div class="modal fade default-dialog input-dialog in " id="reasoninput-dialog"
-	     data-backdrop="static">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title">餐道</div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('reasoninput-dialog')">
-	            </div>
-	            <div class="modal-body">
-	            	<div class="fl ">其他赠菜原因：</div>
-	            	<div class="fr">还可以输入<span id="reason-count">20</span>字</div>
-	            	<textarea class="form-control" maxlength="20" rows="5" cols="80" id="reason-inp" onkeyup="changeReaCount()"></textarea>
-	            	<div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearReasonInput()">清空
-	                    </button>
-	                    <div style="text-align: right;">
-	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('reasoninput-dialog')">取消
-		                    </button>
-		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeReason()">确认
-		                    </button>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	 </div>
-
 	<!-- 赠菜权限 -->
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="givefood-right" style="overflow: auto;"></div>
 	 <!-- 套餐 -->
@@ -458,11 +375,9 @@
 		            		</div>
 		            	</div>
 		                <div class="dialog-sm-info">
-		                	<input type="hidden" id="dish-id" value="">
-		                	<input type="hidden" id="dish-type" value="">
 		               		<h6 style="font-weight: bold; font-size: 16px">忌口</h6>
 		               		<div class="form-group"><div class="avoid">少辣</div><div class="avoid">少盐</div></div>
-		               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" id="combodish-note" class="form-control padding-left" onclick="inputNote()"></div>
+		               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" class="form-control padding-left" onclick="AddDish.inputNote()"></div>
 		                </div>
 	            	</div>
 	            	<div class="fr btns-div">
@@ -482,7 +397,7 @@
 	            		<div class="btn-operate  ">
 		                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('combodish-dialog')">取消
 		                    </button>
-		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="">确认
+		                    <button class="btn btn-save in-btn135" type="button" onclick="">确认
 		                    </button>
 		                </div>
 	            	</div>
@@ -503,8 +418,6 @@
 	            <div class="modal-body">
 	            		<!-- 仅存在一个分类中-->
 		            <div class="dialog-sm-info">
-		              	<input type="hidden" id="dish-id" value="">
-		                <input type="hidden" id="dish-type" value="">
 		                <div id="taste" class="taste">
 	                    	<h6 style="font-weight: bold; font-size: 16px">选择口味</h6>
 	                    	<ul><li>口味1</li><li>口味2</li><li>口味3</li><li>口味4</li></ul>
@@ -532,8 +445,8 @@
 	                    	</div>
 		            	</div>
 		               	<h6 style="font-weight: bold; font-size: 16px">忌口</h6>
-		               	<div class="form-group"><div class="avoid">少辣</div><div class="avoid">少盐</div></div>
-		               	<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" id="combodish-note" class="form-control padding-left" onclick="inputNote()"></div>
+		               	<%--<div class="form-group"><div class="avoid">少辣</div><div class="avoid">少盐</div></div>--%>
+		               	<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" class="form-control padding-left" onclick='widget.textAreaModal({ target: $(this), note: $(this).val() }).show();'></div>
 		            </div>
 	            	<div class="btn-operate  ">
 	            		<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('fishpotdish-dialog')">取消
@@ -545,38 +458,6 @@
 	        </div>
 	    </div>
 	</div>
-	<!-- 输入备注 -->
-	<div class="modal fade default-dialog input-dialog in " id="noteinput-dialog"
-	     data-backdrop="static">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title">餐道</div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('noteinput-dialog')">
-	            </div>
-	            <div class="modal-body">
-	            	<div class="form-group">
-		            	<input type="hidden" id="type" value="">
-		            	<div class="fl ">其他忌口：</div>
-		            	<div class="fr">还可以输入<span id="note-count">20</span>字</div>
-	            	</div>
-	            	<div class="form-group">
-	            		<textarea class="form-control" maxlength="20" rows="5" cols="80" id="note-inp" onkeyup="changeCount()"></textarea>
-	            	</div>
-	            	<div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135 clear-btn disabled" style="float: left;" type="button" onclick="clearNoteInput()">清空
-	                    </button>
-	                    <div style="text-align: right;">
-	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('noteinput-dialog')">取消
-		                    </button>
-		                    <button class="btn btn-save in-btn135" id="" type="button" onclick="changeNote()">确认
-		                    </button>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	 </div>
 	<script type="text/javascript" src="../lib/md5.js"></script>
 	<script type="text/javascript" src="../scripts/addDish.js"></script>
 </body>

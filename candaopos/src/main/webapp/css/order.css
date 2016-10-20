@@ -418,7 +418,7 @@ input[type=search] {
 .campany-icon li {
 	list-style: none;
 	display: inline-block;
-	margin-right:5px;
+	margin:0;
 	padding:0px 10px;
 	background: #FFFFFF;
 	border-radius: 2px;
@@ -440,5 +440,6 @@ input[type=search] {
 }
 
 .campany-icon li + li {
-	margin:0;
+
+	margin-right:5px;
 }
