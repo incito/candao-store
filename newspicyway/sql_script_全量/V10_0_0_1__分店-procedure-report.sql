@@ -709,7 +709,6 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     --   DROP TEMPORARY TABLE IF EXISTS t_temp_order_member;
     --   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   END$$
-DELIMITER ;
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS p_report_yyhzbxq$$
