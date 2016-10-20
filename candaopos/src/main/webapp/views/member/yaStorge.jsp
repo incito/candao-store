@@ -90,6 +90,7 @@
                 <div class="discount-title">会员优惠券</div>
                 <div class="discount_yaList">
                 </div>
+                <div id="pagDome" style="position: absolute;top: 395px;right: 0;z-index: 999;"></div>
             </div>
         </div>
     </div>

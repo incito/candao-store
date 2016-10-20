@@ -843,7 +843,27 @@ var ya_Member = {
                             '<div class="dish-price">' + couponsList[i].split('|')[4] + '张</div>' +
                             '</div>';
                     }
-                    $('.discount_yaList').html(shtml)
+                    $('#pagDome').pagination({//分页
+                        dataSource: couponsList,
+                        pageSize: 12,
+                        showPageNumbers: false,
+                        showNavigator: true,
+                        callback: function(couponsList, pagination) {
+                            //console.log(data)
+                            var shtml = '';
+                            for (var i = 0; i < couponsList.length; i++) {
+                                shtml += '<div class="discount-info">' +
+                                    '<div class="dish-name">' + couponsList[i].split('|')[3] + '</div>' +
+                                    '<hr>' +
+                                    '<div class="dish-price dish-price-border">' + couponsList[i].split('|')[1] / 100 + '元</div>' +
+                                    '<div class="dish-price">' + couponsList[i].split('|')[4] + '张</div>' +
+                                    '</div>';
+                            }
+
+                            $('.discount_yaList').html(shtml)
+                        }
+                    });
+
                 }
             }
         })

@@ -14,7 +14,10 @@ var dom = {
 
 var Login = {
     init: function(){
-
+        /*绑定虚拟键盘*/
+        widget.keyboard({
+            target: '.virtual-keyboard'
+        });
         this.bindEvent();
 
         this.setDefaultLoginForm();
@@ -112,30 +115,6 @@ var Login = {
 
             return false;
         });
-
-
-        //虚拟键盘
-        $(".virtual-keyboard ul li").click(function(){
-            var keytext = $(this).text();
-            if(activeinputele != null && activeinputele != undefined){
-                if(keytext == "←"){
-                    activeinputele.focus();
-                    backspace();
-                }else if(keytext == "."){
-                    return false;
-                }else{
-                    var val = activeinputele.val();
-                    val = val + keytext;
-                    activeinputele.val(val);
-                    activeinputele.focus();
-                }
-            }
-            that.keyUp("#change_val");
-        });
-        $("input").focus(function(event){
-            activeinputele = $(this);
-        });
-
         //找零
         dom.thechangeSubmit.click(function(){
             $("#confirm-change-val").text($("#change_val").val());

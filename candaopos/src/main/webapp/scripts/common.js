@@ -1013,7 +1013,8 @@ var setTentimes=utils.storage.getter('setTentimes')
 if(setTentimes==null||setTentimes==0){
 	setTentimes=60*1000
 }
-setInterval(function () {
+/*定时任务检查打印是否异常*/
+/*setInterval(function () {
 	if(setTentimes>0){
 		setTentimes =setTentimes-1000
 		utils.storage.setter('setTentimes',setTentimes);
@@ -1028,7 +1029,7 @@ setInterval(function () {
 				utils.printAbnormal.int();
 			}
 	}
-},1000);
+},1000);*/
 /*多张会员卡选择
 * 传入参数为对象
 * {'data':data,传入卡号列表['卡号一','卡号二']
