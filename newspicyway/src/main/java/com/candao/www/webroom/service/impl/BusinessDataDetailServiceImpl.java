@@ -192,6 +192,9 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     if (businessR.get(i).get("give") != null) {// 赠送
                         businssRport.setGive(ToolsUtil.formatTwoDecimal(businessR.get(i).get("give").toString()));
                     }
+					if(businessR.get(i).get("memberDishPriceFree") != null){//会员菜价优惠
+						businssRport.setMemberDishPriceFree(ToolsUtil.formatTwoDecimal(businessR.get(i).get("memberDishPriceFree").toString()));
+					}
 
 					if (judgePayforType() == 0) {   //表示 不处理
 
