@@ -1,19 +1,14 @@
 package com.candao.www.dataserver.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
-import com.candao.www.dataserver.service.msghandler.obj.Result;
 import com.candao.www.dataserver.task.DemoTimerTask;
-import com.candao.www.utils.ReturnMap;
-import com.candao.www.webroom.service.NotifyService;
+import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Map;
 
 /**
  * Created by ytq on 2016/3/16.
@@ -26,15 +21,13 @@ public class MsgProcessController {
     private MsgForwardService msgForwardService;
     @Autowired
     private DemoTimerTask demoTimerTask;
-    @Autowired
-    private NotifyService notifyService;
 
     @RequestMapping(value = "/broadcastmsg/{userId}/{msgId}/{msg}", produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public String broadCastMsg(@PathVariable("userId") String userId, @PathVariable("msgId") String msgId, @PathVariable("msg") String msg) {
         String result = msgForwardService.broadCastMsg4Netty(msgId, msg);
         // TODO: 2016/8/9 照顾服务员PAD和咖啡PAD
-        msgForwardService.broadCastMsg(userId, msgId, msg);
+        msgForwardService.broadCastMsg(userId,msgId, msg);
         return result;
 //        return StringUtil.string2Unicode(result);
     }
@@ -84,28 +77,5 @@ public class MsgProcessController {
     @ResponseBody
     public void broadCastMsg1() {
         demoTimerTask.cancel();
-    }
-
-    @RequestMapping(value = "/sendMsgAsyn", produces = {"application/json;charset=UTF-8"})
-    @ResponseBody
-    public String sendMsgAsyn(@RequestBody String body) {
-        Map map = JSON.parseObject(body, Map.class);
-        Integer type = (Integer) map.get("type");
-        String orderId = (String) map.get("orderId");
-        if (null == type || null == orderId || orderId.isEmpty()) {
-            return JSON.toJSONString(ReturnMap.getFailureMap("缺少参数"));
-        }
-        Result result = null;
-        switch (type) {
-            case 1:
-                result = notifyService.notifySettleOrder(orderId);
-                break;
-            default:
-                result = new Result(false, "未知的消息类型");
-        }
-        if (null == result || result.isSuccess()) {
-            return JSON.toJSONString(ReturnMap.getSuccessMap());
-        }
-        return JSON.toJSONString(ReturnMap.getFailureMap(result.getMsg()));
     }
 }
