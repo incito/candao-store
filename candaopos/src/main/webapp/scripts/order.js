@@ -1,5 +1,9 @@
 var pref_prev = 0;
 
+
+//var url = "../views/main.jsp?tips=成功|1|222|成功3";
+//window.location.href = encodeURI(encodeURI(url));
+
 var consts = {
     orderid: $('input[name=orderid]').val(),
     tableno: $('input[name=tableno]').val(),
@@ -29,6 +33,8 @@ var dom = {
 var Order = {
 
     init: function () {
+
+        SetBotoomIfon.init();
 
         this.initPreferentialType();
 
@@ -361,6 +367,8 @@ var Order = {
                 "unit": "" //“xx,xx,xx”,
             });
 
+            $coupnumDialog.find('.coupname').text('');
+            $coupnumDialog.find('.J-pref-ipt').val('');
             //根据不同优惠券,弹出不同modal
             if (type === '05' || type === '03') {
                 //团购 || 代金券, 输入数量
@@ -844,9 +852,18 @@ var Order = {
             contentType: "application/json",
             dataType: 'json',
             success: function (res) {
+                var str = (function(){
+                    var ret = ''
+                   if(type === 1) {
+                       ret = (res.msg === '' ? '预结单打印完毕' : res.msg)
+                   } else {
+                       ret = (res.msg === '' ? '客用单打印完毕' : res.msg)
+                   }
+                    return ret;
+                })();
                 widget.modal.alert({
                     cls: 'fade in',
-                    content: '<strong>' + (res.msg === '' ? '预结单打印完毕' : res.msg) + '</strong>',
+                    content: '<strong>' + str + '</strong>',
                     width: 500,
                     height: 500,
                     btnOkTxt: '',
@@ -1516,6 +1533,15 @@ var Order = {
     doSettlement: function () {
         //会员卡支付方式检查
         var memberTips = '';
+
+        if($('#order-dish-table tbody tr').length === 0){
+            widget.modal.alert({
+                content:'<strong>不能结账空账单</strong>',
+                btnOkTxt: '确定',
+                btnCancelTxt: ''
+            });
+            return ;
+        }
         if(dom.membershipCard.attr('isLogin') === 'true') {
             if(parseFloat($('#memberCash').val()) > parseFloat($("#StoreCardBalance").text())) {
                 memberTips += '会员储值余额不足;<br/>';
@@ -1740,7 +1766,12 @@ var Order = {
                     ),
                     success: function (res) {
                         if(res.result === '0') {
-                            window.location.href = './main.jsp';
+                            if(utils.getUrl.get('referer') === '1') {
+                                window.history.back(-1);
+                            } else {
+                                window.location.href = './main.jsp?tips=';
+                            }
+
                         } else {
                             utils.loading.remove();
                             widget.modal.alert({

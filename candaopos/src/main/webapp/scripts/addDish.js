@@ -125,6 +125,11 @@ var AddDish = {
 								var  f= false;
 								if(dishCartMap!= null && dishCartMap.size()>0){
 									f = dishCartMap.containsKey(dishid);
+									//if(dishCartMap.containsKey(dishid)) {
+									//	if(dishCartMap.get(dishid).randomId) {
+									//		f = false;
+									//	}
+									//}
 								}
 								return f;
 							})(dish.dishid)
@@ -142,7 +147,7 @@ var AddDish = {
 								var num = seldish.dishnum;
 								num = parseFloat(num) + 1;
 								$tr.find("td.num").text(num);
-								var totalPrice = that.calTotalPrice(num, dish.price);
+								var totalPrice = that.calTotalPrice(num, dish.price).toFixed(2);
 								$tr.find("td.price").text(totalPrice);
 								seldish.dishnum = num;
 								dishCartMap.put(dish.dishid, seldish);
@@ -349,41 +354,10 @@ var AddDish = {
 			btnOkCb: function(){
 
 				var dishPotRandomId = getUuid();
-
-				//添加锅
-				for(var i = 0; i < data.length ; i++) {
-					if(data[i].ispot === 1) {
-						that.addDish({
-							dishid: data[i].dishid,
-							dishname: data[i].title,
-							unit: data[i].unit,
-							price: data[i].price,
-							dishtype: data[i].dishtype,
-							dishnum: 1,
-							dishnote: "",
-						}, dishPotRandomId);
-					}
-				}
-
-				//添加鱼
-				$('.fishpot-dialog .fish').each(function(){
-					var me = $(this);
-					var numIpt = parseInt(me.next().find('.num-inp').val(), 10);
-					if(numIpt > 0) {
-						that.addDish({
-							dishid: me.attr('dishid'),
-							dishname: me.attr('dishname'),
-							unit: me.attr('unit'),
-							price: me.attr('price'),
-							dishtype: me.attr('dishtype'),
-							dishnum: numIpt,
-							dishnote: ""
-						}, dishPotRandomId);
-					}
-				});
+				var row = {};
 
 				//添加鱼锅总菜品信息 价格为0
-				that.addDish({
+				row = {
 					dishid: dishid,
 					dishname: dish.title,
 					unit: dish.unit,
@@ -394,8 +368,43 @@ var AddDish = {
 					itemid: itemid,
 					taste: $('.fishpot-dialog .taste li.active').text(),
 					dish_avoids: [$('.fishpot-dialog .avoids input').val()],
-				}, dishPotRandomId);
+					dishes: []
+				};
 
+				//添加锅
+				for(var i = 0; i < data.length ; i++) {
+					if(data[i].ispot === 1) {
+						row.dishes.push({
+							dishid: data[i].dishid,
+							dishname: data[i].title,
+							unit: data[i].unit,
+							price: data[i].price,
+							dishtype: data[i].dishtype,
+							dishnum: 1,
+							dishnote: ""
+						})
+						break;
+					}
+				}
+
+				//添加鱼
+				$('.fishpot-dialog .fish').each(function(){
+					var me = $(this);
+					var numIpt = parseInt(me.next().find('.num-inp').val(), 10);
+					if(numIpt > 0) {
+						row.dishes.push({
+							dishid: me.attr('dishid'),
+							dishname: me.attr('dishname'),
+							unit: me.attr('unit'),
+							price: me.attr('price'),
+							dishtype: me.attr('dishtype'),
+							dishnum: numIpt,
+							dishnote: ""
+						});
+					}
+				});
+
+				that.addDish(row, dishPotRandomId);
 				modalIns.close();
 			},
 			onReady: function(){
@@ -523,6 +532,8 @@ var AddDish = {
 		var price = dish.price;
 		var dishnum = dish.dishnum;
 		var dishnote = dish.dishnote;
+		var tr = '';
+		dish.randomId = (randomId === undefined ? '' : randomId)
 
 		var dish_avoids = dish.dish_avoids;
 		var taste = dish.taste;
@@ -547,13 +558,30 @@ var AddDish = {
 		}
 
 		$("#sel-dish-table tbody tr").removeClass("selected");
-
-		var tr = "<tr class='selected' dishid='"+dishid+"' unit='"+unit+"' dishtype='"+dishtype+"' price="+price+" randomId='" +  (randomId === undefined ? '' : randomId) + "'>"
-			+ "<td class='dishname' name='"+dishname+"' >"
-			+ showname
-			+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
-			+ price
-			+ "</td></tr>";
+		if(dishtype === '0') {
+			tr = "<tr class='selected' dishid='"+dishid+"' unit='"+unit+"' dishtype='"+dishtype+"' price="+price+" potId='" +  (randomId === undefined ? '' : randomId) + "'>"
+				+ "<td class='dishname' name='"+dishname+"' >"
+				+ showname
+				+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
+				+ price
+				+ "</td></tr>";
+		}
+		else if(dishtype === 1) {
+			tr = "<tr class='selected main-pot' dishid='"+dishid+"' unit='"+unit+"' dishtype='"+dishtype+"' price="+price+" potId='" +  (randomId === undefined ? '' : randomId) + "' >"
+				+ "<td class='dishname' name='"+dishname+"' >"
+				+ showname
+				+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
+				+ price
+				+ "</td></tr>";
+			$.each(dish.dishes, function(k, v){
+				tr += "<tr dishid='"+ v.dishid+"' unit='"+ v.unit+"' dishtype='"+ v.dishtype+"' price="+ v.price+" potId='" +  (randomId === undefined ? '' : randomId) + "' >"
+					+ "<td class='dishname' name='"+ v.dishname+"' >"
+					+ v.dishname
+					+ "</td><td class='num'>"+ v.dishnum+"</td><td class='price'>"
+					+ v.price
+					+ "</td></tr>";
+			})
+		}
 
 		$("#sel-dish-table tbody").prepend(tr);
 
@@ -602,7 +630,7 @@ var AddDish = {
 			}
 		});
 
-		$("#total-amount").text(total_amount);
+		$("#total-amount").text(total_amount.toFixed(2));
 	},
 
 	/**
