@@ -16,7 +16,7 @@ $(document).ready(function(){
     }).bind("ajaxComplete", function () {
       utils.loading.remove();
     }).bind('ajaxError',function () {
-    	if($('.errorAlert').length<0){
+    	if($('.errorAlert').length<1){
 			widget.modal.alert({
 				cls: 'fade in errorAlert',
 				content:'<strong>数据加载失败，请稍后重试</strong>',
@@ -504,7 +504,7 @@ widget.keyboard = function(opts){
 					focusIpt.focus();
 					focusIpt.val(focusVal.substring(0,focusVal.length-1));
 				}
-			}else if(keyVal == "btn-clear"){
+			}else if(keyVal == "C"){
 				focusIpt.val("");
 				focusIpt.focus();
 			}else{
@@ -1106,6 +1106,7 @@ var setTentimes=utils.storage.getter('setTentimes')
 if(setTentimes==null||setTentimes==0){
 	setTentimes=60*1000
 }
+/*定时任务检查打印是否异常*/
 setInterval(function () {
 	if(setTentimes>0){
 		setTentimes =setTentimes-1000
@@ -1165,7 +1166,7 @@ utils.chooseMember={
 utils.openCash=function () {
 	if(utils.storage.getter('cashbox')=='1'){
 		$.ajax({
-			url: _config.interfaceUrl.OpenCash + '/127.0.0.1/',
+			url: _config.interfaceUrl.OpenCash + utils.storage.getter('ipaddress'),
 			method: 'POST',
 			contentType: "application/json",
 			dataType: 'json',
