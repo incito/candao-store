@@ -29,6 +29,14 @@ $(document).ready(function(){
 
     });
 
+	if(utils.getUrl.get('tips')) {
+		$.each(decodeURI(utils.getUrl.get('tips')).split('|'), function(k,v){
+			rightBottomPop.alert({
+				content: v
+			});
+		})
+	}
+
 
 });
 

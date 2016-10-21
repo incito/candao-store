@@ -129,7 +129,7 @@ var MainPage = {
 					dataType:'json',
 					success: function(res){
 						if(res.code === '0') {
-							var url = "../views/order.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')
+							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')
 							dom.openDialog.modal('hide');
 							window.location.href = encodeURI(encodeURI(url));
 						} else {
@@ -198,11 +198,11 @@ var MainPage = {
 		$('footer').on('click','.foot-menu li',function(e){
 			var me = $(this);
 			if(me.hasClass("J-btn-takeout")){
-				$("#J-takeout-dialog").modal("show");
-				$(".take-out-list li").unbind("click").on("click",  function(){
-					$(".take-out-list li").removeClass("active");
-					$(this).addClass("active");
-				});
+				//$("#J-takeout-dialog").modal("show");
+				//$(".take-out-list li").unbind("click").on("click",  function(){
+				//	$(".take-out-list li").removeClass("active");
+				//	$(this).addClass("active");
+				//});
 			}
 			if(me.hasClass("member-btns")){
 				//会员

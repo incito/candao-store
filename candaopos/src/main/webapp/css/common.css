@@ -630,6 +630,7 @@ footer{
 	background-color:#000;
 	opacity:0.45;
 	position: fixed;
+	color:#fff;
 }
 .spinner {
 	width: 150px;

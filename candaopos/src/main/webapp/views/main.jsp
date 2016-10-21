@@ -207,13 +207,13 @@
 	</article>
 	<footer>
 		<div class="table-nums J-table-nums">
-			<div class="total-num active all">全部（<span class="num">16</span>）</div>
+			<div class="total-num active all">全部（<span class="num">0</span>）</div>
 			<div class="free-num free">空闲（<span class="num">0</span>）</div>
 			<div class="opened">就餐（<span class="num">0</span>）</div>
 		</div>
 		<div class="foot-menu">
 			<ul class="menu">
-				<li class="J-btn-takeout">外卖</li>
+				<li class="J-btn-takeout disabled">外卖</li>
 				<li class="J-btn-check">账单</li>
 				<li class="J-btn-rep">报表</li>
 				<li class="J-btn-clear">清机 / 结业</li>
@@ -256,8 +256,8 @@
 						<div class="hori-lf-div">
 							<div>
 								<span>服务员编号:</span>
-								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
-									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control serverName J-server-name">
+								<input type="text" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"
+									    class="form-control serverName J-server-name">
 							</div>
 							<%--<div>--%>
 							<%--<span>桌号:</span>--%>
@@ -265,18 +265,18 @@
 							<%--</div>--%>
 							<div>
 								<span>就餐人数(男):</span>
-								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
-									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control personnum J-male-num">
+								<input type="text"  onafterpaste="this.value=this.value.replace(/\D/g,'')"
+									   class="form-control personnum J-male-num">
 							</div>
 							<div>
 								<span>就餐人数(女):</span>
-								<input type="text"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
-									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control personnum J-female-num">
+								<input type="text"  onafterpaste="this.value=this.value.replace(/\D/g,'')"
+									   class="form-control personnum J-female-num">
 							</div>
 							<div>
 								<span>餐具数量:</span>
-								<input type="text" disabled  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
-									   onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" class="form-control J-tableware-num">
+								<input type="text" disabled  onafterpaste="this.value=this.value.replace(/\D/g,'')"
+									    class="form-control J-tableware-num">
 							</div>
 						</div>
 						<div class="hori-rt-div">
