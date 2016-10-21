@@ -250,7 +250,7 @@ var checkOrder={
                     btnOkTxt: '确定',
                     btnOkCb: function(){
                         _getBackinfo();
-                        $(".modal-alert,.modal-backdrop").remove();
+                        $(".modal-alert:last,.modal-backdrop:last").remove();
                     },
                     btnCancelCb: function(){
                     }
@@ -280,13 +280,8 @@ var checkOrder={
                     content:str,
                     width:500,
                     height:500,
-                    title: "",
-                    btnOkTxt: '确定',
-                    btnCancelTxt:"",
-                    btnOkCb: function(){
-                    },
-                    btnCancelCb: function(){
-                    }
+                    btnOkTxt: '',
+                    btnCancelTxt:"确定",
                 });
             };
             function _noChoiceClearReason() {//没有选择反结算原因
@@ -297,7 +292,6 @@ var checkOrder={
                     content:str,
                     width:500,
                     height:500,
-                    title: "",
                     btnOkTxt: '确定',
                     btnCancelTxt:"",
                     btnOkCb: function(){

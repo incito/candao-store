@@ -504,7 +504,7 @@ widget.keyboard = function(opts){
 					focusIpt.focus();
 					focusIpt.val(focusVal.substring(0,focusVal.length-1));
 				}
-			}else if(keyVal == "btn-clear"){
+			}else if(keyVal == "C"){
 				focusIpt.val("");
 				focusIpt.focus();
 			}else{
