@@ -28,7 +28,7 @@
 
 <header>
 	<div class="fl">餐道</div>
-	<div class="fr" onclick="goBack();" >返回</div>
+	<div class="fr" onclick="window.location.href='../main.jsp';" >返回</div>
 </header>
 <article>
 	<div class="member-view"  style="width: 740px;margin:0 auto;">
@@ -101,7 +101,16 @@
 			target: '.virtual-keyboard-base'
 		});
 	})
-
+	$('.virtual-keyboard-ok,.btn-search').click(function () {
+		member.memberSearch();
+	});
+	if(utils.getUrl.get('cardMember')){
+		$('#Member_cardno').val(utils.getUrl.get('cardMember'));
+		$('.btn-search').trigger('click')
+	}
+	else {
+		$('#rechargeMoblie').val('').attr('readonly',false)
+	}
 </script>
 </body>
 </html>

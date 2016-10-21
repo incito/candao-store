@@ -219,6 +219,10 @@
 	display: none;
 }
 .ya_rechargeSave .modal-body {
-	padding: 20px 20px;
+	padding: 30px 20px;
 	text-align: left;
+}
+.memberSucceed .modal-body {
+	padding: 30px 20px;
+	text-align: center;
 }

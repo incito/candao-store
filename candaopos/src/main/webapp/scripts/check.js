@@ -388,7 +388,8 @@ var checkOrder={
         var that=this;
         $("body").on("click","#checklist tr" ,function(){//点击tr变色
             $(this).addClass("tablistActive").siblings("tr").removeClass("tablistActive");
-            var orderstatus=$.trim($(this).attr("orderstatus")) ,memberno=$(this).attr("memberno");
+            var orderstatus=$.trim($(this).attr("orderstatus")) ,
+                memberno=$(this).attr("memberno");
             orderId= $.trim($(this).attr("orderid"));
             cheackorderParameter={
                 'orderId':orderId,
@@ -396,12 +397,6 @@ var checkOrder={
                 'tableno':$.trim($(this).attr("tableno"))
             }
            // console.log(memberno+","+orderId+","+orderstatus)
-            if(memberno !=undefined){//判断是否存在会员登录
-                $(".receipt").removeAttr("disabled").removeClass("disabled");
-            }
-            else {
-                $(".receipt").attr("disabled","disabled").addClass("disabled");
-            };
             if(orderstatus=="0"){
                 $(".c-mod-fjs,.reprintCheck,.receipt").attr("disabled","disabled").addClass("disabled");//反结算按钮，重印账单按钮disabled
                 $(".c-mod-js").removeAttr("disabled","disabled").removeClass("disabled");//结算按钮移除disabled
@@ -410,6 +405,12 @@ var checkOrder={
                 $(".c-mod-js").attr("disabled","disabled").addClass("disabled");//结算按钮disabled
                 $(".c-mod-fjs ,.reprintCheck,.receipt").removeAttr("disabled","disabled").removeClass("disabled");//反结算按钮，重印账单按钮移除disabled
             }
+            if(memberno){//判断是否存在会员登录
+                $(".receipt").removeAttr("disabled").removeClass("disabled");
+            }
+            else {
+                $(".receipt").attr("disabled","disabled").addClass("disabled");
+            };
         });
     },
     search:function () {

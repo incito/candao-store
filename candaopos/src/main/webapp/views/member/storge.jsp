@@ -77,7 +77,7 @@
 					</div>
 				</div>
 				<button class="btn-base btn-yellow btn-base-sm btn-Save">确定充值</button>
-				<button class="btn-base btn-base-sm "onclick="goBack();">取消</button>
+				<button class="btn-base btn-base-sm btn_cancel">取消</button>
 			</div>
 		</div>
 
@@ -114,7 +114,7 @@
 	$('.pay-type-select li').click(function () {
 		$(this).addClass('active').siblings('li').removeClass('active');
 	});
-	$('.btn-Save').click(function () {
+	$('.btn-Save,.virtual-keyboard-ok').click(function () {
 		member.stored_value()
 	})
 	$('#rechargeMoney').on('input propertychange', function(){
@@ -135,6 +135,14 @@
 	else {
 		$('#rechargeMoblie').val('').attr('readonly',false)
 	}
+	$('.btn_cancel').click(function () {
+		if(getUrlcardMember){
+			window.location.href='../member/view.jsp?cardMember='+getUrlcardMember+'';
+		}
+		else {
+			goBack();
+		}
+	})
 </script>
 </body>
 </html>

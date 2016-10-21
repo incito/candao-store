@@ -118,7 +118,7 @@ var Login = {
         //找零
         dom.thechangeSubmit.click(function(){
             $("#confirm-change-val").text($("#change_val").val());
-            $('#confirm-dialog').show();
+            $('#confirm-dialog').modal('show');
         });
     },
 

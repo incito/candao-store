@@ -108,7 +108,7 @@
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal" >
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -117,7 +117,7 @@
 	                    </p>
 	                </div>
 	                <div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal"  >取消
 	                    </button>
 	                    <button class="btn btn-save in-btn135J-cash-conmifr" id="J-thechange-comfirm"  type="button" onclick="Login.toMain()">确认
 	                    </button>

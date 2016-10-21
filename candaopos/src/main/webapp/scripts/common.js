@@ -16,7 +16,7 @@ $(document).ready(function(){
     }).bind("ajaxComplete", function () {
       utils.loading.remove();
     }).bind('ajaxError',function () {
-    	if($('.errorAlert').length<0){
+    	if($('.errorAlert').length<1){
 			widget.modal.alert({
 				cls: 'fade in errorAlert',
 				content:'<strong>数据加载失败，请稍后重试</strong>',
@@ -1101,7 +1101,7 @@ if(setTentimes==null||setTentimes==0){
 	setTentimes=60*1000
 }
 /*定时任务检查打印是否异常*/
-/*setInterval(function () {
+setInterval(function () {
 	if(setTentimes>0){
 		setTentimes =setTentimes-1000
 		utils.storage.setter('setTentimes',setTentimes);
@@ -1116,7 +1116,7 @@ if(setTentimes==null||setTentimes==0){
 				utils.printAbnormal.int();
 			}
 	}
-},1000);*/
+},1000);
 /*多张会员卡选择
 * 传入参数为对象
 * {'data':data,传入卡号列表['卡号一','卡号二']
@@ -1160,7 +1160,7 @@ utils.chooseMember={
 utils.openCash=function () {
 	if(utils.storage.getter('cashbox')=='1'){
 		$.ajax({
-			url: _config.interfaceUrl.OpenCash + '/127.0.0.1/',
+			url: _config.interfaceUrl.OpenCash + utils.storage.getter('ipaddress'),
 			method: 'POST',
 			contentType: "application/json",
 			dataType: 'json',
