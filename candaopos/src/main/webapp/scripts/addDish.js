@@ -812,19 +812,20 @@ var AddDish = {
 				"orderprice": price,//菜品价格
 				"orignalprice": price,//菜品单价
 				"dishid": me.attr('dishid'),
-				"userName": utils.storage.getter('pos_aUserid'),
+				"userName": utils.storage.getter('aUserid'),
 				"dishunit": me.attr('unit'),
 				"orderid": consts.orderid,
 				"dishtype": dishtype,//0：单品 1：鱼锅 2：套餐
 				"orderseq": "1",
 				"dishnum": parseInt(me.find('.num').text(), 10).toFixed(1),
-				"sperequire": me.attr('note'), //忌口信息
+				"sperequire": me.attr('note') === undefined ? '' : me.attr('note'),  //忌口信息
 				"primarykey": getUuid(),
 				"dishstatus": "0",//0：已称重或者不称重 1:未称重
 				"ispot": 0, //0:非锅底 1:锅底
-				"taste": null,// 点菜口味/临时菜的菜名
+				"taste": '',// 点菜口味/临时菜的菜名
 			};
 
+			debugger;
 			if(type === 0) {
 				row = $.extend(row,{
 					"freeuser": null, // 赠菜人/收银员工号
@@ -834,9 +835,11 @@ var AddDish = {
 				})
 			} else {
 				row = $.extend(row,{
-					"freeuser": utils.storage.getter('pos_aUserid'),
+					"pricetype": '1',//0：普通 1：赠菜
+					"orderprice": 0,//菜品价格
+					"freeuser": utils.storage.getter('aUserid'),
 					"freeauthorize": $('#user').val(),
-					"freereason": $("#givefood-reason").val(''),
+					"freereason": $("#givefood-reason").val(),
 				})
 			}
 
@@ -877,12 +880,13 @@ var AddDish = {
 	 * 下单
 	 */
 	placeOrder: function () {
-		widget.modal.alert({
+		var ins = widget.modal.alert({
 			cls: 'fade in',
 			content: '餐台【' + consts.tableno + '】确定下单吗？',
 			width: 500,
 			height: 500,
 			btnOkCb:function () {
+				ins.close();
 				AddDish.doOrder(0)
 			}
 		});
@@ -1057,19 +1061,9 @@ var AddDish = {
 	 */
 	doGiveRight: function(){
 		$("#givefood-dialog").modal('hide');
-		$('#givefood-right').load("./check/impower.jsp",{"title" : "赠菜授权","userRightNo":"030207","cbd":"doGive()"});
+		$('#givefood-right').load("./check/impower.jsp",{"title" : "赠菜授权","userRightNo":"030207","cbd":"AddDish.doOrder(1)"});
 		$('#givefood-right').modal('show');
-	},
-
-	inputReason :function (){
-		widget.textAreaModal({
-			target: $("#givefood-reason"),
-			note: $("#givefood-reason").val(),
-			cb: function(){
-				AddDish.doOrder(1);
-			}
-		}).show();
-	},
+	}
 };
 
 //

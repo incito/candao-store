@@ -1,9 +1,5 @@
 var pref_prev = 0;
 
-
-//var url = "../views/main.jsp?tips=成功|1|222|成功3";
-//window.location.href = encodeURI(encodeURI(url));
-
 var consts = {
     orderid: $('input[name=orderid]').val(),
     tableno: $('input[name=tableno]').val(),
@@ -951,7 +947,6 @@ var Order = {
 
     //退菜 0:单个 1:整单
     backDish: function (type) {
-        debugger;
         var that = this;
         var $target = $("#order-dish-table tr.selected");
         var tableId = $('[name=tableno]').val();
@@ -1117,22 +1112,26 @@ var Order = {
 
             if (targetModal.hasClass('coupnum-num')) {
                 //输入优惠券数量
+                targetModal.removeClass('coupnum-num');
                 that.manageUsePref.set({
                     preferentialNum: val
                 });
             } else if (targetModal.hasClass('coupnum-cus-discount')) {
                 //手动输入折扣
+                targetModal.removeClass('coupnum-cus-discount');
                 that.manageUsePref.set({
                     isCustom: '1',
-                    disrate: val
+                    disrate: parseInt(val,10)/10
                 });
             } else if (targetModal.hasClass('coupnum-cus-free')) {
                 //手动输入优免
+                targetModal.removeClass('coupnum-cus-free');
                 that.manageUsePref.set({
                     isCustom: '1',
                     preferentialAmout: val
                 });
             } else if (targetModal.hasClass('coupnum-cus-give')) {
+                targetModal.removeClass('coupnum-cus-give');
                 var $giveDishDialog = $('#givedish-dialog');
                 var $li = $giveDishDialog.find('li');
                 var preferentialNum = [];
@@ -1531,6 +1530,7 @@ var Order = {
      * 结账
      */
     doSettlement: function () {
+        var that = this;
         //会员卡支付方式检查
         var memberTips = '';
 
@@ -1672,8 +1672,6 @@ var Order = {
                         })()
                     }];
 
-
-
                     //抹零
                     result.push({
                         "payWay": "7",
@@ -1766,12 +1764,14 @@ var Order = {
                     ),
                     success: function (res) {
                         if(res.result === '0') {
+                            utils.openCash();
+                            //结账单
+                            that.printPay(2);
                             if(utils.getUrl.get('referer') === '1') {
                                 window.history.back(-1);
                             } else {
-                                window.location.href = './main.jsp?tips=';
+                                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
                             }
-
                         } else {
                             utils.loading.remove();
                             widget.modal.alert({

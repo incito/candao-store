@@ -544,10 +544,8 @@ widget.textAreaModal = function(opts){
 
 	doc.undelegate('.textareaModal .btn-save','click');
 	doc.delegate('.textareaModal .btn-save','click', function(){
-		if(opts.cb === null) {
-			opts.target.val($('.textareaModal .J-textarea').val());
-			modalIns.close();
-		}
+		opts.target.val($('.textareaModal .J-textarea').val());
+		modalIns.close();
 	});
 
 	doc.undelegate('.textareaModal .J-textarea','keyup');

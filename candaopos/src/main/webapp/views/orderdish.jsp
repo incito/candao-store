@@ -304,7 +304,7 @@
 	            <div class="modal-body">
 	                <div class="dialog-sm-info">
 	               		<h6>赠菜原因</h6>
-	               		<div class="form-group"><span class="inpt-span">其他赠菜原因：</span><input type="text" id="givefood-reason" class="form-control padding-left" onclick="AddDish.inputReason()"></div>
+	               		<div class="form-group"><span class="inpt-span">其他赠菜原因：</span><input type="text" id="givefood-reason" class="form-control padding-left" onclick="widget.textAreaModal({ target: $(this), note: $(this).val() }).show();"></div>
 	                </div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('givefood-dialog')">取消
