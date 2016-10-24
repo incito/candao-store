@@ -82,6 +82,7 @@
 		<property name="encoding" value="UTF-8" />
 		<property name="table" value="TB_SCHEMA_VERSION" />
 		<property name="locations" value="other" />
+		<property name="validateOnMigrate" value="false" />
 		<property name="baselineOnMigrate" value="true" />
 		<property name="baselineVersion">
 			<bean class="org.flywaydb.core.api.MigrationVersion" factory-method="fromVersion">
