@@ -392,15 +392,22 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction") + ""));
 						mapList.add(map);
 					}
-					//折扣优惠
-					if (businessR.get(i).get("discount") != null) {
+//					//折扣优惠
+//					if (businessR.get(i).get("discount") != null) {
+//						Map<String, Object> map = new HashMap<>();
+//						map.put("key", "折扣优惠");
+//						map.put("title", "折扣总额统计");
+//						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("discount") + ""));
+//						mapList.add(map);
+//					}
+					//会员优惠
+					if(businessR.get(i).get("memberDishPriceFree") != null){//会员菜价优惠
 						Map<String, Object> map = new HashMap<>();
-						map.put("key", "折扣优惠");
+						map.put("key", "会员优惠");
 						map.put("title", "折扣总额统计");
-						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("discount") + ""));
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("memberDishPriceFree") + ""));
 						mapList.add(map);
 					}
-
 
 
 
