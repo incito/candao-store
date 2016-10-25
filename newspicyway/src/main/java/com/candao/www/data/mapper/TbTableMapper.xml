@@ -184,7 +184,7 @@
 	   from t_table
 	   where 
 	    areaid=#{areaid} and status !=5
-	    order by CAST( tableNo as SIGNED) asc
+	    order by CAST(IFNULL(position,"0") AS signed) ASC
 	</select>
 
 
@@ -290,7 +290,7 @@
 			  a.tableid
 		<choose>
 		   	<when test="defaultsort!=null and defaultsort==1">
-		   		order by b.areaname asc, a.tableNo asc
+		   		order by b.areaname asc, CAST (IFNULL(position,"0") AS SIGNED )
 		   	</when>
 		   	<otherwise>
 		   		order by  CAST( a.tableNo as SIGNED),a.tableid asc
@@ -323,13 +323,13 @@
 	        and t.custPrinter=#{custPrinter}
 	     </if>
 	     </where>
-	      order by  CAST( t.tableNo as SIGNED) asc
+	      order by  CAST(IFNULL(t.position,"0") AS signed) ASC
 <!-- 	     将varchar 转为int 用 cast(a as signed) -->
 	</select>
 	
 	<select id="getTableTag"  resultMap="findResultMap">
-	  select distinct areaid,   areaname
-	   	 from t_tablearea where `status`=1 
+	  select distinct areaid,   areaname	,	areaSort
+	   	 from t_tablearea where `status`=1 ORDER BY areaSort ASC
 	</select>
 	<select id="getPrinterTag"  resultMap="findResultMap">
 	  select distinct printerid,   printername

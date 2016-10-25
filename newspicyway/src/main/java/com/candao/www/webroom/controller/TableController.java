@@ -1,5 +1,6 @@
 package com.candao.www.webroom.controller;
 //*
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.alibaba.fastjson.JSON;
+import com.candao.www.data.model.TbTableArea;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +45,8 @@ public class TableController extends BaseController{
 	private TableAreaService tableAreaService;
 	//餐桌id
 	private static int tableId = 1;
+
+	private Log log = LogFactory.getLog(TableController.class);
 	
 	/**
 	 * 获取所有餐桌
@@ -358,6 +368,7 @@ public class TableController extends BaseController{
 	    for(Map<String,Object> map:listTableArea){
 	      Map<String,List<Map<String, Object>>> maptotal=new  HashMap<String,List<Map<String, Object>>>();
 	      mapAreaid.put("areaid", map.get("areaid"));
+			mapAreaid.put("defaultsort",1);
 	      List<Map<String, Object>> tablelist= tableService.find(mapAreaid);
 	      
 	      maptotal.put(JacksonJsonMapper.objectToJson(map), tablelist);
@@ -366,5 +377,86 @@ public class TableController extends BaseController{
 
 		mav.addObject("page", list);
 		return mav;
+	}
+
+	/**
+	 * 保存排序过后的餐台区域和餐台
+	 * @param tableAreas
+	 * @return
+     */
+	@RequestMapping("/saveSortedTypeAndTable")
+	@ResponseBody
+	public String saveSortedTypeAndTable(@RequestBody List<TbTableArea> tableAreas){
+		if (CollectionUtils.isEmpty(tableAreas)){
+			GenerateResponse(null,"保存排序失败!参数为空",false);
+		}
+		try {
+			validateSortedTypeAndTable(tableAreas);
+			tableService.updateSortedTypeAndTable(tableAreas);
+		}catch (Exception e){
+			e.printStackTrace();
+			log.error("保存排序失败！",e);
+			return GenerateResponse(null,e.getMessage(),false);
+		}
+
+		return GenerateResponse(null,"保存排序成功",true);
+	}
+
+	private void validateSortedTypeAndTable(List<TbTableArea> tableAreas) throws Exception {
+		//TODO
+		Assert.notEmpty(tableAreas, "保存排序失败！参数为空");
+		List<Map<String,Object>> areas = tableAreaService.getTableAreaTag();
+		//校验餐台区域是否一致
+		validateCollectionKeyField(tableAreas ,areas,"areaid","areaid");
+		for (TbTableArea area : tableAreas) {
+			Map param = new HashMap();
+			param.put("areaid", area.getAreaid());
+			List<Map<String, Object>> tablelist = tableService.find(param);
+			//校验餐台是否一致
+			validateCollectionKeyField(tablelist ,area.getTables(),"tableid","tableid");
+		}
+	}
+
+	private <t,v> void validateCollectionKeyField(List<t> param1,List<v> param2 ,String keyField1 ,String keyField2) throws Exception {
+		if ((param1 == null && param2 == null) || (param2 != null && param1.size() == param2.size())) {
+			Map buffer = new HashMap();
+			for (t temp : param1) {
+				if (temp instanceof Map) {
+					buffer.put(((Map) temp).get(keyField1), temp);
+				} else {
+					Field field = temp.getClass().getField(keyField1);
+					field.setAccessible(true);
+					buffer.put(field.get(temp), temp);
+				}
+			}
+			Map buffer2 = new HashMap();
+			boolean flag = true;
+			for (v temp : param2) {
+				if (flag == true) {
+					if (temp instanceof Map) {
+						flag = buffer.containsKey(((Map) temp).get(keyField2));
+						buffer2.put(((Map) temp).get(keyField2), temp);
+					} else {
+						Field field = temp.getClass().getField(keyField2);
+						field.setAccessible(true);
+						flag = buffer.containsKey(field.get(temp));
+						buffer2.put(field.get(temp), temp);
+					}
+				}
+			}
+			flag = flag == true ? buffer.size() == buffer2.size() : flag;
+			if (!flag)
+				throw new RuntimeException("校验失败，检查数据");
+			return;
+		}
+		throw new RuntimeException("校验失败，检查数据");
+	}
+
+	private String GenerateResponse(Object data,String msg ,boolean flag){
+		Map res = new HashMap();
+		res.put("code", flag ? 0 : 1);
+		res.put("msg", msg);
+		res.put("data", data);
+		return JSON.toJSONString(res);
 	}
 }
