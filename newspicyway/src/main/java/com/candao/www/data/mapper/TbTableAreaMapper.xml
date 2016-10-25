@@ -210,7 +210,7 @@
 	  	 
 	</select>
 	<select id="getTableTag"  resultMap="findResultMap">
-	   select distinct areaid,areaname from t_tablearea 
+	   select distinct areaid,areaname,areaSort from t_tablearea
 	     <where>
 	  	 and status = 1
 	  	 </where>
@@ -235,7 +235,7 @@
 	</foreach>
 	</update>
 	<select id="findTableCountAndAreaname"  resultMap="findResultMap">
-		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' FROM  t_tablearea tt LEFT JOIN 
+		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' ,tt.areaSort FROM  t_tablearea tt LEFT JOIN
 		`t_table` t on t.areaid=tt.areaid where  tt.status =1 and (t.`status` is null or t.`status`!=5)
 		GROUP BY tt.areaid order by tt.areaSort asc
  	</select>
