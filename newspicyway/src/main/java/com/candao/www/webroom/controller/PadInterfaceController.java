@@ -810,11 +810,7 @@ public class PadInterfaceController {
         if ("0".equals(result)) {
             logger.info("结算成功，调用进销存接口");
             String psicallback = psicallback(settlementInfo, 0);
-            /*
-             * // 通知PAD if (Constant.SUCCESSMSG.equals(psicallback)) {
-			 */
-            notifyService.notifySettleOrder(orderid);
-            /* } */
+
               //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
              //在此处转换
         	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
