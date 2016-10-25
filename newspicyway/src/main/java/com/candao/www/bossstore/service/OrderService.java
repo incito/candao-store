@@ -290,7 +290,7 @@ public class OrderService {
             allDay.put("itemName", itemTopArr[0]);
             allDay.put("itemShouldAmount", itemTopArr[1]);
         }else{
-        	allDay.put("itemName","");
+        	allDay.put("itemName","品项");
         }
 
         // 退菜数
@@ -327,7 +327,7 @@ public class OrderService {
             }
             flowDatas.add(dayFlow);
         }
-        System.out.println("得到当天流水："+flowDatas.toString());
+        //System.out.println("得到当天流水："+flowDatas.toString());
         return flowDatas;
     }
 
