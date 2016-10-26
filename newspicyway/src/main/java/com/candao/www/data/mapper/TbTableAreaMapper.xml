@@ -46,9 +46,6 @@
 	     
 	     
 	     <set>
-	     <if test="areaid != null">
-	     areaid=#{areaid},
-	     </if>
 	     <if test="areaNo != null ">
 	     areaNo=#{areaNo},
 	     </if>
@@ -59,13 +56,13 @@
 	     status=#{status},
 	     </if> 
 	      <if test="custPrinter != null ">
-	     custPrinter=#{custPrinter}
+	     custPrinter=#{custPrinter},
 	     </if> 
 	      <if test="areaSort != null ">
-	     areaSort=#{areaSort}
+	     areaSort=#{areaSort},
 	     </if> 
 	     <if test="branchid != null ">
-	     branchid=#{branchid}
+	     branchid=#{branchid},
 	     </if>
 	      modifytime = now()
 	   	 </set> 
