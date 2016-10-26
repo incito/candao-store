@@ -402,6 +402,11 @@ public class TableController extends BaseController{
 		return GenerateResponse(null,"保存排序成功",true);
 	}
 
+	/**
+	 * 其中一个集合需要是元素是唯一的
+	 * @param tableAreas
+	 * @throws Exception
+     */
 	private void validateSortedTypeAndTable(List<TbTableArea> tableAreas) throws Exception {
 		//TODO
 		Assert.notEmpty(tableAreas, "保存排序失败！参数为空");
