@@ -738,14 +738,14 @@ var Order = {
                         }
                     });
             } else {//雅座
-                debugger;
+                //debugger;
                 $.ajax({
                     url: 'http://10.66.21.5:9081/datasnap/rest/TServerMethods1/QueryBalance/' + cardNumber + '/',
                     method: 'POST',
                     contentType: "application/json; charset=utf-8",
                     dataType: 'json',
                 }).then(function (res) {
-                    debugger;
+                    //debugger;
                     console.log(res);
                 })
             }
@@ -927,7 +927,6 @@ var Order = {
                 }),
                 dataType: 'json',
                 success: function (res) {
-                    debugger;
                     if (res.code === '0') {
                         window.location.href = './main.jsp'
                     } else {

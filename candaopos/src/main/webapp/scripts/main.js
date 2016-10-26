@@ -659,12 +659,14 @@ var MainPage = {
 				if(data.Data=='1'){
 					/*$.ajax({
 						url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
-						type: "get",
-						dataType:'text',
+						method: 'GET',
+						contentType: "application/json",
+						dataType: 'json',
 						data:{
 							'synkey':'candaosynkey'
 						},
 						success: function (data) {
+							alert("2222")
 							console.log(data)
 						},
 						error:function (data) {
