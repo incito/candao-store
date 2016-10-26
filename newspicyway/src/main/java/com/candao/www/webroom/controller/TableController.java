@@ -410,20 +410,30 @@ public class TableController extends BaseController{
 	private void validateSortedTypeAndTable(List<TbTableArea> tableAreas) throws Exception {
 		//TODO
 		Assert.notEmpty(tableAreas, "保存排序失败！参数为空");
-		List<Map<String,Object>> areas = tableAreaService.getTableAreaTag();
+		for (TbTableArea area : tableAreas) {
+			if (!CollectionUtils.isEmpty(area.getTables()))
+				for (TbTable table : area.getTables()) {
+					if (!area.getAreaid().equals(table.getAreaid())) {
+						throw new RuntimeException("校验失败！检查数据");
+					}
+				}
+		}
+		List<Map<String, Object>> areas = tableAreaService.getTableAreaTag();
 		//校验餐台区域是否一致
-		validateCollectionKeyField(tableAreas ,areas,"areaid","areaid");
+		validateCollectionKeyField(tableAreas, areas, "areaid", "areaid");
 		for (TbTableArea area : tableAreas) {
 			Map param = new HashMap();
 			param.put("areaid", area.getAreaid());
 			List<Map<String, Object>> tablelist = tableService.find(param);
 			//校验餐台是否一致
-			validateCollectionKeyField(tablelist ,area.getTables(),"tableid","tableid");
+			validateCollectionKeyField(tablelist, area.getTables(), "tableid", "tableid");
 		}
 	}
 
 	private <t,v> void validateCollectionKeyField(List<t> param1,List<v> param2 ,String keyField1 ,String keyField2) throws Exception {
-		if ((param1 == null && param2 == null) || (param2 != null && param1.size() == param2.size())) {
+		if (CollectionUtils.isEmpty(param1) && CollectionUtils.isEmpty(param2))
+			return;
+		else if (!CollectionUtils.isEmpty(param1) && !CollectionUtils.isEmpty(param2) && param1.size() == param2.size()) {
 			Map buffer = new HashMap();
 			for (t temp : param1) {
 				if (temp instanceof Map) {
