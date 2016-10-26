@@ -1059,3 +1059,162 @@ function addEvent_T(event) {
     }
 
 }
+/*自定义餐台*/
+
+var customTable={
+	int:function () {
+		this.isClick();
+		this.getTableJson();
+	},
+	/*获取所以餐台数据*/
+	getTableJson:function () {
+		var tmpJson =[];
+		$.getJSON(global_Path+"/table/getTypeAndTableMap.json", function(json) {
+			console.log(json)
+			$.each(json, function (index, item) {
+				$.each(item, function (key, obj) {
+					var tmpJson1 = JSON.parse(key);
+					//debugger
+					var abc={
+						'areaid':tmpJson1.areaid,
+						'areaname':tmpJson1.areaname,
+						'list':obj
+					}
+					tmpJson.push(abc);
+				})
+			});
+	    })
+		tableJson=tmpJson
+	},
+	isClick:function () {
+		var that=this;
+		$('#dinnerTable').click(function () {
+			var me=$(this).find('span')
+			if(me.text()=='自定义餐台'){
+				me.text('保存')
+				$('#counter-type-add,#tables-detailMain-Add').hide();
+				that.isHide();
+				that.areaDrag();
+				that.tableDrag();
+			}
+			else {
+				me.text('自定义餐台');
+				$('#counter-type-add,#tables-detailMain-Add').show();
+				that.isShow();
+				$(".nav-counter" ).sortable('disable')
+				$(".nav-counter-tab" ).sortable('disable')
+			}
+		})
+	},
+	isHide:function () {
+		var that=this;
+		$('.counter-detail-box').each(function () {
+			var me=$.trim($(this).find('p:first-child').text())
+			if(me.indexOf('外卖')>-1){
+				$(this).hide()
+			}
+		})
+	},
+	isShow:function () {
+		var that=this;
+		$('.counter-detail-box').each(function () {
+			var me=$.trim($(this).find('p:first-child').text())
+			if(me.indexOf('外卖')>-1){
+				$(this).show()
+			}
+		})
+
+	},
+	/*区域拖动*/
+	areaDrag:function () {
+		var that=this;
+		$( ".nav-counter" ).sortable({
+			cursor: "move",
+			items :"li",                        //只是li可以拖动
+			opacity: 1,                       //拖动时，透明度为0.6
+			revert: true,                       //释放时，增加动画
+			start: function(event, ui) {
+				(ui.item).removeAttr('onclick')
+			},
+			stop:function (event, ui) {
+				(ui.item).attr('onclick','oneclickTableType(this.id)')
+			},
+			update : function(event, ui){       //更新排序之后
+				var _thisItem=(ui.item).attr('id')//ui.item当前移动的元素
+				var abc=$(this).sortable("toArray");//更新排序后ID的集合
+				$.each(abc,function (i, value) {
+					$('.ui-sortable-handle').each(function () {
+						if ($(this).attr('id')==value){
+							$(this).attr('abc',i+1)
+						}
+					})
+				});
+				//(ui.item).attr('onclick','oneclickTableType(this.id)')
+
+
+			}
+		});
+	},
+	/*餐台拖动*/
+	tableDrag:function () {
+		var that=this;
+		$( ".nav-counter-tab" ).sortable({
+			cursor: "move",
+			items :"div",                        //只是li可以拖动
+			opacity: 1,                       //拖动时，透明度为0.6
+			revert: true,                       //释放时，增加动画
+			start: function(event, ui) {
+				//(ui.item).removeAttr('onclick')
+			},
+			stop:function (event, ui) {
+				//(ui.item).attr('onclick','oneclickTableType(this.id)')
+			},
+			update : function(event, ui){       //更新排序之后
+				var _thisItem=(ui.item).attr('id')//ui.item当前移动的元素
+				var abc=$(this).sortable("toArray");//更新排序后ID的集合
+
+				$('.counter-detail-box').each(function (i) {
+					if($(this).is(":hidden")){
+						abc.splice($.inArray($(this).attr('id'),abc),1);//删除数组隐藏的id
+						$(this).attr('position',$('.counter-detail-box').length+i+1)
+					}
+				})
+				 $.each(abc,function (i, value) {
+					 $('.counter-detail-box').each(function () {
+					 	if($(this).is(":hidden")){
+						}
+						else {
+							if ($(this).attr('id')==value){
+								$(this).attr('position',i+1)
+							}
+						}
+					 })
+				 });
+				for(var i=0;i<tableJson.length;i++){
+					$('.nav-counter li').each(function () {
+						if(tableJson[i].areaid==$(this).attr('id')){
+							console.log()
+							for(var j=0;j<tableJson[i].list.length;j++){
+								$('.counter-detail-box').each(function () {
+									if(tableJson[i].list[j].tableid==$(this).attr('id')){
+										tableJson[i].list[j].position=$(this).attr('position')
+									}
+								})
+							}
+
+						}
+					});
+				}
+				console.log(JSON.stringify(tableJson))
+				/*var bd=$('.counter-detail-box').is(':hidden')
+				bd.each(function (i) {
+					$(this).attr('position',$('.counter-detail-box').length+i+1)
+				})*/
+				 console.log(abc)
+
+
+			}
+		});
+	}
+
+}
