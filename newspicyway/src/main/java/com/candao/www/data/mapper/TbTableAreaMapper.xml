@@ -46,9 +46,6 @@
 	     
 	     
 	     <set>
-	     <if test="areaid != null">
-	     areaid=#{areaid},
-	     </if>
 	     <if test="areaNo != null ">
 	     areaNo=#{areaNo},
 	     </if>
