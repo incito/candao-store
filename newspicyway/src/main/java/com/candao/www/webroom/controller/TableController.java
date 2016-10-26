@@ -439,7 +439,7 @@ public class TableController extends BaseController{
 				if (temp instanceof Map) {
 					buffer.put(((Map) temp).get(keyField1), temp);
 				} else {
-					Field field = temp.getClass().getField(keyField1);
+					Field field = temp.getClass().getDeclaredField(keyField1);
 					field.setAccessible(true);
 					buffer.put(field.get(temp), temp);
 				}
