@@ -13,7 +13,7 @@
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/counter.css?v=1">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/switchery/style.css"/>
-	<script src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
+	<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/jquery-ui.min.js"></script>
 	<script src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/index.js"></script>
@@ -39,14 +39,14 @@
 				<ul class="nav-counter" id="nav-tables" >
 					<c:forEach var="item" items="${areanames}" varStatus="i">
 						<c:if test="${i.index==0}">
-						<li  id="${item.areaid}" class="active" onmousedown="doMenu(event,this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
+						<li  id="${item.areaid}" areaSort="${item.areaSort}" class="active" onmousedown="doMenu(event,this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
 						onclick="oneclickTableType(this.id)" ondblclick="editArea(this.id)" >
 						<span>${item.areaname}</span><span>(${item.tableCount})</span>
 						<i class="icon-remove hidden"  onclick="showDeleteArea(this.id)"></i>
 						</li>
 						</c:if>
 						<c:if test="${i.index!=0}">
-							 <li  id="${item.areaid}" class="" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
+							 <li  id="${item.areaid}" areaSort="${item.areaSort}" class="" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
 	 						onclick="oneclickTableType(this.id)" onmousedown="doMenu(event,this)"  ondblclick="editArea(this.id)" >
 							<span>${item.areaname}</span><span>(${item.tableCount})</span>
 							<i class="icon-remove hidden"  onclick="showDeleteArea()"></i>

@@ -1069,21 +1069,28 @@ var customTable={
 	/*获取所以餐台数据*/
 	getTableJson:function () {
 		var tmpJson =[];
-		$.getJSON(global_Path+"/table/getTypeAndTableMap.json", function(json) {
-			console.log(json)
-			$.each(json, function (index, item) {
-				$.each(item, function (key, obj) {
-					var tmpJson1 = JSON.parse(key);
-					//debugger
-					var abc={
-						'areaid':tmpJson1.areaid,
-						'areaname':tmpJson1.areaname,
-						'list':obj
-					}
-					tmpJson.push(abc);
-				})
-			});
-	    })
+        $.ajax({
+            url: global_Path+'/table/getTypeAndTableMap.json',
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            success: function (res) {
+                console.log(res)
+                $.each(res, function (index, item) {
+                    $.each(item, function (key, obj) {
+                        var tmpJson1 = JSON.parse(key);
+                        //debugger
+                        var abc={
+                            'areaid':tmpJson1.areaid,
+                            'areaname':tmpJson1.areaname,
+                            'areaSort':tmpJson1.areaSort,
+                            'tables':obj
+                        }
+                        tmpJson.push(abc);
+                    })
+                });
+            }
+        })
 		tableJson=tmpJson
 	},
 	isClick:function () {
@@ -1091,7 +1098,7 @@ var customTable={
 		$('#dinnerTable').click(function () {
 			var me=$(this).find('span')
 			if(me.text()=='自定义餐台'){
-				me.text('保存')
+				me.text('保存');
 				$('#counter-type-add,#tables-detailMain-Add').hide();
 				that.isHide();
 				that.areaDrag();
@@ -1101,8 +1108,9 @@ var customTable={
 				me.text('自定义餐台');
 				$('#counter-type-add,#tables-detailMain-Add').show();
 				that.isShow();
+				that.saveTable();
 				$(".nav-counter" ).sortable('disable')
-				$(".nav-counter-tab" ).sortable('disable')
+				$(".nav-counter-tab" ).sortable('disable');
 			}
 		})
 	},
@@ -1145,11 +1153,12 @@ var customTable={
 				$.each(abc,function (i, value) {
 					$('.ui-sortable-handle').each(function () {
 						if ($(this).attr('id')==value){
-							$(this).attr('abc',i+1)
+							$(this).attr('areaSort',i)
 						}
 					})
 				});
-				//(ui.item).attr('onclick','oneclickTableType(this.id)')
+				(ui.item).attr('onclick','oneclickTableType(this.id)')
+                that.setJson()
 
 
 			}
@@ -1160,7 +1169,7 @@ var customTable={
 		var that=this;
 		$( ".nav-counter-tab" ).sortable({
 			cursor: "move",
-			items :"div",                        //只是li可以拖动
+			items :"div",                        //只是div可以拖动
 			opacity: 1,                       //拖动时，透明度为0.6
 			revert: true,                       //释放时，增加动画
 			start: function(event, ui) {
@@ -1172,10 +1181,9 @@ var customTable={
 			update : function(event, ui){       //更新排序之后
 				var _thisItem=(ui.item).attr('id')//ui.item当前移动的元素
 				var abc=$(this).sortable("toArray");//更新排序后ID的集合
-
 				$('.counter-detail-box').each(function (i) {
 					if($(this).is(":hidden")){
-						abc.splice($.inArray($(this).attr('id'),abc),1);//删除数组隐藏的id
+						abc.splice($.inArray($(this).attr('id'),abc),1);//删除数组中隐藏的外卖咖啡台id
 						$(this).attr('position',$('.counter-detail-box').length+i+1)
 					}
 				})
@@ -1185,36 +1193,50 @@ var customTable={
 						}
 						else {
 							if ($(this).attr('id')==value){
-								$(this).attr('position',i+1)
+								$(this).attr('position',i)
 							}
 						}
 					 })
 				 });
-				for(var i=0;i<tableJson.length;i++){
-					$('.nav-counter li').each(function () {
-						if(tableJson[i].areaid==$(this).attr('id')){
-							console.log()
-							for(var j=0;j<tableJson[i].list.length;j++){
-								$('.counter-detail-box').each(function () {
-									if(tableJson[i].list[j].tableid==$(this).attr('id')){
-										tableJson[i].list[j].position=$(this).attr('position')
-									}
-								})
-							}
-
-						}
-					});
-				}
-				console.log(JSON.stringify(tableJson))
-				/*var bd=$('.counter-detail-box').is(':hidden')
-				bd.each(function (i) {
-					$(this).attr('position',$('.counter-detail-box').length+i+1)
-				})*/
-				 console.log(abc)
-
-
+				that.setJson()
 			}
 		});
+	},
+    setJson:function () {
+        for(var i=0;i<tableJson.length;i++){
+            $('.nav-counter li').each(function () {
+                if(tableJson[i].areaid==$(this).attr('id')){
+                    tableJson[i].areaSort=$(this).attr('areaSort')
+                    for(var j=0;j<tableJson[i].tables.length;j++){
+                        $('.counter-detail-box').each(function () {
+                            if(tableJson[i].tables[j].tableid==$(this).attr('id')){
+                                tableJson[i].tables[j].position=$(this).attr('position')
+                            }
+                        })
+                    }
+
+                }
+            });
+        }
+        console.log(JSON.stringify(tableJson))
+    },
+	/*保存自定义餐台*/
+	saveTable:function () {
+		$.ajax({
+			url: global_Path+'/table/saveSortedTypeAndTable.json',
+			method: 'POST',
+			contentType: "application/json",
+			dataType: 'json',
+			data:JSON.stringify(tableJson),
+			success: function (res) {
+				console.log(res)
+
+			},
+			error:function (res) {
+				console.log(res)
+			}
+		})
+		window.location.reload();
 	}
 
 }
