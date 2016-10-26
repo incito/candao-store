@@ -1766,6 +1766,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     pf.setParentDishName(pd.getParentDishName());
                 }
                 if (fishesList != null) {
+                    //初始化，解析忌口字段
+                    if (!fishesList.isEmpty()) {
+                        for (PrintDish it : fishesList) {
+                            try {
+                                it.initData();
+                            } catch (Exception e) {
+                                log.error("------------------菜品解析失败！-------------");
+                                log.error("菜品忌口信息解析失败！ :" + it.getDishName(), e);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                     if (map0.get("discardReason") != null && flag == 1) {
                         fishesList.get(0).setGlobalsperequire((String.valueOf(map0.get("discardReason"))));
                     }
@@ -1782,18 +1794,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         }
                     }
                     printObj.setList(fishesList);
-                    //初始化，解析忌口字段
-                    if (!fishesList.isEmpty()) {
-                        for (PrintDish it : fishesList) {
-                            try {
-                                it.initData();
-                            } catch (Exception e) {
-                                log.error("------------------菜品解析失败！-------------");
-                                log.error("菜品忌口信息解析失败！ :" + it.getDishName(), e);
-                                e.printStackTrace();
-                            }
-                        }
-                    }
 
                     //查询火锅打印机
                     Map<String, Object> paramMap = new HashMap<String, Object>();
