@@ -196,15 +196,15 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						businssRport.setMemberDishPriceFree(ToolsUtil.formatTwoDecimal(businessR.get(i).get("memberDishPriceFree").toString()));
 					}
 
-					if (judgePayforType() == 0) {   //表示 不处理
-
-					} else if (judgePayforType() == 1) {    //表示 四舍五入
-						businssRport.setHanderWay("四舍五入调整");
+//					if (judgePayforType() == 0) {   //表示 不处理
+//
+//					} else if (judgePayforType() == 1) {    //表示 四舍五入
+//						businssRport.setHanderWay("四舍五入调整");
 						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("roundoff").toString()));
-					} else if (judgePayforType() == 2) {    //表示 抹零
-						businssRport.setHanderWay("抹零");
-						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
-					}
+//					} else if (judgePayforType() == 2) {    //表示 抹零
+//						businssRport.setHanderWay("抹零");
+//						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
+//					}
 					if(businessR.get(i).get("closedbillnums") != null){ //已结账单数
                     	businssRport.setClosedordermums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillnums").toString()));
                     }
