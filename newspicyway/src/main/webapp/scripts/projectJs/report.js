@@ -2002,6 +2002,10 @@ function getWaiterAssessData(){
 	if(oTable !=null){
 		oTable.fnClearTable(false);
 	}
+	if($("#submit").hasClass('disabled')){
+		return false;
+	}
+	$("#submit").addClass('disabled');
 	beginTime = $("#beginTime").val();
 	endTime = $("#endTime").val();
 	shiftid = $("#shiftid").val();
@@ -2011,6 +2015,7 @@ function getWaiterAssessData(){
 		shiftid: shiftid
 	}, function(result){
 		console.log(result);
+		$("#submit").removeClass('disabled');
 		if(result.flag == 1){
 			var data = result.data;
 			var htm = '';
