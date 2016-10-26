@@ -452,7 +452,7 @@ public class TableController extends BaseController{
 						flag = buffer.containsKey(((Map) temp).get(keyField2));
 						buffer2.put(((Map) temp).get(keyField2), temp);
 					} else {
-						Field field = temp.getClass().getField(keyField2);
+						Field field = temp.getClass().getDeclaredField(keyField2);
 						field.setAccessible(true);
 						flag = buffer.containsKey(field.get(temp));
 						buffer2.put(field.get(temp), temp);
