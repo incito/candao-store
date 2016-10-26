@@ -1871,6 +1871,11 @@ function saveLOGOImg(){
 		alert("请选择图片");
 		return;
 	}
+	if(!/\.(jpg|png|JPG|PNG)$/.test(imgUrl))
+	{
+		alert("图片类型必须是.jpg,png中的一种")
+		return false;
+	}
 	$.post("../padinterface/setImg",{
 		id : dictid,
 		itemid : "1",
@@ -1892,6 +1897,11 @@ function saveBackgroundImg(){
 	if(imgUrl == ""){
 		alert("请选择图片");
 		return;
+	}
+	if(!/\.(jpg|png|JPG|PNG)$/.test(imgUrl))
+	{
+		alert("图片类型必须是.jpg,png中的一种")
+		return false;
 	}
 	$.post("../padinterface/setImg",{
 		id : dictid,
