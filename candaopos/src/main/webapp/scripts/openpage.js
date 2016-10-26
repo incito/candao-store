@@ -36,37 +36,7 @@ var OpenPage = {
 		});
 	},
     open:function () {
-
-        /*$.ajax({
-         url: _config.interfaceUrl.AuthorizeLogin,
-         method: 'POST',
-         contentType: "application/json",
-         data: JSON.stringify({
-         username: $.trim($('#manager_num').val()),
-         password: hex_md5($.trim($('#perm_pwd').val())),
-         macAddress:utils.getUrl.get('ipaddress'),//IP地址
-         loginType: '030201'
-         }),
-         dataType:'json',
-         success: function(res){
-         if(res.code === '0') {
-
-
-         }
-         else {
-         widget.modal.alert({
-         cls: 'fade in',
-         content:'<strong>' + res.msg + '</strong>',
-         width:500,
-         height:500,
-         btnOkTxt: '',
-         btnCancelTxt: '确定'
-         });
-         return false
-         }
-         },
-
-         });*/
+	    /*验证开业权限*/
         var iSuserRight=utils.userRight.get($.trim($('#manager_num').val()),'030202');
         if(iSuserRight){//验证是否有开业权限，iSuserRight为true时验证零找金，false直接跳转登录页面
             $.ajax({
