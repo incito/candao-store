@@ -290,7 +290,7 @@
 			  a.tableid
 		<choose>
 		   	<when test="defaultsort!=null and defaultsort==1">
-		   		order by b.areaname asc, CAST (IFNULL(position,"0") AS SIGNED )
+		   		order by  CAST(IFNULL(a.position,"0") AS SIGNED )
 		   	</when>
 		   	<otherwise>
 		   		order by  CAST( a.tableNo as SIGNED),a.tableid asc
