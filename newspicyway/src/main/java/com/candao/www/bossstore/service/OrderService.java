@@ -125,6 +125,7 @@ public class OrderService {
             object.put("itemShouldAmount", 0);//品项top1数量
         }
         //优惠
+        params.put("xslx", -1);
         List<Map<String, Object>> dayyhData = tOrderDao.getyhBusinessData(params);
         if(dayyhData!=null&&dayyhData.size()>0){
         	float shouldamount = 0.0f;
@@ -178,7 +179,6 @@ public class OrderService {
      */
         
         public JSONArray getBusinessDataByMon() {
-        	System.out.println("获取月：");
         
         JSONArray orders = new JSONArray();
         	
