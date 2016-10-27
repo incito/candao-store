@@ -560,7 +560,8 @@ function del() {
 			dataType : "json",
 			success : function(result) {	
 				$(".img-close").click();
-				oneclickTableType($("#nav-tables .active").attr("id"));			
+				oneclickTableType($("#nav-tables .active").attr("id"));
+                customTable.getTableJson();//重新获取餐台数据
 				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(1);
 				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
 			},
@@ -661,6 +662,7 @@ function save_table() {
 			
 			$(".img-close").click();
 			oneclickTableType($("#nav-tables .active").attr("id"));
+            customTable.getTableJson()//添加餐台重新赋值
 			var printeridHave=[];
 			var printerHave=[];
 			$.each(tbPrinterAreaList,function(i,item){
@@ -1337,6 +1339,7 @@ var customTable={
             }
         })
 		tableJson=tmpJson
+        //console.log(JSON.stringify(tableJson))
 	},
 	isClick:function () {
 		var that=this,cont=0;
