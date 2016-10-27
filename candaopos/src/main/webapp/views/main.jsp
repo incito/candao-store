@@ -227,7 +227,7 @@
 					<li class="J-btn-register">会员注册</li>
 					<li class="J-btn-memberView">会员查询</li></ul>
 				</div>
-				<li class="J-btn-sys">系统设置</li>
+				<li class="J-btn-sys main-J-btn-sys">系统设置</li>
 			</ul>
 			<div class="page" id="J-table-pager"></div>
 		</div>

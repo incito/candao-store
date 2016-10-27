@@ -1114,7 +1114,7 @@ utils.printAbnormal={
 						widget.modal.alert({
 							cls: 'fade in printAbnormal',
 							content:str,
-							title:'',
+							title:'打印机连接异常',
 							width:300,
 							height:400,
 							btnOkTxt: '',
@@ -1129,7 +1129,13 @@ utils.printAbnormal={
 							}
 						});
 					}
-					$('.printAbnormal .modal-header span').hide()
+					$('.printAbnormal .modal-header span').hide();
+					utils.storage.setter('printAbnormal',true)
+					$('.main-J-btn-sys').css({'background': '#FF5803','color': '#fff'})
+				}
+				else {
+					utils.storage.remove('printAbnormal')
+					$('.main-J-btn-sys').css({'background': '#fff','color': '#000'})
 				}
 
 			},

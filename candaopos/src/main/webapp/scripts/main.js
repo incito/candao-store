@@ -33,6 +33,12 @@ var MainPage = {
 				'<li class="J-btn-memberView">会员查询</li>'
 			$('.arrowMember').html(str)
 		}
+		if(utils.storage.getter('printAbnormal')){
+			$('.main-J-btn-sys').css({'background': '#FF5803','color': '#fff'})
+		}
+		else {
+			$('.main-J-btn-sys').css({'background': '#fff','color': '#000'})
+		}
 	},
 
 	bindEvent: function(){

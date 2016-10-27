@@ -158,8 +158,11 @@
 				global: false,
 				success: function (data) {
 					//console.log(data)
-					var str="",num=0;
+					var str="",num=0,arr=[];
 					for( var i=0;i<data.data.length;i++) {
+						if(data.data[i].status=='5'){
+							arr.push(data.data[i])
+						}
 						num=i+1
 						str+='<tr>';
 						str+='   <td width="200">'+num+'</td>';
@@ -169,6 +172,12 @@
 						str+='</tr>';
 					};
 					$("#printList tbody").html(str);
+					if(arr.length>0){
+						$('.main-J-btn-sys').addClass('main-J-btn-sys-highlight')
+					}
+					else {
+						$('.main-J-btn-sys').removeClass('main-J-btn-sys-highlight')
+					}
 				},
 			});
 		},
