@@ -10,17 +10,17 @@
     FROM
         v_payway
     WHERE
-        STATUS = 1
+        STATUS = 1 AND (itemid &gt;30 OR itemid in (0,1,5,8,17,18 ))
     ORDER BY
         self_sort
  </select>
-	<insert id="insertBatch" parameterType="list">
+	<insert id="insertBatch" parameterType="java.util.List">
       insert into t_payway_set(item_id,status,sort)VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (
-             #{item.id},
+             #{item.itemId},
              #{item.status},
-             #{index}
+            #{index}
             )
         </foreach>
 	</insert>

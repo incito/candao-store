@@ -3204,7 +3204,7 @@ public class PadInterfaceController {
             result = ReturnMap.getSuccessMap();
         } catch (Exception e) {
             logger.error("->", e);
-            result = ReturnMap.getFailureMap();
+            result = ReturnMap.getFailureMap("服务器异常");
         }
         return JSON.toJSONString(result);
     }
