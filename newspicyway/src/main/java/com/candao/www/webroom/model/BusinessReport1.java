@@ -1,8 +1,13 @@
 package com.candao.www.webroom.model;
 
+import java.io.Serializable;
+import java.util.List;
 
 public class BusinessReport1 {
-	  private String Shouldamount="0";
+	  /**
+	 * 
+	 */
+	private String Shouldamount="0";
 	  private String Paidinamount="0";
 	  private String Discountamount="0";
 	  private String Discount="0";
@@ -31,8 +36,9 @@ public class BusinessReport1 {
 	  private String Malingincom="0";
 	  private String Statistictime="0";
 	  private String Datetype="0";
-    private String give = "0";
-
+	  private String give = "0";
+	  private List<String> settlementDescList ;
+	  private List<String> settlements;
 	private String shouldamountNormal="0"; //    #营业数据统计(堂吃应收）
 	private String shouldamountTakeout="0";  //   外卖统计(应收）
 	private String paidinamountTakeout="0";    //  #外卖统计(实收）
@@ -409,6 +415,22 @@ public class BusinessReport1 {
 
 	public void setZhifubao(String zhifubao) {
 		this.zhifubao = zhifubao;
+	}
+
+	public List<String> getSettlementDescList() {
+		return settlementDescList;
+	}
+
+	public void setSettlementDescList(List<String> settlementDescList) {
+		this.settlementDescList = settlementDescList;
+	}
+
+	public List<String> getSettlements() {
+		return settlements;
+	}
+
+	public void setSettlements(List<String> settlements) {
+		this.settlements = settlements;
 	}
     
 }

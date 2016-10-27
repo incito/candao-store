@@ -272,9 +272,9 @@ public class DayIncomeBillController<V, K> {
 	public ModelAndView getReportList(@RequestParam Map<String, Object> params) {
 
 		String branchid= PropertiesUtils.getValue("current_branch_id");
-		params.put("branchid", branchid);
+		params.put("branchId", branchid);
 		List<BusinessReport1> reportlist = businessDataDetailService
-				.isgetBusinessDetail(params);
+				.isgetBusinessDetail1(params);
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("reportlist", reportlist);
 		return mav;
@@ -365,26 +365,26 @@ public class DayIncomeBillController<V, K> {
 	 */
 	@RequestMapping("/exprotReport/{beginTime}/{endTime}/{shiftid}/{searchType}")
 	@ResponseBody
-	public ModelAndView exportReport(
+	public JSONObject exportReport(
 			@PathVariable(value = "beginTime") String beginTime,
 			@PathVariable(value = "endTime") String endTime,
 			@PathVariable(value = "shiftid") String shiftid,
 			@PathVariable(value = "searchType") String searchType,
 			HttpServletRequest req, HttpServletResponse response) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		ModelAndView mav = new ModelAndView();
+		JSONObject jo = new JSONObject();
 		try {
 			String branchid = PropertiesUtils.getValue("current_branch_id");
 			String branchname = itemDetailService.getBranchName(branchid);
 			map.put("searchType", searchType);
 			map.put("beginTime", beginTime);
-			map.put("branchid", branchid);
+			map.put("branchId", branchid);
 			map.put("branchname", branchname);
 			map.put("endTime", endTime);
 			map.put("shiftid", shiftid);
 			map.put("names", "营业数据明细表");
 			map.put("shopname", "新辣道");
-			mav.addObject("message", "导出成功！");
+			jo.put("message", "导出成功！");
 			String dateShowbegin = formatDate2(beginTime);
 			String dateShowend = formatDate2(endTime);
 			if (dateShowbegin.equals(dateShowend)) {
@@ -395,9 +395,9 @@ public class DayIncomeBillController<V, K> {
 			dayIncomeBillService.exportDaliyRport(map, req, response);
 		} catch (Exception e) {
 			e.printStackTrace();
-			mav.addObject("message", "导出失败！");
+			jo.put("message", "导出失败！");
 		}
-		return mav;
+		return jo;
 	}
 
 	/**

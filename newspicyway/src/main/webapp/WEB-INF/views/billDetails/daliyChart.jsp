@@ -65,14 +65,14 @@
 		<div class="report_data_div">
 			<table class="table table-list" id="paidIn_tb">
 				<thead>
-					<tr>
-						<th width="14%">现金</th>
+					<tr id="settlementDesc">
+						<!-- <th width="14%">现金</th>
 						<th width="14%">挂账</th>
 						<th width="14%">微信</th>
 						<th width="14%">支付宝</th>
 						<th width="14%">刷工行卡</th>
 						<th width="14%">刷他行卡</th>
-						<th width="15%">会员储值消费净值</th>
+						<th width="15%">会员储值消费净值</th> -->
 					</tr>
 				</thead>
 				<tbody>

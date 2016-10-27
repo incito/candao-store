@@ -102,14 +102,14 @@
 						<th>应收人均</th>
 						<th>实收人均</th>
 
-						<th>实收/现金</th>
+						<!-- <th>实收/现金</th>
 						<th>实收/银行卡</th>
-						<%--<th>实收/抹零</th>--%>
+						<th>实收/抹零</th>
 						<th>实收/会员卡消费</th>
-						<%--<th>实收/会员积分消费</th>--%>
+						<th>实收/会员积分消费</th>
 						<th>实收/挂帐</th>
 						<th>实收/微信支付</th>
-						<th>实收/支付宝支付</th>
+						<th>实收/支付宝支付</th> -->
 					</tr>
 				</thead>
 				<tbody>
@@ -139,14 +139,14 @@
 									<th nowrap="nowrap">应收</th>
 									<th nowrap="nowrap">实收</th>
 
-									<th nowrap="nowrap">实收/现金</th>
+									<%-- <th nowrap="nowrap">实收/现金</th>
 									<th nowrap="nowrap">实收/银行卡</th>
-									<%--<th nowrap="nowrap">实收/抹零</th>--%>
+									<th nowrap="nowrap">实收/抹零</th>
 									<th nowrap="nowrap">实收/会员卡消费</th>
-									<%--<th nowrap="nowrap">实收/会员积分消费</th>--%>
+									<th nowrap="nowrap">实收/会员积分消费</th>
 									<th nowrap="nowrap">实收/挂帐</th>
 									<th nowrap="nowrap">实收/微信支付</th>
-									<th nowrap="nowrap">实收/支付宝支付</th>
+									<th nowrap="nowrap">实收/支付宝支付</th> --%>
 								</tr>
 							</thead>
 							<tbody>

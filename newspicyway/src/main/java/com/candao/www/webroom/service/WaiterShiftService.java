@@ -32,6 +32,7 @@ public interface WaiterShiftService {
 	 * @return
 	 */
 	public List<Map<String,String>> getWaiterShiftOrderInfo(Map<String,Object> paramMap); 
-
+	public Map<String,Object> getWaiterShiftInfo1(Map<String,Object> paramMap);
+	public Map<String,Object> getWaiterShiftInfo2(Map<String,Object> paramMap);
 	
 }

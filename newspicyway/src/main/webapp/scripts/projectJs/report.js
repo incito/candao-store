@@ -7,6 +7,14 @@ $(document).ready(function(){
 
 });
 /**
+ * 去掉字符串前后空格
+ * @param str
+ * @returns
+ */
+function dellrTrim(str){
+	return str.replace(/(^\s*)|(\s*$)/g, "");
+}
+/**
  * 切换查询类型的时候，为searchType赋值
  * @param type
  * @param o
@@ -916,6 +924,36 @@ function paidInAmount(result) {
 	var legend_data = [];
 	var series_data = [];
 	var tb = "";
+	var tr = "";
+	if (result != null && result.length > 0) {
+		var item = result[0];
+		legend_data = item.settlementDescList;//[ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
+		tr += '<tr id="settlementDesc">';
+		$.each(legend_data,function(i,data){
+			tr += '<th width="14%">'+data+'</th>';
+		});
+		tr += '</tr>';
+		$("#settlementDesc").replaceWith(tr);
+		tb += '<tr>';
+		$.each(item.settlements,function(i,data){
+			series_data.push({
+				value : data,
+				name : legend_data[i]
+			});
+			tb += '<td>'+data+'</td>';
+		});
+		tb += '</tr>';
+	}
+	$("#paidIn_tb tbody").html(tb);
+
+	// 实收总额统计图表
+	var domMain = document.getElementById('daliy_shishou_main');
+	_pieChart('实收总额统计', domMain, legend_data, series_data, 0);
+}
+/*function paidInAmount(result) {
+	var legend_data = [];
+	var series_data = [];
+	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
 		legend_data = [ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
@@ -960,7 +998,7 @@ function paidInAmount(result) {
 	// 实收总额统计图表
 	var domMain = document.getElementById('daliy_shishou_main');
 	_pieChart('实收总额统计', domMain, legend_data, series_data, 0);
-}
+}*/
 /**
  * 折扣总额
  * @param result
@@ -1998,7 +2036,7 @@ function initDatatableConfig(){
 /**
  * 获取数据
  */
-function getWaiterAssessData(){
+/*function getWaiterAssessData(){
 	if(oTable !=null){
 		oTable.fnClearTable(false);
 	}
@@ -2045,6 +2083,57 @@ function getWaiterAssessData(){
 			alert(result.desc);
 		}
 	},'json');
+}*/
+
+function getWaiterAssessData(){
+	if(oTable !=null){
+		oTable.fnClearTable(false);
+	}
+	beginTime = $("#beginTime").val();
+	endTime = $("#endTime").val();
+	shiftid = $("#shiftid").val();
+	$.get(global_Path+"/waiter/shift.json", {
+		beginTime: beginTime,
+		endTime: endTime,
+		shiftid: shiftid
+	}, function(result){
+		console.log(result);
+		if(result.flag == 1){
+			var data = result.data.td;
+			var tr = result.data.tr;
+			var htm = '';
+			$.each(tr,function(i,item){
+				htm += '<th class="ss">实收/'+dellrTrim(item)+'</th>';
+			});
+			$(".ss").remove();
+			$("#waiter-assess-tb thead tr").append(htm);
+			htm = '';
+			if(data != null && data.length>0){
+				$.each(data, function(i, item){
+					htm += '<tr ondblclick="showWaiterSecPage(\''+item.waiterId+'\')">'
+						+ '<td>'+item.waiterId+'</td>'
+						+ '<td>'+item.waiterName+'</td>'
+						+ '<td>'+item.tableNum+'</td>'
+						+ '<td>'+item.custNum+'</td>'
+						+ '<td>'+item.shouldAmount+'</td>'
+						+ '<td>'+item.actualAmountTotal+'</td>'
+						+ '<td>'+item.shouldPre+'</td>'
+						+ '<td>'+item.actualPre+'</td>';
+					$.each(item.settlements,function(i,item){
+						htm += '<td>'+item+'</td>';
+					});
+					htm += '</tr>';
+				});
+				$("#waiter-assess-tb tbody").html(htm);
+				initDatatableConfig();
+			}else{
+				htm += '<tr><td colspan="16">无数据</td></tr>';
+				$("#waiter-assess-tb tbody").html(htm);
+			}
+		}else{
+			alert(result.desc);
+		}
+	},'json');
 }
 function showWaiterSecPage(userid){
 	$("#p_userid").val(userid);
@@ -2060,23 +2149,26 @@ function getWaiterDetails(){
 		userid: $("#p_userid").val()
 	}, function(result){
 		if(result.flag == 1){
-			var data = result.data;
+			var data = result.data.td;
+			var tr = result.data.tr;
 			var htm = '';
+			$.each(tr,function(i,item){
+				htm += '<th class="ssd">实收/'+dellrTrim(item)+'</th>';
+			});
+			$(".ssd").remove();
+			$("#waiterassess-details-tb thead tr").append(htm);
+			htm = '';
 			if(data != null && data.length>0){
 				$.each(data, function(i, item){
-					htm += '<tr><td>'+item.orderid+'</td>'
-						+ '<td>'+item.tableids+'</td>'
-						+ '<td>'+item.custnum+'</td>'
-						+ '<td>'+item.shouldamount+'</td>'
-						+ '<td>'+item.paidinamount+'</td>'
-						+ '<td>'+item.xjamount+'</td>'
-						+ '<td>'+item.yhkamount+'</td>'
-						//+ '<td>'+item.mlamount+'</td>'
-						+ '<td>'+item.hykxfamount+'</td>'
-						//+ '<td>'+item.hyjfxfamount+'</td>'
-						+ '<td>'+item.gz2amount+'</td>'
-						+ '<td>'+item.wxzfamount+'</td>'
-						+ '<td>'+item.zfbzfamount+'</td></tr>';
+					htm += '<tr><td>'+item.orderId+'</td>'
+						+ '<td>'+item.tableNo+'</td>'
+						+ '<td>'+item.custNum+'</td>'
+						+ '<td>'+item.shouldAmount+'</td>'
+						+ '<td>'+item.actualAmountTotal+'</td>';
+					$.each(item.settlements,function(i,item){
+						htm += '<td>'+item+'</td>';
+					});
+					htm += '</tr>';
 				});
 			}else{
 				htm = '<tr><td colspan="5">无数据</td></tr>';

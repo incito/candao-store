@@ -2,6 +2,8 @@ package com.candao.www.webroom.controller;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.codehaus.groovy.transform.SynchronizedASTTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,13 +89,14 @@ public class WaiterShiftController {
             paramMap.put("beginTime", beginTime.length() == 10 ? beginTime + " 00:00:00" : beginTime);
             paramMap.put("endTime", endTime.length() == 10 ? endTime + " 23:59:59" : endTime);
             paramMap.put("shiftid", shiftid);
-
-            List<Map<String, String>> returnList = shiftService.getWaiterShiftInfo(paramMap);
+            Map<String,Object> map = shiftService.getWaiterShiftInfo1(paramMap);
+            /*List<Map<String, String>> returnList = (List<Map<String, String>>) map.get("td");*/
+            /*List<Map<String, String>> returnList = shiftService.getWaiterShiftInfo(paramMap);
             if (returnList == null || returnList.size() <= 0) {
                 returnList = new ArrayList<Map<String, String>>();
                 return ReturnMap.getReturnMap(1, "001", "没有查询到对应的数据", returnList);
-            }
-            return ReturnMap.getReturnMap(1, "001", "操作成功", returnList);
+            }*/
+            return ReturnMap.getReturnMap(1, "001", "操作成功", map);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -148,13 +152,15 @@ public class WaiterShiftController {
             paramMap.put("endTime", endTime);
             paramMap.put("shiftid", shiftid);
             paramMap.put("userid", userid);
-            List<Map<String, String>> returnList = shiftService.getWaiterShiftOrderInfo(paramMap);
+            Map<String,Object> map = shiftService.getWaiterShiftInfo2(paramMap);
+            System.out.println(map.toString());
+            /*List<Map<String, String>> returnList = shiftService.getWaiterShiftOrderInfo(paramMap);
 
             if (returnList == null || returnList.size() <= 0) {
                 returnList = new ArrayList<Map<String, String>>();
                 return ReturnMap.getReturnMap(1, "001", "没有查询到对应的数据", returnList);
-            }
-            return ReturnMap.getReturnMap(1, "001", "操作成功", returnList);
+            }*/
+            return ReturnMap.getReturnMap(1, "001", "操作成功", map);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -194,11 +200,11 @@ public class WaiterShiftController {
             paramMap.put("beginTime", beginTime);
             paramMap.put("endTime", endTime);
             paramMap.put("shiftid", shiftid);
-
-            List<Map<String, String>> returnList = shiftService.getWaiterShiftInfo(paramMap);
+            Map<String,Object> map = shiftService.getWaiterShiftInfo1(paramMap);
+            /*List<Map<String, String>> returnList = shiftService.getWaiterShiftInfo(paramMap);
             if (returnList == null || returnList.size() <= 0) {
                 returnList = new ArrayList<Map<String, String>>();
-            }
+            }*/
             String filedisplay = "服务员考核统计表";
             response.setContentType("application/vnd.ms-excel");
             String filedi = new String(filedisplay.getBytes("GBK"), "ISO-8859-1");
@@ -210,9 +216,13 @@ public class WaiterShiftController {
             params.put("beginTime", beginTime);
             params.put("endTime", endTime);
             String title = ExcelUtils.setTabTitleToBusiness(filedisplay, params);
-            String[] clounNames = {"服务员编号", "服务员姓名", "开台数", "结算人数", "应收总额", "实收总额", "应收人均", "实收人均", "实收/现金", "实收/银行卡", "实收/会员卡消费", "实收/挂帐", "实收/微信支付", "实收/支付宝支付"};
-            String[] keys = {"userid", "username", "ordernum", "custnum", "shouldamount", "paidinamount", "shouldpre", "paidinpre", "xjamount", "yhkamount", "hykxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
-            HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, clounNames, keys);
+            String[] clounNames = {"服务员编号", "服务员姓名", "开台数", "结算人数", "应收总额", "实收总额", "应收人均", "实收人均"};
+            String[] finalClounNames = conList(clounNames,(List<String>)map.get("tr"));
+            String[] keys = {"waiterId", "waiterName", "tableNum", "custNum", "shouldAmount", "actualAmountTotal", "shouldPre", "actualPre"};
+            String[] finalKeys = conList(keys,(List<String>)map.get("key"));
+            List<Map<String,Object>> td = (List<Map<String, Object>>) map.get("td");
+            List returnList = conListMap(map);
+            HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, finalClounNames, finalKeys);
             OutputStream fout = response.getOutputStream();
             hssfwof.write(fout);
             fout.flush();
@@ -226,7 +236,31 @@ public class WaiterShiftController {
         }
         return null;
     }
-
+    private List<Map<String, Object>> conListMap(Map<String,Object> map){
+    	List<Map<String,Object>> td = (List<Map<String, Object>>) map.get("td");
+    	List returnList = new ArrayList();
+        for(Map<String,Object> m:td){
+        	List<String> settlements = (List<String>) m.get("settlements");
+        	m.remove("settlements");
+        	for(int i=0;i<settlements.size();i++){
+        		m.put(((List<String>) map.get("key")).get(i), settlements.get(i));
+        	}
+        	System.out.println(m.toString());
+        	returnList.add(m);
+        }
+        return returnList;
+    }
+    private String[] conList(String[] old,List<String> extend){
+    	String[] result = new String[old.length+extend.size()];
+    	int count = 0;
+    	for(String temp:old){
+    		result[count++] = new String(temp);
+    	}
+    	for(String temp:extend){
+    		result[count++] = new String(temp);
+    	}
+    	return result;
+    }
 
     /**
      * 导出表格 考核参考表
@@ -267,11 +301,11 @@ public class WaiterShiftController {
             paramMap.put("shiftid", shiftid);
             paramMap.put("userid", userid);
 
-
-            List<Map<String, String>> returnList = shiftService.getWaiterShiftOrderInfo(paramMap);
+            Map<String,Object> map = shiftService.getWaiterShiftInfo2(paramMap);
+            /*List<Map<String, String>> returnList = shiftService.getWaiterShiftOrderInfo(paramMap);
             if (returnList == null || returnList.size() <= 0) {
                 returnList = new ArrayList<Map<String, String>>();
-            }
+            }*/
             String filedisplay = "服务员考核统计子表";
             response.setContentType("application/vnd.ms-excel");
             String filedi = new String(filedisplay.getBytes("GBK"), "ISO-8859-1");
@@ -283,9 +317,21 @@ public class WaiterShiftController {
             params.put("beginTime", beginTime);
             params.put("endTime", endTime);
             String title = ExcelUtils.setTabTitleToBusiness(filedisplay, params);
-            String[] clounNames = {"订单号", "台号", "就餐人数", "应收", "实收", "实收/现金", "实收/银行卡", "实收/会员卡消费", "实收/挂帐", "实收/微信支付", "实收/支付宝支付"};
-            String[] keys = {"orderid", "tableids", "custnum", "shouldamount", "paidinamount", "xjamount", "yhkamount", "hykxfamount", "gz2amount", "wxzfamount", "zfbzfamount"};
-            HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, clounNames, keys);
+            String[] clounNames = {"订单号", "台号", "就餐人数", "应收", "实收"};
+            String[] finalClounNames = conList(clounNames,(List<String>)map.get("tr"));
+            String[] keys = {"orderId", "tableNo", "custNum", "shouldAmount", "actualAmountTotal"};
+            String[] finalKeys = conList(keys,(List<String>)map.get("key"));
+            List<Map<String,Object>> td = (List<Map<String, Object>>) map.get("td");
+            List returnList = new ArrayList();
+            for(Map<String,Object> m:td){
+            	List<String> settlements = (List<String>) m.get("settlements");
+            	m.remove("settlements");
+            	for(int i=0;i<settlements.size();i++){
+            		m.put(((List<String>) map.get("key")).get(i), settlements.get(i));
+            	}
+            	returnList.add(m);
+            }
+            HSSFWorkbook hssfwof = PoiExcleTest.createExcel(returnList, params, filedisplay, title, finalClounNames, finalKeys);
             OutputStream fout = response.getOutputStream();
             hssfwof.write(fout);
             fout.flush();
