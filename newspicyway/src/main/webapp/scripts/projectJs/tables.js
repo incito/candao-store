@@ -773,12 +773,13 @@ function  oneclickTableType(id){
 		datatype : "json",
 		contentType : "application/json; charset=utf-8",
 		success : function(result) {
+		    //console.log(result)
 			$(".counter-detail-box").remove();
 			$.each(result,function(index,item){
-				$('#tables-detailMain-Add').before("<div class='counter-detail-box' id='"+item.tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>"+
+				$('#tables-detailMain-Add').before("<div class='counter-detail-box' tabletype='"+item.tabletype+"' id='"+item.tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>"+
 				"<p  >"+item.tableName+"</p>"+
 				"<p  >("+item.personNum+"人桌)</p>"+
-				"<i class='icon-remove hidden' onclick='delTablesDetail("+"&apos;"+item.tableid+"&apos;"+","+"&apos;"+item.tableName+"&apos;"+",event)'></i></div>");
+				"<i class='icon-remove hidden'  onclick='delTablesDetail("+"&apos;"+item.tableid+"&apos;"+","+"&apos;"+item.tableName+"&apos;"+",event)'></i></div>");
 				$('#'+item.tableid).dblclick(function(){
 					doEdit(item.tableid);
 				});
@@ -1382,17 +1383,17 @@ var customTable={
 	isHide:function () {
 		var that=this;
 		$('.counter-detail-box').each(function () {
-			var me=$.trim($(this).find('p:first-child').text())
-			if(me.indexOf('外卖')>-1 || me.indexOf('咖啡')>-1){
-				$(this).hide()
+            var me=$(this);
+            if(me.attr('tabletype')=='2' || me.attr('tabletype')=='3'){
+				$(this).hide();
 			}
 		})
 	},
 	isShow:function () {
 		var that=this;
 		$('.counter-detail-box').each(function () {
-			var me=$.trim($(this).find('p:first-child').text())
-			if(me.indexOf('外卖')>-1 || me.indexOf('咖啡')>-1){
+			var me=$(this)
+			if(me.attr('tabletype')=='2' || me.attr('tabletype')=='3'){
 				$(this).show()
 			}
 		})
@@ -1453,6 +1454,7 @@ var customTable={
 						$(this).attr('position',$('.counter-detail-box').length+i+1)
 					}
 				})
+               // console.log(abc)
 				 $.each(abc,function (i, value) {
 					 $('.counter-detail-box').each(function () {
 					 	if($(this).is(":hidden")){

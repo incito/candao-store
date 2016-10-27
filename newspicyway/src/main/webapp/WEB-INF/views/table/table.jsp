@@ -66,7 +66,7 @@
 				<div class="nav-counter-tab">
 
 					<c:forEach var="item" items="${datas}" varStatus="i">
-					<div class="counter-detail-box" id="${item.tableid}" onmouseover="delDisplay(this)" onmouseout="delHidden(this)" >
+					<div class="counter-detail-box" tabletype='${item.tabletype}' id="${item.tableid}" onmouseover="delDisplay(this)" onmouseout="delHidden(this)" >
 						<p>${item.tableName }</p>
 						<p>(${item.personNum }人桌)</p>
 						<i class="icon-remove hidden"  onclick="delTablesDetail(&apos;${item.tableid }&apos;,&apos;${item.tableName }&apos;,event)"></i>
