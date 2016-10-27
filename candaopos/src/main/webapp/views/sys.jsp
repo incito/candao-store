@@ -97,12 +97,20 @@
 		</div>
 	</div>
 <script>
+	var timerClear;
+
+	//清除60S倒计时
+
 	$(function () {
+
 		cashbox.init();
+
 	})
 
 	var cashbox={
 		init: function(){
+
+			clearTimeout(timerClear);//清楚setTimeout
 
 			this.getCashbox();
 
@@ -175,7 +183,7 @@
 				var startMinutes = parseInt(timeLeft / (60 * 1000), 10);
 				var startSec = parseInt((timeLeft - startMinutes * 60 * 1000)/1000);
 				timeLeft = timeLeft - 1000;
-				setTimeout(function () {
+				timerClear=setTimeout(function () {
 					countTime();
 				},1000);
 				$('#show').text(startSec);

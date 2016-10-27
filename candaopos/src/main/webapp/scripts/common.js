@@ -28,7 +28,6 @@ $(document).ready(function(){
 		}
 
     });
-
 	if(utils.getUrl.get('tips')) {
 		$.each(decodeURI(utils.getUrl.get('tips')).split('|'), function(k,v){
 			rightBottomPop.alert({
@@ -37,7 +36,8 @@ $(document).ready(function(){
 		})
 	};
     /*判断直接访问页面是否登录*/
-	if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid')){
+    if(!document.referrer){
+	//if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid') ||!document.referrer){
 		var hrefLink=document.location.href;
 		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
 
@@ -45,7 +45,7 @@ $(document).ready(function(){
 		else {
 			widget.modal.alert({
 				cls: 'fade in',
-				content:'<strong>您还没有登录，请先登录</strong>',
+				content:'<strong>您还没有登录请先登录,3秒后将自动跳转页面</strong>',
 				width: 500,
 				height: 500,
 				btnOkTxt: '',
@@ -54,6 +54,9 @@ $(document).ready(function(){
 					window.location='../views/openpage.jsp'
 				}
 			});
+			setTimeout(function () {
+				window.location='../views/openpage.jsp'
+			},3000)
 		}
 
 	}
