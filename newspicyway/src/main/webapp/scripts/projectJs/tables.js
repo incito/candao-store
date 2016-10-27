@@ -6,12 +6,12 @@ var flag_prev =0;
  ************/
 var utils = utils || {};
 $(document).ready(function(){
-	$(document).bind("ajaxSend", function () {
+	/*$(document).bind("ajaxSend", function () {
 		utils.loading.open('正在加载…')
 
 	}).bind("ajaxComplete", function () {
 		utils.loading.remove();
-	})
+	})*/
 	/*餐台分类鼠标滚动*/	
 	var dom =$("#nav-tables")[0];
     var user_agent = navigator.userAgent;
@@ -1491,6 +1491,12 @@ var customTable={
 			method: 'POST',
 			contentType: "application/json",
 			dataType: 'json',
+			beforeSend: function(){
+				utils.loading.open('正在加载');
+			},
+			complete: function(){
+				utils.loading.remove();
+			},
 			data:JSON.stringify(tableJson),
 			success: function (res) {
 				if(res.code=='0'){
