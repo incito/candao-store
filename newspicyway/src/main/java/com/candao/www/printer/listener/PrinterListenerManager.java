@@ -273,13 +273,6 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 				if (flag)
 					temp.add(ip);
 			}
-			// 异步有风险
-			executor.execute(new Runnable() {
-				@Override
-				public void run() {
-					clearListeners(temp);
-				}
-			});
 		}
 		result.addAll(temp);
 		// 更新被移除的
@@ -290,12 +283,8 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 		}
 		// 更新备用打印机
 		backupIPPoll = buffer;
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				createConnections(result);
-			}
-		});
+		createConnections(result);
+		clearListeners(temp);
 	}
 
 	private void clearListeners(List<String> ipAddresss) {
