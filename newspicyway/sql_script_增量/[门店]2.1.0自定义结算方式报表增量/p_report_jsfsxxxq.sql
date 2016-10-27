@@ -1,10 +1,9 @@
 DELIMITER $$
 
-USE `newspicyway`$$
 
 DROP PROCEDURE IF EXISTS `p_report_jsfsxxxq`$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `p_report_jsfsxxxq`(IN  pi_branchid INT(11), 
+CREATE PROCEDURE `p_report_jsfsxxxq`(IN  pi_branchid INT(11), 
 								  IN  pi_jsfs     INT(11),
 								  IN  pi_hdmc     VARCHAR(50),
                                   IN  pi_sb       SMALLINT, 

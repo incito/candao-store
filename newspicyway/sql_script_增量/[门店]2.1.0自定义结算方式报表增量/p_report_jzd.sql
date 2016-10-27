@@ -1,10 +1,9 @@
 DELIMITER $$
 
-USE `newspicyway`$$
 
 DROP PROCEDURE IF EXISTS `p_report_jzd`$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `p_report_jzd`(IN pi_orderid VARCHAR(50),
+CREATE PROCEDURE `p_report_jzd`(IN pi_orderid VARCHAR(50),
 OUT po_errmsg VARCHAR(100))
     SQL SECURITY INVOKER
     COMMENT '结账单'

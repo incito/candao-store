@@ -1,10 +1,9 @@
 DELIMITER $$
 
-USE `newspicyway`$$
 
 DROP PROCEDURE IF EXISTS `p_report_yhhdmxb`$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `p_report_yhhdmxb`(IN  pi_branchid INT(11), 
+CREATE PROCEDURE `p_report_yhhdmxb`(IN  pi_branchid INT(11), 
                                   IN  pi_sb       SMALLINT, 
                                   IN  pi_ksrq     DATETIME, 
                                   IN  pi_jsrq     DATETIME, 

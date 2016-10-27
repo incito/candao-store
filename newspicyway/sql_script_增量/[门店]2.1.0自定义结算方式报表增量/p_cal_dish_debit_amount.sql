@@ -1,10 +1,9 @@
 DELIMITER $$
 
-USE `newspicyway`$$
 
 DROP PROCEDURE IF EXISTS `p_cal_dish_debit_amount`$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `p_cal_dish_debit_amount`(IN  i_orderid VARCHAR(255),
+CREATE PROCEDURE `p_cal_dish_debit_amount`(IN  i_orderid VARCHAR(255),
                                          OUT o_message VARCHAR(255),
                                          OUT o_flag    INT
                                          )
