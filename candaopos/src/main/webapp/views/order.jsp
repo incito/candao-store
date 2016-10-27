@@ -10,6 +10,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
+
 	<title>订单</title>
 	<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="../css/common.css">

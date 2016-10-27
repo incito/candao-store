@@ -83,10 +83,10 @@
 					<button class="btn oper-btn next-btn disabled">
 						<span class="glyphicon glyphicon-chevron-down"></span>
 					</button>
-					<button class="btn oper-btn disabled" onclick="AddDish.addByBtn()">
+					<button class="btn oper-btn disabled" onclick="AddDish.doUpdateNum(1)">
 						<span class="glyphicon glyphicon-plus"></span>
 					</button>
-					<button class="btn oper-btn disabled" onclick="AddDish.reductByBtn()">
+					<button class="btn oper-btn disabled" onclick="AddDish.doUpdateNum(2)">
 						<span class="glyphicon glyphicon-minus"></span>
 					</button>
 					<button class="btn oper-btn disabled" onclick="AddDish.updateNum()">
@@ -202,7 +202,7 @@
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doUpdateNum()">确认
+	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doUpdateNum(0)">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -221,19 +221,11 @@
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
-	                    <div class="dish-info"><p class="p1"><span id="note-dishname"></span> <span id="note-price" style="margin-left: 100px;">0</span>元</p></div>
-	                    <div class="taste">
-	                    	<h6>选择口味</h6>
-	                    	<ul><li>口味1</li><li>口味2</li><li>口味3</li><li>口味4</li></ul>
-	                    </div>
-	               		<h6>忌口</h6>
-	               		<div class="form-group"><div class="avoid">少辣</div><div class="avoid">少盐</div></div>
-	               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" id="dish-note" class="form-control padding-left" onclick='widget.textAreaModal({ target: $(this), note: $(this).val() }).show();'></div>
 	                </div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('note-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doNote()">确认
+	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doNote(this)">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -304,6 +296,7 @@
 	            <div class="modal-body">
 	                <div class="dialog-sm-info">
 	               		<h6>赠菜原因</h6>
+						<div class="form-group freasons"></div>
 	               		<div class="form-group"><span class="inpt-span">其他赠菜原因：</span><input type="text" id="givefood-reason" class="form-control padding-left" onclick="widget.textAreaModal({ target: $(this), note: $(this).val() }).show();"></div>
 	                </div>
 	                <div class="btn-operate  ">
@@ -319,8 +312,7 @@
 	<!-- 赠菜权限 -->
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="givefood-right" style="overflow: auto;"></div>
 	 <!-- 套餐 -->
-	 <div class="modal fade default-dialog in " id="combodish-dialog"
-	     data-backdrop="static">
+	 <div class="modal fade default-dialog combodish-dialog in" id="combodish-dialog"  data-backdrop="static">
 	    <div class="modal-dialog">
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
@@ -329,52 +321,19 @@
 	            </div>
 	            <div class="modal-body">
 	            	<div class="fl dish-div">
-	            		<!-- 仅存在一个分类中-->
-		            	<div class="dishname" id="dishname">套餐</div>
-		            	<div class="combo-group">
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">开胃三拼(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">川青口水鸡(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">水晶猪耳(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">开胃三拼(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">开胃三拼(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">开胃三拼(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">开胃三拼(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            		<h4 class="group-title">凉菜（3选1）已选0</h4>
-		            		<div class="form-group">
-		            			<div class="col-xs-7">开胃三拼(例)</div>
-		            			<div class="col-xs-5"><input class="form-control num-inp" type="text"></div>
-		            		</div>
-		            	</div>
+						<div class="combo-box">
+							<div class="dishname">套餐</div>
+							<div class="combo-group">
+							</div>
+							<div class="f-cb"></div>
+							<hr />
+							<div class="only-group">
+							</div>
+						</div>
 		                <div class="dialog-sm-info">
 		               		<h6 style="font-weight: bold; font-size: 16px">忌口</h6>
-		               		<div class="form-group"><div class="avoid">少辣</div><div class="avoid">少盐</div></div>
-		               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" class="form-control padding-left" onclick="AddDish.inputNote()"></div>
+		               		<div class="form-group avoid-box"></div>
+		               		<div class="form-group"><span class="inpt-span">其他忌口：</span><input type="text" class="form-control padding-left J-note" onclick="widget.textAreaModal({ target: $(this), note: $(this).val() }).show();"></div>
 		                </div>
 	            	</div>
 	            	<div class="fr btns-div">
@@ -391,14 +350,14 @@
 	            			<div class="num-btn">0</div>
 	            			<div class="num-btn">.</div>
 	            		</div>
-	            		<div class="btn-operate  ">
-		                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('combodish-dialog')">取消
-		                    </button>
-		                    <button class="btn btn-save in-btn135" type="button" onclick="">确认
-		                    </button>
-		                </div>
 	            	</div>
-
+					<div class="f-cb"></div>
+					<div class="btn-operate  ">
+						<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('combodish-dialog')">取消
+						</button>
+						<button class="btn btn-save in-btn135 disabled" type="button">确认
+						</button>
+					</div>
 	            </div>
 	        </div>
 	    </div>

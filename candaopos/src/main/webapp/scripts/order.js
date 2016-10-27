@@ -1266,8 +1266,6 @@ var Order = {
                 btnCancelTxt: '确定'
             });
         });
-
-
     },
 
     /**
@@ -1469,7 +1467,7 @@ var Order = {
 
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
-                                tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + v.dishname + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice'>" + (v.dishstatus === '0' ? v.orderprice * v.dishnum : '待称重') + "</td></tr>";
+                                tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + v.dishname + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
 
                                 if(v.dishes !== undefined) {
                                     $.each(v.dishes, function(k1, v1){

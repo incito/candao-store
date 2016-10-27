@@ -177,15 +177,15 @@ footer{
 	padding: 10px;
 }
 .search-btns div.search-btn:hover, .search .btn-clear:hover, 
-.main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, 
-.default-dialog .taste ul li:hover, #combodish-dialog .btns-div .num-btn:hover{
+.main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, .default-dialog .freason:hover,
+.default-dialog .taste ul li:hover, .combodish-dialog .btns-div .num-btn:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #ffffff;
 }
 .search-btns div.search-btn:active, .search .btn-clear:active, 
-.main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, 
-.default-dialog .taste ul li.active, #combodish-dialog .btns-div .num-btn:active{
+.main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, .default-dialog .freason:active,
+.default-dialog .taste ul li.active, .combodish-dialog .btns-div .num-btn:active{
 	background: #FF5803;
 	opacity: 1;
 	color: #ffffff;
@@ -421,7 +421,7 @@ input[type=search] {
 	position: absolute;
 	margin:10px;
 }
-.default-dialog .avoid{
+.default-dialog .avoid,.default-dialog .freason{
 	float: left;
   	width: 100px;
   	height: 40px;
@@ -431,7 +431,7 @@ input[type=search] {
   	margin-right: 4px;
   	border-radius: 2px;
 }
-.default-dialog .avoid.active, #note-dialog .taste ul li.active{
+.default-dialog .avoid.active,.default-dialog .freason.active, #note-dialog .taste ul li.active{
 	background: #FF5803;
 	opacity: 1;
 	color: #ffffff;
@@ -456,21 +456,21 @@ input[type=search] {
 #givefood-dialog .form-group input.padding-left{
 	padding-left: 120px;
 }
-#combodish-dialog .modal-dialog{
+.combodish-dialog .modal-dialog{
 	width: 800px;
 	margin-top: 50px;
 }
-#combodish-dialog .modal-content, #combodish-dialog .modal-body{
+.combodish-dialog .modal-content, .combodish-dialog .modal-body{
 	float: left;
 }
-#combodish-dialog .dish-div{
+.combodish-dialog .dish-div{
 	width: 80%;
 	padding: 0 10px 0 0;
 }
-#combodish-dialog .btns-div{
+.combodish-dialog .btns-div{
 	width: 20%;
 }
-#combodish-dialog .btns-div .num-btn{
+.combodish-dialog .btns-div .num-btn{
 	width: 40px;
   	height: 40px;
   	background: #ffffff;
@@ -480,13 +480,13 @@ input[type=search] {
   	margin-top: 4px;
   	border-radius: 3px;
 }
-#combodish-dialog .dishname{
+.combodish-dialog .dishname{
 	text-align: center;
 	width: 100%;
 	font-size: 18px;
   	font-weight: bold;
 }
-.combo-group{
+.combo-box{
 	overflow-y: auto;
 	height: 400px;
 	width: 100%;
@@ -500,6 +500,9 @@ input[type=search] {
   	font-weight: bold;
   	float: left;
   	width: 100%;
+}
+.combo-group .group-title.fited {
+	background: green;
 }
 .combo-group .col-xs-7{
 	font-size: 16px;
@@ -538,9 +541,7 @@ input[type=search] {
 	width: 40px;
 	display: inline-block;
 }
-.btn-operate  {
-	text-align: right;
-}
+
 .guadan-dialog .inpt-span{
 	position: absolute;
 	padding: 12px 6px;
