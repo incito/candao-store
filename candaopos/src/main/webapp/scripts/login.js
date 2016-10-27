@@ -60,7 +60,8 @@ var Login = {
                         utils.storage.setter('fullname', res.data.fullname);
                         utils.storage.setter('loginTime', res.data.loginTime);
                         utils.storage.setter('aUserid', dom.user.val());
-                        that.setUserRight(dom.user.val());
+                        utils.storage.setter('aUserid', dom.user.val(),1)//设置sessionStorage
+                        that.setUserRight($.trim(dom.user.val()));
                         that.getBranchInfo();
                         var iSuserRight=utils.userRight.get($.trim(dom.user.val()),'030206');
                         if(iSuserRight){//验证是否有收银权限，iSuserRight为true时验证零找金，false直接跳转登录页面

@@ -35,6 +35,27 @@ $(document).ready(function(){
 				content: v
 			});
 		})
+	};
+    /*判断直接访问页面是否登录*/
+	if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid')){
+		var hrefLink=document.location.href;
+		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+
+		}
+		else {
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>您还没有登录，请先登录</strong>',
+				width: 500,
+				height: 500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定',
+				btnCancelCb:function () {
+					window.location='../views/openpage.jsp'
+				}
+			});
+		}
+
 	}
 
 
@@ -846,14 +867,31 @@ utils.HashMap = function(){
  * localStorage
  */
 utils.storage = {
-	getter: function (key) {
-		return localStorage.getItem( _config.projectName + '_' + key);
+	getter: function (key,type) {
+		if(type){
+			return sessionStorage.getItem( _config.projectName + '_' + key);
+		}
+		else {
+			return localStorage.getItem( _config.projectName + '_' + key);
+		}
+
 	},
-	setter: function (key, val) {
-		return localStorage.setItem(_config.projectName + '_' + key, val);
+	setter: function (key, val,type) {
+		if(type){
+			return sessionStorage.setItem(_config.projectName + '_' + key, val);
+
+		}else {
+			return localStorage.setItem(_config.projectName + '_' + key, val);
+		}
 	},
-	remove: function(key){
-		return localStorage.removeItem(_config.projectName + '_' + key);
+	remove: function(key,type){
+		if(type){
+			return sessionStorage.removeItem(_config.projectName + '_' + key);
+		}
+		else {
+			return localStorage.removeItem(_config.projectName + '_' + key);
+		}
+
 	}
 };
 /**
