@@ -39,11 +39,7 @@ $(document).ready(function(){
 
 
 });
-
 javascript:window.history.forward(1);
-function goBack(){
-	window.history.back(-1);
-}
 
 /************
  * 配置项
