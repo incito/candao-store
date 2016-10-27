@@ -324,8 +324,16 @@ var OpenPage = {
 
     /*保存配置信息*/
     saveConfigInfo:function () {
-        //获取会员配置地址
+        //设置配置信息
+        $.ajax({
+            url: _config.interfaceUrl.Config,
+            type:"get",
+            dataType:'text'
+        }).then(function(res){
+            utils.storage.setter('config', res.split("*/")[1]);
+        });
 
+        //获取会员配置地址
         $.ajax({
             url: _config.interfaceUrl.GetMemberAddress,
             type:"get",

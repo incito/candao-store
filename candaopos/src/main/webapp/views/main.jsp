@@ -9,17 +9,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
+
 <title>主页</title>
 <link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="../css/common.css">
 <link rel="stylesheet" href="../css/main.css">
-<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script src="../scripts/jquery-3.1.0.min.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../scripts/common.js"></script>
 <script src="../scripts/main.js"></script>
 	<script src="../lib/md5.js"></script>
+
 <script type="text/javascript">
 	var nowPage = 0;
 	var g_isopened = false;

@@ -60,10 +60,7 @@ $(document).ready(function(){
 
 
 });
-
-function goBack(){
-	window.history.back(-1);
-}
+javascript:window.history.forward(1);
 
 /************
  * 配置项
@@ -183,6 +180,9 @@ _config.interfaceUrl = {
 	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
 	Yarecharge:'/datasnap/rest/TServerMethods1/StoreCardDeposit/',<!--雅座会员储值-->
 	YaCardActive:'/datasnap/rest/TServerMethods1/CardActive/',<!--雅座会员激活-->
+
+	/*pos配置*/
+	Config:'/newspicyway/pos/scripts/config.json',<!--雅座会员激活-->
 };
 //优惠分类
 _config.preferential = {
@@ -540,7 +540,7 @@ widget.keyboard = function(opts){
 			focusIpt = $(this);
 		});
 
-	};
+	}
 	return _init()
 };
 
