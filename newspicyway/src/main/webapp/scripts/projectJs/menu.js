@@ -1849,7 +1849,7 @@ function stopDefault(e) {
 }
 
 /* 分类拖动 */
-function menuDrop(ev,flag){	
+function menuDrop(ev,flag){
 	ev.stopPropagation();
 //	ev.preventDefault();
 	stopDefault(ev);

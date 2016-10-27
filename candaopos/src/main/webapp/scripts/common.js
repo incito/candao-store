@@ -64,7 +64,6 @@ _config.interfaceUrl = {
 	OpenTable: "/newspicyway/padinterface/setorder.json", <!--餐桌开台-->
 	GetOrderInvoice: "/newspicyway/padinterface/findInvoiceByOrderid.json", <!--获取订单发票-->
 	UpdateOrderInvoice: "/newspicyway/padinterface/updateInvoice.json", <!--更新发票信息-->
-	EndWorkSyncData: "/newspicyway/padinterface/jdesyndata.json", <!--结业后通知后台同步数据-->
 	GetDishGroupInfos: "/newspicyway/padinterface/getMenuColumn.json", <!--获取菜品分类信息-->
 	GetCouponInfos: "/newspicyway/padinterface/getPreferentialList.json", <!--获取优惠券信息-->
 	CalcDiscountAmount: "/newspicyway/padinterface/usePreferentialItem.json", <!--使用优惠券-->
