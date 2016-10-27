@@ -30,7 +30,8 @@
 		<div class="ky-content content-iframe">
 			<div class="counter-content">
 				<p class="counter-content-title">
-					<button class="btn btn-default counter-type-add counter-add" style="float: left" type="button" id="dinnerTable"><i class="icon-plus"></i> <span>自定义餐台</span></button>
+					<button class="btn btn-default counter-type-add counter-add" style="float: left" type="button" id="dinnerTable"><i class="icon-edit"></i> <span>自定义餐台</span></button>
+					<button class="btn btn-default counter-type-add counter-add" style="float: left;display: none;margin-left: 30px" type="button" id="dinnerTablecancel"><i class="icon-minus"></i> <span>取消</span></button>
 					<button class="btn btn-default counter-type-add counter-add"   type="button" id="counter-type-add" onclick="addArea()" ><i class="icon-plus"></i> 餐厅分区</button>
 				</p>
 
@@ -260,10 +261,9 @@
 
 
 		<script>
-			var tableJson=null,tableSortJson=null
-			customTable.int();
+			var tableJson=null;
+			customTable.int();//餐台自定义排序
 		var count=0;
-
 		$('.tables-roll-left').click(function(){
 			var marginl = -147.5*(++count)+'px';
 			$('.tables-comboList:eq(0)').css('margin-left',marginl);

@@ -1,7 +1,17 @@
 
 var tbPrinterAreaList=[];
 var flag_prev =0;
+/************
+ * 工具类 utils
+ ************/
+var utils = utils || {};
 $(document).ready(function(){
+	$(document).bind("ajaxSend", function () {
+		utils.loading.open('正在加载…')
+
+	}).bind("ajaxComplete", function () {
+		utils.loading.remove();
+	})
 	/*餐台分类鼠标滚动*/	
 	var dom =$("#nav-tables")[0];
     var user_agent = navigator.userAgent;
@@ -376,7 +386,24 @@ $(document).ready(function(){
 });
 
 //----------------------------------------------------------------------------------------------
-
+utils.loading ={
+	open:function (msg) {
+		var str='<div class="lading-shade" ></div><div class="spinner">'+
+			'<div class="rect1"></div>'+
+			'<div class="rect2"></div>'+
+			'<div class="rect3"></div>'+
+			'<div class="rect4"></div>'+
+			'<div class="rect5"></div>'+
+			'<p>'+msg+'</p>'
+		'</div>';
+		if($('.spinner').length<1){
+			$('body').append(str);
+		}
+	},
+	remove:function () {
+		$('.lading-shade,.spinner').remove();
+	}
+}
 /*禁止浏览器自带的鼠标右键功能*/
 window.onload = function ()
 {
@@ -754,6 +781,11 @@ function  oneclickTableType(id){
 					doEdit(item.tableid);
 				});
 			});
+			/*自定义排序点击隐藏咖啡和外卖台*/
+			if($('#dinnerTable').attr('isclicktype')){
+				customTable.isHide();
+			}
+
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
@@ -763,6 +795,10 @@ function  oneclickTableType(id){
 /*餐台详情删除*/
 function delTablesDetail(tableid,tableName,e)
 {
+	if($('#dinnerTable').attr('isclickType')){
+        customTable.noClick('自定义餐台排序时，不能删除餐台')
+		return false
+	}
 	$("#tables-detailDel-dialog").modal("show");
 	$("#showTableName").html(tableName);
 	$("#showTableId").val(tableid);
@@ -774,12 +810,20 @@ function initArea(){
 	$(".error").text("");
 }
 function addArea(){
+    if($('#dinnerTable').attr('isclickType')){
+        customTable.noClick('自定义餐台排序时，不能添加分区')
+        return false
+    }
 	initArea();
 	 $("#areas-detailAdd-dialog").modal("show");
 	 $("#editTitle1").text("添加分区");
 
 }
 function editArea(id){
+    if($('#dinnerTable').attr('isclickType')){
+        customTable.noClick('自定义餐台排序时，不能编辑分区')
+        return false
+    }
 	initArea();
 	$("#areas-detailAdd-dialog").modal("show");
 	$("#editTitle1").text("编辑分区");
@@ -983,7 +1027,10 @@ function doMenu(e,_this){
 	}
 } 
 function showDeleteArea(){
-	
+    if($('#dinnerTable').attr('isclickType')){
+        customTable.noClick('自定义餐台排序时，不能删除分区')
+        return false
+    }
 	$("#areas-detailDel-dialog").modal("show");
 	$("#showAreaName").html($("#nav-tables .active button").text());
 //	$("#showTableId").val(tableid);
@@ -1059,6 +1106,204 @@ function addEvent_T(event) {
     }
 
 }
+/*提示弹窗*/
+var widget = widget || {};
+/*
+ * 公共模态框
+ * ***参数***
+ *
+ *  - `content` {String} 填充内容
+ *  - `title` {String} 模态框标题
+ *  - `width` {Number} 默认500
+ *  - `height` {Number} 默认auto
+ *  - `vertical` {Boolean} 默认true
+ *  - `cls` {String} 为modal添加样式,多个用空格分开
+ *  - `hasBtns` {Boolean} 是否有按钮 默认为true
+ *  - `btnOkTxt` {String} ok按钮文字 为''时,不显示
+ *  - `btnCancelTxt` {String} cancle按钮文字 为''时,不显示
+ *  - `btnOkCb` {Function} ok按钮回调
+ *  - `btnCancelCb` {Function} cancel按钮回调 默认带有关闭事件
+ *  - `onReady` {Function} 创建完成后回调
+ * ***方法***
+ *
+ * - `close()` 销毁modal
+ * - `hide()`  隐藏modal
+ * - `show()`  对hide的modal 显示
+ * */
+widget.modal = function () {
+	var _tplHtml =
+		'<div class="modal counter-dialog [Cls]" id="[Id]">' +
+		'<div class="modal-content" style="width:[Width]px;margin: 0px auto;">' +
+		'<div class="modal-body" style="width:[Width]px;margin: 0px auto;">' +
+		'<div class="counter-dialog-header" >' +
+		'<span style="padding-left: 0px;"> [Title]</span>'+
+		/*'<img src="/newspicyway/images/close-sm.png" class="img-close"  data-dismiss="modal">'+*/
+		'</div>' +
+		'<hr class="ky-hr">'+
+		'<div class="" style="text-align: center;margin-bottom: 20px;margin-top: 20px">' +
+		'[Content]' +
+		'</div>' +
+		'<div class="btn-operate" style="margin-top: 40px;">' +
+		'<button type="button" class="btn btn-cancel cancel" data-dismiss="modal" style="padding: 6px 30px;margin-right: 40px">[BtnCancelTxt]</button>' +
+		'<button type="button" class="btn btn-save ok" style="padding: 6px 30px">[BtnOkTxt]</button>' +
+		'</div>' +
+		'</div>' +
+		'</div>';
+	'</div>';
+
+	var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm');
+
+	var _alert = function (options) {
+		var id = _dialog(options);
+		var modal = $('#' + id);
+		modal.addClass('modal-alert');
+
+		return {
+			id: id,
+			hide: function(){
+				modal.modal('hide');
+			},
+			close: function(){
+				_close(id);
+			},
+			show:function(){
+				modal.modal('show');
+			}
+		};
+	};
+
+	var _confirm = function (options) {
+		var id = _dialog(options);
+		var modal = $('#' + id);
+		modal.addClass('modal-confirm');
+		return {
+			id: id,
+			hide: function(){
+				modal.modal('hide');
+			},
+			close: function(){
+				_close(id);
+			},
+			show:function(){
+				modal.modal('show');
+			}
+		};
+	};
+
+
+
+
+	var _getId = function () {
+		var date = new Date();
+		return 'mdl' + date.valueOf();
+	};
+
+	var _close = function(id){
+		var $modal = $('#' + id);
+		$modal.next().remove();
+		$modal.remove();
+	};
+
+	var _dialog = function (options) {
+		var modalId = _getId();
+		var ops = {
+			content: "提示内容",
+			title: "操作提示",
+			width: 500,
+			height: 'auto',
+			auto: false,
+			cls:'',
+			hasBtns: true,
+			btnCancelTxt: '取消',
+			btnOkTxt: '确定',
+			vertical: true,
+			onReady: null,
+			hasFooter: true,
+			btnOkCb: function(){
+				_close(modalId);
+			},
+			btnCancelCb:function(){
+				_close(modalId);
+			}
+
+		};
+
+		ops = $.extend({},ops, options);
+
+		var html = _tplHtml.replace(reg, function (node, key) {
+			return {
+				Id: modalId,
+				Title: ops.title,
+				Cls: ops.cls,
+				Width: ops.width,
+				Content: ops.content,
+				BtnCancelTxt: ops.btnCancelTxt,
+				BtnOkTxt: ops.btnOkTxt,
+			}[key];
+		});
+
+
+		$('body').append(html);
+
+		var $modal = $('#' + modalId);
+
+		//按钮逻辑
+		if(!ops.hasBtns) {
+			$modal.find('.modal-footer').remove();
+		} else {
+
+			if(ops.btnOkTxt === '') {
+				$modal.find('.ok').remove();
+			} else {
+				$modal.find('.ok').bind('click', function(){
+					if($(this).hasClass('disabled')) return false;
+					ops.btnOkCb && ops.btnOkCb.call(this);
+				})
+			}
+
+
+			if(!ops.hasFooter) {
+				$modal.find('.modal-footer').remove();
+			}
+
+			if(ops.btnCancelTxt === ''){
+				$modal.find('.cancel').remove();
+			} else {
+				$modal.find('.cancel').bind('click', function(){
+					ops.btnCancelCb && ops.btnCancelCb.call(this);
+					_close(modalId);
+				})
+			}
+		}
+
+
+		ops.onReady && ops.onReady.call(this);
+
+		//关闭按钮
+		$modal.find('.close').bind('click', function(){
+			_close(modalId);
+		});
+
+		if(ops.vertical) {
+			$modal.css({
+				'display': 'flex',
+				'align-items': 'center'
+			});
+		}
+
+		$modal.next('.modal-backdrop').addClass('.modal-backdrop-' + modalId);
+		$modal.modal({
+			width: ops.width,
+			backdrop: 'static'
+		});
+
+		return modalId;
+	};
+	return {
+		alert: _alert,
+		confirm: _confirm
+	}
+}();
 /*自定义餐台*/
 
 var customTable={
@@ -1075,7 +1320,7 @@ var customTable={
             contentType: "application/json",
             dataType: 'json',
             success: function (res) {
-                console.log(res)
+                //console.log(res)
                 $.each(res, function (index, item) {
                     $.each(item, function (key, obj) {
                         var tmpJson1 = JSON.parse(key);
@@ -1094,31 +1339,48 @@ var customTable={
 		tableJson=tmpJson
 	},
 	isClick:function () {
-		var that=this;
+		var that=this,cont=0;
 		$('#dinnerTable').click(function () {
-			var me=$(this).find('span')
+			cont++
+			var me=$(this).find('span');
+            $('#dinnerTablecancel').show();
 			if(me.text()=='自定义餐台'){
+				$(this).attr('isclickType','0')
 				me.text('保存');
 				$('#counter-type-add,#tables-detailMain-Add').hide();
-				that.isHide();
+				if(cont>1){
+					$(".nav-counter" ).sortable('enable')
+					$(".nav-counter-tab" ).sortable('enable');
+				}
 				that.areaDrag();
+
 				that.tableDrag();
+
+				that.isHide();
+
 			}
+			/*保存自定义餐台*/
 			else {
 				me.text('自定义餐台');
+				$(this).removeAttr('isclickType');
+                $('#dinnerTablecancel').hide();
 				$('#counter-type-add,#tables-detailMain-Add').show();
 				that.isShow();
 				that.saveTable();
 				$(".nav-counter" ).sortable('disable')
 				$(".nav-counter-tab" ).sortable('disable');
 			}
-		})
+		});
+        /*取消自定义餐台排序*/
+        $('#dinnerTablecancel').click(function () {
+            window.location.reload();//刷新页面
+        })
 	},
 	isHide:function () {
 		var that=this;
 		$('.counter-detail-box').each(function () {
 			var me=$.trim($(this).find('p:first-child').text())
-			if(me.indexOf('外卖')>-1){
+			if(me.indexOf('外卖')>-1 || me.indexOf('咖啡')>-1){
 				$(this).hide()
 			}
 		})
@@ -1127,7 +1389,7 @@ var customTable={
 		var that=this;
 		$('.counter-detail-box').each(function () {
 			var me=$.trim($(this).find('p:first-child').text())
-			if(me.indexOf('外卖')>-1){
+			if(me.indexOf('外卖')>-1 || me.indexOf('咖啡')>-1){
 				$(this).show()
 			}
 		})
@@ -1167,6 +1429,7 @@ var customTable={
 	/*餐台拖动*/
 	tableDrag:function () {
 		var that=this;
+
 		$( ".nav-counter-tab" ).sortable({
 			cursor: "move",
 			items :"div",                        //只是div可以拖动
@@ -1202,6 +1465,7 @@ var customTable={
 			}
 		});
 	},
+	/*拼装回传数据*/
     setJson:function () {
         for(var i=0;i<tableJson.length;i++){
             $('.nav-counter li').each(function () {
@@ -1218,7 +1482,7 @@ var customTable={
                 }
             });
         }
-        console.log(JSON.stringify(tableJson))
+       // console.log(JSON.stringify(tableJson))
     },
 	/*保存自定义餐台*/
 	saveTable:function () {
@@ -1229,14 +1493,53 @@ var customTable={
 			dataType: 'json',
 			data:JSON.stringify(tableJson),
 			success: function (res) {
-				console.log(res)
+				if(res.code=='0'){
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+res.msg+'</div>',
+						width:360,
+						height:500,
+						btnOkTxt: '确定 ',
+						btnCancelTxt: '',
+						btnOkCb:function () {
+							$('.modal-alert:last,.fade:last').remove()
+							window.location.reload();//刷新页面
+						}
+					});
 
-			},
-			error:function (res) {
-				console.log(res)
+				}
+				else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+res.msg+'</div>',
+						width:360,
+						height:500,
+						btnOkTxt: '确定 ',
+						btnCancelTxt: '',
+						btnOkCb:function () {
+							$('.modal-alert:last,.fade:last').remove()
+						}
+					});
+				}
+				//console.log(res)
 			}
 		})
-		window.location.reload();
-	}
+
+	},
+    /*点击自定义餐台时禁用*/
+    noClick:function (msg) {
+            widget.modal.alert({
+                cls: 'fade in',
+                content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+msg+'</div>',
+                width:360,
+                height:500,
+                btnOkTxt: '确定 ',
+                btnCancelTxt: '',
+                btnOkCb:function () {
+                    $('.modal-alert:last,.fade:last').remove()
+                }
+            });
+
+    }
 
 }
