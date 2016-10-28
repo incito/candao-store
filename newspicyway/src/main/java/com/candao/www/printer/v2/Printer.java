@@ -192,7 +192,7 @@ public class Printer {
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
-        outputStream.write(PrinterConstant.BEL);
+//        outputStream.write(PrinterConstant.BEL);
         outputStream.flush();
     }
 
