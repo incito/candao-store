@@ -19,7 +19,7 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
 
 	<description>Spring公共配置</description>
-	<import resource="applicationContext-quartz.xml"/>
+	<!-- <import resource="applicationContext-quartz.xml"/> -->
 	<!-- <aop:aspectj-autoproxy /> -->
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
