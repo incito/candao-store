@@ -10,17 +10,13 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.candao.common.utils.StreamGobbler;
-import com.candao.file.fastdfs.service.FileService;
 
 public class ConvertVideoUtil  extends Thread {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConvertVideoUtil.class);
 	
-	@Autowired
-	FileService  fileService;
 	
 	private String mencoder_home ;//mencoder.exe所放的路径
 	private String ffmpeg_home ;//ffmpeg.exe所放的路径

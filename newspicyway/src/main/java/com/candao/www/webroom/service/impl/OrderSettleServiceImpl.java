@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.candao.www.data.dao.*;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,13 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.Constant.TABLETYPE;
+import com.candao.www.data.dao.EmployeeUserDao;
+import com.candao.www.data.dao.TRethinkSettlementDao;
+import com.candao.www.data.dao.TbOpenBizLogDao;
+import com.candao.www.data.dao.TdishDao;
+import com.candao.www.data.dao.TorderDetailMapper;
+import com.candao.www.data.dao.TsettlementDetailMapper;
+import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Torder;
@@ -36,7 +42,6 @@ import com.candao.www.webroom.model.SettlementDetail;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.DishService;
 import com.candao.www.webroom.service.OrderDetailService;
-import com.candao.www.webroom.service.OrderDetailSettleService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.webroom.service.TableService;
@@ -54,9 +59,6 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	TsettlementMapper settlementMapper;
-	
-	@Autowired
-	OrderDetailSettleService orderDetailSettleService;
 	
 	@Autowired
 	 TsettlementDetailMapper  tsettlementDetailMapper;

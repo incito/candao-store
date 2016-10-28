@@ -1,6 +1,5 @@
 package com.candao.www.webroom.service.impl;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
-import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
@@ -33,16 +31,6 @@ public class TorderDetailPreferentialServiceImpl implements TorderDetailPreferen
 			result.put("code", "1");
 		}
 		return result;
-	}
-
-	@Override
-	public List<TorderDetailPreferential> getTorderDetailSbyOrderid(Map<String, Object> params) {
-		return detailPreferentialDao.getTorderDetailSbyOrderid(params);
-	}
-
-	@Override
-	public BigDecimal statisticALLDiscount(String orderid) {
-		return detailPreferentialDao.statisticALLDiscount(orderid);
 	}
 
 	@Override

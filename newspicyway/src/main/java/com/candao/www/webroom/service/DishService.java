@@ -50,19 +50,6 @@ public interface DishService {
 	  */
 	 public String getDishSet(Tdish dish);
 
-	 /**
-	  * 更新点餐的数量
-	  * @author zhao
-	  * @param dishids
-	  */
-	public int  updateDishComsumer(List<String> dishids);
-
-	/**
-	 * 多种计量单位使用这个方法
-	 * @author zhao
-	 * @param dishids
-	 */
-	public int updateDishSetComsumer(List<String> dishids);
 
 	/**
 	 * 根据id 查询菜品
@@ -72,20 +59,6 @@ public interface DishService {
 	 */
 	public List<Tdish> findAllByIds(List<String> dishids);
 
-	/**
-	 * 退菜 点击数减 1 
-	 * @author zhao
-	 * @param dishids
-	 * @return
-	 */
-	public int  updateDishComsumerReduce(List<String> dishids);
-
-	/**
-	 * 多个单位退菜 点击数减 1 
-	 * @author zhao
-	 * @param dishids
-	 */
-	public int  updateDishSetComsumerReduce(List<String> dishids);
 
 	/**
 	 * 获取所有组合火锅信息
@@ -125,8 +98,6 @@ public interface DishService {
 	 * @return
 	 */
 	public int addTdishDishType(List<Map<String,Object>> list);
-
-	public List<Map<String, Object>> find(Map<String, Object> params);
 
 	public Tdish findAllById(String dishid);
 

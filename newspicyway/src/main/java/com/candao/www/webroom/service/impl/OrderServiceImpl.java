@@ -1,14 +1,41 @@
 package com.candao.www.webroom.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.DateUtils;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
-import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.PrintObj;
 import com.candao.www.constant.Constant;
-import com.candao.www.data.dao.*;
-import com.candao.www.data.model.*;
+import com.candao.www.data.dao.TbDataDictionaryDao;
+import com.candao.www.data.dao.TbPrintObjDao;
+import com.candao.www.data.dao.TdishDao;
+import com.candao.www.data.dao.TorderDetailMapper;
+import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.model.TCouponRule;
+import com.candao.www.data.model.TCoupons;
+import com.candao.www.data.model.TbDataDictionary;
+import com.candao.www.data.model.TbOpenBizLog;
+import com.candao.www.data.model.TbTable;
+import com.candao.www.data.model.Tdish;
+import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.TorderDetailPreferential;
+import com.candao.www.data.model.User;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
@@ -20,16 +47,14 @@ import com.candao.www.utils.preferential.StrategyFactory;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
 import com.candao.www.webroom.model.OperPreferentialResult;
-import com.candao.www.webroom.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.*;
+import com.candao.www.webroom.service.CouponsService;
+import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.NotifyService;
+import com.candao.www.webroom.service.OpenBizService;
+import com.candao.www.webroom.service.OrderService;
+import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TableService;
+import com.candao.www.webroom.service.ToperationLogService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -51,16 +76,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     TdishDao dishDao;
 
-    @Autowired
-    DishUnitService dishUnitService;
 
     @Autowired
     CouponsService couponsService;
     @Autowired
     TbPrintObjDao tbPrintObjDao;
 
-    @Autowired
-    TbPrinterManagerDao tbPrinterManagerDao;
 
     @Autowired
     @Qualifier("t_userService")
@@ -91,30 +112,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
 
-    @Override
-    public int saveOrder(Torder order) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int discardOrder(Torder order) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int addDishOnOrder(TorderDetail orderDetail) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int reduceDishOnOrder(TorderDetail orderDetail) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
     public Torder findOrderByTableId(Torder order) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("currenttableid", order.getCurrenttableid());
@@ -133,10 +130,6 @@ public class OrderServiceImpl implements OrderService {
         return torderMapper.update(order);
     }
 
-    @Override
-    public int updateInvoiceid(Torder order) {
-        return torderMapper.updateInvoiceid(order);
-    }
 
     @Override
     public Map<String, Object> findOrderById(String orderId) {
@@ -734,23 +727,6 @@ public class OrderServiceImpl implements OrderService {
             mapRet = ReturnMap.getFailureMap("订单为空");
         }
         return mapRet;
-    }
-
-    public class PrintThread extends Thread {
-
-        PrintObj printObj;
-
-        PrintThread(PrintObj printObj) {
-            this.printObj = printObj;
-        }
-
-        @Override
-        public void run() {
-            // 称重后打印单
-            // printService.setDestination(printDishQueue);
-            printService.sendMessage(printObj);
-
-        }
     }
 
     @Override

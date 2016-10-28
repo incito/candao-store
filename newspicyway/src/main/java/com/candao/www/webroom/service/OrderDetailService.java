@@ -11,20 +11,7 @@ import com.candao.www.webroom.model.UrgeDish;
 
 public interface OrderDetailService {
 
-//	public String saveOrderDetails(Order order );
 	public Map<String, Object> setOrderDetailList(Order order );
-	
-	
-	public void discardOrderDetail(TorderDetail orderDetail,String discardUserId,String discardReason);
-	
-	
-//	public int addDishOnOrderDetail(TorderDetail orderDetail);
-	
-//	public int reduceDishOnOrderDetail(TorderDetail orderDetail);
-	
-//	public String startOrderDetail(TorderDetail order);
-
-//	public String discardDish( UrgeDish urgeDish);
 	public String discardDishList( UrgeDish urgeDish,ToperationLog toperationLog);
 
  
@@ -32,12 +19,10 @@ public interface OrderDetailService {
  
 	public String cookiedishList(UrgeDish urgeDish);
 
-//	public TorderDetail findByOrderNoAndDishNo(Map<String, String> mapDetail);
 	
 	public List<TorderDetail> find(Map<String, String> mapDetail);
 	public TorderDetail findOne(Map<String, String> mapDetail);
 
-	public List<Map<String,String>> findTemp(Map<String, String> mapDetail);
 
 	public String cleantable(Table table);
 

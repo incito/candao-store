@@ -102,30 +102,6 @@ public class ReportExportServiceImpl implements ReportExportService{
 		return reportExportDao.getItemAmountTop10(params);
 	}
 	
-	/**
-	 * 品类销售金额趋势top10
-	 * @author weizhifang
-	 * @since 2015-6-6
-	 * @param params
-	 * @return
-	 */
-	public List<Map<String,Object>> getItemAmountTop10trend(List<Map<String,Object>> dishNumList,Map<String,Object> params){
-		List<Map<String,Object>> shareList = new ArrayList<Map<String,Object>>();
-		for(Map<String,Object> map : dishNumList){
-			HashMap<String, Object> mapShare = new HashMap<String, Object>();
-			String dishid = map.get("dishid").toString();
-			String dishunit = map.get("dishunit").toString();
-			params.put("dishid", dishid);
-			params.put("dishunit", dishunit);
-			getformatDayParam(params);
-			List<Map<String,Object>> itemList = reportExportDao.getItemAmountTop10trend(params);
-			List<Map<String,Object>> it = setItemDate(itemList,params);
-			mapShare.put("name", map.get("itemdesc").toString());
-			mapShare.put("list", it);
-			shareList.add(mapShare);
-		}
-		return shareList;
-	}
 	
 	/**
 	 * 格式化日期格式

@@ -4,17 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.www.data.model.Torder;
-import com.candao.www.data.model.TorderDetail;
 
 public interface OrderService {
 
-	public int saveOrder(Torder order );
-	
-	public int discardOrder(Torder order);
-	
-	public int addDishOnOrder(TorderDetail orderDetail);
-	
-	public int reduceDishOnOrder(TorderDetail orderDetail);
 	
 	public String startOrder(Torder order);
 	
@@ -34,7 +26,6 @@ public interface OrderService {
 	 */
 	public  Map<String, Object> calGetOrderInfo(Map<String,Object> params); 
 	
-	public Torder findOrderByTableId(Torder order); 
 	
 	public int update(Torder order);
 	
@@ -48,7 +39,6 @@ public interface OrderService {
 
 	public void executeSql(String sql);
 
-	public int updateInvoiceid(Torder order);
 	
 	public Torder get(java.lang.String id);
 	
@@ -56,9 +46,6 @@ public interface OrderService {
 
 	public List<Torder> verifyAllOrder();
 
-//	public int verifyAllCLean();
-//
-//	public int verifyAllTableClear();
 
 	public String callEndWork(String userName, String isSucess);
 

@@ -206,10 +206,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         return torderDetailMapper.findOne(mapDetail);
     }
 
-    @Override
-    public List<Map<String, String>> findTemp(Map<String, String> mapDetail) {
-        return torderDetailMapper.findTemp(mapDetail);
-    }
 
     //从传过来的数据中，获取订单详情的所有信息
 
@@ -2259,23 +2255,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
     }
 
-    /**
-     * 退整个菜
-     *
-     * @param orderDetail
-     * @param discardNum
-     * @author tom_zhao
-     */
-    @Override
-    public void discardOrderDetail(TorderDetail orderDetail, String discardUserId, String discardReason) {
-        torderDetailMapper.insertDiscardDish(orderDetail);
-        orderDetail.setDiscardUserId(discardUserId);
-        orderDetail.setDiscardReason(discardReason);
-        torderDetailMapper.updateDiscardUserId(orderDetail);
-        torderDetailMapper.delete(orderDetail.getOrderdetailid());
-    }
-
-
     public class StatementThread implements Runnable {
 
         PrintObj printObj;
@@ -2669,12 +2648,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     DishService dishService;
 
     @Autowired
-    PrinterService printerService;
-
-    @Autowired
-    TableAreaService tableAreaService;
-
-    @Autowired
     ToperationLogService toperationLogService;
 
 //	@Autowired
@@ -2707,9 +2680,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Autowired
     @Qualifier("t_userService")
     UserService userService;
-
-    @Autowired
-    ToperationLogDao toperationLogDao;
 
     @Autowired
     private DishSetProducerService dishSetService;

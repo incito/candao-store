@@ -3351,9 +3351,6 @@ public class PadInterfaceController {
     OrderDetailService orderDetailService;
 
     @Autowired
-    private MemeberService memeberService;
-
-    @Autowired
     private LoginService loginService;
 
     @Autowired
@@ -3389,8 +3386,6 @@ public class PadInterfaceController {
 
     @Autowired
     private PreferentialActivityService preferentialActivityService;
-    @Autowired
-    private InstrumentService instrumentService;
     @Autowired
     private UserInstrumentService userInstrumentService;
     @Autowired

@@ -20,14 +20,4 @@ public class OpenBizServiceImpl implements OpenBizService{
 		return tbOpenBizLogDao.findOpenBizDate();
 	}
 
-	@Override
-	public int deleteOpenBizLog() {
-		return tbOpenBizLogDao.deleteOpenBizLog();
-	}
-
-	@Override
-	public int insertOpenBizLog(TbOpenBizLog tbOpenBizLog) {
-		return tbOpenBizLogDao.insertOpenBizLog(tbOpenBizLog);
-	}
-
 }

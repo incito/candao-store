@@ -1,11 +1,9 @@
 package com.candao.www.webroom.service.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.TbMessageInstrument;
 import com.candao.www.data.model.TbUserInstrument;
 import com.candao.www.data.model.Torder;
-import com.candao.www.utils.TsThread;
+import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.webroom.service.MessageInstrumentService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.UserInstrumentService;
@@ -125,30 +123,6 @@ public class UserInstrumentServiceImpl implements UserInstrumentService{
 		
 		return userid;
 		
-	}
-
-	@Override
-	public boolean deleteByParams(Map<String, Object> params) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<Map<String, Object>> find(Map<String, Object> params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int updateStatus(TbUserInstrument tbUserInstrument) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public List<Map<String, Object>> findUseridByParams(
-			Map<String, Object> params) {
-		return tbUserInstrumentDao.findUseridByParams(params);
 	}
 
 	@Override

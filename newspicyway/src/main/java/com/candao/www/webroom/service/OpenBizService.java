@@ -6,10 +6,6 @@ public interface OpenBizService {
 
 	public   TbOpenBizLog getOpenBizLog();
 	
-	public   int  deleteOpenBizLog();
-	
-	
-	public  int  insertOpenBizLog( TbOpenBizLog tbOpenBizLog);
 	
 	
 }

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +67,6 @@ public class GiftServiceImpl implements GiftLogService{
 		return null;
 	}
 
-	@Override
-	public List<TGiftLog> getGiftLogByOrder(String orderid) {
-		return giftDao.getGiftLogByOrder(orderid);
-	}
-	
 	@Override
 	public List<TGiftLog> getGiftLogByRecOrder(String orderid) {
 		return giftDao.getGiftLogByRecOrder(orderid);
@@ -195,10 +188,6 @@ public class GiftServiceImpl implements GiftLogService{
 		return giftDao.getGiftLogInfo(giftLogId);
 	}
 	
-	@Override
-	public List<TGiftLog> getGiftLogInfo(Map<String,String> params) {
-		return giftDao.getGiftLogInfo(params);
-	}
 
 	@Override
 	public Map<String, String> getGiftInfo(String giftId) {
