@@ -97,12 +97,20 @@
 		</div>
 	</div>
 <script>
+	var timerClear;
+
+	//清除60S倒计时
+
 	$(function () {
+
 		cashbox.init();
+
 	})
 
 	var cashbox={
 		init: function(){
+
+			clearTimeout(timerClear);//清楚setTimeout
 
 			this.getCashbox();
 
@@ -150,8 +158,11 @@
 				global: false,
 				success: function (data) {
 					//console.log(data)
-					var str="",num=0;
+					var str="",num=0,arr=[];
 					for( var i=0;i<data.data.length;i++) {
+						if(data.data[i].status=='5'){
+							arr.push(data.data[i])
+						}
 						num=i+1
 						str+='<tr>';
 						str+='   <td width="200">'+num+'</td>';
@@ -161,6 +172,12 @@
 						str+='</tr>';
 					};
 					$("#printList tbody").html(str);
+					if(arr.length>0){
+						$('.main-J-btn-sys').addClass('main-J-btn-sys-highlight')
+					}
+					else {
+						$('.main-J-btn-sys').removeClass('main-J-btn-sys-highlight')
+					}
 				},
 			});
 		},
@@ -175,7 +192,7 @@
 				var startMinutes = parseInt(timeLeft / (60 * 1000), 10);
 				var startSec = parseInt((timeLeft - startMinutes * 60 * 1000)/1000);
 				timeLeft = timeLeft - 1000;
-				setTimeout(function () {
+				timerClear=setTimeout(function () {
 					countTime();
 				},1000);
 				$('#show').text(startSec);

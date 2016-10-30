@@ -28,13 +28,37 @@ $(document).ready(function(){
 		}
 
     });
-
 	if(utils.getUrl.get('tips')) {
 		$.each(decodeURI(utils.getUrl.get('tips')).split('|'), function(k,v){
 			rightBottomPop.alert({
 				content: v
 			});
 		})
+	};
+    /*判断直接访问页面是否登录*/
+    if(!document.referrer){
+	//if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid') ||!document.referrer){
+		var hrefLink=document.location.href;
+		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+
+		}
+		else {
+			widget.modal.alert({
+				cls: 'fade in',
+				content:'<strong>您还没有登录请先登录,3秒后将自动跳转页面</strong>',
+				width: 500,
+				height: 500,
+				btnOkTxt: '',
+				btnCancelTxt: '确定',
+				btnCancelCb:function () {
+					window.location='../views/openpage.jsp'
+				}
+			});
+			setTimeout(function () {
+				window.location='../views/openpage.jsp'
+			},3000)
+		}
+
 	}
 
 
@@ -844,14 +868,31 @@ utils.HashMap = function(){
  * localStorage
  */
 utils.storage = {
-	getter: function (key) {
-		return localStorage.getItem( _config.projectName + '_' + key);
+	getter: function (key,type) {
+		if(type){
+			return sessionStorage.getItem( _config.projectName + '_' + key);
+		}
+		else {
+			return localStorage.getItem( _config.projectName + '_' + key);
+		}
+
 	},
-	setter: function (key, val) {
-		return localStorage.setItem(_config.projectName + '_' + key, val);
+	setter: function (key, val,type) {
+		if(type){
+			return sessionStorage.setItem(_config.projectName + '_' + key, val);
+
+		}else {
+			return localStorage.setItem(_config.projectName + '_' + key, val);
+		}
 	},
-	remove: function(key){
-		return localStorage.removeItem(_config.projectName + '_' + key);
+	remove: function(key,type){
+		if(type){
+			return sessionStorage.removeItem(_config.projectName + '_' + key);
+		}
+		else {
+			return localStorage.removeItem(_config.projectName + '_' + key);
+		}
+
 	}
 };
 /**
@@ -1071,7 +1112,7 @@ utils.printAbnormal={
 						widget.modal.alert({
 							cls: 'fade in printAbnormal',
 							content:str,
-							title:'',
+							title:'打印机连接异常',
 							width:300,
 							height:400,
 							btnOkTxt: '',
@@ -1086,7 +1127,13 @@ utils.printAbnormal={
 							}
 						});
 					}
-					$('.printAbnormal .modal-header span').hide()
+					$('.printAbnormal .modal-header span').hide();
+					utils.storage.setter('printAbnormal',true)
+					$('.main-J-btn-sys').css({'background': '#FF5803','color': '#fff'})
+				}
+				else {
+					utils.storage.remove('printAbnormal')
+					$('.main-J-btn-sys').css({'background': '#fff','color': '#000'})
 				}
 
 			},
