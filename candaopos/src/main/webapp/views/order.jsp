@@ -101,12 +101,12 @@
 				<div class="operate-btns" style="padding-left: 11px;">
 					<div onclick="Order.printPay(1)">预结单</div>
 					<div onclick="Order.takeOrder()">点菜</div>
-					<div onclick="Order.openCash()">开钱箱</div>
+					<div onclick="utils.openCash(0)">开钱箱</div>
 					<div class="show-more">更多</div>
 				</div>
 				<div class="more-oper hide">
 					<ul>
-						<li id="backDishAll" onclick="Order.backDish(1)">整单退菜</li>
+						<li id="backDishAll" onclick="Order.initBackFoodDialog(1)">整单退菜</li>
 						<li id="reprintOrder" onclick="Order.printPay(3)">重印客用单</li>
 						<li onclick="Order.cancelOrder()">取消订单</li>
 						<li id="consumInfo" onclick="Order.consumInfo()">零头不处理</li>
@@ -124,7 +124,7 @@
 					<div class="oper-btn btn next-btn">
 						<span class="glyphicon glyphicon-chevron-down"></span>
 					</div>
-					<div class="oper-btn btn" id="back-dish">
+					<div class="oper-btn btn" onclick="Order.initBackFoodDialog(0)">
 						退菜
 					</div>
 					<div class="oper-btn btn disabled" id="weigh-dish">
@@ -212,11 +212,11 @@
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" disabled class="form-control  J-pay-val" iptType="memberCash" id="memberCash">
+							<input type="text" disabled class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" disabled class="form-control J-pay-val" iptType="memberJf"  id="memberJf">
+							<input type="text" disabled class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
@@ -389,8 +389,8 @@
 	            	<!-- 仅存在一个分类中-->
 	                <div class="dialog-sm-info">
 	               		<h6>退菜原因</h6>
-	               		<div class="form-group"><div class="avoid">客户要求</div><div class="avoid">菜品质量</div><div class="avoid">用餐服务</div></div>
-	               		<div class="form-group"><span class="inpt-span">其他退菜原因：</span><input type="text" id="backfood-reason" class="form-control padding-left"></div>
+	               		<div class="form-group breasons"></div>
+	               		<div class="form-group"><span class="inpt-span">其他退菜原因：</span><input type="text" id="backfood-reason" class="form-control padding-left" onclick="widget.textAreaModal({ target: $(this), note: $(this).val() }).show();" ></div>
 	                </div>
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backfood-dialog')">取消
@@ -402,33 +402,6 @@
 	        </div>
 	    </div>
 	</div>
-	<!-- 输入退菜原因 -->
-	<div class="modal fade default-dialog input-dialog in " id="backreasoninput-dialog"
-	     data-backdrop="static">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	        	<div class="dialog-sm-header">
-	        		<div class="modal-title">餐道</div>
-	                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('backreasoninput-dialog')">
-	            </div>
-	            <div class="modal-body">
-	            	<div class="fl ">其他退菜原因：</div>
-	            	<div class="fr">还可以输入<span id="backreason-count">20</span>字</div>
-	            	<textarea class="form-control" maxlength="20" rows="5" cols="80" id="backreason-inp"></textarea>
-	            	<div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135 clear-btn disabled J-clear" style="float: left;" type="button">清空
-	                    </button>
-	                    <div  style="text-align: right;">
-	                    	<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backreasoninput-dialog')">取消
-		                    </button>
-		                    <button class="btn btn-save in-btn135"  type="button">确认
-		                    </button>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	 </div>
 	<!-- 退菜数量 -->
 	<div class="modal fade default-dialog in input-num-dialog" id="backfoodnum-dialog"
 	 data-backdrop="static">
@@ -591,6 +564,48 @@
 			</div>
 		</div>
 	</div>
+	<!-- 钱箱密码验证 -->
+	<div class="modal fade default-dialog in " id="cashPwd-dialog"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">钱箱密码验证</div>
+					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<!-- 仅存在一个分类中-->
+					<div class="dialog-sm-info">
+						<div class="form-group">
+							<span class="inpt-span">钱箱密码:</span>
+							<input type="text" class="form-control padding-left J-num">
+						</div>
+						<div class="virtual-keyboard">
+							<ul>
+								<li>1</li><li>2</li><li>3</li>
+							</ul>
+							<ul>
+								<li>4</li><li>5</li><li>6</li>
+							</ul>
+							<ul>
+								<li>7</li><li>8</li><li>9</li>
+							</ul>
+							<ul>
+								<li>.</li><li>0</li><li>←</li>
+							</ul>
+						</div>
+					</div>
+					<div class="btn-operate  ">
+						<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+						</button>
+						<button class="btn btn-save in-btn135"  type="button">确认
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 
 	<script type="text/javascript" src="../lib/md5.js"></script>

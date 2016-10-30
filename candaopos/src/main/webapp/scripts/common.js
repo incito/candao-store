@@ -482,8 +482,6 @@ widget.keyboard = function(opts){
 	var opts = $.extend({},defautlopts, opts);
 
 	var $target = $(opts.target);
-
-
 	function _init(){
 		$target.attr('keyboard-type', opts.type);
 		_bindEvent();
@@ -1160,30 +1158,64 @@ utils.chooseMember={
 		});
 	}
 }
-/*弹钱箱
-* 只有utils.storage.getter('cashbox')=='1'时才开启*/
-utils.openCash=function () {
-	if(utils.storage.getter('cashbox')=='1'){
+/**
+ * 弹钱箱
+ * @param type 0:需通过配置判断是否需要设置密码 1:强制弹绕过密码验证(结账时使用)
+ */
+utils.openCash = function (type) {
+	var _openCash = function(){
 		$.ajax({
-			url: _config.interfaceUrl.OpenCash + utils.storage.getter('ipaddress'),
-			method: 'POST',
+			url: _config.interfaceUrl.OpenCash + '/' +JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/',
+			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',
 			success: function (res) {
 				if (res.result[0] === '1') {//成功
-
+					rightBottomPop.alert({content: '打开钱箱成功!'})
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content: '<strong>' + res.Info + '</strong>',
+						width: 500,
+						height: 500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
 				}
-				widget.modal.alert({
-					cls: 'fade in',
-					content: '<strong>' + (res.Info === undefined ? '打开钱箱成功' : res.Info) + '</strong>',
-					width: 500,
-					height: 500,
-					btnOkTxt: '',
-					btnCancelTxt: '确定'
-				});
+
 			}
 		});
+	};
+
+	//强制弹或者不需要密码
+	if(type === 1 || utils.storage.getter('cashbox') == '0') {
+		_openCash();
+	} else {
+		var html = '<div class="dialog-sm-info"> <div class="form-group"><p style="text-align: left;color:red;" class="err"></p> <span class="inpt-span" style="left:10px;">钱箱密码:</span> <input type="password" class="form-control padding-left J-pwd"> </div> <div class="virtual-keyboard"> <ul> <li>1</li><li>2</li><li>3</li> </ul> <ul> <li>4</li><li>5</li><li>6</li> </ul> <ul> <li>7</li><li>8</li><li>9</li> </ul> <ul> <li>.</li><li>0</li><li>←</li> </ul> </div> </div>';
+		var  cashModal = widget.modal.alert({
+			cls: 'default-dialog',
+			content: html,
+			width:340,
+			title: '钱箱密码验证',
+			btnOkCb: function(){
+				var val = $.trim($("#" +cashModal.id).find('.J-pwd').val());
+				var $tip = $("#" +cashModal.id).find('.err');
+				if(val.length < 1) {
+					$tip.text('密码不能为空');
+					return false;
+				}
+
+				if(val === JSON.parse(utils.storage.getter('config')).OpenCashPWD) {
+					_openCash();
+					cashModal.close();
+				} else {
+					$tip.text('密码错误');
+				}
+			}
+		})
+
 	}
+
 }
 
 

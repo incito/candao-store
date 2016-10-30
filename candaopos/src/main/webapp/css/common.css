@@ -65,8 +65,9 @@ footer{
 .dialog-sm-header {
   	background-color: #FF5803;
   	height: 54px;
-  	border-top-left-radius: 4px;
-  	border-top-right-radius: 4px;
+}
+.dialog-sm-header .modal-title {
+	line-height: 54px;
 }
 .modal-dialog .img-close {
   	position: absolute;
@@ -471,7 +472,7 @@ footer{
   	text-align: left;
   	font-size: 16px;
   	color: #FFFFFF;
-  	padding: 12px;
+  	padding:0px 12px;
 }
 .default-dialog .btn{
 	width: 150px;

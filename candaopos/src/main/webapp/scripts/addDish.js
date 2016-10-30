@@ -19,6 +19,7 @@ var consts = {
 	orderid: $('input[name=orderid]').val(),
 	tableno: $('input[name=tableno]').val(),
 	personnum: $('input[name=personnum]').val(),
+	DISHES: JSON.parse(utils.storage.getter('DISHES'))[0]
 };
 
 var AddDish = {
@@ -33,20 +34,22 @@ var AddDish = {
 			.end().find('.J-table-no').text(consts.tableno)
 			.end().find('.J-person-no').text(consts.personnum);
 
+
+		widget.keyboard();
+
 		widget.keyboard({
 			target: '.num-btns',
 			chirdSelector: 'div'
 		});
 
-		//搜索键盘初始化
 		widget.keyboard({
 			target: '.search-btns',
 			chirdSelector: 'div'
 		});
 
 		this.renderDishType();
-
 		this.bindEvent();
+		SetBotoomIfon.init();
 	},
 
 	bindEvent: function () {
@@ -823,7 +826,7 @@ var AddDish = {
 				$.each(keys, function(i, key){
 					var dish = dishCartMap.get(key);
 					var price = dish.price;
-					var totalNum = dish.dishnum;
+					var totalNum = parseInt(dish.dishnum, 10);
 					var itemid = dish.itemid;
 					var dishtype = dish.dishtype;
 
@@ -1225,37 +1228,84 @@ var AddDish = {
 			rows.push(row);
 		});
 
-		//debugger;
-		//return false;
+
 
 		$.ajax({
-			url: _config.interfaceUrl.OrderDish,
+			url: _config.interfaceUrl.GetOrderInfo,
 			method: 'POST',
 			contentType: "application/json",
-			dataType:'json',
-			data:JSON.stringify({
-				"currenttableid": consts.tableno,
-				"globalsperequire": $('#order-note').text(),
-				"orderid": consts.orderid,
-				"operationType": 1,
-				"sequence": 1,
-				"rows": rows
+			data: JSON.stringify({
+				orderid: consts.orderid
 			}),
-			success: function(res){
-				if(res.code === '0') {
-					cb && cb();
-					goToOrder();
+			dataType: 'json',
+		}).then(function(res){
+			if (res.code === '0') {
+				//首次点菜 && 餐具设置收费
+				if(res.data.rows.length === 0 && consts.DISHES.status === '1') {
+					rows.push({
+						"printtype": "0",
+						"pricetype": pricetype,//0：普通 1：赠菜
+						"orderprice": 2.0,
+						"orignalprice": 2.0,
+						"dishid": consts.DISHES.id,
+						"userName": null,
+						"dishunit": "份",
+						"orderid": null,
+						"dishtype": 0,
+						"orderseq": "1",
+						"dishnum": consts.personnum,
+						"sperequire": "",
+						"primarykey": getUuid(),
+						"dishstatus": "0",
+						"ispot": 0,
+						"taste": "",
+						"freeuser": freeuser, // 赠菜人/收银员工号
+						"freeauthorize": freeauthorize, //赠菜授权人工号
+						"freereason": freereason, //赠菜原因
+						"dishes": null
+					});
 				}
+				$.ajax({
+					url: _config.interfaceUrl.OrderDish,
+					method: 'POST',
+					contentType: "application/json",
+					dataType:'json',
+					data:JSON.stringify({
+						"currenttableid": consts.tableno,
+						"globalsperequire": $('#order-note').text(),
+						"orderid": consts.orderid,
+						"operationType": 1,
+						"sequence": 1,
+						"rows": rows
+					}),
+					success: function(res){
+						if(res.code === '0') {
+							cb && cb();
+							goToOrder();
+						}
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				});
+			} else {
 				widget.modal.alert({
 					cls: 'fade in',
-					content:'<strong>' + res.msg + '</strong>',
-					width:500,
-					height:500,
+					content: '<strong>' + res.msg + '</strong>',
+					width: 500,
+					height: 500,
 					btnOkTxt: '',
 					btnCancelTxt: '确定'
 				});
 			}
-		});
+
+		})
+
 	},
 
 	/**
@@ -1504,13 +1554,10 @@ function guadan(){
 	$("#guadan-dialog").modal("show");
 }
 
-
-
 //关闭dialog
 function closeConfirm(dialogId) {
 	$("#" + dialogId).modal("hide");
 }
-
 
 function getUuid(){
 	var len=32;//32长度
@@ -1525,10 +1572,7 @@ function goToOrder(){
 }
 
 $(document).ready(function(){
-
-
 	AddDish.init();
-
 	if(g_eatType == "TAKE-OUT"){
 		//外卖
 		$(".give-dish").addClass("hide");

@@ -3,7 +3,6 @@ var OpenPage = {
         this.isYesterdayEndWork();
 
         this.saveConfigInfo();
-
 		this.bindEvent();
 		var ipaddress= utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
 		var posid=utils.getUrl.get("posid")//设置posid参数到缓存
@@ -328,7 +327,8 @@ var OpenPage = {
         $.ajax({
             url: _config.interfaceUrl.Config,
             type:"get",
-            dataType:'text'
+            dataType:'text',
+            cache:false,
         }).then(function(res){
             utils.storage.setter('config', res.split("*/")[1]);
         });

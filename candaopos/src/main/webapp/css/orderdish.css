@@ -193,14 +193,6 @@ footer{
 .fishpot-dialog .modal-body {
 	text-align: left;
 }
-.fishpot-dialog span.inpt-span {
-	position: absolute;
-	font-size: 16px;
-	color: #B0B0B0;
-	padding-top: 10px;
-	padding-left: 10px;
-}
-
 .main-div>div{
 	position: relative;
 	float: left;
@@ -399,12 +391,7 @@ input[type=search] {
 #updatenum-dialog .modal-dialog{
 	width: 340px;
 }
-#updatenum-dialog .modal-title{
-	text-align: center;
-  	font-size: 16px;
-  	color: #FFFFFF;
-  	padding-top: 15px;
-}
+
 #updatenum-dialog .dialog-sm-info .dishname{
 	font-size: 16px;
 	color: #FF5803;
@@ -421,7 +408,7 @@ input[type=search] {
 	position: absolute;
 	margin:10px;
 }
-.default-dialog .avoid,.default-dialog .freason{
+.default-dialog .avoid,.default-dialog .freason,.default-dialog .breason{
 	float: left;
   	width: 100px;
   	height: 40px;
@@ -431,7 +418,7 @@ input[type=search] {
   	margin-right: 4px;
   	border-radius: 2px;
 }
-.default-dialog .avoid.active,.default-dialog .freason.active, #note-dialog .taste ul li.active{
+.default-dialog .avoid.active,.default-dialog .freason.active,.default-dialog .breason.active, #note-dialog .taste ul li.active{
 	background: #FF5803;
 	opacity: 1;
 	color: #ffffff;

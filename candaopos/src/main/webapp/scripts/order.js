@@ -14,7 +14,8 @@ var consts = {
             })
         }
         return obj;
-    })()
+    })(),
+    backDishReasons: JSON.parse(utils.storage.getter('config')).BackDishReasons.split(';')//退菜原因
 };
 
 var dom = {
@@ -23,7 +24,9 @@ var dom = {
     addDishDialog: $("#adddish-dialog"),//点菜弹窗
     giveDishDialog: $("#givedish-dialog"),//赠菜弹窗
     membershipCard: $('#membership-card'),
-    selCompanyDialog: $('#selCompany-dialog')
+    selCompanyDialog: $('#selCompany-dialog'),
+    backfoodDialog: $("#backfood-dialog"), //退菜弹窗,
+    backfoodNumDialog: $('#backfoodnum-dialog') //退菜数量弹窗,
 };
 
 var Order = {
@@ -157,26 +160,6 @@ var Order = {
         /**
          * 退菜
          */
-
-        $("#back-dish").click(function () {
-            $("#backfood-dialog").find('.avoid').removeClass('active');
-            $("#backfood-reason").val('');
-            $("#backfood-dialog").modal("show");
-            $("#backfood-dialog .avoid").unbind("click").on("click", function () {
-                if ($(this).hasClass("active")) {
-                    $(this).removeClass("active");
-                } else {
-                    $(this).addClass("active");
-                }
-            });
-        });
-
-        $('#backfood-dialog .btn-save').click(function () {
-            $("#backfood-dialog").modal('hide');
-            $('#backfoodnum-dialog').modal('show');
-            $('#backfoodnum-dialog').find('input[type=text]').focus();
-        });
-
         $('#backfoodnum-dialog .btn-save').click(function () {
             var dishNum = parseFloat($('#order-dish-table tr.selected .num').text());
             var backDishNum = parseFloat($('#backDishNumIpt').val());
@@ -212,47 +195,6 @@ var Order = {
             });
             $('#backfood-right').modal('show');
         });
-
-        $("#backfood-reason").click(function () {
-            var reason = $("#backfood-reason").val();
-            $("#backreasoninput-dialog").modal("show");
-            $("#backreason-inp").val(reason);
-            $("#backreason-inp").focus();
-        });
-
-        var count = 20;
-        $("#backreason-inp").keyup(function () {
-            var value = $("#backreason-inp").val();
-            var c = count;
-            if (value != null && value != "") {
-                c = count - value.length;
-            }
-            if (c <= 0) {
-                c = 0;
-            }
-            $("#backreason-count").text(c);
-
-            if (value != null && value != "") {
-                $(".clear-btn").removeClass("disabled");
-            } else {
-                $(".clear-btn").addClass("disabled");
-            }
-        });
-
-        //清空输入的退菜原因
-        $("#backreasoninput-dialog .clear-btn").click(function () {
-            $("#backreason-inp").val("");
-            $(".clear-btn").addClass("disabled");
-        });
-
-        //改变退菜原因
-        $("#backreasoninput-dialog .btn-save").click(function () {
-            var reason = $("#backreason-inp").val();
-            $("#backfood-reason").val(reason);
-            $("#backreasoninput-dialog").modal("hide");
-        });
-
-
 
         //称重
         $("#weigh-dish").click(function () {
@@ -683,8 +625,7 @@ var Order = {
                         console.log('查询');
                         var res1 = res1[0];
                         if (res1.Retcode === '0') {
-                            $('#StoreCardBalance').text(res1.StoreCardBalance);
-                            $('#StoreCardBalance').after('<b>(' + res1.CardLevel + ')</b>');
+                            $('#StoreCardBalance').html('<b>' + res1.StoreCardBalance + '</b>(' + res1.CardLevel + ')');
                             $('#IntegralOverall').text(res1.IntegralOverall);
                             btn.text('退出');
                             btn.addClass('btn-login-out');
@@ -869,29 +810,6 @@ var Order = {
         });
     },
 
-    //开钱箱
-    openCash: function () {
-        $.ajax({
-            url: _config.interfaceUrl.OpenCash + '/127.0.0.1/',
-            method: 'POST',
-            contentType: "application/json",
-            dataType: 'json',
-            success: function (res) {
-                if (res.result[0] === '1') {//成功
-
-                }
-                widget.modal.alert({
-                    cls: 'fade in',
-                    content: '<strong>' + (res.Info === undefined ? '打开钱箱成功' : res.Info) + '</strong>',
-                    width: 500,
-                    height: 500,
-                    btnOkTxt: '',
-                    btnCancelTxt: '确定'
-                });
-            }
-        });
-    },
-
     //抹零不处理
     consumInfo: function () {
         var that = this;
@@ -944,6 +862,43 @@ var Order = {
         }
     },
 
+    /**
+     * 初始化退菜对话框
+     * @param type 0:单品 1:全单
+     */
+    initBackFoodDialog: function(type){
+        dom.backfoodDialog.find('.breasons').html((function(){
+            var str = '';
+            $.each(consts.backDishReasons, function(k,v){
+                str += '<div class="breason">' + v +'</div>';
+            });
+            return str;
+        })());
+        $("#backfood-reason").val('');
+        dom.backfoodDialog.find(".breason").unbind("click").on("click", function () {
+            if ($(this).hasClass("active")) {
+                $(this).removeClass("active");
+            } else {
+                $(this).addClass("active");
+            }
+        });
+        dom.backfoodDialog.find(".btn-save").unbind("click").on("click", function () {
+            if(type === 0) {
+                dom.backfoodDialog.modal('hide');
+                dom.backfoodNumDialog.modal('show');
+                dom.backfoodNumDialog.find('input[type=text]').val('');
+            } else {
+                $('#backfood-right').load("./check/impower.jsp", {
+                    "title": "退菜权限",
+                    "userRightNo": "030102",
+                    "cbd": "Order.backDish(1)"
+                });
+                $('#backfood-right').modal('show');
+            }
+        });
+        dom.backfoodDialog.modal("show");
+    },
+
     //退菜 0:单个 1:整单
     backDish: function (type) {
         var that = this;
@@ -955,8 +910,8 @@ var Order = {
 
         var discardReason = (function () {
             var str = '';
-            $('#backfood-dialog .avoid.active').each(function () {
-                str += $(this).text();
+            $('#backfood-dialog .breason.active').each(function () {
+                str += $(this).text() + ';';
             });
             str += $.trim($('#backfood-reason').val());
             return str.substring(0, str.length - 1);
@@ -968,7 +923,7 @@ var Order = {
                 "operationType": 2,
                 "primarykey": $target.attr('primarykey'),
                 "sequence": 999999,
-                "userName": utils.storage.getter('pos_aUserid'),
+                "userName": utils.storage.getter('aUserid'),
                 "dishunit": $target.attr('unit'),
                 "dishNum": $('#backDishNumIpt').val(),
                 "dishtype": $target.attr('dishtype'),
@@ -997,9 +952,9 @@ var Order = {
             dataType: 'json',
             success: function (res) {
                 if (res.code === '0') {
+                    dom.backfoodDialog.modal('hide');
                     $("#backfood-right").modal('hide');
                     $("#backfood-right .modal-dialog").remove();
-
                     that.updateOrder();
                 } else {
                     widget.modal.alert({
@@ -1385,15 +1340,6 @@ var Order = {
     },
 
     /**
-     * 更新支付方式信息
-     * @param data
-     */
-    updatePayTypeInfo: function (data) {
-
-    },
-
-
-    /**
      * 管理每次使用优惠信息接口
      */
     manageUsePref: (function () {
@@ -1530,6 +1476,7 @@ var Order = {
         var that = this;
         //会员卡支付方式检查
         var memberTips = '';
+        var isMemberLogin = dom.membershipCard.attr('isLogin') === 'true';
 
         if($('#order-dish-table tbody tr').length === 0){
             widget.modal.alert({
@@ -1539,16 +1486,16 @@ var Order = {
             });
             return ;
         }
-        if(dom.membershipCard.attr('isLogin') === 'true') {
-            if(parseFloat($('#memberCash').val()) > parseFloat($("#StoreCardBalance").text())) {
+        if(isMemberLogin) {
+            if($('#memberCash').val().length > 0 && parseFloat($('#memberCash').val()) > parseFloat($("#StoreCardBalance b").text())) {
                 memberTips += '会员储值余额不足;<br/>';
             }
 
-            if(parseFloat($('#memberJf').val()) > parseFloat($("#IntegralOverall").text())) {
-                memberTips += '积分不足;<br/>';
+            if($('#memberJf').val().length > 0  && parseFloat($('#memberJf').val()) > parseFloat($("#IntegralOverall").text())) {
+                memberTips += '积分余额不足;<br/>';
             }
 
-            if($('.J-pay-pwd').val().length === 0 && (parseFloat($('#memberCash').val()) > 0  || parseFloat($('#memberJf').val()) > 0)) {
+            if($('.J-pay-pwd').val().length === 0 && ($('#memberCash').val().length > 0  || $('#memberJf').val().length > 0)) {
                 memberTips += '请输入会员密码;';
             }
 

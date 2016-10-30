@@ -198,11 +198,11 @@ var MainPage = {
 		$('footer').on('click','.foot-menu li',function(e){
 			var me = $(this);
 			if(me.hasClass("J-btn-takeout")){
-				//$("#J-takeout-dialog").modal("show");
-				//$(".take-out-list li").unbind("click").on("click",  function(){
-				//	$(".take-out-list li").removeClass("active");
-				//	$(this).addClass("active");
-				//});
+				$("#J-takeout-dialog").modal("show");
+				$(".take-out-list li").unbind("click").on("click",  function(){
+					$(".take-out-list li").removeClass("active");
+					$(this).addClass("active");
+				});
 			}
 			if(me.hasClass("member-btns")){
 				//会员
