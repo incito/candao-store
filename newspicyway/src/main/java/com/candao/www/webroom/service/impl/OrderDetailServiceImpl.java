@@ -1412,6 +1412,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     //added by caicai
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
+                    printObj.setRePeatID(UUID.randomUUID().toString());
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
                     for (PrintDish printDish : pdList) {
                     	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
@@ -1443,6 +1444,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         //added by caicai
                         printObj.setPrintName((String) tbPrinter.get("printername"));
                         printObj.setPrinterid((String) tbPrinter.get("printerid"));
+                        printObj.setRePeatID(UUID.randomUUID().toString());
 
                         List<PrintDish> list = new ArrayList<>();
                         list.add(pd);
