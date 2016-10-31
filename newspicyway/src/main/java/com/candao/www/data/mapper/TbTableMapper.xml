@@ -187,8 +187,8 @@
 	   where 
 	    areaid=#{areaid} and status !=5
 	    order by CASE WHEN tabletype = 2
-		THEN position = 1 WHEN tabletype = 3 THEN position = 2
-		ELSE  0 - CAST(IFNULL(position,0) AS signed) END ASC ,modifytime DESC
+		THEN  1 WHEN tabletype = 3 THEN 2
+		ELSE  0 - CAST(IFNULL(position,0) AS signed) END ASC ,modifytime ASC
 	</select>
 
 
@@ -295,9 +295,9 @@
 			  a.tableid
 		<choose>
 		   	<when test="defaultsort!=null and defaultsort==1">
-		   		order by  CASE WHEN tabletype = 2 THEN position = 1
-				WHEN tabletype = 3 THEN position = 2
-				ELSE  0 - CAST(IFNULL(position,0) AS signed) END ASC ,modifytime DESC
+		   		order by  CASE WHEN a.tabletype = 2 THEN 1
+				WHEN a.tabletype = 3 THEN  2
+				ELSE  0 - CAST(IFNULL(a.position,0) AS signed) END ASC ,a.modifytime ASC
 		   	</when>
 		   	<otherwise>
 		   		order by  CAST( a.tableNo as SIGNED),a.tableid asc
@@ -330,7 +330,9 @@
 	        and t.custPrinter=#{custPrinter}
 	     </if>
 	     </where>
-	      order by  CAST(IFNULL(t.position,"0") AS signed) ASC
+		order by CASE WHEN t.tabletype = 2
+		THEN  1 WHEN t.tabletype = 3 THEN 2
+		ELSE  0 - CAST(IFNULL(t.position,0) AS signed) END ASC ,t.modifytime ASC
 <!-- 	     将varchar 转为int 用 cast(a as signed) -->
 	</select>
 	
