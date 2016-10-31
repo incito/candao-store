@@ -809,6 +809,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             printDishList.add(printDish1);
                         }
                         object.setList(printDishList);
+                        object.setRePeatID(UUID.randomUUID().toString());
                         new Thread(new WeigthThread(object)).run();
 //							executor.execute(new WeigthThread(object));
                     }
@@ -1061,6 +1062,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         printObj.setCustomerPrinterIp(pm.getIpaddress());
                         printObj.setCustomerPrinterPort(pm.getPort());
                         printObj.setPrinterid(pm.getPrinterid());
+                        printObj.setRePeatID(UUID.randomUUID().toString());
 
                         new Thread(new PrintDishSetThread(printObj)).run();
                     }
@@ -1179,6 +1181,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 //added by caicai
                 printObj.setPrintName(tPrinterManager.getPrintername());
                 printObj.setPrinterid(tPrinterManager.getPrinterid());
+                printObj.setRePeatID(UUID.randomUUID().toString());
 
                 new Thread(new PrintCustThread(printObj)).run();
             }
@@ -1287,21 +1290,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     LoggerHelper logger = LoggerFactory.getLogger(OrderDetailServiceImpl.class);
 
+    /**
+     * @param map0
+     * @param printObj
+     * @param refundDish 1:退菜，0：正常
+     * @param paramsMap
+     */
     private void printSingleDish(Map<String, Object> map0, PrintObj printObj, int refundDish, Map<String, Object> paramsMap) {
         List<PrintDish> listPrint = tbPrintObjDao.findDish(map0);
-
-        if (listPrint != null && !listPrint.isEmpty()) {
-            for (PrintDish it : listPrint) {
-                try {
-                    it.initData();
-                } catch (Exception e) {
-                    log.error("------------------菜品解析失败！-------------");
-                    log.error("菜品忌口信息解析失败！ :" + it.getDishName(), e);
-                    e.printStackTrace();
-                }
-            }
+        if (listPrint == null) {
+        	return;
         }
-
+        convertPrintDish(listPrint);
         Collections.sort(listPrint);
         printObj.setList(listPrint);
         logger.error("------------------------", "");
@@ -1317,16 +1317,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         paramMap.put("tableid", printObj.getTableid());
         // 需要把所有的菜品配置的打印机全部打印
         // 查找菜品所有符合的打印机
-        List<PrintDish> printedList = new ArrayList<>();
         Map<String, Integer> printedmap = new HashMap<>();
         for (PrintDish pd : printObj.getList()) {
-            /*if (printedList.contains(pd)) {//已经合并打印了则跳过
-                logger.error("------------------------", "");
-                logger.error("组合打印后忽略单品，订单号：" + printObj.getOrderNo() + "*菜品名称：" + pd.getDishName(), "");
+        	//是否为套餐
+            boolean isDishSet = "2".equals(pd.getDishtype()) && pd.getPrimarykey().equals(pd.getParentkey())
+                    && pd.getPrimarykey().equals(pd.getSuperkey());
+			if (isDishSet || pd.getDishId().equals("DISHES_98")) {
                 continue;
-            }*/
-            List<String> IPList = new ArrayList<String>();
+            }
             formatDishNum(pd);
+            setPrintTitle(printObj, refundDish, paramsMap, pd);
+            setDiscardNum(map0, refundDish, pd);
+            
             //查询菜品所属套餐,不包括鱼锅
             HashMap<String, Object> map1 = new HashMap<>();
             map1.put("printobjid", pd.getPrintobjid());
@@ -1340,88 +1342,32 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             if (superdishes != null && superdishes.size() == 1) {
                 pd.setParentDishName(superdishes.get(0).getDishName());
             }
-            if (refundDish != 1) {
-                if (pd.getIslatecooke() == 1) {
-                    printObj.setPrintType(Constant.PRINTTYPE.COOKIE_DISH);
-                    printObj.setBillName(Constant.DISHBILLNAME.READYNAME);
-                    printObj.setAbbrbillName(Constant.DISHBILLNAME.READY_ABBR);
-                } else if (paramsMap != null) {
-                    printObj.setPrintType(Integer.valueOf(String.valueOf(paramsMap.get("PrintType"))));
-                    printObj.setBillName(String.valueOf(paramsMap.get("billName")));
-                    if (paramsMap.get("AbbrbillName") != null) {
-                        printObj.setAbbrbillName(String.valueOf(paramsMap.get("AbbrbillName")));
-                    } else {
-                        printObj.setAbbrbillName("");
-                    }
-                }
-            }
-            pd.setAbbrname(printObj.getAbbrbillName());
-            if (("2".equals(pd.getDishtype()) && pd.getPrimarykey().equals(pd.getParentkey())
-                    && pd.getPrimarykey().equals(pd.getSuperkey())) || pd.getDishId().equals("DISHES_98")) {
-                continue;
-            }
-
-            // if(map0.get("discardNum")!=null ){
-            // if(map0.get("discardNum")!=null&&!"".equals(String.valueOf(map0.get("discardNum")))&&String.valueOf(map0.get("discardNum")).endsWith(".0")){
-            // String discardNum=String.valueOf(map0.get("discardNum"));
-            // pd.setDishNum(discardNum.substring(0,
-            // discardNum.lastIndexOf(".")));
-            // }
-            // pd.setDishNum("-"+pd.getDishNum());
-            // }
-            if (map0.get("discardNum") != null && !"".equals(String.valueOf(map0.get("discardNum")))) {
-                String discardNum = String.valueOf(map0.get("discardNum"));
-                if (String.valueOf(map0.get("discardNum")).endsWith(".0")) {
-                    discardNum = discardNum.substring(0, discardNum.lastIndexOf("."));
-                }
-                pd.setDishNum("-" + discardNum);
-            }
-            if (map0.get("discardNum") == null && refundDish == 1) {
-                if (pd.getDishNum() != null && !"".equals(pd.getDishNum()) && pd.getDishNum().endsWith(".0")) {
-                    String discardNum = pd.getDishNum();
-                    pd.setDishNum(discardNum.substring(0, discardNum.lastIndexOf(".")));
-                }
-                pd.setDishNum("-" + pd.getDishNum());
-            }
             if (map0.get("discardReason") != null && refundDish == 1) {
                 pd.setGlobalsperequire(String.valueOf(map0.get("discardReason")));
             }
+            
             paramMap.put("dishid", pd.getDishId());
-
             List<TbPrinterManager> printers = tbPrinterManagerDao.findDishPrinterWithLock(paramMap);
             if (printers != null) {
                 for (TbPrinterManager tbPrinter : printers) {
-                 /*   if (IPList != null) {
-                        if (IPList.contains(tbPrinter.getIpaddress())) {
-                            continue;
-                        }
-                        IPList.add(tbPrinter.getIpaddress());
-                    }*/
-
-                    if (!"(退)".equals(printObj.getAbbrbillName())) {
-                        int printNum = (tbPrinter.getPrintNum() == null ? 0 : tbPrinter.getPrintNum()) + 1;
-                        tbPrinter.setPrintNum(printNum);
-                        int flagB = tbPrinterManagerDao.update(tbPrinter);
-                        if (flagB <= 0) {
-                            System.out.println("printnum更新失败！");
-                        } else {
-                            updateDishPrintNum(printNum, pd.getPrimarykey());
-                            printObj.setOrderseq(printNum);
-                        }
-
-                    } else {
-                        printObj.setOrderseq(pd.getOrderseq());
-                    }
+                	//判断是否已经组合打印过
+					String printid = tbPrinter.getPrinterid();
+					Object obj = printedmap
+							.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
+					if (obj != null && refundDish != 1) {// 退菜单除外
+						continue;// 已经打印过了
+					}
+					//设置打印序号
+                    updatePrintSequence(printObj, pd, tbPrinter);
 
                     // 判断是否合并打印
-                    boolean needMerge = false;
                     List<PrintDish> pdList = new ArrayList<>();
-                    //退菜不合并打印;稍后上菜不合并打印;送礼的菜不合并打印;
-                    boolean isRefund = Constant.DISHBILLNAME.DISCARDDISHNAME_ABBR.equals(printObj.getAbbrbillName());
+                    //退菜不合并打印;送礼的菜不合并打印;
+                    int selfIsLateCooke = pd.getIslatecooke();
                     boolean gift = isGiftDish(pd);
                     if (gift)
                         resolveSpecCustNum(printObj, pd);
-                    if (!isRefund && pd.getIslatecooke() != 1 && !gift) {
+					if (refundDish != 1 && !gift) {
                         String groupSequence = getDishGroupSequence(pd, tbPrinter);
                         if (groupSequence != null) {
                             List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
@@ -1430,39 +1376,33 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             // 有两个及以上的菜才需要合并
                             //modified by caicai
                             if (findPrintDetail.size() > 1) {
-                                int i = 0;
                                 for (TbPrinterDetail tbPrinterDetail : findPrintDetail) {
                                     for (PrintDish printDish : printObj.getList()) {
-                                        if (printDish.getDishId().equals(tbPrinterDetail.getDishid())) {
-                                            gift = isGiftDish(printDish);
-                                            //退菜情况不会进入
-                                            if (printDish.getIslatecooke() != 1 && !gift) {
-                                                //buffer
+                                    	gift = isGiftDish(printDish);
+                                        if (printDish.getDishId().equals(tbPrinterDetail.getDishid()) && !gift) {
+                                        	//同一种状态的才组合出单：正常出单或等叫
+                                            if (selfIsLateCooke == printDish.getIslatecooke()) {
                                                 pdList.add(printDish);
-                                                i++;
                                             }
                                         }
                                     }
                                 }
-                                // 有两个以上才打印
-                                if (i >= 2) {
-                                    needMerge = true;
+                                // 有两个以上才组合
+                                if (pdList.size() >= 2) {
                                     for (PrintDish it : pdList) {
                                         // 加入已打印列表
                                         formatDishNum(it);//格式化菜品数量，不能省略
-                                        printedList.add(it);
                                         //更新打印序号
                                         int printNum = printObj.getOrderseq();
                                         String primarykey = it.getPrimarykey();
                                         updateDishPrintNum(printNum, primarykey);
                                     }
-                                } else {
-                                    pdList.clear();
                                 }
                             }
                         }
                     }
-                    if (!needMerge) {
+					//当没有组合的情况时，添加菜品本身
+                    if (pdList.isEmpty()) {
                         pdList.add(pd);
                     }
 
@@ -1472,24 +1412,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     //added by caicai
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
-
-                    int temp = 0;//默认表示还没有打印
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
-
-                   String printid= tbPrinter.getPrinterid();
                     for (PrintDish printDish : pdList) {
-                    	 
-                        Object obj = printedmap.get(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid);
-                        String abbrname = printDish.getAbbrname() == null ? "" : printDish.getAbbrname();
-                         if (obj != null && !abbrname.contains("退")) {//退菜单除外
-                            temp = 1;//已经打印过
-                            break;
-                        }
-                        logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
-                    }
-                    if (temp == 1) {
-                        continue;//已经打印过了
-                    }
+                    	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
+					}
+                    //加入打印队列
                     new Thread(new PrintThread(printObj)).run();
 
                     for (PrintDish printDish : pdList) {
@@ -1501,7 +1428,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 Map<String, Object> printertypeMap = new HashMap<String, Object>();
                 printertypeMap.put("printertype", 4);
                 List<Map> findPrinterByType = tbPrinterManagerDao.find(printertypeMap);
-                IPList.clear();
+                List<String> IPList = new ArrayList<String>();
                 if (printers != null && "(退)".equals(printObj.getAbbrbillName())) {
                     for (Map tbPrinter : findPrinterByType) {
                         if (IPList != null) {
@@ -1524,12 +1451,74 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         // executor.execute(new PrintThread(printObj));
                     }
                 }
+                printdishware(listPrint, printObj, map0);
             }
         }
-        if (refundDish == 1) {
-            printdishware(listPrint, printObj, map0);
-        }
     }
+
+	private void convertPrintDish(List<PrintDish> listPrint) {
+		for (PrintDish it : listPrint) {
+		    try {
+		        it.initData();
+		    } catch (Exception e) {
+		        log.error("------------------菜品解析失败！-------------");
+		        log.error("菜品忌口信息解析失败！ :" + it.getDishName(), e);
+		    }
+		}
+	}
+
+	private void setPrintTitle(PrintObj printObj, int refundDish, Map<String, Object> paramsMap, PrintDish pd) {
+		if (refundDish != 1) {
+			if (pd.getIslatecooke() == 1) {
+			    printObj.setPrintType(Constant.PRINTTYPE.COOKIE_DISH);
+			    printObj.setBillName(Constant.DISHBILLNAME.READYNAME);
+			    printObj.setAbbrbillName(Constant.DISHBILLNAME.READY_ABBR);
+			} else if (paramsMap != null) {
+			    printObj.setPrintType(Integer.valueOf(String.valueOf(paramsMap.get("PrintType"))));
+			    printObj.setBillName(String.valueOf(paramsMap.get("billName")));
+			    if (paramsMap.get("AbbrbillName") != null) {
+			        printObj.setAbbrbillName(String.valueOf(paramsMap.get("AbbrbillName")));
+			    } else {
+			        printObj.setAbbrbillName("");
+			    }
+			}
+		}
+		pd.setAbbrname(printObj.getAbbrbillName());
+	}
+
+	private void updatePrintSequence(PrintObj printObj, PrintDish pd, TbPrinterManager tbPrinter) {
+		if (!"(退)".equals(printObj.getAbbrbillName())) {
+		    int printNum = (tbPrinter.getPrintNum() == null ? 0 : tbPrinter.getPrintNum()) + 1;
+		    tbPrinter.setPrintNum(printNum);
+		    int flagB = tbPrinterManagerDao.update(tbPrinter);
+		    if (flagB <= 0) {
+		    	logger.error("更新【" + tbPrinter.getPrintername() + "】printnum失败！", "");
+		    } else {
+		        updateDishPrintNum(printNum, pd.getPrimarykey());
+		        printObj.setOrderseq(printNum);
+		    }
+
+		} else {
+		    printObj.setOrderseq(pd.getOrderseq());
+		}
+	}
+
+	private void setDiscardNum(Map<String, Object> map0, int refundDish, PrintDish pd) {
+		if (map0.get("discardNum") != null && !"".equals(String.valueOf(map0.get("discardNum")))) {
+		    String discardNum = String.valueOf(map0.get("discardNum"));
+		    if (String.valueOf(map0.get("discardNum")).endsWith(".0")) {
+		        discardNum = discardNum.substring(0, discardNum.lastIndexOf("."));
+		    }
+		    pd.setDishNum("-" + discardNum);
+		}
+		if (map0.get("discardNum") == null && refundDish == 1) {
+		    if (pd.getDishNum() != null && !"".equals(pd.getDishNum()) && pd.getDishNum().endsWith(".0")) {
+		        String discardNum = pd.getDishNum();
+		        pd.setDishNum(discardNum.substring(0, discardNum.lastIndexOf(".")));
+		    }
+		    pd.setDishNum("-" + pd.getDishNum());
+		}
+	}
 
 
     private PrintObj resolveSpecCustNum(PrintObj tartget,PrintDish printDish) {
@@ -1853,7 +1842,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             //added by caicai
                             printObj.setPrintName(pm.getPrintername());
                             printObj.setPrinterid(pm.getPrinterid());
-
+                            printObj.setRePeatID(UUID.randomUUID().toString());
                             new Thread(new PrintMutiThread(printObj)).run();
 
 //									  executor.execute(new PrintMutiThread(printObj));
@@ -1878,6 +1867,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 //added by caicai
                                 printObj.setPrintName((String) tbPrinterMap.get("printername"));
                                 printObj.setPrinterid((String) tbPrinterMap.get("printerid"));
+                                printObj.setRePeatID(UUID.randomUUID().toString());
 
                                 new Thread(new PrintMutiThread(printObj)).run();
 //										  executor.execute(new PrintMutiThread(printObj));
@@ -2329,6 +2319,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 }
             }
         }
+        printObj.setRePeatID(UUID.randomUUID().toString());
         new Thread(new StatementThread(printObj)).run();
 
     }

@@ -220,6 +220,7 @@ public class TableServiceImpl implements TableService {
             for (Map<String, Object> map : list) {
                 pj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress")));
                 pj.setCustomerPrinterPort(String.valueOf(map.get("port")));
+                pj.setRePeatID(UUID.randomUUID().toString());
                 new Thread(new PrintBillThread(pj)).run();
             }
         }
