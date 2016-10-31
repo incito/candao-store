@@ -55,6 +55,7 @@
          
 		insert into t_table (
 	  	tableid,
+		position,
 	    minprice,
 	   	fixprice,
 	   	tableNo,
@@ -68,6 +69,7 @@
 	     
 	   )values (
 	     #{tableid},
+		 #{position},
 	     #{minprice},
 	     #{fixprice},
 	     #{tableNo},
@@ -496,4 +498,16 @@
 		orderid=#{orderId} and status !='5'
 		limit 1
 	</select>
+	<update id="updatePosition" parameterType="java.util.ArrayList">
+		UPDATE t_table
+		SET position = CASE tableid
+		<foreach collection="list" item="item" index="index" open="">
+		WHEN #{item.tableid} THEN #{item.position}
+		</foreach>
+		END
+		WHERE tableid IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item.tableid}
+		</foreach>
+	</update>
 </mapper> 
