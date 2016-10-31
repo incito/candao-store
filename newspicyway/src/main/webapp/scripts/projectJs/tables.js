@@ -299,8 +299,12 @@ $(document).ready(function(){
 		$(".select-multi").prev(".select-box").find("input").val(text)
 
 	});
-	/*双击菜品名称弹出菜品编辑框*/
+	/*双击菜餐台名称弹出餐台编辑框*/
 	$(".counter-detail-box").dblclick(function(){
+		if($('#dinnerTable').attr('isclickType')){//自定义餐台排序是不能编辑餐台
+			customTable.noClick('自定义餐台排序时，不能编辑餐台')
+			return false
+		}
 		doEdit($(this).attr("id"));
 
 	});
