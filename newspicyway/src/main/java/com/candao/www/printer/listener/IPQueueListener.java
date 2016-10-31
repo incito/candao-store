@@ -89,7 +89,9 @@ public class IPQueueListener implements ApplicationContextAware {
             int arrayLength = Array.getLength(src);
             buffer = (Object[])Array.newInstance(src.getClass().getComponentType(), arrayLength + 1);
             System.arraycopy(src, 0, buffer, 1, arrayLength);
-            buffer[0] = obj.getRePeatID().getBytes();
+            com.candao.www.printer.v2.PrintData<String> uuid = new com.candao.www.printer.v2.PrintData<>();
+            uuid.setData(obj.getRePeatID());
+            buffer[0] = uuid;
         } else {
             buffer = src;
         }
