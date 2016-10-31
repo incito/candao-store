@@ -1101,10 +1101,10 @@ public class PadInterfaceController {
     public String getTableByType(@RequestBody String json) {
         Map<String, Object> map = new HashMap<>();
         com.alibaba.fastjson.JSONObject obj = JSON.parseObject(json);
-        String defaultsort = "0";// 默认
-        if (null != Constant.DEFAULT_TABLE_SORT) {
-            defaultsort = Constant.DEFAULT_TABLE_SORT;
-        }
+        String defaultsort = "1";// 默认
+//        if (null != Constant.DEFAULT_TABLE_SORT) {
+//            defaultsort = Constant.DEFAULT_TABLE_SORT;
+//        }
         map.put("defaultsort", Integer.parseInt(defaultsort));
         String jsonString = "";
         try {

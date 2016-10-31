@@ -186,7 +186,9 @@
 	   from t_table
 	   where 
 	    areaid=#{areaid} and status !=5
-	    order by CAST(IFNULL(position,"0") AS signed) ASC
+	    order by CASE WHEN tabletype = 2
+		THEN position = 1 WHEN tabletype = 3 THEN position = 2
+		ELSE  0 - CAST(IFNULL(position,0) AS signed) END ASC ,modifytime DESC
 	</select>
 
 
@@ -209,6 +211,7 @@
 	       ELSE
 	         sum(d.dishnum * d.orderprice)
 	       END as amount
+		,b.areaSort
 		    from t_table a
 	   		LEFT JOIN t_tablearea b
 			ON a.areaid = b.areaid
@@ -292,7 +295,9 @@
 			  a.tableid
 		<choose>
 		   	<when test="defaultsort!=null and defaultsort==1">
-		   		order by  CAST(IFNULL(a.position,"0") AS SIGNED )
+		   		order by  CASE WHEN tabletype = 2 THEN position = 1
+				WHEN tabletype = 3 THEN position = 2
+				ELSE  0 - CAST(IFNULL(position,0) AS signed) END ASC ,modifytime DESC
 		   	</when>
 		   	<otherwise>
 		   		order by  CAST( a.tableNo as SIGNED),a.tableid asc
