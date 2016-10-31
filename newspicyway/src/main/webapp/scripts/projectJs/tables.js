@@ -1341,10 +1341,11 @@ var customTable={
                         tmpJson.push(abc);
                     })
                 });
+				tableJson=tmpJson
+				//console.log(JSON.stringify(tableJson))
             }
         })
-		tableJson=tmpJson
-        //console.log(JSON.stringify(tableJson))
+
 	},
 	isClick:function () {
 		var that=this,cont=0;
@@ -1455,16 +1456,19 @@ var customTable={
 				$('.counter-detail-box').each(function (i) {
 					if($(this).is(":hidden")){
 						abc.splice($.inArray($(this).attr('id'),abc),1);//删除数组中隐藏的外卖咖啡台id
-						$(this).attr('position',$('.counter-detail-box').length+i+1)
+						//$(this).attr('position',$('.counter-detail-box').length+i+1)
 					}
 				})
                // console.log(abc)
+				 //var len=abc.length+1  排序后去掉外卖咖啡台id的数组集合的长度+1
 				 $.each(abc,function (i, value) {
+				 	//len--  长度每次减1
 					 $('.counter-detail-box').each(function () {
 					 	if($(this).is(":hidden")){
 						}
 						else {
 							if ($(this).attr('id')==value){
+								//$(this).attr('position',-len);按长度的负数排序
 								$(this).attr('position',i)
 							}
 						}
@@ -1482,7 +1486,8 @@ var customTable={
                     tableJson[i].areaSort=$(this).attr('areaSort')
                     for(var j=0;j<tableJson[i].tables.length;j++){
                         $('.counter-detail-box').each(function () {
-                            if(tableJson[i].tables[j].tableid==$(this).attr('id')){
+                            if(tableJson[i].tables[j].tableid==$(this).attr('id') && !$(this).is(":hidden")){//!$(this).is(":hidden")不是外卖和咖啡台才改变position
+								//alert(tableJson[i].tables[j].tabletype)
                                 tableJson[i].tables[j].position=$(this).attr('position')
                             }
                         })
