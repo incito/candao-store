@@ -809,6 +809,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             printDishList.add(printDish1);
                         }
                         object.setList(printDishList);
+                        object.setRePeatID(UUID.randomUUID().toString());
                         new Thread(new WeigthThread(object)).run();
 //							executor.execute(new WeigthThread(object));
                     }
@@ -1061,6 +1062,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         printObj.setCustomerPrinterIp(pm.getIpaddress());
                         printObj.setCustomerPrinterPort(pm.getPort());
                         printObj.setPrinterid(pm.getPrinterid());
+                        printObj.setRePeatID(UUID.randomUUID().toString());
 
                         new Thread(new PrintDishSetThread(printObj)).run();
                     }
@@ -1179,6 +1181,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 //added by caicai
                 printObj.setPrintName(tPrinterManager.getPrintername());
                 printObj.setPrinterid(tPrinterManager.getPrinterid());
+                printObj.setRePeatID(UUID.randomUUID().toString());
 
                 new Thread(new PrintCustThread(printObj)).run();
             }
@@ -1472,6 +1475,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     //added by caicai
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
+                    printObj.setRePeatID(UUID.randomUUID().toString());
 
                     int temp = 0;//默认表示还没有打印
                     logger.error("------------------------,菜品数量" + pdList.size(), "");
@@ -1853,7 +1857,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             //added by caicai
                             printObj.setPrintName(pm.getPrintername());
                             printObj.setPrinterid(pm.getPrinterid());
-
+                            printObj.setRePeatID(UUID.randomUUID().toString());
                             new Thread(new PrintMutiThread(printObj)).run();
 
 //									  executor.execute(new PrintMutiThread(printObj));
@@ -1878,6 +1882,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 //added by caicai
                                 printObj.setPrintName((String) tbPrinterMap.get("printername"));
                                 printObj.setPrinterid((String) tbPrinterMap.get("printerid"));
+                                printObj.setRePeatID(UUID.randomUUID().toString());
 
                                 new Thread(new PrintMutiThread(printObj)).run();
 //										  executor.execute(new PrintMutiThread(printObj));
@@ -2329,6 +2334,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 }
             }
         }
+        printObj.setRePeatID(UUID.randomUUID().toString());
         new Thread(new StatementThread(printObj)).run();
 
     }

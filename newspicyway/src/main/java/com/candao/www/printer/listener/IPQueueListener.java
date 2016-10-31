@@ -6,15 +6,19 @@ import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.listener.QueueListener;
 import com.candao.print.listener.template.ListenerTemplate;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.printer.v2.Printer;
 import com.candao.www.printer.v2.PrinterManager;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.lang.reflect.Array;
 
 /**
  * Created by Administrator on 2016-6-13.
@@ -79,9 +83,16 @@ public class IPQueueListener implements ApplicationContextAware {
     }
 
     private void print(final Object[] src, final PrintObj obj) throws Exception {
-        // TODO
-        // System.out.println("2333333333333333333333333333333");
-        // System.out.println(JacksonJsonMapper.objectToJson(src));
+        Object[] buffer = null;
+        if (!StringUtil.isEmpty(obj.getRePeatID())){
+            Class type = src.getClass();
+            int arrayLength = Array.getLength(src);
+            buffer = (Object[])Array.newInstance(src.getClass().getComponentType(), arrayLength + 1);
+            System.arraycopy(src, 0, buffer, 1, arrayLength);
+            buffer[0] = obj.getRePeatID().getBytes();
+        } else {
+            buffer = src;
+        }
         String ipAddress = obj.getCustomerPrinterIp();
         String backupAddress = "";
         if (ipAddress.contains(",")) {
