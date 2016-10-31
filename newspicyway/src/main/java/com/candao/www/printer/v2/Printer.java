@@ -175,7 +175,6 @@ public class Printer {
 
     protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         outputStream.write(PrinterConstant.AUTO_STATUS);
-        int oldMsgLen=msg.length;
         msg = checkDuplicate(msg);
         for (Object o : msg) {
             if (null == o) {
@@ -196,13 +195,14 @@ public class Printer {
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
-        handleDuplicate(msg,oldMsgLen!=msg.length);
+        handleDuplicate(msg);
 //        outputStream.write(PrinterConstant.BEL);
         outputStream.flush();
     }
 
     /**
      * 检查该单是否已打印，如果已打印，添加"补打"标记
+     *
      * @param msg
      * @return
      */
@@ -224,13 +224,13 @@ public class Printer {
 //                如果已打印过，则增加“补打”标记
                 if (exists) {
                     Object[] newMsg = new Object[msg.length + 4];
-                    newMsg[0]=msg[0];
-                    // TODO: 2016/10/31  add 补打
-                    newMsg[1]=PrinterConstant.getFdDoubleFont();
-                    newMsg[2]="*补打*";
-                    newMsg[3]=PrinterConstant.getClear_font();
-                    newMsg[4]="请与上一份单据确认是否重复\t\n\t\n";
-                    System.arraycopy(msg, 1, newMsg, 5, msg.length-1);
+                    newMsg[0] = msg[0];
+//                    补打标记
+                    newMsg[1] = PrinterConstant.getFdDoubleFont();
+                    newMsg[2] = "*补打*";
+                    newMsg[3] = PrinterConstant.getClear_font();
+                    newMsg[4] = "请与上一份单据确认是否重复\t\n\t\n";
+                    System.arraycopy(msg, 1, newMsg, 5, msg.length - 1);
                     return newMsg;
                 }
             }
@@ -238,11 +238,11 @@ public class Printer {
         return msg;
     }
 
-    private void handleDuplicate(Object[] msg,boolean isDuplicate) {
+    private void handleDuplicate(Object[] msg) {
         if (null == msg || 0 == msg.length) {
             return;
         }
-        Object o = isDuplicate?msg[1]:msg[0];
+        Object o = msg[0];
         if (o instanceof PrintData) {
             PrintData<String> data = (PrintData<String>) o;
             if (!StringUtils.isEmpty(data.getData())) {
