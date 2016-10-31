@@ -211,6 +211,11 @@ public class TbTableDaoImpl implements TbTableDao {
 		param.put("orderId",orderId);
 		return dao.get(PREFIX+".getByOrderId",param);
 	}
+
+	@Override
+	public int updatePosition(List<TbTable> tables) {
+		return dao.update(PREFIX + ".updatePosition", tables);
+	}
 }
 
 

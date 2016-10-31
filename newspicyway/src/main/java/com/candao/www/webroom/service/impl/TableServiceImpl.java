@@ -1,11 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.candao.www.data.model.*;
 import com.candao.www.webroom.service.*;
@@ -37,6 +32,7 @@ import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -876,13 +872,15 @@ public class TableServiceImpl implements TableService {
 
     @Override
     public void updateSortedTypeAndTable(List<TbTableArea> tableAreas) {
-        Assert.notEmpty(tableAreas,"保存排序失败！参数为空");
+        Assert.notEmpty(tableAreas, "保存排序失败！参数为空");
         boolean flag = false;
+        List<TbTableArea> temp = new ArrayList<>();
         for (TbTableArea area : tableAreas) {
-            flag = tatableAreaService.update(area);
-            for (TbTable table : area.getTables()) {
-                flag = flag == true ? tableDao.update(table) > 0 : flag;
-            }
+            temp.clear();
+            temp.add(area);
+            flag = tatableAreaService.updateListOrder(temp) == 1;
+            if (!CollectionUtils.isEmpty(area.getTables()))
+                flag = flag == true ? tableDao.updatePosition(area.getTables()) == area.getTables().size() : flag;
             if (!flag)
                 throw new RuntimeException("保存排序失败！餐台区域或餐台不存在");
         }
