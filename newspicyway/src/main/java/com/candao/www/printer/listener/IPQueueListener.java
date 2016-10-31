@@ -108,7 +108,7 @@ public class IPQueueListener implements ApplicationContextAware {
             log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
             return;
         }
-        printer.print(src, backupAddress);
+        printer.print(buffer, backupAddress);
     }
 
     @Override
