@@ -137,7 +137,6 @@ public class TableController extends BaseController{
 					tbTable.setTableid(UUID.randomUUID().toString());
 				}
 				tbTable.setStatus(0);
-				tbTable.setPosition("-1");
 				//0空闲
 				b = tableService.save(tbTable);
 				map.put("tableid", tbTable.getTableid());
