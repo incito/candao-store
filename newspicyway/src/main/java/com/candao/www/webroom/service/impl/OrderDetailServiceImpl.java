@@ -1276,6 +1276,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 //added by caicai
                 printObj.setPrintName(tPrinterManager.getPrintername());
                 printObj.setPrinterid(tPrinterManager.getPrinterid());
+                printObj.setRePeatID(UUID.randomUUID().toString());
 
                 new Thread(new PrintCustThread(printObj)).run();
 //				  executor.execute(new PrintCustThread(printObj));
@@ -1671,6 +1672,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                             //added by caicai
                             printObj.setPrintName((String) tbPrinter.get("printername"));
                             printObj.setPrinterid((String) tbPrinter.get("printerid"));
+                            printObj.setRePeatID(UUID.randomUUID().toString());
 
                             List<PrintDish> list = new ArrayList<>();
                             list.add(pdish);
