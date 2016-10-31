@@ -161,11 +161,14 @@ public class OrderService {
         params.put("xslx", -1);
         List<Map<String, Object>> tcData = tOrderDao.gettcBusinessData(params);
         if(tcData!=null&&tcData.size()>0){
-        	Integer sum = 0;
+        	float sum = 0;
         	for(Map<String, Object> map : tcData){
+        		float temp = map.containsKey("num")?partFlaot(map.get("num").toString()):0.0f;
+        		sum += temp;
+        		/*System.out.println(map.get("num").toString());
         		String num = map.containsKey("num")?map.get("num").toString():null;
         		Integer temp = num!=null?Integer.valueOf(num.substring(0,num.indexOf("."))):0;
-        		sum += temp;
+        		sum += temp;*/
         	}
         	object.put("returnDishAmount", sum);//营业数据统计(退菜数）
         }
