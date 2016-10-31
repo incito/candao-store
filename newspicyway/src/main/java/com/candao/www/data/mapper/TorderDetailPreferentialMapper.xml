@@ -14,6 +14,9 @@
 		<result property="isGroup" column="isGroup" jdbcType="TINYINT" />
 		<result property="isUse" column="isUse" jdbcType="TINYINT" />
 		<result property="insertime" column="insertime" jdbcType="TIMESTAMP" />
+		<result property="unit" column="unit" jdbcType="VARCHAR"/>
+		<result property="preType" column="preType" jdbcType="VARCHAR"/>
+		<result property="preName" column="preName" jdbcType="VARCHAR"/>
 	</resultMap>
 	<resultMap id="base_result_map"
 		type="com.candao.www.data.model.TbPreferentialActivity">
@@ -51,17 +54,42 @@
 
 	<insert id="addBatchInfo" parameterType="java.util.List">
 		INSERT INTO
-		`t_order_detail_preferential` (`id`,`orderid`,`dishid`,
-		`preferential`,`deAmount`, `discount`,`isCustom`, `isGroup`,
-		`isUse`,`dishNum` ,`insertime`)
+		`t_order_detail_preferential` (	
+			`id`,
+			`orderid`,
+			`dishid`,
+			`dishNum`,
+			`preferential`,
+			`deAmount`,
+			`discount`,
+			`isCustom`,
+			`isGroup`,
+			`isUse`,
+			`toalFreeAmount`,
+			`toalDebitAmount`,
+			`insertime`,
+			`unit`,
+			`preType`,
+			`preName`)
 		VALUES
 		<foreach collection="list" item="ordDetPre" index="index"
 			separator=",">
-			(#{ordDetPre.id,jdbcType=VARCHAR},#{ordDetPre.orderid,jdbcType=VARCHAR},#{ordDetPre.dishid,jdbcType=VARCHAR},#{ordDetPre.preferential,jdbcType=VARCHAR},
+			(#{ordDetPre.id,jdbcType=VARCHAR},
+			#{ordDetPre.orderid,jdbcType=VARCHAR},
+			#{ordDetPre.dishid,jdbcType=VARCHAR},
+			#{ordDetPre.dishNum,jdbcType=VARCHAR},
+			#{ordDetPre.preferential,jdbcType=VARCHAR},
 			#{ordDetPre.deAmount,jdbcType=DECIMAL},
 			#{ordDetPre.discount,jdbcType=DECIMAL},
 			#{ordDetPre.isCustom,jdbcType=DECIMAL},
-			#{ordDetPre.isGroup,jdbcType=TINYINT},#{ordDetPre.isUse,jdbcType=TINYINT},#{ordDetPre.dishNum,jdbcType=VARCHAR},#{ordDetPre.insertime,jdbcType=TIMESTAMP})
+			#{ordDetPre.isGroup,jdbcType=TINYINT},
+			#{ordDetPre.isUse,jdbcType=TINYINT},
+			#{ordDetPre.toalFreeAmount,jdbcType=VARCHAR},
+			#{ordDetPre.toalDebitAmount,jdbcType=VARCHAR},
+			#{ordDetPre.insertime,jdbcType=TIMESTAMP},
+			#{ordDetPre.unit,jdbcType=VARCHAR},
+			#{ordDetPre.preType,jdbcType=VARCHAR},
+			#{ordDetPre.preName,jdbcType=VARCHAR})
 		</foreach>
 		ON DUPLICATE KEY UPDATE deAmount =VALUES(deAmount)
 	</insert>
@@ -103,14 +131,15 @@
 	<select id="queryGiveprefer" parameterType="map" resultType="java.util.HashMap">
 			SELECT
 			COUNT(id) AS count,
-			top.dishid
+			top.dishid,
+			top.unit
 		FROM
 			t_order_detail_preferential AS top
 		WHERE
 			orderid = #{orderid}
 		AND isCustom = 4
 		GROUP BY
-			top.dishid;
+			top.dishid,top.unit;
 	</select>
 	<select id="getTorderDetailSbyOrderid" parameterType="map"
 		resultMap="associationDetailpreferInfo">

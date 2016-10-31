@@ -1244,6 +1244,8 @@ CREATE TABLE t_order (
   gzuser VARCHAR(20) DEFAULT NULL,
   invoice_id VARCHAR(50) DEFAULT NULL,
   gift_status CHAR(2) DEFAULT '0',
+  isfree TINYINT(1)   DEFAULT 0 COMMENT '是否餐具需要收费0不收费1收费',
+  num_of_meals INT(2)  DEFAULT 0 COMMENT '用餐人数 pad专用',
   PRIMARY KEY (orderid),
   INDEX IX_t_order_begintime (branchid, begintime)
 )
@@ -1503,7 +1505,9 @@ CREATE TABLE t_order_history (
   gztele varchar(20) DEFAULT NULL,
   gzuser varchar(20) DEFAULT NULL,
   invoice_id varchar(50) DEFAULT NULL,
-  gift_status char(2) DEFAULT '0'
+  gift_status char(2) DEFAULT '0',
+  isfree TINYINT(1)   DEFAULT 0 COMMENT '是否餐具需要收费0不收费1收费',
+  num_of_meals INT(2)  DEFAULT 0 COMMENT '用餐人数 pad专用'
 )
 ENGINE = INNODB
 CHARACTER SET utf8

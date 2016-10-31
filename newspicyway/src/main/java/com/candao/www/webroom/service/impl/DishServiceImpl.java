@@ -263,5 +263,15 @@ public class DishServiceImpl implements DishService {
 		tdishDao.updateDishNum(orderId);
 	}
 
+	@Override
+	public void dishSellOut(Map<String, Object> params) {
+		tdishDao.dishSellOut(params);
+	}
+	@Override
+	public void dishRevertSellOut(Map<String, Object> params) {
+		tdishDao.dishRevertSellOut(params);
+	}
+	
+	
 }
  

@@ -192,16 +192,19 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     if (businessR.get(i).get("give") != null) {// 赠送
                         businssRport.setGive(ToolsUtil.formatTwoDecimal(businessR.get(i).get("give").toString()));
                     }
-
-					if (judgePayforType() == 0) {   //表示 不处理
-
-					} else if (judgePayforType() == 1) {    //表示 四舍五入
-						businssRport.setHanderWay("四舍五入调整");
-						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("roundoff").toString()));
-					} else if (judgePayforType() == 2) {    //表示 抹零
-						businssRport.setHanderWay("抹零");
-						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
+					if(businessR.get(i).get("memberDishPriceFree") != null){//会员菜价优惠
+						businssRport.setMemberDishPriceFree(ToolsUtil.formatTwoDecimal(businessR.get(i).get("memberDishPriceFree").toString()));
 					}
+
+//					if (judgePayforType() == 0) {   //表示 不处理
+//
+//					} else if (judgePayforType() == 1) {    //表示 四舍五入
+//						businssRport.setHanderWay("四舍五入调整");
+						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("roundoff").toString()));
+//					} else if (judgePayforType() == 2) {    //表示 抹零
+//						businssRport.setHanderWay("抹零");
+//						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
+//					}
 					if(businessR.get(i).get("closedbillnums") != null){ //已结账单数
                     	businssRport.setClosedordermums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillnums").toString()));
                     }
@@ -389,15 +392,22 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction") + ""));
 						mapList.add(map);
 					}
-					//折扣优惠
-					if (businessR.get(i).get("discount") != null) {
+//					//折扣优惠
+//					if (businessR.get(i).get("discount") != null) {
+//						Map<String, Object> map = new HashMap<>();
+//						map.put("key", "折扣优惠");
+//						map.put("title", "折扣总额统计");
+//						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("discount") + ""));
+//						mapList.add(map);
+//					}
+					//会员优惠
+					if(businessR.get(i).get("memberDishPriceFree") != null){//会员菜价优惠
 						Map<String, Object> map = new HashMap<>();
-						map.put("key", "折扣优惠");
+						map.put("key", "会员优惠");
 						map.put("title", "折扣总额统计");
-						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("discount") + ""));
+						map.put("value",ToolsUtil.formatTwoDecimal(businessR.get(i).get("memberDishPriceFree") + ""));
 						mapList.add(map);
 					}
-
 
 
 

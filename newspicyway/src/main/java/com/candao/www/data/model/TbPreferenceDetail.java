@@ -7,6 +7,7 @@ public class TbPreferenceDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String preferential;
+	private String coupondetailid;
 	private String dish;
 	private String dish_title;
 	private BigDecimal price;
@@ -49,5 +50,13 @@ public class TbPreferenceDetail implements Serializable {
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+	public String getCoupondetailid() {
+		return coupondetailid;
+	}
+
+	public void setCoupondetailid(String coupondetailid) {
+		this.coupondetailid = coupondetailid;
 	}
 }

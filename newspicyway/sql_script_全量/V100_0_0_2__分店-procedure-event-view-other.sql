@@ -1252,7 +1252,8 @@ IF v_t_relateorderid IS NULL
 													memberno = ifNUll(v_memberno,v_t_memberno)
 											WHERE orderid = v_orderid;
 
-    
+
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
  
 					 
 IF v_t_orderid!=v_orderid AND v_t_orderid IS NOT NULL THEN
@@ -1303,6 +1304,7 @@ UPDATE t_order
                 WHERE orderid = v_orderid;
  
 
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
                 
 							 
 IF v_t_orderid!=v_orderid AND v_t_orderid IS NOT NULL THEN
@@ -1334,7 +1336,8 @@ ELSE
                     ageperiod = CONCAT(ageperiod,ifnull(v_t_ageperiod,'')),
                     memberno = ifNUll(v_memberno,v_t_memberno)
               WHERE orderid = v_orderid;
- 
+
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
 
             END IF;
           ELSE
@@ -1359,6 +1362,8 @@ ELSE
 																memberno = ifNUll(v_memberno,v_t_memberno)
 												WHERE orderid = v_orderid;
  
+
+    UPDATE t_printobj SET custnum = custnum + ifnull(v_t_person_num,0) WHERE orderno = v_orderid;
 
           END IF;
 
@@ -2087,7 +2092,7 @@ BEGIN
 
 
      SELECT
-        CONCAT('桌号:', ' ', IFNULL(tableno, '')) INTO v_tableno
+        CONCAT('台号:', ' ', IFNULL(tableno, '')) INTO v_tableno
       FROM t_tablearea ta,
            t_table tb
       WHERE tb.areaid = ta.areaid
@@ -2672,13 +2677,13 @@ DECLARE done int DEFAULT 0;
 DECLARE  v_total varchar(100);
 DECLARE  v_primarykey varchar(100);
 
---###定义一个游标表示所有重复的primarykey
+-- ###定义一个游标表示所有重复的primarykey
 DECLARE cur_repat_keys CURSOR FOR SELECT count(1) total,t.primarykey
 			                          from t_order_detail t
 	                                   GROUP BY t.primarykey
 					                    HAVING total>1
 			                          ORDER BY total desc;
---##先更新以前没有用到primarykey字段的数据
+-- ##先更新以前没有用到primarykey字段的数据
 update t_order_detail set primarykey=UUID() where primarykey='';
 OPEN cur_repat_keys;
   REPEAT

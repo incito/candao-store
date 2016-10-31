@@ -16,6 +16,7 @@
         <result property="tableArea" column="tableArea"/>
         <result property="tableid" column="tableid"/>
         <result property="orderseq" column="orderseq"/>
+        <result property="custnum" column="custnum"/>
     </resultMap>
 
     <resultMap id="DishResultMap" type="com.candao.print.entity.PrintDish">
@@ -62,6 +63,7 @@
 		  customerprinterip,
 		  customerprinterport,
 		  tableArea,
+		  custnum,
 		  tableid,orderseq
     </sql>
     <sql id="BASE_DISH_SELECT">
@@ -133,8 +135,27 @@
     </update>
 
     <update id="updateByOrderno" parameterType="java.util.Map">
-		update t_printobj set orderno=#{sourceOrderid}, username=#{username}, tableno=#{tableno}, tableArea=#{tableArea}, tableid=#{tableid}  where orderno = #{targetOrderid}
-	</update>
+        update t_printobj set
+        <if test="sourceOrderid != null">
+            orderno=#{sourceOrderid},
+        </if>
+        <if test="username != null">
+            username=#{username},
+        </if>
+        <if test="tableno != null">
+            tableno=#{tableno},
+        </if>
+        <if test="tableArea != null">
+            tableArea=#{tableArea},
+        </if>
+        <if test="tableid != null">
+            tableid=#{tableid}
+        </if>
+        <if test="custnum != null">
+            custnum=#{custnum}
+        </if>
+        where orderno = #{targetOrderid}
+    </update>
 
     <update id="updateDishCall" parameterType="java.util.Map">
         update t_printdish
@@ -723,7 +744,8 @@
 	, customerprinterip
 	, customerprinterport
 	, tableArea,
-	tableid)
+	tableid
+	,custnum)
 
 	VALUES (
 	#{id}
@@ -736,6 +758,7 @@
 	,#{customerPrinterPort}
 	,#{tableArea}
 	,#{tableid}
+	,#{custnum}
 	)
 </insert>
     <update id="updateTimemsg" parameterType="Map">

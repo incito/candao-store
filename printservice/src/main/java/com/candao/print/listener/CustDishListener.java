@@ -84,7 +84,7 @@ public class CustDishListener extends AbstractQueueListener {
 		socketOut.write(template.getBodyFont());
 
 		// 居中
-		socketOut.write(template.setAlignCenter());
+		socketOut.write(template.setAlignLeft());
 		String[] table = template.getTableMsg(object);
 		this.write(writer, table);
 		// 左对齐

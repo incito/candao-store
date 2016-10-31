@@ -196,4 +196,9 @@ public class TbOrderDaoImpl implements TorderMapper {
 		return dao.get(PREFIX + ".selectForUpdate", map);
 	}
 
+	@Override
+	public <K, V> Map<K, V> selectConsumInfo() {
+		return dao.get(PREFIX + ".selectConsumInfo", null);
+	}
+
 }

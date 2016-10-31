@@ -196,7 +196,7 @@
 	   select 
 	      a.tableid ,a.`position` ,a.status ,a.restaurantId ,a.isVip ,a.iscompartment
 		 ,a.isavailable ,a.buildingNo ,a.minprice ,a.fixprice ,a.tableNo ,a.personNum
-		 ,a.tabletype ,a.areaid ,a.tableName ,a.orderid ,a.custPrinter,b.areaname,b.areaid,
+		 ,a.tabletype ,a.areaid ,a.tableName ,a.orderid ,a.custPrinter,b.areaname,b.areaid,(select custnum from t_order where orderid=a.orderid) as custnum,
 		   CASE WHEN min(a.status) = 0
 		   THEN  NULL
 	       ELSE

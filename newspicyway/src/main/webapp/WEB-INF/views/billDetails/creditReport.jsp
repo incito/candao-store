@@ -90,7 +90,7 @@
 					</div>
 					</div>
 					<div class="col-xs-1 report-confirm-btn" id="div1">
-					<button type="button" id="submit" onclick="getCreditData()"   
+					<button type="button" id="submit" onclick="getCreditData()"
 						name="submit" class="btn btn-default">确认</button>
 					</div>
 				</div>
@@ -202,11 +202,11 @@
 									</td>
 							        <td>结算金额</td>
 							        <td>
-							            <input onkeyup='this.value=this.value.replace(/[^0-9]D*$/,"")' ondragenter="return false" onpaste="return !clipboardData.getData('text').match(/D/)" id="jiesuajine" type="text"/>
+							            <input onkeyup='clearNoNum(this)' ondragenter="return false" onpaste="return !clipboardData.getData('text').match(/D/)" id="jiesuajine" type="text"/>
 							        </td>
 							        <td>优免金额</td>
 							        <td>
-							            <input onkeyup='this.value=this.value.replace(/[^0-9]D*$/,"")' ondragenter="return false" onpaste="return !clipboardData.getData('text').match(/D/)" id="youmianjine" type="text"/>
+							            <input onkeyup='clearNoNum(this)' ondragenter="return false" onpaste="return !clipboardData.getData('text').match(/D/)" id="youmianjine" type="text"/>
 							        </td>
 							    </tr>
 							    <tr>
@@ -263,6 +263,13 @@
 			changeDataType(0);
 			getCreditData();
 		});
+
+		function clearNoNum(obj) {
+			obj.value = obj.value.replace(/[^\d.]/g, "");//清除“数字”和“.”以外的字符
+			obj.value = obj.value.replace(/^\./g, "");//验证第一个字符是数字而不是.
+			obj.value = obj.value.replace(/\.{2,}/g, ".");//只保留第一个. 清除多余的.
+			obj.value = obj.value.replace(".", "$#$").replace(/\./g,"").replace("$#$", ".");
+		}
 	</script>
 </body>
 </html>

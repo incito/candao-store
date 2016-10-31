@@ -43,7 +43,7 @@
       SELECT * FROM t_device
     </select>
     <select id="getDeviceByMeId" resultMap="BaseResultMap">
-        SELECT * FROM t_device WHERE meid=#{meid}
+        SELECT * FROM t_device WHERE meid=#{meid} ORDER BY update_time desc limit 1
     </select>
     <select id="getDeviceById" resultMap="BaseResultMap">
         SELECT * FROM t_device WHERE id=#{id}

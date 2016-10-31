@@ -971,7 +971,7 @@ function discountAmount(result) {
 	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
-		legend_data = [ '优免', '会员积分消费', '会员券消费', '折扣优惠', '赠送金额',
+		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员优惠', '赠送金额',
 				'会员储值消费虚增' ];
 		series_data.push({
 			value : strToFloat(item.bastfree),
@@ -986,7 +986,7 @@ function discountAmount(result) {
 			name : legend_data[2]
 		});
 		series_data.push({
-			value : strToFloat(item.discountmoney),
+			value : strToFloat(item.memberDishPriceFree),
 			name : legend_data[3]
 		});
 		series_data.push({
@@ -1006,7 +1006,7 @@ function discountAmount(result) {
 		}
 		tb = '<tr><td>' + item.bastfree + '</td><td>' + item.integralconsum
 				+ '</td><td>' + item.meberTicket + '</td><td>'
-				+ item.discountmoney + '</td>';
+				+ item.memberDishPriceFree + '</td>';
 		if(item.handerWay != null && item.handerWay != ""){
 			$("#dynamic-col").text(item.handerWay);
 			tb += '<td>' + item.handervalue + '</td>';
@@ -2002,6 +2002,10 @@ function getWaiterAssessData(){
 	if(oTable !=null){
 		oTable.fnClearTable(false);
 	}
+	if($("#submit").hasClass('disabled')){
+		return false;
+	}
+	$("#submit").addClass('disabled');
 	beginTime = $("#beginTime").val();
 	endTime = $("#endTime").val();
 	shiftid = $("#shiftid").val();
@@ -2011,6 +2015,7 @@ function getWaiterAssessData(){
 		shiftid: shiftid
 	}, function(result){
 		console.log(result);
+		$("#submit").removeClass('disabled');
 		if(result.flag == 1){
 			var data = result.data;
 			var htm = '';

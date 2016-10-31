@@ -61,10 +61,10 @@ $(document).ready(function(){
 //				vcheck = false;
 //			} 
 			/**可以配置备用打印机，通过逗号隔开，所以去掉IP校验**/
-//			if(!f_check_IP()){
-//				$("#ipAddress_tip").text("请输入格式正确的IP");
-//				vcheck = false;
-//			}
+			if(!f_check_IP()){
+				$("#ipAddress_tip").text("请输入格式正确的IP,多个ip用逗号','隔开");
+				vcheck = false;
+			}
 			
 //			if ($("#port").val().trim() == "") {
 //
@@ -183,7 +183,7 @@ $(document).ready(function(){
 				html +="<div class='panel panel-default'>      "
 						+"	<div class='panel-heading clearfix' role='tab'  id='headingFour_"+tmpJson.areaid+"' >      "
 						+"		<div style='width:18px;float:left'><img alt='0' src='"+global_Path+ "/images/none_select.png' panelCheckedStatus='' style='width:15px;height:15px'></div>"
-						+"		<div class='panel-title' style='width:470px;float:left' data-toggle='collapse' data-parent='#printArea-add-dialog #accordion' href='#collapseFour_"+tmpJson.areaid+"' aria-expanded='true' aria-controls='collapseFour'>      "
+						+"		<div class='panel-title' style='width:468px;float:left' data-toggle='collapse' data-parent='#printArea-add-dialog #accordion' href='#collapseFour_"+tmpJson.areaid+"' aria-expanded='true' aria-controls='collapseFour'>      "
 						+"			<span>"+ tmpJson.areaname+"</span>      "
 						+			"<span class='dish-label'></span>"
 						+"			<a  class='pull-right'>      "
@@ -315,7 +315,7 @@ $(document).ready(function(){
 				html +="<div class='panel panel-default'>      "
 						+"	<div class='panel-heading clearfix' role='tab' id='headingDish_"+tmpJson.id+"'>      "
 						+"		<div style='width:18px;float:left'><img alt='0' src='"+global_Path+ "/images/none_select.png' panelCheckedStatus='' style='width:15px;height:15px'></div>"
-						+"		<div class='panel-title' style='width:470px;float:left' data-toggle='collapse' data-parent='#printDishes-add-dialog #accordion' href='#collapseDish_"+tmpJson.id+"' aria-expanded='true' aria-controls='collapseFour'>      "
+						+"		<div class='panel-title' style='width:468px;float:left' data-toggle='collapse' data-parent='#printDishes-add-dialog #accordion' href='#collapseDish_"+tmpJson.id+"' aria-expanded='true' aria-controls='collapseFour'>      "
 						+"			<span>"+ tmpJson.itemdesc+"</span>      "
 						+			"<span class='dish-label'></span>"
 						+"			<a  class='pull-right'>      "
@@ -715,7 +715,7 @@ function showGroupDialog(obj){
 					html +="<div class='panel panel-default'>      "
 							+"	<div class='panel-heading clearfix' role='tab' id='gheadingDish_"+tmpJson.id+"'>      "
 							+"		<div style='width:18px;float:left'><img alt='0' src='"+global_Path+ "/images/none_select.png' panelCheckedStatus='' style='width:15px;height:15px'></div>"
-							+"		<div class='panel-title' style='width:470px;float:left' data-toggle='collapse' data-parent='#printGroup-add-dialog #accordion' href='#gcollapseDish_"+tmpJson.id+"' aria-expanded='true' aria-controls='collapseFour'>      "
+							+"		<div class='panel-title' style='width:468px;float:left' data-toggle='collapse' data-parent='#printGroup-add-dialog #accordion' href='#gcollapseDish_"+tmpJson.id+"' aria-expanded='true' aria-controls='collapseFour'>      "
 							+"			<span>"+ tmpJson.itemdesc+"</span>      "
 							+			"<span class='dish-label'></span>"
 							+"			<a  class='pull-right'>      "
@@ -1200,6 +1200,10 @@ function initPrinter(){
 	dishTypeIdListTag=[];
 	$("#print-area").removeClass("hidden");
 	$("#print-dishes").removeClass("hidden");
+	//added by caicai 修改默认显示
+	$("#print-font").removeClass("hidden");
+	$("#print-note").addClass("hidden");
+
 	clearGroup();
 	initGroupDiv();
 	$("#print-groupdishes").addClass("hidden");
@@ -1208,7 +1212,7 @@ function initPrinter(){
 
 }
 function getPrintBillTag(){
-	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},/*{'value':'3','printBillName':'预结单'},*/{'value':'4','printBillName':'前台退菜单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'},{'value':'10','printBillName':'POS单据'}];
+	var result = [{'value':'1','printBillName':'厨打单'},{'value':'2','printBillName':'客用单'},/*{'value':'3','printBillName':'预结单'},*/{'value':'4','printBillName':'前台退菜单'},{'value':'5','printBillName':'称重单'},{'value':'6','printBillName':'并台单'},{'value':'7','printBillName':'换台单'},{'value':'10','printBillName':'POS单据'},{'value':'11','printBillName':'微信在线支付'}];
 
 
 			$.each(result, function(i,val){
@@ -1235,23 +1239,33 @@ function printerBillChange(text){
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").removeClass("hidden");
 		$("#print-groupdishes").removeClass("hidden");
+		$("#print-note").addClass("hidden");
 	}else if(text ==='2')
 	{
 		$("#print-font").removeClass("hidden");
 		$("#print-area").removeClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").addClass("hidden");
 	}else if(text ==='4')
 	{
 		$("#print-font").removeClass("hidden");
 		$("#print-area").addClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").addClass("hidden");
+	}else if(text === '10'){
+		$("#print-font").addClass("hidden");
+		$("#print-area").addClass("hidden");
+		$("#print-dishes").addClass("hidden");
+		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").removeClass("hidden");
 	}else{
 		$("#print-font").addClass("hidden");
 		$("#print-area").addClass("hidden");
 		$("#print-dishes").addClass("hidden");
 		$("#print-groupdishes").addClass("hidden");
+		$("#print-note").addClass("hidden");
 	}
 }
 function check_same_printerName(){
@@ -1318,18 +1332,18 @@ function checkedBoxLength(addDialog){
 	}
 
 }
-function f_check_IP(){
-   var ip = document.getElementById('ipAddress').value;
-   var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;//正则表达式
-   if(re.test(ip)||ip=="")
-   {
-       if( RegExp.$1<256 && RegExp.$2<256 && RegExp.$3<256 && RegExp.$4<256||ip==""){
-    	   return true;
-       }
-
-   }
-
-   return false;
+function f_check_IP(ip){
+   var ip = ip || document.getElementById('ipAddress').value;
+   var re=/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;//正则表达式
+	var ips = ip.split(',');
+	var result = true;
+	for(var i = 0; i< ips.length; i++) {
+		if(!re.test(ips[i])){
+			result = false;
+			break;
+		}
+	}
+   return result;
 }
 function findTableAndDish(addDialog){
 	var checkedtables=$(addDialog).find("input[type=checkbox]:checked");

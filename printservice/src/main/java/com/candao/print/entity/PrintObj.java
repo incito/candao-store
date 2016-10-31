@@ -78,9 +78,39 @@ public class PrintObj implements Serializable,Cloneable {
     private ResultInfo4Pos item;
     
     private ResultTip4Pos tip;
-    
-    private Map<String, Object> posData;
-	
+
+	public String getCustnum() {
+		return custnum;
+	}
+
+	public void setCustnum(String custnum) {
+		this.custnum = custnum;
+	}
+
+	private Map<String, Object> posData;
+
+	private String targetCustNum;
+
+	private String custnum;
+
+	private String rePeatID;
+
+	public String getRePeatID() {
+		return rePeatID;
+	}
+
+	public void setRePeatID(String rePeatID) {
+		this.rePeatID = rePeatID;
+	}
+
+	public String getTargetCustNum() {
+		return targetCustNum;
+	}
+
+	public void setTargetCustNum(String targetCustNum) {
+		this.targetCustNum = targetCustNum;
+	}
+
 	
 	public String getPrintName() {
 		return printName;
