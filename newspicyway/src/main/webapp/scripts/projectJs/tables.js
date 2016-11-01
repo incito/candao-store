@@ -775,6 +775,26 @@ function init_object(){
 function  oneclickTableType(id){
 	$(".nav-counter li").removeClass("active");
 	$("#"+id).addClass("active");
+	/*自定义排序点击隐藏咖啡和外卖台*/
+	if($('#dinnerTable').attr('isclicktype')){//自定义排序时切换分区用tableJson缓存数据
+		var _html=''
+		$(".counter-detail-box").remove();
+		$.each(tableJson,function(index,item){
+			if(id==item.areaid){
+				item.tables.sort(function(a,b){return a.position-b.position});//按照position排序
+				for(var i=0;i<item.tables.length;i++ ){
+					_html+="<div class='counter-detail-box' tabletype='"+item.tables[i].tabletype+"' id='"+item.tables[i].tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>";
+					_html+="<p  >"+item.tables[i].tableName+"</p>";
+					_html+=	"<p  >("+item.tables[i].personNum+"人桌)</p>";
+					_html+=	"<i class='icon-remove hidden'  onclick='delTablesDetail("+"&apos;"+item.tables[i].tableid+"&apos;"+","+"&apos;"+item.tables[i].tableName+"&apos;"+",event)'></i></div>";
+				}
+				$('#tables-detailMain-Add').before(_html)
+				customTable.isHide();
+				return false
+			}
+		});
+		return false
+	}
 	$.ajax({
 		url : global_Path + "/table/getTablesByTableType/"+id+".json",
 		type : "post",
@@ -1346,7 +1366,7 @@ var customTable={
                     })
                 });
 				tableJson=tmpJson
-				console.log(JSON.stringify(tableJson))
+				//console.log(JSON.stringify(tableJson))
             }
         })
 
