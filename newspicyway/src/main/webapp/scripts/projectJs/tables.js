@@ -300,14 +300,18 @@ $(document).ready(function(){
 
 	});
 	/*双击菜餐台名称弹出餐台编辑框*/
-	$(".counter-detail-box").dblclick(function(){
+	$('.counter-content').on('dblclick', '.counter-detail-box', function() {
 		if($('#dinnerTable').attr('isclickType')){//自定义餐台排序是不能编辑餐台
 			customTable.noClick('自定义餐台排序时，不能编辑餐台')
 			return false
 		}
 		doEdit($(this).attr("id"));
-
 	});
+	/*$(".counter-detail-box").dblclick(function(){
+		debugger
+
+
+	});*/
 
 	/*菜品口味,菜品标签中添加按钮*/	
 	$(".tagAdd-btn button").click(function(){
@@ -784,9 +788,9 @@ function  oneclickTableType(id){
 				"<p  >"+item.tableName+"</p>"+
 				"<p  >("+item.personNum+"人桌)</p>"+
 				"<i class='icon-remove hidden'  onclick='delTablesDetail("+"&apos;"+item.tableid+"&apos;"+","+"&apos;"+item.tableName+"&apos;"+",event)'></i></div>");
-				$('#'+item.tableid).dblclick(function(){
-					doEdit(item.tableid);
-				});
+				/*$('#'+item.tableid).dblclick(function(){
+					doEdit($(this).attr("id"));
+				})*/;
 			});
 			/*自定义排序点击隐藏咖啡和外卖台*/
 			if($('#dinnerTable').attr('isclicktype')){
@@ -1342,7 +1346,7 @@ var customTable={
                     })
                 });
 				tableJson=tmpJson
-				//console.log(JSON.stringify(tableJson))
+				console.log(JSON.stringify(tableJson))
             }
         })
 
@@ -1542,6 +1546,20 @@ var customTable={
 					});
 				}
 				//console.log(res)
+			},
+			error:function () {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">保存失败请稍后重试</div>',
+					width:360,
+					height:500,
+					btnOkTxt: '确定 ',
+					btnCancelTxt: '',
+					btnOkCb:function () {
+						$('.modal-alert:last,.fade:last').remove()
+						//window.location.reload();//刷新页面
+					}
+				});
 			}
 		})
 
