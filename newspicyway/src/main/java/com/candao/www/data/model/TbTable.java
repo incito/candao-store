@@ -29,7 +29,17 @@ public class TbTable {
 	
 	private String orderid;
 	private java.lang.String custPrinter;
-	
+
+	private String areaSort;
+
+	public String getAreaSort() {
+		return areaSort;
+	}
+
+	public void setAreaSort(String areaSort) {
+		this.areaSort = areaSort;
+	}
+
 	private int operationType;//（1：下单;2 :退菜 3：并台  4换台） 
 	
 	private int sequence;//顺序
