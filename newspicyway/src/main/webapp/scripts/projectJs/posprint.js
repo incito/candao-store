@@ -205,7 +205,7 @@ function initPosList(){
 				var data = json.data;
 				if(data != null && data != ""){
 					$.each(data.list, function(i, val){
-						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
+						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+' title = ' + val.devicename + ' onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
 					});
 				}
 			}else{

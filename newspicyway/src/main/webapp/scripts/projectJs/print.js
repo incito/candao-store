@@ -61,10 +61,10 @@ $(document).ready(function(){
 //				vcheck = false;
 //			} 
 			/**可以配置备用打印机，通过逗号隔开，所以去掉IP校验**/
-//			if(!f_check_IP()){
-//				$("#ipAddress_tip").text("请输入格式正确的IP");
-//				vcheck = false;
-//			}
+			if(!f_check_IP()){
+				$("#ipAddress_tip").text("请输入格式正确的IP,多个ip用逗号','隔开");
+				vcheck = false;
+			}
 			
 //			if ($("#port").val().trim() == "") {
 //
@@ -1200,6 +1200,10 @@ function initPrinter(){
 	dishTypeIdListTag=[];
 	$("#print-area").removeClass("hidden");
 	$("#print-dishes").removeClass("hidden");
+	//added by caicai 修改默认显示
+	$("#print-font").removeClass("hidden");
+	$("#print-note").addClass("hidden");
+
 	clearGroup();
 	initGroupDiv();
 	$("#print-groupdishes").addClass("hidden");
@@ -1328,18 +1332,18 @@ function checkedBoxLength(addDialog){
 	}
 
 }
-function f_check_IP(){
-   var ip = document.getElementById('ipAddress').value;
-   var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;//正则表达式
-   if(re.test(ip)||ip=="")
-   {
-       if( RegExp.$1<256 && RegExp.$2<256 && RegExp.$3<256 && RegExp.$4<256||ip==""){
-    	   return true;
-       }
-
-   }
-
-   return false;
+function f_check_IP(ip){
+   var ip = ip || document.getElementById('ipAddress').value;
+   var re=/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;//正则表达式
+	var ips = ip.split(',');
+	var result = true;
+	for(var i = 0; i< ips.length; i++) {
+		if(!re.test(ips[i])){
+			result = false;
+			break;
+		}
+	}
+   return result;
 }
 function findTableAndDish(addDialog){
 	var checkedtables=$(addDialog).find("input[type=checkbox]:checked");

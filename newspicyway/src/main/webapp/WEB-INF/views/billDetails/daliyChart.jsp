@@ -96,7 +96,7 @@
 						<th class="count">优免</th>
 						<th class="code">会员积分消费</th>
 						<th class="name">会员券消费</th>
-						<th class="name">折扣优惠</th>
+						<th class="name">会员优惠</th>
 						<th id="dynamic-col">抹零</th>
 						<th class="name">赠送金额</th>
 						<th class="name">会员储值消费虚增</th>

@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -53,6 +55,10 @@ public class Printer {
      * 停止打印标示
      */
     private volatile boolean stop = false;
+    /**
+     * 打印历史ID记录
+     */
+    private List<String> historyIds = new ArrayList<>();
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -169,9 +175,7 @@ public class Printer {
 
     protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         outputStream.write(PrinterConstant.AUTO_STATUS);
-        //added by caicai
-        //省纸
-        /*outputStream.write(new byte[]{27, 27});*/
+        msg = checkDuplicate(msg);
         for (Object o : msg) {
             if (null == o) {
                 o = "";
@@ -191,7 +195,73 @@ public class Printer {
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
+        handleDuplicate(msg);
+//        outputStream.write(PrinterConstant.BEL);
         outputStream.flush();
+    }
+
+    /**
+     * 检查该单是否已打印，如果已打印，添加"补打"标记
+     *
+     * @param msg
+     * @return
+     */
+    private Object[] checkDuplicate(Object[] msg) {
+        if (null == msg || 0 == msg.length) {
+            return msg;
+        }
+        Object o = msg[0];
+        if (o instanceof PrintData) {
+            PrintData<String> data = (PrintData<String>) o;
+            if (!StringUtils.isEmpty(data.getData())) {
+                boolean exists = false;
+                for (String uuid : historyIds) {
+                    if (data.getData().equals(uuid)) {
+                        exists = true;
+                        break;
+                    }
+                }
+//                如果已打印过，则增加“补打”标记
+                if (exists) {
+                    Object[] newMsg = new Object[msg.length + 4];
+                    newMsg[0] = msg[0];
+//                    补打标记
+                    newMsg[1] = PrinterConstant.getFdDoubleFont();
+                    newMsg[2] = "*补打*";
+                    newMsg[3] = PrinterConstant.getClear_font();
+                    newMsg[4] = "请与上一份单据确认是否重复\t\n\t\n";
+                    System.arraycopy(msg, 1, newMsg, 5, msg.length - 1);
+                    return newMsg;
+                }
+            }
+        }
+        return msg;
+    }
+
+    private void handleDuplicate(Object[] msg) {
+        if (null == msg || 0 == msg.length) {
+            return;
+        }
+        Object o = msg[0];
+        if (o instanceof PrintData) {
+            PrintData<String> data = (PrintData<String>) o;
+            if (!StringUtils.isEmpty(data.getData())) {
+                boolean exists = false;
+                for (String uuid : historyIds) {
+                    if (data.getData().equals(uuid)) {
+                        exists = true;
+                        break;
+                    }
+                }
+//                如果不在最近打印记录中，添加到打印记录
+                if (!exists) {
+                    historyIds.add(data.getData());
+                    if (historyIds.size() > 10) {
+                        historyIds.remove(0);
+                    }
+                }
+            }
+        }
     }
 
     /**

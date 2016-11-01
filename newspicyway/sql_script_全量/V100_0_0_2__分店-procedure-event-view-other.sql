@@ -2662,13 +2662,13 @@ DECLARE done int DEFAULT 0;
 DECLARE  v_total varchar(100);
 DECLARE  v_primarykey varchar(100);
 
---###定义一个游标表示所有重复的primarykey
+-- ###定义一个游标表示所有重复的primarykey
 DECLARE cur_repat_keys CURSOR FOR SELECT count(1) total,t.primarykey
 			                          from t_order_detail t
 	                                   GROUP BY t.primarykey
 					                    HAVING total>1
 			                          ORDER BY total desc;
---##先更新以前没有用到primarykey字段的数据
+-- ##先更新以前没有用到primarykey字段的数据
 update t_order_detail set primarykey=UUID() where primarykey='';
 OPEN cur_repat_keys;
   REPEAT

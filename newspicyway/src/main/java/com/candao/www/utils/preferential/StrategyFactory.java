@@ -31,6 +31,7 @@ public enum StrategyFactory {
 		strategyMap.put(Constant.CouponType.HANDFREE, new HandfreeStategy());
 		strategyMap.put(Constant.CouponType.INNERFREE, new InnerfreeStrategy());
 		strategyMap.put(Constant.CouponType.YAZUOFREE, new YazuoStrategy());
+		strategyMap.put(Constant.CouponType.YAZUO_DISCOUNT_TICKET, new YazuoStrategy());
 		strategyMap.put("Auto", new AutoCalPreFerntialStrategy());
 
 	}

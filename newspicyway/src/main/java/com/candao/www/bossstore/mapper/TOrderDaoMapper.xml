@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.bossstore.dao.TOrderDao">
+	<select id="getBusinessData" parameterType="java.util.Map" 
+		statementType="CALLABLE"  resultType="java.util.Map">
+		call p_report_yysjmxb(
+			#{branchId,jdbcType=INTEGER,mode=IN},
+			#{xslx,jdbcType=INTEGER,mode=IN},
+			#{beginTime,jdbcType=DATE,mode=IN},
+			#{endTime,jdbcType=DATE,mode=IN},
+			#{result,jdbcType=VARCHAR,mode=OUT}
+		)
+	</select>
+	<select id="getpxBusinessData" parameterType="java.util.Map" 
+		statementType="CALLABLE"  resultType="java.util.Map">
+		call p_report_yyfx_pxxstj(
+			#{branchId,jdbcType=INTEGER,mode=IN},
+			#{xslx,jdbcType=INTEGER,mode=IN},
+			#{beginTime,jdbcType=DATE,mode=IN},
+			#{endTime,jdbcType=DATE,mode=IN},
+			#{result,jdbcType=VARCHAR,mode=OUT}
+		)
+	</select>
+	<select id="getyhBusinessData" parameterType="java.util.Map" 
+		statementType="CALLABLE"  resultType="java.util.Map">
+		call p_report_yhhdmxb(
+			#{branchId,jdbcType=INTEGER,mode=IN},
+			#{xslx,jdbcType=INTEGER,mode=IN},
+			#{beginTime,jdbcType=DATE,mode=IN},
+			#{endTime,jdbcType=DATE,mode=IN},
+			-1,
+			-1,
+			-1,
+			#{result,jdbcType=VARCHAR,mode=OUT}
+		)
+	</select>
+	<select id="gettcBusinessData" parameterType="java.util.Map" 
+		statementType="CALLABLE"  resultType="java.util.Map">
+		call p_report_tcmxb(
+			#{branchId,jdbcType=INTEGER,mode=IN},
+			#{xslx,jdbcType=INTEGER,mode=IN},
+			#{beginTime,jdbcType=DATE,mode=IN},
+			#{endTime,jdbcType=DATE,mode=IN},
+			0,
+			1000000,
+			#{result,jdbcType=VARCHAR,mode=OUT}
+		)
+	</select>
+	<select id="getFlowData" parameterType="java.util.Map"  resultType="java.util.Map">
+		SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0) showldamount,
+		 DATE_FORMAT(o.begintime,'%Y-%m-%d %H:%i') beginTime,
+		 t.tableName tableName
+		 FROM t_order o 
+		 left join t_table t 
+		 	on o.currenttableid = t.tableid
+		 left join t_order_detail tod 
+		 	on tod.orderid = o.orderid
+		 where o.begintime BETWEEN STR_TO_DATE(#{beginTime},'%Y-%m-%d %H:%i:%s')
+		 AND STR_TO_DATE(#{endTime},'%Y-%m-%d %H:%i:%s')
+		 and o.orderstatus=3 
+		 and o.branchid=#{branchId}
+		 GROUP BY o.orderid
+		 order by o.begintime desc
+	</select>
+	<select id="getCurrDayOrders" parameterType="java.util.Map"  resultType="java.util.Map">
+		select o.begintime as beginTime,
+			 o.orderid as orderId,
+			 o.custnum as realPersonNum,
+			 o.tableids tableIds,
+			 t.tabletype as tableType
+		from t_table t 
+		left join t_order o 
+			on t.orderid = o.orderid
+		where t.status in (1,3)
+		and o.orderstatus = 0
+		and o.branchid = #{branchId}
+	</select>
+	<select id="getCurrDayOrdersToday" parameterType="java.util.Map"  resultType="java.util.Map">
+		select o.begintime as beginTime,
+		 	o.orderid as orderId,
+		 	o.mannum + o.womannum as realPersonNum,
+		 	o.tableids as tableIds
+		 	from t_order o  
+		 	where o.begintime >= #{startTime}
+		 	and  o.branchid = #{branchId}
+		 	order by o.begintime desc
+	</select>
+	<select id="getShouldAmountByOrderId" parameterType="java.util.Map"  resultType="java.util.Map">
+		select sum(tod.dishnum*tod.orignalprice) as finalPrice
+			from t_order_detail tod
+			where tod.orderid=#{orderId}
+	</select>
+	<select id="getOrderCom" parameterType="java.util.Map"  resultType="java.util.Map">
+		SELECT u. NAME as name,
+			m.response_nums as responseNums,
+			c.complaint_opinion as complaintOpinion,
+			c.photo_url as photoUrl,
+			m.msg_type as msgType,
+			t.complaint_type_id as complaintType,
+			m.call_start_time as callStartTime,
+			m.timeout_start_time as timeoutStartTime,
+			m.call_over_date as callOverDate
+			FROM  t_message m
+			LEFT JOIN t_b_employee e 
+				ON m.userid = e.job_number 
+			LEFT JOIN t_b_user u 
+				ON e.user_id = u.id 
+			LEFT JOIN t_user_complaint c 
+				ON c.message_id = m.id 
+			left join t_complaint_type t 
+				on t.complaint_id = c.id 
+			where m.orderid = #{orderId}
+	</select>
+	<select id="getCouponsTopOne" parameterType="java.util.Map" 
+		statementType="CALLABLE"  resultType="java.util.Map">
+		call p_report_yhhdmxb(
+			#{branchId,jdbcType=INTEGER,mode=IN},
+			-1,
+			#{beginTime,jdbcType=DATE,mode=IN},
+			#{endTime,jdbcType=DATE,mode=IN},
+			null,
+			null,
+			null,
+			#{result,jdbcType=VARCHAR,mode=OUT}
+		)
+	</select>
+</mapper>
