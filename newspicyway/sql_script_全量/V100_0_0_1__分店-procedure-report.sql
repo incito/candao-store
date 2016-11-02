@@ -391,7 +391,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     FROM
       t_temp_settlement_detail
     WHERE
-      payway IN (0, 1, 5, 8, 13, 17, 18, 30)
+      payway IN (SELECT itemid FROM v_revenuepayway)
       AND ordertype > 0;
 
     SET v_oa_paidinamount = v_oa_paidinamount - v_oa_mebervalueadd;
@@ -2517,7 +2517,7 @@ BEGIN
   WHERE
     a.orderid = b.orderid
     AND b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8,13,17,18,30);
+    AND b.payway IN (SELECT itemid FROM v_revenuepayway);
   CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
 
   #创建会员消费内存表
@@ -2828,7 +2828,7 @@ BEGIN
     t_temp_settlement_detail
   WHERE
     payamount > 0
-    AND payway IN (0, 1, 5, 8,13,17,18)
+    AND payway IN (SELECT itemid FROM v_revenuepayway)
   GROUP BY
     orderid;
   CREATE INDEX ix_t_temp_settlement_paidinamount_orderid ON t_temp_settlement_paidinamount (orderid);
@@ -4512,7 +4512,7 @@ lable_fetch_loop:
     t_temp_settlement_detail a, t_temp_orderid b
   WHERE
     a.orderid = b.orderid
-    AND payway IN (0, 1, 5, 8, 13, 17, 18)  
+    AND payway IN (SELECT itemid FROM v_revenuepayway)  
   GROUP BY
     a.orderid;
 
@@ -4750,7 +4750,7 @@ BEGIN
   FROM
     t_temp_settlement_detail
   WHERE
-    payway IN (0, 1, 5, 8, 17, 18 ,13,30);
+    payway IN (SELECT itemid FROM v_revenuepayway);
   CREATE INDEX ix_t_temp_paidinamout_orderid ON t_temp_paidinamout (orderid);
 
 
@@ -5267,7 +5267,7 @@ BEGIN
       t_temp_order a, t_settlement_detail b
     WHERE
       a.orderid = b.orderid
-      AND b.payway IN (0, 1, 5, 8, 13, 17, 18)   
+      AND b.payway IN (SELECT itemid FROM v_revenuepayway)   
       AND b.payamount > 0;
 
     CREATE INDEX ix_t_temp_settlement_detail_begintime ON t_temp_settlement_detail (begintime);
@@ -6860,7 +6860,7 @@ BEGIN
 				t_temp_settlement_detail a, t_temp_orderid b
 			  WHERE
 				a.orderid = b.orderid
-				AND payway IN (0, 1, 5, 8,13,17,18)
+				AND payway IN (SELECT itemid FROM v_revenuepayway)
 			  GROUP BY
 				a.orderid;
 
@@ -7498,7 +7498,7 @@ BEGIN
 			WHERE
 				a.orderid = b.orderid
 			AND
-				a.payway IN (0, 1, 5, 8, 13, 17, 18); #增加挂账2 标记13
+				a.payway IN (SELECT itemid FROM v_revenuepayway); #增加挂账2 标记13
 			  
 			#计算虚增
 			SELECT ifnull(sum(a.Inflated), 0)
@@ -7628,7 +7628,7 @@ BEGIN
 			  t_temp_settlement_detail_sub a USE INDEX (ix_t_temp_settlement_detail_sub_orderid,ix_t_temp_settlement_detail_sub_payway) join t_temp_orderid b USE INDEX (ix_t_temp_orderid_orderid)
 			on
 			  a.orderid = b.orderid
-			WHERE a.payway IN (0, 1, 5, 8, 13, 17, 18);
+			WHERE a.payway IN (SELECT itemid FROM v_revenuepayway);
 			
 			#计算拉动应收
 			SELECT ifnull(sum(a.orignalprice * a.dishnum), 0)
@@ -7838,7 +7838,7 @@ BEGIN
   WHERE
     a.orderid = b.orderid
     and b.payamount > 0
-    AND b.payway IN (0, 1, 5, 8, 11, 12, 13,17, 18,30);
+    AND b.payway IN (SELECT itemid FROM v_revenuepayway);
   
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
@@ -9408,7 +9408,7 @@ BEGIN
   SELECT
     IFNULL(SUM(payamount), 0.00) INTO v_paidamount
   FROM t_settlement_detail
-  WHERE orderid = pi_orderid AND payway IN (0, 1, 5, 8, 13, 17, 18, 30);
+  WHERE orderid = pi_orderid AND payway IN (SELECT itemid FROM v_revenuepayway);
 
   SELECT
     IFNULL(SUM(orignalprice), 0.00) INTO v_giveamount
