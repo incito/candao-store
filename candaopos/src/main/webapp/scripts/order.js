@@ -1,4 +1,5 @@
 var pref_prev = 0;
+var g_eatType = utils.getUrl.get('type');
 
 var consts = {
     orderid: $('input[name=orderid]').val(),
@@ -816,7 +817,7 @@ var Order = {
                 str += $(this).text() + ';';
             });
             str += $.trim($('#backfood-reason').val());
-            return str.substring(0, str.length - 1);
+            return str;
         })();
 
 
@@ -886,7 +887,7 @@ var Order = {
 
     //点菜
     takeOrder: function () {
-        var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno;
+        var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno + '&type=' + g_eatType;
         window.location.href = encodeURI(encodeURI(url));
     },
 

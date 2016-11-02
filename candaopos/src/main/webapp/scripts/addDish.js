@@ -2,7 +2,7 @@
 var dishCartMap = null;//添加进购物车的菜品
 var dishesMap = null;//菜品
 
-var g_eatType = "EAT-IN";
+var g_eatType = utils.getUrl.get('type');
 
 
 var dom = {
@@ -28,6 +28,16 @@ var AddDish = {
 
 		dishCartMap = new utils.HashMap();
 		dishesMap = new utils.HashMap();
+
+		if(g_eatType === "out"){
+			//外卖
+			$(".give-dish").addClass("hide");
+			$(".gua-dan").removeClass("hide");
+		} else {
+			//堂食
+			$(".gua-dan").addClass("hide");
+			$(".give-dish").removeClass("hide");
+		}
 
 		//设置全局订单信息
 		$(".order-info").find('.J-order-id').text(consts.orderid)
@@ -1240,8 +1250,8 @@ var AddDish = {
 			dataType: 'json',
 		}).then(function(res){
 			if (res.code === '0') {
-				//首次点菜 && 餐具设置收费
-				if(res.data.rows.length === 0 && consts.DISHES.status === '1') {
+				//首次点菜 && 餐具设置收费 && 堂食
+				if(res.data.rows.length === 0 && consts.DISHES.status === '1'  && g_eatType === 'out') {
 					rows.push({
 						"printtype": "0",
 						"pricetype": pricetype,//0：普通 1：赠菜
@@ -1567,19 +1577,10 @@ function getUuid(){
 }
 
 function goToOrder(){
-	var url = "../views/order.jsp?orderid=" + $('input[name=orderid]').val() + '&personnum=' + $('input[name=personnum]').val() + '&tableno=' + $('input[name=tableno]').val();
+	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno  + '&type=' + g_eatType;
 	window.location.href = encodeURI(encodeURI(url));
 }
 
 $(document).ready(function(){
 	AddDish.init();
-	if(g_eatType == "TAKE-OUT"){
-		//外卖
-		$(".give-dish").addClass("hide");
-		$(".gua-dan").removeClass("hide");
-	}else if(g_eatType == "EAT-IN"){
-		//堂食
-		$(".gua-dan").addClass("hide");
-		$(".give-dish").removeClass("hide");
-	}
 });

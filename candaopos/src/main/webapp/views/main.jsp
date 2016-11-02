@@ -187,7 +187,7 @@
     </div>
     <div class="foot-menu">
         <ul class="menu">
-            <li class="J-btn-takeout disabled">外卖</li>
+            <li class="J-btn-takeout">外卖</li>
             <li class="J-btn-check">账单</li>
             <li class="J-btn-rep">报表</li>
             <li class="J-btn-clear">清机 / 结业</li>
@@ -313,22 +313,17 @@
             <div class="modal-body">
                 <div class="form-group">
                     <ul class="take-out-list">
-                        <li class="active">咖啡外卖1</li>
-                        <li>咖啡外卖2</li>
-                        <li>咖啡外卖3</li>
-                        <li>咖啡外卖4</li>
-                        <li>咖啡外卖5</li>
                     </ul>
+                    <ul class="take-out-list-normal" style="display: none"></ul>
                 </div>
                 <div class="btn-operate  ">
                     <button class="btn btn-cancel in-btn135 clear-btn" style="float: left;" type="button"
-                            data-dismiss="modal" onclick="takeOut()">外带
+                            data-dismiss="modal" onclick="MainPage.setTakeOutOrder(0)">外带
                     </button>
                     <div style="text-align: right;">
                         <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
                         </button>
-                        <button class="btn btn-save in-btn135" id="" type="button" data-dismiss="modal"
-                                onclick="takeOut()">确认
+                        <button class="btn btn-save in-btn135"  onclick="MainPage.setTakeOutOrder(1)" type="button" data-dismiss="modal">确认
                         </button>
                     </div>
                 </div>

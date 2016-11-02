@@ -61,7 +61,7 @@ var MainPage = {
 				$("#open-dialog").modal("show");
 				return false;
 			}
-			var url = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + me.attr('tableno');
+			var url = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + me.attr('tableno')  + '&type=in';
 			window.location.href = encodeURI(encodeURI(url));
 		});
 
@@ -134,7 +134,7 @@ var MainPage = {
 					dataType:'json',
 					success: function(res){
 						if(res.code === '0') {
-							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')
+							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')  + '&type=in';
 							dom.openDialog.modal('hide');
 							window.location.href = encodeURI(encodeURI(url));
 						} else {
@@ -203,11 +203,7 @@ var MainPage = {
 		$('footer').on('click','.foot-menu li',function(e){
 			var me = $(this);
 			if(me.hasClass("J-btn-takeout")){
-				$("#J-takeout-dialog").modal("show");
-				$(".take-out-list li").unbind("click").on("click",  function(){
-					$(".take-out-list li").removeClass("active");
-					$(this).addClass("active");
-				});
+				that.initTakeOutModal();
 			}
 			if(me.hasClass("member-btns")){
 				//会员
@@ -387,6 +383,102 @@ var MainPage = {
 			}
 
 		}, 50);
+	},
+
+	initTakeOutModal: function(){
+		var $modal = $('#J-takeout-dialog');
+		$.ajax({
+			url: _config.interfaceUrl.GetTableInfoByTableType,
+			method: 'POST',
+			contentType: "application/json",
+			global: false,
+			data: JSON.stringify({
+				tableType: [2,3]
+			}),
+			dataType:'json'
+		}).then(function(res){
+			var ret = [];
+			var retNormal = [];
+			$.each(res, function(k, v){
+				if(v.tabletype === '3') {
+					ret.push('<li>' + v.tableNo + '</li>');
+				} else {
+					retNormal.push('<li>' + v.tableNo + '</li>');
+				}
+			});
+			$(".take-out-list").html(ret.join(''));
+			$(".take-out-list").find('li').eq(0).addClass('active');
+			$(".take-out-list-normal").html(retNormal.join(''));
+
+			if(ret.length === 0 && retNormal.length === 0){
+				widget.modal.alert({
+					content:'<strong>获取外卖餐台接口错误</strong>',
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+				return false;
+			}
+
+			$(".take-out-list li").unbind("click").on("click",  function(){
+				$(".take-out-list li").removeClass("active");
+				$(this).addClass("active");
+			});
+			$modal.modal("show");
+		});
+	},
+
+	/**
+	 * 外卖开台
+ 	 * @param type 0:普通外卖 1:咖啡外卖
+     */
+	setTakeOutOrder: function(type){
+		var tableNo = '';
+		if(type === 0) {
+			tableNo = $('.take-out-list-normal').find('li').eq(0).text();
+		} else {
+			tableNo = $('.take-out-list').find('li.active').text();
+		}
+
+		$.ajax({
+			url: _config.interfaceUrl.OpenTable,
+			method: 'POST',
+			contentType: "application/json",
+			data: JSON.stringify({
+				tableNo: tableNo,
+				ageperiod: '',
+				username: utils.storage.getter('aUserid'),
+				manNum: 0,
+				womanNum: 0
+			}),
+			dataType:'json'
+		}).then(function(res){
+			if(res.code === '0') {
+				$.ajax({
+					url: _config.interfaceUrl.SetOrderTakeout + res.data.orderid + '/',
+					method: 'GET',
+					dataType:'text'
+				}).then(function(data){
+					var  data=JSON.parse(data.substring(12, data.length - 3));
+					if(data.Data === '1') {
+						var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=0&tableno=' + tableNo + '&type=out';
+						window.location.href = encodeURI(encodeURI(url));
+					} else {
+						widget.modal.alert({
+							content:'<strong>设置为外卖接口错误</strong>',
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				})
+			} else {
+				widget.modal.alert({
+					content:'<strong>' + res.msg + '</strong>',
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+			}
+		})
+
 	},
 
 	//验证用户
