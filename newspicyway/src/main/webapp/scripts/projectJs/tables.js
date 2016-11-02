@@ -566,12 +566,28 @@ function del() {
 			url : global_Path+"/table/delete/"+$("#showTableId").val()+".json",
 //			url : global_Path + "/dish/delete/"+$("#showDishId").val()+".json",
 			dataType : "json",
-			success : function(result) {	
-				$(".img-close").click();
-				oneclickTableType($("#nav-tables .active").attr("id"));
-                customTable.getTableJson();//重新获取餐台数据
-				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(1);
-				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+			success : function(result) {
+				if(result=='删除成功'){
+					$(".img-close").click();
+					oneclickTableType($("#nav-tables .active").attr("id"));
+					customTable.getTableJson();//重新获取餐台数据
+					var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(1);
+					$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+				}
+				else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result+'</div>',
+							width:360,
+							height:500,
+							btnOkTxt: '确定 ',
+							btnCancelTxt: '',
+							btnOkCb:function () {
+								$('.modal-alert:last,.fade:last').remove()
+							}
+						});
+					}
+
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				alert(errorThrown);
@@ -956,8 +972,23 @@ function delAreaAndTables(){
 		async:false,
 		url : global_Path+"/table/deleteTablesByAreaid/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
-		success : function(result) {	
-			delArea();
+		success : function(result) {
+			if(result=='删除成功'){
+				delArea();
+			}
+			else {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">删除分区失败</div>',
+					width:360,
+					height:500,
+					btnOkTxt: '确定 ',
+					btnCancelTxt: '',
+					btnOkCb:function () {
+						$('.modal-alert:last,.fade:last').remove()
+					}
+				});
+			}
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
@@ -970,9 +1001,26 @@ function delArea(){
 		async:false,
 		url : global_Path+"/tableArea/delete/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
-		success : function(result) {	
-			updateAreaOrder();
-			window.location.reload();
+		success : function(result) {
+			debugger
+			if(result=='删除成功'){
+				updateAreaOrder();
+				window.location.reload();
+			}
+			else {
+				widget.modal.alert({
+					cls: 'fade in',
+					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result+'</div>',
+					width:360,
+					height:500,
+					btnOkTxt: '确定 ',
+					btnCancelTxt: '',
+					btnOkCb:function () {
+						$('.modal-alert:last,.fade:last').remove()
+					}
+				});
+			}
+
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
