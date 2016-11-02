@@ -301,6 +301,8 @@ footer .info{
   	padding-top: 12px;
   	background: #FFFFFF;
   	border-radius: 4px;
+	margin-right:5px;
+	cursor: pointer;
 }
 .J-takeout-dialog .take-out-list li.active{
 	background: #FF5803;
