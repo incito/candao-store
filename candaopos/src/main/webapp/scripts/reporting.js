@@ -101,13 +101,29 @@ var reporting={
                 for (var i = 0; i < total; i++) {
                     count += Number(data.data[i].serviceCount);
                     sum += Number(data.data[i].tipMoney);
-                    str += '<tr>';
+                    /*str += '<tr>';
                     str += '   <td>' + data.data[i].waiterName + '</td>';
                     str += '   <td>' + data.data[i].serviceCount + '</td>';
-                    str += '   <td>' + data.data[i].tipMoney + '</td>';
-                }
-                ;
-                $("#getTipList tbody").html(str);
+                    str += '   <td>' + data.data[i].tipMoney + '</td>';*/
+                };
+                $('#getTipList .demo').pagination({
+                    dataSource: data.data,
+                    pageSize: 11,
+                    showPageNumbers: false,
+                    showNavigator: true,
+                    callback: function(data, pagination) {
+                        var str="";
+                        for( var i=0;i<data.length;i++) {
+                            str+='<tr>';
+                            str+='   <td width="476">'+data[i].waiterName+'</td>';
+                            str+='   <td width="200">'+data[i].serviceCount+'</td>';
+                            str+='   <td width="200">'+data[i].tipMoney+'</td>';
+                            str+='</tr>';
+
+                        };
+                        $("#getTipList tbody").html(str);
+                    }
+                });
                 $("#getTipList .reportingInfo i").eq(0).text(total);
                 $("#getTipList .reportingInfo i").eq(1).text(count.toFixed(1));
                 $("#getTipList .reportingInfo i").eq(2).text(sum.toFixed(2));
