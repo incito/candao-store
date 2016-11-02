@@ -1025,7 +1025,7 @@ var Order = {
             data: JSON.stringify(that.manageUsePref.get()),
             success: function (res) {
                 if (res.code === '0') {
-                    console.log(res);
+                    //console.log(res);
 
 
                     that.updateTotal(res.data);
@@ -1198,9 +1198,10 @@ var Order = {
 
         //设置统计
         $('#discount-amount').text(amount);
-        $('#amount').text(originalOrderAmount);
+        $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
         $('#cash input').val(payamount);
+        $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
 
@@ -1614,12 +1615,12 @@ var Order = {
                             //结账单
                             that.printPay(2);
                             setTimeout(function(){
-                                if(utils.getUrl.get('referer') === '1') {
-                                    //window.history.back(-1);
+                                if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                                    goBack()
                                 } else {
-                                    //window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                                    window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
                                 }
-                            },1000)
+                            },2000)
                         } else {
                             utils.loading.remove();
                             widget.modal.alert({

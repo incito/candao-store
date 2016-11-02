@@ -120,7 +120,7 @@ footer{
   	overflow: hidden;
   	display: inline-block;
   	padding: 0;
-  	margin: 0;
+  	margin: 0 0 0 10px;
   	height: 43px;
   	width: 522px;/***85%****/
   	float: left;
@@ -131,13 +131,15 @@ footer{
 	position: relative;
   	list-style: none;
 	float: left;
-  	width: 16.66%;
+  	/*width: 16.66%;*/
+	width: 16%;
   	height: 100%;
   	text-align: center;
   	padding: 12px 2px;
   	font-size: 14px;
 	color: #111111;
 	cursor: pointer;
+	overflow: hidden;
 }
 .main-div .nav-types li.active{
 	font-size: 16px;
