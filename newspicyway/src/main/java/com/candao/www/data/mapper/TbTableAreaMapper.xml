@@ -211,7 +211,7 @@
 	     <where>
 	  	 and status = 1
 	  	 </where>
-	  	 order by areaSort
+	  	 order by IFNULL(areaSort,9999) ASC ,modifytime ASC
 	</select>
 	<select id="getTableTag2"  resultMap="findResultMap">
 	   select distinct areaNo from t_tablearea 

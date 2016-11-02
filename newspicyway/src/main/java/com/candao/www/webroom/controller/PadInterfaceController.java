@@ -1119,17 +1119,30 @@ public class PadInterfaceController {
     @RequestMapping("/getTableAndType")
     @ResponseBody
     public String getTableAndType() {
-        ModelAndView mav = new ModelAndView();
-        List<Map<String, Object>> listTableArea = tableAreaService.getTableAreaTag();
-        Map<String, Object> mapAreaid = new HashMap<String, Object>();
-        for (Map<String, Object> map : listTableArea) {
-            mapAreaid.put("areaid", map.get("areaid"));
-            mapAreaid.put("defaultsort", 1);
-            List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
-            if (!CollectionUtils.isEmpty(tablelist))
-                map.put("tables", tablelist);
+        List<Map<String,Object>> listTableArea = null;
+        //0成功1失败
+        Map<String,Object> res = new HashMap<>();
+        try {
+            listTableArea = tableAreaService.getTableAreaTag();
+            Map<String, Object> mapAreaid = new HashMap<String, Object>();
+            for (Map<String, Object> map : listTableArea) {
+                mapAreaid.put("areaid", map.get("areaid"));
+                mapAreaid.put("defaultsort", 1);
+                List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
+                if (!CollectionUtils.isEmpty(tablelist))
+                    map.put("tables", tablelist);
+            }
+        } catch (Throwable e){
+            loggers.error(e.getMessage(),e);
+            res.put("code",1);
+            res.put("msg",e.getMessage());
+            res.put("data",null);
+            return JSON.toJSONString(res);
         }
-        return JSON.toJSONString(listTableArea);
+        res.put("code",0);
+        res.put("msg","查询成功");
+        res.put("data",listTableArea);
+        return JSON.toJSONString(res);
     }
 
     /**
