@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -117,6 +118,8 @@ public class Printer {
                         }
                         /*开始打印*/
                         logger.info("[" + ip + "]开始打印");
+                        /*开启一票一控*/
+                        outputStream.write(PrinterConstant.AUTO_STATUS);
                         doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
@@ -174,30 +177,29 @@ public class Printer {
     }
 
     protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
-        outputStream.write(PrinterConstant.AUTO_STATUS);
         msg = checkDuplicate(msg);
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
         for (Object o : msg) {
             if (null == o) {
                 o = "";
             }
-            byte[] line;
             if (o instanceof Byte) {
-                line = new byte[]{(byte) o};
+                outputStream.write(new byte[]{(byte) o});
             } else if (o instanceof byte[]) {
-                line = (byte[]) o;
+                outputStream.write((byte[]) o);
             } else {
-                line = o.toString().getBytes(CHARSET);
+                writer.write(o.toString());
             }
-            outputStream.write(line);
             outputStream.flush();
+            writer.flush();
         }
         outputStream.write(PrinterConstant.getLineN((byte) 4));
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
+        outputStream.flush();
         handleDuplicate(msg);
 //        outputStream.write(PrinterConstant.BEL);
-        outputStream.flush();
     }
 
     /**
@@ -316,6 +318,8 @@ public class Printer {
                     result.setCode(state);
                     return result;
                 }
+                 /*开启一票一控*/
+                outputStream.write(PrinterConstant.AUTO_STATUS);
                 doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
                 state = PrintControl.CheckJob(8000, inputStream, getIp());
