@@ -20,7 +20,6 @@ var consts = {
 
 var dom = {
     order: $("#order"),
-    openDialog: $("#open-dialog"),//开台权限验证弹窗
     addDishDialog: $("#adddish-dialog"),//点菜弹窗
     giveDishDialog: $("#givedish-dialog"),//赠菜弹窗
     membershipCard: $('#membership-card'),
@@ -64,98 +63,6 @@ var Order = {
     bindEvent: function () {
 
         var that = this;
-
-
-        /**
-         * 开启服务员权限验证
-         */
-        dom.openDialog.on('click', '.age-type>div', function () {
-            var me = $(this);
-            me.toggleClass('active');
-        });
-
-        dom.openDialog.on('change', '.J-male-num, .J-female-num', function () {
-            var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
-            var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
-            $('.J-tableware-num').val(parseInt(maleNum, 10) + parseInt(femailNum, 10))
-        });
-
-        dom.openDialog.on('click', '.J-btn-submit', function () {
-            var serverName = dom.openDialog.find('.J-server-name').val();
-            var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
-            var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
-
-            if (parseInt(maleNum, 10) + parseInt(femailNum, 10) < 1) {
-                widget.modal.alert({
-                    cls: 'fade in',
-                    content: '<strong>请输入就餐人数</strong>',
-                    width: 500,
-                    height: 500,
-                    btnOkTxt: '确定',
-                    btnCancelTxt: ''
-                });
-                return false;
-            }
-
-            if (serverName === undefined || serverName === '') {
-                widget.modal.alert({
-                    cls: 'fade in',
-                    content: '<strong>请输入服务员编号</strong>',
-                    width: 500,
-                    height: 500,
-                    btnOkTxt: '确定',
-                    btnCancelTxt: ''
-                });
-                return false;
-            }
-
-            //验证用户权限,然后开台
-            that.verifyUser(serverName, function () {
-                $.ajax({
-                    url: _config.interfaceUrl.OpenTable,
-                    method: 'POST',
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        tableNo: consts.tableno,
-                        ageperiod: (function () {
-                            var str = '';
-                            dom.openDialog.find('.age-type>div').each(function () {
-                                var me = $(this);
-                                if (me.hasClass('active')) {
-                                    str += me.index() + 1;
-                                }
-                            });
-                            return str;
-                        })(),
-                        username: serverName,
-                        manNum: maleNum,
-                        womanNum: femailNum
-                    }),
-                    dataType: 'json',
-                    success: function (res) {
-                        if (res.code === '0') {
-                            console.log(res.data);
-                            dom.openDialog.modal('hide');
-
-                            $('input[name=tableno]').val(res.data.orderid)
-                            //设置订单信息
-                            that.takeOrder();
-
-                        } else {
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content: '<strong>' + res.msg + '</strong>',
-                                width: 500,
-                                height: 500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
-                        }
-                    }
-                })
-
-            });
-        });
 
         /**
          * 退菜
@@ -798,13 +705,8 @@ var Order = {
                    }
                     return ret;
                 })();
-                widget.modal.alert({
-                    cls: 'fade in',
-                    content: '<strong>' + str + '</strong>',
-                    width: 500,
-                    height: 500,
-                    btnOkTxt: '',
-                    btnCancelTxt: '确定'
+                rightBottomPop.alert({
+                    content: str
                 });
             }
         });
@@ -1021,7 +923,7 @@ var Order = {
             contentType: "application/json",
             dataType: 'json',
             data: JSON.stringify({
-                machineno: "96121CBC21EF02256E9C5F2E602C5441",
+                machineno: utils.storage.getter('ipaddress'),
                 userid: utils.storage.getter('aUserid'),
                 orderid: '0',
                 typeid: id
@@ -1708,14 +1610,16 @@ var Order = {
                     ),
                     success: function (res) {
                         if(res.result === '0') {
-                            utils.openCash();
+                            utils.openCash(1);
                             //结账单
                             that.printPay(2);
-                            if(utils.getUrl.get('referer') === '1') {
-                                window.history.back(-1);
-                            } else {
-                                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
-                            }
+                            setTimeout(function(){
+                                if(utils.getUrl.get('referer') === '1') {
+                                    //window.history.back(-1);
+                                } else {
+                                    //window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                                }
+                            },1000)
                         } else {
                             utils.loading.remove();
                             widget.modal.alert({
