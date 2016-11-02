@@ -60,6 +60,19 @@ var AddDish = {
 		this.renderDishType();
 		this.bindEvent();
 		SetBotoomIfon.init();
+
+		/*菜品数量格式现在*/
+		$('.dish-amount').on('input propertychange focus', function() {
+			var _thisVal=$.trim($(this).val()),pattern = /^\+?[1-9][0-9]*$/;//只能输入非0开始的数字
+			if(_thisVal!=''){
+				if(pattern.test(_thisVal)===false){
+					utils.printError.alert('菜品数量，只能输入非0开始的数字');
+					$(this).val(_thisVal.substring(0,_thisVal.length-1));
+					return false
+				}
+			}
+
+		});
 	},
 
 	bindEvent: function () {
@@ -749,7 +762,6 @@ var AddDish = {
 
 		var dish_avoids = dish.dish_avoids;
 		var taste = dish.taste;
-
 		var showname = dishname;
 		if(taste != null && taste != ""){
 			showname = showname+"("+taste+")";
@@ -1027,14 +1039,14 @@ var AddDish = {
 		var n2 = "";
 		var dish_avoids = [];
 		var $orderNote= $("#order-note");
-		$("#note-dialog .avoid.active").each(function(){
-			var avoid = $(this).text();
-			dish_avoids.push(avoid);
-			n1 += avoid+";";
-			n2 += avoid+"|";
-		});
+			$("#note-dialog .avoid.active").each(function(){
+				var avoid = $(this).text();
+				dish_avoids.push(avoid);
+				n1 += avoid+";";
+				n2 += avoid+"|";
+			});
 		var note1 = n1+note;
-		note1 = note1.substring(0, note1.length-1);
+		//note1 = note1.substring(0, note1.length-1);
 		var type = dom.noteDialog.attr('notetype');
 		var dishtype = dom.noteDialog.attr('dishtype');
 		if(type == 1){
@@ -1066,6 +1078,7 @@ var AddDish = {
 				$("#sel-dish-table tbody tr.selected").attr('note',note1);
 				dish.dishnote = note;
 				dish.dish_avoids = dish_avoids;
+				dish.sperequire=note1;//添加忌口
 				dishCartMap.put(cid, dish);
 
 			}
@@ -1162,7 +1175,6 @@ var AddDish = {
 				"freeauthorize": freeauthorize, //赠菜授权人工号
 				"freereason": freereason, //赠菜原因
 			};
-
 			//如果是鱼锅
 			if(dish.dishtype === 1) {
 				row = $.extend(row,{

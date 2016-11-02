@@ -1079,7 +1079,7 @@ utils.loading ={
 utils.printError={//打印失败
     alert:function (msg) {
         widget.modal.alert({
-            cls: 'fade in',
+            cls: 'fade in printError',
             content:'<strong>'+msg+'</strong>',
             width:500,
             height:500,
