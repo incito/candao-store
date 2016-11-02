@@ -86,10 +86,6 @@ public class MsgProcessServiceImpl implements MsgProcessService, MsgHandler {
         return communicationService.queryTerminals(msg);
     }
 
-    @Override
-    public Response queryTerminalsByIp(String ip) {
-        return communicationService.queryTerminalsByIp(ip);
-    }
 
     public void setMsgHandlerMap(Map msgHandlerMap) {
         this.msgHandlerMap = msgHandlerMap;
