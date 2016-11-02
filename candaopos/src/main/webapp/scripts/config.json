@@ -10,7 +10,7 @@ BackDishReasons  退菜原因，多个原因通过英文分号分割。
 "CloudServer":"10.66.21.6:8080",
 "MemberSystem":"0",
 "AutoFillCashAmount":"1",
-"OpenCashIp":"127.0.0.1",
+"OpenCashIp":"10.66.18.2",
 "OpenCashPWD":"123456",
 "ResettlementReason":"结错帐;用错优惠;用错会员;客人投诉",
 "DishGiftReasons":"大客户;长得帅;明星人物",

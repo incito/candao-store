@@ -34,10 +34,11 @@ html{
   	line-height: 2;
   	color: #F9EFE1;
   	cursor: pointer;
+	overflow: hidden;
 }
 .menu-tab ul li{
   	display: inline-block;
-  	width: 50%;
+  	width: 49%;
 }
 .menu-tab ul li.active{
 	background: #FFFFFF;
@@ -333,6 +334,7 @@ footer .info{
 	color: #FFFFFF;
 	text-align: center;
 	padding-top: 10px;
+	line-height: 100%;
 }
 .open-dialog .btn-operate .in-btn135{
 	width: 285px;

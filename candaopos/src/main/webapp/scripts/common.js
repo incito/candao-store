@@ -1212,7 +1212,7 @@ utils.chooseMember={
 utils.openCash = function (type) {
 	var _openCash = function(){
 		$.ajax({
-			url: _config.interfaceUrl.OpenCash + '/' +JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/',
+			url: _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/',
 			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',

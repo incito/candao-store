@@ -24,10 +24,8 @@
     <script src="../lib/md5.js"></script>
 
     <script type="text/javascript">
-        var nowPage = 0;
-        var g_isopened = false;
 
-        var g_eatType = "EAT-IN";//堂食
+
 
         $(document).ready(function () {
 //		var dom =$("#nav-room-types")[0];
@@ -85,59 +83,59 @@
 
         });
         //外带
-        function takeOut() {
-            g_isopened = true;
-            g_eatType = "TAKE-OUT";
-            $("#order-dialog").load("../views/order.jsp");
-            $("#order-dialog").modal("show");
-            $("#adddish-dialog").load("../views/orderdish.jsp");
-            $("#adddish-dialog").modal("show");
-        }
-        function doPage(currPage) {
-            var o = $(".menu-tab ul li.active").attr("loaddiv") + " li";
-            var options = {
-                obj: o,
-                listNum: 40,
-                currPage: currPage,
-                totleNums: $(o).length,
-                curPageObj: "#curr-page",
-                pagesLenObj: "#pages-len",
-                prevBtnObj: ".page .prev-btn",
-                nextBtnObj: ".page .next-btn"
-            };
-            nowPage = page(options);
-        }
-        function addEvent(event) {
-            event.preventDefault();
-            event = event || window.event;
-
-            var type = event.type;
-            if (type == 'DOMMouseScroll' || type == 'mousewheel' || type == 'touchmove') {
-                event.delta = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
-            }
-            var count = $("#nav-room-types").children("li").length;
-            if (event.delta > 0) {
-                if (count - roomtype_prev > 10) {
-                    $("#nav-room-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
-                    $(".rooms-type .nav-types").find("li").eq(roomtype_prev + 1).click();
-                    roomtype_prev++;
-                }
-
-            } else {
-                if (roomtype_prev >= 1) {
-                    $("#nav-room-types").find("li").eq(roomtype_prev - 1).css("margin-left", "0");
-                    $(".rooms-type .nav-types").find("li").eq(roomtype_prev - 1).click();
-                    roomtype_prev--;
-                }
-            }
-
-            if (document.all) {
-                event.cancelBubble = false;
-                return false;
-            } else {
-                event.preventDefault();
-            }
-        }
+//        function takeOut() {
+//            g_isopened = true;
+//            g_eatType = "TAKE-OUT";
+//            $("#order-dialog").load("../views/order.jsp");
+//            $("#order-dialog").modal("show");
+//            $("#adddish-dialog").load("../views/orderdish.jsp");
+//            $("#adddish-dialog").modal("show");
+//        }
+//        function doPage(currPage) {
+//            var o = $(".menu-tab ul li.active").attr("loaddiv") + " li";
+//            var options = {
+//                obj: o,
+//                listNum: 40,
+//                currPage: currPage,
+//                totleNums: $(o).length,
+//                curPageObj: "#curr-page",
+//                pagesLenObj: "#pages-len",
+//                prevBtnObj: ".page .prev-btn",
+//                nextBtnObj: ".page .next-btn"
+//            };
+//            nowPage = page(options);
+//        }
+//        function addEvent(event) {
+//            event.preventDefault();
+//            event = event || window.event;
+//
+//            var type = event.type;
+//            if (type == 'DOMMouseScroll' || type == 'mousewheel' || type == 'touchmove') {
+//                event.delta = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
+//            }
+//            var count = $("#nav-room-types").children("li").length;
+//            if (event.delta > 0) {
+//                if (count - roomtype_prev > 10) {
+//                    $("#nav-room-types").find("li").eq(roomtype_prev).css("margin-left", "-10%");
+//                    $(".rooms-type .nav-types").find("li").eq(roomtype_prev + 1).click();
+//                    roomtype_prev++;
+//                }
+//
+//            } else {
+//                if (roomtype_prev >= 1) {
+//                    $("#nav-room-types").find("li").eq(roomtype_prev - 1).css("margin-left", "0");
+//                    $(".rooms-type .nav-types").find("li").eq(roomtype_prev - 1).click();
+//                    roomtype_prev--;
+//                }
+//            }
+//
+//            if (document.all) {
+//                event.cancelBubble = false;
+//                return false;
+//            } else {
+//                event.preventDefault();
+//            }
+//        }
     </script>
 </head>
 <body>
@@ -155,9 +153,6 @@
     <div class="exit-sys">退出系统</div>
 </header>
 <article>
-    <!--div class="tab-div">
-        <ul><li class="active" loaddiv="#standard-tables">标准台</li><li loaddiv="#coffee-tables">咖啡台</li></ul>
-    </div-->
     <div class="rooms-type">
         <div class="nav-type-btn nav-type-prev">
             <span class="glyphicon glyphicon-chevron-left"></span>
@@ -170,38 +165,6 @@
     </div>
     <div class="content">
         <ul id="standard-tables" class="standard tables">
-            <%--<li class="opened">110--%>
-            <%--<div class="tb-info tb-status">￥246</div>--%>
-            <%--<div class="tb-info meal-time">12:00</div>--%>
-            <%--<div class="tb-info tb-person">2/2</div>--%>
-            <%--</li>--%>
-            <%--<!--li class="reserved">111<div class="tb-info tb-status">预</div><div class="tb-info tb-person">2人桌</div></li-->--%>
-            <%--<li>外卖台<div class="tb-info tb-person">2人桌</div></li>--%>
-            <%--<li class="opened">贵宾台--%>
-            <%--<div class="tb-info tb-status">￥246</div>--%>
-            <%--<div class="tb-info meal-time">16:00</div>--%>
-            <%--<div class="tb-info tb-person">2/2</div>--%>
-            <%--</li>--%>
-            <%--<li>112<div class="tb-info tb-person">2人桌</div></li><li>113<div class="tb-info tb-person">2人桌</div></li>--%>
-            <%--<li>114<div class="tb-info tb-person">4人桌</div></li><li>115<div class="tb-info tb-person">2人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">4人桌</div></li><li>116<div class="tb-info tb-person">4人桌</div></li>--%>
-            <%--<li>116<div class="tb-info tb-person">5人桌</div></li><li>116<div class="tb-info tb-person">6人桌</div></li>--%>
-            <%----%>
         </ul>
         <ul id="coffee-tables" class="hide coffee tables">
             <li>1台
@@ -253,6 +216,7 @@
             class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span
             class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 </footer>
+
 
 <div class="modal fade in main-dialog" data-backdrop="static" id="order-dialog" style="overflow: auto;">
 
