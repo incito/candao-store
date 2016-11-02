@@ -205,7 +205,10 @@ _config.preferential = {
 /************
  * 组件类
  ************/
+function goBack() {
+	window.location=document.referrer
 
+}
 var widget = widget || {};
 
 /*
@@ -1093,7 +1096,7 @@ utils.printAbnormal={
 	get:function () {//获取打印机列表
 		var that = this,timedata='';
 		$.ajax({
-			url:'/newspicyway/pos/printerlist.json',
+			url:_config.interfaceUrl.GetPrinterList,
 			type: "get",
 			dataType: "json",
 			async:false,
@@ -1101,7 +1104,7 @@ utils.printAbnormal={
 			success: function (data) {
 				var arry=[];
 				for( var i=0;i<data.data.length;i++) {
-					if(data.data[i].status!='1'){
+					if(data.data[i].status=='5'){
 						arry.push(data.data[i])
 					}
 				};
@@ -1128,12 +1131,12 @@ utils.printAbnormal={
 						});
 					}
 					$('.printAbnormal .modal-header span').hide();
-					utils.storage.setter('printAbnormal',true)
-					$('.main-J-btn-sys').css({'background': '#FF5803','color': '#fff'})
+					utils.storage.setter('printAbnormal',true);
+					$('.J-btn-sys').css({'background': '#FF5803','color': '#fff'})//系统设置高亮
 				}
 				else {
 					utils.storage.remove('printAbnormal')
-					$('.main-J-btn-sys').css({'background': '#fff','color': '#000'})
+					$('.J-btn-sys').css({'background': '#fff','color': '#000'})
 				}
 
 			},

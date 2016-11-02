@@ -35,10 +35,10 @@
 				</header>
 				<article style="height: 540px;">
 					<div class="content">
-						<div class="g-l J-g-menu">
+						<div class="g-l J-g-menu print_list">
 							<ul>
 								<%--<li >启动打印复写卡</li>--%>
-								<li class="active">打印机列表<i>i</i></li>
+								<li class="active">打印机列表<i style="display: none">i</i></li>
 								<li>钱箱密码验证</li>
 							</ul>
 						</div>
@@ -152,7 +152,7 @@
 		getPrintDetail: function () {//获取打印机列表
 			var that = this;
 			$.ajax({
-				url:'/newspicyway/pos/printerlist.json',
+				url:_config.interfaceUrl.GetPrinterList,
 				type: "get",
 				dataType: "json",
 				global: false,
@@ -167,16 +167,23 @@
 						str+='<tr>';
 						str+='   <td width="200">'+num+'</td>';
 						str+='   <td width="276">'+data.data[i].ip+'</td>';
-						str+='   <td width="200">'+data.data[i].name+'</td>';
+						if(data.data[i].name){
+							str+='   <td width="200">'+data.data[i].name+'</td>';
+						}
+						else {
+							str+='   <td width="200"> </td>';
+						}
 						str+='   <td width="200">'+data.data[i].statusTitle+'</td>';
 						str+='</tr>';
 					};
 					$("#printList tbody").html(str);
 					if(arr.length>0){
-						$('.main-J-btn-sys').addClass('main-J-btn-sys-highlight')
+						$('.J-btn-sys').css({'background': '#FF5803','color': '#fff'});//系统设置高亮
+						$('.print_list li').eq(0).find('i').show()
 					}
 					else {
-						$('.main-J-btn-sys').removeClass('main-J-btn-sys-highlight')
+						$('.J-btn-sys').css({'background': '#fff','color': '#000'});
+						$('.print_list li').eq(0).find('i').hide()
 					}
 				},
 			});
