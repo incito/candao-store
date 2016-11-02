@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -1113,6 +1114,22 @@ public class PadInterfaceController {
             logger.error("根据类型查询桌台异常！", e);
         }
         return jsonString;
+    }
+
+    @RequestMapping("/getTableAndType")
+    @ResponseBody
+    public String getTableAndType() {
+        ModelAndView mav = new ModelAndView();
+        List<Map<String, Object>> listTableArea = tableAreaService.getTableAreaTag();
+        Map<String, Object> mapAreaid = new HashMap<String, Object>();
+        for (Map<String, Object> map : listTableArea) {
+            mapAreaid.put("areaid", map.get("areaid"));
+            mapAreaid.put("defaultsort", 1);
+            List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
+            if (!CollectionUtils.isEmpty(tablelist))
+                map.put("tables", tablelist);
+        }
+        return JSON.toJSONString(listTableArea);
     }
 
     /**
@@ -3449,5 +3466,8 @@ public class PadInterfaceController {
     private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
+
+    @Autowired
+    private TableAreaService tableAreaService;
 
 }
