@@ -183,81 +183,130 @@ var Order = {
         });
 
         //添加优惠
-        dom.order.delegate(".preferential-info", 'click', function () {
+        var _time = null;
+        //设置优惠
+        dom.order.delegate(".preferential-info", 'dblclick', function (){
+            clearTimeout(_time);
             var me = $(this);
-            var name = me.attr('name');
-            var type = me.attr('type');
-            var sub_type = me.attr('sub_type');
-            var discount = me.attr('discount');
-            var free_reason = me.attr('free_reason')
-            var $coupnumDialog = $('#coupnum-dialog');
-            var $givedishDialog = $('#givedish-dialog');
-
-            that.manageUsePref.set({
-                "preferentialid": me.attr('preferential'),
-                "disrate": discount === '' ? '0.0' : discount,//折扣
-                "type": type,//类型
-                "sub_type": sub_type === '' ? null : sub_type,//子类型  优惠券信息
-
-                //"preferentialAmt": "0.00",//总优惠
-                //"toalFreeAmount": "0.00",//优免
-                //"toalDebitAmount": "0.00",//挂账
-                //"toalDebitAmountMany": "0.00",//挂账多收
-                //"adjAmout": "0.00",//优免调整
-
-                "preferentialNum": "1",//优惠卷张数 “xx,xx,xx”,
-                "preferentialAmout": "0",//手动输入优惠金额
-                "isCustom": "0",//是否是用户自己输入
-
-                "dishid": "",//赠菜卷“xx,xx,xx”,
-                "unit": "" //“xx,xx,xx”,
-            });
-
-            $coupnumDialog.find('.coupname').text('');
-            $coupnumDialog.find('.J-pref-ipt').val('');
-            //根据不同优惠券,弹出不同modal
-            if (type === '05' || type === '03') {
-                //团购 || 代金券, 输入数量
-                $coupnumDialog.addClass('coupnum-num');
-                $coupnumDialog.find('.coupname').text(name);
-                $coupnumDialog.find('.inpt-span').text('使用数量');
-                $coupnumDialog.modal('show');
-
-            } else if (type === '07' && free_reason === '1') {
-                //手工 输入折扣率
-                $coupnumDialog.addClass('coupnum-cus-discount');
-                $coupnumDialog.find('.inpt-span').text('折扣率');
-                $coupnumDialog.modal('show');
-            } else if (type === '07' && free_reason === '2') {
-                //手工 输入金额(优免)
-                $coupnumDialog.addClass('coupnum-cus-free');
-                $coupnumDialog.find('.inpt-span').text('优免');
-                $coupnumDialog.modal('show');
-            } else if (type === '07' && free_reason === '0') {
-                //手工 选择赠菜
-                $givedishDialog.addClass('coupum-cus-give');
-
-                //更新可选赠菜信息
-                that.updateGiveDishInfo(function () {
-                    $givedishDialog.modal('show');
-                });
+            var tips = '';
+            var name = me.find('.dish-name').text();
+            var type = $('.nav-pref-type.active').attr('preid') !== '-1'; // true:设置  false:恢复
+            if(type) {
+                tips = '设置[' + name + ']为不常用优惠(设置后可在对应分类查看,使用)'
             } else {
-                //确认框
-                var alert = widget.modal.alert({
-                    cls: 'fade in',
-                    content: '<strong>确定使用' + name + '?</strong>',
-                    width: 500,
-                    height: 500,
-                    btnOkCb: function () {
-                        alert.close();
-                        that.addPref(this);
-                    }
-                });
+                tips = '恢复[' + name + ']为常用优惠(恢复后可在对应分类查看,使用)'
             }
 
-            return false;
+            var alertModal = widget.modal.alert({
+                content: '<strong>' + tips + '</strong>',
+                btnOkCb: function () {
+                    $.ajax({
+                        url: _config.interfaceUrl.SetCouponFavor,
+                        method: 'post',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify({
+                            "preferential": me.attr('preferential'),
+                            "operationtype": type ? '1' : '0'
+                        })
+                    }).then(function(res){
+                        if(res.result === '0') {
+                           me.remove();
+                            rightBottomPop.alert({
+                                content: '分类调整成功'
+                            })
+                        } else {
+                            rightBottomPop.alert({
+                                content: '分类调整失败'
+                            })
+                        }
+                        alertModal.close();
+                    })
+                }
+            })
+        });
+        dom.order.delegate(".preferential-info", 'click', function () {
+            clearTimeout(_time);
+            _time = setTimeout(function(){
+                //单击事件在这里
+                var me = $(this);
+                var name = me.attr('name');
+                var type = me.attr('type');
+                var sub_type = me.attr('sub_type');
+                var discount = me.attr('discount');
+                var free_reason = me.attr('free_reason')
+                var $coupnumDialog = $('#coupnum-dialog');
+                var $givedishDialog = $('#givedish-dialog');
+
+                that.manageUsePref.set({
+                    "preferentialid": me.attr('preferential'),
+                    "disrate": discount === '' ? '0.0' : discount,//折扣
+                    "type": type,//类型
+                    "sub_type": sub_type === '' ? null : sub_type,//子类型  优惠券信息
+
+                    //"preferentialAmt": "0.00",//总优惠
+                    //"toalFreeAmount": "0.00",//优免
+                    //"toalDebitAmount": "0.00",//挂账
+                    //"toalDebitAmountMany": "0.00",//挂账多收
+                    //"adjAmout": "0.00",//优免调整
+
+                    "preferentialNum": "1",//优惠卷张数 “xx,xx,xx”,
+                    "preferentialAmout": "0",//手动输入优惠金额
+                    "isCustom": "0",//是否是用户自己输入
+
+                    "dishid": "",//赠菜卷“xx,xx,xx”,
+                    "unit": "" //“xx,xx,xx”,
+                });
+
+                $coupnumDialog.find('.coupname').text('');
+                $coupnumDialog.find('.J-pref-ipt').val('');
+                //根据不同优惠券,弹出不同modal
+                if (type === '05' || type === '03') {
+                    //团购 || 代金券, 输入数量
+                    $coupnumDialog.addClass('coupnum-num');
+                    $coupnumDialog.find('.coupname').text(name);
+                    $coupnumDialog.find('.inpt-span').text('使用数量');
+                    $coupnumDialog.modal('show');
+
+                } else if (type === '07' && free_reason === '1') {
+                    //手工 输入折扣率
+                    $coupnumDialog.addClass('coupnum-cus-discount');
+                    $coupnumDialog.find('.inpt-span').text('折扣率');
+                    $coupnumDialog.modal('show');
+                } else if (type === '07' && free_reason === '2') {
+                    //手工 输入金额(优免)
+                    $coupnumDialog.addClass('coupnum-cus-free');
+                    $coupnumDialog.find('.inpt-span').text('优免');
+                    $coupnumDialog.modal('show');
+                } else if (type === '07' && free_reason === '0') {
+                    //手工 选择赠菜
+                    $givedishDialog.addClass('coupum-cus-give');
+
+                    //更新可选赠菜信息
+                    that.updateGiveDishInfo(function () {
+                        $givedishDialog.modal('show');
+                    });
+                } else {
+                    //确认框
+                    var alert = widget.modal.alert({
+                        cls: 'fade in',
+                        content: '<strong>确定使用' + name + '?</strong>',
+                        width: 500,
+                        height: 500,
+                        btnOkCb: function () {
+                            alert.close();
+                            that.addPref(this);
+                        }
+                    });
+                }
+
+                return false;
+            }, 300);
+
 
         });
+
+
 
         //删除或清空优惠
         $('#del-pref,#clear-pref').click(function () {
@@ -689,13 +738,14 @@ var Order = {
         }
     },
 
-    //type:1 预结单, 3:客用单
+    //type:1 预结单 2: 结账单 3:客用单
     printPay: function (type) {
         $.ajax({
             url: _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/' + utils.storage.getter('posid'),
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
+            async: false,
             success: function (res) {
                 var str = (function(){
                     var ret = ''
@@ -894,11 +944,11 @@ var Order = {
     /**
      * 优惠
      */
-
     //加载优惠分类
     initPreferentialType: function () {
         var ret = [];
         var that = this;
+        pref_prev = 0;
         $.each(_config.preferential, function (k, v) {
             var cla = "";
             if (k === '05') {
@@ -1375,7 +1425,6 @@ var Order = {
 
     /**
      * 结账
-     * @param type 0:普通结算 1:外卖结算
      * @returns {boolean}
      */
     doSettlement: function() {
@@ -1384,6 +1433,7 @@ var Order = {
         var memberTips = '';
         var isMemberLogin = dom.membershipCard.attr('isLogin') === 'true';
         var url = '';
+
         if(g_eatType === 'in') {
             url = _config.interfaceUrl.PayTheBill;
         } else {
@@ -1607,8 +1657,128 @@ var Order = {
                 doSettlementModal.close();
 
                 //结算
-                utils.loading.open('正在加载…')
+                utils.loading.open('正在结算…');
+
                 $.ajax({
+                    url: url,
+                    method: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    global: false,
+                    data: JSON.stringify({
+                            "payDetail": rows, "userName": utils.storage.getter('aUserid'), "orderNo": consts.orderid
+                        }
+                    )
+                })
+                .then(function(res) {
+                    if(res.result === '0') {
+                        if(isMemberLogin) {
+                            //餐道会员会员消费
+                            $.ajax({
+                                url: _config.interfaceUrl.SaleCanDao,
+                                method: 'post',
+                                contentType: "application/json",
+                                dataType: 'json',
+                                data: JSON.stringify({
+                                    "Serial": consts.orderid,
+                                    "FCash": 3.00,
+                                    "FWeChat": 0.0,
+                                    "FIntegral": 0.0,
+                                    "FStore": 0.0,
+                                    "FTicketList": null,
+                                    "cardno": "00000000000000000000CD00440088",
+                                    "password": null,
+                                    "branch_id": "23231",
+                                    "securityCode": ""
+                                }),
+                                async: false,
+                                success: function(res){
+                                    console.log('餐道会员会员消费');
+                                    console.log(res);
+                                }
+                            });
+                            //保存会员消费
+                            $.ajax({
+                                url: _config.interfaceUrl.AddMemberSaleInfo,
+                                method: 'post',
+                                contentType: "application/json",
+                                dataType: 'json',
+                                data: JSON.stringify({
+                                    "orderid": "H20161103023231006851",
+                                    "cardno": "00000000000000000000CD00440088",
+                                    "userid": "100",
+                                    "business": "23231",
+                                    "terminal": "002",
+                                    "serial": "201611031413531807",
+                                    "businessname": "辣江南生态火锅",
+                                    "score": 3.0,
+                                    "coupons": 0.0,
+                                    "stored": 0.0,
+                                    "scorebalance": 236.15000000000000568434188608,
+                                    "couponsbalance": "0",
+                                    "storedbalance": 996.9700000000000272848410532,
+                                    "psexpansivity": 0.0,
+                                    "netvalue": 0.0,
+                                    "inflated": 0.0
+                                }),
+                                async: false,
+                                success: function (res) {
+                                    console.log('餐道会员会员消费');
+                                    console.log(res);
+                                }
+                            });
+                            //打印会员消费
+                            $.ajax({
+                                url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
+                                method: 'get',
+                                contentType: "application/json",
+                                dataType: 'json',
+                                async: false,
+                                success: function(res3){
+                                    console.log('打印会员消费');
+                                    console.log(res3);
+                                }
+                            });
+                        }
+
+                        //弹钱箱
+                        utils.openCash(1);
+                        //结账单
+                        that.printPay(2);
+
+                        //给pad发送清台消息
+                        $.ajax({
+                            url: _config.interfaceUrl.SendMsgAsyn,
+                            method: 'post',
+                            contentType: "application/json",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                orderId: consts.orderid,
+                                type:'1'
+                            }),
+                            async: false,
+                            success: function(res2){
+                                console.log('SendMsgAsyn');
+                                console.log(res2);
+                            }
+                        });
+
+                        if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                            goBack()
+                        } else {
+                            window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                        }
+                    } else {
+                        utils.loading.remove();
+                        widget.modal.alert({
+                            content:'<strong>结账失败,请稍后重试</strong>',
+                            btnOkTxt: '确定',
+                            btnCancelTxt: ''
+                        });
+                    }
+                })
+
+                false && $.ajax({
                     url: url,
                     method: 'POST',
                     contentType: "application/json",
@@ -1620,16 +1790,107 @@ var Order = {
                     ),
                     success: function (res) {
                         if(res.result === '0') {
+
+                            if(isMemberLogin) {
+                                //餐道会员会员消费
+                                $.ajax({
+                                    url: _config.interfaceUrl.SaleCanDao,
+                                    method: 'post',
+                                    contentType: "application/json",
+                                    dataType: 'json',
+                                    data: JSON.stringify({
+                                        "Serial": consts.orderid,
+                                        "FCash": 3.00,
+                                        "FWeChat": 0.0,
+                                        "FIntegral": 0.0,
+                                        "FStore": 0.0,
+                                        "FTicketList": null,
+                                        "cardno": "00000000000000000000CD00440088",
+                                        "password": null,
+                                        "branch_id": "23231",
+                                        "securityCode": ""
+                                    }),
+                                    async: false,
+                                    success: function(res){
+                                        console.log('餐道会员会员消费');
+                                        console.log(res);
+                                    }
+                                });
+                                //保存会员消费
+                                $.ajax({
+                                    url: _config.interfaceUrl.AddMemberSaleInfo,
+                                    method: 'post',
+                                    contentType: "application/json",
+                                    dataType: 'json',
+                                    data: JSON.stringify({
+                                        "orderid": "H20161103023231006851",
+                                        "cardno": "00000000000000000000CD00440088",
+                                        "userid": "100",
+                                        "business": "23231",
+                                        "terminal": "002",
+                                        "serial": "201611031413531807",
+                                        "businessname": "辣江南生态火锅",
+                                        "score": 3.0,
+                                        "coupons": 0.0,
+                                        "stored": 0.0,
+                                        "scorebalance": 236.15000000000000568434188608,
+                                        "couponsbalance": "0",
+                                        "storedbalance": 996.9700000000000272848410532,
+                                        "psexpansivity": 0.0,
+                                        "netvalue": 0.0,
+                                        "inflated": 0.0
+                                    }),
+                                    async: false,
+                                    success: function (res) {
+                                        console.log('餐道会员会员消费');
+                                        console.log(res);
+                                    }
+                                });
+                            }
+
+                            //弹钱箱
                             utils.openCash(1);
                             //结账单
                             that.printPay(2);
-                            setTimeout(function(){
-                                if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                                    goBack()
-                                } else {
-                                    window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+
+                            $.ajax({
+                                url: _config.interfaceUrl.SendMsgAsyn,
+                                method: 'post',
+                                contentType: "application/json",
+                                dataType: 'json',
+                                data: JSON.stringify({
+                                    orderId: consts.orderid,
+                                    type:'1'
+                                }),
+                                async: false,
+                                success: function(res2){
+                                    console.log('SendMsgAsyn');
+                                    console.log(res2);
                                 }
-                            },2000)
+                            });
+
+                            if(isMemberLogin) {
+                                //打印会员消费
+                                $.ajax({
+                                    url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
+                                    method: 'get',
+                                    contentType: "application/json",
+                                    dataType: 'json',
+                                    async: false,
+                                    success: function(res3){
+                                        console.log('打印会员消费');
+                                        console.log(res3);
+                                    }
+                                });
+                            }
+
+
+
+                            if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                                goBack()
+                            } else {
+                                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                            }
                         } else {
                             utils.loading.remove();
                             widget.modal.alert({

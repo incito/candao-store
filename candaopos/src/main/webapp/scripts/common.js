@@ -105,7 +105,7 @@ _config.interfaceUrl = {
 	GetBranchInfo: "/newspicyway/padinterface/getbranchinfo.json", <!--获取分店店铺信息-->
 	MemberLogin: "/newspicyway/member/MemberLogin.json", <!--餐道会员登入-->
 	MemberLogout: "/newspicyway/member/MemberLogout.json", <!--餐道会员登出-->
-	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--添加会员消op费信息-->
+	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--保存会员消费-->
 	ClearTable: "/newspicyway/padinterface/cleantable.json", <!--清台-->
 	ClearTableCf: "/newspicyway/padinterface/cleanTableSimply.json", <!--咖啡模式的清台-->
 	AntiSettlementOrder: "/newspicyway/padinterface/rebacksettleorder.json", <!--反结算账单-->
@@ -167,6 +167,7 @@ _config.interfaceUrl = {
 	CancelCanDao: "/newspicyway/memberManager/delete.json", <!--餐道会员会员注销-->
 	SaleCanDao: "/newspicyway/deal/MemberSale.json", <!--餐道会员会员消费-->
 	VoidSaleCanDao: "/newspicyway/deal/VoidSale.json", <!--餐道会员取消消费-->
+	SendMsgAsyn: "/newspicyway/datasnap/rest/TServerMethods1/sendMsgAsyn/", <!--给pad发送清台消息-->
 
 	CancelLossCanDao: "/newspicyway/member/deal/UnCardLose", <!--餐道会员会员挂失-->
 	VipChangeCardNum: "/newspicyway/memberCardService/cardNoByModify.json", <!--修改会员卡号-->
@@ -1070,6 +1071,8 @@ utils.loading ={
 			'</div>';
 		if($('.spinner').length<1){
 			$('body').append(str);
+		} else {
+			$('.spinner p').html(msg);
 		}
 	},
 	remove:function () {
@@ -1219,6 +1222,7 @@ utils.openCash = function (type) {
 			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',
+			async: false,
 			success: function (res) {
 				if (res.result[0] === '1') {//成功
 					rightBottomPop.alert({content: '打开钱箱成功!'})
