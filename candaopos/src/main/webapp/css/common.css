@@ -730,3 +730,8 @@ footer{
 .textareaModal .modal-body {
 	padding:20px;
 }
+/*打印错误提示框*/
+.printError .modal-body {
+	padding: 20px 20px;
+	text-align: center;
+}

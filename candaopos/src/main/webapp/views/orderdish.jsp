@@ -182,7 +182,7 @@
 	                    <div class="form-group dishname">菜品名称：<span class="dish-name"></span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">菜品数量:</span>
-	                    	<input type="text" class="form-control padding-left J-num">
+	                    	<input type="text" class="form-control padding-left J-num dish-amount">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
