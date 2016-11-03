@@ -93,6 +93,16 @@ public class PrintObj implements Serializable,Cloneable {
 
 	private String custnum;
 
+	private String rePeatID;
+
+	public String getRePeatID() {
+		return rePeatID;
+	}
+
+	public void setRePeatID(String rePeatID) {
+		this.rePeatID = rePeatID;
+	}
+
 	public String getTargetCustNum() {
 		return targetCustNum;
 	}

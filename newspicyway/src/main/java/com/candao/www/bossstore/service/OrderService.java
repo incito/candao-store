@@ -125,6 +125,7 @@ public class OrderService {
             object.put("itemShouldAmount", 0);//品项top1数量
         }
         //优惠
+        params.put("xslx", -1);
         List<Map<String, Object>> dayyhData = tOrderDao.getyhBusinessData(params);
         if(dayyhData!=null&&dayyhData.size()>0){
         	float shouldamount = 0.0f;
@@ -160,11 +161,14 @@ public class OrderService {
         params.put("xslx", -1);
         List<Map<String, Object>> tcData = tOrderDao.gettcBusinessData(params);
         if(tcData!=null&&tcData.size()>0){
-        	Integer sum = 0;
+        	float sum = 0;
         	for(Map<String, Object> map : tcData){
+        		float temp = map.containsKey("num")?partFlaot(map.get("num").toString()):0.0f;
+        		sum += temp;
+        		/*System.out.println(map.get("num").toString());
         		String num = map.containsKey("num")?map.get("num").toString():null;
         		Integer temp = num!=null?Integer.valueOf(num.substring(0,num.indexOf("."))):0;
-        		sum += temp;
+        		sum += temp;*/
         	}
         	object.put("returnDishAmount", sum);//营业数据统计(退菜数）
         }
@@ -178,7 +182,6 @@ public class OrderService {
      */
         
         public JSONArray getBusinessDataByMon() {
-        	System.out.println("获取月：");
         
         JSONArray orders = new JSONArray();
         	
