@@ -157,25 +157,25 @@ _config.interfaceUrl = {
 	PrintBusinessDetail: "/newspicyway/print4POS/printBusinessDetail.json", <!--打印营业报表明细-->
 	PrintInvoice: "/newspicyway/print4POS/printInvoice.json", <!--打印发票单-->
 	<!--云接口-->
-	QueryCanDao: "/member/memberManager/findByParams.json", <!--餐道会员查询-->
-	StorageCanDao: "/member/deal/StoreCardToNewPos.json", <!--餐道会员储值-->
-	ModifyPwdCanDao: "/member/memberManager/MemberEdit.json", <!--修改密码-->
-	SendVerifyCode: "/member/memberManager/sendAccountByMobile", <!--发送验证码-->
-	MobileRepeatCheck: "/member/memberManager/validateTbMemberManager", <!--验证手机号是否重复-->
-	RegistCanDao: "/member/memberManager/save.json", <!--餐道会员会员注册-->
-	ReportLossCanDao: "/member/deal/CardLose.json", <!--餐道会员会员挂失-->
-	CancelCanDao: "/member/memberManager/delete.json", <!--餐道会员会员注销-->
-	SaleCanDao: "/member/deal/MemberSale.json", <!--餐道会员会员消费-->
-	VoidSaleCanDao: "/member/deal/VoidSale.json", <!--餐道会员取消消费-->
+	QueryCanDao: "/newspicyway/memberManager/findByParams.json", <!--餐道会员查询-->
+	StorageCanDao: "/newspicyway/deal/StoreCardToNewPos.json", <!--餐道会员储值-->
+	ModifyPwdCanDao: "/newspicyway/memberManager/MemberEdit.json", <!--修改密码-->
+	SendVerifyCode: "/newspicyway/memberManager/sendAccountByMobile.json", <!--发送验证码-->
+	MobileRepeatCheck: "/newspicyway/memberManager/validateTbMemberManager.json", <!--验证手机号是否重复-->
+	RegistCanDao: "/newspicyway/memberManager/save.json", <!--餐道会员会员注册-->
+	ReportLossCanDao: "/newspicyway/deal/CardLose.json", <!--餐道会员会员挂失-->
+	CancelCanDao: "/newspicyway/memberManager/delete.json", <!--餐道会员会员注销-->
+	SaleCanDao: "/newspicyway/deal/MemberSale.json", <!--餐道会员会员消费-->
+	VoidSaleCanDao: "/newspicyway/deal/VoidSale.json", <!--餐道会员取消消费-->
 
-	CancelLossCanDao: "/member/deal/UnCardLose", <!--餐道会员会员挂失-->
-	VipChangeCardNum: "/member/rest/memberCardService/cardNoByModify", <!--修改会员卡号-->
-	VipChangeInfo: "/member/rest/memberService/memberEditService", <!--修改会员基本信息-->
-	VipQuery: "/member/rest/memberCardService/getCardNoByMobile", <!--会员查询(一户多卡)-->
-	VipInsertCard: "/member/rest/memberCardService/bindingCardService", <!--新增会员实体卡号-->
-	VipCheckCard: "/member/memberManager/byUserTouse.json", <!--判断会员实体卡-->
-	VipChangePsw: "/member/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
-	GetCouponList: "/member/preferential/posPreferentialList", <!--获取优惠列表-->
+	CancelLossCanDao: "/newspicyway/member/deal/UnCardLose", <!--餐道会员会员挂失-->
+	VipChangeCardNum: "/newspicyway/memberCardService/cardNoByModify.json", <!--修改会员卡号-->
+	VipChangeInfo: "/newspicyway/memberService/unCardLoseService.json", <!--修改会员基本信息-->
+	VipQuery: "/newspicyway/memberCardService/getCardNoByMobile.json", <!--会员查询(一户多卡)-->
+	VipInsertCard: "/newspicyway/memberCardService/bindingCardService.json", <!--新增会员实体卡号-->
+	VipCheckCard: "/newspicyway/memberManager/byUserTouse.json", <!--判断会员实体卡-->
+	VipChangePsw: "/newspicyway/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
+	GetCouponList: "/newspicyway/memberpreferential/posPreferentialList.json", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
 
 

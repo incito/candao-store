@@ -197,10 +197,10 @@ var member = {
                     $('.member_level_name').text(res.result[0].level_name)//会员卡等级名称
                     $('.member_birthday').text((res.birthday).substring(0, res.birthday.length - 8))//生日
                     switch (res.gender) {
-                        case 0 :
+                        case '0' :
                             gender = '男';
                             break;
-                        case 1 :
+                        case '1' :
                             gender = '女';
                             break;
                         default :
@@ -211,13 +211,13 @@ var member = {
                     $('.member_StoreCardBalance').text(res.result[0].StoreCardBalance)//余额
                     $('.member_IntegralOverall').text(res.result[0].IntegralOverall)//会员积分
                     switch (res.result[0].status) {
-                        case 0 :
+                        case '0' :
                             status = '注销';
                             break;
-                        case 1 :
+                        case '1' :
                             status = '正常';
                             break;
-                        case 2 :
+                        case '2' :
                             status = '挂失';
                             break;
                         default :
@@ -244,7 +244,7 @@ var member = {
     /*充值优惠列表*/
     getCouponList: function () {
         $.ajax({
-            url: memberAddress.vipcandaourl + _config.interfaceUrl.GetCouponList + '.json',
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.GetCouponList,
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
