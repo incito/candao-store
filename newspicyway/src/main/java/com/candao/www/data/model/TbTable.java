@@ -30,6 +30,16 @@ public class TbTable {
 	private String orderid;
 	private java.lang.String custPrinter;
 
+	private String modifytime;
+
+	public String getModifytime() {
+		return modifytime;
+	}
+
+	public void setModifytime(String modifytime) {
+		this.modifytime = modifytime;
+	}
+
 	private String areaSort;
 
 	public String getAreaSort() {
