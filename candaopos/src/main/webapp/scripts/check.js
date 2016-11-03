@@ -98,13 +98,23 @@ var checkOrder={
                 //console.log(data)
                 var str="";
                 for( var i=0;i<data.length;i++) {
-
-                    if(data[i].memberno){//判断是否是会员登录
-                        str+='<tr orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' memberno='+data[i].memberno+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
+                    if(data[i].tabletype=='2'||data[i].tabletype=='3'){
+                        if(data[i].memberno){//判断是否是会员登录
+                            str+='<tr type="out" orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' memberno='+data[i].memberno+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
+                        }
+                        else {
+                            str+='<tr type="out" orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
+                        }
                     }
                     else {
-                        str+='<tr orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
+                        if(data[i].memberno){//判断是否是会员登录
+                            str+='<tr type="in" orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' memberno='+data[i].memberno+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
+                        }
+                        else {
+                            str+='<tr type="in" orderid='+data[i].orderid+' orderstatus='+data[i].orderstatus+' personnum='+data[i].custnum+' tableno='+data[i].tableName+'>';
+                        }
                     }
+
                     str+='   <td>'+data[i].orderid+'</td>'
                     var  ordertype='';
                     switch (data[i].orderstatus){
@@ -216,7 +226,7 @@ var checkOrder={
                     //console.log(data)
                     if(data.result==='0'){
                         $('#c-mod-fjs').modal("hide");
-                        var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1'
+                        var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
                         window.location.href=encodeURI(encodeURI(_url));
 
                         //$("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
@@ -369,7 +379,7 @@ var checkOrder={
         function _clearingOk() {
             var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
             if(userRight){
-                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1'
+                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
                 window.location.href=encodeURI(encodeURI(_url));
             }
             else {
@@ -388,7 +398,8 @@ var checkOrder={
             cheackorderParameter={
                 'orderId':orderId,
                 'personnum':$.trim($(this).attr("personnum")),
-                'tableno':$.trim($(this).attr("tableno"))
+                'tableno':$.trim($(this).attr("tableno")),
+                'type':$.trim($(this).attr("type"))
             }
            // console.log(memberno+","+orderId+","+orderstatus)
             if(orderstatus=="0"){
