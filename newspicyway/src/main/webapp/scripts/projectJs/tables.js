@@ -967,6 +967,10 @@ function check_area(){
 	return flag;
 } 
 function delAreaAndTables(){
+	if($('.counter-detail-box').length<1){
+		delArea();
+		return false
+	}
 	$.ajax({
 		type:"post",
 		async:false,
@@ -974,7 +978,7 @@ function delAreaAndTables(){
 		dataType : "json",
 		success : function(result) {
 			if(result=='删除成功'){
-				delArea();
+					delArea()
 			}
 			else {
 				widget.modal.alert({
@@ -1002,7 +1006,6 @@ function delArea(){
 		url : global_Path+"/tableArea/delete/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
-			debugger
 			if(result=='删除成功'){
 				updateAreaOrder();
 				window.location.reload();
