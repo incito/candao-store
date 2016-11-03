@@ -2543,8 +2543,22 @@ public class OrderDetailServiceImpl implements OrderDetailService {
      * 获取品项销售明细
      */
     @Override
-    public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) throws Exception {
-        return torderDetailMapper.getItemSellDetail(timeMap);
+    public List<Map<String, Object>> itemSellDetail(Map<String, Object> timeMap) throws Exception {
+        timeMap.put("branchId",Constant.BRANCH.BRANCH_ID);
+        List<Map<String, Object>> itemSellDetail = torderDetailMapper.getItemSellDetail(timeMap);
+        //数据适配
+        if(null==itemSellDetail){
+            return itemSellDetail;
+        }
+        List<Map<String, Object>> result=new ArrayList<>();
+        for(Map<String,Object> detail:itemSellDetail){
+            Map<String,Object> map=new HashMap<>();
+            map.put("dishName",detail.get("title"));
+            map.put("dishCount",detail.get("number"));
+            map.put("totlePrice",detail.get("orignalprice"));
+            result.add(map);
+        }
+        return result;
     }
 
     /**

@@ -54,7 +54,7 @@ public interface OrderDetailService {
 	 * @param timeMap
 	 * @return
 	 */
-	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) throws Exception;
+	public List<Map<String, Object>> itemSellDetail(Map<String, Object> timeMap) throws Exception;
 
 	public Map<String, Object> placeOrder(Order order);
 

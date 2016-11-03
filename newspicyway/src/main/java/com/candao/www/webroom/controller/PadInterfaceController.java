@@ -51,9 +51,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -2754,7 +2751,7 @@ public class PadInterfaceController {
         Map<String, Object> timeMap = getTime(flag);
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
+            List<Map<String, Object>> result = orderDetailService.itemSellDetail(timeMap);
             resultMap.put("result", 0);
             resultMap.put("mag", "");
             resultMap.put("data", result);
