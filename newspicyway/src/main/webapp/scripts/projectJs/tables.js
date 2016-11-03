@@ -6,12 +6,21 @@ var flag_prev =0;
  ************/
 var utils = utils || {};
 $(document).ready(function(){
-	/*$(document).bind("ajaxSend", function () {
-		utils.loading.open('正在加载…')
-
-	}).bind("ajaxComplete", function () {
-		utils.loading.remove();
-	})*/
+	$(document).bind('ajaxError',function () {
+		if($('.errorAlert').length<1){
+			widget.modal.alert({
+				cls: 'fade in errorAlert',
+				content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">后台服务错误，请稍后重试</div>',
+				width:360,
+				height:500,
+				btnOkTxt: '确定 ',
+				btnCancelTxt: '',
+				btnOkCb:function () {
+					$('.modal-alert:last,.fade:last').remove()
+				}
+			});
+		}
+	});
 	/*餐台分类鼠标滚动*/	
 	var dom =$("#nav-tables")[0];
     var user_agent = navigator.userAgent;
@@ -1485,6 +1494,7 @@ var customTable={
 		$( ".nav-counter" ).sortable({
 			cursor: "move",
 			items :"li",                        //只是li可以拖动
+			//axis:'x',                           //横向拖动
 			opacity: 1,                       //拖动时，透明度为0.6
 			revert: true,                       //释放时，增加动画
 			start: function(event, ui) {
@@ -1517,6 +1527,7 @@ var customTable={
 		$( ".nav-counter-tab" ).sortable({
 			cursor: "move",
 			items :"div",                        //只是div可以拖动
+			//axis:'x',                           //横向拖动
 			opacity: 1,                       //拖动时，透明度为0.6
 			revert: true,                       //释放时，增加动画
 			start: function(event, ui) {
