@@ -37,7 +37,7 @@
 		data-backdrop="static" >
 		<header>
 			<div class="fl">餐道</div>
-			<div class="fr close-win" onclick="window.location.href = './main.jsp'">关闭</div>
+			<div class="fr close-win" onclick="Order.closeOrder()">关闭</div>
 		</header>
 		<div class="content">
 			<input type="hidden" id="isopened" value="">
@@ -175,7 +175,7 @@
 				</div>
 				<hr style="border: 1px solid #D3D3D3;">
 				<div class="tab-payment">
-					<ul><li class="active" target="#cash">现金支付</li><li target="#bank-card">银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">挂账支付</li><li target="#pay-treasure">支付宝</li><li target="#wechat-pay">微信支付</li></ul>
+					<ul><li class="active" target="#cash">现金支付</li><li target="#bank-card">银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">da支付</li><li target="#pay-treasure">支付宝</li><li target="#wechat-pay">微信支付</li></ul>
 				</div>
 				<div class="pay-div">
 					<!-- 现金支付 -->

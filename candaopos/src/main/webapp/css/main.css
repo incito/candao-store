@@ -45,9 +45,9 @@ html{
 	color: #FF5803;
 }
 .rooms-type{
-	height: 60px;
+	height: 45px;
   	background: #FFFFFF;
-  	padding: 10px 5px;
+  	padding: 5px 5px;
 }
 .rooms-type .nav-type-btn{
 	float: left;
@@ -100,7 +100,7 @@ html{
 	float: left;
 	margin: 2px;
 	width: 12%;
-	height: 75px;
+	height: 65px;
 	text-align: center;
   	font-size: 24px;
   	font-weight: bold;
@@ -302,7 +302,7 @@ footer .info{
   	background: #FFFFFF;
   	border-radius: 4px;
 	margin-right:5px;
-	cursor: pointer;
+	cursor: p;
 }
 .J-takeout-dialog .take-out-list li.active{
 	background: #FF5803;

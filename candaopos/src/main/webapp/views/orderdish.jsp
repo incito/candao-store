@@ -155,7 +155,7 @@
 					</div>
 				</div>
 				<div class="main-oper-btns">
-					<button class="btn disabled gua-dan hide" onclick="guadan()">挂单</button>
+					<button class="btn disabled gua-dan hide" onclick="AddDish.guadan()">挂单</button>
 					<button class="btn disabled give-dish" onclick="AddDish.giveFood()">赠菜</button>
 					<button class="btn disabled" onclick="AddDish.initNoteDialog(1)">全单备注</button>
 					<button class="btn disabled" onclick="AddDish.clearSelected()">清空</button>
@@ -245,21 +245,21 @@
 		            	<div class="col-xs-6" style="padding: 0;">
 		            		<div class="form-group" style="display: inline-block;">
 		            			<span class="inpt-span">订餐单位:</span>
-		            			<input type="text" class="form-control" style="width: 80%; display: inline-block;">
-		            			<button class="btn sel-btn" onclick="selPayCompany()">选择</button>
+		            			<input type="text" class="form-control payment-unit"  disabled style="width: 80%; display: inline-block;">
+		            			<button class="btn sel-btn J-selCompany">选择</button>
 		            		</div>
 		            		<div class="form-group">
-		            			<span class="inpt-span">联系人:</span>
-		            			<input type="text" class="form-control">
+		            			<span class="inpt-span ">联系人:</span>
+		            			<input type="text" class="form-control contact">
 		            		</div>
 		            		<div class="form-group">
-		            			<span class="inpt-span">联系电话:</span>
-		            			<input type="text" class="form-control">
+		            			<span class="inpt-span ">联系电话:</span>
+		            			<input type="text" class="form-control tel">
 		            		</div>
 		            		<div class="btn-operate ">
 			                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('guadan-dialog')" >取消
 			                    </button>
-			                    <button class="btn btn-save in-btn135"  type="button" onclick="">确认挂单
+			                    <button class="btn btn-save in-btn135" disabled  type="button" onclick="AddDish.doOrder(2)">确认挂单
 			                    </button>
 	                		</div>
 		            	</div>
@@ -284,7 +284,62 @@
 	        </div>
 	    </div>
 	</div>
-	 <!-- 赠菜 -->
+	<!-- 挂账单位 -->
+	<div class="modal fade in default-dialog" id="selCompany-dialog"
+		 data-backdrop="static">
+		<div class="modal-dialog" style="width: 800px;">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">挂账单位</div>
+					<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<div class="form-group search-btns ">
+						<div class="search-btn">A</div>
+						<div class="search-btn">B</div>
+						<div class="search-btn">C</div>
+						<div class="search-btn">D</div>
+						<div class="search-btn">E</div>
+						<div class="search-btn">F</div>
+						<div class="search-btn">G</div>
+						<div class="search-btn">H</div>
+						<div class="search-btn">I</div>
+						<div class="search-btn">J</div>
+						<div class="search-btn">K</div>
+						<div class="search-btn">L</div>
+						<div class="search-btn">M</div>
+						<div class="search-btn">N</div>
+						<div class="search-btn">O</div>
+						<div class="search-btn">P</div>
+						<div class="search-btn">Q</div>
+						<div class="search-btn">R</div>
+						<div class="search-btn">S</div>
+						<div class="search-btn">T</div>
+						<div class="search-btn">U</div>
+						<div class="search-btn">V</div>
+						<div class="search-btn">W</div>
+						<div class="search-btn">X</div>
+						<div class="search-btn">Y</div>
+						<div class="search-btn">Z</div>
+					</div>
+					<div class="form-group search J-search">
+						<span class="glyphicon glyphicon-search"></span> <input type="search" class="form-control" placeholder="输入首字母">
+						<div class="btn-clear">C</div>
+					</div>
+					<ul class="campany-icon clearfix">
+					</ul>
+					<div class="page" id="J-company-pager"></div>
+					<div class="btn-operate  ">
+						<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+						</button>
+						<button class="btn btn-save in-btn135"  type="button">确认
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 赠菜 -->
 	 <div class="modal fade default-dialog in " id="givefood-dialog"
 	     data-backdrop="static">
 	    <div class="modal-dialog">

@@ -12,7 +12,9 @@ var dom = {
 	selDishable : $("#sel-dish-table"),
 	numDialog: $("#updatenum-dialog"),//菜品数量对话框
 	noteDialog: $('#note-dialog'),//备注对话框
-	combodishialog: $('#combodish-dialog')//套餐
+	combodishialog: $('#combodish-dialog'),//套餐,
+	selCompanyDialog: $('#selCompany-dialog'),
+	guadanDialog: $("#guadan-dialog")
 };
 
 var consts = {
@@ -33,6 +35,8 @@ var AddDish = {
 			//外卖
 			$(".give-dish").addClass("hide");
 			$(".gua-dan").removeClass("hide");
+
+			this.renderPayCompany();
 		} else {
 			//堂食
 			$(".gua-dan").addClass("hide");
@@ -264,6 +268,55 @@ var AddDish = {
 		dom.addDishModal.delegate("#sel-dish-table tbody tr",'click', function() {
 			$(this).siblings().removeClass("selected").end().addClass("selected");
 			that.controlBtns();
+		});
+
+		/**
+		 * 合作单位 挂单
+		 */
+
+		dom.guadanDialog.find('.payment-unit').bind('input propertychange focus', function () {
+
+		});
+
+		dom.selCompanyDialog.find('[type=search]').bind('input propertychange focus', function () {
+			that.renderPayCompany($.trim($(this).val()));
+		});
+
+		dom.selCompanyDialog.find('.btn-clear').click(function () {
+			dom.selCompanyDialog.find('[type=search]').val('');
+			that.renderPayCompany();
+
+		});
+
+		$('.J-selCompany').click(function () {
+			dom.selCompanyDialog.modal('show');
+		});
+
+		dom.selCompanyDialog.delegate('li', 'click', function () {
+			var me = $(this);
+			me.addClass('selected').siblings().removeClass('selected');
+		});
+
+		dom.selCompanyDialog.find('.btn-save').click(function () {
+			var $target = dom.selCompanyDialog.find('li.selected');
+
+			if ($target.length === 0) {
+				widget.modal.alert({
+					content: '<strong>请选择挂账单位</strong>',
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+				return;
+			}
+			$('.payment-unit').val($target.text());
+			$('.payment-unit').attr('preferential',$target.attr('preferential'));
+
+			if($target.text().length > 0) {
+				dom.guadanDialog.find('.btn-save').removeAttr('disabled');
+			} else {
+				dom.guadanDialog.find('.btn-save').attr('disabled','disabled');
+			}
+			dom.selCompanyDialog.modal('hide');
 		});
 	},
 
@@ -1108,16 +1161,16 @@ var AddDish = {
 
 	/**
 	 * 下单
-	 * @param type 0:普通下单, 1:赠菜下单
+	 * @param type 0:普通下单, 1:赠菜下单 2:挂单(挂账下单)
 	 */
 	doOrder: function(type,cb){
-		var $dishes = $('#sel-dish-table tbody tr');
 		var rows = [];
 		var user = utils.storage.getter('aUserid');
 		var freeuser = null;
 		var freeauthorize = null;
 		var freereason = null;
 		var pricetype = '0'  //0：普通 1：赠菜;
+		var url = _config.interfaceUrl.OrderDish;
 
 		//如果是赠菜
 		if(type === 1){
@@ -1135,6 +1188,10 @@ var AddDish = {
 				return reason.join(';')
 			})();
 			pricetype = '1';
+		}
+
+		if(type === 2) {
+			url = _config.interfaceUrl.OrderDishCf;
 		}
 
 
@@ -1238,8 +1295,6 @@ var AddDish = {
 			rows.push(row);
 		});
 
-
-
 		$.ajax({
 			url: _config.interfaceUrl.GetOrderInfo,
 			method: 'POST',
@@ -1251,7 +1306,7 @@ var AddDish = {
 		}).then(function(res){
 			if (res.code === '0') {
 				//首次点菜 && 餐具设置收费 && 堂食
-				if(res.data.rows.length === 0 && consts.DISHES.status === '1'  && g_eatType === 'out') {
+				if(res.data.rows.length === 0 && consts.DISHES.status === '1'  && g_eatType === 'in') {
 					rows.push({
 						"printtype": "0",
 						"pricetype": pricetype,//0：普通 1：赠菜
@@ -1276,7 +1331,7 @@ var AddDish = {
 					});
 				}
 				$.ajax({
-					url: _config.interfaceUrl.OrderDish,
+					url: url,
 					method: 'POST',
 					contentType: "application/json",
 					dataType:'json',
@@ -1287,12 +1342,40 @@ var AddDish = {
 						"operationType": 1,
 						"sequence": 1,
 						"rows": rows
-					}),
-					success: function(res){
-						if(res.code === '0') {
-							cb && cb();
-							goToOrder();
+					})
+				}).then(function(res){
+					if(res.code === '0') {
+						cb && cb();
+
+						if(type === 2) {
+							var putOrderUrl = _config.interfaceUrl.SetTakeoutOrderOnAccount + consts.tableno + '/' + consts.orderid + '/' + dom.guadanDialog.find('.payment-unit').attr('preferential') + '/' + dom.guadanDialog.find('.payment-unit').val() + '/' + dom.guadanDialog.find('.contact').val() + '/' + dom.guadanDialog.find('.tel').val() + '/';
+							$.ajax({
+								url: putOrderUrl,
+								method: 'get',
+								dataType:'text',
+							}).then(function(data){
+								dom.guadanDialog.modal('hide');
+								var  data=JSON.parse(data.substring(12, data.length - 3));
+								if(data.Data === '1'){
+									widget.modal.alert({
+										content:'<strong>设置外卖挂单成功,挂单单号:[' + consts.orderid  + ']</strong>',
+										btnOkCb: function(){
+											window.location.href = "../views/main.jsp"
+										}
+									});
+								} else {
+									widget.modal.alert({
+										content:'<strong>设置外卖挂单失败,挂单单号:[' + consts.orderid  + ']</strong>',
+										btnOkTxt: '',
+										btnCancelTxt: '确定'
+									});
+								}
+							})
+						} else {
+							goToOrder('下单成功');
 						}
+
+					} else {
 						widget.modal.alert({
 							cls: 'fade in',
 							content:'<strong>' + res.msg + '</strong>',
@@ -1302,6 +1385,7 @@ var AddDish = {
 							btnCancelTxt: '确定'
 						});
 					}
+
 				});
 			} else {
 				widget.modal.alert({
@@ -1313,9 +1397,7 @@ var AddDish = {
 					btnCancelTxt: '确定'
 				});
 			}
-
 		})
-
 	},
 
 	/**
@@ -1532,7 +1614,43 @@ var AddDish = {
 		}
 
 		return f;
-	}
+	},
+
+	/**
+	 * 挂单
+	 */
+	guadan: function(){
+		$("#guadan-dialog").modal("show");
+	},
+
+	//挂账单位
+	renderPayCompany: function (key) {
+		var payCompany = utils.storage.getter('payCompany');
+		var ret = [];
+		var searchKey = !key ? $.trim(dom.selCompanyDialog.find('[type=search]').val()) : key;
+		if (payCompany !== null) {
+			$.each(JSON.parse(payCompany), function (k, v) {
+				if (v.name_first_letter.indexOf(searchKey.toUpperCase()) !== -1) {
+					ret.push('<li py="' + v.name_first_letter + '" preferential="' + v.preferential + '">' + v.name + '</li>');
+				}
+			});
+
+			if (ret.length < 11) {
+				$('#J-company-pager').html('');
+				$('.campany-icon').html(ret.join(''));
+			} else {
+				$('#J-company-pager').pagination({
+					dataSource: ret,
+					pageSize: 10,
+					showPageNumbers: false,
+					showNavigator: true,
+					callback: function (data) {
+						$('.campany-icon').html(data.join(''));
+					}
+				});
+			}
+		}
+	},
 };
 
 //
@@ -1557,12 +1675,6 @@ var AddDish = {
 //	}
 //}
 
-/**
- * 挂单
- */
-function guadan(){
-	$("#guadan-dialog").modal("show");
-}
 
 //关闭dialog
 function closeConfirm(dialogId) {
@@ -1576,8 +1688,11 @@ function getUuid(){
 	return uuid.join('');
 }
 
-function goToOrder(){
+function goToOrder(tips){
 	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno  + '&type=' + g_eatType;
+	if(tips.length > 0) {
+		url += '&tips=' + tips;
+	}
 	window.location.href = encodeURI(encodeURI(url));
 }
 

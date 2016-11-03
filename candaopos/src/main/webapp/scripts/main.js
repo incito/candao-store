@@ -570,7 +570,7 @@ var MainPage = {
 						}
 
 						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.custnum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
-							'<div class="tb-info tb-status">￥' + (val.amount === '' ? '0' : val.amount) + '</div>' +
+							'<div class="tb-info tb-status">￥' + (val.amount === '' ? '0' : parseFloat(val.amount).toFixed(2)) + '</div>' +
 							'<div class="tb-info meal-time">' + time + '</div> ' +
 							'<div class="tb-info tb-person">' + val.custnum + '/' + val.personNum + '</div>' +
 							' </li>';

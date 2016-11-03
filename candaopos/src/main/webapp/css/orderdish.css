@@ -239,7 +239,7 @@ input[type=search] {
 	float: left;
 }
 .main-div .dishes .dish-info{
-	width: 132px;
+	width: 130px;
 	height: 70px;
 	background: #FFFFFF;
 	box-shadow: 0px 1px 0px 0px #B1B1B1;
@@ -533,8 +533,9 @@ input[type=search] {
 
 .guadan-dialog .inpt-span{
 	position: absolute;
-	padding: 12px 6px;
+	padding:2px;
 	color: #A6A6A6;
+
 }
 .guadan-dialog input{
 	padding-left: 72px;
@@ -553,4 +554,33 @@ input[type=search] {
 .guadan-dialog .virtual-keyboard ul li{
 	margin-bottom: 10px;
 	width: 82px;
+}
+
+.campany-icon {
+	min-height: 150px;
+	padding:0;
+}
+.campany-icon li {
+	list-style: none;
+	display: inline-block;
+	margin:0;
+	padding:0px 10px;
+	background: #FFFFFF;
+	border-radius: 2px;
+	cursor: pointer;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	width: 120px;
+	overflow: hidden;
+	height: 30px;
+	line-height: 30px;
+	text-overflow:ellipsis;white-space:nowrap;overflow:hidden;
+	text-align: center;
+	margin-right:5px;
+}
+
+.campany-icon li.selected {
+	background: #FF5803;
+	box-shadow: 0px 1px 0px 0px #C64300;
+	border-radius: 3px;
+	color: #FFFFFF;
 }
