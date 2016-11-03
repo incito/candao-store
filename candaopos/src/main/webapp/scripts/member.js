@@ -284,7 +284,7 @@ var member = {
                     valicode = res.valicode
                 }
                 else {
-                    that.errorAlert(res.RetInfo)
+                    that.errorAlert('发送验证码'+res.RetInfo+'，请稍后重试！')
                 }
             }
         })
@@ -662,9 +662,9 @@ var member = {
                 success: function (res) {
                     //console.log(res)
                     if(res.Retcode=='0'){
-                        utils.openCash();//弹钱箱
+                        utils.openCash(0);//弹钱箱
                         that.succeedAlert({'info':'会员充值成功,<br>交易流水号:'+res.TraceCode+'',
-                            'callBack':'if(utils.getUrl.get("cardMember")){window.location.href="../member/view.jsp?cardMember='+utils.getUrl.get("cardMember")+'"}'
+                            'callBack':'if(utils.getUrl.get("cardMember")){window.location.href="../member/view.jsp?cardMember='+utils.getUrl.get("cardMember")+'"}else{$("#rechargeMoblie,#rechargeMoney").val("");$(".giveMoney").text("");$(".coupon-List .coupon-item").removeClass("active")}'
                         });
                         /*rightBottomPop.alert({
                             content:'会员充值成功,<br>交易流水号:'+res.TraceCode+'',

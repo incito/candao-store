@@ -169,7 +169,7 @@ _config.interfaceUrl = {
 	VoidSaleCanDao: "/newspicyway/deal/VoidSale.json", <!--餐道会员取消消费-->
 	SendMsgAsyn: "/newspicyway/datasnap/rest/TServerMethods1/sendMsgAsyn/", <!--给pad发送清台消息-->
 
-	CancelLossCanDao: "/newspicyway/member/deal/UnCardLose", <!--餐道会员会员挂失-->
+	CancelLossCanDao: "/newspicyway/deal/UnCardLose", <!--餐道会员会员解除挂失-->
 	VipChangeCardNum: "/newspicyway/memberCardService/cardNoByModify.json", <!--修改会员卡号-->
 	VipChangeInfo: "/newspicyway/memberService/unCardLoseService.json", <!--修改会员基本信息-->
 	VipQuery: "/newspicyway/memberCardService/getCardNoByMobile.json", <!--会员查询(一户多卡)-->
