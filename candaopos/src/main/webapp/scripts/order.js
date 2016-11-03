@@ -1375,12 +1375,20 @@ var Order = {
 
     /**
      * 结账
+     * @param type 0:普通结算 1:外卖结算
+     * @returns {boolean}
      */
-    doSettlement: function () {
+    doSettlement: function() {
         var that = this;
         //会员卡支付方式检查
         var memberTips = '';
         var isMemberLogin = dom.membershipCard.attr('isLogin') === 'true';
+        var url = '';
+        if(g_eatType === 'in') {
+            url = _config.interfaceUrl.PayTheBill;
+        } else {
+            url = _config.interfaceUrl.PayTheBillCf;
+        }
 
         if($('#order-dish-table tbody tr').length === 0){
             widget.modal.alert({
@@ -1388,7 +1396,7 @@ var Order = {
                 btnOkTxt: '确定',
                 btnCancelTxt: ''
             });
-            return ;
+            return  false;
         }
         if(isMemberLogin) {
             if($('#memberCash').val().length > 0 && parseFloat($('#memberCash').val()) > parseFloat($("#StoreCardBalance b").text())) {
@@ -1601,7 +1609,7 @@ var Order = {
                 //结算
                 utils.loading.open('正在加载…')
                 $.ajax({
-                    url: _config.interfaceUrl.PayTheBill,
+                    url: url,
                     method: 'POST',
                     contentType: "application/json",
                     dataType: 'json',
@@ -1634,6 +1642,32 @@ var Order = {
                 });
             }
         })
+    },
+
+    /**
+     * 关闭结算
+     */
+    closeOrder: function(){
+        if(g_eatType === 'in') {
+            window.location.href = './main.jsp'
+        } else {
+            $.ajax({
+                url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
+                method: 'get'
+            }).then(function(data){
+                var  data = JSON.parse(data.result[0]);
+                if(data.Data === '1') {
+                    window.location.href = './main.jsp'
+                } else {
+                    widget.modal.alert({
+                        content:'<strong>取消外卖账单接口错误</strong>',
+                        btnOkTxt: '',
+                        btnCancelTxt: '确定'
+                    });
+                }
+            })
+        }
+
     }
 };
 
