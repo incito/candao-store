@@ -211,7 +211,7 @@
 	     <where>
 	  	 and status = 1
 	  	 </where>
-	  	 order by IFNULL(areaSort,9999) ASC ,modifytime ASC
+	  	 order by IFNULL(areaSort,0) ASC ,modifytime ASC,areaname ASC
 	</select>
 	<select id="getTableTag2"  resultMap="findResultMap">
 	   select distinct areaNo from t_tablearea 
@@ -234,6 +234,6 @@
 	<select id="findTableCountAndAreaname"  resultMap="findResultMap">
 		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' ,tt.areaSort FROM  t_tablearea tt LEFT JOIN
 		`t_table` t on t.areaid=tt.areaid where  tt.status =1 and (t.`status` is null or t.`status`!=5)
-		GROUP BY tt.areaid order by tt.areaSort asc
+		GROUP BY tt.areaid order by IFNULL(tt.areaSort,0) ASC ,tt.modifytime ASC,tt.areaname ASC
  	</select>
 </mapper> 
