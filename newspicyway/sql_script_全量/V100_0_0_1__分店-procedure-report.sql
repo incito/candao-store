@@ -3515,7 +3515,7 @@ BEGIN
   (
     orderid VARCHAR(50),
     dishid VARCHAR(50),
-    dishunit VARCHAR(10),
+    dishunit VARCHAR(100),
     dishnum DOUBLE(13, 2),
     orignalprice DOUBLE(13, 2),
     begintime DATETIME,
@@ -3567,7 +3567,7 @@ BEGIN
   (
     statistictime VARCHAR(20),
     dishid VARCHAR(50),
-    dishunit VARCHAR(10),
+    dishunit VARCHAR(100),
     dishnum INT,
     dishprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
@@ -3622,7 +3622,7 @@ BEGIN
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     showtype TINYINT,
     dishid VARCHAR(50),
-    dishunit VARCHAR(50),
+    dishunit VARCHAR(100),
     total_num INT,
     detail_num VARCHAR(1000),
     PRIMARY KEY (id)
@@ -3843,7 +3843,7 @@ BEGIN
   (
     orderid VARCHAR(50),
     dishid VARCHAR(50),
-    dishunit VARCHAR(10),
+    dishunit VARCHAR(100),
     dishnum DOUBLE(13, 2),
     orignalprice DOUBLE(13, 2),
     begintime DATETIME,
@@ -3894,7 +3894,7 @@ BEGIN
   (
     statistictime VARCHAR(20),
     dishid VARCHAR(50),
-    dishunit VARCHAR(10),
+    dishunit VARCHAR(100),
     dishnum INT,
     dishprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
@@ -3949,7 +3949,7 @@ BEGIN
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     showtype TINYINT,
     dishid VARCHAR(50),
-    dishunit VARCHAR(50),
+    dishunit VARCHAR(100),
     total_num INT,
     detail_num VARCHAR(1000),
     PRIMARY KEY (id)
@@ -5815,7 +5815,7 @@ BEGIN
     dishnum DOUBLE(13, 2),
     dishid VARCHAR(40),
     dishtype INT,
-    dishunit VARCHAR(10),
+    dishunit VARCHAR(100),
     orignalprice DOUBLE(13, 2),
     ispot TINYINT,
     parentkey VARCHAR(40),
