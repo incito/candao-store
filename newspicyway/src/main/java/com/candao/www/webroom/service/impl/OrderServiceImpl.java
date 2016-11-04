@@ -387,6 +387,12 @@ public class OrderServiceImpl implements OrderService {
         userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
 
         int result = torderMapper.update(order);
+
+        Map<String,Object> param = new HashMap<>();
+        param.put("targetOrderid",order.getOrderid());
+        param.put("custnum",order.getCustnum());
+        tbPrintObjDao.updateByOrderno(param);
+
         if (result > 0) {
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap());
         }
@@ -1289,7 +1295,12 @@ public class OrderServiceImpl implements OrderService {
             setMap.put("resultAmount", "0");
             if (branchDataSyn.getIsCustom() == 1) {
                 setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
-            } else {
+            } else if(branchDataSyn.getIsCustom()==5){
+            	//雅座
+            	setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
+            	setMap.put("type", branchDataSyn.getPreType());
+            	setMap.put("preferentialName", branchDataSyn.getPreName());
+            }else {
                 setMap.put("preferentialAmout", "0");
             }
             calALLAmout(setMap, operPreferentialResult);

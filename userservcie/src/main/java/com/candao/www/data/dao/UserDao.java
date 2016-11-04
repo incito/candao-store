@@ -61,7 +61,7 @@ public interface UserDao {
 	 * @param password
 	 * @return
 	 */
-	public User getUser(String loginName, String password);
+	public List<User> getUser(String loginName, String password);
 	
 	/**
 	 * 根据用户ID，更新用户最后登录时间

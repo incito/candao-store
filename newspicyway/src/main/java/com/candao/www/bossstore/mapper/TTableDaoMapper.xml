@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.bossstore.dao.TTableDao">
+	 <!-- 查询所有的用户信息-->
+	<select id="queryTablesStatus"  resultType="java.util.Map">
+	    select t.personNum as personNum,
+	   	 	sum(case when t.STATUS = 1 then 1 else 0 end) as inUse ,
+	    	sum(1) as total,
+	    	t.tabletype as tableType
+	    from t_table t
+	    where t.status != 5 and t.tabletype not in(2,3)
+	    group by t.tabletype
+	</select>
+	<select id="queryService" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT m.userid as userId,
+				us.name as name,
+				t.complaint_type_id as typeId,
+				m.call_start_time as startTime,
+				m.call_over_date as endTime,
+				m.timeout_start_time as outTime,
+				response_nums  as response 
+				FROM t_message m 
+				LEFT JOIN t_user_complaint u 
+					ON m.id = u.message_id 
+				LEFT JOIN t_complaint_type t 
+					on t.complaint_id = u.id 
+				left join t_b_employee e 
+					on e.job_number = m.userid 
+				left join t_b_user us 
+					on e.user_id = us.id  
+				where m.msg_type = 1
+				and m.call_start_time >= #{beginTime}
+				and m.call_start_time &lt;= #{endTime}
+				and e.branch_id = #{branchId}
+				order by startTime
+	</select>
+	<select id="queryTableInfoByTableId" resultType="java.util.Map" parameterType="java.util.Map">
+		select t.personNum as personNum,
+	 		   t.tableName as tableName
+	 	from t_table t
+	 	where t.status != 5 
+	 	and t.tabletype not in(2,3)
+	 	and t.tableid = #{tableId}
+	</select>
+</mapper>

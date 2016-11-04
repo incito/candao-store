@@ -1,5 +1,8 @@
 alter table `t_printobj` ADD `custnum` varchar(50)  DEFAULT NULL COMMENT '用餐人数';
 alter table `t_order_detail_preferential` ADD `unit` VARCHAR(50) DEFAULT NULL COMMENT '菜品单位'; 
+alter table `t_order_detail_preferential` ADD `pretype` VARCHAR(10) DEFAULT NULL COMMENT '优惠类型';
+alter table `t_order_detail_preferential` ADD `preName` VARCHAR(50) DEFAULT NULL COMMENT '优惠名称'; 
+ALTER TABLE t_dish_dishtype ADD UNIQUE `unique` (`columnid`, `dishid`) USING BTREE;
 
 -- ----------------------------
 -- Table structure for `t_printer_device`

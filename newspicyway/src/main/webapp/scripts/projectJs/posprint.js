@@ -47,9 +47,10 @@ $(document).ready(function(){
 	$("#printer-add").click(function(){
 		$("#printer-add-dialog").modal("show");
 		$("printer-add-dialog #accordion").html("数据正在加载中......");
-		
+
 		//解析获取到的打印机数据
-		$.getJSON(global_Path+"/printerManager/find.json", function(result){
+		var obj = {'printertype':10};
+		$.post(global_Path+"/printerManager/find.json",obj,function(result) {
 			console.log(result);
 			var html="";
 			$.each(result, function(i, printer){
@@ -60,8 +61,8 @@ $(document).ready(function(){
 			});
 			$("#printer-add-dialog #accordion .panel-body").html(html);
 			$("#printer-add-dialog #accordion").children(":first").find(".panel-collapse").addClass("in");
-			
-			
+
+
 			$("#printer-add-dialog input[type='checkbox']").click(function(){
 				var selected = parseInt($("#printer-add-dialog #table-count").text());
 				if($(this).prop("checked")){
@@ -73,12 +74,12 @@ $(document).ready(function(){
 				}
 				if(selected==0){
 					$("#printer-add-dialog #table-count").parent().css("display","none");
-					
+
 				}else{
 					$("#printer-add-dialog #table-count").parent().css("display","inline");
 				}
 				$("#printer-add-dialog #table-count").text(selected);
-				
+
 				if($("#printer-add-dialog #accordion").find("input[type=checkbox]:checked").length==0){
 					$("#printer-add-dialog #table-radio-uncheck").click();
 					$("#printer-add-dialog #table-radio-check").attr("checked",false);
@@ -105,6 +106,64 @@ $(document).ready(function(){
 			});
 			checkedBoxLength("#printer-add-dialog #table-count");
 		});
+
+		/*//解析获取到的打印机数据
+		$.getJSON(global_Path+"/printerManager/find.json", function(result){
+			console.log(result);
+			var html="";
+			$.each(result, function(i, printer){
+				html +=" <label class='checkbox-inline col-xs-3'><input type='checkbox' id='table_"
+					+ printer.printerid+"' ip='"+printer.ipaddress+"' value='"+printer.printerid+"' data-title='"
+					+ printer.printername + "'><span title='"+printer.printername+"'>"
+					+ substrControl(printer.printername,12)+"</span></label>";
+			});
+			$("#printer-add-dialog #accordion .panel-body").html(html);
+			$("#printer-add-dialog #accordion").children(":first").find(".panel-collapse").addClass("in");
+
+
+			$("#printer-add-dialog input[type='checkbox']").click(function(){
+				var selected = parseInt($("#printer-add-dialog #table-count").text());
+				if($(this).prop("checked")){
+					selected++;
+					$("#printer-add-dialog").find("input[type='checkbox'][id='"+$(this).attr("id")+"']").prop("checked", true);
+				} else {
+					selected--;
+					$("#printer-add-dialog").find("input[type='checkbox'][id='"+$(this).attr("id")+"']").prop("checked", false);
+				}
+				if(selected==0){
+					$("#printer-add-dialog #table-count").parent().css("display","none");
+
+				}else{
+					$("#printer-add-dialog #table-count").parent().css("display","inline");
+				}
+				$("#printer-add-dialog #table-count").text(selected);
+
+				if($("#printer-add-dialog #accordion").find("input[type=checkbox]:checked").length==0){
+					$("#printer-add-dialog #table-radio-uncheck").click();
+					$("#printer-add-dialog #table-radio-check").attr("checked",false);
+				}else if($("#printer-add-dialog #accordion").find("input[type=checkbox]:checked").length==$("#printer-add-dialog #accordion").find("input[type=checkbox]").length){
+					$("#printer-add-dialog #table-radio-uncheck").attr("checked",false);
+					$("#printer-add-dialog #table-radio-check").click();
+				}else{
+					$("#printer-add-dialog #table-radio-uncheck").attr("checked",false);
+					$("#printer-add-dialog #table-radio-check").attr("checked",false);
+				}
+			});
+			if($("#printer-add-dialog #accordion").find("input[type=checkbox]:checked").length==0){
+				$("#printer-add-dialog #table-radio-uncheck").click();
+				$("#printer-add-dialog #table-radio-check").attr("checked",false);
+			}else if($("#printer-add-dialog #accordion").find("input[type=checkbox]:checked").length==$("#printer-add-dialog #accordion").find("input[type=checkbox]").length){
+				$("#printer-add-dialog #table-radio-uncheck").attr("checked",false);
+				$("#printer-add-dialog #table-radio-check").click();
+			}else{
+				$("#printer-add-dialog #table-radio-uncheck").attr("checked",false);
+				$("#printer-add-dialog #table-radio-check").attr("checked",false);
+			}
+			$.each(findTableids, function(key,obj) {
+				$("#table_"+obj).click();
+			});
+			checkedBoxLength("#printer-add-dialog #table-count");
+		});*/
 	});
 	
 	/*打印配置内容添加*/
@@ -146,7 +205,7 @@ function initPosList(){
 				var data = json.data;
 				if(data != null && data != ""){
 					$.each(data.list, function(i, val){
-						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+'  onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
+						$("#pos-printConfig-add").before('<div class="print-detail-box" id='+val.deviceid+' title = ' + val.devicename + ' onmouseover="showPrintDel(this)" onmouseout="displayPrintDel(this)" ondblclick="editPosPrintBox(this)"><p class="print-img" ><img src="../images/print.png"></p><p id="printernameShow" title="'+val.devicename+'">'+substrControl(val.devicename,18)+'</p>	<i class="icon-remove hidden" onclick="delPosPrintBox(this)"></i></div>');
 					});
 				}
 			}else{
@@ -248,13 +307,19 @@ function clickFormAddPrintConfig(){
 			selectedPrinters.push(a);
 		});
 	}
-	
 	var options = {
 			deviceid: $("#deviceid").val(),
 			devicecode: $("#posid").val(),
 			devicename: $("#posname").val(),
 			printers: selectedPrinters
 	};
+	//added by caicai
+	if (selectedPrinters != null && selectedPrinters.length>0){
+		$.each(selectedPrinters,function (i,obj) {
+			obj.devicecode = $("#posid").val();
+			obj.devicename = $("#posname").val();
+		});
+	}
 	if(validateCode()){
 		$.ajax({
 			type : "post",

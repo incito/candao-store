@@ -32,9 +32,10 @@ public class BusinessReport1 {
 	  private String Statistictime="0";
 	  private String Datetype="0";
     private String give = "0";
+	private String memberDishPriceFree = "0";
 
 	private String shouldamountNormal="0"; //    #营业数据统计(堂吃应收）
-	private String shouldamountTakeout="0";  //   外卖统计(应收）
+
 	private String paidinamountTakeout="0";    //  #外卖统计(实收）
 	private String ordercountTakeout="0";        //  // #外卖统计(订单数）
 	private String avgpriceTakeout="0";       //  	#外卖统计(订单平均价格）
@@ -43,18 +44,26 @@ public class BusinessReport1 {
 	private String viporderpercent="0";     //会员消费占比
 	private String handerWay="";     //零头处理方式名称
 	private String handervalue="";     //零头处理方式值
-	
 	private String closedordermums = "0";  //已结账单数
-    private String closedordershouldamount = "0";  //已结账单应收
-    private String closedorderpersonnums = "0";  //已结人数
-    private String nobillnums = "0"; //未结账单数
-    private String nobillshouldamount = "0"; //未结账单应收
-    private String nopersonnums = "0"; //未结人数
-    private String billnums = "0"; //全部账单数
-    private String billshouldamount = "0"; //全部账单应收
-    private String personnums = "0"; //全部人数
-    private String zaitaishu = "0"; //在台数
-    private String kaitaishu = "0"; //开台数
+
+	private String closedordershouldamount = "0";  //已结账单应收
+	private String closedorderpersonnums = "0";  //已结人数
+	private String nobillnums = "0"; //未结账单数
+	private String nobillshouldamount = "0"; //未结账单应收
+	private String nopersonnums = "0"; //未结人数
+	private String billnums = "0"; //全部账单数
+	private String billshouldamount = "0"; //全部账单应收
+	private String personnums = "0"; //全部人数
+	private String zaitaishu = "0"; //在台数
+	private String kaitaishu = "0"; //开台数
+	private String shouldamountTakeout="0";  //   外卖统计(应收）
+	public String getMemberDishPriceFree() {
+		return memberDishPriceFree;
+	}
+
+	public void setMemberDishPriceFree(String memberDishPriceFree) {
+		this.memberDishPriceFree = memberDishPriceFree;
+	}
 
 	public String getClosedordermums() {
 		return closedordermums;

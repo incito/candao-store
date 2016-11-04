@@ -350,9 +350,9 @@ public class OrderOpServiceImpl implements OrderOpService {
             e.printStackTrace();
             LOGGER.error("###cancelOrder userId={} orderId={} tableNo={} error={}###", userId, orderId, tableNo, e.getCause().getStackTrace());
             responseJsonData.setData("0");
-            return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
+            return JSON.toJSONString(new ResultData(responseJsonData));
         }
-        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseJsonData)));
+        return JSON.toJSONString(new ResultData(responseJsonData));
     }
 
     public static void main(String[] args) {

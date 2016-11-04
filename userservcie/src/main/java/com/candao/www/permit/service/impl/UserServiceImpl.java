@@ -57,11 +57,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User login(String loginName, String password) {
-		User loginUser = userDao.getUser(loginName, password);
-		if (loginUser == null) {
+		List<User> loginUsers = userDao.getUser(loginName, password);
+		if (loginUsers == null||loginUsers.isEmpty()) {
 			throw new BusinessException("账号/邮箱/手机号或者密码错误");
 		}
-		if (!Constants.ENABLE.equals(loginUser.getStatus())) {
+		User loginUser=null;
+		for(User user:loginUsers) {
+			if (Constants.ENABLE.equals(user.getStatus())) {
+				loginUser=user;
+				break;
+			}
+		}
+		if(null==loginUser){
 			throw new BusinessException("用户已经失效，请联系管理员");
 		}
 		return loginUser;
