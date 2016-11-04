@@ -1,10 +1,12 @@
 var g_eatType = "EAT-IN";//堂食
+var tackOUttable=[];//外卖咖啡外卖台
 
 var MainPage = {
 
 	CurrentTalbeType: 'all',
 	CurrentArea: '-1',//默认为全部
 	CurrentSelectedTable: '',
+
 
 	init: function(){
 
@@ -22,8 +24,8 @@ var MainPage = {
 		/*雅座会员餐道会员切换 1为餐道会员；2为雅座会员*/
 		if(utils.storage.getter('vipType')=='1'){
 			var str='<li class="J-btn-storge">会员储值</li>'+
-				    '<li class="J-btn-register">会员注册</li>'+
-				    '<li class="J-btn-memberView">会员查询</li>'
+				'<li class="J-btn-register">会员注册</li>'+
+				'<li class="J-btn-memberView">会员查询</li>'
 			$('.arrowMember').html(str)
 		}
 		if(utils.storage.getter('vipType')=='2'){
@@ -31,12 +33,6 @@ var MainPage = {
 				'<li class="J-btn-register">会员激活</li>'+
 				'<li class="J-btn-memberView">会员查询</li>'
 			$('.arrowMember').html(str)
-		}
-		if(utils.storage.getter('printAbnormal')){
-			$('.main-J-btn-sys').css({'background': '#FF5803','color': '#fff'})
-		}
-		else {
-			$('.main-J-btn-sys').css({'background': '#fff','color': '#000'})
 		}
 	},
 
@@ -240,23 +236,23 @@ var MainPage = {
 					}
 				});
 
-					var str ='<strong>请选择倒班或结业：</strong>'
-					str+='<div id="clearchoose" class="form-group form-group-base" style="margin-top: 20px">'
-					if(utils.userRight.get(aUserid,"030204")){//判断清机权限
-						str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll"  style="margin-right: 5px">倒班</button>'
-					}
-					else {
-						str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" disabled="disabled" style="margin-right: 5px;color: #999; background: #E8E8E8">倒班</button>'
-					}
-					if(orderLength>0){//判断账单未结业数量
-						str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" disabled="disabled" style="color: #999; background: #E8E8E8">结业</button>'
-						str+='</div>'
-						str+='<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
-					}
-					else {
-						str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'
-						str+='</div>'
-					}
+				var str ='<strong>请选择倒班或结业：</strong>'
+				str+='<div id="clearchoose" class="form-group form-group-base" style="margin-top: 20px">'
+				if(utils.userRight.get(aUserid,"030204")){//判断清机权限
+					str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll"  style="margin-right: 5px">倒班</button>'
+				}
+				else {
+					str+='<button id="clearAll" class="btn-default btn-lg btn-base btn-base-flex2 clearAll" disabled="disabled" style="margin-right: 5px;color: #999; background: #E8E8E8">倒班</button>'
+				}
+				if(orderLength>0){//判断账单未结业数量
+					str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" disabled="disabled" style="color: #999; background: #E8E8E8">结业</button>'
+					str+='</div>'
+					str+='<div class="glyphicon glyphicon-info-sign" style="color: #8c8c8c;">还有未结账的餐台不能结业</div>'
+				}
+				else {
+					str+='<button id="completion" class="btn-default btn-lg btn-base btn-base-flex2 clearCompletion" >结业</button>'
+					str+='</div>'
+				}
 				widget.modal.alert({
 					cls: 'fade in',
 					content:str,
@@ -275,7 +271,7 @@ var MainPage = {
 					}
 					if(_this.hasClass("clearCompletion")){//结业
 						var str ='<strong>确定要结业吗？</strong>';
-						 widget.modal.alert({
+						widget.modal.alert({
 							cls: 'fade in',
 							content:str,
 							width:400,
@@ -304,7 +300,7 @@ var MainPage = {
 					window.location.href = '../views/member/yaRegister.jsp';
 				}
 				/*$("#register-dialog").load("../views/member/register.jsp");
-				$("#register-dialog").modal("show");*/
+				 $("#register-dialog").modal("show");*/
 			}
 
 			if(me.hasClass('J-btn-storge')) {//会员储值
@@ -387,50 +383,39 @@ var MainPage = {
 
 	initTakeOutModal: function(){
 		var $modal = $('#J-takeout-dialog');
-		$.ajax({
-			url: _config.interfaceUrl.GetTableInfoByTableType,
-			method: 'POST',
-			contentType: "application/json",
-			global: false,
-			data: JSON.stringify({
-				tableType: [2,3]
-			}),
-			dataType:'json'
-		}).then(function(res){
-			var ret = [];
-			var retNormal = [];
-			$.each(res, function(k, v){
-				if(v.tabletype === '3') {
-					ret.push('<li>' + v.tableNo + '</li>');
-				} else {
-					retNormal.push('<li>' + v.tableNo + '</li>');
-				}
-			});
-			$(".take-out-list").html(ret.join(''));
-			$(".take-out-list").find('li').eq(0).addClass('active');
-			$(".take-out-list-normal").html(retNormal.join(''));
-
-			if(ret.length === 0 && retNormal.length === 0){
-				widget.modal.alert({
-					content:'<strong>获取外卖餐台接口错误</strong>',
-					btnOkTxt: '',
-					btnCancelTxt: '确定'
-				});
-				return false;
+		var ret = [];
+		var retNormal = [];
+		$.each(tackOUttable, function(k, v){
+			if(v.tabletype == '3') {
+				ret.push('<li>' + v.tableNo + '</li>');
+			} else {
+				retNormal.push('<li>' + v.tableNo + '</li>');
 			}
-
-			$(".take-out-list li").unbind("click").on("click",  function(){
-				$(".take-out-list li").removeClass("active");
-				$(this).addClass("active");
-			});
-			$modal.modal("show");
 		});
+		$(".take-out-list").html(ret.join(''));
+		$(".take-out-list").find('li').eq(0).addClass('active');
+		$(".take-out-list-normal").html(retNormal.join(''));
+
+		if(ret.length === 0 && retNormal.length === 0){
+			widget.modal.alert({
+				content:'<strong>获取外卖餐台接口错误</strong>',
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+			return false;
+		}
+
+		$(".take-out-list li").unbind("click").on("click",  function(){
+			$(".take-out-list li").removeClass("active");
+			$(this).addClass("active");
+		});
+		$modal.modal("show");
 	},
 
 	/**
 	 * 外卖开台
- 	 * @param type 0:普通外卖 1:咖啡外卖
-     */
+	 * @param type 0:普通外卖 1:咖啡外卖
+	 */
 	setTakeOutOrder: function(type){
 		var tableNo = '';
 		if(type === 0) {
@@ -539,7 +524,7 @@ var MainPage = {
 
 			$.each(res, function(key,val){
 				var tmp = '';
-				isOpend = val.status === '0' ? false : true;
+				isOpend = val.status == '0' ? false : true;
 				if(areaid === val.areaid || areaid === '-1') {
 					if(isOpend) {
 						time = '';
@@ -570,7 +555,7 @@ var MainPage = {
 						}
 
 						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.custnum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
-							'<div class="tb-info tb-status">￥' + (val.amount === '' ? '0' : parseFloat(val.amount).toFixed(2)) + '</div>' +
+							'<div class="tb-info tb-status">￥' + (val.amount == undefined ? '0': parseFloat(val.amount).toFixed(2)) + '</div>' +
 							'<div class="tb-info meal-time">' + time + '</div> ' +
 							'<div class="tb-info tb-person">' + val.custnum + '/' + val.personNum + '</div>' +
 							' </li>';
@@ -598,13 +583,32 @@ var MainPage = {
 			method: 'POST',
 			contentType: "application/json",
 			global: false,
-			data: JSON.stringify({
-				tableType: [0,1]
-			}),
+			/*data: JSON.stringify({
+			 tableType: [0,1]
+			 }),*/
 			dataType:'json',
 			success: function(res){
+				var allTables=[]//全部餐台（不包括外卖和咖啡外卖台）
+				tackOUttable=[]//全部外卖和咖啡外卖台
+				if(res.code=='1'){
+					utils.printError.alert('餐台'+res.msg);
+					return false
+				}
+				$.each(res.data, function(key,val){
+					$.each(val.tables, function(k,v){
+						if(v.tabletype=='2'){//过滤外卖咖啡外卖
+							tackOUttable.push(v)
+						}
+						else if(v.tabletype=='3'){//过滤外卖咖啡外卖
+							tackOUttable.push(v)
+						}
+						else {
+							allTables.push(v)
+						}
+					})
+				})
 
-				var tables = _getTablesArr(res);
+				var tables = _getTablesArr(allTables);
 				var navRoomTypesArr = [];
 				var navRoomTypes = $('#nav-room-types');
 
@@ -616,7 +620,7 @@ var MainPage = {
 				//设置区域
 				if(navRoomTypes.attr('inited') !== 'true'){
 					navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
-					$.each(res, function(key, val){
+					$.each(res.data, function(key, val){
 						navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
 					});
 					navRoomTypes.attr('inited', 'true');
@@ -732,10 +736,10 @@ var MainPage = {
 				height:500,
 				btnOkTxt: '重试',
 				btnCancelTxt: '',
-			    btnOkCb:function () {
+				btnOkCb:function () {
 					$(".modal-alert:last,.modal-backdrop:last").remove();
 					that.checkout()
-			     }
+				}
 			});
 		}
 		if(Uncleandata.findUncleanPosList.detail.length=='0'){
@@ -755,22 +759,22 @@ var MainPage = {
 				var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
 				if(data.Data=='1'){
 					/*$.ajax({
-						url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
-						method: 'GET',
-						contentType: "application/json",
-						dataType: 'json',
-						data:{
-							'synkey':'candaosynkey'
-						},
-						success: function (data) {
-							alert("2222")
-							console.log(data)
-						},
-						error:function (data) {
-							console.log(data)
-							alert("1111")
-						}
-					});*/
+					 url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
+					 method: 'GET',
+					 contentType: "application/json",
+					 dataType: 'json',
+					 data:{
+					 'synkey':'candaosynkey'
+					 },
+					 success: function (data) {
+					 alert("2222")
+					 console.log(data)
+					 },
+					 error:function (data) {
+					 console.log(data)
+					 alert("1111")
+					 }
+					 });*/
 					widget.modal.alert({
 						cls: 'fade in',
 						content:'<strong>'+data.Info+',即将退出程序</strong>',
@@ -808,7 +812,7 @@ var MainPage = {
 			success: function (data) {
 				findUncleanPosList=JSON.parse(data)
 				/*console.log(findUncleanPosList.detail)
-				console.log(findUncleanPosList.result)*/
+				 console.log(findUncleanPosList.result)*/
 				if(findUncleanPosList.result==='0'){
 					LocalArry=[];//本机数组集合
 					OtherArry=[];//其他pos登录集合
