@@ -1566,22 +1566,23 @@ var Order = {
             //结账单
             that.printPay(2);
             //给pad发送清台消息
-            $.ajax({
-                url: _config.interfaceUrl.SendMsgAsyn,
-                method: 'post',
-                contentType: "application/json",
-                dataType: 'json',
-                data: JSON.stringify({
-                    orderId: consts.orderid,
-                    type:1
-                })
-            }).then(function(){
-                if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                    goBack()
-                } else {
-                    window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
-                }
-            });
+            if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                goBack()
+            } else {
+                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+            }
+            //$.ajax({
+            //    url: _config.interfaceUrl.SendMsgAsyn,
+            //    method: 'post',
+            //    contentType: "application/json",
+            //    dataType: 'json',
+            //    data: JSON.stringify({
+            //        orderId: consts.orderid,
+            //        type:1
+            //    })
+            //}).then(function(){
+            //
+            //});
         };
 
         var doSettlementModal = widget.modal.alert({
@@ -1781,7 +1782,7 @@ var Order = {
                     )
                 })
                 .then(function(res) {
-                    if(res.result === '0') {
+                    if(res.code === '0') {
                         if(isMemberLogin){
                             //餐道会员会员消费
                             $.ajax({
@@ -1871,7 +1872,7 @@ var Order = {
                 url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
                 method: 'get'
             }).then(function(data){
-                var  data = JSON.parse(data.result[0]);
+                var  data = data.result[0];
                 if(data.Data === '1') {
                     window.location.href = './main.jsp'
                 } else {
