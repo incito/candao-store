@@ -6,6 +6,9 @@ AND itemid NOT IN(0,1,5,8,13,17,18,30);
 UPDATE t_dictionary SET STATUS = 1 , charges_status ='1'
 WHERE TYPE='PAYWAY'
 AND itemid IN(0,1,5,8,13,17,18,30);
+-- 更新文案
+UPDATE t_dictionary SET itemDesc='会员卡' where type='PAYWAY' and itemid='8';
+UPDATE t_dictionary SET itemDesc='挂账支付' where type='PAYWAY' and itemid='13';
 
 CREATE TABLE `t_payway_set` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
