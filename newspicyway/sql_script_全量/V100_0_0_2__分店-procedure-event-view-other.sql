@@ -500,7 +500,7 @@ loop_label:
   WHERE
     t.orderid = i_orderid
     AND t.payamount > 0
-    AND t.payway IN (0, 1, 5, 8, 13, 17, 18);
+    AND t.payway IN (SELECT itemid FROM v_payway WHERE `chargeStatus` = 1);
 
   SELECT ifnull(sum(t.debitamount), 0)
   INTO
@@ -836,6 +836,7 @@ BEGIN
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
   select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail st join v_revenuepayway vr on st.payway=vr.itemid where st.orderid=v_orderid;
+  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(SELECT itemid FROM `v_payway` where `chargeStatus` = 1);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
   select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid;
