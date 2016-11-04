@@ -1,4 +1,5 @@
 var g_eatType = "EAT-IN";//堂食
+var tackOUttable=[];//外卖咖啡外卖台
 
 var MainPage = {
 
@@ -6,9 +7,10 @@ var MainPage = {
 	CurrentArea: '-1',//默认为全部
 	CurrentSelectedTable: '',
 
+
 	init: function(){
 
-		this.timeTask();
+		//this.timeTask();
 
 		this.setTables();
 
@@ -31,12 +33,6 @@ var MainPage = {
 				'<li class="J-btn-register">会员激活</li>'+
 				'<li class="J-btn-memberView">会员查询</li>'
 			$('.arrowMember').html(str)
-		}
-		if(utils.storage.getter('printAbnormal')){
-			$('.main-J-btn-sys').css({'background': '#FF5803','color': '#fff'})
-		}
-		else {
-			$('.main-J-btn-sys').css({'background': '#fff','color': '#000'})
 		}
 	},
 
@@ -387,44 +383,33 @@ var MainPage = {
 
 	initTakeOutModal: function(){
 		var $modal = $('#J-takeout-dialog');
-		$.ajax({
-			url: _config.interfaceUrl.GetTableInfoByTableType,
-			method: 'POST',
-			contentType: "application/json",
-			global: false,
-			data: JSON.stringify({
-				tableType: [2,3]
-			}),
-			dataType:'json'
-		}).then(function(res){
-			var ret = [];
-			var retNormal = [];
-			$.each(res, function(k, v){
-				if(v.tabletype === '3') {
-					ret.push('<li>' + v.tableNo + '</li>');
-				} else {
-					retNormal.push('<li>' + v.tableNo + '</li>');
-				}
-			});
-			$(".take-out-list").html(ret.join(''));
-			$(".take-out-list").find('li').eq(0).addClass('active');
-			$(".take-out-list-normal").html(retNormal.join(''));
-
-			if(ret.length === 0 && retNormal.length === 0){
-				widget.modal.alert({
-					content:'<strong>获取外卖餐台接口错误</strong>',
-					btnOkTxt: '',
-					btnCancelTxt: '确定'
-				});
-				return false;
+		var ret = [];
+		var retNormal = [];
+		$.each(tackOUttable, function(k, v){
+			if(v.tabletype == '3') {
+				ret.push('<li>' + v.tableNo + '</li>');
+			} else {
+				retNormal.push('<li>' + v.tableNo + '</li>');
 			}
-
-			$(".take-out-list li").unbind("click").on("click",  function(){
-				$(".take-out-list li").removeClass("active");
-				$(this).addClass("active");
-			});
-			$modal.modal("show");
 		});
+		$(".take-out-list").html(ret.join(''));
+		$(".take-out-list").find('li').eq(0).addClass('active');
+		$(".take-out-list-normal").html(retNormal.join(''));
+
+		if(ret.length === 0 && retNormal.length === 0){
+			widget.modal.alert({
+				content:'<strong>获取外卖餐台接口错误</strong>',
+				btnOkTxt: '',
+				btnCancelTxt: '确定'
+			});
+			return false;
+		}
+
+		$(".take-out-list li").unbind("click").on("click",  function(){
+			$(".take-out-list li").removeClass("active");
+			$(this).addClass("active");
+		});
+		$modal.modal("show");
 	},
 
 	/**
@@ -539,7 +524,7 @@ var MainPage = {
 
 			$.each(res, function(key,val){
 				var tmp = '';
-				isOpend = val.status === '0' ? false : true;
+				isOpend = val.status == '0' ? false : true;
 				if(areaid === val.areaid || areaid === '-1') {
 					if(isOpend) {
 						time = '';
@@ -570,7 +555,7 @@ var MainPage = {
 						}
 
 						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.custnum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +
-							'<div class="tb-info tb-status">￥' + (val.amount === '' ? '0' : parseFloat(val.amount).toFixed(2)) + '</div>' +
+							'<div class="tb-info tb-status">￥' + (val.amount == undefined ? '0': parseFloat(val.amount).toFixed(2)) + '</div>' +
 							'<div class="tb-info meal-time">' + time + '</div> ' +
 							'<div class="tb-info tb-person">' + val.custnum + '/' + val.personNum + '</div>' +
 							' </li>';
@@ -598,13 +583,39 @@ var MainPage = {
 			method: 'POST',
 			contentType: "application/json",
 			global: false,
-			data: JSON.stringify({
+			/*data: JSON.stringify({
 				tableType: [0,1]
-			}),
+			}),*/
 			dataType:'json',
 			success: function(res){
+				var allTables=[]//全部餐台（不包括外卖和咖啡外卖台）
+				tackOUttable=[]//全部外卖和咖啡外卖台
+				if(res.code=='1'){
+					utils.printError.alert('餐台'+res.msg);
+					return false
+				}
+				$.each(res.data, function(key,val){
+					$.each(val.tables, function(k,v){
+						if(v.tabletype=='2'){//过滤外卖咖啡外卖
+							tackOUttable.push(v)
+						}
+						else if(v.tabletype=='3'){
+							tackOUttable.push(v)
+						}
+						else {
+							allTables.push(v)
+						}
+					})
+				})
+				/*for (var i=0;i<res.data.length;i++){
+					if(res.data[i].tables){
+						for(var k=0;k<res.data[i].tables.length;k++){
+							allTables.push(res.data[i].tables[k]);
+						}
+					}
+				}*/
 
-				var tables = _getTablesArr(res);
+				var tables = _getTablesArr(allTables);
 				var navRoomTypesArr = [];
 				var navRoomTypes = $('#nav-room-types');
 
@@ -616,7 +627,7 @@ var MainPage = {
 				//设置区域
 				if(navRoomTypes.attr('inited') !== 'true'){
 					navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
-					$.each(res, function(key, val){
+					$.each(res.data, function(key, val){
 						navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
 					});
 					navRoomTypes.attr('inited', 'true');

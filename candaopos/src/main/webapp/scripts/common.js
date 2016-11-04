@@ -105,7 +105,7 @@ _config.interfaceUrl = {
 	GetBranchInfo: "/newspicyway/padinterface/getbranchinfo.json", <!--获取分店店铺信息-->
 	MemberLogin: "/newspicyway/member/MemberLogin.json", <!--餐道会员登入-->
 	MemberLogout: "/newspicyway/member/MemberLogout.json", <!--餐道会员登出-->
-	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--添加会员消op费信息-->
+	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--保存会员消费-->
 	ClearTable: "/newspicyway/padinterface/cleantable.json", <!--清台-->
 	ClearTableCf: "/newspicyway/padinterface/cleanTableSimply.json", <!--咖啡模式的清台-->
 	AntiSettlementOrder: "/newspicyway/padinterface/rebacksettleorder.json", <!--反结算账单-->
@@ -113,7 +113,8 @@ _config.interfaceUrl = {
 	UpdateDishWeigh: "/newspicyway/padinterface/updateDishWeight.json", <!--更新菜品重量-->
 	TipBill: "/newspicyway/tip/tipBilling.json", <!--小费结算-->
 	SetCouponFavor: "/newspicyway/padinterface/setPreferentialFavor.json", <!--设置不常用优惠-->
-	GetTableInfoByTableType: "/newspicyway/padinterface/getTableByType.json", <!--根据餐桌类型获取餐桌信息-->
+	//GetTableInfoByTableType: "/newspicyway/padinterface/getTableByType.json", <!--根据餐桌类型获取餐桌信息-->
+	GetTableInfoByTableType: "/newspicyway/padinterface/getTableAndType.json", <!--获取全部餐台类型-->
 	GetPrinterList: "/newspicyway/pos/printerlist.json", <!--获取打印机状态列表-->
 	GetItemForList: "/newspicyway/itemDetail/getItemForList.json", <!-- 获取营业明细（品类、金额）-->
 	GetGrouponForList: "/newspicyway/preferentialAnalysisCharts/findPreferential.json", <!--获取营业明细(团购券)-->
@@ -167,6 +168,7 @@ _config.interfaceUrl = {
 	CancelCanDao: "/newspicyway/memberManager/delete.json", <!--餐道会员会员注销-->
 	SaleCanDao: "/newspicyway/deal/MemberSale.json", <!--餐道会员会员消费-->
 	VoidSaleCanDao: "/newspicyway/deal/VoidSale.json", <!--餐道会员取消消费-->
+	SendMsgAsyn: "/newspicyway/datasnap/rest/TServerMethods1/sendMsgAsyn/", <!--给pad发送清台消息-->
 
 	CancelLossCanDao: "/newspicyway/deal/UnCardLose", <!--餐道会员会员解除挂失-->
 	VipChangeCardNum: "/newspicyway/memberCardService/cardNoByModify.json", <!--修改会员卡号-->
@@ -1070,6 +1072,8 @@ utils.loading ={
 			'</div>';
 		if($('.spinner').length<1){
 			$('body').append(str);
+		} else {
+			$('.spinner p').html(msg);
 		}
 	},
 	remove:function () {
@@ -1219,6 +1223,7 @@ utils.openCash = function (type) {
 			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',
+			async: false,
 			success: function (res) {
 				if (res.result[0] === '1') {//成功
 					rightBottomPop.alert({content: '打开钱箱成功!'})
