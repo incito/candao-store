@@ -53,10 +53,10 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 				}
 			}else{
 				settlementSort.put(map.get("itemId")+"_1", sort++);
-				settlementDescList.add("刷工行卡");
+				settlementDescList.add("刷卡-工行");
 				settlementKey.add(map.get("itemId")+"_1");
 				settlementSort.put(map.get("itemId")+"_2", sort++);
-				settlementDescList.add("刷他行卡");
+				settlementDescList.add("刷卡-他行");
 				settlementKey.add(map.get("itemId")+"_2");
 			}
 		}

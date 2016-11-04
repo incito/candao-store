@@ -12,6 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.candao.print.entity.*;
 import com.candao.www.data.model.*;
@@ -427,12 +428,13 @@ public class Print4POSServiceImpl implements Print4POSService {
     private List<Map<String, Object>> generateSettlementList(Map<String, Object> map) {
         Assert.notEmpty(map, "固定结算信息不能为空");
         List<Map<String, Object>> res = new LinkedList<>();
-        String[] name = {"现金", "挂账", "微信", "支付宝", "刷卡-工行", "刷卡-他行", "会员储值消费净值"};
-        String[] valueName = {"money", "card", "weixin", "zhifubao", "icbc", "otherbank", "merbervaluenet"};
-        for (int i = 0; i < name.length; i++) {
+        //自定义支付方式
+        List settlements = (List)map.get("settlements");
+        List settlementDesc = (List)map.get("settlementDescList");
+        for (int i = 0; i < settlementDesc.size(); i++) {
             Map<String, Object> temp = new HashMap<>();
-            temp.put("name", name[i]);
-            temp.put("value", map.get(valueName[i]));
+            temp.put("name",settlementDesc.get(i));
+            temp.put("value", settlements.get(i));
             res.add(temp);
         }
         return res;
