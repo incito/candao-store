@@ -113,7 +113,8 @@ _config.interfaceUrl = {
 	UpdateDishWeigh: "/newspicyway/padinterface/updateDishWeight.json", <!--更新菜品重量-->
 	TipBill: "/newspicyway/tip/tipBilling.json", <!--小费结算-->
 	SetCouponFavor: "/newspicyway/padinterface/setPreferentialFavor.json", <!--设置不常用优惠-->
-	GetTableInfoByTableType: "/newspicyway/padinterface/getTableByType.json", <!--根据餐桌类型获取餐桌信息-->
+	//GetTableInfoByTableType: "/newspicyway/padinterface/getTableByType.json", <!--根据餐桌类型获取餐桌信息-->
+	GetTableInfoByTableType: "/newspicyway/padinterface/getTableAndType.json", <!--获取全部餐台信息-->
 	GetPrinterList: "/newspicyway/pos/printerlist.json", <!--获取打印机状态列表-->
 	GetItemForList: "/newspicyway/itemDetail/getItemForList.json", <!-- 获取营业明细（品类、金额）-->
 	GetGrouponForList: "/newspicyway/preferentialAnalysisCharts/findPreferential.json", <!--获取营业明细(团购券)-->
