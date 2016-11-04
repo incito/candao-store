@@ -335,11 +335,12 @@
 	  	SELECT  <include refid="base_user_column_list" />
 	    FROM t_b_user bu
 	    <where>
-	    	bu.password = #{password}
-	     	AND (
-	     		bu.account = #{loginName} OR bu.email = #{loginName} OR bu.mobile = #{loginName} or bu.name =#{loginName}
-	     	)
-	    </where>
+	     	 (
+			BINARY bu.account = #{loginName} OR BINARY bu.email = #{loginName} OR BINARY bu.mobile = #{loginName} or BINARY bu.name =#{loginName}
+			)
+			AND
+			bu.password = #{password}
+		</where>
 	</select>
   
   <select id="findMaxOrderNum" parameterType="map" resultMap="userMap">

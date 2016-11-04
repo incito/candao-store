@@ -34,6 +34,24 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 		List<Map<String, Object>> detailList = tbPreferentialActivityDao.findPreferentialDetail(detail_params);
 		return detailList;
 	}
+	/***
+	 * 计算菜品总价
+	 */
+	protected BigDecimal getAmountCount(List<TorderDetail> orderDetailList){
+		BigDecimal amountCount=new BigDecimal("0");
+		for (TorderDetail d : orderDetailList) {
+			// 判断价格，如果菜品价格存在null的问题，则返回错误信息
+			if (null != d.getOrderprice()) {
+				// 如果此菜品是多份，则计算多份总的优惠价格
+				BigDecimal numOfDish = new BigDecimal("1");
+				if (new BigDecimal(d.getDishnum()).compareTo(new BigDecimal("0")) > 0) {
+					numOfDish = new BigDecimal(d.getDishnum());
+				}
+				amountCount = amountCount.add(d.getOrderprice().multiply(numOfDish));
+			}
+		}
+		return amountCount;
+	}
 
 	/**
 	 * 现金优免 手动输入

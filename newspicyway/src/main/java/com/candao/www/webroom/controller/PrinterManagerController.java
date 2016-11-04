@@ -10,6 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.candao.www.webroom.service.PosService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.tools.GrapeUtil;
@@ -46,6 +47,8 @@ public class PrinterManagerController {
 	private DishService dishService;
 	@Autowired
 	private DishTypeService dishTypeService;
+	@Autowired
+	private PosService posService;
 	
 	private Log log = LogFactory.getLog(PrinterManagerController.class.getName());
 
@@ -338,6 +341,11 @@ public class PrinterManagerController {
 	@ResponseBody
 	public ModelAndView deleteById(@PathVariable(value = "id") String id) {
 		boolean b = printerManagerService.deleteById(id);
+
+		//added by caicai
+		//删除POS打印机中间表
+		posService.delPOSPrinter(id);
+
 		ModelAndView mav = new ModelAndView();
 		if (b) {
 			//更新打印队列，连接

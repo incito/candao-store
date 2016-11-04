@@ -82,11 +82,11 @@ public class UserDaoImpl implements UserDao{
   }
   
   @Override
-  public User getUser(String loginName, String password) {
+  public List<User> getUser(String loginName, String password) {
     Map<String, String> params = new HashMap<String, String>();
     params.put("loginName", loginName);
     params.put("password", password);
-    return dao.get(PREFIX + ".getUser", params);
+    return dao.find(PREFIX + ".getUser", params);
   }
 	@Override
 	public int updateLoginTime(String userId) {

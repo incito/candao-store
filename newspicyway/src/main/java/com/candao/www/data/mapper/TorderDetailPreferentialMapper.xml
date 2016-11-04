@@ -15,6 +15,8 @@
 		<result property="isUse" column="isUse" jdbcType="TINYINT" />
 		<result property="insertime" column="insertime" jdbcType="TIMESTAMP" />
 		<result property="unit" column="unit" jdbcType="VARCHAR"/>
+		<result property="preType" column="preType" jdbcType="VARCHAR"/>
+		<result property="preName" column="preName" jdbcType="VARCHAR"/>
 	</resultMap>
 	<resultMap id="base_result_map"
 		type="com.candao.www.data.model.TbPreferentialActivity">
@@ -66,7 +68,9 @@
 			`toalFreeAmount`,
 			`toalDebitAmount`,
 			`insertime`,
-			`unit`)
+			`unit`,
+			`preType`,
+			`preName`)
 		VALUES
 		<foreach collection="list" item="ordDetPre" index="index"
 			separator=",">
@@ -83,7 +87,9 @@
 			#{ordDetPre.toalFreeAmount,jdbcType=VARCHAR},
 			#{ordDetPre.toalDebitAmount,jdbcType=VARCHAR},
 			#{ordDetPre.insertime,jdbcType=TIMESTAMP},
-			#{ordDetPre.unit,jdbcType=VARCHAR})
+			#{ordDetPre.unit,jdbcType=VARCHAR},
+			#{ordDetPre.preType,jdbcType=VARCHAR},
+			#{ordDetPre.preName,jdbcType=VARCHAR})
 		</foreach>
 		ON DUPLICATE KEY UPDATE deAmount =VALUES(deAmount)
 	</insert>
