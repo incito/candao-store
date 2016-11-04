@@ -1,6 +1,5 @@
 var pref_prev = 0;
 var g_eatType = utils.getUrl.get('type');
-
 var consts = {
     orderid: $('input[name=orderid]').val(),
     tableno: $('input[name=tableno]').val(),
@@ -20,6 +19,7 @@ var consts = {
 };
 
 var dom = {
+    doc: $(document),
     order: $("#order"),
     addDishDialog: $("#adddish-dialog"),//点菜弹窗
     giveDishDialog: $("#givedish-dialog"),//赠菜弹窗
@@ -64,6 +64,24 @@ var Order = {
     bindEvent: function () {
 
         var that = this;
+
+        //支付方式切换
+        $(".tab-payment ul li").click(function () {
+            $(this).addClass("active").siblings().removeClass("active");
+            $(".paytype-input").addClass("hide");
+            var targetId = $(this).attr("target");
+            $(targetId).removeClass("hide");
+        });
+
+        dom.doc.click(function (e) {
+            $(".more-oper").addClass("hide");
+            e.stopPropagation();
+        });
+
+        $(".show-more").click(function (e) {
+            $(".more-oper").removeClass("hide");
+            e.stopPropagation();
+        });
 
         /**
          * 退菜
@@ -305,8 +323,6 @@ var Order = {
 
 
         });
-
-
 
         //删除或清空优惠
         $('#del-pref,#clear-pref').click(function () {
@@ -636,61 +652,124 @@ var Order = {
                         }
                     });
             } else {//雅座
-                //debugger;
-                $.ajax({
-                    url: 'http://10.66.21.5:9081/datasnap/rest/TServerMethods1/QueryBalance/' + cardNumber + '/',
-                    method: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: 'json',
-                }).then(function (res) {
-                    //debugger;
-                    console.log(res);
-                })
+                $.when(
+                    $.ajax({
+                        url: consts.memberAddr.vipotherurl + _config.interfaceUrl.Yafindmember + cardNumber,
+                        method: 'GET',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json'
+                    }),
+                    $.ajax({
+                        url: _config.interfaceUrl.MemberLogin,
+                        method: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        data: JSON.stringify({
+                            "mobile": cardNumber,
+                            "orderid": consts.orderid,
+                        })
+                    })
+                    )
+                    .then(function (res1, res2) {
+                        //查询
+                        console.log('查询');
+                        var res1 = res1[0];
+                        if (res1.Data === '1') {
+                            $('#StoreCardBalance').html('<b>' + res1.psStoredCardsBalance/100 + '</b>');
+                            $('#IntegralOverall').text(res1.psIntegralAvail/100);
+                            btn.text('退出');
+                            btn.addClass('btn-login-out');
+                            btn.removeClass('disabled');
+                            ipt.attr('disabled', 'disabled');
+
+                            //重新刷新订单信息
+                            that.updateOrder();
+
+                            rightBottomPop.alert({
+                                title: "提示信息",
+                                content: '雅座会员查询成功',
+                                width: 320,
+                                height: 200,
+                                right: 5
+                            });
+                        } else {
+                            widget.modal.alert({
+                                cls: 'fade in',
+                                content: '<strong>雅座会员查询失败</strong>',
+                                width: 500,
+                                height: 500,
+                                btnOkTxt: '',
+                                btnCancelTxt: '确定'
+                            });
+                        }
+
+                        //登录
+                        var res2 = res2[0];
+                        if (res2.code === '0') {
+
+                            dom.membershipCard.attr('isLogin','true');
+
+                            rightBottomPop.alert({
+                                title: "提示信息",
+                                content: res2.msg,
+                                width: 320,
+                                height: 200,
+                                right: 5
+                            });
+                        } else {
+                            widget.modal.alert({
+                                cls: 'fade in',
+                                content: '<strong>' + res2.msg + '</strong>',
+                                width: 500,
+                                height: 500,
+                                btnOkTxt: '',
+                                btnCancelTxt: '确定'
+                            });
+                        }
+                    });
             }
         } else {//登出
-            if (consts.vipType === '1') {//餐道会员
-                $.ajax({
-                    url: _config.interfaceUrl.MemberLogout,
-                    method: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: 'json',
-                    data: JSON.stringify({
-                        "moblie": cardNumber,
-                        "orderid": consts.orderid,
-                    })
-                }).then(function (res) {
-                    if (res.code === '0') {
-                        rightBottomPop.alert({
-                            title: "提示信息",
-                            content: res.msg,
-                            width: 320,
-                            height: 200,
-                            right: 5
-                        });
-                        $('#StoreCardBalance').text('');
-                        $('#IntegralOverall').text('');
-                        btn.text('登录');
-                        btn.removeClass('btn-login-out');
-                        btn.addClass('disabled');
-                        ipt.removeAttr('disabled');
-                        ipt.val('');
-                        dom.membershipCard.attr('isLogin','false');
-
-                        //重新刷新订单信息
-                        that.updateOrder();
-
-                    } else {
-                        widget.modal.alert({
-                            cls: 'fade in',
-                            content: '<strong>' + res.msg + '</strong>',
-                            width: 500,
-                            height: 500,
-                            btnOkTxt: '',
-                            btnCancelTxt: '确定'
-                        });
-                    }
+            $.ajax({
+                url: _config.interfaceUrl.MemberLogout,
+                method: 'POST',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify({
+                    "moblie": cardNumber,
+                    "orderid": consts.orderid,
                 })
-            }
+            }).then(function (res) {
+                if (res.code === '0') {
+                    rightBottomPop.alert({
+                        title: "提示信息",
+                        content: res.msg,
+                        width: 320,
+                        height: 200,
+                        right: 5
+                    });
+                    $('#StoreCardBalance').text('');
+                    $('#IntegralOverall').text('');
+                    btn.text('登录');
+                    btn.removeClass('btn-login-out');
+                    btn.addClass('disabled');
+                    ipt.removeAttr('disabled');
+                    ipt.val('');
+                    dom.membershipCard.attr('isLogin','false');
+
+                    //重新刷新订单信息
+                    that.updateOrder();
+
+                } else {
+                    widget.modal.alert({
+                        cls: 'fade in',
+                        content: '<strong>' + res.msg + '</strong>',
+                        width: 500,
+                        height: 500,
+                        btnOkTxt: '',
+                        btnCancelTxt: '确定'
+                    });
+                }
+            })
         }
     },
 
@@ -745,7 +824,6 @@ var Order = {
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
-            async: false,
             success: function (res) {
                 var str = (function(){
                     var ret = ''
@@ -897,6 +975,9 @@ var Order = {
             }
         }
 
+        dom.backfoodDialog.modal('hide');
+        $("#backfood-right").modal('hide');
+        utils.loading.open('退菜中...');
         $.ajax({
             url: _config.interfaceUrl.BackDish,
             method: 'POST',
@@ -905,8 +986,7 @@ var Order = {
             dataType: 'json',
             success: function (res) {
                 if (res.code === '0') {
-                    dom.backfoodDialog.modal('hide');
-                    $("#backfood-right").modal('hide');
+                    utils.loading.remove();
                     $("#backfood-right .modal-dialog").remove();
                     that.updateOrder();
                 } else {
@@ -1429,10 +1509,14 @@ var Order = {
      */
     doSettlement: function() {
         var that = this;
+
         //会员卡支付方式检查
         var memberTips = '';
         var isMemberLogin = dom.membershipCard.attr('isLogin') === 'true';
+
         var url = '';
+        var memberCash = $.trim($('#memberCash').val());
+        var memberJf = $.trim($('#memberJf').val());
 
         if(g_eatType === 'in') {
             url = _config.interfaceUrl.PayTheBill;
@@ -1449,15 +1533,16 @@ var Order = {
             return  false;
         }
         if(isMemberLogin) {
-            if($('#memberCash').val().length > 0 && parseFloat($('#memberCash').val()) > parseFloat($("#StoreCardBalance b").text())) {
+            if(memberCash.length > 0 && parseFloat(memberCash.val()) > parseFloat($("#StoreCardBalance b").text())) {
                 memberTips += '会员储值余额不足;<br/>';
             }
 
-            if($('#memberJf').val().length > 0  && parseFloat($('#memberJf').val()) > parseFloat($("#IntegralOverall").text())) {
+            if(memberJf.length > 0  && parseFloat(memberJf) > parseFloat($("#IntegralOverall").text())) {
                 memberTips += '积分余额不足;<br/>';
             }
 
-            if($('.J-pay-pwd').val().length === 0 && ($('#memberCash').val().length > 0  || $('#memberJf').val().length > 0)) {
+            //雅座会员需要不需要设置密码
+            if($('.J-pay-pwd').val().length === 0 && (memberCash.length > 0  || memberJf.length > 0)) {
                 memberTips += '请输入会员密码;';
             }
 
@@ -1473,6 +1558,31 @@ var Order = {
                 return false;
             }
         }
+
+        //弹钱箱 打印结账单 给pad发送清台消息 页面跳转
+        var _fn = function(){
+            //弹钱箱
+            utils.openCash(1);
+            //结账单
+            that.printPay(2);
+            //给pad发送清台消息
+            $.ajax({
+                url: _config.interfaceUrl.SendMsgAsyn,
+                method: 'post',
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify({
+                    orderId: consts.orderid,
+                    type:1
+                })
+            }).then(function(){
+                if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                    goBack()
+                } else {
+                    window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                }
+            });
+        };
 
         var doSettlementModal = widget.modal.alert({
             cls: 'fade in',
@@ -1672,7 +1782,7 @@ var Order = {
                 })
                 .then(function(res) {
                     if(res.result === '0') {
-                        if(isMemberLogin) {
+                        if(isMemberLogin){
                             //餐道会员会员消费
                             $.ajax({
                                 url: _config.interfaceUrl.SaleCanDao,
@@ -1690,134 +1800,11 @@ var Order = {
                                     "password": null,
                                     "branch_id": "23231",
                                     "securityCode": ""
-                                }),
-                                async: false,
-                                success: function(res){
-                                    console.log('餐道会员会员消费');
-                                    console.log(res);
-                                }
-                            });
-                            //保存会员消费
-                            $.ajax({
-                                url: _config.interfaceUrl.AddMemberSaleInfo,
-                                method: 'post',
-                                contentType: "application/json",
-                                dataType: 'json',
-                                data: JSON.stringify({
-                                    "orderid": "H20161103023231006851",
-                                    "cardno": "00000000000000000000CD00440088",
-                                    "userid": "100",
-                                    "business": "23231",
-                                    "terminal": "002",
-                                    "serial": "201611031413531807",
-                                    "businessname": "辣江南生态火锅",
-                                    "score": 3.0,
-                                    "coupons": 0.0,
-                                    "stored": 0.0,
-                                    "scorebalance": 236.15000000000000568434188608,
-                                    "couponsbalance": "0",
-                                    "storedbalance": 996.9700000000000272848410532,
-                                    "psexpansivity": 0.0,
-                                    "netvalue": 0.0,
-                                    "inflated": 0.0
-                                }),
-                                async: false,
-                                success: function (res) {
-                                    console.log('餐道会员会员消费');
-                                    console.log(res);
-                                }
-                            });
-                            //打印会员消费
-                            $.ajax({
-                                url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
-                                method: 'get',
-                                contentType: "application/json",
-                                dataType: 'json',
-                                async: false,
-                                success: function(res3){
-                                    console.log('打印会员消费');
-                                    console.log(res3);
-                                }
-                            });
-                        }
-
-                        //弹钱箱
-                        utils.openCash(1);
-                        //结账单
-                        that.printPay(2);
-
-                        //给pad发送清台消息
-                        $.ajax({
-                            url: _config.interfaceUrl.SendMsgAsyn,
-                            method: 'post',
-                            contentType: "application/json",
-                            dataType: 'json',
-                            data: JSON.stringify({
-                                orderId: consts.orderid,
-                                type:'1'
-                            }),
-                            async: false,
-                            success: function(res2){
-                                console.log('SendMsgAsyn');
-                                console.log(res2);
-                            }
-                        });
-
-                        if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                            goBack()
-                        } else {
-                            window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
-                        }
-                    } else {
-                        utils.loading.remove();
-                        widget.modal.alert({
-                            content:'<strong>结账失败,请稍后重试</strong>',
-                            btnOkTxt: '确定',
-                            btnCancelTxt: ''
-                        });
-                    }
-                })
-
-                false && $.ajax({
-                    url: url,
-                    method: 'POST',
-                    contentType: "application/json",
-                    dataType: 'json',
-                    global: false,
-                    data: JSON.stringify({
-                            "payDetail": rows, "userName": utils.storage.getter('aUserid'), "orderNo": consts.orderid
-                        }
-                    ),
-                    success: function (res) {
-                        if(res.result === '0') {
-
-                            if(isMemberLogin) {
-                                //餐道会员会员消费
-                                $.ajax({
-                                    url: _config.interfaceUrl.SaleCanDao,
-                                    method: 'post',
-                                    contentType: "application/json",
-                                    dataType: 'json',
-                                    data: JSON.stringify({
-                                        "Serial": consts.orderid,
-                                        "FCash": 3.00,
-                                        "FWeChat": 0.0,
-                                        "FIntegral": 0.0,
-                                        "FStore": 0.0,
-                                        "FTicketList": null,
-                                        "cardno": "00000000000000000000CD00440088",
-                                        "password": null,
-                                        "branch_id": "23231",
-                                        "securityCode": ""
-                                    }),
-                                    async: false,
-                                    success: function(res){
-                                        console.log('餐道会员会员消费');
-                                        console.log(res);
-                                    }
-                                });
+                                })
+                            }).then(function(data){
+                                console.log('餐道会员会员消费');
                                 //保存会员消费
-                                $.ajax({
+                                return $.ajax({
                                     url: _config.interfaceUrl.AddMemberSaleInfo,
                                     method: 'post',
                                     contentType: "application/json",
@@ -1839,39 +1826,11 @@ var Order = {
                                         "psexpansivity": 0.0,
                                         "netvalue": 0.0,
                                         "inflated": 0.0
-                                    }),
-                                    async: false,
-                                    success: function (res) {
-                                        console.log('餐道会员会员消费');
-                                        console.log(res);
-                                    }
+                                    })
                                 });
-                            }
-
-                            //弹钱箱
-                            utils.openCash(1);
-                            //结账单
-                            that.printPay(2);
-
-                            $.ajax({
-                                url: _config.interfaceUrl.SendMsgAsyn,
-                                method: 'post',
-                                contentType: "application/json",
-                                dataType: 'json',
-                                data: JSON.stringify({
-                                    orderId: consts.orderid,
-                                    type:'1'
-                                }),
-                                async: false,
-                                success: function(res2){
-                                    console.log('SendMsgAsyn');
-                                    console.log(res2);
-                                }
-                            });
-
-                            if(isMemberLogin) {
+                            }).then(function(){
                                 //打印会员消费
-                                $.ajax({
+                                return $.ajax({
                                     url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
                                     method: 'get',
                                     contentType: "application/json",
@@ -1882,23 +1841,19 @@ var Order = {
                                         console.log(res3);
                                     }
                                 });
-                            }
-
-
-
-                            if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                                goBack()
-                            } else {
-                                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
-                            }
-                        } else {
-                            utils.loading.remove();
-                            widget.modal.alert({
-                                content:'<strong>结账失败,请稍后重试</strong>',
-                                btnOkTxt: '确定',
-                                btnCancelTxt: ''
+                            }).then(function(){
+                                _fn();
                             });
+                        } else {
+                            _fn();
                         }
+                    } else {
+                        utils.loading.remove();
+                        widget.modal.alert({
+                            content:'<strong>结账失败,请稍后重试</strong>',
+                            btnOkTxt: '确定',
+                            btnCancelTxt: ''
+                        });
                     }
                 });
             }
@@ -1934,214 +1889,10 @@ var Order = {
 
 
 $(document).ready(function () {
-
     Order.init();
-
-    $("img.img-close").hover(function () {
-        $(this).attr("src", "../images/close-active.png");
-    }, function () {
-        $(this).attr("src", "../images/close-sm.png");
-    });
-    //未开过台的先开台
-    //if(!g_isopened){
-    //	$("#open-dialog").modal("show");
-    //}
-
-    ////已点菜上一页
-    //$(".dish-oper-btns .prev-btn").click(function() {
-    //	if ($(this).hasClass("disabled")) {
-    //		return false;
-    //	}
-    //	page1(nowPage1 - 1);
-    //});
-    ////已点菜下一页
-    //$(".dish-oper-btns .next-btn").click(function() {
-    //	if ($(this).hasClass("disabled")) {
-    //		return false;
-    //	}
-    //	page1(nowPage1 + 1);
-    //});
-
-
-    //已选优惠上一页
-    //$(".preferential-oper-btns .prev-btn").click(
-    //		function() {
-    //			if ($(this).hasClass("disabled")) {
-    //				return false;
-    //			}
-    //			page2(nowPage2 - 1);
-    //		});
-    ////已选优惠下一页
-    //$(".preferential-oper-btns .next-btn").click(
-    //		function() {
-    //			if ($(this).hasClass("disabled")) {
-    //				return false;
-    //			}
-    //			page2(nowPage2 + 1);
-    //		});
-    ////优惠上一页
-    //$(".main-div .prev-btn").click(function() {
-    //	if ($(this).hasClass("disabled")) {
-    //		return false;
-    //	}
-    //	page3(nowPage3 - 1);
-    //});
-    ////优惠下一页
-    //$(".main-div .next-btn").click(function() {
-    //	if ($(this).hasClass("disabled")) {
-    //		return false;
-    //	}
-    //	page3(nowPage3 + 1);
-    //});
-
-    $(".tab-payment ul li").click(function () {
-        $(".tab-payment ul li").removeClass("active");
-        $(this).addClass("active");
-
-        $(".paytype-input").addClass("hide");
-        var targetId = $(this).attr("target");
-        $(targetId).removeClass("hide");
-    });
-
-    //initPreferentialType();
-
-
-    $(document).click(function (e) {
-        $(".more-oper").addClass("hide");
-        e.stopPropagation();
-    });
-    $(".show-more").click(function (e) {
-        $(".more-oper").removeClass("hide");
-        e.stopPropagation();
-    });
-
-    //清空购物车优惠
 });
-
-
-///**
-// * 退菜
-// * @param type： 0：单个退菜；1:整单退菜
-// */
-//function backFood(type){
-//
-//}
-// 已点菜品分页
-//function page1(currPage) {
-//	nowPage1 = widget.loadPage({
-//		obj : "#order-dish-table tbody tr",
-//		listNum : 6,
-//		currPage : currPage,
-//		totleNums : $("#order-dish-table tbody tr").length,
-//		curPageObj : "#order-modal #curr-page1",
-//		pagesLenObj : "#order-modal #pages-len1",
-//		prevBtnObj : "#order-modal .dish-oper-btns .prev-btn",
-//		nextBtnObj : "#order-modal .dish-oper-btns .next-btn",
-//		callback : function() {
-//			$("#order-dish-table tbody tr").removeClass("selected");
-//			$("#order-dish-table tbody tr").not(".hide").eq(0).addClass(
-//					"selected");
-//		}
-//	});
-//}
-// 已选优惠分页
-//function page2(currPage) {
-//	nowPage2 = widget.loadPage({
-//		obj : "#sel-preferential-table tbody tr",
-//		listNum : 6,
-//		currPage : currPage,
-//		totleNums : $("#sel-preferential-table tbody tr").length,
-//		curPageObj : "#order-modal #curr-page2",
-//		pagesLenObj : "#order-modal #pages-len2",
-//		prevBtnObj : "#order-modal .preferential-oper-btns .prev-btn",
-//		nextBtnObj : "#order-modal .preferential-oper-btns .next-btn",
-//		callback : function() {
-//			$("#sel-preferential-table tbody tr").removeClass("selected");
-//			$("#sel-preferential-table tbody tr").not(".hide").eq(0).addClass(
-//					"selected");
-//		}
-//	});
-//	Order.controlOperBtns();
-//}
-// 优惠分页
-//function page3(currPage) {
-//	nowPage3 = widget.loadPage({
-//		obj : ".preferentials-content .preferential-info",
-//		listNum : 16,
-//		currPage : currPage,
-//		totleNums : $(".preferentials-content .preferential-info").length,
-//		curPageObj : "#order-modal #curr-page3",
-//		pagesLenObj : "#order-modal #pages-len3",
-//		prevBtnObj : "#order-modal .main-div .prev-btn",
-//		nextBtnObj : "#order-modal .main-div .next-btn"
-//	});
-//}
-
-//function trClickEvent(){
-//	// 选中已点菜品
-//	$("#order-dish-table tbody tr").click(function() {
-//		$("#order-dish-table tbody tr").removeClass("selected");
-//		$(this).addClass("selected");
-//	});
-//}
-
-
-///**
-// * 添加优惠
-// */
-//function addPref(){
-//	var tr = "";
-//	var name = $("#pref-name").val();
-//	var price = $("#pref-price").val();
-//	var num = $("#pref-num").val();
-//	if(num == null || num== ""){
-//		num = 1;
-//	}
-//	tr = "<tr><td>" + name + "</td><td>"+num+"</td><td>" + price
-//			+ "</td></tr>";
-//
-//	$("#sel-preferential-table tbody").prepend(tr);
-//	page2(nowPage2);
-//	$("#coupnum-dialog").modal("hide");
-//	// 选中已选优惠
-//	$("#sel-preferential-table tbody tr").unbind("click").on("click", function(){
-//		$("#sel-preferential-table tbody tr").removeClass( "selected");
-//		$(this).addClass("selected");
-//	});
-//}
-///**
-// * 优惠购物车操作
-// */
-//function controlOperBtns(){
-//	if($("#sel-preferential-table tbody tr.selected").length > 0){
-//		$("#del-pref").removeClass("disabled");
-//		$("#clear-pref").removeClass("disabled");
-//	}else{
-//		$("#del-pref").addClass("disabled");
-//		$("#clear-pref").addClass("disabled");
-//	}
-//
-//}
-
-
-// 确认开台
-function confirmOpen() {
-    $("#open-dialog").modal("hide");
-    $("#adddish-dialog").load("../views/orderdish.jsp");
-    $("#adddish-dialog").modal("show");
-}
-
 
 //关闭dialog
 function closeConfirm(dialogId) {
     $("#" + dialogId).modal("hide");
-}
-function stoppro(evt) {
-    var e = evt ? evt : window.event; //判断浏览器的类型，在基于ie内核的浏览器中的使用cancelBubble
-    if (window.event) {
-        e.cancelBubble = true;
-    } else {
-        e.preventDefault(); //在基于firefox内核的浏览器中支持做法stopPropagation
-        e.stopPropagation();
-    }
 }

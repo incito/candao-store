@@ -597,7 +597,7 @@ widget.textAreaModal = function(opts){
 		modalIns.close();
 	});
 
-	var html = '<div class="fl ">其他退菜原因：</div>' +
+	var html = '<div class="fl ">其他原因：</div>' +
 		'<div class="fr">还可以输入<span class="J-count">20</span>字</div>' +
 		'<textarea class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
 		'<div class="btn-operate  ">' +
@@ -621,7 +621,7 @@ widget.textAreaModal = function(opts){
 			});
 		}
 	}
-}
+};
 
 
 /**
@@ -674,11 +674,11 @@ var rightBottomPop ={
 			"<div style='clear:both'></div>"+
 			"</div>" +
 			"<div class='rightBottomPop-content'>" + opts.content+ "</div>"+
-			"</div>"
+			"</div>";
 		$("body").append(html);
 		var lengthCon=$(".rightBottomPop").length
 		for( var i=0;i<lengthCon;i++){
-			$(".rightBottomPop").eq(i).animate({bottom:i*opts.height},1500);
+			//$(".rightBottomPop").eq(i).animate({bottom:i*opts.height},1500);
 			$(".rightBottomPop").eq(i).css("bottom",i*opts.height);
 		}
 		setTimeout(function() {
@@ -1222,7 +1222,6 @@ utils.openCash = function (type) {
 			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',
-			async: false,
 			success: function (res) {
 				if (res.result[0] === '1') {//成功
 					rightBottomPop.alert({content: '打开钱箱成功!'})

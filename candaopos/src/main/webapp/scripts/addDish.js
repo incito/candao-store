@@ -777,7 +777,7 @@ var AddDish = {
 						$.each(result.OrderJson , function(k,v){
 							var pid = getUuid();
 							v.pid = pid;
-							v.itemid = id;
+							v.itemid = v.source;
 							dishesMap.put(pid, v);
 						});
 						that.renderDishes(id);
@@ -921,6 +921,7 @@ var AddDish = {
 				});
 			}
 		}
+		console.log(dishids);
 		$('.nav-dish-type').each(function(){
 			var me = $(this);
 			var itemid = me.attr('itemid');
@@ -1702,7 +1703,7 @@ function getUuid(){
 
 function goToOrder(tips){
 	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno  + '&type=' + g_eatType;
-	if(tips.length > 0) {
+	if(tips !== undefined && tips.length > 0) {
 		url += '&tips=' + tips;
 	}
 	window.location.href = encodeURI(encodeURI(url));

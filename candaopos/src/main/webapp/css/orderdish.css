@@ -29,6 +29,7 @@ footer{
 	background: #FFFFFF;
 	float:  left;
 	position: relative;
+	padding-right: 53px;
 }
 /******涓棿鎿嶄綔鏍�****/
 .oper-div{
@@ -37,7 +38,9 @@ footer{
 	display: inline-block;
 	height: 100%;
 	background: #FFFFFF;
-	float: left;
+	position: absolute;
+	right: 0;
+	top:0;
 }
 .oper-div .btns{
   	margin-top: 53px;
@@ -78,7 +81,7 @@ footer{
 /******涓棿鎿嶄綔鏍�end****/
 
 .main-div{
-	width: 60%;
+	width: 66%;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -86,7 +89,7 @@ footer{
 	background: #E8E8E8;
 }
 .main-div .nav-type-prev, .main-div .nav-type-next{
-	width: 43px;
+	width: 5%;
   	height: 43px;
   	background: #F6F6F6;
   	box-shadow: 0px 1px 0px 0px #B1B1B1;
@@ -120,9 +123,9 @@ footer{
   	overflow: hidden;
   	display: inline-block;
   	padding: 0;
-  	margin: 0 0 0 10px;
+  	margin: 0 2%;
   	height: 43px;
-  	width: 522px;/***85%****/
+  	width: 86%;
   	float: left;
 }
 .main-div .nav-types li{

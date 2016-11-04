@@ -23,7 +23,7 @@
 	<link rel="stylesheet" href="../css/orderdish.css">
 	<link rel="stylesheet" href="../css/order.css">
 </head>
-<body id="order" style="overflow: scroll">
+<body id="order" style="overflow-y: scroll">
 
 <%
 	String orderid = request.getParameter("orderid");
@@ -112,41 +112,42 @@
 						<li id="consumInfo" onclick="Order.consumInfo()">零头不处理</li>
 					</ul>
 				</div>
-			</div>
-			<div class="oper-div">
-				<div class="dish-oper-btns btns">
-					<div class="oper-btn btn prev-btn">
-						<span class="glyphicon glyphicon-chevron-up"></span>
+
+				<div class="oper-div">
+					<div class="dish-oper-btns btns">
+						<div class="oper-btn btn prev-btn">
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</div>
+						<div class="page-info">
+							<span id="curr-page1">0</span>/<span id="pages-len1">0</span>
+						</div>
+						<div class="oper-btn btn next-btn">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</div>
+						<div class="oper-btn btn" onclick="Order.initBackFoodDialog(0)">
+							退菜
+						</div>
+						<div class="oper-btn btn disabled" id="weigh-dish">
+							称重
+						</div>
 					</div>
-					<div class="page-info">
-						<span id="curr-page1">0</span>/<span id="pages-len1">0</span>
+					<div class="preferential-oper-btns btns">
+						<div class="oper-btn prev-btn">
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</div>
+						<div class="page-info">
+							<span id="curr-page2">0</span>/<span id="pages-len2">0</span>
+						</div>
+						<div class="oper-btn next-btn">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</div>
+						<button class="btn oper-btn disabled" id="del-pref">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+						<button class="btn oper-btn disabled" id="clear-pref">
+							<span>C</span>
+						</button>
 					</div>
-					<div class="oper-btn btn next-btn">
-						<span class="glyphicon glyphicon-chevron-down"></span>
-					</div>
-					<div class="oper-btn btn" onclick="Order.initBackFoodDialog(0)">
-						退菜
-					</div>
-					<div class="oper-btn btn disabled" id="weigh-dish">
-						称重
-					</div>
-				</div>
-				<div class="preferential-oper-btns btns">
-					<div class="oper-btn prev-btn">
-						<span class="glyphicon glyphicon-chevron-up"></span>
-					</div>
-					<div class="page-info">
-						<span id="curr-page2">0</span>/<span id="pages-len2">0</span>
-					</div>
-					<div class="oper-btn next-btn">
-						<span class="glyphicon glyphicon-chevron-down"></span>
-					</div>
-					<button class="btn oper-btn disabled" id="del-pref">
-						<span class="glyphicon glyphicon-minus"></span>
-					</button>
-					<button class="btn oper-btn disabled" id="clear-pref">
-						<span>C</span>
-					</button>
 				</div>
 			</div>
 			<div class="main-div">

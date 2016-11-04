@@ -70,31 +70,30 @@
 						全单备注：<span id="order-note"></span>
 					</div>
 				</div>
-
-			</div>
-			<div class="oper-div">
-				<div class="btns">
-					<button class="btn oper-btn prev-btn disabled">
-						<span class="glyphicon glyphicon-chevron-up"></span>
-					</button>
-					<div class="page-info">
-						<span id="curr-page">0</span>/<span id="pages-len">0</span>
+				<div class="oper-div">
+					<div class="btns">
+						<button class="btn oper-btn prev-btn disabled">
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</button>
+						<div class="page-info">
+							<span id="curr-page">0</span>/<span id="pages-len">0</span>
+						</div>
+						<button class="btn oper-btn next-btn disabled">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</button>
+						<button class="btn oper-btn disabled" onclick="AddDish.doUpdateNum(1)">
+							<span class="glyphicon glyphicon-plus"></span>
+						</button>
+						<button class="btn oper-btn disabled" onclick="AddDish.doUpdateNum(2)">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+						<button class="btn oper-btn disabled" onclick="AddDish.updateNum()">
+							<span>数量</span>
+						</button>
+						<button class="btn oper-btn disabled" onclick="AddDish.initNoteDialog(0);">
+							<span>备注</span>
+						</button>
 					</div>
-					<button class="btn oper-btn next-btn disabled">
-						<span class="glyphicon glyphicon-chevron-down"></span>
-					</button>
-					<button class="btn oper-btn disabled" onclick="AddDish.doUpdateNum(1)">
-						<span class="glyphicon glyphicon-plus"></span>
-					</button>
-					<button class="btn oper-btn disabled" onclick="AddDish.doUpdateNum(2)">
-						<span class="glyphicon glyphicon-minus"></span>
-					</button>
-					<button class="btn oper-btn disabled" onclick="AddDish.updateNum()">
-						<span>数量</span>
-					</button>
-					<button class="btn oper-btn disabled" onclick="AddDish.initNoteDialog(0);">
-						<span>备注</span>
-					</button>
 				</div>
 			</div>
 			<div class="main-div">
