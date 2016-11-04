@@ -991,7 +991,7 @@ var ya_Member = {
                     }
                     if (res.Data == 1) {
                         //member.errorAlert('充值成功');
-                        utils.openCash(0);//弹钱箱
+                        utils.openCash();//弹钱箱
                         rightBottomPop.alert({
                             content:'会员充值成功,<br>交易流水号:'+res.pszTrace+'',
                         });

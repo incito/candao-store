@@ -87,10 +87,20 @@ public class PrintObj implements Serializable,Cloneable {
 		this.custnum = custnum;
 	}
 
+	private Map<String, Object> posData;
+
+	private String targetCustNum;
+
 	private String custnum;
-    
-    private Map<String, Object> posData;
-	
+
+	public String getTargetCustNum() {
+		return targetCustNum;
+	}
+
+	public void setTargetCustNum(String targetCustNum) {
+		this.targetCustNum = targetCustNum;
+	}
+
 	
 	public String getPrintName() {
 		return printName;

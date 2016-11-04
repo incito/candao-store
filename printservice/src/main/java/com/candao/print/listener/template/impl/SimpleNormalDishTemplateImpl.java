@@ -240,7 +240,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
         String special = printDish.getSperequire();
         String[] arraySpec = special.split(",");
         String subMsg = "";
-        String subTableMsg = "桌号：";
+        String subTableMsg = "台号：";
         for (String spec : arraySpec) {
             if (!spec.contains("[")) {
                 continue;
@@ -252,7 +252,7 @@ public class SimpleNormalDishTemplateImpl implements ListenerTemplate {
         String prefixMsg = " (" + subMsg.split("-")[0] + "台送)";
         subMsg = subMsg.split("-")[1];
 
-        String[] tableName = {subTableMsg + subMsg + prefixMsg," ","人数:" + obj.getCustnum()};
+        String[] tableName = {subTableMsg + subMsg + prefixMsg," ","人数:" + obj.getTargetCustNum()};
         Integer[] tableLength = template.getSpeTableLength();
         String[] table = StringUtils.getLineFeedText(tableName, tableLength);
 

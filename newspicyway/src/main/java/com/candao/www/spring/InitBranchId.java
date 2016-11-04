@@ -32,7 +32,7 @@ public class InitBranchId implements ApplicationListener<ContextRefreshedEvent>{
 	    			logger.error("获取门店ID失败,请检查t_branch_info表(branchid字段)是否有数据");
 	    			return;
 	    		}
-	    		branchId = (String) map.get("branchid");
+	    		branchId = map.get("branchid").toString().trim();
 	    		PropertiesUtils.setBranchId(branchId);
 	    	}
 		}

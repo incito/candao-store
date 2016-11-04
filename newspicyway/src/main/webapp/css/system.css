@@ -306,7 +306,6 @@ body {
 	line-height:23px;
 	text-indent:10px;
 	margin:0;
-	padding: 20px 0px 0px 0px;
 	display:block;
 	color: #999999;
 }
@@ -367,7 +366,7 @@ body {
 	line-height:23px;
 	text-indent:10px;
 	margin:0;
-	padding: 40px 0px 0px 0px;
+	padding: 10px 0px 0px 0px;
 	display:block;
 	color: #999999;
 }
@@ -388,4 +387,18 @@ body {
 	overflow:hidden;
 	text-overflow:ellipsis;
     white-space: nowrap;
+}
+
+#reUpload {
+	background: #8cc253;
+	width: 130px;
+	height: 37px;
+	border-radius: 3px;
+	color: #fff;
+	line-height: 37px;
+	font-size: 18px;
+	text-align: center;
+	cursor: pointer;
+	margin-left: 25px;
+	margin-top: 15px;
 }

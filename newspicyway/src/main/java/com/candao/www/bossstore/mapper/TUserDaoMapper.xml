@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.bossstore.dao.TUserDao">
+	 <!-- 查询所有的用户信息-->
+	<select id="getOpenUser" parameterType="java.util.Map"  resultType="java.util.Map">
+	    select u.name as name,u.mobile as mobile
+		from t_b_employee e, t_b_user u
+		where u.id = e.user_id
+		and e.branch_id = #{branchId}
+	</select>
+</mapper>

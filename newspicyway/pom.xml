@@ -63,6 +63,11 @@
             <version>1.7.12</version>
         </dependency>
         <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        <dependency>
             <groupId>com.candao</groupId>
             <artifactId>candaopos</artifactId>
             <version>${project.version}</version>
@@ -129,6 +134,20 @@
                                 <include>**/*.jar</include>
                             </includes>
                         </resource>
+                        <resource>
+                            <directory>${project.basedir}/sql_script_全量</directory>
+                            <targetPath>WEB-INF/classes/other</targetPath>
+                            <includes>
+                                <include>**/V*.sql</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${project.basedir}/sql_script_增量</directory>
+                            <targetPath>WEB-INF/classes/other</targetPath>
+                            <includes>
+                                <include>**/V*.sql</include>
+                            </includes>
+                        </resource>
                     </webResources>
                 </configuration>
             </plugin>
@@ -157,7 +176,7 @@
                     <include>**/*.properties</include>
                     <include>**/template/**</include>
                     <include>**/other/*</include>
-                    <include>**/template/**</include>
+                    <include>**/*.p12</include>
                 </includes>
             </resource>
         </resources>

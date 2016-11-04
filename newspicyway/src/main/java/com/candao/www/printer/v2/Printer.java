@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
@@ -191,6 +192,7 @@ public class Printer {
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
+        outputStream.write(PrinterConstant.BEL);
         outputStream.flush();
     }
 

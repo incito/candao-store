@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSONObject;
+import com.candao.print.entity.*;
 import com.candao.www.data.model.*;
 import com.candao.www.data.pos.TPrinterDeviceMapper;
 import com.candao.www.data.pos.TPrinterDeviceprinterMapper;
@@ -33,13 +34,6 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.Constant;
 import com.candao.print.dao.TbPrinterManagerDao;
-import com.candao.print.entity.DishItem;
-import com.candao.print.entity.OrderInfo4Pos;
-import com.candao.print.entity.PrintObj;
-import com.candao.print.entity.ResultInfo4Pos;
-import com.candao.print.entity.ResultTip4Pos;
-import com.candao.print.entity.SettlementInfo4Pos;
-import com.candao.print.entity.TipItem;
 import com.candao.www.data.dao.TbBranchDao;
 import com.candao.www.utils.CloneUtil;
 import com.candao.www.webroom.service.DataDictionaryService;
@@ -225,8 +219,9 @@ public class Print4POSServiceImpl implements Print4POSService {
         for (int i = 0; i < res.size(); i++) {
             Map<String, Object> map = res.get(i);
             PrintObj tempObj = (PrintObj) CloneUtil.clone(obj, -1);
+            TbPrinterManager printerManager = tbPrinterManagerDao.get(String.valueOf(map.get("printerid")));
             tempObj.setPrinterid(String.valueOf(map.get("printerid")));
-            tempObj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress") == null ? map.get("printerip") : map.get("ipaddress")));
+            tempObj.setCustomerPrinterIp(printerManager.getIpaddress());
             Print4POSProcedure print4POSProcedure = (Print4POSProcedure) SpringContext
                     .getBean(Print4POSProcedure.class);
             print4POSProcedure.setSource(tempObj);
@@ -417,8 +412,8 @@ public class Print4POSServiceImpl implements Print4POSService {
     private List<Map<String, Object>> generatePreferList(Map<String, Object> map) {
         Assert.notEmpty(map, "固定优惠不能为空");
         List<Map<String, Object>> res = new LinkedList<>();
-        String[] name = {"优免", "会员积分消费", "会员券消费", "折扣优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增"};
-        String[] valueName = {"bastfree", "integralconsum", "meberTicket", "discountmoney", "malingincom", "give",
+        String[] name = {"优免", "会员积分消费", "会员券消费", "会员优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增"};
+        String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "malingincom", "give",
                 "handervalue", "mebervalueadd"};
         for (int i = 0; i < name.length; i++) {
             Map<String, Object> temp = new HashMap<>();
