@@ -500,7 +500,7 @@ widget.loadPage = function(options){
  * @returns {*}
  */
 
-var focusIpt;
+var focusIpt = null;
 widget.keyboard = function(opts){
 	var defautlopts = {
 		target: '.virtual-keyboard',
