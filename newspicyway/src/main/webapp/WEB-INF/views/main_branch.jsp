@@ -152,6 +152,11 @@
 						<a href="#" class="ky-menu-setup" onclick="toSetup()">系统设置</a>
 					</li>
 				</c:if>
+				<c:if test="${item.key  == '0316' || item.key=='020101'}">
+ 				<li  class="ky-dropdown" id="help">
+ 					<a href="#" class="ky-menu-success ky-menu-report" onclick="toFrame('http://oms.candaochina.com/helprest/')">帮助中心</a>
+ 				</li>
+ 				</c:if>
 			</c:forEach>	
 			</ul>
 		</div>
