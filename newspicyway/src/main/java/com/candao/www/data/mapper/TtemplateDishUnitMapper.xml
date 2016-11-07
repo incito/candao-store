@@ -60,16 +60,17 @@
 	</where>
 	</select>
 	<select id="getTtemplateDishUnitByparamsPad" resultMap="findResultMap" parameterType="map" >
-	select unit,price,vipprice from t_template_dishunit 
+	select DISTINCT ttd.unit, ttd.price,ttd.vipprice FROM t_template_dishunit as ttd 
+	LEFT JOIN t_dish_unit as tdu ON ttd.dishid=tdu.dishid 
 	<where>
 	<if test="menuid != null ">
-	        and menuid=#{menuid}
+	        and  ttd.menuid=#{menuid}
 	</if>
 	<if test="dishid != null ">
-	        and dishid=#{dishid}
+	        and ttd.dishid=#{dishid}
 	</if>
 	</where>
-	ORDER BY price asc
+	 ORDER BY tdu.orderNum ASC
 	</select>
 	<update id="updateDishStatus" parameterType="map">
 	update t_template_dishunit set `status`=#{status} where menuid=#{menuid} and dishid=#{dishid}
