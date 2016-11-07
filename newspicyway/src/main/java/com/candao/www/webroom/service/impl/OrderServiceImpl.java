@@ -1300,6 +1300,7 @@ public class OrderServiceImpl implements OrderService {
 				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
 					if (branchDataSyn.getIsCustom() == 2) {
 						falg = true;
+						break;
 					}
 				}
 				if (!falg) {
