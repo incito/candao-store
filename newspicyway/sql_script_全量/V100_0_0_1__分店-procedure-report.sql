@@ -43,7 +43,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     DECLARE v_da_mebervalueadd DOUBLE(13, 2) DEFAULT 0; #折扣(虚增）
     #登录会员以后菜价的变化
     DECLARE v_da_meberDishPriceFree DOUBLE(13, 2) DEFAULT 0;
-
+	DECLARE v_temp_paidinamount DOUBLE(13, 2) DEFAULT 0;
     #以下为营业数据统计项(堂吃)
     DECLARE v_sa_ordercount INT DEFAULT 0; #营业数据统计(桌数）
     DECLARE v_sa_tableconsumption DOUBLE(13, 2) DEFAULT 0; #营业数据统计(桌均消费）
@@ -491,9 +491,18 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     FROM
       t_temp_settlement_detail;
 
-    SET v_paidinamount =
-    v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin +
-    v_pa_zhifubao;
+   -- SET v_paidinamount =
+   -- v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin +
+   -- v_pa_zhifubao;
+	SELECT IFNULL(SUM(payamount),0) INTO v_temp_paidinamount
+
+   FROM t_temp_settlement_detail
+
+   WHERE payway IN (SELECT itemid FROM v_revenuepayway);
+
+ 
+
+   SET v_paidinamount = v_temp_paidinamount - v_da_mebervalueadd;
 
     #     modified by caicai
     #     为保证POS清机单上的优免金额和这里的优免相同，将折扣金额去掉
