@@ -10,13 +10,13 @@ OUT po_errmsg VARCHAR(100))
 label_main:
 BEGIN
 
-  DECLARE v_payway DOUBLE(13, 2) DEFAULT 0;              
-  DECLARE v_pamount DOUBLE(13, 2) DEFAULT 0;             
-  DECLARE v_totalconsumption DOUBLE(13, 2) DEFAULT 0;    
-  DECLARE v_paidamount DOUBLE(13, 2) DEFAULT 0;          
-  DECLARE v_giveamount DOUBLE(13, 2) DEFAULT 0;          
-  DECLARE v_couponamount DOUBLE(13, 2) DEFAULT 0;        
-  DECLARE v_taocan DOUBLE(13, 2) DEFAULT 0;              
+  DECLARE v_payway DOUBLE(13, 2) DEFAULT 0;              -- 结算方式（四舍五入/抹零）
+  DECLARE v_pamount DOUBLE(13, 2) DEFAULT 0;             -- 结算金额（四舍五入/抹零）
+  DECLARE v_totalconsumption DOUBLE(13, 2) DEFAULT 0;    -- 应收金额（不含赠菜）
+  DECLARE v_paidamount DOUBLE(13, 2) DEFAULT 0;          -- 实收金额
+  DECLARE v_giveamount DOUBLE(13, 2) DEFAULT 0;          -- 赠菜金额
+  DECLARE v_couponamount DOUBLE(13, 2) DEFAULT 0;        -- 优惠金额
+  DECLARE v_taocan DOUBLE(13, 2) DEFAULT 0;              -- 套餐金额
 
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
@@ -40,11 +40,11 @@ BEGIN
   FROM t_order_detail tod
   WHERE orderid = pi_orderid AND pricetype <> 1;
 
-  
-  
-  
-  
-  
+  #added by caicai
+  #SELECT
+  #  IFNULL(SUM(dishnum * orignalprice), 0.00) INTO v_taocan
+  #FROM t_order_detail
+  #WHERE orderid = pi_orderid AND dishtype = 2 AND superkey <> primarykey;
 
   SELECT
     payway,
@@ -55,30 +55,31 @@ BEGIN
   SELECT
     IFNULL(SUM(payamount), 0.00) INTO v_paidamount
   FROM t_settlement_detail
-  WHERE orderid = pi_orderid AND payway IN (SELECT itemid FROM v_revenuepayway);
+  RIGHT JOIN v_revenuepayway vr ON vr.itemid = payway
+  WHERE orderid = pi_orderid;
 
   SELECT
     IFNULL(SUM(orignalprice), 0.00) INTO v_giveamount
   FROM t_order_detail
   WHERE orderid = pi_orderid AND pricetype = 1;
 
-  
-  
+  #SET v_couponamount = v_totalconsumption - v_taocan - v_paidamount;
+  #added by caicai
   SET v_couponamount = v_totalconsumption - v_paidamount;
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res (
-    payway VARCHAR(50),               
-    payamount DOUBLE(13, 2),          
-    totalconsumption DOUBLE(13, 2),   
-    paidamount DOUBLE(13, 2),         
-    giveamount DOUBLE(13, 2),         
-    couponamount DOUBLE(13, 2),       
-    invoiceamount DOUBLE(13, 2)       
+    payway VARCHAR(50),               -- 结算方式（四舍五入/抹零） 
+    payamount DOUBLE(13, 2),          -- 结算金额（四舍五入/抹零)                                                                         
+    totalconsumption DOUBLE(13, 2),   -- 应收金额（不含赠菜）                                                                     
+    paidamount DOUBLE(13, 2),         -- 实收金额                                                                    
+    giveamount DOUBLE(13, 2),         -- 赠菜金额                                                                   
+    couponamount DOUBLE(13, 2),       -- 优惠金额
+    invoiceamount DOUBLE(13, 2)       -- 发票金额 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
-  
-  
+  #INSERT INTO t_temp_res (payway, payamount, totalconsumption, paidamount, giveamount, couponamount, invoiceamount)
+  #VALUES (v_payway, v_pamount, v_totalconsumption - v_taocan, v_paidamount, v_giveamount, v_couponamount, 0.00);
 
   INSERT INTO t_temp_res (payway, payamount, totalconsumption, paidamount, giveamount, couponamount, invoiceamount)
     VALUES (v_payway, v_pamount, v_totalconsumption, v_paidamount, v_giveamount, v_couponamount, 0.00);

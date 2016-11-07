@@ -9417,7 +9417,7 @@ BEGIN
   SELECT
     IFNULL(SUM(payamount), 0.00) INTO v_paidamount
   FROM t_settlement_detail
-  LEFT JOIN v_revenuepayway vr ON vr.itemid = payway
+  RIGHT JOIN v_revenuepayway vr ON vr.itemid = payway
   WHERE orderid = pi_orderid;
 
   SELECT
