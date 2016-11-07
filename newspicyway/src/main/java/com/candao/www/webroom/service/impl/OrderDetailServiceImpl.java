@@ -1353,7 +1353,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 for (TbPrinterManager tbPrinter : printers) {
                 	//判断是否已经组合打印过
 					String printid = tbPrinter.getPrinterid();
-					Object obj = printedmap
+					Integer obj = printedmap
 							.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
 					if (obj != null && refundDish != 1) {// 退菜单除外
 						continue;// 已经打印过了
@@ -2441,11 +2441,91 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 map0.put("islatecooke", "1");
             }
 
-            List<PrintDish> pdList = tbPrintObjDao.findDishByObjId(map0);
-            if (pdList != null) {
-                for (PrintDish pd : pdList) {
-                    singleDishUrgeAndCall(pd.getPrimarykey(), urgeDish.getOrderNo(), type, printObj);
-                }
+            List<PrintDish> printdishList = tbPrintObjDao.findDishByObjId(map0);
+            if (printdishList != null) {
+            	Map<String, Integer> printedmap = new HashMap<>();
+            	convertPrintDish(printdishList);
+                for (PrintDish pd : printdishList) {
+                    /********* new start ***********/
+                    pd.setAbbrname(printObj.getAbbrbillName());
+                    formatDishNum(pd);
+	                List<TbPrinterManager> printers = getPrinter(printObj.getTableid(), pd.getDishId(), "1");
+	                if (printers != null) {
+	                    for (TbPrinterManager tbPrinter : printers) {
+		                  //判断是否已经组合打印过
+							String printid = tbPrinter.getPrinterid();
+							Integer obj = printedmap
+									.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
+							if (obj != null) {
+								continue;// 已经打印过了
+							}
+		
+		                    // 判断是否合并打印
+		                    List<PrintDish> pdList = new ArrayList<>();
+		                    //送礼的菜不合并打印;
+		                    boolean gift = isGiftDish(pd);
+		                    if (gift)
+		                        resolveSpecCustNum(printObj, pd);
+							if (!gift) {
+		                        String groupSequence = getDishGroupSequence(pd, tbPrinter);
+		                        if (groupSequence != null) {
+		                            List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
+		                            logger.error("------------------------", "");
+		                            logger.error("起菜（催菜）进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
+		                            // 有两个及以上的菜才需要合并
+		                            //modified by caicai
+		                            if (findPrintDetail.size() > 1) {
+		                                for (TbPrinterDetail tbPrinterDetail : findPrintDetail) {
+		                                    for (PrintDish printDish : printdishList) {
+		                                    	gift = isGiftDish(printDish);
+		                                        if (printDish.getDishId().equals(tbPrinterDetail.getDishid()) && !gift) {
+	                                                pdList.add(printDish);
+		                                        }
+		                                    }
+		                                }
+		                                // 有两个以上才组合
+		                                if (pdList.size() >= 2) {
+		                                    for (PrintDish it : pdList) {
+		                                        // 加入已打印列表
+		                                        formatDishNum(it);//格式化菜品数量，不能省略
+		                                    }
+		                                }
+		                            }
+		                        }
+		                    }
+							//当没有组合的情况时，添加菜品本身
+		                    if (pdList.isEmpty()) {
+		                        pdList.add(pd);
+		                    }
+		
+		                    printObj.setOrderseq(pd.getOrderseq());  //设置起菜的打印序号为备菜时的序号
+		                    printObj.setCustomerPrinterIp(tbPrinter.getIpaddress());
+		                    printObj.setCustomerPrinterPort(tbPrinter.getPort());
+		                    printObj.setpDish(pdList);
+		                    //added by caicai
+		                    printObj.setPrintName(tbPrinter.getPrintername());
+		                    printObj.setPrinterid(tbPrinter.getPrinterid());
+		                    printObj.setRePeatID(UUID.randomUUID().toString());
+		                    logger.error("------------------------,菜品数量" + pdList.size(), "");
+		                    for (PrintDish printDish : pdList) {
+		                    	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
+							}
+		                    //加入打印队列
+		                    new Thread(new PrintThread(printObj)).run();
+		
+		                    //如果是叫起的单子需要更新状态为0
+		                    if ("1".equals(type)) {
+		                        map0.put("primarykey", pd.getPrimarykey());
+		                    	tbPrintObjDao.updateDishByPrimaryKey(map0);
+		                    	tbPrintObjDao.updateDetailByPrimaryKey(map0);
+		                    }
+		                    
+		                    for (PrintDish printDish : pdList) {
+		                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
+		                    }
+		                }
+	                }	
+	            }
             }
         }
         return Constant.SUCCESSMSG;

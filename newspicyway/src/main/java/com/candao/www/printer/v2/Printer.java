@@ -178,7 +178,7 @@ public class Printer {
 
     protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         msg = checkDuplicate(msg);
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "GBK");
         for (Object o : msg) {
             if (null == o) {
                 o = "";
