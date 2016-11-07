@@ -529,16 +529,12 @@ var MainPage = {
 					if(isOpend) {
 						time = '';
 						var hm = (new Date().getTime() - (new Date(val.begintime.replace(new RegExp("-","gm"),"/"))).getTime());//得到毫秒数
-
-						//计算出相差天数
-						var days=Math.floor(hm/(24*3600*1000));
 						//计算出小时数
 						var leave1=hm%(24*3600*1000);    //计算天数后剩余的毫秒数
 						var hours=Math.floor(leave1/(3600*1000));//计算相差分钟数
 						var leave2=leave1%(3600*1000);       //计算小时数后剩余的毫秒数
 						var minutes=Math.floor(leave2/(60*1000));
-
-						if(hours === 0) {
+						if(hours <= 0 ) {
 							time += '00:'
 						} else if(hours > 10) {
 							time += hours + ':'
@@ -546,7 +542,7 @@ var MainPage = {
 							time += '0' + hours + ':'
 						}
 
-						if(minutes === 0) {
+						if(minutes <= 0) {
 							time += '00'
 						} else if(minutes > 10) {
 							time += minutes

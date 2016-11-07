@@ -244,10 +244,11 @@ var Order = {
             })
         });
         dom.order.delegate(".preferential-info", 'click', function () {
+            var me = $(this);
             clearTimeout(_time);
             _time = setTimeout(function(){
                 //单击事件在这里
-                var me = $(this);
+
                 var name = me.attr('name');
                 var type = me.attr('type');
                 var sub_type = me.attr('sub_type');
@@ -1851,7 +1852,7 @@ var Order = {
                     } else {
                         utils.loading.remove();
                         widget.modal.alert({
-                            content:'<strong>结账失败,请稍后重试</strong>',
+                            content:'<strong>' + res.msg + '</strong>',
                             btnOkTxt: '确定',
                             btnCancelTxt: ''
                         });
