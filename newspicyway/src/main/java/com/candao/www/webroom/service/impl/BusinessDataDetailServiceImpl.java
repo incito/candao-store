@@ -167,7 +167,7 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                         businssRport.setGive(ToolsUtil.formatTwoDecimal(businessR.get(i).get("give").toString()));
                     }
 
-					if (judgePayforType() == 0) {   //表示 不处理
+					/*if (judgePayforType() == 0) {   //表示 不处理
 
 					} else if (judgePayforType() == 1) {    //表示 四舍五入
 						businssRport.setHanderWay("四舍五入调整");
@@ -175,7 +175,13 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					} else if (judgePayforType() == 2) {    //表示 抹零
 						businssRport.setHanderWay("抹零");
 						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
-					}
+					}*/
+                    if(businessR.get(i).get("roundoff") != null){ //已结账单数
+                        businssRport.setRoundoff(ToolsUtil.formatTwoDecimal(businessR.get(i).get("roundoff").toString()));
+                    }
+                    if(businessR.get(i).get("fraction") != null){ //已结账单数
+                        businssRport.setRoundoff(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
+                    }
 					if(businessR.get(i).get("closedbillnums") != null){ //已结账单数
                     	businssRport.setClosedordermums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillnums").toString()));
                     }
@@ -548,16 +554,16 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 
 //					//优免（元）
 					map = new HashMap<>();
-					map.put("key", "折扣总额");
+					map.put("key", "优免");
 					map.put("title", "折扣总额统计");
 					map.put("value",businessR.get(i).getBastfree());
 					mapList.add(map);
 
-//					//会员积分消费（元）Merbervaluenet
+//					//会员积分消费（元）
 					map = new HashMap<>();
 					map.put("key", "会员积分消费");
 					map.put("title", "折扣总额统计");
-					map.put("value", businessR.get(i).getMerbervaluenet());
+					map.put("value", businessR.get(i).getIntegralconsum());
 					mapList.add(map);
 //
 //						//会员券消费（元）
@@ -567,21 +573,21 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					map.put("value",businessR.get(i).getMeberTicket());
 					mapList.add(map);
 
-					if (judgePayforType() == 0) {   //表示 不处理
+					//if (judgePayforType() == 0) {   //表示 不处理
 
-					} else if (judgePayforType() == 1) {    //表示 四舍五入
+					//} else if (judgePayforType() == 1) {    //表示 四舍五入
 						map = new HashMap<>();
 						map.put("key", "四舍五入调整");
 						map.put("title", "折扣总额统计");
-						map.put("value",businessR.get(i).getHandervalue());
+						map.put("value",businessR.get(i).getRoundoff());
 						mapList.add(map);
-					} else if (judgePayforType() == 2) {    //表示 抹零
+					//} else if (judgePayforType() == 2) {    //表示 抹零
 						map = new HashMap<>();
 						map.put("key", "抹零");
 						map.put("title", "折扣总额统计");
-						map.put("value",businessR.get(i).getHandervalue());
+						map.put("value",businessR.get(i).getFraction());
 						mapList.add(map);
-					}
+					//}
 					//折扣优惠
 					map = new HashMap<>();
 					map.put("key", "折扣优惠");

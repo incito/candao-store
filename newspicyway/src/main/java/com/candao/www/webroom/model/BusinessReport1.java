@@ -47,7 +47,8 @@ public class BusinessReport1 {
 	private String handerWay="";     //零头处理方式名称
 	private String handervalue="";     //零头处理方式值
 	private String closedordermums = "0";  //已结账单数
-
+    private String roundoff = "0";
+    private String fraction = "0";
 	private String closedordershouldamount = "0";  //已结账单应收
 	private String closedorderpersonnums = "0";  //已结人数
 	private String nobillnums = "0"; //未结账单数
@@ -436,6 +437,22 @@ public class BusinessReport1 {
 
 	public void setSettlements(List<String> settlements) {
 		this.settlements = settlements;
+	}
+
+	public String getRoundoff() {
+		return roundoff;
+	}
+
+	public void setRoundoff(String roundoff) {
+		this.roundoff = roundoff;
+	}
+
+	public String getFraction() {
+		return fraction;
+	}
+
+	public void setFraction(String fraction) {
+		this.fraction = fraction;
 	}
     
 }
