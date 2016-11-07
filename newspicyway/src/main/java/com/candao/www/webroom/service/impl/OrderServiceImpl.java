@@ -1293,24 +1293,28 @@ public class OrderServiceImpl implements OrderService {
 		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
 		// 新辣道特殊新编码处理
 		if (PropertiesUtils.getValue("tenant_id").equals("100011")) {
-			if (allDetailPre == null || allDetailPre.isEmpty()) {
-				autoPre(orderid,params.get("memberno"), operPreferentialResult);
-			} else {
-				boolean falg = false;
-				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
-					if (branchDataSyn.getIsCustom() == 2) {
-						falg = true;
-						break;
-					}
-				}
-				if (!falg) {
-					autoPre(orderid,params.get("memberno"),  operPreferentialResult);
-				}
-			}
+			autoPre(orderid,params.get("memberno"),  operPreferentialResult);
+//			if (allDetailPre == null || allDetailPre.isEmpty()) {
+//				autoPre(orderid,params.get("memberno"), operPreferentialResult);
+//			} else {
+//				boolean falg = false;
+//				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
+//					if (branchDataSyn.getIsCustom() == 2) {
+//						falg = true;
+//						break;
+//					}
+//				}
+//				if (!falg) {
+//				
+//				}
+//			}
 		}
 
 		// 需要得到已经是有优惠的值
 		for (TorderDetailPreferential branchDataSyn : allDetailPre) {
+			if (branchDataSyn.getIsCustom() == 2) {
+				continue;
+			}
 			setMap.clear();
 			setMap.put("orderid", orderid);
 			setMap.put("preferentialid", branchDataSyn.getPreferential());

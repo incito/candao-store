@@ -115,6 +115,10 @@
 			and id=#{DetalPreferentiald,jdbcType=VARCHAR}
 		</if>
 	</delete>
+	<delete id="deleteForXinladaoInfo" parameterType="map">
+		DELETE FROM t_order_detail_preferential WHERE
+		orderid=#{orderid} and isCustom=#{custom};
+	</delete>
 
 	<select id="getTorderDetailPreS" parameterType="map"
 		resultType="com.candao.www.data.model.TorderDetailPreferential">

@@ -63,6 +63,11 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				singleDishs.add(torderDetail);
 			}
 		}
+		//优先干掉新新辣道优惠
+		Map<String, Object> delMap = new HashMap<>();
+		delMap.put("orderid", orderid);
+		delMap.put("custom", "2");
+		orderDetailPreferentialDao.deleteForXinladao(delMap);
 		// 双拼锅立减
 		Map<String, Object> doublePotAmountMap = calDoublePot(doublePots, tbPreferentialActivityDao, params, orderid,
 				paraMap, orderDetailPreferentialDao);
@@ -150,13 +155,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				// 设置优免金额
 				torder.setToalFreeAmount(amount);
 				detailPreferentials.add(torder);
-			} else {
-				// 如果重新计算没有找到数据库记录数据及删除原来数据
-				Map<String, Object> deletMap = new HashMap<>();
-				deletMap.put("orderid", orderid);
-				deletMap.put("DetalPreferentiald", paraMap.get("updateId"));
-				orderDetailPreferentialDao.deleteDetilPreFerInfo(deletMap);
-			}
+			} 
 
 		}
 		result.put("detailPreferentials", detailPreferentials);
@@ -192,11 +191,6 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				torder.setToalFreeAmount(amount);
 				detailPreferentials.add(torder);
 			}
-		} else {
-			Map<String, Object> delMap = new HashMap<>();
-			delMap.put("DetalPreferentiald", paraMap.get("updateId"));
-			delMap.put("orderid", orderid);
-			orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);

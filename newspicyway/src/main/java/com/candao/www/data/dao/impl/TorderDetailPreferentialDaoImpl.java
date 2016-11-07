@@ -60,6 +60,11 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		params.put("clear", String.valueOf(params.get("clear")));
 		return daoSupport.delete(PREFIX + ".deleteDetilPreFerInfo",params);
 	}
+	@Override
+	public int deleteForXinladao(Map<String, Object> params) {
+		return  daoSupport.delete(PREFIX + ".deleteForXinladaoInfo",params);
+	}
+
 
 	@Override
 	public BigDecimal statisticALLDiscount(String orderid) {
@@ -75,6 +80,7 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		return daoSupport.find(PREFIX + ".queryGiveprefer", params);
 	}
 
+	
 
 
 }
