@@ -14,7 +14,7 @@
 	</select>
 	<select id="getpxBusinessData" parameterType="java.util.Map" 
 		statementType="CALLABLE"  resultType="java.util.Map">
-		call p_report_yysjmxb(
+		call p_report_yyfx_pxxstj(
 			#{branchId,jdbcType=INTEGER,mode=IN},
 			#{xslx,jdbcType=INTEGER,mode=IN},
 			#{beginTime,jdbcType=DATE,mode=IN},
@@ -67,7 +67,8 @@
 		select o.begintime as beginTime,
 			 o.orderid as orderId,
 			 o.custnum as realPersonNum,
-			 o.tableids tableIds
+			 o.tableids tableIds,
+			 t.tabletype as tableType
 		from t_table t 
 		left join t_order o 
 			on t.orderid = o.orderid

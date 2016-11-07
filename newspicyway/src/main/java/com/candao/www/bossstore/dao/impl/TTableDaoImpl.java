@@ -18,10 +18,11 @@ public class TTableDaoImpl implements TTableDao{
 		List<Object[]> result = new ArrayList<Object[]>();
 		List<Map<String,Object>> list = daoSupport.find(PREFIX+".queryTablesStatus");
 		for(Map<String,Object> map:list){
-			Object[] objects = new Object[3];
+			Object[] objects = new Object[4];
 			objects[0] = map.get("personNum");
 			objects[1] = map.get("inUse");
 			objects[2] = map.get("total");
+			objects[3] = map.get("tableType");
 			result.add(objects);
 		}
 		return result;

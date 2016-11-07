@@ -22,8 +22,7 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>classpath*:/jdbc.properties</value>
-				<value>classpath*:/Inorderconfig.properties</value>
+				<value>classpath:/jdbc.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -65,6 +64,8 @@
 		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}" />
 		<property name="testOnBorrow" value="${jdbc.testOnBorrow}" />
 	</bean>
+	<context:component-scan base-package="com.candao.inorder" />
+
 	<!-- 多数据源融合 -->
 	<bean id="inoderDynamicDataSource" class="com.candao.inorder.lzrabbit.MultipleDataSource">
 		<property name="targetDataSources">
@@ -76,60 +77,25 @@
 		<property name="defaultTargetDataSource" ref="inorderSourceData"></property>
 	</bean>
 
-	<!-- 多数据源访问 -->
-	<!-- 定义Mybatis的SqlSessionFactory -->
-	<bean id="inorderSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<!-- 定义数据源 -->
+	<bean id="sqlSessionFactoryInorderPoserver" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="inoderDynamicDataSource" />
-		<!-- 指定mybatis全局配置文件 -->
-		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
-
-		<!-- 扫描mappers目录以及子目录下的所有xml文件 -->
-		<property name="mapperLocations" value="classpath*:com/candao/inorder/**/mapper/*.xml" />
-		<!-- 别名扫描包 -->
+		<property name="mapperLocations" value="classpath*:com/candao/**/inordermapper/*.xml" />
 		<property name="typeAliasesPackage" value="com.candao.inorder.pojo" />
-	</bean>
-	
-	<bean id="inorderSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
-		<constructor-arg index="0" ref="inorderSqlSessionFactory" />
-	</bean>
-
-	<bean class="com.candao.common.dao.SqlSessionDaoSupport">
-		<constructor-arg index="0" ref="inorderSqlSessionTemplate" />
-	</bean>
-	
-	<context:component-scan base-package="com.candao.inorder" />
-
-	<!-- 定义切入点 -->
-	<aop:config>
-		<!--pointcut元素定义一个切入点，execution中的第一个星号 用以匹配方法的返回类型， 这里星号表明匹配所有返回类型。 com.abc.dao.*.*(..)表明匹配com.simple.mybatis.service包下的所有类的所有 
-			方法 -->
-		<aop:pointcut id="inorderMyPointcut"
-			expression="execution(* com.candao.inorder.service.*.*(..))" />
-		<!--将定义好的事务处理策略应用到上述的切入点 -->
-		<aop:advisor advice-ref="inorderTxAdvice" pointcut-ref="inorderMyPointcut" />
-	</aop:config>
-
-	<tx:annotation-driven transaction-manager="inorderTransactionManager"
-		proxy-target-class="true" />
-	<!-- 事务配置 -->
-
-	<bean id="inorderTransactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="inoderDynamicDataSource" />
+		<property name="typeAliases"
+			value="org.springframework.util.LinkedCaseInsensitiveMap" />
+		<property name="configLocation" value="classpath:/mybatis-config.xml" />
 	</bean>
 
-	<!-- 定义事务策略 -->
-	<tx:advice id="inorderTxAdvice" transaction-manager="inorderTransactionManager">
-		<tx:attributes>
-			<!--所有以query开头的方法都是只读的 -->
-			<tx:method name="query*" read-only="true" />
-			<tx:method name="save*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" /> 
-			<tx:method name="insert*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
-			<tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />  
-			<!--其他方法使用默认事务策略 -->
-			<tx:method name="*" />
-		</tx:attributes>
-	</tx:advice>
+
+	<bean id="SqlSessionDaoSupportnorderPoserver" class="com.candao.inorder.dao.SqlSessionDaoSupport">
+		<constructor-arg index="0"
+			ref="sqlSessionTemplateInorderPoserver" />
+	</bean>
+
+	<bean id="sqlSessionTemplateInorderPoserver" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0"
+			ref="sqlSessionFactoryInorderPoserver" />
+	</bean>
+
 
 </beans>	

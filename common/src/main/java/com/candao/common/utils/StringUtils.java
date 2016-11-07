@@ -1,5 +1,7 @@
 package com.candao.common.utils;
 
+import org.springframework.util.CollectionUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -287,6 +289,7 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 				}
 			}
 		} else {
+			res.add(getStr(num));
 			return res;
 		}
 		if (charlength < src.length() - 1) {
@@ -351,9 +354,13 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 	 * @return
 	 */
 	public static String[] getLineFeedText(String[] src, Integer[] length) throws Exception {
-		if (src == null || length == null || src.length > length.length) {
-			return null;
+		if (src == null)
+			return  new String[0];
+		for (int i = 0; i < src.length; i++) {
+			src[i] = src[i] == null ? "":src[i];
 		}
+		if (length == null || src.length > length.length)
+			return src;
 		// 换行
 		List<List<String>> dst = new ArrayList<>();
 		for (int i = 0; i < src.length; i++) {

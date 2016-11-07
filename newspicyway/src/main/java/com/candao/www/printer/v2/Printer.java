@@ -9,8 +9,11 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -53,6 +56,10 @@ public class Printer {
      * 停止打印标示
      */
     private volatile boolean stop = false;
+    /**
+     * 打印历史ID记录
+     */
+    private List<String> historyIds = new ArrayList<>();
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -111,6 +118,8 @@ public class Printer {
                         }
                         /*开始打印*/
                         logger.info("[" + ip + "]开始打印");
+                        /*开启一票一控*/
+                        outputStream.write(PrinterConstant.AUTO_STATUS);
                         doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
@@ -168,30 +177,93 @@ public class Printer {
     }
 
     protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
-        outputStream.write(PrinterConstant.AUTO_STATUS);
-        //added by caicai
-        //省纸
-        /*outputStream.write(new byte[]{27, 27});*/
+        msg = checkDuplicate(msg);
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "GBK");
         for (Object o : msg) {
             if (null == o) {
                 o = "";
             }
-            byte[] line;
             if (o instanceof Byte) {
-                line = new byte[]{(byte) o};
+                outputStream.write(new byte[]{(byte) o});
             } else if (o instanceof byte[]) {
-                line = (byte[]) o;
+                outputStream.write((byte[]) o);
             } else {
-                line = o.toString().getBytes(CHARSET);
+                writer.write(o.toString());
             }
-            outputStream.write(line);
             outputStream.flush();
+            writer.flush();
         }
         outputStream.write(PrinterConstant.getLineN((byte) 4));
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
         outputStream.flush();
+        handleDuplicate(msg);
+//        outputStream.write(PrinterConstant.BEL);
+    }
+
+    /**
+     * 检查该单是否已打印，如果已打印，添加"补打"标记
+     *
+     * @param msg
+     * @return
+     */
+    private Object[] checkDuplicate(Object[] msg) {
+        if (null == msg || 0 == msg.length) {
+            return msg;
+        }
+        Object o = msg[0];
+        if (o instanceof PrintData) {
+            PrintData<String> data = (PrintData<String>) o;
+            if (!StringUtils.isEmpty(data.getData())) {
+                boolean exists = false;
+                for (String uuid : historyIds) {
+                    if (data.getData().equals(uuid)) {
+                        exists = true;
+                        break;
+                    }
+                }
+//                如果已打印过，则增加“补打”标记
+                if (exists) {
+                    Object[] newMsg = new Object[msg.length + 4];
+                    newMsg[0] = msg[0];
+//                    补打标记
+                    newMsg[1] = PrinterConstant.getFdDoubleFont();
+                    newMsg[2] = "*补打*";
+                    newMsg[3] = PrinterConstant.getClear_font();
+                    newMsg[4] = "请与上一份单据确认是否重复\t\n\t\n";
+                    System.arraycopy(msg, 1, newMsg, 5, msg.length - 1);
+                    return newMsg;
+                }
+            }
+        }
+        return msg;
+    }
+
+    private void handleDuplicate(Object[] msg) {
+        if (null == msg || 0 == msg.length) {
+            return;
+        }
+        Object o = msg[0];
+        if (o instanceof PrintData) {
+            PrintData<String> data = (PrintData<String>) o;
+            if (!StringUtils.isEmpty(data.getData())) {
+                boolean exists = false;
+                for (String uuid : historyIds) {
+                    if (data.getData().equals(uuid)) {
+                        exists = true;
+                        break;
+                    }
+                }
+//                如果不在最近打印记录中，添加到打印记录
+                if (!exists) {
+                    historyIds.add(data.getData());
+                    if (historyIds.size() > 10) {
+                        historyIds.remove(0);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -246,6 +318,8 @@ public class Printer {
                     result.setCode(state);
                     return result;
                 }
+                 /*开启一票一控*/
+                outputStream.write(PrinterConstant.AUTO_STATUS);
                 doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
                 state = PrintControl.CheckJob(8000, inputStream, getIp());
