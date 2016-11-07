@@ -25,7 +25,7 @@
             AND too.endtime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
         </if>
         AND tsh.reason not in('??????,??????' ,'会员结算失败,系统自动反结','会员结算失败，系统自动反结')
-        AND tsdh.payway in (0,1,5,8,13,17,18)
+        AND tsdh.payway in (SELECT itemid FROM v_revenuepayway)
 		AND too.orderstatus = 3
         group by tsdh.orderid
 	</select>
@@ -46,7 +46,7 @@
 		WHERE
 			tsd.orderid = too.orderid
 		AND tsd.orderid = ts.orderid
-		AND tsd.payway in (0,1,5,8,13,17,18)
+		AND tsd.payway in (SELECT itemid FROM v_revenuepayway)
 		AND tsd.orderid = #{orderid}
     </select>
     
