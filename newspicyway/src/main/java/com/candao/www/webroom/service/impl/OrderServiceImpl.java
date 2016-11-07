@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.data.dao.*;
+import com.candao.www.dataserver.util.StringUtil;
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +25,6 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.PrintObj;
 import com.candao.www.constant.Constant;
-import com.candao.www.data.dao.TbDataDictionaryDao;
-import com.candao.www.data.dao.TbPrintObjDao;
-import com.candao.www.data.dao.TdishDao;
-import com.candao.www.data.dao.TorderDetailMapper;
-import com.candao.www.data.dao.TorderDetailPreferentialDao;
-import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.TCouponRule;
 import com.candao.www.data.model.TCoupons;
 import com.candao.www.data.model.TbDataDictionary;
@@ -118,6 +115,8 @@ public class OrderServiceImpl implements OrderService {
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	private OrderMapper orderMapper;
+    @Autowired
+    private TbTableDao tableDao;
 
 	@Override
 	public int saveOrder(Torder order) {
@@ -1213,6 +1212,9 @@ public class OrderServiceImpl implements OrderService {
 		params.put("branchid", branchid);
 		params.put("id", orderid);
 		if (orderid != null && !orderid.isEmpty() && !orderid.equals("null")) {
+			//如果是外卖订单，强制绑定对应餐台
+			doBindTableForTakeOutFood(orderid);
+
 			if (!params.containsKey("clean")) {
 				mapRet.put("rows", getMapData(orderid));// 获取订单数据
 			}
@@ -1234,6 +1236,26 @@ public class OrderServiceImpl implements OrderService {
 
 		return ReturnMap.getSuccessMap(mapRet);
 	}
+
+	/**
+	 * 强制外卖订单绑定餐台
+	 */
+	private void doBindTableForTakeOutFood(String orderid) {
+        if (!StringUtils.isEmpty(orderid)) {
+            Map<String, Object> res = torderMapper.findOne(orderid);
+            if (!MapUtils.isEmpty(res)) {
+                if (!StringUtil.isEmpty(res.get("currenttableid"))) {
+                    TbTable table = tableService.findById(res.get("currenttableid").toString());
+                    if (table != null && ("2".equals(table.getTabletype()) || "3".equals(table.getTabletype()))) {
+                        Map<String, Object> param = new HashMap<>();
+                        param.put("orderid", orderid);
+                        param.put("tableid", res.get("currenttableid"));
+                        tableDao.updateTableById(param);
+                    }
+                }
+            }
+        }
+    }
 
 	private Map<String, Object> findOrderByInfo(String orderid) {
 		// orderInvoiceTitle 发票抬头
