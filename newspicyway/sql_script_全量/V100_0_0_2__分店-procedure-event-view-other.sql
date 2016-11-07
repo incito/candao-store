@@ -45,7 +45,7 @@ select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `item
 CREATE OR REPLACE SQL SECURITY INVOKER
 VIEW `v_revenuepayway`
 AS
-select `v_payway`.`dictid` AS `dictid`,`v_payway`.`itemid` AS `itemid`,`v_payway`.`itemDesc` AS `itemDesc`,`v_payway`.`itemSort` AS `itemSort`,`v_payway`.`status` AS `status`,`v_payway`.`type` AS `type`,`v_payway`.`typename` AS `typename`,`v_payway`.`chargeStatus` AS `chargeStatus`,`v_payway`.`isshow` AS `isshow`,`v_payway`.`self_sort` AS `self_sort` from `v_payway` where (`v_payway`.`chargeStatus` = 1)$$
+select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `itemDesc`,`d`.`itemSort` AS `itemSort`,`d`.`status` AS `status`,`d`.`type` AS `type`,`d`.`typename` AS `typename`,`d`.`charges_status` AS `chargeStatus`,`ps`.`status` AS `isshow`,`ps`.`sort` AS `self_sort` from (`t_dictionary` `d` left join `t_payway_set` `ps` on((`d`.`itemid` = `ps`.`item_id`))) where ((`d`.`type` = 'PAYWAY') and (`d`.`charges_status` = 1))$$
 
 --
 -- Definition for view v_t_p_preferential_activity
