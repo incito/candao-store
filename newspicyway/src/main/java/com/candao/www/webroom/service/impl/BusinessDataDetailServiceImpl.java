@@ -121,6 +121,10 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					if (businessR.get(i).get("free") != null) {
 						businssRport.setBastfree(ToolsUtil.formatTwoDecimal(businessR.get(i).get("free") + ""));
 					}
+                    // 会员优惠（元）
+                    if (businessR.get(i).get("memberDishPriceFree") != null) {
+                        businssRport.setMemberDishPriceFree(ToolsUtil.formatTwoDecimal(businessR.get(i).get("memberDishPriceFree") + ""));
+                    }
 //
 //					//折扣优惠
 					if (businessR.get(i).get("discount") != null) {
@@ -593,6 +597,12 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					map.put("key", "折扣优惠");
 					map.put("title", "折扣总额统计");
 					map.put("value",businessR.get(i).getDiscount());
+					mapList.add(map);
+					//会员优惠
+					map = new HashMap<>();
+					map.put("key", "会员优惠");
+					map.put("title", "折扣总额统计");
+					map.put("value",businessR.get(i).getMemberDishPriceFree());
 					mapList.add(map);
                     //赠送总额
 					map = new HashMap<>();
