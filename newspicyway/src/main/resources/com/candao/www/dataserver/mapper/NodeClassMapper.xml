@@ -2,8 +2,18 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.candao.www.dataserver.mapper.NodeClassMapper">
-    <select id="getMaxClassNo" resultType="java.lang.String">
+    <select id="getMaxClassNo" resultType="java.lang.String" parameterType="java.util.HashMap">
       select max(classno) from t_nodeclass
+      <where>
+          <trim prefixOverrides="and">
+              <if test="posID != null and posID != '' ">
+                  AND posID = #{posID}
+              </if>
+              <if test="operatorID != null and operatorID != ''">
+                  AND operatorID = #{operatorID}
+              </if>
+          </trim>
+      </where>
     </select>
     <select id="getMaxClassNoToday" resultType="java.lang.String" parameterType="String">
         select max(classno) from t_nodeclass where classno like '${preStr}%'

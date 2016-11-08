@@ -405,10 +405,13 @@ public class PrintDish implements Serializable, Comparable<PrintDish> {
             for (int i = 0; i < sperequires.length && i < properties.length; i++) {
                 Field field = this.getClass().getDeclaredField(properties[i]);
                 field.setAccessible(true);
-                int end = sperequires[i].indexOf("#");
-                field.set(this, sperequires[i].substring(0, (end == -1 ? sperequires[i].length() : end)));
+                String[] tempSperequires = StringUtils.delimitedListToStringArray(sperequires[i], Constant.DELIMITER_MULTISPECIAL);
+                for (int j = 0; j < tempSperequires.length; j++) {
+                    int end = tempSperequires[j].indexOf("#");
+                    tempSperequires[j] = tempSperequires[j].substring(0, end == -1 ? tempSperequires[j].length() : end);
+                }
+                field.set(this, StringUtils.arrayToDelimitedString(tempSperequires, ""));
             }
         }
     }
-
 }
