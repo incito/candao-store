@@ -31,6 +31,8 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     DECLARE v_pa_paidinamount DOUBLE(13, 2) DEFAULT 0; #会员储值消费（含虚增）
     DECLARE v_pa_weixin DOUBLE(13, 2) DEFAULT 0; #实收（微信）
     DECLARE v_pa_zhifubao DOUBLE(13, 2) DEFAULT 0; #实收（支付宝）
+    #总实收，统计t_order表的ssamount字段
+    DECLARE v_ssamount DOUBLE(13, 2) DEFAULT 0; #实收（支付宝）
 
     #以下为折扣明细统计项
     DECLARE v_da_free DOUBLE(13, 2) DEFAULT 0; #折扣(优免）
@@ -514,10 +516,41 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     #     WHERE
     #       a.couponid = b.id
     #       AND b.type = '02';
-
+  IF pi_sb > -1 THEN
+        SELECT
+          IFNULL(sum(payamount), 0) into v_ssamount
+        FROM
+          t_settlement_detail sd
+        LEFT JOIN t_order o ON sd.orderid = o.orderid
+        WHERE
+          o.branchid = pi_branchid
+        AND o.begintime BETWEEN v_date_start
+        AND v_date_end
+        AND sd.payway IN (
+          SELECT
+            itemid
+          FROM
+            `v_revenuepayway`
+        ) AND o.shiftid = pi_sb;
+      ELSE
+       SELECT
+          IFNULL(sum(payamount), 0) into v_ssamount
+        FROM
+          t_settlement_detail sd
+        LEFT JOIN t_order o ON sd.orderid = o.orderid
+        WHERE
+          o.branchid = pi_branchid
+        AND o.begintime BETWEEN v_date_start
+        AND v_date_end
+        AND sd.payway IN (
+          SELECT
+            itemid
+          FROM
+            `v_revenuepayway`
+        );
+      END IF;
     SET v_da_free =
-    v_sa_shouldamount + v_oa_shouldamount - v_paidinamount - v_da_roundoff - v_da_integralconsum - v_da_meberTicket -
-    v_da_discount - v_da_fraction - v_da_give - v_da_mebervalueadd - v_da_meberDishPriceFree;
+    v_sa_shouldamount + v_oa_shouldamount - v_ssamount;
 
     SELECT
       count(1),
