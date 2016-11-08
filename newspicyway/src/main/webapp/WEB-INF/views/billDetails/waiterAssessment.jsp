@@ -89,7 +89,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="report-tb-div bottom-div">
+		<div class="report-tb-div bottom-div" style="overflow-x: auto;">
 			<table class="ky-table table table-striped table-bordered table-hover datatable table-list click-table" id="waiter-assess-tb">
 				<thead>
 					<tr>
