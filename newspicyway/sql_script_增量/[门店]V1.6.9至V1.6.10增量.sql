@@ -574,7 +574,7 @@ BEGIN
 
   END IF;
 
-  CALL newspicyway.p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
+  CALL p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
 
 
 END
