@@ -25,14 +25,6 @@ import com.candao.www.webroom.model.VoucherVo;
  *
  */
 public interface PreferentialActivityService {
-  /**
-   * 分页查询数据
-   * @param params
-   * @param current
-   * @param pagesize
-   * @return
-   */
-   public Page<Map<String,Object>> page(Map<String, Object> params, int current, int pagesize);
    
    /**
     * <pre>
@@ -63,12 +55,6 @@ public interface PreferentialActivityService {
     */
    public boolean updateById(TbPreferentialActivity preferentialActivity);
    
-   /**
-    * 删除优惠活动
-    * @param id
-    * @return
-    */
-   public boolean deleteById(String id);
    
    
    /**
@@ -193,12 +179,6 @@ public interface PreferentialActivityService {
     */
    public boolean saveInnerFree(TbInnerFree innerfree) ;
    
-   /**
-    * 删除 内部减免（合作单位优惠）
-    * @param id
-    * @return
-    */
-   public boolean deleteInnerFree(String id);
    
    /**
     * 更新 内部减免（合作单位优惠）
@@ -239,7 +219,6 @@ public interface PreferentialActivityService {
    public List<Map<String , Object>> findCouponsByType4Pad(String typeid);
    
    
-   public List<Map<String , Object>> findCouponsByType4Pad(Map param);
 
    /**
  	 * 查询所有的可挂账的合作单位

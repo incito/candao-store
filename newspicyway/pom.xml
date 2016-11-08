@@ -40,11 +40,6 @@
             <artifactId>userservcie</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <!-- <dependency> -->
-        <!-- <groupId>com.candao</groupId> -->
-        <!-- <artifactId>psi</artifactId> -->
-        <!-- <version>0.0.1-SNAPSHOT</version> -->
-        <!-- </dependency> -->
         <dependency>
             <groupId>com.candao</groupId>
             <artifactId>candao-communication-client4java</artifactId>
@@ -58,18 +53,11 @@
             <version>4.1.0.CR3</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
-        </dependency>
-        <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>4.0.3</version>
         </dependency>
     </dependencies>
-
-
     <build>
         <finalName>newspicyway</finalName>
         <plugins>

@@ -54,10 +54,4 @@ public class BranchProducerServiceImpl implements BranchProducerService{
 		 }
 	}
 
-
-	@Override
-	public void sendMessage(String obj,Destination branchQueue) {
-		
-	}
-
 }

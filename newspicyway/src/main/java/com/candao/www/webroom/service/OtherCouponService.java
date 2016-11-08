@@ -62,16 +62,6 @@ public interface OtherCouponService {
 	   * @param groupon
 	   */
 	  public int updateDetail(Map<String, Object> params);
-	  /**
-	   * 删除优惠活动信息表
-	   * @param groupon
-	   */
-	  /**
-	   * 删除优惠活动门店信息
-	   * @param groupon
-	   */
-	  public int deleteBranch(Map<String, Object> params);
-	  
 	  public int deleteActivity(String id);
 	  /**
 	   * 删除优惠活动信息明细表

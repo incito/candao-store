@@ -101,13 +101,6 @@ public interface MenuService {
 	 * @Description: TODO
 	 */
 	public List<Map<String,Object>> getMenuSpfishpot(String jsonString);
-	/**
-	 * 更新菜谱中某个菜的估清
-	 * @author shen
-	 * @date:2015年5月11日下午8:12:25
-	 * @Description: TODO
-	 */
-	public boolean updateDishStatus(Map<String,Object> params);
 	public TtemplateDishUnit findOneTtd(Map<String, Object> paramsTtd);
 	/**
 	 * 查询出所有已启用和定时启用的菜谱

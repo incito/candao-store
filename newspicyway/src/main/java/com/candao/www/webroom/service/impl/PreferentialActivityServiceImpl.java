@@ -53,8 +53,6 @@ import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.utils.SessionUtils;
-import com.candao.www.utils.preferential.CalMenuOrderAmount;
-import com.candao.www.utils.preferential.CalMenuOrderAmountInterface;
 import com.candao.www.utils.preferential.CalPreferentialStrategyInterface;
 import com.candao.www.utils.preferential.StrategyFactory;
 import com.candao.www.webroom.model.DiscountTicketsVo;
@@ -64,7 +62,6 @@ import com.candao.www.webroom.model.PreferentialActivitySpecialStampVO;
 import com.candao.www.webroom.model.VoucherVo;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.PreferentialActivityService;
-import com.candao.www.webroom.service.TableService;
 
 /**
  * @author zhao
@@ -102,17 +99,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	@Autowired
 	OrderOpMapper  orderOpMapper;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.candao.www.webroom.service.PreferentialActivityService#grid(java.util
-	 * .Map, int, int)
-	 */
-	@Override
-	public Page<Map<String, Object>> page(Map<String, Object> params, int current, int pagesize) {
-		return tbPreferentialActivityDao.page(params, current, pagesize);
-	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -214,27 +200,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		return tbPreferentialActivityDao.update(preferentialActivity) == 1;
 	}
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public boolean deleteById(String id) {
-		boolean success = true;
-		TbPreferentialActivity preferentialActivity = tbPreferentialActivityDao.get(id);
-		String subDelSql = generalDelSql(preferentialActivity);
-		if (subDelSql != null && subDelSql.trim().length() > 0) {
-			// 删除优惠子表数据
-			// tbPreferentialActivityDao.deleteSubCoupon(subDelSql);
-			tbPreferentialActivityDao.deletePreferentialDetail(id);
-		}
-		// 需要删除指定门店数据
-		tbPreferentialActivityDao.deleteBranchs(id);
-		success = tbPreferentialActivityDao.delete(id) == 1;
-		// 如果是折扣券，还需要删除不参与折扣菜品记录
-		if (preferentialActivity.getType().equals(Constant.CouponType.DISCOUNT_TICKET)) {
-			tbDiscountTicketsDao.deleteNoDiscountDishsByPreterential(id);
-		}
-
-		return success;
-	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -913,11 +878,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		return ret;
 	}
 
-	@Override
-	public boolean deleteInnerFree(String id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public boolean updateInnerFree(TbInnerFree innerfree) {
@@ -1034,21 +994,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		return list;
 	}
 
-	public List<Map<String, Object>> findCouponsByType4Pad(Map params) {
-		List<Map<String, Object>> list = new ArrayList();
-		Map branchInfoMap = tbBranchDao.getBranchInfo();
-		// 如果没有默认门店，则返回所有的门店信息。 关于branchid，会在SQL中判断，这里只需要 值为 NULL即可
-		String branchid = null;
-		if (null != branchInfoMap) {
-			branchid = (String) branchInfoMap.get("branchid");
-		}
-		params.put("branchid", branchid);
-		// added by caicai 2 隐藏，表示不提供隐藏的优惠券
-		params.put("status", 2);
-		List<Map<String, Object>> activitys = this.tbPreferentialActivityDao.findPreferentialDetail(params);
-
-		return list;
-	}
 
 	/**
 	 * 查询所有的可挂账的合作单位

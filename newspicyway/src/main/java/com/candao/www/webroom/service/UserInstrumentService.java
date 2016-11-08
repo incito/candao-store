@@ -23,24 +23,6 @@ public interface UserInstrumentService {
   * @return
   */
  public boolean updateByid(TbUserInstrument tbUserInstrument);
-
-
- /**
-  * 删除单个数据
-  * @param id
-  * @return
-  */
- public boolean deleteByParams(Map<String, Object> params);
- 
- /**
-  * 获取所有桌号
-  * @author zhao
-  * @param params
-  * @return
-  */
-public List<Map<String, Object>>  find(Map<String, Object> params);
-public int updateStatus(TbUserInstrument tbUserInstrument);
-public List<Map<String, Object>> findUseridByParams(Map<String, Object> params);
 public int insertByParams(Map<String, Object> map);
 public List<TbUserInstrument> findByParams(Map<String, Object> params);
 public String findrelateUserid(List<Map<String, Object>> retableList);

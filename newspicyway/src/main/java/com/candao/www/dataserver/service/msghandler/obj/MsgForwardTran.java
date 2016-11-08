@@ -46,11 +46,6 @@ public class MsgForwardTran {
         return new MsgForwardData(msgId, msg);
     }
 
-    public static MsgForwardData getSendMsgSyncResp(String msg) {
-        String msgId = msgConfig.getProperty("MSG_ID.SEND_MSG.SYNC.RESP");
-        return new MsgForwardData(msgId, msg);
-    }
-
     public static MsgForwardData getLogCollectResp(String msg) {
         String msgId = msgConfig.getProperty("MSF_ID.LOG.COLLECT.RESP");
         return new MsgForwardData(msgId, msg);

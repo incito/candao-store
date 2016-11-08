@@ -43,12 +43,6 @@ public interface MsgForwardService {
     void broadCastMsg4Netty(String msgId, Object msgData, int expireSeconds, boolean isSingle);
 
 
-    /**
-     * @param client
-     * @param msgId
-     * @return
-     */
-    String broadCastOk(String client, String msgId);
 
     /**
      * 批量给设备发送消息
@@ -92,16 +86,6 @@ public interface MsgForwardService {
 
     void forwardMsg(Map<String, List<String>> targetMap, String msg);
 
-    /**
-     * 给指定IMEI的设备发送异步信息
-     *
-     * @param imei
-     * @param msgId
-     * @param msgData
-     * @param expireSeconds
-     * @param isSingle
-     */
-    Result sendMsgAsyn(String imei, String msgId, Object msgData, int expireSeconds, boolean isSingle);
 
     /**
      * 给指定订单所属的设备发送异步消息

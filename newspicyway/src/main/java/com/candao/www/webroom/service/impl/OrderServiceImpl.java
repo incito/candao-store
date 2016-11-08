@@ -118,30 +118,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private TbTableDao tableDao;
 
-	@Override
-	public int saveOrder(Torder order) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int discardOrder(Torder order) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int addDishOnOrder(TorderDetail orderDetail) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int reduceDishOnOrder(TorderDetail orderDetail) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	public Torder findOrderByTableId(Torder order) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("currenttableid", order.getCurrenttableid());
@@ -160,10 +136,6 @@ public class OrderServiceImpl implements OrderService {
 		return torderMapper.update(order);
 	}
 
-	@Override
-	public int updateInvoiceid(Torder order) {
-		return torderMapper.updateInvoiceid(order);
-	}
 
 	@Override
 	public Map<String, Object> findOrderById(String orderId) {

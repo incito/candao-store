@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.www.data.model.Tinvoice;
-import com.candao.www.data.model.Torder;
 
 public interface InvoiceService {
 
@@ -16,13 +15,9 @@ public interface InvoiceService {
 	 */
 	public int insertInvoice(Tinvoice tinvoice);
 	
-	public Torder selectByorderId(String orderid);
 	
 	public List<Tinvoice> findTinvoice(Map<String, Object> params);
 	
-	public  int findTinvoiceLimit1(Map<String, Object> params);
-	
-	public int update(Torder torder);
 
 	public List<com.candao.www.data.model.Tinvoice> findInvoiceByOrderid(
 			Map<String, Object> params);

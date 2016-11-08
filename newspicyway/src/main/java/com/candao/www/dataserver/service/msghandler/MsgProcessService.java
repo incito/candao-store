@@ -16,7 +16,5 @@ public interface MsgProcessService {
     //查询终端信息
     Response queryTerminals(String msg);
 
-    //查询终端信息
-    Response queryTerminalsByIp(String ip);
 
 }

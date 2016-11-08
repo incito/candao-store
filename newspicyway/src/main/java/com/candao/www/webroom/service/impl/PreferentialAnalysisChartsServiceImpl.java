@@ -240,23 +240,6 @@ public class PreferentialAnalysisChartsServiceImpl   {
 		List<Map<String,Object>> listCou = tpreferentialAnalysisChartsDao.findPreferentialView(params);
 		return listCou;
 	}
-	/**
-	 * 根据门店编号查询活动名称
-	 * @author zhouyao
-	 * @serialData 2015-11-26
-	 */
-	public List<Map<String,Object>>  findBranchPreferential(Map<String, Object>params){
-		String branchId = "";
-    	if(params.get("branchId") != null && !"".equals(params.get("branchId"))){
-    		branchId = params.get("branchId").toString();
-    	}else{
-    		branchId = PropertiesUtils.getValue("current_branch_id");
-    	}
-    	params.put("branchId", branchId);
-    	List<Map<String,Object>> BranchPreferential = tpreferentialAnalysisChartsDao.findBranchPreferential(params);
-		return BranchPreferential;
-	}
-	
 	
 	/**
 	 * 导出优惠活动明细表主表

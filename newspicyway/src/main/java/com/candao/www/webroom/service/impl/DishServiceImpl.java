@@ -132,16 +132,6 @@ public class DishServiceImpl implements DishService {
 		}
 		return  Constant.FAILUREMSG;
 	}
-	@Override
-	public int updateDishComsumer(List<String> dishids) {
-		return tdishDao.updateDishComsumer(dishids);
-		
-	}
-	
-	@Override
-	public int updateDishSetComsumer(List<String> dishids){
-		return tdishDao.updateDishSetComsumer(dishids);
-	}
 	
 	@Override
 	public List<Tdish> findAllByIds(List<String> dishids){
@@ -230,10 +220,6 @@ public class DishServiceImpl implements DishService {
 			map.put("id", IdentifierUtils.getId().generate().toString());
 		}
 		return tdishTypeDao.addDishType(list);
-	}
-	@Override
-	public List<Map<String, Object>> find(Map<String, Object> params) {
-		return tdishDao.find(params);
 	}
 	@Override
 	public Tdish findAllById(String dishid) {
