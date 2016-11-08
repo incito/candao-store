@@ -62,7 +62,7 @@
 			<!--/span-->
 		</div>
 		<!--/row-->
-		<div class="report_data_div">
+		<div class="report_data_div" style="overflow-x: auto;">
 			<table class="table table-list" id="paidIn_tb">
 				<thead>
 					<tr id="settlementDesc">
