@@ -810,7 +810,7 @@ BEGIN
   DECLARE v_message varchar(255);
   DECLARE v_flag int;
 
-  CALL newspicyway.p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
+  CALL p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
 
 END
 $$
@@ -825,7 +825,7 @@ BEGIN
       DECLARE v_message varchar(255);
   DECLARE v_flag int;
 
-  CALL newspicyway.p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
+  CALL p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
 END
 $$
 
@@ -1198,7 +1198,7 @@ IF v_t_orderstatus != 3  and v_t_orderstatus != 2  THEN
            update t_order set memberno = v_t_memberno 
            where orderid = v_orderid;
 
-          call newspicyway.p_update2vipprice(v_orderid);
+          call p_update2vipprice(v_orderid);
  
        else 
            if v_memberno is not null  and v_t_memberno is null then
@@ -1206,7 +1206,7 @@ IF v_t_orderstatus != 3  and v_t_orderstatus != 2  THEN
              update t_order set memberno = v_memberno 
              where orderid = v_t_orderid;
 
-            call newspicyway.p_update2vipprice(v_t_orderid);
+            call p_update2vipprice(v_t_orderid);
 
            end if;
        end if; 
@@ -1964,7 +1964,7 @@ BEGIN
 
   END IF;
 
-  CALL newspicyway.p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
+  CALL p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
 
 
 END
@@ -2003,7 +2003,7 @@ BEGIN
   UNTIL done = 1
   END REPEAT;
   CLOSE cur_orderlist;
-  CALL newspicyway.p_caletableamount(v_orderid);
+  CALL p_caletableamount(v_orderid);
 END
 $$
 
@@ -2042,7 +2042,7 @@ BEGIN
   SELECT
     COUNT(1) INTO v_count
   FROM t_table
-  WHERE tableno = i_orignaltableno;
+  WHERE tableno = i_orignaltableno AND status = '1';
   IF v_count = 1 THEN
     SELECT
       COUNT(1) INTO v_count
@@ -2055,13 +2055,13 @@ BEGIN
         orderid,
         tableid INTO v_status, v_orderid, v_table_orginal_id
       FROM t_table
-      WHERE tableno = i_orignaltableno;
+      WHERE tableno = i_orignaltableno AND status = '1';
 
       SELECT
         tableid,
         orderid INTO v_tableid, v_t_orderid
       FROM t_table
-      WHERE tableno = i_targettableno;
+      WHERE tableno = i_targettableno AND status = '0';
 
       IF v_status = 0 THEN
         SET v_status = 1;
@@ -2082,7 +2082,7 @@ BEGIN
       UPDATE t_table
       SET orderid = v_orderid,
           status = v_status
-      WHERE tableNo = i_targettableno;
+      WHERE tableid = v_tableid;
 
       UPDATE t_order
       SET currenttableid = v_tableid,
