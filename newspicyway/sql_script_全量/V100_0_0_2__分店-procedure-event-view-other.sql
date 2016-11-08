@@ -2042,7 +2042,7 @@ BEGIN
   SELECT
     COUNT(1) INTO v_count
   FROM t_table
-  WHERE tableno = i_orignaltableno;
+  WHERE tableno = i_orignaltableno AND status = '1';
   IF v_count = 1 THEN
     SELECT
       COUNT(1) INTO v_count
@@ -2055,13 +2055,13 @@ BEGIN
         orderid,
         tableid INTO v_status, v_orderid, v_table_orginal_id
       FROM t_table
-      WHERE tableno = i_orignaltableno;
+      WHERE tableno = i_orignaltableno AND status = '1';
 
       SELECT
         tableid,
         orderid INTO v_tableid, v_t_orderid
       FROM t_table
-      WHERE tableno = i_targettableno;
+      WHERE tableno = i_targettableno AND status = '0';
 
       IF v_status = 0 THEN
         SET v_status = 1;
@@ -2082,7 +2082,7 @@ BEGIN
       UPDATE t_table
       SET orderid = v_orderid,
           status = v_status
-      WHERE tableNo = i_targettableno;
+      WHERE tableid = v_tableid;
 
       UPDATE t_order
       SET currenttableid = v_tableid,
