@@ -109,7 +109,7 @@ BEGIN
   GROUP BY
     payway,membercardno;
   
-  SELECT (CASE payway WHEN 1 THEN (SELECT c.itemDesc FROM t_dictionary c WHERE c.type ='BANK' AND c.itemid = a.membercardno) ELSE b.itemDesc END)  AS payway
+  SELECT IFNULL((CASE payway WHEN 1 THEN (SELECT c.itemDesc FROM t_dictionary c WHERE c.type ='BANK' AND c.itemid = a.membercardno) ELSE b.itemDesc END),'')  AS payway
        , b.itemid
        , SUM(a.nums) AS nums
        , SUM(a.prices) AS prices
