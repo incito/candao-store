@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.candao.common.page.Page;
 import com.candao.www.data.model.TbTable;
-import com.candao.www.data.model.TbTableArea;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.webroom.model.Table;
 
@@ -107,6 +106,4 @@ public interface TableService {
 
     public String generatePrintObjId();
     public Map<String, Object> getByOrderId(String orderId);
-
-    public void updateSortedTypeAndTable(List<TbTableArea> areas);
 }

@@ -55,7 +55,6 @@
          
 		insert into t_table (
 	  	tableid,
-		position,
 	    minprice,
 	   	fixprice,
 	   	tableNo,
@@ -69,7 +68,6 @@
 	     
 	   )values (
 	     #{tableid},
-		 #{position},
 	     #{minprice},
 	     #{fixprice},
 	     #{tableNo},
@@ -183,13 +181,10 @@
 	<select id="findTableDetail" parameterType="map" resultMap="findResultMap">
 	   select 
 	    <include refid="Base_Column_List"/>
-		,modifytime
 	   from t_table
 	   where 
 	    areaid=#{areaid} and status !=5
-	    order by CASE WHEN tabletype = 2
-		THEN  1 WHEN tabletype = 3 THEN 2
-		ELSE  -9999 + CAST(IFNULL(position,9999) AS signed) END ASC ,modifytime ASC ,tableNo ASC
+	    order by CAST( tableNo as SIGNED) asc
 	</select>
 
 
@@ -212,7 +207,6 @@
 	       ELSE
 	         sum(d.dishnum * d.orderprice)
 	       END as amount
-		,b.areaSort,a.modifytime
 		    from t_table a
 	   		LEFT JOIN t_tablearea b
 			ON a.areaid = b.areaid
@@ -296,9 +290,7 @@
 			  a.tableid
 		<choose>
 		   	<when test="defaultsort!=null and defaultsort==1">
-		   		order by  CASE WHEN a.tabletype = 2 THEN 1
-				WHEN a.tabletype = 3 THEN  2
-				ELSE  -9999 + CAST(IFNULL(a.position,9999) AS signed) END ASC ,a.modifytime ASC,a.tableNo ASC
+		   		order by b.areaname asc, a.tableNo asc
 		   	</when>
 		   	<otherwise>
 		   		order by  CAST( a.tableNo as SIGNED),a.tableid asc
@@ -310,7 +302,7 @@
 	select    tt.areaname,    t.tableid,       t.position,       t.status,       t.restaurantId,       
 	t.isVip,       t.iscompartment,       t.isavailable,       t.buildingNo,      t.minprice,       
 	t.fixprice,       t.tableNo,       t.personNum,       t.tabletype,      t. areaid,       t.tableName
-	,t.custPrinter,t.modifytime
+	,t.custPrinter       
      from t_table t,   t_tablearea tt      
 	    <where>
 	   <!-- ??? -->
@@ -331,15 +323,13 @@
 	        and t.custPrinter=#{custPrinter}
 	     </if>
 	     </where>
-		order by CASE WHEN t.tabletype = 2
-		THEN  1 WHEN t.tabletype = 3 THEN 2
-		ELSE  -9999 + CAST(IFNULL(t.position,9999) AS signed) END ASC ,t.modifytime ASC ,t.tableNo ASC
+	      order by  CAST( t.tableNo as SIGNED) asc
 <!-- 	     将varchar 转为int 用 cast(a as signed) -->
 	</select>
 	
 	<select id="getTableTag"  resultMap="findResultMap">
-	  select distinct areaid,   areaname	,	areaSort
-	   	 from t_tablearea where `status`=1 ORDER BY areaSort ASC
+	  select distinct areaid,   areaname
+	   	 from t_tablearea where `status`=1 
 	</select>
 	<select id="getPrinterTag"  resultMap="findResultMap">
 	  select distinct printerid,   printername
@@ -506,16 +496,4 @@
 		orderid=#{orderId} and status !='5'
 		limit 1
 	</select>
-	<update id="updatePosition" parameterType="java.util.ArrayList">
-		UPDATE t_table
-		SET position = CASE tableid
-		<foreach collection="list" item="item" index="index" open="">
-		WHEN #{item.tableid} THEN #{item.position}
-		</foreach>
-		END
-		WHERE tableid IN
-		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
-			#{item.tableid}
-		</foreach>
-	</update>
 </mapper> 

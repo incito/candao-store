@@ -42,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -1099,10 +1098,10 @@ public class PadInterfaceController {
     public String getTableByType(@RequestBody String json) {
         Map<String, Object> map = new HashMap<>();
         com.alibaba.fastjson.JSONObject obj = JSON.parseObject(json);
-        String defaultsort = "1";// 默认
-//        if (null != Constant.DEFAULT_TABLE_SORT) {
-//            defaultsort = Constant.DEFAULT_TABLE_SORT;
-//        }
+        String defaultsort = "0";// 默认
+        if (null != Constant.DEFAULT_TABLE_SORT) {
+            defaultsort = Constant.DEFAULT_TABLE_SORT;
+        }
         map.put("defaultsort", Integer.parseInt(defaultsort));
         String jsonString = "";
         try {
@@ -1114,35 +1113,6 @@ public class PadInterfaceController {
             logger.error("根据类型查询桌台异常！", e);
         }
         return jsonString;
-    }
-
-    @RequestMapping("/getTableAndType")
-    @ResponseBody
-    public String getTableAndType() {
-        List<Map<String,Object>> listTableArea = null;
-        //0成功1失败
-        Map<String,Object> res = new HashMap<>();
-        try {
-            listTableArea = tableAreaService.getTableAreaTag();
-            Map<String, Object> mapAreaid = new HashMap<String, Object>();
-            for (Map<String, Object> map : listTableArea) {
-                mapAreaid.put("areaid", map.get("areaid"));
-                mapAreaid.put("defaultsort", 1);
-                List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
-                if (!CollectionUtils.isEmpty(tablelist))
-                    map.put("tables", tablelist);
-            }
-        } catch (Throwable e){
-            loggers.error(e.getMessage(),e);
-            res.put("code",1);
-            res.put("msg",e.getMessage());
-            res.put("data",null);
-            return JSON.toJSONString(res);
-        }
-        res.put("code",0);
-        res.put("msg","查询成功");
-        res.put("data",listTableArea);
-        return JSON.toJSONString(res);
     }
 
     /**
@@ -3479,8 +3449,5 @@ public class PadInterfaceController {
     private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
-
-    @Autowired
-    private TableAreaService tableAreaService;
 
 }

@@ -29,72 +29,12 @@ public class TbTable {
 	
 	private String orderid;
 	private java.lang.String custPrinter;
-
-	private String modifytime;
-
-	public String getModifytime() {
-		return modifytime;
-	}
-
-	public void setModifytime(String modifytime) {
-		this.modifytime = modifytime;
-	}
-
-	private String areaSort;
-
-	public String getAreaSort() {
-		return areaSort;
-	}
-
-	public void setAreaSort(String areaSort) {
-		this.areaSort = areaSort;
-	}
-
+	
 	private int operationType;//（1：下单;2 :退菜 3：并台  4换台） 
 	
 	private int sequence;//顺序
-
-	private String amount;
-
-	public String getAreaname() {
-		return areaname;
-	}
-
-	public void setAreaname(String areaname) {
-		this.areaname = areaname;
-	}
-
-	private String areaname;
-
-	public String getCustnum() {
-		return custnum;
-	}
-
-	public void setCustnum(String custnum) {
-		this.custnum = custnum;
-	}
-
-	private String custnum;
-
-	public String getBegintime() {
-		return begintime;
-	}
-
-	public void setBegintime(String begintime) {
-		this.begintime = begintime;
-	}
-
-	private String begintime;
-
-	public String getAmount() {
-		return amount;
-	}
-
-	public void setAmount(String amount) {
-		this.amount = amount;
-	}
-
-
+	
+	
 	public int getOperationType() {
 		return operationType;
 	}
