@@ -62,17 +62,17 @@
 			<!--/span-->
 		</div>
 		<!--/row-->
-		<div class="report_data_div">
+		<div class="report_data_div" style="overflow-x: auto;">
 			<table class="table table-list" id="paidIn_tb">
 				<thead>
-					<tr>
-						<th width="14%">现金</th>
+					<tr id="settlementDesc">
+						<!-- <th width="14%">现金</th>
 						<th width="14%">挂账</th>
 						<th width="14%">微信</th>
 						<th width="14%">支付宝</th>
 						<th width="14%">刷工行卡</th>
 						<th width="14%">刷他行卡</th>
-						<th width="15%">会员储值消费净值</th>
+						<th width="15%">会员储值消费净值</th> -->
 					</tr>
 				</thead>
 				<tbody>
@@ -97,7 +97,8 @@
 						<th class="code">会员积分消费</th>
 						<th class="name">会员券消费</th>
 						<th class="name">会员优惠</th>
-						<th id="dynamic-col">抹零</th>
+						<th class="name">抹零</th>
+						<th class="name">四舍五入</th>
 						<th class="name">赠送金额</th>
 						<th class="name">会员储值消费虚增</th>
 					</tr>

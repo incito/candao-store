@@ -1,6 +1,8 @@
 package com.candao.www.webroom.model;
 
 
+import java.util.List;
+
 public class BusinessReport1 {
 	  private String Shouldamount="0";
 	  private String Paidinamount="0";
@@ -33,9 +35,9 @@ public class BusinessReport1 {
 	  private String Datetype="0";
     private String give = "0";
 	private String memberDishPriceFree = "0";
-
+	private List<String> settlementDescList ;
+	  private List<String> settlements;
 	private String shouldamountNormal="0"; //    #营业数据统计(堂吃应收）
-
 	private String paidinamountTakeout="0";    //  #外卖统计(实收）
 	private String ordercountTakeout="0";        //  // #外卖统计(订单数）
 	private String avgpriceTakeout="0";       //  	#外卖统计(订单平均价格）
@@ -45,7 +47,8 @@ public class BusinessReport1 {
 	private String handerWay="";     //零头处理方式名称
 	private String handervalue="";     //零头处理方式值
 	private String closedordermums = "0";  //已结账单数
-
+    private String roundoff = "0";
+    private String fraction = "0";
 	private String closedordershouldamount = "0";  //已结账单应收
 	private String closedorderpersonnums = "0";  //已结人数
 	private String nobillnums = "0"; //未结账单数
@@ -418,6 +421,38 @@ public class BusinessReport1 {
 
 	public void setZhifubao(String zhifubao) {
 		this.zhifubao = zhifubao;
+	}
+
+	public List<String> getSettlementDescList() {
+		return settlementDescList;
+	}
+
+	public void setSettlementDescList(List<String> settlementDescList) {
+		this.settlementDescList = settlementDescList;
+	}
+
+	public List<String> getSettlements() {
+		return settlements;
+	}
+
+	public void setSettlements(List<String> settlements) {
+		this.settlements = settlements;
+	}
+
+	public String getRoundoff() {
+		return roundoff;
+	}
+
+	public void setRoundoff(String roundoff) {
+		this.roundoff = roundoff;
+	}
+
+	public String getFraction() {
+		return fraction;
+	}
+
+	public void setFraction(String fraction) {
+		this.fraction = fraction;
 	}
     
 }

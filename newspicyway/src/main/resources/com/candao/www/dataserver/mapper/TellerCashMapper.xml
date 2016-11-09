@@ -66,7 +66,7 @@
        WHERE a.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) and  b.payway=7
     </select>
     <select id="selectTotalMoney" resultType="String" parameterType="Map">
-        select IFNULL(sum(case when b.payway='7' then 0-b.payamount else b.payamount end) ,0) as payamount  from t_settlement a
+        select IFNULL(sum(b.payamount) ,0) as payamount  from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
         where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and a.userid=#{userId} and a.isclear=0

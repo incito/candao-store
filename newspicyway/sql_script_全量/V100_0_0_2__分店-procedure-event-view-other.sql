@@ -38,29 +38,14 @@ AS
 --
 -- Definition for view v_revenuepayway
 --
-DROP VIEW IF EXISTS v_revenuepayway CASCADE $$
+CREATE OR REPLACE SQL SECURITY DEFINER
+VIEW `v_payway` AS
+select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `itemDesc`,`d`.`itemSort` AS `itemSort`,`d`.`status` AS `status`,`d`.`type` AS `type`,`d`.`typename` AS `typename`,`d`.`charges_status` AS `chargeStatus`,`ps`.`status` AS `isshow`,`ps`.`sort` AS `self_sort` from (`t_dictionary` `d` left join `t_payway_set` `ps` on((`d`.`itemid` = `ps`.`item_id`))) where (`d`.`type` = 'PAYWAY')$$
+
 CREATE OR REPLACE SQL SECURITY INVOKER
-VIEW v_revenuepayway
+VIEW `v_revenuepayway`
 AS
-SELECT t_dictionary.dictid AS dictid
-     , t_dictionary.itemid AS itemid
-     , t_dictionary.itemDesc AS itemDesc
-     , t_dictionary.itemSort AS itemSort
-     , t_dictionary.status AS status
-     , t_dictionary.type AS type
-     , t_dictionary.typename AS typename
-     , t_dictionary.begin_time AS begin_time
-     , t_dictionary.end_time AS end_time
-     , t_dictionary.charges_status AS charges_status
-     , t_dictionary.member_price AS member_price
-     , t_dictionary.price AS price
-     , t_dictionary.date_type AS date_type
-     , t_dictionary.item_value AS item_value
-FROM
-  t_dictionary
-WHERE
-  ((t_dictionary.itemid IN ('0', '1', '5', '8', '13', '17', '18', '30'))
-  AND (t_dictionary.type = 'PAYWAY')) $$
+select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `itemDesc`,`d`.`itemSort` AS `itemSort`,`d`.`status` AS `status`,`d`.`type` AS `type`,`d`.`typename` AS `typename`,`d`.`charges_status` AS `chargeStatus`,`ps`.`status` AS `isshow`,`ps`.`sort` AS `self_sort` from (`t_dictionary` `d` left join `t_payway_set` `ps` on((`d`.`itemid` = `ps`.`item_id`))) where ((`d`.`type` = 'PAYWAY') and (`d`.`charges_status` = 1))$$
 
 --
 -- Definition for view v_t_p_preferential_activity
@@ -515,7 +500,7 @@ loop_label:
   WHERE
     t.orderid = i_orderid
     AND t.payamount > 0
-    AND t.payway IN (0, 1, 5, 8, 13, 17, 18);
+    AND t.payway IN (SELECT itemid FROM v_payway WHERE `chargeStatus` = 1);
 
   SELECT ifnull(sum(t.debitamount), 0)
   INTO
@@ -850,7 +835,7 @@ BEGIN
   update t_order_detail set payamount=0, discountamount=0,predisamount=0  where ((status<>5 and  (not (orderprice>0))) or (status=5))  and orderid=v_orderid;
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
-  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,5,8,13,17,18,30);
+  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(SELECT itemid FROM `v_payway` where `chargeStatus` = 1);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
   select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid;

@@ -1,13 +1,13 @@
 var myChart;
 var curTheme = "macarons";
-
+var echarts;
 require.config({
 	paths : {
 		echarts : global_Path + '/tools/echarts/js'
 	}
 });
 
-function launchExample(domMain, option) {
+function launchExample(domMain, option,flag) {
 	// 按需加载
 	require([ 'echarts',
 	// 'theme/' + hash.replace('-en', ''),
@@ -29,6 +29,9 @@ function launchExample(domMain, option) {
 		myChart = ec.init(domMain, curTheme);
 		myChart.setOption(option, true);
 		echarts = ec;
+		if(flag==1){
+			g_legend_custom(domMain, option, "pie");
+		}
 	});
 }
 /**
@@ -222,8 +225,7 @@ function _pieChart(title, domMain, legend_data, series_data, flag) {
 		//title居中，图例放在图表下面
 		option.title = {text: title, x: "center"};
 		option.legend = {show: false, orient : 'horizontal', y : "bottom", data : legend_data};
-		launchExample(domMain, option);
-		g_legend_custom(domMain, option, "pie");
+		launchExample(domMain, option,flag);
 	}else{
 		launchExample(domMain, option);
 	}

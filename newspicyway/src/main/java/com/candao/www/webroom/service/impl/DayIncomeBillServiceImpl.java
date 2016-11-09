@@ -213,7 +213,7 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 	@Override
 	public void exportDaliyRport(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		//List<TjObj> list = getDaliyReport(params);
-		List<Map<String, Object>> list  = businessDataDetailService.isgetBusinessDetailexcel(params);
+		List<Map<String, Object>> list  = businessDataDetailService.isgetBusinessDetailexcel1(params);
 		String vasd =params.get("names").toString() ;
 		PoiExcleTest poi = new PoiExcleTest();
 		poi.exportExcle(list,params, vasd, req,resp);

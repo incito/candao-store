@@ -2740,6 +2740,14 @@ CREATE TABLE `t_dish_sellout` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `t_payway_set`;
+CREATE TABLE `t_payway_set` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `item_id` int(11) DEFAULT NULL COMMENT '支付方式ID',
+  `status` tinyint(4) DEFAULT NULL COMMENT '是否显示 0隐藏 1显示',
+  `sort` int(11) DEFAULT NULL COMMENT '排序字段',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 -- 
 -- Enable foreign keys
 -- 

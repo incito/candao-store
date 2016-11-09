@@ -3174,24 +3174,54 @@ public class PadInterfaceController {
 //		  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
 //		  this.delFile(inputDir+delPathName);
 //		PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
-		 padConfigService.saveorupdateToDic(dictionary);
-		return "system/systemSet";
-	}
-	
-	
-	private void delFile(String fileName){
-		File file = new File(fileName);
-		if(file.exists()){
-			file.delete();
-		}
-	}
-	
-	private int fileupload(InputStream inuStream, String imagelocation) {
-		try {
-			// 拿到输出流，同时重命名上传的文件
-			FileOutputStream os = new FileOutputStream(imagelocation);
-			// 拿到上传文件的输入流
-			InputStream in =  inuStream;
+        padConfigService.saveorupdateToDic(dictionary);
+        return "system/systemSet";
+    }
+
+    /**
+     * 获取支付方式
+     *
+     * @return
+     */
+    @RequestMapping("/getPayways")
+    @ResponseBody
+    public String getPayways() {
+        return JSON.toJSONString(ReturnMap.getSuccessMap(paywayService.getPayways()));
+    }
+
+    /**
+     * 保存自定义支付方式
+     *
+     * @return
+     */
+    @RequestMapping("/savePayway")
+    @ResponseBody
+    public String savePayway(@RequestBody String body) {
+        List<Map<String, Object>> payways = JSON.parseObject(body, List.class);
+        Map result;
+        try {
+            paywayService.savePayways(payways);
+            result = ReturnMap.getSuccessMap();
+        } catch (Exception e) {
+            logger.error("->", e);
+            result = ReturnMap.getFailureMap("服务器异常");
+        }
+        return JSON.toJSONString(result);
+    }
+
+    private void delFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    private int fileupload(InputStream inuStream, String imagelocation) {
+        try {
+            // 拿到输出流，同时重命名上传的文件
+            FileOutputStream os = new FileOutputStream(imagelocation);
+            // 拿到上传文件的输入流
+            InputStream in = inuStream;
 
 			// 以写字节的方式写文件
 			int b = 0;
@@ -3388,33 +3418,35 @@ public class PadInterfaceController {
     @Autowired
     private MessageInstrumentService messageInstrumentService;
 
-	@Autowired
-	private CallWaiterService callWaiterService;
-	@Autowired
-	private InvoiceService invoiceService;
-	@Autowired
-	private GiftLogService giftService;
-	@Autowired
-	private TbUserInstrumentDao tbUserInstrumentDao;
-	@Autowired
-	TorderMapper torderMapper;
-	@Autowired
-	TsettlementMapper tsettlementMapper;
-	@Autowired
-	private CallWaiterService callService;
-	@Autowired
-	private TtellerCashDao tellerCashService;
-	@Autowired
-	private TbBranchDao tbBranchDao;
-	@Autowired
-	private SystemServiceImpl systemServiceImpl;
-	@Autowired
-	private PadConfigService padConfigService;
-	@Autowired
-	private TorderDetailPreferentialService torderDetailPreferentialService;
-	@Autowired
-	private OrderOpService orderOpService;
-	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
+    @Autowired
+    private CallWaiterService callWaiterService;
+    @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
+    private GiftLogService giftService;
+    @Autowired
+    private TbUserInstrumentDao tbUserInstrumentDao;
+    @Autowired
+    TorderMapper torderMapper;
+    @Autowired
+    TsettlementMapper tsettlementMapper;
+    @Autowired
+    private CallWaiterService callService;
+    @Autowired
+    private TtellerCashDao tellerCashService;
+    @Autowired
+    private TbBranchDao tbBranchDao;
+    @Autowired
+    private SystemServiceImpl systemServiceImpl;
+    @Autowired
+    private PadConfigService padConfigService;
+    @Autowired
+    private TorderDetailPreferentialService torderDetailPreferentialService;
+    @Autowired
+    private PaywayService paywayService;
+    @Autowired
+    private OrderOpService orderOpService;
+    private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
 

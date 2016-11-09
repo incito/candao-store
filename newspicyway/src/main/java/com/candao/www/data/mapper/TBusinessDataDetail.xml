@@ -6,7 +6,7 @@
     <select id="isgetBusinessDetail" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
         {
           call p_report_yysjmxb(
-            #{branchid,jdbcType=INTEGER,mode=IN},
+            #{branchId,jdbcType=INTEGER,mode=IN},
             #{shiftid,jdbcType=INTEGER,mode=IN},
             #{beginTime,jdbcType=TIMESTAMP,mode=IN},
             #{endTime,jdbcType=TIMESTAMP,mode=IN},
@@ -15,6 +15,70 @@
         }
     </select>
 
-
+<select id="getSettlementOptions" parameterType="java.util.Map" resultType="java.util.Map"> 
+		SELECT itemid AS itemId,
+			itemDesc AS itemDesc
+		FROM v_revenuepayway
+		where itemid NOT IN (13,30)
+		ORDER BY itemSort ASC
+	</select>
+	
+	<select id="getOrderActualSettlements" parameterType="java.util.Map" resultType="java.util.Map"> 
+		SELECT IFNULL(SUM(tsd.payamount), 0) AS actualAmount,
+			vr.itemid AS itemId,
+			vr.itemDesc AS itemDesc
+		FROM t_settlement_detail AS tsd
+		LEFT JOIN t_order AS too ON too.orderid = tsd.orderid
+		RIGHT JOIN v_revenuepayway AS vr ON vr.itemid = tsd.payway
+		WHERE too.branchid = #{branchId}
+		AND too.begintime >= #{beginTime}
+		AND too.begintime &lt;= #{endTime}
+		AND too.orderstatus = 3
+		<if test="shiftid==-1">
+	    AND too.shiftid IN (0,1)
+	    </if>
+	    <if test="shiftid!=-1">
+		AND too.shiftid = #{shiftid}
+		</if>
+		<if test="orderType != null">
+		AND too.ordertype>0
+		</if>
+		GROUP BY tsd.payway 
+		ORDER BY vr.itemSort ASC
+	</select>
+	<select id="getOrderInflate" parameterType="java.util.Map" resultType="java.util.Map"> 
+		SELECT IFNULL(SUM(tom.Inflated),0) AS inflated,
+			IFNULL(SUM(CASE ordertype WHEN 0 THEN 0 ELSE tom.Inflated END), 0) AS waimaiInflated
+		FROM t_order_member tom 
+		LEFT JOIN t_order AS too ON too.orderid = tom.orderid
+		WHERE too.branchid = #{branchId}
+		AND too.begintime >= #{beginTime}
+		AND too.begintime &lt;= #{endTime}
+		AND too.orderstatus = 3
+		<if test="shiftid==-1">
+	    AND too.shiftid IN (0,1)
+	    </if>
+	    <if test="shiftid!=-1">
+		AND too.shiftid = #{shiftid}
+		</if>
+	</select>
+	
+	<select id="getthActualAmount" parameterType="java.util.Map" resultType="java.util.Map"> 
+		SELECT IFNULL(SUM(tsd.payamount),0) AS actualAmount
+		FROM t_settlement_detail AS tsd
+		LEFT JOIN t_order AS too ON too.orderid = tsd.orderid
+		WHERE too.branchid = #{branchId}
+		AND too.begintime >= #{beginTime}
+		AND too.begintime &lt;= #{endTime}
+		AND too.orderstatus = 3
+		<if test="shiftid==-1">
+	    AND too.shiftid IN (0,1)
+	    </if>
+	    <if test="shiftid!=-1">
+		AND too.shiftid = #{shiftid}
+		</if>
+		AND tsd.payway = 1
+		AND tsd.membercardno != '1'
+	</select>
 
 </mapper>

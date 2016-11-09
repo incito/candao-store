@@ -137,7 +137,21 @@ public class SyncService {
 							}
 						}
 					}
-				}
+				}else{
+                    stmt.addBatch("DELETE FROM t_dictionary WHERE type ='PAYWAY'");
+                    stmt.addBatch("TRUNCATE TABLE t_payway_set ");
+                    List<Map<String, Object>> value = entry.getValue();
+                    List<Map<String, Object>> payways = new ArrayList<>();
+                    for(Map<String,Object> dictionary:value){
+                            if("payway".equalsIgnoreCase(dictionary.get("type").toString())){
+                                payways.add(dictionary);
+                            }
+                    }
+                    String dml = createSql(entry.getKey(), payways, connection);
+                    if (StringUtils.hasText(dml)){
+                        stmt.addBatch(dml);
+                    }
+                }
 			}
             // 持久化
             stmt.executeBatch();

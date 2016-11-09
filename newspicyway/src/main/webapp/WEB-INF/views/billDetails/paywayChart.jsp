@@ -121,8 +121,7 @@
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/zxx.color_exchange.js"></script>
 	<script type="text/javascript">
 		$(function() {
-			var curTheme = "macarons";
-
+			/* var curTheme = "macarons";
 			require.config({
 				paths : {
 					echarts : global_Path + '/tools/echarts/js'
@@ -137,7 +136,7 @@
 				], function(ec) {
 					echarts = ec;
 				});
-			}
+			} */
 			initPaywayData();
 		});
 	</script>
