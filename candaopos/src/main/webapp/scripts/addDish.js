@@ -31,6 +31,8 @@ var AddDish = {
 		dishCartMap = new utils.HashMap();
 		dishesMap = new utils.HashMap();
 
+		focusIpt = $('input[type=search]');
+
 		if(g_eatType === "out"){
 			//外卖
 			$(".give-dish").addClass("hide");
@@ -65,18 +67,6 @@ var AddDish = {
 		this.bindEvent();
 		SetBotoomIfon.init();
 
-		/*菜品数量格式现在*/
-		$('.dish-amount').on('input propertychange focus', function() {
-			var _thisVal=$.trim($(this).val()),pattern = /^\+?[1-9][0-9]*$/;//只能输入非0开始的数字
-			if(_thisVal!=''){
-				if(pattern.test(_thisVal)===false){
-					utils.printError.alert('菜品数量，只能输入非0开始的数字');
-					$(this).val(_thisVal.substring(0,_thisVal.length-1));
-					return false
-				}
-			}
-
-		});
 	},
 
 	bindEvent: function () {
@@ -990,7 +980,8 @@ var AddDish = {
 		}
 
 		if(type === 2) {
-			tasts = dish.imagetitle
+			tasts = dish.imagetitle;
+			dom.noteDialog.find('.btn-save').attr('disabled', 'disabled');
 		}
 
 
@@ -1032,6 +1023,8 @@ var AddDish = {
 		dom.noteDialog.delegate('.taste li', 'click', function(){
 			var me = $(this);
 			me.addClass('active').siblings().removeClass('active');
+			dom.noteDialog.find('.btn-save').removeAttr('disabled');
+
 		});
 
 		if(type == 1){
@@ -1063,7 +1056,6 @@ var AddDish = {
 				dom.noteDialog.attr({'dish-type':dish.dishtype});
 				dom.noteDialog.attr({'pid':dish.pid});
 			}
-
 		}
 
 		//
@@ -1470,6 +1462,16 @@ var AddDish = {
 			dom.numDialog.attr("cid",cid);
 			dom.numDialog.find('.dish-name').text(dishname);
 			dom.numDialog.find('.J-num').val('');
+			dom.numDialog.find('.J-num').off('input propertychange focus').on('input propertychange focus', function() {
+				var me = $(this);
+				me.val(me.val().replace(/[^\d]/g,''));
+				if($.trim(me.val()).length > 0) {
+					dom.numDialog.find('.btn-save').removeAttr('disabled');
+				} else {
+					dom.numDialog.find('.btn-save').attr('disabled', 'disabled');
+				}
+			});
+			focusIpt = dom.numDialog.find('.J-num');
 			if(dishtype === 2 || dishtype === 1 ) {
 				widget.modal.alert({
 					content:'<strong>套餐和鱼锅不能直接修改数量</strong>',

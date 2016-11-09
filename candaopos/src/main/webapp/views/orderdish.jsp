@@ -181,7 +181,7 @@
 	                    <div class="form-group dishname">菜品名称：<span class="dish-name"></span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">菜品数量:</span>
-	                    	<input type="text" class="form-control padding-left J-num dish-amount">
+	                    	<input type="text"  class="form-control padding-left J-num dish-amount">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -201,7 +201,7 @@
 	                <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135"  type="button" onclick="AddDish.doUpdateNum(0)">确认
+	                    <button class="btn btn-save in-btn135" disabled  type="button" onclick="AddDish.doUpdateNum(0)">确认
 	                    </button>
 	                </div>
 	            </div>

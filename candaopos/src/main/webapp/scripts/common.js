@@ -61,6 +61,11 @@ $(document).ready(function(){
 
 	}
 
+	//input验证
+	$('input[validtype=number]').on('input propertychange focus', function() {
+		$(this).val($(this).val().replace(/[^\d]/g,''));
+	});
+
 
 });
 javascript:window.history.forward(1);
@@ -520,8 +525,7 @@ widget.keyboard = function(opts){
 		doc.undelegate(opts.target + ' ' + opts.chirdSelector,'click');
 		doc.delegate(opts.target + ' ' + opts.chirdSelector,'click', function(){
 			var me = $(this);
-			if(focusIpt === null || me.hasClass('btn-action')) return false;
-
+			if(me.hasClass('btn-action') || focusIpt === null) return false;
 			var focusVal = focusIpt.val();
 			var keyVal = $(this).text();
 

@@ -176,7 +176,7 @@
 				</div>
 				<hr style="border: 1px solid #D3D3D3;">
 				<div class="tab-payment">
-					<ul><li class="active" target="#cash">现金支付</li><li target="#bank-card">银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">da支付</li><li target="#pay-treasure">支付宝</li><li target="#wechat-pay">微信支付</li></ul>
+					<ul><li class="active" target="#cash">现金支付</li><li target="#bank-card">银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">挂账支付</li><li target="#pay-treasure">支付宝</li><li target="#wechat-pay">微信支付</li></ul>
 				</div>
 				<div class="pay-div">
 					<!-- 现金支付 -->
@@ -197,11 +197,11 @@
 						</div>
 						<div class="form-group">
 							<span>银行卡号:</span>
-							<input type="text" class="form-control J-pay-name" id="bankno">
+							<input type="text" validType='number' class="form-control J-pay-name" id="bankno">
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" disabled class="form-control J-pay-val" name="bank"  iptType="bank">
+							<input type="text" disabled validType='number' class="form-control J-pay-val" name="bank"  iptType="bank">
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
@@ -213,11 +213,11 @@
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" disabled class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
+							<input type="text" disabled validType='number' class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" disabled class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
+							<input type="text" disabled validType='number' class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
@@ -235,7 +235,7 @@
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
-							<input type="text" disabled class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
+							<input type="text" validType='number' disabled class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
@@ -246,18 +246,18 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text"  disabled class="form-control J-pay-val" name="alipay" iptType="alipay">
+							<input type="text" validType='number'   class="form-control J-pay-val" name="alipay" iptType="alipay">
 						</div>
 					</div>
 					<!-- 微信支付 -->
 					<div class="paytype-input wechat-pay hide" id="wechat-pay">
 						<div class="form-group">
 							<span>微信号:</span>
-							<input type="text"  class="form-control J-pay-name" name="wpayName">
+							<input type="text"   class="form-control J-pay-name" name="wpayName">
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" disabled class="form-control J-pay-val" ipttype="wpay" name="wpay" >
+							<input type="text" validType='number'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
 						</div>
 					</div>
 					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
@@ -344,7 +344,7 @@
 	                <div class="btn-operate">
 	                    <button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('coupnum-dialog')">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135"  type="button" onclick="Order.addPref(this)">确认
+	                    <button class="btn btn-save in-btn135"  type="button" disabled onclick="Order.addPref(this)">确认
 	                    </button>
 	                </div>
 	            </div>
@@ -416,7 +416,7 @@
 					<div class="dialog-sm-info">
 						<div class="form-group">
 							<span class="inpt-span">退菜数量:</span>
-							<input type="text" id="backDishNumIpt"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"    class="form-control padding-left">
+							<input type="text" id="backDishNumIpt"  onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')"    class="form-control padding-left">
 						</div>
 						<div class="virtual-keyboard">
 							<ul>
@@ -459,7 +459,7 @@
 	                    <div class="form-group coupname"><span id="coup-name">称重菜品</span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">称重数量:</span>
-	                    	<input type="text" class="form-control padding-left" id="weight-num">
+	                    	<input type="text" class="form-control padding-left" onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')" id="weight-num">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>

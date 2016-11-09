@@ -235,8 +235,7 @@
                     <div class="hori-lf-div">
                         <div>
                             <span>服务员编号:</span>
-                            <input type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
-                                   onafterpaste="this.value=this.value.replace(/\D/g,'')"
+                            <input type="text" validType='number'
                                    class="form-control serverName J-server-name">
                         </div>
                         <%--<div>--%>
@@ -245,17 +244,17 @@
                         <%--</div>--%>
                         <div>
                             <span>就餐人数(男):</span>
-                            <input type="text" onafterpaste="this.value=this.value.replace(/\D/g,'')"
+                            <input type="text" validType='number'
                                    class="form-control personnum J-male-num">
                         </div>
                         <div>
                             <span>就餐人数(女):</span>
-                            <input type="text" onafterpaste="this.value=this.value.replace(/\D/g,'')"
+                            <input type="text" validType='number'
                                    class="form-control personnum J-female-num">
                         </div>
                         <div>
                             <span>餐具数量:</span>
-                            <input type="text" disabled onafterpaste="this.value=this.value.replace(/\D/g,'')"
+                            <input type="text" disabled validType='number'
                                    class="form-control J-tableware-num">
                         </div>
                     </div>

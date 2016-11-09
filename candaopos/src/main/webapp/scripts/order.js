@@ -277,8 +277,20 @@ var Order = {
                     "unit": "" //“xx,xx,xx”,
                 });
 
+                focusIpt = $coupnumDialog.find('.J-pref-ipt');
                 $coupnumDialog.find('.coupname').text('');
                 $coupnumDialog.find('.J-pref-ipt').val('');
+
+                $coupnumDialog.find('.J-pref-ipt').off('input propertychange focus').on('input propertychange focus', function() {
+                    var me = $(this);
+                    me.val(me.val().replace(/[^\d]/g,''));
+                    if($.trim(me.val()).length > 0) {
+                        $coupnumDialog.find('.btn-save').removeAttr('disabled');
+                    } else {
+                        $coupnumDialog.find('.btn-save').attr('disabled', 'disabled');
+                    }
+                });
+
                 //根据不同优惠券,弹出不同modal
                 if (type === '05' || type === '03') {
                     //团购 || 代金券, 输入数量
@@ -509,11 +521,12 @@ var Order = {
             if (iptName.length > 0) {
                 $parent.find('.J-pay-val,.J-pay-pwd').removeAttr('disabled');
             } else {
+                if($parent.find('.J-pay-val').attr('ipttype') === 'wpay' || $parent.find('.J-pay-val').attr('ipttype') === 'alipay') {
+                    return false;
+                }
+
                 $parent.find('.J-pay-val, .J-pay-pwd').attr('disabled', 'disabled');
             }
-            //$parent.find('.J-pay-val,.J-pay-pwd').val('');
-
-            //return false;
         }
 
         //if (!this.value.match(/^[\+\-]?\d*?\.?\d*?$/)) this.value = this.t_value; else this.t_value = this.value;
@@ -1063,7 +1076,7 @@ var Order = {
             success: function (res) {
                 var htm = '';
                 $.each(res, function (k, v) {
-                    htm += '<div class="preferential-info"' +
+                    htm += '<div style="background-color:' + v.color + '" class="preferential-info"' +
                         ' type="' + v.type + '"' +
                         ' free_reason="' + v.free_reason + '"' +
                         ' preferential="' + v.preferential + '"' +
@@ -1278,7 +1291,7 @@ var Order = {
         if(opType === 0) {
             $("#sel-preferential-table tbody").html(tr);
         } else {
-            $("#sel-preferential-table tbody").prepend(tr);
+            $("#sel-preferential-table tbody").append(tr);
         }
 
         widget.loadPage({
@@ -1292,8 +1305,7 @@ var Order = {
             nextBtnObj: ".preferential-oper-btns .next-btn",
             callback: function () {
                 $body.find('tr').removeClass("selected");
-                $body.find('tr').not(".hide").eq(0).addClass(
-                    "selected");
+                $body.find('tr').not(".hide").eq(0).addClass("selected");
             }
         });
 
@@ -1447,7 +1459,7 @@ var Order = {
 
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
-                                tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + v.dishname + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + v.dishname + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
 
                                 if(v.dishes !== undefined) {
                                     $.each(v.dishes, function(k1, v1){
@@ -1474,8 +1486,13 @@ var Order = {
                             nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
                             callback: function () {
                                 $body.find('tr').removeClass("selected");
-                                $body.find('tr').not(".hide").eq(0).addClass(
-                                    "selected");
+                                $body.find('tr').not(".hide").eq(0).addClass('selected');
+                                if($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
+                                    $("#weigh-dish").removeClass('disabled');
+                                } else {
+                                    $("#weigh-dish").addClass('disabled');
+                                }
+
                             }
                         });
 
