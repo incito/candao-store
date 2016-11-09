@@ -213,15 +213,15 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 			TblEmployee emloyee = employeeDao.queryForEmpNo(orderDetailMap.get(menu.getItem()).getUserName());
 			/** 点菜的名称 **/
 			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq1(), checkNum,
-					candaoDishMap, detail);
+					candaoDishMap, detail, order.getGlobalsperequire());
 			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq2(), checkNum,
-					candaoDishMap,detail);
+					candaoDishMap, detail, order.getGlobalsperequire());
 			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq3(), checkNum,
-					candaoDishMap, detail);
+					candaoDishMap, detail, order.getGlobalsperequire());
 			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq4(), checkNum,
-					candaoDishMap, detail);
+					candaoDishMap, detail, order.getGlobalsperequire());
 			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq5(), checkNum,
-					candaoDishMap,detail);
+					candaoDishMap, detail, order.getGlobalsperequire());
 		}
 		// 封装成数据流
 		Map<String, String> printMesBytes = new HashMap<String, String>();
@@ -230,22 +230,59 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 		for (String key : printMes.keySet()) {
 			StringBuffer buffer = new StringBuffer();
 			List<LinuxPrintEmpBean> linuxPrintEmpBeans = printMes.get(key);
-			for (LinuxPrintEmpBean empBean : linuxPrintEmpBeans) {
-				String tempPrintMes = String.format(LiunxSSHScpclientUtil.getInstance().getEmpPrintbuffer(),
-						empBean.getPrintQname(), empBean.getTableNum(), empBean.getEmpName(), empBean.getCover(),
-						empBean.getCheckNum(), empBean.getDate(), empBean.getTime(), empBean.getMenuNum(),
-						empBean.getMenuName());
-				buffer.append(tempPrintMes);
-				if (empBean.getDoMethod() == null) {
+			int beanSize = linuxPrintEmpBeans.size();
+			if (key.equals("10")) {
+				LinuxPrintEmpBean empBean;
+				if (beanSize > 0) {
+					empBean = linuxPrintEmpBeans.get(0);
+					String tempPrintMes = String.format(LiunxSSHScpclientUtil.getInstance().getEmpPrintbuffer(),
+							empBean.getPrintQname(), empBean.getTableNum(), empBean.getEmpName(), empBean.getCover(),
+							empBean.getCheckNum(), empBean.getDate(), empBean.getTime());
+					buffer.append(tempPrintMes);
+				}
+				for (int i = 0; i < beanSize; i++) {
+					empBean = linuxPrintEmpBeans.get(i);
 					buffer.append("\r\n");
-					buffer.append("^,Xfullcut 		|**Cut Paper**");
-				} else {
-					buffer.append("F4,AL		|  ");
-					buffer.append(empBean.getDoMethod());
+					buffer.append("^,Xred_color|**Change to red Color** ");
 					buffer.append("\r\n");
-					buffer.append("^,Xfullcut 		|**Cut Paper**");
+					buffer.append("L2,F3,AL		|" + empBean.getMenuNum() + "  " + empBean.getMenuName());
+					if ((i + 1) < beanSize) {
+						buffer.append("\r\n");
+						buffer.append("^,Xblack_color|**Change to black Color**");
+					}else{
+						buffer.append("\r\n");
+						buffer.append("L2,F1,AL		|");
+						buffer.append("\r\n");
+						buffer.append("|");
+						buffer.append("\r\n");
+						buffer.append("^,Xfullcut 		|**Cut Paper**");
+					}
+				}
+			} else {
+				for (LinuxPrintEmpBean empBean : linuxPrintEmpBeans) {
+					String tempPrintMes = String.format(LiunxSSHScpclientUtil.getInstance().getEmpPrintbuffer(),
+							empBean.getPrintQname(), empBean.getTableNum(), empBean.getEmpName(), empBean.getCover(),
+							empBean.getCheckNum(), empBean.getDate(), empBean.getTime());
+					buffer.append(tempPrintMes);
+					if (empBean.getDoMethod() == null) {
+						buffer.append("^,Xblack_color|**Change to black Color**");
+						buffer.append("\r\n");
+						buffer.append("F4,AL		|" + empBean.getMenuNum() + "  " + empBean.getMenuName());
+						buffer.append("\r\n");
+						buffer.append("^,Xfullcut 		|**Cut Paper**");
+					} else {
+						buffer.append("^,Xblack_color|**Change to black Color**");
+						buffer.append("\r\n");
+						buffer.append("F4,AL		|" + empBean.getMenuNum() + "  " + empBean.getMenuName());
+						buffer.append("\r\n");
+						buffer.append("F4,AL		|  ");
+						buffer.append(empBean.getDoMethod());
+						buffer.append("\r\n");
+						buffer.append("^,Xfullcut 		|**Cut Paper**");
+					}
 				}
 			}
+
 			printMesBytes.put(diskPath + CommonUtil.getPrintFileName(key, PropertiesUtils.getValue("station")),
 					buffer.toString());
 		}
@@ -268,9 +305,9 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 
 	private void setPrintMes(TblEmployee emloyee, Map<String, TblPrintqueue> printALLMap, String tableid,
 			Map<String, List<LinuxPrintEmpBean>> printMes, TblMenu menu, String queueNo, String checkNum,
-			Map<String, String> candaoDishMap, TorderDetail detail) throws IOException {
-		String dishNum=detail.getDishnum();
-		String dishUnit=detail.getDishunit();
+			Map<String, String> candaoDishMap, TorderDetail detail, String globalsperequire) throws IOException {
+		String dishNum = detail.getDishnum();
+		String dishUnit = detail.getDishunit();
 		/** 当前菜品个数 **/
 		if (!queueNo.trim().equals("0")) {
 			LinuxPrintEmpBean empBean = new LinuxPrintEmpBean(
@@ -278,19 +315,37 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 					CommonUtil.getFomartGBK(emloyee.getShortname3()), String.valueOf("5"), checkNum,
 					CommonUtil.yearMonthFomart(), CommonUtil.dateTimeFomart(), dishNum,
 					CommonUtil.getFomartGBK(menu.getName3()));
-			
-			//如果为上菜单不打印做法
-			if(!queueNo.trim().equals("10")){
+
+			// 拼接打印做法
+			// 如果为上菜单不打印做法
+			if (!queueNo.trim().equals("10")) {
+
+				StringBuffer sb = new StringBuffer();
 				// 判断是是否是有多规格菜品
 				if (candaoDishMap.values().contains(menu.getItem())) {
-					empBean.setDoMethod("*" + dishUnit);
+					// empBean.setDoMethod("*" + dishUnit);
+					sb.append(" ");
+					sb.append(dishUnit);
 				}
-				
-				if(detail.getTaste()!=null&&!detail.getTaste().isEmpty()){
-					empBean.setDoMethod("*" + detail.getTaste());
+				if (detail.getTaste() != null && !detail.getTaste().isEmpty()) {
+					sb.append(" ");
+					sb.append(detail.getTaste());
+				}
+				if (globalsperequire != null && !globalsperequire.isEmpty()) {
+					sb.append(" ");
+					sb.append(globalsperequire.replaceAll(";", " "));
+				}
+
+				if (detail.getSperequire() != null && !detail.getSperequire().isEmpty()) {
+					sb.append(" ");
+					sb.append(detail.getSperequire().replaceAll(";", " "));
+				}
+				if (!sb.toString().isEmpty()) {
+					sb.insert(0, "*");
+					empBean.setDoMethod(sb.toString());
 				}
 			}
-		
+
 			if (!printMes.containsKey(queueNo)) {
 				List<LinuxPrintEmpBean> beans = new ArrayList<LinuxPrintEmpBean>();
 				beans.add(empBean);
@@ -371,7 +426,8 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 				List<TblItem> items = new ArrayList<>();
 				// 单一菜品
 				Map<String, Object> singleMap = createCheckItem(checkInfo,
-						inorderItems.toArray(new String[inorderItems.size()]), orders, candaoDishMap, canDaoToInorderMap);
+						inorderItems.toArray(new String[inorderItems.size()]), orders, candaoDishMap,
+						canDaoToInorderMap);
 				items.addAll((Collection<? extends TblItem>) singleMap.get("items"));
 				allItemtot += ((double) singleMap.get("allItemtot"));
 				alltRvItemtot += ((double) singleMap.get("alltRvItemtot"));
@@ -429,21 +485,22 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 				TblMenu tblMenu = mapTblMenu.get(canDaoToInorderMap.get(detail.getDishid()));
 
 				// 取值如果是多规格取餐道数据
-				 String candaoDishId = candaoDishMap.get(detail.getDishid());
-				 
-//				 String menuItemSuffix=candaoDishId==null?detail.getTaste():detail.getDishunit();
-//				 StringBuffer sb=new StringBuffer();
-//				 if(menuItemSuffix==null||menuItemSuffix.isEmpty()){
-//					 sb.append("");
-//				 }else{
-//					 sb.append("<");
-//					 sb.append(menuItemSuffix);
-//					 sb.append(">");
-//				 }
+				String candaoDishId = candaoDishMap.get(detail.getDishid());
+
+				// String
+				// menuItemSuffix=candaoDishId==null?detail.getTaste():detail.getDishunit();
+				// StringBuffer sb=new StringBuffer();
+				// if(menuItemSuffix==null||menuItemSuffix.isEmpty()){
+				// sb.append("");
+				// }else{
+				// sb.append("<");
+				// sb.append(menuItemSuffix);
+				// sb.append(">");
+				// }
 
 				TblItem tblItem = new TblItem(checkInfo.getDate(), Integer.valueOf(checkInfo.getCheck()),
 						checkInfo.getOutlet(), maxItemInx, tblMenu.getItem());
-				tblItem.setClone(tblMenu,"");
+				tblItem.setClone(tblMenu, "");
 				if (candaoDishId == null) {
 					tblItem.setOgnprice(tblMenu.getItemprice1());// 原始菜品价格
 					tblItem.setPrice(tblMenu.getItemprice1());// 实际菜品价格（不能确定数据来源）
@@ -479,12 +536,12 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 				tblItem.setLastmodifiedtime(new Date());
 				items.add(tblItem);
 			}
-		
+
 			resultMap.put("allItemtot", allItemtot);
 			resultMap.put("alltRvItemtot", alltRvItemtot);
 			resultMap.put("items", items);
 		} catch (Exception e) {
-			logger.error("方法：createCheckItem---》"+e.getStackTrace());
+			logger.error("方法：createCheckItem---》" + e.getStackTrace());
 		}
 		return resultMap;
 	}
