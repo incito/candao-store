@@ -1,9 +1,12 @@
 package com.candao.www.webroom.service.impl;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import com.candao.www.data.model.*;
-import com.candao.www.webroom.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +29,23 @@ import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.dao.UserDao;
+import com.candao.www.data.model.TbDataDictionary;
+import com.candao.www.data.model.TbTable;
+import com.candao.www.data.model.ToperationLog;
+import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.Tworklog;
+import com.candao.www.data.model.User;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.NotifyService;
+import com.candao.www.webroom.service.TableService;
+import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.webroom.service.WorkLogService;
 
 @Service
 public class TableServiceImpl implements TableService {
@@ -80,9 +91,6 @@ public class TableServiceImpl implements TableService {
 
     @Autowired
     private NotifyService notifyService;
-
-    @Autowired
-    private TableAreaService tatableAreaService;
 
     @Override
     public Page<Map<String, Object>> grid(Map<String, Object> params, int current, int pagesize) {
@@ -849,22 +857,6 @@ public class TableServiceImpl implements TableService {
     @Override
     public Map<String, Object> getByOrderId(String orderId) {
         return tableDao.getByOrderId(orderId);
-    }
-
-    @Override
-    public void updateSortedTypeAndTable(List<TbTableArea> tableAreas) {
-        Assert.notEmpty(tableAreas, "保存排序失败！参数为空");
-        boolean flag = false;
-        List<TbTableArea> temp = new ArrayList<>();
-        for (TbTableArea area : tableAreas) {
-            temp.clear();
-            temp.add(area);
-            flag = tatableAreaService.updateListOrder(temp) == 1;
-            if (!CollectionUtils.isEmpty(area.getTables()))
-                flag = flag == true ? tableDao.updatePosition(area.getTables()) == area.getTables().size() : flag;
-            if (!flag)
-                throw new RuntimeException("保存排序失败！餐台区域或餐台不存在");
-        }
     }
 }
 
