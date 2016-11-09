@@ -2,24 +2,18 @@ package com.candao.www.data.model;
 
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 public class TbTableArea {
 	private java.lang.String areaid; 
 	private java.lang.Integer areaNo; 
 	private java.lang.String areaname;
-	private java.lang.Integer status;
+	private java.lang.Integer status; 
 	private java.lang.String custPrinter;
 	private java.lang.Integer areaSort;
 	private java.lang.String branchid;
-	private List<TbTable> tables;
-
-	public List<TbTable> getTables() {
-		return tables;
-	}
-	public void setTables(List<TbTable> tables) {
-		this.tables = tables;
-	}
+	
+	
+	
 	public java.lang.String getBranchid() {
 		return branchid;
 	}

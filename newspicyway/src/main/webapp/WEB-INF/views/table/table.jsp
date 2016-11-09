@@ -13,8 +13,7 @@
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/counter.css?v=1">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/font-awesome/css/font-awesome.css">
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/switchery/style.css"/>
-	<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/jquery-ui.min.js"></script>
+	<script src="<%=request.getContextPath()%>/scripts/jquery.js"></script>
 	<script src="<%=request.getContextPath()%>/tools/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/index.js"></script>
 	<script src="<%=request.getContextPath()%>/scripts/projectJs/tables.js?v=b"></script>
@@ -30,9 +29,7 @@
 		<div class="ky-content content-iframe">
 			<div class="counter-content">
 				<p class="counter-content-title">
-					<button class="btn btn-default counter-type-add counter-add" style="float: left" type="button" id="dinnerTable"><i class="icon-edit"></i> <span>自定义餐台</span></button>
-					<button class="btn btn-default counter-type-add counter-add" style="float: left;display: none;margin-left: 30px" type="button" id="dinnerTablecancel"><i class="icon-minus"></i> <span>取消</span></button>
-					<button class="btn btn-default counter-type-add counter-add"   type="button" id="counter-type-add" onclick="addArea()" ><i class="icon-plus"></i> 餐厅分区</button>
+					<button class="btn btn-default counter-type-add counter-add"  type="button" id="counter-type-add" onclick="addArea()" ><i class="icon-plus"></i> 餐厅分区</button>
 				</p>
 
 					<div class="nav-counter-prev"  style="display: none"><i class="icon-chevron-left"></i></div>
@@ -40,14 +37,14 @@
 				<ul class="nav-counter" id="nav-tables" >
 					<c:forEach var="item" items="${areanames}" varStatus="i">
 						<c:if test="${i.index==0}">
-						<li  id="${item.areaid}" areaSort="${item.areaSort}" class="active" onmousedown="doMenu(event,this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
+						<li id="${item.areaid}" class="active" onmousedown="doMenu(event,this)" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
 						onclick="oneclickTableType(this.id)" ondblclick="editArea(this.id)" >
 						<span>${item.areaname}</span><span>(${item.tableCount})</span>
 						<i class="icon-remove hidden"  onclick="showDeleteArea(this.id)"></i>
 						</li>
 						</c:if>
 						<c:if test="${i.index!=0}">
-							 <li  id="${item.areaid}" areaSort="${item.areaSort}" class="" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
+							 <li id="${item.areaid}" class="" onmouseover="delDisplay(this)" onmouseout="delHidden(this)"
 	 						onclick="oneclickTableType(this.id)" onmousedown="doMenu(event,this)"  ondblclick="editArea(this.id)" >
 							<span>${item.areaname}</span><span>(${item.tableCount})</span>
 							<i class="icon-remove hidden"  onclick="showDeleteArea()"></i>
@@ -66,7 +63,7 @@
 				<div class="nav-counter-tab">
 
 					<c:forEach var="item" items="${datas}" varStatus="i">
-					<div class="counter-detail-box" tabletype='${item.tabletype}' id="${item.tableid}" onmouseover="delDisplay(this)" onmouseout="delHidden(this)" >
+					<div class="counter-detail-box" id="${item.tableid}" onmouseover="delDisplay(this)" onmouseout="delHidden(this)" >
 						<p>${item.tableName }</p>
 						<p>(${item.personNum }人桌)</p>
 						<i class="icon-remove hidden"  onclick="delTablesDetail(&apos;${item.tableid }&apos;,&apos;${item.tableName }&apos;,event)"></i>
@@ -119,7 +116,7 @@
 								<label class="col-xs-4 control-label"><span class="required-span">*</span>就餐人数：</label>
 								<div class="col-xs-7">
 									<div class="input-group  unit-style">
-										  <input type="text" name="personNum" id="personNum"     maxlength="3" onkeyup="clearNoNum(this);"  class="form-control ">
+										  <input type="text" name="personNum" id="personNum"     maxlength="3" onkeyup="clearNoNum(this);"  class="form-control "></input>
 										  <span class="input-group-addon" style="color: #282828;">人</span>
 
 										</div>
@@ -261,8 +258,6 @@
 
 
 		<script>
-			var tableJson=null;
-			customTable.int();//餐台自定义排序
 		var count=0;
 		$('.tables-roll-left').click(function(){
 			var marginl = -147.5*(++count)+'px';
