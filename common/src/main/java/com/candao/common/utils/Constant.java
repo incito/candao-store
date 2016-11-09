@@ -1,5 +1,7 @@
 package com.candao.common.utils;
 
+import java.util.Timer;
+
 public class Constant {
 
 	public static final String PRINTERENCODE = "GBK";
@@ -72,5 +74,7 @@ public class Constant {
 	public static final String URL_SYSTEM = "/system/systemSet";
 
 	public static final String FUNCTION_SYSTEM = "0311";
+
+	public static final long TIME_INTERVAL = 24*60*60*1000;
 
 }
