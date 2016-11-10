@@ -3,9 +3,10 @@ SET NAMES 'utf8';
 
 DELIMITER $$
 
+
 DROP PROCEDURE IF EXISTS `p_report_yysjmxb`$$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
+CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                                     IN  pi_sb       SMALLINT,
                                     IN  pi_ksrq     DATETIME,
                                     IN  pi_jsrq     DATETIME,
@@ -185,26 +186,26 @@ label_main:
       WHERE
         a.orderid = b.orderid
         AND b.orignalprice > 0;
-    DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
-    CREATE TEMPORARY TABLE t_temp_taocan
-    (
-      primarykey   VARCHAR(50),
-      orignalprice DOUBLE(13, 2)
-    )
-      ENGINE = MEMORY
-      DEFAULT CHARSET = utf8
-      MAX_ROWS = 1000000;
-    INSERT INTO t_temp_taocan SELECT
-                                superkey,
-                                SUM(dishnum * orignalprice)
-                              FROM t_temp_order_detail
-                              WHERE dishtype = 2 AND superkey <> primarykey
-                              GROUP BY superkey;
-    UPDATE t_temp_order_detail d, t_temp_taocan c
-    SET d.orignalprice = c.orignalprice
-    WHERE c.primarykey = d.primarykey;
-    DELETE FROM t_temp_order_detail
-    WHERE dishtype = 2 AND superkey <> primarykey;
+    #DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   # CREATE TEMPORARY TABLE t_temp_taocan
+   # (
+   #   primarykey   VARCHAR(50),
+   #   orignalprice DOUBLE(13, 2)
+  #  )
+  #    ENGINE = MEMORY
+   #   DEFAULT CHARSET = utf8
+   #   MAX_ROWS = 1000000;
+   # INSERT INTO t_temp_taocan SELECT
+   #                             superkey,
+  #                              SUM(dishnum * orignalprice)
+    #                          FROM t_temp_order_detail
+    #                          WHERE dishtype = 2 AND superkey <> primarykey
+     #                         GROUP BY superkey;
+  #  UPDATE t_temp_order_detail d, t_temp_taocan c
+   # SET d.orignalprice = c.orignalprice
+    #WHERE c.primarykey = d.primarykey;
+    #DELETE FROM t_temp_order_detail
+    #WHERE dishtype = 2 AND superkey <> primarykey;
     DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
     CREATE TEMPORARY TABLE t_temp_settlement_detail
     (
@@ -351,8 +352,10 @@ label_main:
 		-
 		IFNULL(SUM(CASE WHEN superkey<>primarykey THEN 0 ELSE orignalprice END),0)
 	INTO v_taocanyouhui
-	FROM t_temp_order_detail
-	WHERE dishtype = 2;
+	FROM t_temp_order_detail a,t_temp_order b
+	WHERE dishtype = 2
+	AND a.orderid = b.orderid
+	AND b.orderstatus = 3;
     SELECT
       IFNULL(SUM(Inflated), 0),
       IFNULL(SUM(
