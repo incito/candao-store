@@ -662,7 +662,7 @@ var member = {
                 success: function (res) {
                     //console.log(res)
                     if(res.Retcode=='0'){
-                        utils.openCash(0);//弹钱箱
+                        utils.openCash(1);//弹钱箱
                         that.succeedAlert({'info':'会员充值成功,<br>交易流水号:'+res.TraceCode+'',
                             'callBack':'if(utils.getUrl.get("cardMember")){window.location.href="../member/view.jsp?cardMember='+utils.getUrl.get("cardMember")+'"}else{$("#rechargeMoblie,#rechargeMoney").val("");$(".giveMoney").text("");$(".coupon-List .coupon-item").removeClass("active")}'
                         });
@@ -717,7 +717,7 @@ var member = {
     },
     /*输入的是否为金额*/
     ismoney: function (money) {
-        var pattern = /^[0-9]+(\.[0-9]{2})?$/;
+        var pattern =/^[1-9]{1}\d*(.\d{1,2})?$|^0.\d{1,2}$/;
         pattern.lastIndex = 0;//正则开始为0
         return pattern.test(money);
     },
@@ -991,7 +991,7 @@ var ya_Member = {
                     }
                     if (res.Data == 1) {
                         //member.errorAlert('充值成功');
-                        utils.openCash();//弹钱箱
+                        utils.openCash(1);//弹钱箱
                         rightBottomPop.alert({
                             content:'会员充值成功,<br>交易流水号:'+res.pszTrace+'',
                         });

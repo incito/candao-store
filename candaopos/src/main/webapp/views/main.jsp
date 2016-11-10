@@ -206,7 +206,7 @@
         <div class="page" id="J-table-pager"></div>
     </div>
     <div class="form-group amount-div">
-        <span class="highlight-color">总金额：</span><span class="highlight-color totalAmount">0</span>
+        <span class="highlight-color" style="color: #333">总金额：</span><span class="highlight-color totalAmount" style="color: #333">0</span>
         <span>&nbsp;&nbsp;未结金额：</span><span class="dueamount">0</span>
         <span>&nbsp;&nbsp;已结单数：</span><span class="orderCount">0</span>
         <span>&nbsp;&nbsp;已结金额：</span><span class="ssamount">0</span>

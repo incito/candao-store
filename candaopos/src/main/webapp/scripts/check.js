@@ -410,7 +410,7 @@ var checkOrder={
                 $(".c-mod-js").attr("disabled","disabled").addClass("disabled");//结算按钮disabled
                 $(".c-mod-fjs ,.reprintCheck,.receipt").removeAttr("disabled","disabled").removeClass("disabled");//反结算按钮，重印账单按钮移除disabled
             }
-            if(memberno){//判断是否存在会员登录
+            if(memberno && orderstatus=="3"){//判断是否存在会员登录并且已经结账才显示会员交易凭条
                 $(".receipt").removeAttr("disabled").removeClass("disabled");
             }
             else {

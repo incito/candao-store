@@ -67,7 +67,7 @@
 				<div class="form-group form-group-nor" >
 					<span class="form-label">充值金额:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd" id="rechargeMoney"  placeholder="100.00" type="text" class="form-control" >
+						<input value=""   name="repwd" id="rechargeMoney"  placeholder="100.00" type="text" class="form-control" >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
@@ -117,7 +117,7 @@
 	$('.btn-Save,.virtual-keyboard-ok').click(function () {
 		member.stored_value()
 	})
-	$('#rechargeMoney').on('input propertychange', function(){
+	$('#rechargeMoney').on('input propertychange focus', function(){
 		var rechargeMoney=$.trim($('#rechargeMoney').val());
 		var presentvalue=$.trim($('.coupon-List .active').attr('presentvalue'));//赠送比例
 		var dealvalue=$.trim($('.coupon-List .active').attr('dealvalue'));//满多少赠送
@@ -127,6 +127,32 @@
 		else {
 			$('.giveMoney').text(0)
 		}
+		/*只能输入两位小数*/
+		if(member.ismoney(rechargeMoney)===false){
+		if(rechargeMoney.indexOf('.')>-1){
+			var a= rechargeMoney.split('.').length;
+			if(rechargeMoney.split('.')[0]==''){
+				$(this).val('');
+				return
+			}
+			if(a<=2){
+				if(rechargeMoney.split('.')[1].length>2){
+					$(this).val(rechargeMoney.substring(0,rechargeMoney.length-1))
+				}
+			}
+			else {
+				var b=rechargeMoney.split('.')[0]+'.'+rechargeMoney.split('.')[1]
+				$(this).val(b)
+			}
+		}
+		else {
+				$(this).val('')
+
+		}
+		}
+
+
+
 	});
 	var getUrlcardMember=utils.getUrl.get('cardMember');
 	if(getUrlcardMember){

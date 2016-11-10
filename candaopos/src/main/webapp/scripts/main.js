@@ -657,10 +657,10 @@ var MainPage = {
 		$.ajax({
 			url: _config.interfaceUrl.Clearner+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('fullname')+'/',
 			type: "get",
-			dataType: "json",
+			dataType: "text",
 			success: function (data) {
 				$(".modal-alert:last,.modal-backdrop:last").remove();
-				data=JSON.parse(data.result[0])
+			var	data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
 				if(data.Data === '0') {//清机失败
 					widget.modal.alert({
 						cls: 'fade in',
@@ -675,6 +675,9 @@ var MainPage = {
 					utils.reprintClear.get()//打印清机单
 					window.location = "../views/login.jsp";
 				}
+			},
+			error:function () {
+				alert(1111)
 			}
 		});
 	},
@@ -693,9 +696,9 @@ var MainPage = {
 		$.ajax({
 			url: _config.interfaceUrl.Clearner+''+$.trim($('#user').val())+'/'+utils.storage.getter('checkout_fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
 			type: "get",
-			dataType: "json",
+			dataType: "text",
 			success: function (data) {
-				data=JSON.parse(data.result[0])
+				var	data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
 				if(data.Data === '0') {//清机失败
 					$(".modal-alert:last,.modal-backdrop:last").remove();
 					widget.modal.alert({

@@ -41,8 +41,8 @@
 						<input id="J_remember_pwd" type="checkbox" value="true">&nbsp;保存登录信息</label>
 					</div>
 					<div class="form-group space">
-						<input type="button" value="&nbsp;取&nbsp;消&nbsp;" class="btn btn-default btn-lg">
-						<button type="button" class="btn btn-primary btn-lg J-login-form-submit">&nbsp;登&nbsp;录&nbsp </button>
+						<%--<input type="button" value="&nbsp;取&nbsp;消&nbsp;" class="btn btn-default btn-lg">--%>
+						<button type="button" style="width: 99%" class="btn btn-primary btn-lg J-login-form-submit">&nbsp;登&nbsp;录&nbsp </button>
 					</div>
 				</form>
 			</div>

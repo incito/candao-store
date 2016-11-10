@@ -143,6 +143,7 @@ var AddDish = {
 				method: 'POST',
 				contentType: "application/json",
 				dataType:'text',
+				global: false,
 				data: JSON.stringify({
 					dishUnit: dish.unit
 				})
