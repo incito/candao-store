@@ -212,7 +212,10 @@
 	       ELSE
 	         sum(d.dishnum * d.orderprice)
 	       END as amount
-		,b.areaSort,a.modifytime
+		,b.areaSort,a.modifytime,
+			a.chargeOn,
+			a.chargeType,
+			a.chargeRule
 		    from t_table a
 	   		LEFT JOIN t_tablearea b
 			ON a.areaid = b.areaid
