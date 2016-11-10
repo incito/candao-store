@@ -338,8 +338,7 @@ label_main:
       t_temp_order a, t_temp_order_detail b
     WHERE
       a.orderid = b.orderid
-      AND b.orignalprice > 0
-      AND b.orderprice > 0
+      AND b.pricetype = 0
       AND a.orderstatus = 3
 			AND (b.dishtype <> 2 OR(b.dishtype =2 AND b.superkey = b.primarykey));
 
