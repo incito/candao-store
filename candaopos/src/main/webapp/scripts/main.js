@@ -1,5 +1,6 @@
 var g_eatType = "EAT-IN";//堂食
 var tackOUttable=[];//外卖咖啡外卖台
+var tablesCurPager = 1;
 
 var MainPage = {
 
@@ -54,7 +55,9 @@ var MainPage = {
 			that.CurrentSelectedTable = me;
 
 			if (cla !== "opened") {
-				$("#open-dialog").modal("show");
+				dom.openDialog.find('.J-server-name,.J-male-num,.J-female-num,.J-tableware-num').val('');
+				dom.openDialog.modal("show");
+				focusIpt = dom.openDialog.find('.J-server-name')
 				return false;
 			}
 			var url = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + me.attr('tableno')  + '&type=in';
@@ -377,7 +380,6 @@ var MainPage = {
 			if (running){
 				setTimeout(arguments.callee, 5000);
 			}
-
 		}, 50);
 	},
 
@@ -628,15 +630,18 @@ var MainPage = {
 					$("#standard-tables").html('');
 				} else {
 					//初始化分页
-					$('#J-table-pager').pagination({
+					var pager = $('#J-table-pager').pagination({
 						dataSource: tables[type],
 						pageSize: 40,
 						showPageNumbers: false,
 						showNavigator: true,
-						callback: function(data) {
+						pageNumber: tablesCurPager,
+						callback: function(data,pagination) {
+							tablesCurPager = pagination.pageNumber
 							$("#standard-tables").html(data.join(''));
 						}
 					});
+
 				}
 
 			}

@@ -347,6 +347,9 @@ input[type=search] {
 	text-align: center;
 	padding: 5px;
 }
+.table>tbody>tr>td.weigh {
+	color:blue!important;
+}
 .table>tbody>tr>td:first-child{
 	text-align: left;
 	padding-left: 40px;

@@ -30,7 +30,7 @@
                         </div>
                         <div class="form-group form-group-base">
                             <span class="form-label">权限密码:</span>
-                            <input value="" id="psd" name="psd"  type="password" class="form-control" autocomplete="off">
+                            <input value="" id="psd" name="psd"  type="text" onfocus="this.type='password'" class="form-control" autocomplete="off">
                         </div>
                         <div class="virtual-keyboard-base" style="overflow: auto;">
                             <ul>

@@ -73,6 +73,7 @@ var Login = {
                                     var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
                                     if(data.Data=='0'){
                                         $("#change_val").val("");
+                                        focusIpt = $('#change_val');
                                         $("#thechange-dialog").modal("show");
                                     }
                                     else {
