@@ -17,6 +17,7 @@
  		AND too.branchid = #{branchId}
  		AND too.begintime >= #{beginTime}
  		AND too.begintime &lt;= #{endTime}
+ 		AND (tod.dishtype &lt;> 2 or (tod.primarykey &lt;> tod.superkey and tod.dishtype = 2))
  		<if test="shiftid==-1">
 	    AND too.shiftid IN (0,1)
 	    </if>
@@ -96,7 +97,7 @@
 			  LEFT JOIN t_b_user us ON us.id = em.user_id
 		      LEFT JOIN t_order_detail tod ON tod.orderid = tooo.orderid
 		      WHERE em.branch_id = #{branchId}
-			  AND (tod.primarykey &lt;> tod.superkey OR tod.ordertype &lt;> 2)
+			  AND (tod.dishtype &lt;> 2 or (tod.primarykey &lt;> tod.superkey and tod.dishtype = 2))
 			  GROUP BY tooo.userid 
 			)AS S1
 		LEFT JOIN 

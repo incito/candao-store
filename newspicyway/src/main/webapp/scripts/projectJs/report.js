@@ -1009,8 +1009,8 @@ function discountAmount(result) {
 	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
-		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员优惠','抹零','四舍五入', '赠送金额',
-				'会员储值消费虚增' ];
+		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员价优惠','抹零','四舍五入', '赠送金额',
+				'会员储值消费虚增','套餐优惠', ];
 		series_data.push({
 			value : strToFloat(item.bastfree),
 			name : legend_data[0]
@@ -1043,25 +1043,25 @@ function discountAmount(result) {
 			value : strToFloat(item.mebervalueadd),
 			name : legend_data[7]
 		});
-		if(item.handerWay != null && item.handerWay != ""){
-			legend_data.push(item.handerWay);
-			series_data.push({
-				value : Math.abs(strToFloat(item.handervalue)),
-				name : item.handerWay
-			});
-		}
+		series_data.push({
+			value : strToFloat(item.taocanyouhui),
+			name : legend_data[8]
+		});
 		tb = '<tr><td>' + item.bastfree + '</td><td>' + item.integralconsum+'</td>'
 				+ '<td>' + item.meberTicket + '</td>'
 				+ '<td>'+item.memberDishPriceFree + '</td>'
 				+ '<td>'+item.fraction+'</td>'
-				+ '<td>'+item.roundoff+'</td>';
+				+ '<td>'+item.roundoff+'</td>'
+				+ '<td>'+strToFloat(item.give)+'</td>'
+				+ '<td>' + item.mebervalueadd + '</td>'
+				+ '<td>' + item.taocanyouhui + '</td>';
 		/*if(item.handerWay != null && item.handerWay != ""){
 			$("#dynamic-col").text(item.handerWay);
 			tb += '<td>' + item.handervalue + '</td>';
 		}else{
 			$("#dynamic-col").css("display", "none");
 		}*/
-		tb += '<td>'+strToFloat(item.give)+'</td><td>' + item.mebervalueadd + '</td></tr>';
+		tb += '</tr>';
 	}
 	$("#discount_tb tbody").html(tb);
 
