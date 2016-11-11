@@ -187,6 +187,10 @@ var MainPage = {
 				navRoomTypes.find("li").eq(roomtype_prev).css("margin-left", "-10%");
 				navRoomTypes.find("li").eq(roomtype_prev+1).click();
 				roomtype_prev++;
+				if (roomtype_prev == count - 10) {
+					$(".nav-type-next").addClass('unclick');
+					$(".nav-type-prev").removeClass('unclick');
+				}
 			}
 		});
 
@@ -195,6 +199,10 @@ var MainPage = {
 				navRoomTypes.find("li").eq(roomtype_prev-1).css("margin-left","0");
 				navRoomTypes.find("li").eq(roomtype_prev-1).click();
 				roomtype_prev--;
+				if (roomtype_prev == 0) {
+					$(".nav-type-prev").addClass('unclick');
+					$(".nav-type-next").removeClass('unclick');
+				}
 			}
 		});
 
@@ -619,10 +627,17 @@ var MainPage = {
 				if(navRoomTypes.attr('inited') !== 'true'){
 					navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
 					$.each(res.data, function(key, val){
-						navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
+						//判断分区下是否存在餐台
+						if(val.tables){
+							navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
+						}
+
 					});
 					navRoomTypes.attr('inited', 'true');
 					navRoomTypes.html(utils.array.unique(navRoomTypesArr).join(''));
+					if (navRoomTypesArr.length>10) {//当区域数组大于10时，移除不能点击样式
+							$(".nav-type-next").removeClass('unclick');
+					}
 				}
 
 				if(tables[type].length == 0) {

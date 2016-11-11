@@ -1350,21 +1350,21 @@ var Order = {
         $('.pay-total').remove();
 
 
-        totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账:<span>' + toalDebitAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免:<span>' + toalFreeAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零:<span>' + moneyWipeAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整:<span>' + adjAmout + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收:<span>' + toalDebitAmountMany + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金:<span>' + payamount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(tipAmount) !== 0 ? '' : 'hide') + ' tipAmount" >小费:<span>' + tipAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账<i class="spangap">:</i><span>' + toalDebitAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免<i class="spangap">:</i><span>' + toalFreeAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零<i class="spangap">:</i><span>' + moneyWipeAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整<i class="spangap">:</i><span>' + adjAmout + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收<i class="spangap">:</i><span>' + toalDebitAmountMany + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + payamount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(tipAmount) !== 0 ? '' : 'hide') + ' tipAmount" >小费<i class="spangap">:</i><span>' + tipAmount + '</span></li> ';
 
-        totalHtml += '<li class="hide giveChange">找零:<span></span></li> ';
-        totalHtml += '<li class="hide bank" payway="1">银行卡:<span></span></li> ';
-        totalHtml += '<li class="hide memberCash"  payway="8">会员消费:<span></span></li> ';
-        totalHtml += '<li class="hide memberJf"  payway="8">会员积分:<span></span></li> ';
-        totalHtml += '<li class="hide debitAmount" payway="5">挂账支付:<span></span></li> ';
-        totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
-        totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
+        totalHtml += '<li class="hide giveChange">找零<i class="spangap">:</i><span></span></li> ';
+        totalHtml += '<li class="hide bank" payway="1">银行卡<i class="spangap">:</i><span></span></li> ';
+        totalHtml += '<li class="hide memberCash"  payway="8">会员消费<i class="spangap">:</i><span></span></li> ';
+        totalHtml += '<li class="hide memberJf"  payway="8">会员积分<i class="spangap">:</i><span></span></li> ';
+        totalHtml += '<li class="hide debitAmount" payway="5">挂账支付<i class="spangap">:</i><span></span></li> ';
+        totalHtml += '<li class="hide alipay" payway="18">支付宝<i class="spangap">:</i><span></span>;</li> ';
+        totalHtml += '<li class="hide wpay" payway="17">微信<i class="spangap">:</i><span></span></li> ';
 
         totalHtml += '</ul>';
 
@@ -1587,7 +1587,8 @@ var Order = {
             if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
                 goBack()
             } else {
-                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                //window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                window.location.href = encodeURI(encodeURI('./main.jsp'));
             }
             //$.ajax({
             //    url: _config.interfaceUrl.SendMsgAsyn,

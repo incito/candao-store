@@ -69,7 +69,13 @@ var reporting={
     },
     PrintItemSell:function () {//消费品项打印
         var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag"),
-            that=this;
+            that=this,
+            TipListPrintLength=$('#getTipList tbody').find('tr').length;
+
+        if(TipListPrintLength<1){
+            utils.printError.alert('没有需要打印的报表数据')
+            return false
+        }
         $.ajax({
             url:_config.interfaceUrl.PrintItemSell,
             type: "get",
@@ -133,7 +139,12 @@ var reporting={
     },
     TipListPrint:function(){//服务员小费打印
         var flag=$("#getTipList .dataSelect-type .active" ).attr("flag"),
-            that=this;
+            that=this,
+            TipListPrintLength=$('#getTipList tbody').find('tr').length;
+        if(TipListPrintLength<1){
+            utils.printError.alert('没有需要打印的报表数据')
+            return false
+        }
         $.ajax({
             url:_config.interfaceUrl.PrintTip,
             type: "get",
