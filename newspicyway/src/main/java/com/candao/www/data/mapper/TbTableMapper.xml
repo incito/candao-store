@@ -226,7 +226,30 @@
 	
 	<select id="findTableDetail" parameterType="map" resultMap="findResultMap">
 	   select 
-	    <include refid="Base_Column_List"/>
+           t.tableid
+		 ,t.`position`
+		 ,t.status
+		 ,t.restaurantId
+		 ,t.isVip
+		 ,t.iscompartment
+		 ,t.isavailable
+		 ,t.buildingNo
+		 ,t.minprice
+		 ,t.fixprice
+		 ,t.tableNo
+		 ,t.personNum
+		 ,t.tabletype
+		 ,t.areaid
+		 ,t.tableName
+		 ,t.orderid
+		 ,t.custPrinter
+		 ,t.modifytime
+		 ,t.chargeOn
+		 ,t.chargeType
+		 ,t.chargeRateRule
+		 ,t.chargeRate
+		 ,t.chargeTime
+		 ,t.chargeAmount
 		,d.itemDesc AS chargeName
 		,d.itemid AS chargeID
 	   from t_table t

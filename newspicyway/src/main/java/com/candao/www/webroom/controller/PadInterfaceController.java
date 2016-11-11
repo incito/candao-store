@@ -1118,7 +1118,7 @@ public class PadInterfaceController {
 
     @RequestMapping("/getTableAndType")
     @ResponseBody
-    public String getTableAndType() {
+    public Map<String,Object> getTableAndType() {
         List<Map<String,Object>> listTableArea = null;
         //0成功1失败
         Map<String,Object> res = new HashMap<>();
@@ -1137,12 +1137,12 @@ public class PadInterfaceController {
             res.put("code",1);
             res.put("msg",e.getMessage());
             res.put("data",null);
-            return JSON.toJSONString(res);
+            return res;
         }
         res.put("code",0);
         res.put("msg","查询成功");
         res.put("data",listTableArea);
-        return JSON.toJSONString(res);
+        return res;
     }
 
     /**
