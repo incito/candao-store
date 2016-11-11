@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TServiceChargeDao">
+	<insert id="insertChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge">
+		INSERT INTO
+		`t_service_charge` ( `orderid`, `chargeOn`,
+		`chargeRule`, `charge`,
+		`isCustom`, `autho`, `ctime`) VALUES (
+		#{orderId,jdbcType=VARCHAR}, #{chargeOn,jdbcType=VARCHAR}, #{chargeRule,jdbcType=VARCHAR},
+		#{charge,jdbcType=DECIMAL}, #{isCustom,jdbcType=VARCHAR},
+		#{autho,jdbcType=VARCHAR},
+		#{now(),jdbcType=TIMESTAMP});
+	</insert>
+	<update id="updateChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge">
+		UPDATE `t_service_charge`
+		<set>
+			<if test="orderId != null">
+				orderid=#{orderId}
+			</if>
+			<if test="chargeOn != null">
+				chargeOn=#{chargeOn}
+			</if>
+			<if test="chargeRule != null">
+				chargeRule=#{chargeRule}
+			</if>
+			<if test="charge != null">
+				charge=#{charge}
+			</if>
+			<if test="isCustom != null">
+				isCustom=#{isCustom}
+			</if>
+			<if test="autho != null">
+				autho=#{autho}
+			</if>
+			<if test="mtime != null">
+				mtime=now()
+			</if>
+		</set>
+		WHERE
+		`id` = #{id};
+	</update>
+	
+	<select id="getChargeInfo" parameterType="map" resultType="com.candao.www.data.model.TServiceCharge">
+	     SELECT * FROM t_service_charge 
+	     <where>
+	        <if test="id != null">
+	            id=#{id}
+	        </if>
+	         <if test="orderId !=null">
+	              orderid=#{orderId}
+	         </if>
+	     </where> 
+	</select>
+</mapper>
