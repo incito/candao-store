@@ -86,6 +86,51 @@ var Order = {
         /**
          * 退菜
          */
+        //单品退菜
+        $('#backDish').click(function(){
+            var $target = $("#order-dish-table tr.selected");
+            var groupid = $target.attr('groupid');
+            var groupType = $target.attr('grouptype');
+            var isGroupMain = $target.attr('groupmain') === 'true';
+            //单品 && 组合(鱼锅\套餐) && 组合子菜品
+            if(groupid !== undefined && !isGroupMain) {
+                //鱼锅 && 锅底
+                if(groupType === '1' && $target.attr('ispot') === '1') {
+                    var modal = widget.modal.alert({
+                        content: '<strong>选择鱼锅锅底退菜会退掉整个鱼锅,确定继续退菜?</strong>',
+                        btnOkCb: function(){
+                            modal.close();
+                            that.initBackFoodDialog(0);
+                        }
+                    });
+                    return false;
+                }
+                //套餐
+                if(groupType === '2') {
+                    widget.modal.alert({
+                        content: '<strong>请选择套餐主体退整个套餐</strong>',
+                        btnOkTxt: '',
+                        btnCancelTxt: '确定'
+                    });
+                    return false;
+                }
+            }
+            that.initBackFoodDialog(0);
+        });
+
+        $("#backDishNumIpt").on('input propertychange focus', function() {
+            var me = $(this);
+            var val = me.val();
+            if(!(/^[0-9]{1,3}$/g.test(me.val()) || /^[0-9]{1,3}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,3}\.$/g.test(me.val()))) {
+                me.val(val.substr(0, me.val().length-1))
+            }
+            if($.trim(me.val()).length > 0) {
+                $('#backfoodnum-dialog .btn-save').removeAttr('disabled');
+            } else {
+                $('#backfoodnum-dialog .btn-save').attr('disabled', 'disabled');
+            }
+        });
+
         $('#backfoodnum-dialog .btn-save').click(function () {
             var dishNum = parseFloat($('#order-dish-table tr.selected .num').text());
             var backDishNum = parseFloat($('#backDishNumIpt').val());
@@ -500,10 +545,10 @@ var Order = {
         var me = obj;
         var type = me.attr('iptType');
         var $paytotal = $('.pay-total');
+        var $cash = $('[name=cash]');
         var shouldAmount = parseFloat($("#should-amount").text());
-        var iptVal = parseFloat(me.val()).toFixed(2);
-        var giveChange = parseFloat(iptVal - shouldAmount).toFixed(2);
-        var isGiveChange = giveChange > 0 ? true : false;
+        var iptVal = parseFloat(me.val().length > 0 ? me.val() : '0').toFixed(2);
+        var cash = parseFloat($cash.length > 0 ? $cash.val() : '0').toFixed(2);
         var totalOtherPay = (function () {
             var total = 0;
             $('.pay-div .J-pay-val').each(function () {
@@ -515,6 +560,81 @@ var Order = {
             return total;
         })();
 
+
+        var _updateCash = function(val){
+            //if(parseFloat(val) === parseFloat($cash.attr('prepayamount'))) {
+            //    return false
+            //}
+
+            //是小数
+            //if((parseFloat(val) - parseInt(val,10)) > 0 ? true : false) {
+            //    $cash.val(parseFloat(val));
+            //} else {
+            //    $cash.val(parseInt(val, 10));
+            //}
+
+            //$cash.attr('prepayamount', $cash.val());
+            $cash.val(parseFloat(val));
+
+            var giveChange = (function(){
+                var v = parseFloat(val - shouldAmount).toFixed(2);
+                if(totalOtherPay >= shouldAmount) {
+                    v = val;
+                }
+                return v;
+            })();
+            var needPay = parseFloat(shouldAmount - cash - totalOtherPay);
+            var isGiveChange = giveChange > 0 ? true : false;
+            var tipAmount = parseFloat($('#tip-amount').text());
+            var tipAmountCac = (function(){
+                var v = 0;
+                if((totalOtherPay - shouldAmount) >  0) {
+                    v = val;
+                } else {
+                    if(parseFloat(val) > parseFloat($('#amount').text())) {
+                        v = parseFloat(val) - parseFloat($('#amount').text());
+                    } else {
+                        v = 0;
+                    }
+                }
+
+                if(v > tipAmount) {
+                    v = tipAmount;
+                }
+                return v;
+            })();
+
+            if(tipAmount > 0) {
+                $paytotal.find('.tipAmount span').text(parseFloat(tipAmountCac).toFixed(2));
+            }
+
+            if(needPay > 0) {
+                $paytotal.find('.needPay span').text(needPay.toFixed(2));
+                $paytotal.find('.needPay').removeClass('hide');
+            } else {
+                $paytotal.find('.needPay span').text('0.00');
+                $paytotal.find('.needPay').addClass('hide');
+            }
+
+            if (isGiveChange) {
+                $paytotal.find('.giveChange span').text(giveChange);
+                $paytotal.find('.giveChange').removeClass('hide');
+                $('.the-change-span').text(giveChange);
+            } else {
+                $paytotal.find('.giveChange span').text('0.00');
+                $('.the-change-span').text('0.00');
+                $paytotal.find('.giveChange').addClass('hide');
+            }
+
+            if (val > 0) {
+                $paytotal.find('.payamount').find('span').text(val);
+                $paytotal.find('.payamount').removeClass('hide');
+            } else {
+                $paytotal.find('.payamount').find('span').text('0.00');
+                $paytotal.find('.payamount ,.giveChange').addClass('hide');
+            }
+        }
+
         if(me.hasClass('J-pay-name')) {
             var iptName = me.val();
             var $parent = me.parents('.paytype-input');
@@ -524,49 +644,39 @@ var Order = {
                 if($parent.find('.J-pay-val').attr('ipttype') === 'wpay' || $parent.find('.J-pay-val').attr('ipttype') === 'alipay') {
                     return false;
                 }
-
                 $parent.find('.J-pay-val, .J-pay-pwd').attr('disabled', 'disabled');
             }
-        }
-
-        //if (!this.value.match(/^[\+\-]?\d*?\.?\d*?$/)) this.value = this.t_value; else this.t_value = this.value;
-
-        var target = $paytotal.find('.' + me.attr('iptType'));
-        if (iptVal > 0) {
-            target.find('span').text(iptVal);
-            target.removeClass('hide');
         } else {
-            target.find('span').text('');
-            target.addClass('hide');
-        }
+            var target = $paytotal.find('.' + me.attr('iptType'));
 
-        if (type === 'cash') {
             if (iptVal > 0) {
-                $paytotal.find('.payamount').find('span').text(iptVal);
-                $paytotal.find('.payamount').removeClass('hide');
-                if (isGiveChange) {
-                    $paytotal.find('.giveChange span').text(giveChange);
-                    $paytotal.find('.giveChange').removeClass('hide');
+                target.find('span').text(iptVal);
+                target.removeClass('hide');
+            } else {
+                target.find('span').text('');
+                target.addClass('hide');
+            }
+
+            if (type === 'cash') {
+                _updateCash(iptVal);
+            } else {
+                if (totalOtherPay >= shouldAmount) {//其他支付大于应收
+                    _updateCash('0');
+                    $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
+                    $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
-                    $paytotal.find('.giveChange span').text('0.00');
-                    $paytotal.find('.giveChange').addClass('hide');
+                    _updateCash(shouldAmount - totalOtherPay);
+                    $paytotal.find('.payamount').find('span').text(shouldAmount - totalOtherPay);
+                    $paytotal.find('.payamount').removeClass('hide');
                 }
-            } else {
-                $paytotal.find('.payamount').find('span').text('0.00');
-                $paytotal.find('.payamount ,.giveChange').addClass('hide');
             }
-        } else {
-            if (totalOtherPay >= shouldAmount) {//其他支付大于应收
-                $('#cash .J-pay-val').val('0');
-                $paytotal.find('.payamount,.giveChange').find('span').text('0.00');
-                $paytotal.find('.payamount ,.giveChange').addClass('hide');
-            } else {
-                $('#cash .J-pay-val').val(shouldAmount - totalOtherPay);
-                $paytotal.find('.payamount').find('span').text(shouldAmount - totalOtherPay);
-                $paytotal.find('.payamount').removeClass('hide');
-            }
+            //console.log('应收:' + shouldAmount);
+            //console.log('现金:' + cash);
+            //console.log('其他收入:' +totalOtherPay);
+            //console.log('needpay:' + needPay);
         }
     },
+
 
     /**
      *
@@ -859,12 +969,17 @@ var Order = {
     consumInfo: function () {
         var that = this;
         var $moneyWipeAmount = $('.pay-total .moneyWipeAmount span');
+        var $shouldAmount = $('#should-amount');
+        var $discountAmount= $('#discount-amount');
         var moneyWipeAmount = $moneyWipeAmount.text();
-        var $target = $('.paytype-input input[type=text]');
+        var $target = $('.paytype-input input[name=cash]');
         if ($moneyWipeAmount.length === 0 || moneyWipeAmount === '0') return false;
         $moneyWipeAmount.parents('li').remove();
         consts.moneyWipeAmount = 0.0;
+        $shouldAmount.text((parseFloat($shouldAmount.text()) + parseFloat(moneyWipeAmount)).toFixed(2));
+        $discountAmount.text((parseFloat($discountAmount.text()) - parseFloat(moneyWipeAmount)).toFixed(2));
         $target.val((parseFloat($target.val()) + parseFloat(moneyWipeAmount)).toFixed(2));
+        $('.payamount span').text($target.val());
     },
 
     //取消订单
@@ -998,6 +1113,7 @@ var Order = {
             contentType: "application/json",
             data: JSON.stringify(params),
             dataType: 'json',
+            global: false,
             success: function (res) {
                 if (res.code === '0') {
                     utils.loading.remove();
@@ -1345,6 +1461,7 @@ var Order = {
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
         $('#cash input').val(payamount);
+        $('#cash input').attr('prepayamount',payamount);
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
@@ -1365,6 +1482,7 @@ var Order = {
         totalHtml += '<li class="hide debitAmount" payway="5">挂账支付:<span></span></li> ';
         totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
+        totalHtml += '<li class="hide needPay">还需在收:<span></span></li> ';
 
         totalHtml += '</ul>';
 
@@ -1459,18 +1577,19 @@ var Order = {
 
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
-                                tr += "<tr dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + v.dishname + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
-
+                                var groupid = utils.getUuid();
                                 if(v.dishes !== undefined) {
+                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" +  v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname,16) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     $.each(v.dishes, function(k1, v1){
-                                        tr += "<tr dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + v1.dishname + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                        tr += "<tr groupid='" + groupid + "' ispot='" +  v1.ispot + "' grouptype='" +  v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname,16) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     })
+                                } else {
+                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname,16) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
-
                             });
-                            $('#back-dish, #backDishAll, #reprintOrder').removeClass('disabled');
+                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter').removeClass('disabled');
                         } else {
-                            $('#back-dish, #backDishAll, #reprintOrder').addClass('disabled');
+                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter').addClass('disabled');
                         }
 
                         $body.html(tr);
@@ -1527,6 +1646,7 @@ var Order = {
      */
     doSettlement: function() {
         var that = this;
+        var $trs = $('#order-dish-table tbody tr');
 
         //会员卡支付方式检查
         var memberTips = '';
@@ -1542,7 +1662,7 @@ var Order = {
             url = _config.interfaceUrl.PayTheBillCf;
         }
 
-        if($('#order-dish-table tbody tr').length === 0){
+        if($trs.length === 0){
             widget.modal.alert({
                 content:'<strong>不能结账空账单</strong>',
                 btnOkTxt: '确定',
@@ -1550,6 +1670,38 @@ var Order = {
             });
             return  false;
         }
+
+        if(parseFloat($('.giveChange span').text()) >= 100){
+            widget.modal.alert({
+                content:'<strong>找零金额不能大于100</strong>',
+                btnOkTxt: '确定',
+                btnCancelTxt: ''
+            });
+            return  false;
+        }
+
+        if(parseFloat($('.needPay span').text()) > 0){
+            widget.modal.alert({
+                content:'<strong>还有未收金额</strong>',
+                btnOkTxt: '确定',
+                btnCancelTxt: ''
+            });
+            return  false;
+        }
+
+
+
+        for(var i = 0, len = $trs.length; i < len; i++ ) {
+            if($trs.eq(i).attr('dishstatus') === '1') {
+                widget.modal.alert({
+                    content:'<strong>还有未称重菜品</strong>',
+                    btnOkTxt: '确定',
+                    btnCancelTxt: ''
+                });
+                return false;
+            }
+        }
+
         if(isMemberLogin) {
             if(memberCash.length > 0 && parseFloat(memberCash.val()) > parseFloat($("#StoreCardBalance b").text())) {
                 memberTips += '会员储值余额不足;<br/>';
@@ -1579,6 +1731,28 @@ var Order = {
 
         //弹钱箱 打印结账单 给pad发送清台消息 页面跳转
         var _fn = function(){
+
+            //如果有小费
+            if(parseInt($('#tip-amount').text(), 10) > 0){
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify({
+                            "paid": parseInt($('#tip-amount').text(), 10), "orderNo": consts.orderid
+                        }
+                    )
+                }).then(function(res){
+                    if(res.code !== '0') {
+                        widget.modal.alert({
+                            content:'<strong>' + res.msg + '</strong>',
+                            btnOkTxt: '确定',
+                            btnCancelTxt: ''
+                        });
+                    }
+                });
+            }
             //弹钱箱
             utils.openCash(1);
             //结账单
@@ -1883,9 +2057,7 @@ var Order = {
      * 关闭结算
      */
     closeOrder: function(){
-        if(g_eatType === 'in') {
-            window.location.href = './main.jsp'
-        } else {
+        var _cancelOrder = function(){
             $.ajax({
                 url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
                 method: 'get'
@@ -1901,6 +2073,21 @@ var Order = {
                     });
                 }
             })
+        };
+        if(g_eatType === 'in') {
+            window.location.href = './main.jsp'
+        } else {
+            if($('#order-dish-table tbody tr').length > 0)  {
+                var modal = widget.modal.alert({
+                    content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
+                    btnOkCb: function(){
+                        modal.close();
+                        _cancelOrder();
+                    }
+                });
+            } else {
+                _cancelOrder()
+            }
         }
 
     }

@@ -99,7 +99,7 @@
 					</div>
 				</div>
 				<div class="operate-btns" style="padding-left: 11px;">
-					<div onclick="Order.printPay(1)">预结单</div>
+					<div class="disabled" id="prePrinter" onclick="Order.printPay(1)">预结单</div>
 					<div onclick="Order.takeOrder()">点菜</div>
 					<div onclick="utils.openCash(0)">开钱箱</div>
 					<div class="show-more">更多</div>
@@ -124,7 +124,7 @@
 						<div class="oper-btn btn next-btn">
 							<span class="glyphicon glyphicon-chevron-down"></span>
 						</div>
-						<div class="oper-btn btn" onclick="Order.initBackFoodDialog(0)">
+						<div class="oper-btn btn" id="backDish">
 							退菜
 						</div>
 						<div class="oper-btn btn disabled" id="weigh-dish">
@@ -183,7 +183,7 @@
 					<div class="paytype-input cash" id="cash">
 						<div class="form-group">
 							<span>金额：</span>
-							<input type="text" class="form-control J-pay-val" name="cash" iptType="cash">
+							<input type="text" class="form-control J-pay-val" validtype="intAndFloat2" name="cash" iptType="cash">
 						</div>
 						<div class="form-group the-change-div">
 							找零：<span class="the-change-span">0.00</span>
@@ -416,7 +416,7 @@
 					<div class="dialog-sm-info">
 						<div class="form-group">
 							<span class="inpt-span">退菜数量:</span>
-							<input type="text" id="backDishNumIpt"  onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')"    class="form-control padding-left">
+							<input type="text" id="backDishNumIpt"      class="form-control padding-left">
 						</div>
 						<div class="virtual-keyboard">
 							<ul>
@@ -436,7 +436,7 @@
 					<div class="btn-operate">
 						<button class="btn btn-cancel in-btn135" type="button" onclick="closeConfirm('backfoodnum-dialog')">取消
 						</button>
-						<button class="btn btn-save in-btn135"  type="button">确认
+						<button class="btn btn-save in-btn135 " disabled type="button">确认
 						</button>
 					</div>
 				</div>

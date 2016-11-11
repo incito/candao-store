@@ -72,7 +72,7 @@ var MainPage = {
 			me.toggleClass('active');
 		});
 
-		dom.openDialog.on('change', '.J-male-num, .J-female-num', function(){
+		dom.openDialog.on('input propertychange focus', '.J-male-num, .J-female-num', function(){
 			var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
 			var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
 			$('.J-tableware-num').val(parseInt(maleNum,10) + parseInt(femailNum,10))
@@ -133,7 +133,7 @@ var MainPage = {
 					dataType:'json',
 					success: function(res){
 						if(res.code === '0') {
-							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $target.attr('personnum') + '&tableno=' + $target.attr('tableno')  + '&type=in';
+							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $('.J-tableware-num').val() + '&tableno=' + $target.attr('tableno')  + '&type=in';
 							dom.openDialog.modal('hide');
 							window.location.href = encodeURI(encodeURI(url));
 						} else {

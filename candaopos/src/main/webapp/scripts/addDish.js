@@ -21,7 +21,8 @@ var consts = {
 	orderid: $('input[name=orderid]').val(),
 	tableno: $('input[name=tableno]').val(),
 	personnum: $('input[name=personnum]').val(),
-	DISHES: JSON.parse(utils.storage.getter('DISHES'))[0]
+	DISHES: JSON.parse(utils.storage.getter('DISHES'))[0],
+	DISHES2: JSON.parse(utils.storage.getter('DISHES2'))[0]
 };
 
 var AddDish = {
@@ -88,7 +89,9 @@ var AddDish = {
 		$navDishTypes.delegate('li.nav-dish-type', 'click', function () {
 			var me = $(this);
 			me.siblings().removeClass("active").end().addClass("active");
-			that.renderDishes(me.attr('itemid'));
+			if(dom.searchBtn.val().length === 0) {
+				that.renderDishes(me.attr('itemid'));
+			}
 		});
 
 		//菜品分类向左向右按钮
@@ -112,7 +115,13 @@ var AddDish = {
 		 * 菜品搜索事件
 		 */
 		dom.searchBtn.bind('input propertychange focus', function(){
-			that.renderDishes($('.nav-dish-types li.active').attr('itemid'), $(this).val());
+			var val = $.trim($(this).val());
+			if(val.length > 0) {
+				that.renderDishes('-1', val);
+			} else {
+				that.renderDishes($('.nav-dish-types li.active').attr('itemid'));
+			}
+
 		});
 
 		dom.addDishModal.find('.btn-clear').click(function(){
@@ -569,7 +578,7 @@ var AddDish = {
 			me.val(me.val().replace(/\D/g,''));
 
 			var _getSelectedNum = (function(){
-				selnum = 0
+				selnum = 0;
 				$('div[groupid=' + groupid + ']').each(function(){
 					if($(this).find('.num-inp').val() !== '') {
 						selnum += parseInt($(this).find('.num-inp').val(), 10);
@@ -577,20 +586,29 @@ var AddDish = {
 				});
 			});
 
+
 			_getSelectedNum();
 
-			if(val > endnum) {
-				me.val('');
-				_getSelectedNum();
-				$selnum.text(selnum);
+			if(endnum === 1) {
+				me.val('1');
+				me.parents('.form-group').siblings('.form-group[groupid=' + groupid + ']').each(function(){
+					$(this).find('.num-inp').val('')
+				});
+				$selnum.text('1');
+				$title.addClass('fited');
 				return false;
+			}
+
+			if(val > endnum) {
+				me.val(endnum);
+				me.parents('.form-group').siblings('.form-group[groupid="' + groupid + '"]').find('.num-inp').val('');
+				_getSelectedNum();
+				//return false;
 			}
 
 			if(selnum > endnum ){
 				me.parents('.form-group').siblings('.form-group[groupid="' + groupid + '"]').find('.num-inp').val('');
 				_getSelectedNum();
-				$selnum.text(selnum);
-				return false;
 			}
 
 			if(selnum === endnum) {
@@ -719,21 +737,27 @@ var AddDish = {
 
 	/**
 	 * 渲染菜品信息
-	 * @param id	菜品分类id
+	 * @param id	菜品分类id (-1, 全部分类)
 	 * @param key 搜索字符串(不传时,需直接从dom中获取key)
 	 */
 	renderDishes: function (id, key) {
 		var that = this;
 		var searchKey = !key ? $.trim(dom.searchBtn.val()) : key;
-
 		if(dishesMap != null && dishesMap.size()>0){
 			var oBuffer = new utils.string.buffer();
 			var keys = dishesMap.keySet();
 			if(keys != null && keys.length>0){
 				$.each(keys, function(i, key){
 					var v = dishesMap.get(key);
-					if(v.source === id && (v.py.indexOf(searchKey.toUpperCase()) !== -1)) {
+					var idCondition = (function(){
+						if(id === '-1') {
+							return true
+						}  else {
+							return v.source === id
+						}
+					})();
 
+					if(idCondition && (v.py.indexOf(searchKey.toUpperCase()) !== -1)) {
 						oBuffer.append('<div class="dish-info" pid="' + key + '">'
 							+ '<div class="dish-name">' + v.title
 							+ '</div>'
@@ -1168,7 +1192,7 @@ var AddDish = {
 
 	/**
 	 * 下单
-	 * @param type 0:普通下单, 1:赠菜下单 2:挂单(挂账下单)
+	 * @param type 0:普通下单, 1:赠菜下单 2:挂单(挂账下单) 3:外卖下单
 	 */
 	doOrder: function(type,cb){
 		var rows = [];
@@ -1197,7 +1221,7 @@ var AddDish = {
 			pricetype = '1';
 		}
 
-		if(type === 2) {
+		if(type === 2 || type === 3) {
 			url = _config.interfaceUrl.OrderDishCf;
 		}
 
@@ -1312,13 +1336,13 @@ var AddDish = {
 		}).then(function(res){
 			if (res.code === '0') {
 				//首次点菜 && 餐具设置收费 && 堂食
-				if(res.data.rows.length === 0 && consts.DISHES.status === '1'  && g_eatType === 'in') {
+				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in') {
 					rows.push({
 						"printtype": "0",
-						"pricetype": pricetype,//0：普通 1：赠菜
-						"orderprice": 2.0,
-						"orignalprice": 2.0,
-						"dishid": consts.DISHES.id,
+						"pricetype": 0,//0：普通 1：赠菜
+						"orderprice": consts.DISHES.price,
+						"orignalprice": consts.DISHES.price,
+						"dishid": consts.DISHES.dishid,
 						"userName": null,
 						"dishunit": "份",
 						"orderid": null,
@@ -1417,7 +1441,7 @@ var AddDish = {
 			height: 500,
 			btnOkCb:function () {
 				ins.close();
-				AddDish.doOrder(0)
+				AddDish.doOrder(g_eatType === 'in' ? 0 : 3);
 			}
 		});
 	},
@@ -1465,7 +1489,10 @@ var AddDish = {
 			dom.numDialog.find('.J-num').val('');
 			dom.numDialog.find('.J-num').off('input propertychange focus').on('input propertychange focus', function() {
 				var me = $(this);
-				me.val(me.val().replace(/[^\d]/g,''));
+				var val = me.val();
+				if(!(/^[0-9]{1,3}$/g.test(me.val()) || /^[0-9]{1,3}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,3}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
 				if($.trim(me.val()).length > 0) {
 					dom.numDialog.find('.btn-save').removeAttr('disabled');
 				} else {

@@ -411,8 +411,19 @@ var OpenPage = {
                 }
             )
         }).then(function(res){
-            utils.storage.setter('DISHES', JSON.stringify(res.rows));
+            utils.storage.setter('DISHES2', JSON.stringify(res.rows));
         });
+
+        $.ajax({
+            url: _config.interfaceUrl.GetDinnerWareInfo + utils.storage.getter('aUserid') + '/',
+            method: 'get',
+            contentType: "application/json",
+            dataType:'text',
+        }).then(function(res){
+            utils.storage.setter('DISHES', JSON.stringify(JSON.parse(res.substring(12, res.length-3)).OrderJson));
+        });
+
+
 
         //挂账单位
         $.ajax({

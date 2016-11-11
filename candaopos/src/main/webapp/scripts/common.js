@@ -62,8 +62,29 @@ $(document).ready(function(){
 	}
 
 	//input验证
-	$('input[validtype=number]').on('input propertychange focus', function() {
-		$(this).val($(this).val().replace(/[^\d]/g,''));
+	$('input[validtype]').on('input propertychange focus', function() {
+		var me = $(this);
+		var val = me.val();
+		var type = me.attr('validtype');
+		if(type !== undefined) {
+			//纯数字
+			if(type === 'number'){
+				me.val(val.replace(/[^\d]/g,''));
+			}
+			//整数3位 小数2位
+			if(type === 'intAndFloat') {
+				if(!(/^[0-9]{1,3}$/g.test(me.val()) || /^[0-9]{1,3}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,3}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
+
+			//整数5位 小数2位
+			if(type === 'intAndFloat2') {
+				if(!(/^[0-9]{1,5}$/g.test(me.val()) || /^[0-9]{1,5}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,5}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
+		}
 	});
 
 
@@ -755,6 +776,29 @@ utils.string = {
 			return this.__strings__.join("");
 		};
 		return new StringBuffer();
+	},
+	cutString: function (str, len) {
+		//length属性读出来的汉字长度为1
+		if(str.length*2 <= len) {
+			return str;
+		}
+		var strlen = 0;
+		var s = "";
+		for(var i = 0;i < str.length; i++) {
+			s = s + str.charAt(i);
+			if (str.charCodeAt(i) > 128) {
+				strlen = strlen + 2;
+				if(strlen >= len){
+					return s.substring(0,s.length-1) + "...";
+				}
+			} else {
+				strlen = strlen + 1;
+				if(strlen >= len){
+					return s.substring(0,s.length-2) + "...";
+				}
+			}
+		}
+		return s;
 	}
 };
 
@@ -1274,6 +1318,13 @@ utils.openCash = function (type) {
 
 	}
 
+}
+
+utils.getUuid = function(){
+	var len=32;//32长度
+	var radix=16;//16进制
+	var chars='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');var uuid=[],i;radix=radix||chars.length;if(len){for(i=0;i<len;i++)uuid[i]=chars[0|Math.random()*radix];}else{var r;uuid[8]=uuid[13]=uuid[18]=uuid[23]='-';uuid[14]='4';for(i=0;i<36;i++){if(!uuid[i]){r=0|Math.random()*16;uuid[i]=chars[(i==19)?(r&0x3)|0x8:r];}}}
+	return uuid.join('');
 }
 
 
