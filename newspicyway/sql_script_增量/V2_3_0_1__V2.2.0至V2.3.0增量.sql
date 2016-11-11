@@ -1,7 +1,19 @@
+SET NAMES 'utf8';
+
 ALTER TABLE `t_table`
 ADD COLUMN `chargeOn`  char(1) NULL DEFAULT '0' COMMENT '服务费开关 0关闭 1打开' AFTER `modifytime`,
-ADD COLUMN `chargeType`  smallint NULL COMMENT '服务费计算方式 1比例 2固定 3时长' AFTER `chargeOn`,
-ADD COLUMN `chargeRule`  varchar(200) NULL COMMENT '服务费详细规则，业务自己控制存储格式' AFTER `chargeType`;
+ADD COLUMN `chargeType` varchar(50) NULL DEFAULT NULL COMMENT '服务费计算方式' AFTER `chargeOn`,
+ADD COLUMN `chargeRateRule` tinyint(1) NULL DEFAULT NULL  COMMENT '0:实收 1:应收' AFTER `chargeType`,
+ADD COLUMN `chargeRate` smallint(2) NULL DEFAULT NULL COMMENT '比例计算方式 比率' AFTER `chargeRateRule`,
+ADD COLUMN `chargeTime` varchar(50) NULL DEFAULT NULL  COMMENT '时长计算方式 时长(分钟单位)' AFTER `chargeRate`,
+ADD COLUMN `chargeAmount` decimal(10,2) NULL DEFAULT NULL  COMMENT '服务费金额' AFTER `chargeTime`;
+
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES
+  ('674a7e69-a7de-11e6-a925-00ffb1cf25e1', '0', '比例', 0, 0, 'TABLECHARGE', '餐台服务费', '2016-11-11 15:13:54', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES
+  ('90bce8ed-a7de-11e6-a925-00ffb1cf25e1', '1', '固定', 1, 0, 'TABLECHARGE', '餐台服务费', '2016-11-11 15:15:03', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO t_dictionary(dictid, itemid, itemDesc, itemSort, status, type, typename, begin_time, end_time, charges_status, member_price, price, date_type, item_value) VALUES
+  ('975b17c0-a7de-11e6-a925-00ffb1cf25e1', '2', '时长', 2, 0, 'TABLECHARGE', '餐台服务费', '2016-11-11 15:15:15', NULL, NULL, NULL, NULL, NULL, NULL);
 
 DROP TABLE IF EXISTS t_service_charge;
 CREATE TABLE `t_service_charge` (

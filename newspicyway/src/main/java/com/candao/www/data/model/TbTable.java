@@ -29,8 +29,80 @@ public class TbTable {
 	
 	private String orderid;
 	private java.lang.String custPrinter;
-
 	private String modifytime;
+
+	private String chargeOn;
+	private String chargeType;
+	private Integer chargeRateRule;
+	private Integer chargeRate;
+	private String chargeTime;
+	private BigDecimal chargeAmount;
+	private String chargeName;
+	private String chargeID;
+
+	public String getChargeID() {
+		return chargeID;
+	}
+
+	public void setChargeID(String chargeID) {
+		this.chargeID = chargeID;
+	}
+
+	public String getChargeName() {
+		return chargeName;
+	}
+
+	public void setChargeName(String chargeName) {
+		this.chargeName = chargeName;
+	}
+
+	public BigDecimal getChargeAmount() {
+		return chargeAmount;
+	}
+
+	public void setChargeAmount(BigDecimal chargeAmount) {
+		this.chargeAmount = chargeAmount;
+	}
+
+	public String getChargeOn() {
+		return chargeOn;
+	}
+
+	public void setChargeOn(String chargeOn) {
+		this.chargeOn = chargeOn;
+	}
+
+	public String getChargeType() {
+		return chargeType;
+	}
+
+	public void setChargeType(String chargeType) {
+		this.chargeType = chargeType;
+	}
+
+	public Integer getChargeRateRule() {
+		return chargeRateRule;
+	}
+
+	public void setChargeRateRule(Integer chargeRateRule) {
+		this.chargeRateRule = chargeRateRule;
+	}
+
+	public Integer getChargeRate() {
+		return chargeRate;
+	}
+
+	public void setChargeRate(Integer chargeRate) {
+		this.chargeRate = chargeRate;
+	}
+
+	public String getChargeTime() {
+		return chargeTime;
+	}
+
+	public void setChargeTime(String chargeTime) {
+		this.chargeTime = chargeTime;
+	}
 
 	public String getModifytime() {
 		return modifytime;
