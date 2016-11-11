@@ -2459,12 +2459,12 @@ BEGIN
     primarykey VARCHAR(50),
     orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_taocan SELECT superkey,SUM(dishnum*orignalprice) FROM t_temp_order_detail  WHERE dishtype = 2 AND superkey <> primarykey GROUP BY superkey;
-  UPDATE t_temp_order_detail d,t_temp_taocan c SET d.orignalprice = c.orignalprice  WHERE c.primarykey = d.primarykey;
+  #INSERT INTO t_temp_taocan SELECT superkey,SUM(dishnum*orignalprice) FROM t_temp_order_detail  WHERE dishtype = 2 AND superkey <> primarykey GROUP BY superkey;
+  #UPDATE t_temp_order_detail d,t_temp_taocan c SET d.orignalprice = c.orignalprice  WHERE c.primarykey = d.primarykey;
    --  计算套餐金额结束 
 
   # 删除套餐明细
-  DELETE FROM t_temp_order_detail WHERE dishtype =2 AND superkey <> primarykey;
+  #DELETE FROM t_temp_order_detail WHERE dishtype =2 AND superkey <> primarykey;
 
   #为订单详情表创建索引
   CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
@@ -2537,8 +2537,7 @@ BEGIN
       t_temp_order_detail a LEFT JOIN t_temp_order b ON a.orderid = b.orderid
     WHERE
       b.begintime BETWEEN v_date_start AND v_date_interval
-		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey = a.primarykey))
-		AND a.pricetype = 0;
+		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey <> a.primarykey));
 
     #计算实收（含虚增）
     SELECT IFNULL(SUM(payamount), 0)

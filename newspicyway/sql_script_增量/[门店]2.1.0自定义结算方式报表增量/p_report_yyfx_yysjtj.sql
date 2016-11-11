@@ -214,8 +214,7 @@ BEGIN
       t_temp_order_detail a LEFT JOIN t_temp_order b ON a.orderid = b.orderid
     WHERE
       b.begintime BETWEEN v_date_start AND v_date_interval
-		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey = a.primarykey))
-		AND a.pricetype = 0;
+		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey <> a.primarykey));
 
     #计算实收（含虚增）
     SELECT IFNULL(SUM(payamount), 0)
