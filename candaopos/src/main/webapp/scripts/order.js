@@ -1,4 +1,10 @@
 var pref_prev = 0;
+var invoice_Flag={
+    'orderid':'',
+    'amount':'',
+    'flag':''
+
+};
 var g_eatType = utils.getUrl.get('type');
 var consts = {
     orderid: $('input[name=orderid]').val(),
@@ -52,6 +58,11 @@ var Order = {
             target: '.search-btns',
             chirdSelector: 'div'
         });
+        //发票信息键盘初始化
+        widget.keyboard({
+            target: '.virtual-keyboard-baseOne',
+            chirdSelector: 'li'
+        });
 
         //定时更新订单信息
         //setInterval(function(){
@@ -64,6 +75,22 @@ var Order = {
     bindEvent: function () {
 
         var that = this;
+
+        //点击- +修改发票金额
+        $('#Invoice-title .plus_sign').click(function () {
+            var se=$(this),
+                _thisVal=parseFloat($.trim($('#Invoice-title .invoiceMoney').val()));
+            /*减号*/
+            if(se.hasClass('minus')){
+                _thisVal= _thisVal-1
+            }
+            /*加号*/
+            if(se.hasClass('Add_key')){
+                _thisVal=_thisVal+1
+
+            }
+            $('#Invoice-title .invoiceMoney').val(_thisVal.toFixed(2))
+        })
 
         //支付方式切换
         $(".tab-payment ul li").click(function () {
@@ -1419,6 +1446,7 @@ var Order = {
 
     updateOrderStatus: 0, //1 正在进行 0 空闲
 
+
     /**
      * 更新订单信息
      */
@@ -1441,6 +1469,28 @@ var Order = {
                 async: false,
                 success: function (res) {
                     if (res.code === '0') {
+                        if(res.data.userOrderInfo.orderInvoiceTitle!=''){
+                           // $('#Invoice-title').modal('show');
+                           //focusIpt=$('#Invoice-title .invoiceMoney');
+                            $('.tableNumber').text(res.data.userOrderInfo.tableName+'开发票')
+                            $('.orderNumber').text(res.data.userOrderInfo.orderid)
+                            $('.invoiceInfo').text(res.data.userOrderInfo.orderInvoiceTitle)
+                            $('.orderMoney').text(res.data.preferentialInfo.payamount)
+                            $('.invoiceMoney').val(res.data.preferentialInfo.payamount);
+                            invoice_Flag={
+                                'orderid':res.data.userOrderInfo.orderid,
+                                'amount':res.data.preferentialInfo.payamount,
+                                'flag':res.data.userOrderInfo.orderInvoiceTitle
+                            }
+
+                        }
+                        else {
+                            invoice_Flag={
+                                'orderid':res.data.userOrderInfo.orderid,
+                                'amount':res.data.preferentialInfo.payamount,
+                                'flag':''
+                            }
+                        }
 
                         if (utils.object.isEmptyObject(res.data)) return false;
 
@@ -1603,6 +1653,41 @@ var Order = {
             //
             //});
         };
+        //打印发票信息
+        var invoiceMsg=function () {
+            if(invoice_Flag.flag!=''){
+                utils.loading.remove();
+                $('#Invoice-title').modal('show');
+                focusIpt=$('#Invoice-title .invoiceMoney');
+                $('#Invoice-title #Invoice-title-btnOk ').click(function () {
+                    $.ajax({
+                        url: _config.interfaceUrl.PrintInvoice,
+                        method: 'POST',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify({
+                            deviceid: utils.storage.getter('posid'),
+                            orderid:invoice_Flag.orderid,
+                            amount:$.trim($('#Invoice-title .invoiceMoney').val()),
+                        }),
+                        success: function (res) {
+                            console.log(res)
+                            if(res.result=='0'){
+                                _fn()
+                            }
+                            else {
+                                utils.printError.alert('打印开发票信息失败，请稍后重试！')
+                            }
+
+                        }
+                    })
+                });
+
+            }
+            else {
+                _fn()
+            }
+        }
 
         var doSettlementModal = widget.modal.alert({
             cls: 'fade in',
@@ -1802,6 +1887,8 @@ var Order = {
                 })
                 .then(function(res) {
                     if(res.code === '0') {
+
+
                         if(isMemberLogin){
                             //餐道会员会员消费
                             $.ajax({
@@ -1862,10 +1949,11 @@ var Order = {
                                     }
                                 });
                             }).then(function(){
-                                _fn();
+                                invoiceMsg()//发票信息
+
                             });
                         } else {
-                            _fn();
+                            invoiceMsg()//发票信息
                         }
                     } else {
                         utils.loading.remove();

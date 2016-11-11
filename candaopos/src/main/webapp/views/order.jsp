@@ -607,6 +607,70 @@
 		</div>
 	</div>
 
+    <!-- 发票信息 -->
+    <div class="modal fade default-dialog in " id="Invoice-title"
+	 data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="dialog-sm-header">
+				<div class="modal-title">发票设置</div>
+				<img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
+			</div>
+			<div class="modal-body">
+				<!-- 仅存在一个分类中-->
+				<div class="row">
+					<div class="col-md-6">
+						<div class=" ">
+							<ul class="member-info-list">
+								<li>桌号：<span class="tableNumber"></span></li>
+								<li>账单编号：<span class="orderNumber"></span></li>
+								<li>发票抬头：<span class="invoiceInfo"></span></li>
+								<li>账单金额：<span class="orderMoney"></span></li>
+								<li>发票金额：
+									<span class="plus_sign minus">-</span>
+									<input type="text" class="invoiceMoney" style='width: 70px;margin:0 5px;padding-left:5px;height: 28px;border: none;'>
+									<span class="plus_sign Add_key">+</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="virtual-keyboard-base virtual-keyboard-baseOne" style="overflow: auto;width: 100%">
+							<ul>
+								<li>1</li>
+								<li>2</li>
+								<li>3</li>
+							</ul>
+							<ul>
+								<li>4</li>
+								<li>5</li>
+								<li>6</li>
+							</ul>
+							<ul>
+								<li>7</li>
+								<li>8</li>
+								<li>9</li>
+							</ul>
+							<ul>
+								<li>.</li>
+								<li>0</li>
+								<li class="clearLength">←</li>
+							</ul>
+						</div>
+						<div class="form-group form-group-base ya_btn" style="margin-top: 10px">
+							<button class="btn-default btn-lg btn-base btn-base-flex2"  data-dismiss="modal">取消</button>
+							<button class="btn-default btn-lg btn-base btn-base-flex2  " id="Invoice-title-btnOk">确定
+							</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
 
 
 	<script type="text/javascript" src="../lib/md5.js"></script>
