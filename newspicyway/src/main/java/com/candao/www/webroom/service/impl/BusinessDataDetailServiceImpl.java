@@ -253,7 +253,7 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					businssRport.setDiscountamount(shouldAmountDecimal.subtract(actualTotalAmountPure)+"");
 					//实收列表值td
 					List<String> settlements = (List<String>) actualAmountMap.get("settlements");
-					settlements.set(settlementSort.get("8"), hykAmountDecimal+"");
+					settlements.set(settlementSort.get("8"), businssRport.getMerbervaluenet()+"");
 					//封装
 					businssRport.setSettlementDescList(settlementDescList);
 					businssRport.setSettlements((List<String>)actualAmountMap.get("settlements"));
