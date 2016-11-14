@@ -495,7 +495,7 @@ public class DayIncomeBillController<V, K> {
 	public ModelAndView getpaywayList(@RequestParam Map<String, Object> params,
 									  HttpServletRequest request, HttpServletResponse response) {
 		List<Map<String, Object>> paywayList = datadictionaryService
-				.getDatasByType("PAYWAY");
+				.getDatasByTypeIgnoreStatus("PAYWAY");
 		ModelAndView mad = new ModelAndView();
 		mad.addObject("paywayList", paywayList);
 		return mad;

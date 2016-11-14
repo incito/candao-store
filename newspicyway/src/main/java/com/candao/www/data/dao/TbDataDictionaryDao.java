@@ -58,6 +58,7 @@ public interface TbDataDictionaryDao {
 	 * @return
 	 */
 	public List<Map<String, Object>> getDatasByType(String type);
+	public List<Map<String, Object>> getDatasByTypeIgnoreStatus(String type);
 
 	public int delDishTasteDao(String dishTasteId);
 
