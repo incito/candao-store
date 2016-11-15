@@ -194,7 +194,7 @@ public class Printer {
             writer.flush();
         }
         //省纸
-//        outputStream.write(PrinterConstant.getLineN((byte) 4));
+        outputStream.write(PrinterConstant.getLineN((byte) 3));
         outputStream.write(new byte[]{10});
         outputStream.flush();
         outputStream.write(PrinterConstant.CUT);
