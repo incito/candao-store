@@ -2,7 +2,6 @@ alter table `t_printobj` ADD `custnum` varchar(50)  DEFAULT NULL COMMENT '用餐
 alter table `t_order_detail_preferential` ADD `unit` VARCHAR(50) DEFAULT NULL COMMENT '菜品单位'; 
 alter table `t_order_detail_preferential` ADD `pretype` VARCHAR(10) DEFAULT NULL COMMENT '优惠类型';
 alter table `t_order_detail_preferential` ADD `preName` VARCHAR(50) DEFAULT NULL COMMENT '优惠名称'; 
-ALTER TABLE t_dish_dishtype ADD UNIQUE `unique` (`columnid`, `dishid`) USING BTREE;
 ALTER TABLE `t_b_tip` MODIFY COLUMN `receivables`  decimal(11,2) NOT NULL COMMENT '预期给的小费' AFTER `waiter_number`,
 MODIFY COLUMN `paid`  decimal(11,2) NULL DEFAULT NULL COMMENT '实际支付小费' AFTER `receivables`;
 

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.candao.www.security.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +30,7 @@ import com.candao.www.webroom.service.TableAreaService;
 
 @Controller
 @RequestMapping("/tableArea")
-public class TableAreaController {
+public class TableAreaController extends BaseController{
 	@Autowired
 	private TableAreaService tableAreaService;
 
@@ -88,27 +90,15 @@ public class TableAreaController {
 				String branchId = PropertiesUtils.getValue("current_branch_id");
 				tbTableArea.setBranchid(branchId);
 				b = tableAreaService.save(tbTableArea);
+				return JSON.toJSONString(getResponseStr(null, b ? "添加成功" : "添加失败", b));
 			} else {// 修改
 				b = tableAreaService.update(tbTableArea);
+				return JSON.toJSONString(getResponseStr(null, b ? "修改成功" : "修改失败", b));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return JSON.toJSONString(getResponseStr(null, e.getMessage(), false));
 		}
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (b) {
-			if (ValidateUtils.isEmpty(id)) {
-				map.put("maessge", "添加成功");
-			} else {
-				map.put("maessge", "修改成功");
-			}
-		} else {
-			if (ValidateUtils.isEmpty(id)) {
-				map.put("maessge", "添加失败");
-			} else {
-				map.put("maessge", "修改失败");
-			}
-		}
-		return JacksonJsonMapper.objectToJson(map);
 	}
 
 	@RequestMapping("/findById/{id}")
@@ -133,9 +123,9 @@ public class TableAreaController {
 		boolean b = tableAreaService.deleteById(id);
 		ModelAndView mav = new ModelAndView();
 		if (b) {
-			mav.addObject("message", "删除成功");
+			mav.addAllObjects(getResponseStr(null,"删除成功",true));
 		} else {
-			mav.addObject("message", "删除失败");
+			mav.addAllObjects(getResponseStr(null,"删除失败",false));
 		}
 		return mav;
 	}

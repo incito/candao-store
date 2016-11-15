@@ -4,12 +4,14 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.candao.www.constant.Constant;
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
@@ -120,7 +122,18 @@ public class TipService {
 
         return dao.findOne(PREFIX + ".tipListByTime", params);
     }
-    
+        /**
+     * 查询小费
+     *
+     * @param groupon
+     */
+    public String getTipMoney(String orderId) {
+        Map<String,Object> params=new HashMap<>();
+        params.put("orderId",orderId);
+        params.put("branchId", Constant.BRANCH.BRANCH_ID);
+        return dao.get(PREFIX + ".getTipMoney", params);
+    }
+
     public int rebacktip(String orderid){
         return 	dao.update(PREFIX + ".rebacktip", orderid);
     }

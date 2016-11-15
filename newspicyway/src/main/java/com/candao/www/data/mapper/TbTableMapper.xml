@@ -190,13 +190,13 @@
 	   update t_table
 	   set status = 5, modifytime = now()
 	   where 
-	    tableid=#{id} 
+	    tableid=#{id} AND (status IS NULL OR status != 1)
 	</delete>
 	<delete id="deleteTablesByAreaid" parameterType="map">
 	   update t_table
 	   set status = 5, modifytime = now()
 	   where 
-	    areaid=#{areaid} 
+	    areaid=#{areaid} AND (status IS NULL OR status != 1)
 	</delete>
 	
 	<select id="get" parameterType="map" resultMap="tbTableResultMap">

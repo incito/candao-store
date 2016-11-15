@@ -118,6 +118,13 @@ public class TbDataDictionaryDaoImpl implements TbDataDictionaryDao {
 		params.put("type", type);
 		return dao.find(PREFIX+".getDatasByType",params);
 	}
+	@Override
+	public List<Map<String, Object>> getDatasByTypeIgnoreStatus(String type) {
+		// TODO Auto-generated method stub
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("type", type);
+		return dao.find(PREFIX+".getDatasByTypeIgnoreStatus",params);
+	}
 
 	@Override
 	public int delDishTasteDao(String dishTasteId) {
