@@ -217,8 +217,9 @@ var checkOrder={
     },
     rebackOrder:{//反结算跳转
         jumpfjs:function(user) {
-            var memberAddress = JSON.parse(utils.storage.getter('memberAddress')),
-                vipType=utils.storage.getter('vipType');
+            var memberAddress = JSON.parse(utils.storage.getter('memberAddress')),//会员地址
+                vipType=utils.storage.getter('vipType');//会员类型1为餐道2为雅座
+            /*雅座会员反结算*/
             if(cheackorderParameter.memberno  && vipType=='1'){
                 $.ajax({
                     url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
@@ -259,7 +260,7 @@ var checkOrder={
                     }
                 })
             }
-            /*雅座会员结算*/
+            /*雅座会员反结算*/
             if(cheackorderParameter.memberno  && vipType=='2'){
                 $.ajax({
                     url:memberAddress.vipotherurl + _config.interfaceUrl.YaVoidSaleCanDao + cheackorderParameter.orderId + '/0/111111/',//雅座会员取消会员消费
