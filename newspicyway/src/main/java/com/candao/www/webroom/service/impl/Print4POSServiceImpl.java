@@ -513,6 +513,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // 品项费
                     String pxFee = stringAdd(free, resolveNullType(orderJson.get("dueamount")));
                     posdata.put("pxFee", pxFee);
+                    //小费
+                    String tip = resolveNullType(orderJson.get("tipAmount"));
+                    posdata.put("tip",tip);
                     // 打印人
                     Map<String, Object> param = new HashMap<>();
                     param.put("jobNumber", params[2]);
