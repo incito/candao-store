@@ -410,7 +410,7 @@ public class PrintDish implements Serializable, Comparable<PrintDish> {
                     int end = tempSperequires[j].indexOf("#");
                     tempSperequires[j] = tempSperequires[j].substring(0, end == -1 ? tempSperequires[j].length() : end);
                 }
-                field.set(this, StringUtils.arrayToDelimitedString(tempSperequires, ""));
+                field.set(this, StringUtils.arrayToDelimitedString(tempSperequires, Constant.DELIMITER_MULTISPECIAL));
             }
         }
     }
