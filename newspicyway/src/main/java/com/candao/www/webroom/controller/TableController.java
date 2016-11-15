@@ -129,8 +129,8 @@ public class TableController extends BaseController{
 		tbTable.setTabletype((String) tableMap.get("tabletype"));
 		tbTable.setChargeOn((String) tableMap.get("chargeOn"));
 		tbTable.setChargeType((String) tableMap.get("chargeType"));
-		tbTable.setChargeRateRule((Integer) tableMap.get("chargeRateRule"));
-		tbTable.setChargeRate((Integer) tableMap.get("chargeRate"));
+		tbTable.setChargeRateRule(Integer.valueOf((String) tableMap.get("chargeRateRule")));
+		tbTable.setChargeRate(Integer.valueOf((String) tableMap.get("chargeRate")));
 		tbTable.setChargeTime((String) tableMap.get("chargeTime"));
 		tbTable.setChargeAmount(new BigDecimal((String) tableMap.get("chargeAmount")));
 
