@@ -2611,6 +2611,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         List<Map<String, Object>> result=new ArrayList<>();
         for(Map<String,Object> detail:itemSellDetail){
+            if(null==detail){
+                continue;
+            }
             Map<String,Object> map=new HashMap<>();
             map.put("dishName",detail.get("title"));
             map.put("dishCount",detail.get("number"));
