@@ -217,7 +217,9 @@ var checkOrder={
     },
     rebackOrder:{//反结算跳转
         jumpfjs:function(user) {
-            if(cheackorderParameter.memberno){
+            var memberAddress = JSON.parse(utils.storage.getter('memberAddress')),
+                vipType=utils.storage.getter('vipType');
+            if(cheackorderParameter.memberno  && vipType=='1'){
                 $.ajax({
                     url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
                     method: 'POST',
@@ -227,45 +229,94 @@ var checkOrder={
                     }),
                     dataType: "json",
                     success: function (data) {
-                        debugger
-                        console.log(data)
+                        $('#c-mod-fjs').modal("hide");
+                        var rebackMemberinfo=data
+                        if(rebackMemberinfo.cardno !=undefined){
+                                $.ajax({
+                                    url:memberAddress.vipcandaourl + _config.interfaceUrl.VoidSaleCanDao,//餐道会员取消会员消费
+                                    method: 'POST',
+                                    contentType: "application/json",
+                                    data: JSON.stringify({
+                                        "Serial":rebackMemberinfo.orderid,//订单号
+                                        "TraceCode":rebackMemberinfo.serial,//会员交易号
+                                        "SUPERPWD":"",
+                                        "cardno":rebackMemberinfo.cardno,//会员卡号
+                                        "password":"",
+                                        "branch_id":rebackMemberinfo.business,//租户id
+                                        "securityCode":""
+                                    }),
+                                    dataType: "json",
+                                    success: function (msg) {
+                                        if(msg.Retcode!=0){
+                                            utils.printError.alert('会员反结算失败')
+                                        }
+                                        else {
+                                            rebackOrderOk()
+                                        }
+                                    },
+                                })
+                        }
                     }
                 })
             }
-            return false;
-            $.ajax({
-                url: _config.interfaceUrl.AntiSettlementOrder,//反结算
-                method: 'POST',
-                contentType: "application/json",
-                data: JSON.stringify({
-                    'reason':rebackOrderReason,
-                    'orderNo':orderId,
-                    'userName':user
-                }),
-                dataType: "json",
-                success:function (data) {
-                    //console.log(data)
-                    if(data.result==='0'){
+            /*雅座会员结算*/
+            if(cheackorderParameter.memberno  && vipType=='2'){
+                $.ajax({
+                    url:memberAddress.vipotherurl + _config.interfaceUrl.YaVoidSaleCanDao + cheackorderParameter.orderId + '/0/111111/',//雅座会员取消会员消费
+                    type: "get",
+                    dataType: "json",
+                    success: function (msg) {
                         $('#c-mod-fjs').modal("hide");
-                        var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
-                        window.location.href=encodeURI(encodeURI(_url));
-
-                        //$("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
+                        if(msg.Data=='1'){
+                            rebackOrderOk();
+                        }
+                        else {
+                            utils.printError.alert(msg.Info)
+                        }
                     }
-                    else {
+                })
+            }
+            if(cheackorderParameter.memberno==undefined){
+                rebackOrderOk();
+            }
+            //会员反结结算成功后执行后台账单反结算
+            function rebackOrderOk() {
+                $.ajax({
+                    url: _config.interfaceUrl.AntiSettlementOrder,//反结算
+                    method: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        'reason':rebackOrderReason,
+                        'orderNo':orderId,
+                        'userName':user
+                    }),
+                    dataType: "json",
+                    success:function (data) {
+                        //console.log(data)
                         $('#c-mod-fjs').modal("hide");
-                        widget.modal.alert({
-                            cls: 'fade in',
-                            content:'<strong>反结算失败，请稍后再试</strong>',
-                            width:500,
-                            height:500,
-                            btnOkTxt: '',
-                            btnCancelTxt: '确定'
-                        });
-                    }
+                        if(data.result==='0'){
+                            $('#c-mod-fjs').modal("hide");
+                            var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
+                            window.location.href=encodeURI(encodeURI(_url));
 
-                }
-            })
+                            //$("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
+                        }
+                        else {
+                            $('#c-mod-fjs').modal("hide");
+                            widget.modal.alert({
+                                cls: 'fade in',
+                                content:'<strong>反结算失败，请稍后再试</strong>',
+                                width:500,
+                                height:500,
+                                btnOkTxt: '',
+                                btnCancelTxt: '确定'
+                            });
+                        }
+
+                    }
+                })
+            }
+
         },
         rebackOrder:function () {//反结算
             var that=this
@@ -415,6 +466,7 @@ var checkOrder={
             $(this).addClass("tablistActive").siblings("tr").removeClass("tablistActive");
             var orderstatus=$.trim($(this).attr("orderstatus")) ,
                 memberno=$(this).attr("memberno");
+            orderId= $.trim($(this).attr("orderid"));
             if(memberno){
                 cheackorderParameter={
                     'orderId':orderId,
@@ -432,7 +484,7 @@ var checkOrder={
                     'type':$.trim($(this).attr("type")),
                 }
             }
-            orderId= $.trim($(this).attr("orderid"));
+
 
            // console.log(memberno+","+orderId+","+orderstatus)
             if(orderstatus=="0"){
