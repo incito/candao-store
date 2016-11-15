@@ -164,24 +164,12 @@
 	       custPrinter=#{custPrinter},
 	     </if>	
 	     modifytime = now(),
-		   <if test="chargeOn != null ">
 			   chargeOn=#{chargeOn},
-		   </if>
-		   <if test="chargeType != null ">
 			   chargeType=#{chargeType},
-		   </if>
-		   <if test="chargeRateRule != null ">
 			   chargeRateRule=#{chargeRateRule},
-		   </if>
-		   <if test="chargeRate != null ">
 			   chargeRate=#{chargeRate},
-		   </if>
-		   <if test="chargeTime != null ">
 			   chargeTime=#{chargeTime},
-		   </if>
-		   <if test="chargeAmount != null ">
-			   chargeAmount=#{chargeAmount},
-		   </if>
+			   chargeAmount=#{chargeAmount}
 	   </set>
 	   where 
 	    tableid=#{tableid} 
