@@ -1,4 +1,10 @@
 var pref_prev = 0;
+var invoice_Flag={
+    'orderid':'',
+    'amount':'',
+    'flag':''
+
+};
 var g_eatType = utils.getUrl.get('type');
 var consts = {
     orderid: $('input[name=orderid]').val(),
@@ -52,6 +58,11 @@ var Order = {
             target: '.search-btns',
             chirdSelector: 'div'
         });
+        //发票信息键盘初始化
+        widget.keyboard({
+            target: '.virtual-keyboard-baseOne',
+            chirdSelector: 'li'
+        });
 
         //定时更新订单信息
         //setInterval(function(){
@@ -64,6 +75,22 @@ var Order = {
     bindEvent: function () {
 
         var that = this;
+
+        //点击- +修改发票金额
+        $('#Invoice-title .plus_sign').click(function () {
+            var se=$(this),
+                _thisVal=parseFloat($.trim($('#Invoice-title .invoiceMoney').val()));
+            /*减号*/
+            if(se.hasClass('minus')){
+                _thisVal= _thisVal-1
+            }
+            /*加号*/
+            if(se.hasClass('Add_key')){
+                _thisVal=_thisVal+1
+
+            }
+            $('#Invoice-title .invoiceMoney').val(_thisVal.toFixed(2))
+        })
 
         //支付方式切换
         $(".tab-payment ul li").click(function () {
@@ -1467,13 +1494,13 @@ var Order = {
         $('.pay-total').remove();
 
 
-        totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账:<span>' + toalDebitAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免:<span>' + toalFreeAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零:<span>' + moneyWipeAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整:<span>' + adjAmout + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收:<span>' + toalDebitAmountMany + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金:<span>' + payamount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(tipAmount) !== 0 ? '' : 'hide') + ' tipAmount" >小费:<span>' + tipAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账<i class="spangap">:</i><span>' + toalDebitAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免<i class="spangap">:</i><span>' + toalFreeAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零<i class="spangap">:</i><span>' + moneyWipeAmount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整<i class="spangap">:</i><span>' + adjAmout + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收<i class="spangap">:</i><span>' + toalDebitAmountMany + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + payamount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(tipAmount) !== 0 ? '' : 'hide') + ' tipAmount" >小费<i class="spangap">:</i><span>' + tipAmount + '</span></li> ';
 
         totalHtml += '<li class="hide giveChange">找零:<span></span></li> ';
         totalHtml += '<li class="hide bank" payway="1">银行卡:<span></span></li> ';
@@ -1537,6 +1564,7 @@ var Order = {
 
     updateOrderStatus: 0, //1 正在进行 0 空闲
 
+
     /**
      * 更新订单信息
      */
@@ -1559,6 +1587,28 @@ var Order = {
                 async: false,
                 success: function (res) {
                     if (res.code === '0') {
+                        if(res.data.userOrderInfo.orderInvoiceTitle!=''){
+                           // $('#Invoice-title').modal('show');
+                           //focusIpt=$('#Invoice-title .invoiceMoney');
+                            $('.tableNumber').text(res.data.userOrderInfo.tableName+'开发票')
+                            $('.orderNumber').text(res.data.userOrderInfo.orderid)
+                            $('.invoiceInfo').text(res.data.userOrderInfo.orderInvoiceTitle)
+                            $('.orderMoney').text(res.data.preferentialInfo.payamount)
+                            $('.invoiceMoney').val(res.data.preferentialInfo.payamount);
+                            invoice_Flag={
+                                'orderid':res.data.userOrderInfo.orderid,
+                                'amount':res.data.preferentialInfo.payamount,
+                                'flag':res.data.userOrderInfo.orderInvoiceTitle
+                            }
+
+                        }
+                        else {
+                            invoice_Flag={
+                                'orderid':res.data.userOrderInfo.orderid,
+                                'amount':res.data.preferentialInfo.payamount,
+                                'flag':''
+                            }
+                        }
 
                         if (utils.object.isEmptyObject(res.data)) return false;
 
@@ -1761,7 +1811,8 @@ var Order = {
             if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
                 goBack()
             } else {
-                window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                //window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
+                window.location.href = encodeURI(encodeURI('./main.jsp'));
             }
             //$.ajax({
             //    url: _config.interfaceUrl.SendMsgAsyn,
@@ -1776,6 +1827,41 @@ var Order = {
             //
             //});
         };
+        //打印发票信息
+        var invoiceMsg=function () {
+            if(invoice_Flag.flag!=''){
+                utils.loading.remove();
+                $('#Invoice-title').modal('show');
+                focusIpt=$('#Invoice-title .invoiceMoney');
+                $('#Invoice-title #Invoice-title-btnOk ').click(function () {
+                    $.ajax({
+                        url: _config.interfaceUrl.PrintInvoice,
+                        method: 'POST',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify({
+                            deviceid: utils.storage.getter('posid'),
+                            orderid:invoice_Flag.orderid,
+                            amount:$.trim($('#Invoice-title .invoiceMoney').val()),
+                        }),
+                        success: function (res) {
+                            console.log(res)
+                            if(res.result=='0'){
+                                _fn()
+                            }
+                            else {
+                                utils.printError.alert('打印开发票信息失败，请稍后重试！')
+                            }
+
+                        }
+                    })
+                });
+
+            }
+            else {
+                _fn()
+            }
+        }
 
         var doSettlementModal = widget.modal.alert({
             cls: 'fade in',
@@ -1975,6 +2061,8 @@ var Order = {
                 })
                 .then(function(res) {
                     if(res.code === '0') {
+
+
                         if(isMemberLogin){
                             //餐道会员会员消费
                             $.ajax({
@@ -2035,10 +2123,11 @@ var Order = {
                                     }
                                 });
                             }).then(function(){
-                                _fn();
+                                invoiceMsg()//发票信息
+
                             });
                         } else {
-                            _fn();
+                            invoiceMsg()//发票信息
                         }
                     } else {
                         utils.loading.remove();

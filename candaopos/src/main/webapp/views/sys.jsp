@@ -163,6 +163,12 @@
 						if(data.data[i].status=='5'){
 							arr.push(data.data[i])
 						}
+						if(data.data[i].statusTitle.indexOf('上盖打开')>-1){
+							arr.push(data.data[i])
+						}
+						if(data.data[i].statusTitle.indexOf('打印纸已用尽')>-1){
+							arr.push(data.data[i])
+						}
 						num=i+1
 						str+='<tr>';
 						str+='   <td width="200">'+num+'</td>';
@@ -179,11 +185,11 @@
 					$("#printList tbody").html(str);
 					if(arr.length>0){
 						$('.J-btn-sys').css({'background': '#FF5803','color': '#fff'});//系统设置高亮
-						$('.print_list li').eq(0).find('i').show()
+						$('.print_list li').eq(0).find('i').show()//显示感叹号！
 					}
 					else {
 						$('.J-btn-sys').css({'background': '#fff','color': '#000'});
-						$('.print_list li').eq(0).find('i').hide()
+						$('.print_list li').eq(0).find('i').hide()//隐藏感叹号！
 					}
 				},
 			});

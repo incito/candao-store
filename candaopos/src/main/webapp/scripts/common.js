@@ -1159,6 +1159,12 @@ utils.printAbnormal={
 					if(data.data[i].status=='5'){
 						arry.push(data.data[i])
 					}
+                    if(data.data[i].statusTitle.indexOf('上盖打开')>-1){
+                        arr.push(data.data[i])
+                    }
+                    if(data.data[i].statusTitle.indexOf('打印纸已用尽')>-1){
+                        arr.push(data.data[i])
+                    }
 				};
 				if(arry.length>0){
 					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
@@ -1185,10 +1191,12 @@ utils.printAbnormal={
 					$('.printAbnormal .modal-header span').hide();
 					utils.storage.setter('printAbnormal',true);
 					$('.J-btn-sys').css({'background': '#FF5803','color': '#fff'})//系统设置高亮
+                    $('.print_list li').eq(0).find('i').show()//显示感叹号！
 				}
 				else {
 					utils.storage.remove('printAbnormal')
 					$('.J-btn-sys').css({'background': '#fff','color': '#000'})
+                    $('.print_list li').eq(0).find('i').hide()//隐藏感叹号！
 				}
 
 			},

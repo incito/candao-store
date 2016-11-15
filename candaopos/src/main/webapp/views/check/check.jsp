@@ -37,7 +37,7 @@
     <div class="fl">餐道</div>
     <div class="fr close-win" data-dismiss="modal" onclick="window.location.href='../main.jsp';">返回</div>
 </header>
-<article style="height: 540px;">
+<article style="overflow: hidden">
     <div class="content">
         <div class="g-r">
             <div class="g-a-content tab-box">

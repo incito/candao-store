@@ -154,12 +154,12 @@
 </header>
 <article>
     <div class="rooms-type">
-        <div class="nav-type-btn nav-type-prev">
+        <div class="nav-type-btn nav-type-prev unclick">
             <span class="glyphicon glyphicon-chevron-left"></span>
         </div>
         <ul class="nav-types" id="nav-room-types">
         </ul>
-        <div class="nav-type-btn nav-type-next">
+        <div class="nav-type-btn nav-type-next unclick">
             <span class="glyphicon glyphicon-chevron-right"></span>
         </div>
     </div>

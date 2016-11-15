@@ -1,7 +1,11 @@
 var orderdata='',orderId='',rebackOrderReason='',cheackorderParameter=null;
+var tab_itemHeight=$('article').height()-60;
+var tab_listHeight=tab_itemHeight-53-56-75-37.33;
+var listSize=parseInt(tab_listHeight/37.33)-1;
 
 $(function () {
     checkOrder.int("");
+
 });
 var aUserid=utils.storage.getter('aUserid')//获取登录用户
 var checkOrder={
@@ -91,7 +95,7 @@ var checkOrder={
         }
         $('#pagDome').pagination({
             dataSource: data,
-            pageSize: 12,
+            pageSize: listSize,
             showPageNumbers: false,
             showNavigator: true,
             callback: function(data, pagination) {
@@ -120,6 +124,7 @@ var checkOrder={
                     switch (data[i].orderstatus){
                         case 0: ordertype="未结"; break;
                         case 3: ordertype="已结"; break;
+                        case 2: ordertype="已取消"; break;
                         default:  ordertype="未知";break;
                     };
                     str+='   <td>'+ordertype+'</td>'
@@ -406,6 +411,9 @@ var checkOrder={
                 $(".c-mod-fjs,.reprintCheck,.receipt").attr("disabled","disabled").addClass("disabled");//反结算按钮，重印账单按钮disabled
                 $(".c-mod-js").removeAttr("disabled","disabled").removeClass("disabled");//结算按钮移除disabled
             }
+            if(orderstatus=="2"){//订单已取消
+                $(".c-mod-fjs,.reprintCheck,.receipt,.c-mod-js").attr("disabled","disabled").addClass("disabled");//反结算按钮，重印账单按钮disabled
+            }
             if(orderstatus=="3"){
                 $(".c-mod-js").attr("disabled","disabled").addClass("disabled");//结算按钮disabled
                 $(".c-mod-fjs ,.reprintCheck,.receipt").removeAttr("disabled","disabled").removeClass("disabled");//反结算按钮，重印账单按钮移除disabled
@@ -416,6 +424,7 @@ var checkOrder={
             else {
                 $(".receipt").attr("disabled","disabled").addClass("disabled");
             };
+
         });
     },
     search:function () {
