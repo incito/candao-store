@@ -1,10 +1,16 @@
 package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.candao.common.exception.SysException;
+import com.candao.common.utils.DateUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
@@ -12,7 +18,6 @@ import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
-import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
  * 
@@ -21,7 +26,9 @@ import com.candao.www.webroom.service.TorderDetailPreferentialService;
  */
 public enum StrategyFactory {
 	INSTANCE;
+    private Logger logger = LoggerFactory.getLogger(StrategyFactory.class);
 	private static Map<String, Object> strategyMap = new HashMap<>();
+
 	static {
 		strategyMap.put(Constant.CouponType.SPECIAL_TICKET, new SpecialTicketStrategy());
 		strategyMap.put(Constant.CouponType.DISCOUNT_TICKET, new DiscountTicketStrategy());
@@ -48,19 +55,21 @@ public enum StrategyFactory {
 
 	/**
 	 * 计算实收金额 优免金额 挂账金额 小费
-	 * @param orderDetailPreferentialDao 
+	 * 
+	 * @param orderDetailPreferentialDao
 	 * 
 	 * @param caleTableAmountMapper
 	 * @param orderid
 	 * @param dataDictionaryService
-	 * @param torderDetailPreferentialService 
+	 * @param torderDetailPreferentialService
 	 * @param preferentialResult
 	 * @param orderMapper
 	 *            (核心计算方式)
 	 */
-	public void calcAmount(TorderDetailPreferentialDao orderDetailPreferentialDao, CaleTableAmountMapper caleTableAmountMapper, String orderid,
-			DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,
-			OrderMapper orderMapper, OrderOpMapper orderOpMapper,String itemid) {
+	public void calcAmount(TorderDetailPreferentialDao orderDetailPreferentialDao,
+			CaleTableAmountMapper caleTableAmountMapper, String orderid, DataDictionaryService dataDictionaryService,
+			OperPreferentialResult preferentialResult, OrderMapper orderMapper, OrderOpMapper orderOpMapper,
+			String itemid) {
 		caleTableAmountMapper.pCaleTableAmount(orderid);
 		Map<String, Object> amountMap = new HashMap<>();
 		amountMap.put("orderid", orderid);
@@ -69,14 +78,14 @@ public enum StrategyFactory {
 			Map<String, Object> resAmountMap = resAmountList.get(0);
 			BigDecimal tipAmount = new BigDecimal(String.valueOf(resAmountMap.get("tipAmount")));// 小费
 			BigDecimal dueamount = new BigDecimal(String.valueOf(resAmountMap.get("dueamount")));// 订单（菜品）总价
-			BigDecimal originalOrderAmount=new BigDecimal(String.valueOf(resAmountMap.get("freeamount")));// 原价
+			BigDecimal originalOrderAmount = new BigDecimal(String.valueOf(resAmountMap.get("freeamount")));// 原价
 			// 赠送金额
 			float zaAmount = orderOpMapper.getZdAmountByOrderId(orderid);
 			preferentialResult.setZdAmount(new BigDecimal(zaAmount));
 			// 全单总价（不包含小费）
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
-			//原始价格
+			// 原始价格
 			preferentialResult.setOriginalOrderAmount(originalOrderAmount);
 			// 计算实际收入金额
 			// 优免调整（如果优惠大于订单价做优惠调整）
@@ -88,19 +97,20 @@ public enum StrategyFactory {
 				// 挂账
 				BigDecimal toaldDebitAmount = preferentialResult.getToalDebitAmount();
 				BigDecimal toaldDebitAmountMany = preferentialResult.getToalDebitAmountMany();
-				preferentialResult
-						.setAdjAmout(orderPrice.subtract(toaldDebitAmount.add(toalFreeAmount).add(toaldDebitAmountMany)));
+				preferentialResult.setAdjAmout(
+						orderPrice.subtract(toaldDebitAmount.add(toalFreeAmount).add(toaldDebitAmountMany)));
 			}
-			//查询数据库价格
+			// 查询数据库价格
 			BigDecimal statisticPrice = orderDetailPreferentialDao.statisticALLDiscount(orderid);
-			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult,itemid,statisticPrice);
-			//优惠总消费重新计算（菜单总价-应收金额）
-			preferentialResult.setAmount(preferentialResult.getMenuAmount().subtract(preferentialResult.getPayamount()));
+			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult, itemid, statisticPrice);
+			// 优惠总消费重新计算（菜单总价-应收金额）
+			preferentialResult
+					.setAmount(preferentialResult.getMenuAmount().subtract(preferentialResult.getPayamount()));
 			// 应收应该是小费+消费
 			preferentialResult.setPayamount(preferentialResult.getPayamount().add(tipAmount));
-			//预结单小票
-			preferentialResult.setReserveAmout(preferentialResult.getPayamount().add(preferentialResult.getToalDebitAmount()));
-			
+			// 预结单小票
+			preferentialResult
+					.setReserveAmout(preferentialResult.getPayamount().add(preferentialResult.getToalDebitAmount()));
 
 		}
 	}
@@ -155,5 +165,50 @@ public enum StrategyFactory {
 		resultMapPrice.put("toalFreeAmount", toalFreeAmount);
 		resultMapPrice.put("toalDebitAmount", toalDebitAmount);
 		return resultMapPrice;
+	}
+
+	// 计算服务费
+	public BigDecimal calcServiceCharge(Map<String, Object> userOrderInfo, BigDecimal payDecimal,
+			BigDecimal menuDecimal) {
+		BigDecimal serverCharageCash = new BigDecimal("0");
+		// '服务费计算方式 0比例 1 固定 2 时长'
+		int chargeType = (int) userOrderInfo.get("chargeType");
+		int chargeRateRule = (int) userOrderInfo.get("chargeRateRule");
+		int chargeRate = (int) userOrderInfo.get("chargeRate");
+		String chargeTime = (String) userOrderInfo.get("chargeTime");
+		BigDecimal chargeAmount = (BigDecimal) userOrderInfo.get("chargeAmount");
+		if (chargeType == 1) {
+			// 固定消费
+			serverCharageCash = chargeAmount;
+		} else if (chargeType == 0) {
+			// 比例
+			if (chargeRateRule == 0) {
+				// 实收
+				serverCharageCash = payDecimal.multiply(new BigDecimal(chargeRate).divide(new BigDecimal(100)));
+			} else {
+				// 应收
+				serverCharageCash = menuDecimal.multiply(new BigDecimal(chargeRate).divide(new BigDecimal(100)));
+			}
+		} else {
+			// 时长
+			String begintime = (String) userOrderInfo.get("begintime");
+			String endtime = (String) userOrderInfo.get("endtime");
+			long intervalTime = 0;
+			// 算出分钟数
+			try {
+				if (endtime != null&&!endtime.isEmpty()) {
+					intervalTime = DateUtils.stringToDate(endtime).getTime()
+							- DateUtils.stringToDate(begintime).getTime();
+				} else {
+					intervalTime = new Date().getTime() - DateUtils.stringToDate(begintime).getTime();
+				}
+				// 换算成分钟数
+				long d = ((intervalTime / 1000 / 60) / Long.valueOf(chargeTime));
+				serverCharageCash = chargeAmount.multiply(new BigDecimal(d));
+			} catch (SysException e) {
+				logger.error("服务计算错误", e.fillInStackTrace());
+			}
+		}
+		return serverCharageCash.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 }

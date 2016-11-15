@@ -47,7 +47,14 @@
 		<result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
 		<result column="dishunit" property="dishunit" jdbcType="VARCHAR" />
 	</resultMap>
-
+	 <resultMap type="com.candao.www.data.model.Ttable" id="tableInfoMap"></resultMap>
+     <resultMap type="java.util.HashMap" id="serviceChargeMap"  extends="tableInfoMap" >
+         <result column="chargeOn"  property="chargeOn" javaType="INTEGER" />
+         <result column="chargeType"  property="chargeType" javaType="INTEGER"/>
+         <result column="chargeRateRule" property="chargeRateRule" javaType="INTEGER" />
+         <result column="chargeRate" property="chargeRate" javaType="INTEGER"/>
+     </resultMap>
+  
 	<resultMap id="findResultMap" type="java.util.HashMap"
 		extends="BaseResultMap"></resultMap>
 
@@ -898,7 +905,7 @@
 		orderid=#{orderno}
 	</update>
 
-	<select id="findOrderByInfo" parameterType="map" resultType="java.util.HashMap">
+	<select id="findOrderByInfo" parameterType="map" resultMap="serviceChargeMap">
 		SELECT
 		tor.userid,
 		tor.begintime,
@@ -915,6 +922,12 @@
 		tor.childNum,
 		tor.mannum,
 		tab.`status`,
+		tab.`chargeOn`,
+		tab.`chargeType`,
+		tab.`chargeRateRule`,
+		tab.`chargeRate`,
+		tab.`chargeTime`,
+		tab.`chargeAmount`,
 		tbue.`name`,
 		tinv.invoice_title
 		FROM

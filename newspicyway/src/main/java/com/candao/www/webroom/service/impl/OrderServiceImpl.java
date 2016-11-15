@@ -23,6 +23,7 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.PrintObj;
 import com.candao.www.constant.Constant;
+import com.candao.www.data.dao.TServiceChargeDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
 import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.data.dao.TbTableDao;
@@ -32,6 +33,7 @@ import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.TCouponRule;
 import com.candao.www.data.model.TCoupons;
+import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.data.model.TbDataDictionary;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
@@ -120,8 +122,11 @@ public class OrderServiceImpl implements OrderService {
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	private OrderMapper orderMapper;
-    @Autowired
-    private TbTableDao tableDao;
+	@Autowired
+	private TbTableDao tableDao;
+
+	@Autowired
+	private TServiceChargeDao serviceChargeDao;
 
 	public Torder findOrderByTableId(Torder order) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -140,7 +145,6 @@ public class OrderServiceImpl implements OrderService {
 	public int update(Torder order) {
 		return torderMapper.update(order);
 	}
-
 
 	@Override
 	public Map<String, Object> findOrderById(String orderId) {
@@ -1189,7 +1193,7 @@ public class OrderServiceImpl implements OrderService {
 		params.put("branchid", branchid);
 		params.put("id", orderid);
 		if (orderid != null && !orderid.isEmpty() && !orderid.equals("null")) {
-			//如果是外卖订单，强制绑定对应餐台
+			// 如果是外卖订单，强制绑定对应餐台
 			doBindTableForTakeOutFood(orderid);
 
 			if (!params.containsKey("clean")) {
@@ -1209,30 +1213,87 @@ public class OrderServiceImpl implements OrderService {
 			params.put("memberno", menberNo);
 			OperPreferentialResult result = preResult(params);
 			mapRet.put("preferentialInfo", result);
+			// 服务费信息
+			TServiceCharge serviceCharge = serviceCharge(orderid, userOrderInfo,
+					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
+			mapRet.put("serviceCharge", serviceCharge);
 		}
 
 		return ReturnMap.getSuccessMap(mapRet);
+	}
+
+	private TServiceCharge serviceCharge(String orderid, Map<String, Object> userOrderInfo, BigDecimal payDecimal,
+			BigDecimal MenuDecimal) {
+		Map<String, Object> serParams = new HashMap<>();
+		serParams.put("orderId", orderid);
+	
+		BigDecimal calcServiceCharge = null;
+		int chargeOn = (int) userOrderInfo.get("chargeOn");
+		int chargeType=(int) userOrderInfo.get("chargeType");
+		int chargeRateRule=(int) userOrderInfo.get("chargeRateRule");
+		int chargeRate=(int) userOrderInfo.get("chargeRate");
+		String chargeTime=(String)userOrderInfo.get("chargeTime");
+		TServiceCharge servceCharageBean=null;
+		if(chargeOn!=0){
+			   servceCharageBean = serviceChargeDao.getChargeInfo(serParams);
+			if(servceCharageBean==null||(servceCharageBean!=null&&servceCharageBean.getIsCustom()==0)){
+				Map<String, Object> params = new HashMap<>();
+				params.put("itemid", chargeType);
+				params.put("type", "TABLECHARGE");
+				List<Object> dataDictionary = dictionaryDao.find(params);
+				if (!dataDictionary.isEmpty()) {
+					// 0比例 1 固定 2 时长
+					calcServiceCharge = StrategyFactory.INSTANCE.calcServiceCharge(userOrderInfo, payDecimal,
+							MenuDecimal);
+				}
+			}else if(servceCharageBean.getIsCustom()==1){
+				calcServiceCharge=servceCharageBean.getChargeAmount();
+			}
+		
+			if (servceCharageBean == null) {
+				servceCharageBean = new TServiceCharge(orderid, chargeOn, chargeType, chargeRateRule, chargeRate,
+						chargeTime);
+				servceCharageBean.setChargeAmount(calcServiceCharge);
+				servceCharageBean.setAutho("");
+				long id  =serviceChargeDao.insertChargeInfo(servceCharageBean);
+				servceCharageBean.setId(id);
+			} else  {
+				servceCharageBean.setChargeAmount(calcServiceCharge);
+				try {
+					serviceChargeDao.updateChargeInfo(servceCharageBean);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+		}
+		
+		
+
+		return servceCharageBean;
+
 	}
 
 	/**
 	 * 强制外卖订单绑定餐台
 	 */
 	private void doBindTableForTakeOutFood(String orderid) {
-        if (!StringUtils.isEmpty(orderid)) {
-            Map<String, Object> res = torderMapper.findOne(orderid);
-            if (!MapUtils.isEmpty(res)) {
-                if (!StringUtil.isEmpty(res.get("currenttableid"))) {
-                    TbTable table = tableService.findById(res.get("currenttableid").toString());
-                    if (table != null && ("2".equals(table.getTabletype()) || "3".equals(table.getTabletype()))) {
-                        Map<String, Object> param = new HashMap<>();
-                        param.put("orderid", orderid);
-                        param.put("tableid", res.get("currenttableid"));
-                        tableDao.updateTableById(param);
-                    }
-                }
-            }
-        }
-    }
+		if (!StringUtils.isEmpty(orderid)) {
+			Map<String, Object> res = torderMapper.findOne(orderid);
+			if (!MapUtils.isEmpty(res)) {
+				if (!StringUtil.isEmpty(res.get("currenttableid"))) {
+					TbTable table = tableService.findById(res.get("currenttableid").toString());
+					if (table != null && ("2".equals(table.getTabletype()) || "3".equals(table.getTabletype()))) {
+						Map<String, Object> param = new HashMap<>();
+						param.put("orderid", orderid);
+						param.put("tableid", res.get("currenttableid"));
+						tableDao.updateTableById(param);
+					}
+				}
+			}
+		}
+	}
 
 	private Map<String, Object> findOrderByInfo(String orderid) {
 		// orderInvoiceTitle 发票抬头
@@ -1268,6 +1329,14 @@ public class OrderServiceImpl implements OrderService {
 			/** 预打印 **/
 			int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
 			outresultMap.put("befprintcount", printcount + 1);
+
+			/** 服务费 **/
+			outresultMap.put("chargeOn", resultMap.get("chargeOn"));
+			outresultMap.put("chargeType", resultMap.get("chargeType"));
+			outresultMap.put("chargeRateRule", resultMap.get("chargeRateRule"));
+			outresultMap.put("chargeRate", resultMap.get("chargeRate"));
+			outresultMap.put("chargeAmount", resultMap.get("chargeAmount"));
+			outresultMap.put("chargeTime", resultMap.get("chargeTime"));
 		}
 		outresultMap.put("orderid", orderid);
 		return outresultMap;
@@ -1292,21 +1361,21 @@ public class OrderServiceImpl implements OrderService {
 		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
 		// 新辣道特殊新编码处理
 		if (PropertiesUtils.getValue("tenant_id").equals("100011")) {
-			autoPre(orderid,params.get("memberno"),  operPreferentialResult);
-//			if (allDetailPre == null || allDetailPre.isEmpty()) {
-//				autoPre(orderid,params.get("memberno"), operPreferentialResult);
-//			} else {
-//				boolean falg = false;
-//				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
-//					if (branchDataSyn.getIsCustom() == 2) {
-//						falg = true;
-//						break;
-//					}
-//				}
-//				if (!falg) {
-//				
-//				}
-//			}
+			autoPre(orderid, params.get("memberno"), operPreferentialResult);
+			// if (allDetailPre == null || allDetailPre.isEmpty()) {
+			// autoPre(orderid,params.get("memberno"), operPreferentialResult);
+			// } else {
+			// boolean falg = false;
+			// for (TorderDetailPreferential branchDataSyn : allDetailPre) {
+			// if (branchDataSyn.getIsCustom() == 2) {
+			// falg = true;
+			// break;
+			// }
+			// }
+			// if (!falg) {
+			//
+			// }
+			// }
 		}
 
 		// 需要得到已经是有优惠的值
@@ -1329,7 +1398,7 @@ public class OrderServiceImpl implements OrderService {
 			setMap.put("insertime", branchDataSyn.getInsertime());
 			setMap.put("resultAmount", "0");
 			setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
-			setMap.put("memberno",params.get("memberno"));
+			setMap.put("memberno", params.get("memberno"));
 			if (branchDataSyn.getIsCustom() == 5) {
 				// 雅座
 				setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
@@ -1375,7 +1444,7 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-	private void autoPre(String orderid,  Object  memberno, OperPreferentialResult operPreferentialResult) {
+	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult) {
 		Map<String, Object> setMap = new HashMap<>();
 		setMap.put("orderid", orderid);
 		setMap.put("type", "03");
