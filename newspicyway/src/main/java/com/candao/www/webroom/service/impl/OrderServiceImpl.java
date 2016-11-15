@@ -1293,20 +1293,6 @@ public class OrderServiceImpl implements OrderService {
 		// 新辣道特殊新编码处理
 		if (PropertiesUtils.getValue("tenant_id").equals("100011")) {
 			autoPre(orderid,params.get("memberno"),  operPreferentialResult);
-//			if (allDetailPre == null || allDetailPre.isEmpty()) {
-//				autoPre(orderid,params.get("memberno"), operPreferentialResult);
-//			} else {
-//				boolean falg = false;
-//				for (TorderDetailPreferential branchDataSyn : allDetailPre) {
-//					if (branchDataSyn.getIsCustom() == 2) {
-//						falg = true;
-//						break;
-//					}
-//				}
-//				if (!falg) {
-//				
-//				}
-//			}
 		}
 
 		// 需要得到已经是有优惠的值
@@ -1376,12 +1362,20 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private void autoPre(String orderid,  Object  memberno, OperPreferentialResult operPreferentialResult) {
+		
+		//查询新拿到配置优惠
+		Map<String, Object> newspicywayPre=new HashMap<>();
+		newspicywayPre.put("type", "NEWSPICYWAYPRE");
+		newspicywayPre.put("itemid", "0");
+		 List<Map<String, Object>> reslut = dictionaryDao.find(newspicywayPre);
+		 
 		Map<String, Object> setMap = new HashMap<>();
 		setMap.put("orderid", orderid);
 		setMap.put("type", "03");
 		setMap.put("isCustom", "2");
 		setMap.put("resultAmount", "0");
 		setMap.put("memberno", memberno);
+		setMap.put("doubSpellPreId", reslut.get(0).get("itemValue"));
 		calALLAmout(setMap, operPreferentialResult);
 	}
 
