@@ -217,6 +217,22 @@ var checkOrder={
     },
     rebackOrder:{//反结算跳转
         jumpfjs:function(user) {
+            if(cheackorderParameter.memberno){
+                $.ajax({
+                    url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
+                    method: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        'orderid': cheackorderParameter.orderId,
+                    }),
+                    dataType: "json",
+                    success: function (data) {
+                        debugger
+                        console.log(data)
+                    }
+                })
+            }
+            return false;
             $.ajax({
                 url: _config.interfaceUrl.AntiSettlementOrder,//反结算
                 method: 'POST',
@@ -399,13 +415,25 @@ var checkOrder={
             $(this).addClass("tablistActive").siblings("tr").removeClass("tablistActive");
             var orderstatus=$.trim($(this).attr("orderstatus")) ,
                 memberno=$(this).attr("memberno");
-            orderId= $.trim($(this).attr("orderid"));
-            cheackorderParameter={
-                'orderId':orderId,
-                'personnum':$.trim($(this).attr("personnum")),
-                'tableno':$.trim($(this).attr("tableno")),
-                'type':$.trim($(this).attr("type"))
+            if(memberno){
+                cheackorderParameter={
+                    'orderId':orderId,
+                    'personnum':$.trim($(this).attr("personnum")),
+                    'tableno':$.trim($(this).attr("tableno")),
+                    'type':$.trim($(this).attr("type")),
+                    'memberno':$.trim($(this).attr("memberno")),
+                }
             }
+            else {
+                cheackorderParameter={
+                    'orderId':orderId,
+                    'personnum':$.trim($(this).attr("personnum")),
+                    'tableno':$.trim($(this).attr("tableno")),
+                    'type':$.trim($(this).attr("type")),
+                }
+            }
+            orderId= $.trim($(this).attr("orderid"));
+
            // console.log(memberno+","+orderId+","+orderstatus)
             if(orderstatus=="0"){
                 $(".c-mod-fjs,.reprintCheck,.receipt").attr("disabled","disabled").addClass("disabled");//反结算按钮，重印账单按钮disabled
