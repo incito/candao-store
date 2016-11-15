@@ -79,6 +79,45 @@ $(document).ready(function(){
 						$("#tableName").addClass("error");
 						vcheck = false;
 					}
+                    var chargeOn=$('#serviceCharge_onoff input:checked').val();//是否开启服务费 0关闭 1开启
+                    if(chargeOn=="1"){
+                        var chargeType=$('.serviceCharge_count_select').val()//服务费计算方式 0比例 1 固定 2 时长
+                        if ($(".serviceCharge_count_timer").val().trim() == "" && chargeType=='0') {
+                            $(".serviceCharge_count_timer_tip").text("餐台服务费比例不能为空");
+
+                            $(".serviceCharge_count_timer").focus();
+                            $(".serviceCharge_count_timer").addClass("error");
+                            vcheck = false;
+                        }
+						if ($(".serviceCharge_count_timer").val().trim() != "" && chargeType=='0') {
+							var reg=/^(100|[1-9]\d|\d)$/ //只能输入0-100的整数
+                                reg.lastIndex = 0;//正则开始为0
+							var val=$.trim($(".serviceCharge_count_timer").val());
+							if(reg.test(val)===false){
+								$(".serviceCharge_count_timer").val().trim()
+								$(".serviceCharge_count_timer_tip").text("餐台服务费比例只能输入0~100的整数");
+								$(".serviceCharge_count_timer").focus();
+								$(".serviceCharge_count_timer").addClass("error");
+								vcheck = false;
+							}
+
+						}
+
+                        if ($(".serviceCharge_count_timer1").val().trim() == "" && chargeType=='1') {
+                            $(".serviceCharge_count_timer_tip").text("餐台服务费金额不能为空");
+
+                            $(".serviceCharge_count_timer1").focus();
+                            $(".serviceCharge_count_timer1").addClass("error");
+                            vcheck = false;
+                        }
+                        if ($(".serviceCharge_count_timer2").val().trim() == "" && chargeType=='2') {
+                            $(".serviceCharge_count_timer_tip").text("餐台服务费金额不能为空");
+                            $(".serviceCharge_count_timer2").focus();
+                            $(".serviceCharge_count_timer2").addClass("error");
+                            vcheck = false;
+                        }
+                    }
+
 
 					if($("#minp").is(":checked") && ($('#minprice').val() === '0' ||  $('#minprice').val() === '')) {
 						vcheck = false;
@@ -92,6 +131,7 @@ $(document).ready(function(){
 
 					
 					if (vcheck) {
+                        $(".serviceCharge_count_timer_tip").text('')//提示信息为空;
 						if(check_validate()){
 							save_table();
 						}else{
@@ -576,7 +616,8 @@ function del() {
 //			url : global_Path + "/dish/delete/"+$("#showDishId").val()+".json",
 			dataType : "json",
 			success : function(result) {
-				if(result=='删除成功'){
+			    //console.log(result)
+				if(result.code=='0'){
 					$(".img-close").click();
 					oneclickTableType($("#nav-tables .active").attr("id"));
 					customTable.getTableJson();//重新获取餐台数据
@@ -676,6 +717,7 @@ function getTabletypeTag(){
 
 //保存餐台信息
 function save_table() {
+	var chargeOn=$('#serviceCharge_onoff input:checked').val();//是否开启服务费 0关闭 1开启
 	$("#areaid").val($("#nav-tables .active").attr("id"));
 	var tableInfo = {};
 	$("#tableNo,#tableName,#areaid,#minprice,#fixprice,#personNum,#tableid").each(function(index) {
@@ -684,6 +726,40 @@ function save_table() {
 	$("#tabletype option:selected,#areaid option:selected").each(function(index) {
 		tableInfo["" + $(this).parent().attr("name") + ""] = $(this).val();
 	});
+	tableInfo['chargeOn']=chargeOn;//是否开启服务费 0关闭 1开启
+	if(chargeOn=='1'){
+		var chargeType=$('.serviceCharge_count_select').val()//服务费计算方式 0比例 1 固定 2 时长
+		tableInfo['chargeType']=chargeType;//是否开启服务费 0关闭 1开启
+		if(chargeType=='0'){//服务费计算方式 0比例
+			var chargeRateRule=$('.serviceCharge_count_select').val()//0:实收 1:应收
+			var chargeRate=$.trim($('.serviceCharge_count_timer').val())//比例计算方式 比率
+			tableInfo['chargeRateRule']=chargeRateRule;//0:实收 1:应收
+			tableInfo['chargeRate']=chargeRate;//比例计算方式 比率 数字100%
+
+            tableInfo['chargeAmount']='';//固定方式金额
+
+            tableInfo['chargeTime']='';//时长方式计算
+            tableInfo['chargeAmount']='';//时长方式金额
+		}
+		if(chargeType=='1'){//服务费计算方式 1 固定
+			var chargeAmount=$.trim($('.serviceCharge_count_timer1').val())//固定金额
+			tableInfo['chargeAmount']=chargeAmount;//固定金额
+
+            tableInfo['chargeRateRule']='';//0:实收 1:应收
+            tableInfo['chargeRate']='';//比例计算方式 比率 数字100%
+
+            tableInfo['chargeTime']='';//时长方式计算
+		}
+		if(chargeType=='2'){//服务费计算方式 2 时长
+			var chargeTime=$('.serviceCharge_count_time .timerLength').val();//时长
+			var chargeAmount=$.trim($('.serviceCharge_count_timer2').val())//固定金额
+			tableInfo['chargeTime']=chargeTime;//时长
+			tableInfo['chargeAmount']=chargeAmount;//金额
+
+            tableInfo['chargeRateRule']='';//0:实收 1:应收
+            tableInfo['chargeRate']='';//比例计算方式 比率 数字100%
+		}
+	}
 	$.ajax({
 		type:"post",
 		async:false,
@@ -691,28 +767,41 @@ function save_table() {
 		contentType:'application/json;charset=UTF-8',
 	    data:JSON.stringify(tableInfo),
 		dataType : "json",
-		success : function(result) {	
-			
-			$(".img-close").click();
-			oneclickTableType($("#nav-tables .active").attr("id"));
-            customTable.getTableJson()//添加餐台重新赋值
-			var printeridHave=[];
-			var printerHave=[];
-			$.each(tbPrinterAreaList,function(i,item){
-				if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
-					item.tableid=result.tableid;
-					printeridHave.push(item.printerid);
-					printerHave.push(item);
-				}
-			});
-			if(printerHave!=""&&$("#tableid").val()==""){
-				addPrinterArea(printerHave);
-			}
-			if($("#editTitle2").text() === "添加餐台") {
-				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
-				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
-				console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
-			}
+		success : function(result) {
+	        if(result.code=='0'){
+                $(".img-close").click();
+                $('#serviceCharge_onoff input[value="0"]').prop('checked',true).click();//重新赋餐台服务费值为关闭
+                oneclickTableType($("#nav-tables .active").attr("id"));
+                customTable.getTableJson()//添加餐台重新赋值
+                var printeridHave=[];
+                var printerHave=[];
+                $.each(tbPrinterAreaList,function(i,item){
+                    if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
+                        if($("#editTitle2").text() === "添加餐台"){
+                            item.tableid=result.data.tableid;
+                        }
+                        else {
+                            item.tableid=tableInfo.areaid;
+                        }
+                        printeridHave.push(item.printerid);
+                        printerHave.push(item);
+                    }
+                });
+                if(printerHave!=""&&$("#tableid").val()==""){
+                    //在打印配置单选中餐台
+                    addPrinterArea(printerHave);
+                }
+                if($("#editTitle2").text() === "添加餐台") {
+                    var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
+                    $("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+                    console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+                }
+            }
+            else {
+                tableJson.errorAlert(result.msg)
+            }
+			//console.log(result)
+
 
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -732,13 +821,39 @@ function doEdit(id) {
 		url : global_Path+"/table/findById/"+id+".json",
 		dataType : "json",
 		success : function(result) {
-			
+			console.log(result)
+            if(result.chargeOn=='1'){
+			    debugger
+                $('#serviceCharge_onoff input[value="1"]').prop('checked',true).click();//是否开启餐台服务费
+                $('.serviceCharge_count_proportion,.serviceCharge_count_fixed,.serviceCharge_count_time').hide();//计算方式隐藏
+                $('.serviceCharge_count_select').val(result.chargeType)//服务费类型
+                switch (result.chargeType){
+                    case '0':$('.serviceCharge_count_proportion select').val(result.chargeRateRule);
+                              $('.serviceCharge_count_timer').val(result.chargeRate);
+                              $('.serviceCharge_count_proportion').show();
+                              break;
+
+                    case '1':$('.serviceCharge_count_timer1').val(result.chargeAmount);
+                              $('.serviceCharge_count_fixed').show();
+                              break;
+
+                    case '2':$('.serviceCharge_count_time .timerLength').val(result.chargeTime);
+                             $('.serviceCharge_count_timer2').val(result.chargeAmount);
+                             $('.serviceCharge_count_time').show();
+                              break;
+                }
+            }
+            else {
+                $('#serviceCharge_onoff input[value="0"]').prop('checked',true).click();
+            }
+
 			$("#tableid").val(result.tableid);					
 			$("#tableNo").val(result.tableNo);		
 			$("#tabletype  option[value="+result.tabletype+"] ").attr("selected",true);
 			$("#personNum").val(result.personNum);
 			$("#areaid2").val(result.areaname);
 			$("#tableName").val(result.tableName);
+
 			$("#minpriceLable").html('<input type="checkbox" id="minp" onclick="checkit(this.checked,this.id)" >最低消费：');
 			if(result.minprice==0.00){
 				result.minprice="";
@@ -826,7 +941,7 @@ function  oneclickTableType(id){
 		datatype : "json",
 		contentType : "application/json; charset=utf-8",
 		success : function(result) {
-		    //console.log(result)
+		    console.log(result)
 			$(".counter-detail-box").remove();
 			$.each(result,function(index,item){
 				$('#tables-detailMain-Add').before("<div class='counter-detail-box' tabletype='"+item.tabletype+"' id='"+item.tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>"+
@@ -1129,8 +1244,8 @@ function showDeleteArea(){
 function hideDialog(){
 	$(".img-close").click();
 }
+//在打印配置单选中餐台
 function addPrinterArea(list){
-
 	$.ajax({
 		type:"post",
 		async:false,
@@ -1401,6 +1516,7 @@ var customTable={
 	int:function () {
 		this.isClick();
 		this.getTableJson();
+		this.serviceCharge_onoff();
 	},
 	/*获取所以餐台数据*/
 	getTableJson:function () {
@@ -1660,6 +1776,65 @@ var customTable={
                 }
             });
 
-    }
+    },
+    /*餐台服务费开启关闭*/
+	serviceCharge_onoff:function () {
+		$('#serviceCharge_onoff input').click(function () {
+			var me=$(this).val();
+			$('.serviceCharge_count_timer_tip').text('')//错误信息
+			if(me=='0'){
+				//$('#serviceCharge_favorable input[value="0"]').prop('checked',true);//是否参与优惠，不参与
+				//$('#serviceCharge_count,#serviceCharge_favorable').hide();//是否参与折扣
+				$('#serviceCharge_count').hide();
+			}
+			if(me=='1'){
+				//$('#serviceCharge_count,#serviceCharge_favorable').show();//是否参与折扣
+				$('#serviceCharge_count').show();
+			}
+
+		});
+		/*餐台服务费计算方式选择*/
+		$('.serviceCharge_count_select').change(function () {
+			var me=$(this).val();
+			$('.serviceCharge_count_timer,.serviceCharge_count_timer1,.serviceCharge_count_timer2').val('');
+			$('.serviceCharge_count_proportion,.serviceCharge_count_fixed,.serviceCharge_count_time').hide();
+			$('.serviceCharge_count_timer_tip').text('')//错误信息
+			if(me=='0'){
+				$('.serviceCharge_count_proportion').show();
+			}
+			if(me=='1'){
+				$('.serviceCharge_count_fixed').show();
+			}
+			if(me=='2'){
+				$('.serviceCharge_count_time').show();
+			}
+		});
+		/*选择时长*/
+		/*$('.timerLength').change(function () {
+			$('.serviceCharge_count_timer').val('');
+		})*/
+
+
+	},
+    errorAlert:function (msg) {
+        widget.modal.alert({
+            cls: 'fade in',
+            content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+msg+'</div>',
+            width:360,
+            height:500,
+            btnOkTxt: '确定 ',
+            btnCancelTxt: '',
+            btnOkCb:function () {
+                $('.modal-alert:last,.fade:last').remove()
+            }
+        });
+    },
+    /*输入的是否为金额非零开始的两位小数*/
+    ismoney: function (money) {
+        var pattern =/^[1-9]{1}\d*(.\d{1,2})?$|^0.\d{1,2}$/;
+        pattern.lastIndex = 0;//正则开始为0
+        return pattern.test(money);
+    },
+
 
 }
