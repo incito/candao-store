@@ -39,7 +39,7 @@ var member = {
 
             if(me.hasClass('J-modify-storge')){
                 if (that.isClick()) {
-                    var _url='../member/storge.jsp?cardMember=' +$.trim($('.member_card').text()) + '';
+                    var _url='../member/storge.jsp?cardMember=' +$.trim($('.member_mobile').text()) + '';//传递会员电话号码
                     window.location.href=encodeURI(encodeURI(_url));
                 }
             }
@@ -622,7 +622,8 @@ var member = {
                 success: function (res) {
                     //console.log(res)
                     if (res.Retcode == 0) {
-                        if (res.CardList.length > 1) {
+                        //注释会员卡
+                        /*if (res.CardList.length > 1) {
                             var memberCard = [];
                             for (var i = 0; i < res.CardList.length; i++) {
                                 memberCard.push(res.CardList[i].cardno)
@@ -631,7 +632,7 @@ var member = {
                                 'data': memberCard, 'callback': 'member.stored_value(chooseNo)'
                             })
                             return false
-                        }
+                        }*/
                         //cardno=res.CardList[0].cardno
                         savevale()
                     }

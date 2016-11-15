@@ -211,6 +211,7 @@ _config.interfaceUrl = {
 	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
 	Yarecharge:'/datasnap/rest/TServerMethods1/StoreCardDeposit/',<!--雅座会员储值-->
 	YaCardActive:'/datasnap/rest/TServerMethods1/CardActive/',<!--雅座会员激活-->
+	YaVoidSaleCanDao:'/datasnap/rest/TServerMethods1/VoidSale/',<!--雅座会员反结算-->
 
 	/*pos配置*/
 	Config:'/newspicyway/pos/scripts/config.json',<!--雅座会员激活-->

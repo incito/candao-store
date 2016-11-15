@@ -236,13 +236,14 @@ var MainPage = {
 					async: false,
 					dataType: "text",
 					success: function (data) {
-						data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+						var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
 						var arry = [];
 						for (var i = 0; i < data.OrderJson.length; i++) {
 							if (data.OrderJson[i].orderstatus == 0) {
 								arry.push(data.OrderJson[i])
 							}
 						}
+						debugger
 						orderLength=arry.length
 					}
 				});

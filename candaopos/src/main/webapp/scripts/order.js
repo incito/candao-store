@@ -1,5 +1,5 @@
 var pref_prev = 0;
-var invoice_Flag={
+var invoice_Flag={/*发票信息全局变量*/
     'orderid':'',
     'amount':'',
     'flag':''
