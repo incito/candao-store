@@ -253,7 +253,7 @@
 		,d.itemDesc AS chargeName
 		,d.itemid AS chargeID
 	   from t_table t
-		LEFT JOIN t_dictionary d ON t.chargeType = d.dictid
+		LEFT JOIN t_dictionary d ON (t.chargeType = d.itemid AND d.type = 'TABLECHARGE')
 	   where 
 	    t.areaid=#{areaid} and t.status !=5
 	    order by CASE WHEN t.tabletype = 2
@@ -298,7 +298,7 @@
 			ON a.orderid = c.orderid
 			LEFT JOIN t_order_detail d
 			ON c.orderid = d.orderid
-			LEFT JOIN t_dictionary td ON a.chargeType = td.dictid
+			LEFT JOIN t_dictionary td ON (a.chargeType = td.itemid AND td.type = 'TABLECHARGE')
 	   <where>
 			  a.status != 5
 	     <if test="tableid != null and tableid != ''">
@@ -415,7 +415,7 @@
 		,td.itemid AS chargeID
 		from t_table t
 		INNER JOIN t_tablearea tt
-		LEFT JOIN t_dictionary td ON t.chargeType = td.dictid
+		LEFT JOIN t_dictionary td ON (t.chargeType = td.itemid AND td.type = 'TABLECHARGE')
 		<where>
 			<!-- ??? -->
 			t.areaid=tt.areaid and t.status != 5 and tt.status=1

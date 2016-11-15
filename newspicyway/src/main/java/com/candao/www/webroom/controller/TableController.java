@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -129,10 +130,16 @@ public class TableController extends BaseController{
 		tbTable.setTabletype((String) tableMap.get("tabletype"));
 		tbTable.setChargeOn((String) tableMap.get("chargeOn"));
 		tbTable.setChargeType((String) tableMap.get("chargeType"));
-		tbTable.setChargeRateRule(Integer.valueOf((String) tableMap.get("chargeRateRule")));
-		tbTable.setChargeRate(Integer.valueOf((String) tableMap.get("chargeRate")));
+
+		String chargeRateRule = (String) tableMap.get("chargeRateRule");
+		tbTable.setChargeRateRule(StringUtils.isEmpty(chargeRateRule) ? null : Integer.valueOf(chargeRateRule));
+
+		String chargeRate = (String) tableMap.get("chargeRate");
+		tbTable.setChargeRate(StringUtils.isEmpty(chargeRate) ? null : Integer.valueOf(chargeRate));
 		tbTable.setChargeTime((String) tableMap.get("chargeTime"));
-		tbTable.setChargeAmount(new BigDecimal((String) tableMap.get("chargeAmount")));
+
+		String chargeAmount = (String) tableMap.get("chargeAmount");
+		tbTable.setChargeAmount(StringUtils.isEmpty(chargeAmount) ? null : new BigDecimal(chargeAmount));
 
 		String id = tbTable.getTableid();
 
@@ -225,16 +232,9 @@ public class TableController extends BaseController{
 	
 	@RequestMapping("/findById/{id}")
 	@ResponseBody
-	public ModelAndView findById(@PathVariable(value = "id") String id, Model model) {
+	public TbTable findById(@PathVariable(value = "id") String id, Model model) {
 		TbTable tbTable = tableService.findById(id);
-		ModelAndView mav = new ModelAndView("table/table");
-//		
-//		BigDecimal fixprice = tbTable.getFixprice();
-//		if(fixprice.compareTo(new BigDecimal(0)) ==0){
-//			tbTable.setFixprice(new   BigDecimal(""));
-//		}
-		mav.addObject("tbTable", tbTable);
-		return mav;
+		return tbTable;
 	}
 /**
  * 删除餐台
