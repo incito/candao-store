@@ -552,8 +552,8 @@ widget.keyboard = function(opts){
 
 			if(keyVal == "←"){
 				if(focusVal.length>0){
-					focusIpt.focus();
 					focusIpt.val(focusVal.substring(0,focusVal.length-1));
+					focusIpt.focus();
 				}
 			}else if(keyVal == "C"){
 				focusIpt.val("");
@@ -1279,6 +1279,7 @@ utils.openCash = function (type) {
 			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',
+			async: false,
 			success: function (res) {
 				if (res.result[0] === '1') {//成功
 					rightBottomPop.alert({content: '打开钱箱成功!'})

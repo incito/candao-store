@@ -21,7 +21,8 @@ var consts = {
         }
         return obj;
     })(),
-    backDishReasons: JSON.parse(utils.storage.getter('config')).BackDishReasons.split(';')//退菜原因
+    backDishReasons: JSON.parse(utils.storage.getter('config')).BackDishReasons.split(';'),//退菜原因
+    memberInfo: null
 };
 
 var dom = {
@@ -599,34 +600,48 @@ var Order = {
             //} else {
             //    $cash.val(parseInt(val, 10));
             //}
-
-            //$cash.attr('prepayamount', $cash.val());
-            $cash.val(parseFloat(val));
+            var val = val;
+            $cash.val(val);
+            if(/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
+                val = parseInt(val);
+            }
 
             var giveChange = (function(){
-                var v = parseFloat(val - shouldAmount).toFixed(2);
-                if(totalOtherPay >= shouldAmount) {
+                //var v = parseFloat(val - shouldAmount).toFixed(2);
+                //if(totalOtherPay >= shouldAmount) {
+                //    v = val;
+                //}
+                //return v;
+
+                var v = 0;
+                if(totalOtherPay >  shouldAmount) {
                     v = val;
+                } else {
+                    v = parseFloat(val) - (shouldAmount - totalOtherPay)
+                }
+
+                if(v < 0) {
+                    v = 0;
                 }
                 return v;
             })();
             var needPay = parseFloat(shouldAmount - cash - totalOtherPay);
             var isGiveChange = giveChange > 0 ? true : false;
             var tipAmount = parseFloat($('#tip-amount').text());
+            var amount = parseFloat($('#amount').text());
             var tipAmountCac = (function(){
                 var v = 0;
-                if((totalOtherPay - shouldAmount) >  0) {
+                if(totalOtherPay >  amount) {
                     v = val;
                 } else {
-                    if(parseFloat(val) > parseFloat($('#amount').text())) {
-                        v = parseFloat(val) - parseFloat($('#amount').text());
-                    } else {
-                        v = 0;
-                    }
+                    v = parseFloat(val) - (amount - totalOtherPay)
                 }
 
                 if(v > tipAmount) {
-                    v = tipAmount;
+                    v = tipAmount
+                }
+                if(v < 0) {
+                    v = 0;
                 }
                 return v;
             })();
@@ -644,9 +659,9 @@ var Order = {
             }
 
             if (isGiveChange) {
-                $paytotal.find('.giveChange span').text(giveChange);
+                $paytotal.find('.giveChange span').text(parseFloat(giveChange).toFixed(2));
                 $paytotal.find('.giveChange').removeClass('hide');
-                $('.the-change-span').text(giveChange);
+                $('.the-change-span').text(parseFloat(giveChange).toFixed(2));
             } else {
                 $paytotal.find('.giveChange span').text('0.00');
                 $('.the-change-span').text('0.00');
@@ -654,13 +669,13 @@ var Order = {
             }
 
             if (val > 0) {
-                $paytotal.find('.payamount').find('span').text(val);
+                $paytotal.find('.payamount').find('span').text(parseFloat(val).toFixed(2));
                 $paytotal.find('.payamount').removeClass('hide');
             } else {
                 $paytotal.find('.payamount').find('span').text('0.00');
                 $paytotal.find('.payamount ,.giveChange').addClass('hide');
             }
-        }
+        };
 
         if(me.hasClass('J-pay-name')) {
             var iptName = me.val();
@@ -685,7 +700,7 @@ var Order = {
             }
 
             if (type === 'cash') {
-                _updateCash(iptVal);
+                _updateCash(me.val().length > 0 ? me.val() : '0');
             } else {
                 if (totalOtherPay >= shouldAmount) {//其他支付大于应收
                     _updateCash('0');
@@ -755,6 +770,7 @@ var Order = {
                             btn.addClass('btn-login-out');
                             btn.removeClass('disabled');
                             ipt.attr('disabled', 'disabled');
+                            consts.memberInfo = res1;
 
 
                             //重新刷新订单信息
@@ -832,7 +848,7 @@ var Order = {
                             btn.addClass('btn-login-out');
                             btn.removeClass('disabled');
                             ipt.attr('disabled', 'disabled');
-
+                            consts.memberInfo = res1;
                             //重新刷新订单信息
                             that.updateOrder();
 
@@ -975,6 +991,7 @@ var Order = {
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
+            async: false,
             success: function (res) {
                 var str = (function(){
                     var ret = ''
@@ -1499,7 +1516,7 @@ var Order = {
         totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零<i class="spangap">:</i><span>' + moneyWipeAmount + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整<i class="spangap">:</i><span>' + adjAmout + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收<i class="spangap">:</i><span>' + toalDebitAmountMany + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + payamount + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + parseFloat(payamount).toFixed(2) + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(tipAmount) !== 0 ? '' : 'hide') + ' tipAmount" >小费<i class="spangap">:</i><span>' + tipAmount + '</span></li> ';
 
         totalHtml += '<li class="hide giveChange">找零:<span></span></li> ';
@@ -1706,24 +1723,35 @@ var Order = {
         var memberCash = $.trim($('#memberCash').val());
         var memberJf = $.trim($('#memberJf').val());
 
+        var totalPay = (function () {
+            var total = 0;
+            $('.pay-div .J-pay-val').each(function () {
+                var $me = $(this);
+                if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'cash') {
+                    total += parseFloat($me.val());
+                }
+            });
+            return total;
+        })();
+
         if(g_eatType === 'in') {
             url = _config.interfaceUrl.PayTheBill;
         } else {
             url = _config.interfaceUrl.PayTheBillCf;
         }
 
-        if($trs.length === 0){
+        if(totalPay > parseFloat($('#should-amount').text())){
             widget.modal.alert({
-                content:'<strong>不能结账空账单</strong>',
+                content:'<strong>实际支付金额"'+ (totalPay + parseFloat($('[name=cash]').val())).toFixed(2)  + '"超过应收金额"' + parseFloat($('#should-amount').text()).toFixed(2) + '"</strong>',
                 btnOkTxt: '确定',
                 btnCancelTxt: ''
             });
             return  false;
         }
 
-        if(parseFloat($('.giveChange span').text()) >= 100){
+        if($trs.length === 0){
             widget.modal.alert({
-                content:'<strong>找零金额不能大于100</strong>',
+                content:'<strong>不能结账空账单</strong>',
                 btnOkTxt: '确定',
                 btnCancelTxt: ''
             });
@@ -1739,7 +1767,25 @@ var Order = {
             return  false;
         }
 
+        if(!$('.tipAmount').hasClass('hide')){
+            if(parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
+                widget.modal.alert({
+                    content:'<strong>小费' + parseFloat($('#tip-amount').text()).toFixed(2) + '元,必须使用现金结算</strong>',
+                    btnOkTxt: '确定',
+                    btnCancelTxt: ''
+                });
+                return  false;
+            }
+        }
 
+        if(parseFloat($('.giveChange span').text()) >= 100){
+            widget.modal.alert({
+                content:'<strong>找零金额不能大于100</strong>',
+                btnOkTxt: '确定',
+                btnCancelTxt: ''
+            });
+            return  false;
+        }
 
         for(var i = 0, len = $trs.length; i < len; i++ ) {
             if($trs.eq(i).attr('dishstatus') === '1') {
@@ -1752,8 +1798,9 @@ var Order = {
             }
         }
 
+        //会员相关验证
         if(isMemberLogin) {
-            if(memberCash.length > 0 && parseFloat(memberCash.val()) > parseFloat($("#StoreCardBalance b").text())) {
+            if(memberCash.length > 0 && parseFloat(memberCash) > parseFloat($("#StoreCardBalance b").text())) {
                 memberTips += '会员储值余额不足;<br/>';
             }
 
@@ -1785,12 +1832,13 @@ var Order = {
             //如果有小费
             if(parseInt($('#tip-amount').text(), 10) > 0){
                 $.ajax({
-                    url: url,
+                    url: _config.interfaceUrl.TipBill,
                     method: 'POST',
                     contentType: "application/json",
                     dataType: 'json',
+                    async: false,
                     data: JSON.stringify({
-                            "paid": parseInt($('#tip-amount').text(), 10), "orderNo": consts.orderid
+                            "paid": $('#tip-amount').text(), "orderid": consts.orderid
                         }
                     )
                 }).then(function(res){
@@ -1803,29 +1851,31 @@ var Order = {
                     }
                 });
             }
+
             //弹钱箱
             utils.openCash(1);
             //结账单
             that.printPay(2);
             //给pad发送清台消息
-            if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                goBack()
-            } else {
-                //window.location.href = encodeURI(encodeURI('./main.jsp?tips=打印结账单成功'));
-                window.location.href = encodeURI(encodeURI('./main.jsp'));
-            }
-            //$.ajax({
-            //    url: _config.interfaceUrl.SendMsgAsyn,
-            //    method: 'post',
-            //    contentType: "application/json",
-            //    dataType: 'json',
-            //    data: JSON.stringify({
-            //        orderId: consts.orderid,
-            //        type:1
-            //    })
-            //}).then(function(){
-            //
-            //});
+            $.ajax({
+                url: _config.interfaceUrl.SendMsgAsyn,
+                method: 'post',
+                contentType: "application/json",
+                dataType: 'json',
+                async: false,
+                data: JSON.stringify({
+                    orderId: consts.orderid,
+                    type:1
+                })
+            }).then(function(){
+
+            });
+
+            //if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+            //    goBack()
+            //} else {
+            //    window.location.href = encodeURI(encodeURI('./main.jsp'));
+            //}
         };
         //打印发票信息
         var invoiceMsg=function () {
@@ -1875,7 +1925,17 @@ var Order = {
                 var rows = (function () {
                     var result = [{
                         "payWay": "0",
-                        "payAmount": parseFloat($("input[name=cash]").val()),
+                        "payAmount": (function(){
+                            var v = parseFloat($("input[name=cash]").val());
+                            if(parseFloat($('#tip-amount').text()) > 0) {
+                                v  = v - parseFloat($('#tip-amount').text())
+                            }
+
+                            if(parseFloat($('.needPay span').text()) > 0){
+                                v = -parseFloat($('.needPay span').text());
+                            }
+                            return v;
+                        })(),
                         "memerberCardNo": "",
                         "bankCardNo": "",
                         "couponnum": "0",
@@ -2064,68 +2124,115 @@ var Order = {
 
 
                         if(isMemberLogin){
-                            //餐道会员会员消费
-                            $.ajax({
-                                url: _config.interfaceUrl.SaleCanDao,
-                                method: 'post',
-                                contentType: "application/json",
-                                dataType: 'json',
-                                data: JSON.stringify({
-                                    "Serial": consts.orderid,
-                                    "FCash": 3.00,
-                                    "FWeChat": 0.0,
-                                    "FIntegral": 0.0,
-                                    "FStore": 0.0,
-                                    "FTicketList": null,
-                                    "cardno": "00000000000000000000CD00440088",
-                                    "password": null,
-                                    "branch_id": "23231",
-                                    "securityCode": ""
-                                })
-                            }).then(function(data){
-                                console.log('餐道会员会员消费');
-                                //保存会员消费
-                                return $.ajax({
-                                    url: _config.interfaceUrl.AddMemberSaleInfo,
+                            //新增积分
+                            var scoreAdd = (function () {
+                                var total = 0;
+                                $('.pay-div .J-pay-val').each(function () {
+                                    var $me = $(this);
+                                    if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'memberJf') {
+                                        total += parseFloat($me.val());
+                                    }
+                                });
+                                return total;
+                            })();
+
+                            var stored = $('[ipttype=memberCash]').val().length > 0 ? parseFloat($('[ipttype=memberCash]').val()) : 0.0;
+
+                            if (consts.vipType === '1') {//餐道会员
+                                //餐道会员会员消费
+                                $.ajax({
+                                    url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.SaleCanDao,
                                     method: 'post',
                                     contentType: "application/json",
                                     dataType: 'json',
                                     data: JSON.stringify({
-                                        "orderid": "H20161103023231006851",
-                                        "cardno": "00000000000000000000CD00440088",
-                                        "userid": "100",
-                                        "business": "23231",
-                                        "terminal": "002",
-                                        "serial": "201611031413531807",
-                                        "businessname": "辣江南生态火锅",
-                                        "score": 3.0,
-                                        "coupons": 0.0,
-                                        "stored": 0.0,
-                                        "scorebalance": 236.15000000000000568434188608,
-                                        "couponsbalance": "0",
-                                        "storedbalance": 996.9700000000000272848410532,
-                                        "psexpansivity": 0.0,
-                                        "netvalue": 0.0,
-                                        "inflated": 0.0
+                                        "Serial": consts.orderid,
+                                        "FCash": (function () {
+                                            var total = 0;
+                                            $('.pay-div .J-pay-val').each(function () {
+                                                var $me = $(this);
+                                                if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'memberCash' && $me.attr('iptType') !== 'memberJf') {
+                                                    total += parseFloat($me.val());
+                                                }
+                                            });
+                                            return total.toFixed(2);
+                                        })(),
+                                        "FWeChat": '0.0',
+                                        "FIntegral": $('[ipttype=memberJf]').val().length > 0 ? parseFloat($('[ipttype=memberJf]').val()).toFixed(2) : '0.0',
+                                        "FStore": stored.toFixed(2),
+                                        "FTicketList": null,
+                                        "cardno": consts.memberInfo.MCard,
+                                        "password": $.trim($('.J-pay-pwd').val()),
+                                        "branch_id": utils.storage.getter('branch_id'),
+                                        "securityCode": ""
                                     })
-                                });
-                            }).then(function(){
-                                //打印会员消费
-                                return $.ajax({
-                                    url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
-                                    method: 'get',
-                                    contentType: "application/json",
-                                    dataType: 'json',
-                                    async: false,
-                                    success: function(res3){
-                                        console.log('打印会员消费');
-                                        console.log(res3);
+                                }).then(function(data){
+                                    console.log('餐道会员会员消费');
+                                    if(data.Retcode == '1') {
+                                        widget.modal.alert({
+                                            cls: 'fade in',
+                                            content: '<strong>' + data.RetInfo + '</strong>',
+                                            width: 500,
+                                            height: 500,
+                                            btnOkTxt: '',
+                                            btnCancelTxt: '确定'
+                                        });
+                                    } else {
+                                        //保存会员消费
+                                        return $.ajax({
+                                            url: _config.interfaceUrl.AddMemberSaleInfo,
+                                            method: 'post',
+                                            contentType: "application/json",
+                                            dataType: 'json',
+                                            data: JSON.stringify({
+                                                "orderid": consts.orderid,
+                                                "cardno": consts.memberInfo.MCard,
+                                                "userid": utils.storage.getter('aUserid'),
+                                                "business": utils.storage.getter('branch_id'),
+                                                "terminal": utils.storage.getter('posid'),
+                                                "serial": that.ya_formatDate(new Date(),'YY-MM-DD'),
+                                                "businessname": utils.storage.getter('branch_branchname'),
+                                                "score": scoreAdd,
+                                                "coupons": 0.0,
+                                                "stored": stored,
+                                                "scorebalance": scoreAdd + parseFloat(consts.memberInfo.IntegralOverall),
+                                                "couponsbalance": "0",
+                                                "storedbalance": parseFloat(consts.memberInfo.StoreCardBalance) - stored ,
+                                                "psexpansivity": 0.0,
+                                                "netvalue": stored,
+                                                "inflated": 0.0
+                                            })
+                                        });
                                     }
+                                }).then(function(){
+                                    debugger;
+                                    //打印会员消费
+                                    return $.ajax({
+                                        url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
+                                        method: 'get',
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        async: false,
+                                        success: function(res3){
+                                            console.log('打印会员消费');
+                                            console.log(res3);
+                                        }
+                                    });
+                                }).then(function(){
+                                    invoiceMsg()//发票信息
                                 });
-                            }).then(function(){
-                                invoiceMsg()//发票信息
+                            } else {
+                                //雅座会员消费
+                                $.ajax({
+                                    //url: consts.memberAddr.vipotherurl + _config.interfaceUrl.SaleYa +  utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + ,
+                                    method: 'get',
+                                    contentType: "application/json"
+                                }).then(function(data){
+                                    debugger;
+                                    console.log(data);
+                                })
+                            }
 
-                            });
                         } else {
                             invoiceMsg()//发票信息
                         }
@@ -2140,6 +2247,32 @@ var Order = {
                 });
             }
         })
+    },
+
+    ya_formatDate: function (date, format) {
+        if (!date) return;
+        if (!format) format = "yyyy-MM-dd";
+        switch (typeof date) {
+            case "string":
+                date = new Date(date.replace(/-/, "/"));
+                break;
+            case "number":
+                date = new Date(date);
+                break;
+        }
+        if (!date instanceof Date) return;
+        var dict = {
+            "yyyy": date.getFullYear(),
+            "MM": ("" + (date.getMonth() + 101)).substr(1),
+            "dd": ("" + (date.getDate() + 100)).substr(1),
+            "HH": ("" + (date.getHours() + 100)).substr(1),
+            "mm": ("" + (date.getMinutes() + 100)).substr(1),
+            "ss": ("" + (date.getSeconds() + 100)).substr(1),
+            "ffff": ("" + (date.getMilliseconds() + 10000)).substr(1),//毫秒
+        };
+        return format.replace(/(yyyy|MM?|dd?|HH?|ss?|mm?|ffff?)/g, function () {
+            return dict[arguments[0]];
+        });
     },
 
     /**

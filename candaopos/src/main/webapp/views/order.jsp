@@ -221,7 +221,7 @@
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
-							<input type="text" disabled class="form-control J-pay-pwd" >
+							<input type="password" disabled class="form-control J-pay-pwd" >
 						</div>
 						<!--div class="form-group"><button class="btn register-btn">注册</button></div-->
 						<div class="form-group" style="color: #FF5803;">储值金额：<b id="StoreCardBalance"></b></div>

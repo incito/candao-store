@@ -81,7 +81,7 @@ footer{
 /******涓棿鎿嶄綔鏍�end****/
 
 .main-div{
-	width: 65%;
+	width: 64%;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -360,7 +360,7 @@ input[type=search] {
 }
 .left-div .total-amount{
   	height: 25px;
-  	padding: 0 30px;
+  	padding: 0 0 0 30px;
   	font-size: 18px;
   	color: #FF5803;
   	font-weight: bold;
