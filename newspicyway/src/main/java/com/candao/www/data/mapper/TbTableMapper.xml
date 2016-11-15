@@ -80,7 +80,7 @@
 	    status,
 	    custPrinter,
 	    modifytime,
-		,chargeOn
+		chargeOn
 		,chargeType
 		,chargeRateRule
 		,chargeRate
