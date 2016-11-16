@@ -49,19 +49,21 @@ public class OrderOpServiceImpl implements OrderOpService {
     @Transactional
     public String getOrderInfo(String aUserId, String orderId, String printType) {
         LOGGER.info("###getOrderInfo aUserId={},orderId={},printType={}###", aUserId, orderId, printType);
-        ResponseJsonData responseJsonData = new ResponseJsonData();
+        ResponseJsonData responseJsonData = new ResponseJsonData();//获取小费
+        String tipMoney ="0";
         try {
             switch (printType) {
                 case PrintType.BEF_PRINT:
                     orderMapper.updateBefPrintCount(orderId);
+                    tipMoney = tipService.getTipMoney(orderId,false);
                     break;
                 case PrintType.PRINT:
                     orderMapper.updatePrintCount(orderId);
+                    tipMoney = tipService.getTipMoney(orderId,true);
                     break;
             }
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
-            //获取小费
-            String tipMoney = tipService.getTipMoney(orderId);
+
             List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", StringUtils.isEmpty(tipMoney)?"0":tipMoney, orderId);
             //处理时间格式
             if (null != orderJson) {

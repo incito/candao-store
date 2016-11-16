@@ -1081,6 +1081,11 @@ public class PadInterfaceController {
             int[] tabletypefilter = {2, 3, 4};
             map.put("tabletypefilter", tabletypefilter);// 过滤掉餐台类型为外卖,咖啡的餐台
             List<Map<String, Object>> list = tableService.find(map);
+            if(null!=list&&!list.isEmpty()){
+                for(Map<String, Object> table:list){
+
+                }
+            }
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(list));
         } catch (Exception e) {
             jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("查询所有桌台异常"));
