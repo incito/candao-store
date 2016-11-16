@@ -178,11 +178,11 @@
                                                                                                  name="kaiq"
                                                                                                  checked="checked"
                                                                                                  value="0"><span
-                                    class="minpCheckboxSpan">关闭</span></label>
+                                   >关闭</span></label>
                             <label class="col-xs-4 control-label" style="text-align:left"><input type="radio"
                                                                                                  name="kaiq"
                                                                                                  value="1"><span
-                                    class="minpCheckboxSpan">开启</span></label>
+                                    >开启</span></label>
                         </div>
                     </div>
                     <%--服务费--计算方式--%>

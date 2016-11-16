@@ -619,9 +619,16 @@ function del() {
             if (result.code == '0') {
                 $(".img-close").click();
                 customTable.getTableJson();//重新获取餐台数据
-                oneclickTableType($("#nav-tables .active").attr("id"));
+                /*当在餐台服务费分类下时，或者当前选中的分区餐台数量为0时*/
                 var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0] - (1);
                 $("#nav-tables .active").find("span").eq(1).text("(" + tableNum + ")");
+
+                if(tableNum=='0'&& $('.counter-content-title .tables-type-active').attr('type') == '1'){
+                    $('.counter-content-title .tables-type-active').click()
+                }
+                else {
+                    oneclickTableType($("#nav-tables .active").attr("id"));
+                }
             }
             else {
                 customTable.errorAlert(result.msg)
@@ -822,7 +829,7 @@ function doEdit(id) {
         url: global_Path + "/table/findById/" + id + ".json",
         dataType: "json",
         success: function (result) {
-            console.log(result)
+            //console.log(result)
             if (result.chargeOn == '1') {
                 $('#serviceCharge_onoff input[value="1"]').prop('checked', true).click();//是否开启餐台服务费
                 $('.serviceCharge_count_proportion,.serviceCharge_count_fixed,.serviceCharge_count_time').hide();//计算方式隐藏
@@ -850,6 +857,21 @@ function doEdit(id) {
                 $('#serviceCharge_onoff input[value="0"]').prop('checked', true).click();
             }
 
+            if (result.minprice == 0.00) {
+                result.minprice = "";
+            } else {
+                $("#minp").prop("checked",true);
+                checkit(true,'minp')
+
+            }
+            $("#fixpriceLable").html('<input type="checkbox" id="fixp" onclick="checkit(this.checked,this.id)" >固定使用费：');
+            if (result.fixprice == 0.00) {
+                result.fixprice = "";
+            } else {
+                $("#fixp").prop("checked",true);
+                checkit(true,'fixp')
+            }
+
             $("#tableid").val(result.tableid);
             $("#tableNo").val(result.tableNo);
             $("#tabletype  option[value=" + result.tabletype + "] ").attr("selected", true);
@@ -858,23 +880,11 @@ function doEdit(id) {
             $("#tableName").val(result.tableName);
 
             $("#minpriceLable").html('<input type="checkbox" id="minp" onclick="checkit(this.checked,this.id)" >最低消费：');
-            if (result.minprice == 0.00) {
-                result.minprice = "";
-            } else {
-//				$("#minp").attr("checked",true);
-//				$("#minprice").attr("disabled",false);
-                $("#minp").click();
-            }
-            $("#fixpriceLable").html('<input type="checkbox" id="fixp" onclick="checkit(this.checked,this.id)" >固定使用费：');
-            if (result.fixprice == 0.00) {
-                result.fixprice = "";
-            } else {
-//				$("#fixp").attr("checked",true);
-//				$("#fixprice").attr("disabled",false);
-                $("#fixp").click();
-            }
+
             $("#minprice").val(result.minprice);
             $("#fixprice").val(result.fixprice);
+
+
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             alert(errorThrown);
@@ -885,8 +895,9 @@ function init_object() {
 // 	tableid,tableNo,tabletype,tableName,personNum,areaid,minprice,fixprice
     $("#minprice").attr("disabled", true);
     $("#fixprice").attr("disabled", true);
-    $("#minp").attr("checked", false);
-    $("#fixp").attr("checked", false);
+
+    $("#minp").prop("checked",false);
+    $("#fixp").prop("checked",false);
     $("#minprice").next("span").css({"color": "#CECECE"});
     $(".minpCheckboxSpan").css({"color": " #CECECE"});
     $("#fixprice").next("span").css({"color": "#CECECE"});
@@ -956,18 +967,13 @@ function oneclickTableType(id) {
         $(".counter-detail-box").remove();
         $.each(serviceTablesJson, function (key, val) {
             /*当前areaid=选中的分区id并且餐台个数大于0*/
-            if (id == val.areaid && val.tables.length>0){
+            if (id == val.areaid){
                 $.each(val.tables, function (index, item) {
                     $('#tables-detailMain-Add').before("<div class='counter-detail-box counter-detailService-box' tabletype='" + item.tabletype + "' chargeOn='" + item.chargeOn + "' id='" + item.tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>" +
                         "<p  >" + item.tableName + "</p>" +
                         "<p  >(" + item.personNum + "人桌)</p>" +
                         "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tableid + "&apos;" + "," + "&apos;" + item.tableName + "&apos;" + ",event)'></i></div>");
                 })
-                return false
-            }
-            /*当前areaid !=选中的分区时执行点击服务费餐台分类*/
-            if(id != val.areaid ){
-                $('.counter-content-title .tables-type-active').click()
             }
 
         });
@@ -1884,7 +1890,7 @@ var customTable = {
          $('.serviceCharge_count_timer').val('');
          })*/
         /*餐台切换*/
-        $('.counter-content-title span').click(function () {
+        $('#serviceTables,#allTables ').click(function () {
             $('#serviceTables,#allTables').removeClass('tables-type-active')
             var me = $(this).attr('type');
             if (me == '0') {
@@ -1898,7 +1904,7 @@ var customTable = {
                 var html = '';
                 for (var i = 0; i < serviceTablesJson.length; i++) {
                     html += '<li id="' + serviceTablesJson[i].areaid + '" areaSort="' + serviceTablesJson[i].areaSort + '"  class="counter-detailService-box" onmouseover="delDisplay(this)"';
-                    html += ' onmouseout="delHidden(this)" onclick="oneclickTableType(this.id)" onmousedown="doMenu(event,this)" ondblclick="editArea(this.id)"> ';
+                    html += ' onmouseout="delHidden(this)"  onclick="oneclickTableType(this.id)" onmousedown="doMenu(event,this)" ondblclick="editArea(this.id)"> ';
                     html += '    <span>' + serviceTablesJson[i].areaname + '</span><span>(' + serviceTablesJson[i].tables.length + ')</span>';
                     html += '    <i class="icon-remove hidden" onclick="showDeleteArea()"></i>';
                     html += '</li>';
