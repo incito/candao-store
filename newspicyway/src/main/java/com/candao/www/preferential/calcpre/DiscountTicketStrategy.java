@@ -21,6 +21,7 @@ import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
+import com.candao.www.utils.ReturnMes;
 
 /**
  * 
@@ -133,6 +134,12 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
+		boolean flag=true;
+		if(!paraMap.containsKey("updateId")&&detailPreferentials.isEmpty()&& amount.doubleValue()<=0){
+			flag=false;
+		}
+		result.put("falg", flag);
+		result.put("mes", flag?ReturnMes.SUCCESS.getMsg():ReturnMes.DISCOUNT_FAIL.getMsg());
 		return result;
 	}
 
