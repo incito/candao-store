@@ -1004,17 +1004,7 @@ function delAreaAndTables(){
 					delArea()
 			}
 			else {
-				widget.modal.alert({
-					cls: 'fade in',
-					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
-					width:360,
-					height:500,
-					btnOkTxt: '确定 ',
-					btnCancelTxt: '',
-					btnOkCb:function () {
-						$('.modal-alert:last,.fade:last').remove()
-					}
-				});
+				customTable.errorAlert(result.msg)
 			}
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1034,17 +1024,7 @@ function delArea(){
 				window.location.reload();
 			}
 			else {
-				widget.modal.alert({
-					cls: 'fade in',
-					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
-					width:360,
-					height:500,
-					btnOkTxt: '确定 ',
-					btnCancelTxt: '',
-					btnOkCb:function () {
-						$('.modal-alert:last,.fade:last').remove()
-					}
-				});
+				customTable.errorAlert(result.msg)
 			}
 
 		},
