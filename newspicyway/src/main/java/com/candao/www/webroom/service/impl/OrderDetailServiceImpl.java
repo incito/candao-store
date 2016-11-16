@@ -1350,7 +1350,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 	//判断是否已经组合打印过
 					String printid = tbPrinter.getPrinterid();
 					Integer obj = printedmap
-							.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
+							.get(pd.getDishId() + pd.getPrimarykey() + printid);
 					if (obj != null && refundDish != 1) {// 退菜单除外
 						continue;// 已经打印过了
 					}
@@ -1418,7 +1418,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     new Thread(new PrintThread(printObj)).run();
 
                     for (PrintDish printDish : pdList) {
-                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
+                        printedmap.put(printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
                     }
                 }
             }
@@ -2436,7 +2436,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                  //判断是否已经组合打印过
 							String printid = tbPrinter.getPrinterid();
 							Integer obj = printedmap
-									.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
+									.get(pd.getDishId() + pd.getPrimarykey() + printid);
 							if (obj != null) {
 								continue;// 已经打印过了
 							}
@@ -2502,7 +2502,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                    }
 		                    
 		                    for (PrintDish printDish : pdList) {
-		                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
+		                        printedmap.put(printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
 		                    }
 		                }
 	                }	
