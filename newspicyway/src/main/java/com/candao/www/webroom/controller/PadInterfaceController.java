@@ -52,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1807,6 +1808,34 @@ public class PadInterfaceController {
             ex.printStackTrace();
         }
     }
+    
+    /**
+	 * 服务费修改
+	 * 
+	 * @param jsonString
+	 * @param request
+	 * @param response
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/serviceChange", method = RequestMethod.POST)
+	@ResponseBody
+	public void updateServiceCharge(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+		TServiceCharge charge = new TServiceCharge();
+		charge.setOrderid((String) params.get("orderId"));
+		charge.setAutho((String) params.get("autho"));
+		charge.setChargeOn(Integer.valueOf(String.valueOf(params.get("chargeOn"))));
+		charge.setChargeAmount(new BigDecimal(String.valueOf(params.get("chargeAmount"))));
+		charge.setIsCustom(Integer.valueOf(String.valueOf(params.get("isCustom"))));
+		int i = chargeService.updateChargeInfo(charge);
+		if (i > 0) {
+			mav.addObject(ReturnMap.getSuccessMap("修改成功！"));
+		} else {
+			mav.addObject(ReturnMap.getFailureMap("修改失败！"));
+		}
+	}
 
     /**
      * 获取更换pad的信息
@@ -3522,5 +3551,7 @@ public class PadInterfaceController {
 
     @Autowired
     private TableAreaService tableAreaService;
+	@Autowired
+	private TServiceChargeService chargeService;
 
 }
