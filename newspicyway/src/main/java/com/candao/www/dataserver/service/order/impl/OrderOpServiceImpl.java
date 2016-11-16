@@ -15,9 +15,11 @@ import com.candao.www.dataserver.util.DataServerJsonFormat;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.dataserver.util.WorkDateUtil;
 import com.candao.www.webroom.service.TorderDetailPreferentialService;
+import com.candao.www.webroom.service.impl.TipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -40,6 +42,8 @@ public class OrderOpServiceImpl implements OrderOpService {
 
     @Autowired
     TbPrintObjDao tbPrintObjDao;
+    @Autowired
+    TipService tipService;
 
     @Override
     @Transactional
@@ -56,7 +60,9 @@ public class OrderOpServiceImpl implements OrderOpService {
                     break;
             }
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
-            List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", orderId);
+            //获取小费
+            String tipMoney = tipService.getTipMoney(orderId);
+            List<Map> orderJson = orderMapper.getOrderJson(zdAmount + "", StringUtils.isEmpty(tipMoney)?"0":tipMoney, orderId);
             //处理时间格式
             if (null != orderJson) {
                 for (Map<String, Object> orderMap : orderJson) {
