@@ -26,7 +26,7 @@ import com.candao.www.webroom.service.DataDictionaryService;
  */
 public enum StrategyFactory {
 	INSTANCE;
-    private Logger logger = LoggerFactory.getLogger(StrategyFactory.class);
+	private Logger logger = LoggerFactory.getLogger(StrategyFactory.class);
 	private static Map<String, Object> strategyMap = new HashMap<>();
 
 	static {
@@ -172,11 +172,13 @@ public enum StrategyFactory {
 			BigDecimal menuDecimal) {
 		BigDecimal serverCharageCash = new BigDecimal("0");
 		// '服务费计算方式 0比例 1 固定 2 时长'
-		int chargeType = (int) userOrderInfo.get("chargeType");
-		int chargeRateRule = (int) userOrderInfo.get("chargeRateRule");
-		int chargeRate = (int) userOrderInfo.get("chargeRate");
-		String chargeTime = (String) userOrderInfo.get("chargeTime");
-		BigDecimal chargeAmount = (BigDecimal) userOrderInfo.get("chargeAmount");
+		int chargeType = userOrderInfo.get("chargeType") == null ? 0 : (int) userOrderInfo.get("chargeType");
+		int chargeRateRule = userOrderInfo.get("chargeRateRule") == null ? 0
+				: (int) userOrderInfo.get("chargeRateRule");
+		int chargeRate = userOrderInfo.get("chargeRate") == null ? 0 : (int) userOrderInfo.get("chargeRate");
+		String chargeTime = userOrderInfo.get("chargeTime") == null ? "" : (String) userOrderInfo.get("chargeTime");
+		BigDecimal chargeAmount = userOrderInfo.get("chargeAmount") == null ? new BigDecimal("0")
+				: (BigDecimal) userOrderInfo.get("chargeAmount");
 		if (chargeType == 1) {
 			// 固定消费
 			serverCharageCash = chargeAmount;
@@ -196,7 +198,7 @@ public enum StrategyFactory {
 			long intervalTime = 0;
 			// 算出分钟数
 			try {
-				if (endtime != null&&!endtime.isEmpty()) {
+				if (endtime != null && !endtime.isEmpty()) {
 					intervalTime = DateUtils.stringToDate(endtime).getTime()
 							- DateUtils.stringToDate(begintime).getTime();
 				} else {

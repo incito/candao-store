@@ -52,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1081,12 +1082,52 @@ public class PadInterfaceController {
             int[] tabletypefilter = {2, 3, 4};
             map.put("tabletypefilter", tabletypefilter);// 过滤掉餐台类型为外卖,咖啡的餐台
             List<Map<String, Object>> list = tableService.find(map);
+            handleServiceCharge(list);
+
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(list));
         } catch (Exception e) {
             jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("查询所有桌台异常"));
             logger.error("查询所有桌台异常！", e);
         }
         return jsonString;
+    }
+
+    /**
+     * 处理服务费说明
+     * @param list
+     */
+    private void handleServiceCharge(List<Map<String, Object>> list) {
+        for(Map<String, Object> table :list){
+            Object chargeOn=table.get("chargeOn");
+            short chargeOnShort = Short.valueOf(chargeOn.toString());
+            if(chargeOnShort == Constant.SERVICE_CHARGE_ON.OFF){
+                continue;
+            }
+            Object chargeType=table.get("chargeType");
+            if(null==chargeType){
+                continue;
+            }
+            switch (Short.valueOf(chargeType.toString()).shortValue()){
+                case Constant.SERVICE_CHARGE_TYPE.RATE:
+                    Object chargeRate = table.get("chargeRate");
+                    if(null!=chargeRate) {
+                        table.put("chargetDesc", "按菜品价格比例"+chargeRate+"%收取服务费");
+                    }
+                    break;
+                case Constant.SERVICE_CHARGE_TYPE.CONST:
+                    Object chargeAmount = table.get("chargeAmount");
+                    if(null!=chargeAmount) {
+                        table.put("chargetDesc", "收取固定服务费￥"+chargeAmount);
+                    }
+                    break;
+                case Constant.SERVICE_CHARGE_TYPE.TIME:
+                    Object chargeTime = table.get("chargeTime");
+                    if(null!=chargeTime) {
+                        table.put("chargetDesc", "按用餐时长收取服务费￥"+ table.get("chargeAmount")+"/"+chargeTime+"分钟");
+                    }
+                    break;
+            }
+        }
     }
 
     /**
@@ -1767,6 +1808,34 @@ public class PadInterfaceController {
             ex.printStackTrace();
         }
     }
+    
+    /**
+	 * 服务费修改
+	 * 
+	 * @param jsonString
+	 * @param request
+	 * @param response
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/serviceChange", method = RequestMethod.POST)
+	@ResponseBody
+	public void updateServiceCharge(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+		TServiceCharge charge = new TServiceCharge();
+		charge.setOrderid((String) params.get("orderId"));
+		charge.setAutho((String) params.get("autho"));
+		charge.setChargeOn(Integer.valueOf(String.valueOf(params.get("chargeOn"))));
+		charge.setChargeAmount(new BigDecimal(String.valueOf(params.get("chargeAmount"))));
+		charge.setIsCustom(Integer.valueOf(String.valueOf(params.get("isCustom"))));
+		int i = chargeService.updateChargeInfo(charge);
+		if (i > 0) {
+			mav.addObject(ReturnMap.getSuccessMap("修改成功！"));
+		} else {
+			mav.addObject(ReturnMap.getFailureMap("修改失败！"));
+		}
+	}
 
     /**
      * 获取更换pad的信息
@@ -3482,5 +3551,7 @@ public class PadInterfaceController {
 
     @Autowired
     private TableAreaService tableAreaService;
+	@Autowired
+	private TServiceChargeService chargeService;
 
 }

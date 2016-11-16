@@ -383,6 +383,36 @@ public class Constant {
 	public static class SOURCE{
 		public static final String PAD="1";
 		public static final String POS="2";
+	}
 
+	/**
+	 * 服务费类型
+	 */
+	public static interface SERVICE_CHARGE_TYPE{
+		/**
+		 * 比例
+		 */
+		short RATE=0;
+		/**
+		 * 固定
+		 */
+		short CONST=1;
+		/**
+		 * 时间
+		 */
+		short TIME=2;
+	}
+	/**
+	 * 服务费开关
+	 */
+	public static interface SERVICE_CHARGE_ON{
+		/**
+		 * 打开
+		 */
+		short ON=1;
+		/**
+		 * 关闭
+		 */
+		short OFF=0;
 	}
 }

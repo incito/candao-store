@@ -271,7 +271,7 @@
 	       END as amount
 			,b.areaSort
 			,a.modifytime
-			,a.chargeOn
+			,ifnull(a.chargeOn,0) as chargeOn
 			,a.chargeType
 			,a.chargeRateRule
 			,a.chargeRate

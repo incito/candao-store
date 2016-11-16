@@ -45,8 +45,10 @@
 			</if>
 			mtime=now()
 		</set>
-		WHERE
-		`id` = #{id};
+		 <where>
+		 	orderid=#{orderid}
+		 </where>
+		
 	</update>
 
 	<select id="getChargeInfo" parameterType="map"
