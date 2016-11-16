@@ -1226,17 +1226,19 @@ public class OrderServiceImpl implements OrderService {
 			BigDecimal MenuDecimal) {
 		Map<String, Object> serParams = new HashMap<>();
 		serParams.put("orderId", orderid);
-	
+
 		BigDecimal calcServiceCharge = null;
-		int chargeOn = (int) userOrderInfo.get("chargeOn");
-		int chargeType=(int) userOrderInfo.get("chargeType");
-		int chargeRateRule=(int) userOrderInfo.get("chargeRateRule");
-		int chargeRate=(int) userOrderInfo.get("chargeRate");
-		String chargeTime=(String)userOrderInfo.get("chargeTime");
-		TServiceCharge servceCharageBean=null;
-		if(chargeOn!=0){
-			   servceCharageBean = serviceChargeDao.getChargeInfo(serParams);
-			if(servceCharageBean==null||(servceCharageBean!=null&&servceCharageBean.getIsCustom()==0)){
+		int chargeOn = userOrderInfo.get("chargeOn") == null ? 0 : (int) userOrderInfo.get("chargeOn");
+		int chargeType = userOrderInfo.get("chargeType") == null ? 0 : (int) userOrderInfo.get("chargeType");
+		int chargeRateRule = userOrderInfo.get("chargeRateRule") == null ? 0
+				: (int) userOrderInfo.get("chargeRateRule");
+		int chargeRate = userOrderInfo.get("chargeRate") == null ? 0 : (int) userOrderInfo.get("chargeRate");
+		String chargeTime = userOrderInfo.get("chargeTime") == null ? "" : (String) userOrderInfo.get("chargeTime");
+		TServiceCharge servceCharageBean = null;
+		if (chargeOn != 0) {
+			servceCharageBean = serviceChargeDao.getChargeInfo(serParams);
+			if (servceCharageBean == null || (servceCharageBean != null && servceCharageBean.getIsCustom() == 0
+					&& servceCharageBean.getChargeOn() == 1)) {
 				Map<String, Object> params = new HashMap<>();
 				params.put("itemid", chargeType);
 				params.put("type", "TABLECHARGE");
@@ -1246,30 +1248,28 @@ public class OrderServiceImpl implements OrderService {
 					calcServiceCharge = StrategyFactory.INSTANCE.calcServiceCharge(userOrderInfo, payDecimal,
 							MenuDecimal);
 				}
-			}else if(servceCharageBean.getIsCustom()==1){
-				calcServiceCharge=servceCharageBean.getChargeAmount();
+			} else if (servceCharageBean.getIsCustom() == 1 && servceCharageBean.getChargeOn() == 1) {
+				calcServiceCharge = servceCharageBean.getChargeAmount();
 			}
-		
+
 			if (servceCharageBean == null) {
 				servceCharageBean = new TServiceCharge(orderid, chargeOn, chargeType, chargeRateRule, chargeRate,
 						chargeTime);
 				servceCharageBean.setChargeAmount(calcServiceCharge);
 				servceCharageBean.setAutho("");
-				long id  =serviceChargeDao.insertChargeInfo(servceCharageBean);
+				long id = serviceChargeDao.insertChargeInfo(servceCharageBean);
 				servceCharageBean.setId(id);
-			} else  {
+			} else {
 				servceCharageBean.setChargeAmount(calcServiceCharge);
 				try {
 					serviceChargeDao.updateChargeInfo(servceCharageBean);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 			}
-			
+
 		}
-		
-		
 
 		return servceCharageBean;
 
