@@ -1427,7 +1427,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 printertypeMap.put("printertype", 4);
                 List<Map> findPrinterByType = tbPrinterManagerDao.find(printertypeMap);
                 List<String> IPList = new ArrayList<String>();
-                if (printers != null && "(退)".equals(printObj.getAbbrbillName())) {
+                if (findPrinterByType != null && "(退)".equals(printObj.getAbbrbillName())) {
                     for (Map tbPrinter : findPrinterByType) {
                         if (IPList != null) {
                             if (IPList.contains(tbPrinter.get("ipaddress"))) {
@@ -1450,8 +1450,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         // executor.execute(new PrintThread(printObj));
                     }
                 }
-                printdishware(listPrint, printObj, map0);
             }
+        }
+        if (refundDish == 1) {
+            printdishware(listPrint, printObj, map0);
         }
     }
 

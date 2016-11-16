@@ -92,7 +92,11 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 	private Map<String, Object> singleDishs(List<TorderDetail> singleDishs,
 			TbPreferentialActivityDao tbPreferentialActivityDao, Map<String, Object> params, String orderid,
 			Map<String, Object> paraMap, TdishDao tdishDao, TorderDetailPreferentialDao orderDetailPreferentialDao) {
-		params.put("name", "第二扎半价");
+		
+		Map<String, Object> singleDishsMap=new HashMap<>();
+		singleDishsMap.putAll(params);
+		singleDishsMap.put("name", "第二扎半价");
+		
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
@@ -110,7 +114,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		for (Map<String, Object> dishTypeMap : tdish_dish_typeMap) {
 			dishIDColumindMap.put((String) dishTypeMap.get("dishid"), (String) dishTypeMap.get("columnid"));
 		}
-		List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(params);
+		List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(singleDishsMap);
 		if (!singleDishs.isEmpty() && !dishIDColumindMap.isEmpty() && pres != null && !pres.isEmpty()) {
 			// 遍历订单饮品为扎的数据
 			// 计数器饮品格式
@@ -157,13 +161,17 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 		
 		//获取配置ID
-		params.put("preferential", paraMap.get("doubSpellPreId"));
+		
+		 HashMap<String, Object> doublePotPrams=new HashMap<>();
+		 doublePotPrams.putAll(params);
+		 doublePotPrams.put("preferential", paraMap.get("doubSpellPreId"));
+		 
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal("0");
 		String memberno = String.valueOf(paraMap.get("memberno"));
 		if (!doublePots.isEmpty() && !memberno.isEmpty()) {
-			List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(params);
+			List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(doublePotPrams);
 			if (!pres.isEmpty()) {
 				Map<String, Object> res = pres.get(0);
 				BigDecimal tempAmount = new BigDecimal(String.valueOf(res.get("amount")))
@@ -181,6 +189,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				detailPreferentials.add(torder);
 			}
 		}
+	    paraMap.remove("doubSpellPreId");
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
 		return result;
