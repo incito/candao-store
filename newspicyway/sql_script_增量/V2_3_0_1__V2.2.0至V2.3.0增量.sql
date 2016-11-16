@@ -32,4 +32,6 @@ CREATE TABLE `t_service_charge` (
   PRIMARY KEY (`id`),
   KEY `i_o` (`orderid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+UPDATE `t_b_function` SET NAME = '反结算/服务费' WHERE CODE = '030203';
+CODE = '030203';
 
