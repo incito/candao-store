@@ -1870,12 +1870,12 @@ var Order = {
             }).then(function(){
 
             });
-            //
-            //if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-            //    goBack()
-            //} else {
-            //    window.location.href = encodeURI(encodeURI('./main.jsp'));
-            //}
+
+            if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                goBack()
+            } else {
+                window.location.href = encodeURI(encodeURI('./main.jsp'));
+            }
         };
         //打印发票信息
         var invoiceMsg=function () {
