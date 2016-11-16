@@ -88,6 +88,11 @@ $(document).ready(function(){
 	});
 
 
+	$('.modal').on('show.bs.modal,shown.bs.modal', function() {
+		$('body').css('padding-right', '0');
+	});
+
+
 });
 javascript:window.history.forward(1);
 
@@ -208,6 +213,7 @@ _config.interfaceUrl = {
 
 
     /*雅座接口*/
+	SaleYa: '/datasnap/rest/TServerMethods1/Sale/',
 	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
 	Yarecharge:'/datasnap/rest/TServerMethods1/StoreCardDeposit/',<!--雅座会员储值-->
 	YaCardActive:'/datasnap/rest/TServerMethods1/CardActive/',<!--雅座会员激活-->
@@ -405,8 +411,6 @@ widget.modal = function () {
 				})
 			}
 		}
-
-
 		ops.onReady && ops.onReady.call(this);
 
 		//关闭按钮
@@ -426,6 +430,7 @@ widget.modal = function () {
 			width: ops.width,
 			backdrop: 'static'
 		});
+		$('body').css('padding-right', '0');
 
 		return modalId;
 	};

@@ -539,6 +539,7 @@ var MainPage = {
 				if(areaid === val.areaid || areaid === '-1') {
 					if(isOpend) {
 						time = '';
+						if(val.begintime === undefined) return;
 						var hm = (new Date().getTime() - (new Date(val.begintime.replace(new RegExp("-","gm"),"/"))).getTime());//得到毫秒数
 						//计算出小时数
 						var leave1=hm%(24*3600*1000);    //计算天数后剩余的毫秒数

@@ -237,14 +237,23 @@ var checkOrder={
                                     url:memberAddress.vipcandaourl + _config.interfaceUrl.VoidSaleCanDao,//餐道会员取消会员消费
                                     method: 'POST',
                                     contentType: "application/json",
-                                    data: JSON.stringify({
-                                        "Serial":rebackMemberinfo.orderid,//订单号
-                                        "TraceCode":rebackMemberinfo.serial,//会员交易号
-                                        "SUPERPWD":"",
-                                        "cardno":rebackMemberinfo.cardno,//会员卡号
-                                        "password":"",
-                                        "branch_id":rebackMemberinfo.business,//租户id
-                                        "securityCode":""
+                                    //data: JSON.stringify({
+                                    //    "Serial":rebackMemberinfo.orderid,//订单号
+                                    //    "TraceCode":rebackMemberinfo.serial,//会员交易号
+                                    //    "SUPERPWD":"",
+                                    //    "cardno":rebackMemberinfo.cardno,//会员卡号
+                                    //    "password":"",
+                                    //    "branch_id":rebackMemberinfo.business,//租户id
+                                    //    "securityCode":""
+                                    //}),
+                                    data: JSON.stringify(   {
+                                        "Serial": "H20161116023231006981",
+                                        "TraceCode": "201611160932361531",
+                                        "SUPERPWD": "",
+                                        "cardno": "00000000000000000000CD00440088",
+                                        "password": "",
+                                        "branch_id": "23231",
+                                        "securityCode": ""
                                     }),
                                     dataType: "json",
                                     success: function (msg) {
@@ -297,8 +306,9 @@ var checkOrder={
                         $('#c-mod-fjs').modal("hide");
                         if(data.result==='0'){
                             $('#c-mod-fjs').modal("hide");
-                            var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
-                            window.location.href=encodeURI(encodeURI(_url));
+                            debugger;
+                            //var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
+                            //window.location.href=encodeURI(encodeURI(_url));
 
                             //$("#order-dialog").load("../orderdish.jsp",{"fromType":"1"});
                         }
