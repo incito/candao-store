@@ -576,7 +576,7 @@ function del() {
 //			url : global_Path + "/dish/delete/"+$("#showDishId").val()+".json",
 			dataType : "json",
 			success : function(result) {
-				if(result=='删除成功'){
+				if(result.code=='0'){
 					$(".img-close").click();
 					oneclickTableType($("#nav-tables .active").attr("id"));
 					customTable.getTableJson();//重新获取餐台数据
@@ -586,7 +586,7 @@ function del() {
 				else {
 						widget.modal.alert({
 							cls: 'fade in',
-							content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result+'</div>',
+							content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
 							width:360,
 							height:500,
 							btnOkTxt: '确定 ',
@@ -691,28 +691,35 @@ function save_table() {
 		contentType:'application/json;charset=UTF-8',
 	    data:JSON.stringify(tableInfo),
 		dataType : "json",
-		success : function(result) {	
-			
-			$(".img-close").click();
-			oneclickTableType($("#nav-tables .active").attr("id"));
-            customTable.getTableJson()//添加餐台重新赋值
-			var printeridHave=[];
-			var printerHave=[];
-			$.each(tbPrinterAreaList,function(i,item){
-				if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
-					item.tableid=result.tableid;
-					printeridHave.push(item.printerid);
-					printerHave.push(item);
+		success : function(result) {
+	    	/*成功*/
+			if(result.code=='0'){
+				$(".img-close").click();
+				oneclickTableType($("#nav-tables .active").attr("id"));
+				customTable.getTableJson()//添加餐台重新赋值
+				var printeridHave=[];
+				var printerHave=[];
+				$.each(tbPrinterAreaList,function(i,item){
+					if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
+						item.tableid=result.data.tableid;
+						printeridHave.push(item.printerid);
+						printerHave.push(item);
+					}
+				});
+				if(printerHave!=""&&$("#tableid").val()==""){
+					addPrinterArea(printerHave);
 				}
-			});
-			if(printerHave!=""&&$("#tableid").val()==""){
-				addPrinterArea(printerHave);
+				if($("#editTitle2").text() === "添加餐台") {
+					var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
+					$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+					console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+				}
 			}
-			if($("#editTitle2").text() === "添加餐台") {
-				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
-				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
-				console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+			/*失败*/
+			else {
+				customTable.errorAlert(result.msg)
 			}
+
 
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -903,6 +910,7 @@ function editArea(id){
 	});
 }
 var areaLength;
+/*保存分区*/
 function save_Area(){
 	var areaInfo = {};
 	areaInfo["" + "areaname" + ""] = $("#areanameB").val();
@@ -915,8 +923,14 @@ function save_Area(){
 		contentType:'application/json;charset=UTF-8',
 	    data:JSON.stringify(areaInfo),
 		dataType : "json",
-		success : function(result) {	
-			window.location.reload();
+		success : function(result) {
+			if(result.code=='0'){
+				window.location.reload();
+			}
+			else {
+				customTable.errorAlert(result.msg)
+			}
+
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
@@ -986,13 +1000,13 @@ function delAreaAndTables(){
 		url : global_Path+"/table/deleteTablesByAreaid/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
-			if(result=='删除成功'){
+			if(result.code=='0'){
 					delArea()
 			}
 			else {
 				widget.modal.alert({
 					cls: 'fade in',
-					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">删除分区失败</div>',
+					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
 					width:360,
 					height:500,
 					btnOkTxt: '确定 ',
@@ -1015,14 +1029,14 @@ function delArea(){
 		url : global_Path+"/tableArea/delete/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
-			if(result=='删除成功'){
+			if(result.code=='0'){
 				updateAreaOrder();
 				window.location.reload();
 			}
 			else {
 				widget.modal.alert({
 					cls: 'fade in',
-					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result+'</div>',
+					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
 					width:360,
 					height:500,
 					btnOkTxt: '确定 ',
@@ -1660,6 +1674,20 @@ var customTable={
                 }
             });
 
-    }
+    },
+	/*错误信息弹窗*/
+	errorAlert:function (msg) {
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+msg+'</div>',
+			width:360,
+			height:500,
+			btnOkTxt: '确定 ',
+			btnCancelTxt: '',
+			btnOkCb:function () {
+				$('.modal-alert:last,.fade:last').remove()
+			}
+		});
+	},
 
 }
