@@ -15,7 +15,7 @@ public interface OrderOpMapper {
 
     float getZdAmountByOrderId(String orderId);
 
-    List<Map> getOrderJson(@Param("zdAmount") String zdAmount, @Param("orderId") String orderId);
+    List<Map> getOrderJson(@Param("zdAmount") String zdAmount, @Param("tipAmount") String tipAmount,@Param("orderId") String orderId);
 
     List<Map> getListJson(String orderId);
 
