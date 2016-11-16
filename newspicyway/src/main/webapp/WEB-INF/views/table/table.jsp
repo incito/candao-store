@@ -24,20 +24,31 @@
     </script>
     <script src="<%=request.getContextPath()%>/tools/jquery-validation/jquery.validate.js"></script>
     <script src="<%=request.getContextPath()%>/tools/jquery-validation/messages_zh.js"></script>
-
 </head>
 <body>
 <div class="ky-content content-iframe">
     <div class="counter-content">
         <p class="counter-content-title">
-            <button class="btn btn-default counter-type-add counter-add" style="float: left" type="button"
-                    id="dinnerTable"><i class="icon-edit"></i> <span>自定义餐台</span></button>
-            <button class="btn btn-default counter-type-add counter-add"
-                    style="float: left;display: none;margin-left: 30px" type="button" id="dinnerTablecancel"><i
-                    class="icon-minus"></i> <span>取消</span></button>
-            <button class="btn btn-default counter-type-add counter-add" type="button" id="counter-type-add"
+            <span class="btn  counter-type-add counter-add tables-type-active"
+                  style="float: left;padding: 5px 12px;border-radius: 0px;"
+                  type="0" id="allTables">全部餐台
+            </span>
+            <span class="btn counter-type-add counter-add"
+                  style="float: left;margin-left: 10px;padding: 5px 12px;border-radius: 0px;"
+                  type="1" id="serviceTables">服务费餐台
+            </span>
+
+
+            <button class="btn btn-default counter-type-add counter-add" style="float: right" type="button"
+                    id="counter-type-add"
                     onclick="addArea()"><i class="icon-plus"></i> 餐厅分区
             </button>
+            <button class="btn btn-default counter-type-add counter-add"
+                    style="float: right;display: none;margin-left: 10px" type="button" id="dinnerTablecancel"><i
+                    class="icon-minus"></i> <span>取消</span></button>
+            <button class="btn btn-default counter-type-add counter-add" style="float: right;margin-right:10px;"
+                    type="button"
+                    id="dinnerTable"><i class="icon-edit"></i> <span>自定义餐台排序</span></button>
         </p>
 
         <div class="nav-counter-prev" style="display: none"><i class="icon-chevron-left"></i></div>
@@ -72,15 +83,30 @@
             <li id="tables-right-tab3" onclick="showDeleteArea()"><i class="icon-minus"></i><span>删除分区</span></li>
         </ul>
         <div class="nav-counter-tab">
-
             <c:forEach var="item" items="${datas}" varStatus="i">
-                <div class="counter-detail-box" tabletype='${item.tabletype}' id="${item.tableid}"
-                     onmouseover="delDisplay(this)" onmouseout="delHidden(this)">
-                    <p>${item.tableName }</p>
-                    <p>(${item.personNum }人桌)</p>
-                    <i class="icon-remove hidden"
-                       onclick="delTablesDetail(&apos;${item.tableid }&apos;,&apos;${item.tableName }&apos;,event)"></i>
-                </div>
+                <c:choose>
+                    <c:when test="${item.chargeOn==0}">
+                        <div class="counter-detail-box" tabletype='${item.tabletype}' id="${item.tableid}"
+                             chargeOn="${item.chargeOn}"
+                             onmouseover="delDisplay(this)" onmouseout="delHidden(this)">
+                            <p>${item.tableName }</p>
+                            <p>(${item.personNum }人桌)</p>
+                            <i class="icon-remove hidden"
+                               onclick="delTablesDetail(&apos;${item.tableid }&apos;,&apos;${item.tableName }&apos;,event)"></i>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="counter-detail-box counter-detailService-box" tabletype='${item.tabletype}'
+                             id="${item.tableid}" chargeOn="${item.chargeOn}"
+                             onmouseover="delDisplay(this)" onmouseout="delHidden(this)">
+                            <p>${item.tableName }</p>
+                            <p>(${item.personNum }人桌)</p>
+                            <i class="icon-remove hidden"
+                               onclick="delTablesDetail(&apos;${item.tableid }&apos;,&apos;${item.tableName }&apos;,event)"></i>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+
             </c:forEach>
 
             <button class="btn btn-default counter-add" type="button" id="tables-detailMain-Add"><i
@@ -149,10 +175,13 @@
                         <label class="col-xs-4 control-label">餐台服务费：</label>
                         <div class="col-xs-7" id="serviceCharge_onoff">
                             <label class="col-xs-4 control-label" style="text-align:left"><input type="radio"
-                                                                                                 name="kaiq" checked="checked"value="0" ><span
+                                                                                                 name="kaiq"
+                                                                                                 checked="checked"
+                                                                                                 value="0"><span
                                     class="minpCheckboxSpan">关闭</span></label>
                             <label class="col-xs-4 control-label" style="text-align:left"><input type="radio"
-                                                                                                 name="kaiq" value="1"><span
+                                                                                                 name="kaiq"
+                                                                                                 value="1"><span
                                     class="minpCheckboxSpan">开启</span></label>
                         </div>
                     </div>
@@ -160,14 +189,15 @@
                     <div class="form-group" id="serviceCharge_count" style="display: none">
                         <label class="col-xs-4 control-label">计算方式：</label>
                         <div class="col-xs-2" style="padding-right: 2px">
-                            <select class="form-control serviceCharge_count_select"  style="padding: 2px 2px ">
+                            <select class="form-control serviceCharge_count_select" style="padding: 2px 2px ">
                                 <option value="0">比例</option>
                                 <option value="1">固定</option>
                                 <option value="2">时长</option>
                             </select>
                         </div>
                         <%--比例--%>
-                        <div class="col-xs-6 serviceCharge_count_proportion" style="padding-left: 2px;padding-right: 2px;">
+                        <div class="col-xs-6 serviceCharge_count_proportion"
+                             style="padding-left: 2px;padding-right: 2px;">
                             <div class="col-xs-5" style="padding-left: 2px;padding-right: 2px">
                                 <select class="form-control" style="padding: 2px 2px; ">
                                     <option value="0">应收金额</option>
@@ -175,15 +205,17 @@
                                 </select>
                             </div>
                             <div class="col-xs-6" style="padding-left: 2px;padding-right: 2px;width: 72px">
-                                <input type="text"  class="form-control  serviceCharge_count_timer"  maxlength="3">
+                                <input type="text" class="form-control  serviceCharge_count_timer" maxlength="3">
                             </div>
                         </div>
                         <%--固定--%>
-                        <div class="col-xs-5 serviceCharge_count_fixed" style="padding-left: 2px;padding-right: 2px;display: none;width: 158px">
-                            <input type="text"  class="form-control  serviceCharge_count_timer1"  >
+                        <div class="col-xs-5 serviceCharge_count_fixed"
+                             style="padding-left: 2px;padding-right: 2px;display: none;width: 158px">
+                            <input type="text" class="form-control  serviceCharge_count_timer1">
                         </div>
                         <%--时长--%>
-                        <div class="col-xs-6 serviceCharge_count_time " style=";padding-left: 2px;padding-right: 2px;display: none">
+                        <div class="col-xs-6 serviceCharge_count_time "
+                             style=";padding-left: 2px;padding-right: 2px;display: none">
                             <div class="col-xs-5" style="padding-left: 2px;padding-right: 2px">
                                 <select class="form-control timerLength" style="padding: 2px 2px; ">
                                     <option value="10">10分钟</option>
@@ -193,11 +225,11 @@
                                     <option value="120">2小时</option>
                                 </select>
                             </div>
-                            <div class="col-xs-6 "  style="padding-left: 2px;padding-right: 2px;width: 72px;">
-                                <input type="text" name="personNum" class="form-control  serviceCharge_count_timer2" >
+                            <div class="col-xs-6 " style="padding-left: 2px;padding-right: 2px;width: 72px;">
+                                <input type="text" name="personNum" class="form-control  serviceCharge_count_timer2">
                             </div>
                         </div>
-                        <font color="red"  class="error serviceCharge_count_timer_tip" style="margin-left: 151px"></font>
+                        <font color="red" class="error serviceCharge_count_timer_tip" style="margin-left: 151px"></font>
                     </div>
                     <%--服务费--参与折扣--%>
                     <%--<div class="form-group" id="serviceCharge_favorable" style="display: none">
