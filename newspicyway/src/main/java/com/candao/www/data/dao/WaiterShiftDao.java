@@ -32,6 +32,14 @@ public interface WaiterShiftDao {
 	 * @param paramMap
 	 * @return
 	 */
+	public List<Map<String,Object>> getOrderInflateInfo(Map<String,Object> paramMap); 
+	/**
+	 * 
+	 * 查询订单虚增
+	 * 
+	 * @param paramMap
+	 * @return
+	 */
 	public List<Map<String,Object>> getOrderInflated(Map<String,Object> paramMap); 
 	
 	/**
@@ -58,5 +66,4 @@ public interface WaiterShiftDao {
 	
 	public List<Map<String,Object>> getOrderSettlementInfoDetail(Map<String,Object> paramMap);
 	public List<Map<String,Object>> getOrderInfoGroupByOrder(Map<String,Object> paramMap);
-	
 }
