@@ -128,7 +128,7 @@
 					</div>
 				</div>
 				<div class="modal-body">
-					<div style="width: 950px;max-height: 500px;overflow-x: scroll;">
+					<div style="width: 950px;max-height: 300px;overflow-x: scroll;">
 						<input type="hidden" id="p_userid" value="" />
 						<table class="ky-table table table-list report_sub_tb" id="waiterassess-details-tb">
 							<thead>

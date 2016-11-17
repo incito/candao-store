@@ -101,6 +101,7 @@
 						<th class="name">四舍五入</th>
 						<th class="name">赠送金额</th>
 						<th class="name">会员储值消费虚增</th>
+						<th class="name">套餐优惠</th>
 					</tr>
 				</thead>
 				<tbody>

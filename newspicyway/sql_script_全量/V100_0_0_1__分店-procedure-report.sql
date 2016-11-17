@@ -18,8 +18,8 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     --
     -- 返回数据举例（只返回一条数据）：
     -- 3895.00 3636.00 259.00 3895 0 0 0 14.50 0 0 0 0.5 0.5 0.5 9 432.78 28 129.86	139.11 0.41	0.70 31 0.00 0.00	0.00 0.00	0.00
-
-    DECLARE v_date_start DATETIME;
+	DECLARE v_taocanyouhui					DOUBLE(13, 2) DEFAULT 0;    
+	DECLARE v_date_start DATETIME;
     DECLARE v_date_end DATETIME;
     DECLARE v_paidinamount DOUBLE(13, 2) DEFAULT 0; #实收
 
@@ -203,31 +203,26 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       WHERE
         a.orderid = b.orderid
         AND b.orignalprice > 0;
-
-    DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
-    CREATE TEMPORARY TABLE t_temp_taocan
-    (
-      primarykey   VARCHAR(50),
-      orignalprice DOUBLE(13, 2)
-    )
-      ENGINE = MEMORY
-      DEFAULT CHARSET = utf8
-      MAX_ROWS = 1000000;
-
-    INSERT INTO t_temp_taocan SELECT
-                                superkey,
-                                sum(dishnum * orignalprice)
-                              FROM t_temp_order_detail
-                              WHERE dishtype = 2 AND superkey <> primarykey
-                              GROUP BY superkey;
-
-    UPDATE t_temp_order_detail d, t_temp_taocan c
-    SET d.orignalprice = c.orignalprice
-    WHERE c.primarykey = d.primarykey;
-
-    DELETE FROM t_temp_order_detail
-    WHERE dishtype = 2 AND superkey <> primarykey;
-
+    #DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   # CREATE TEMPORARY TABLE t_temp_taocan
+   # (
+   #   primarykey   VARCHAR(50),
+   #   orignalprice DOUBLE(13, 2)
+  #  )
+  #    ENGINE = MEMORY
+   #   DEFAULT CHARSET = utf8
+   #   MAX_ROWS = 1000000;
+   # INSERT INTO t_temp_taocan SELECT
+   #                             superkey,
+  #                              SUM(dishnum * orignalprice)
+    #                          FROM t_temp_order_detail
+    #                          WHERE dishtype = 2 AND superkey <> primarykey
+     #                         GROUP BY superkey;
+  #  UPDATE t_temp_order_detail d, t_temp_taocan c
+   # SET d.orignalprice = c.orignalprice
+    #WHERE c.primarykey = d.primarykey;
+    #DELETE FROM t_temp_order_detail
+    #WHERE dishtype = 2 AND superkey <> primarykey;
     DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
     CREATE TEMPORARY TABLE t_temp_settlement_detail
     (
@@ -358,20 +353,31 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     WHERE
       a.orderid = b.orderid
       AND b.orignalprice > 0
-      AND a.orderstatus = 3;
-
+      AND a.orderstatus = 3
+      AND (b.dishtype<>2
+		OR (b.dishtype = 2 AND b.superkey <> b.primarykey));
     # 会员登录后菜价变化
-    SELECT sum((ifnull(b.orignalprice, 0) - ifnull(b.orderprice, 0)) * b.dishnum)
+    SELECT SUM((IFNULL(b.orignalprice, 0) - IFNULL(b.orderprice, 0)) * b.dishnum)
     INTO
       v_da_meberDishPriceFree
     FROM
       t_temp_order a, t_temp_order_detail b
     WHERE
       a.orderid = b.orderid
-      AND b.orignalprice > 0
-      AND b.orderprice > 0
-      AND a.orderstatus = 3;
+      AND b.pricetype = 0
+      AND a.orderstatus = 3
+			AND (b.dishtype <> 2 OR(b.dishtype =2 AND b.superkey = b.primarykey));
 
+#套餐优惠
+	SELECT 
+		IFNULL(SUM(CASE WHEN superkey=primarykey THEN 0 ELSE orignalprice END),0)
+		-
+		IFNULL(SUM(CASE WHEN superkey<>primarykey THEN 0 ELSE orignalprice END),0)
+	INTO v_taocanyouhui
+	FROM t_temp_order_detail a,t_temp_order b
+	WHERE dishtype = 2
+	AND a.orderid = b.orderid
+	AND b.orderstatus = 3;
     SELECT
       ifnull(sum(Inflated), 0),
       ifnull(sum(
@@ -487,25 +493,28 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                      payamount
                  ELSE
                    0
+                 END), 0),
+      IFNULL(SUM(
+                 CASE
+                 WHEN payway = 6
+                   THEN
+                     payamount
+                 ELSE
+                   0
                  END), 0)
+
     INTO
-      v_pa_cash, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_other_vipordercount, v_pa_weixin, v_pa_zhifubao
+      v_pa_cash, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_other_vipordercount, v_pa_weixin, v_pa_zhifubao,v_da_free
     FROM
       t_temp_settlement_detail;
-
-   -- SET v_paidinamount =
-   -- v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin +
-   -- v_pa_zhifubao;
-	SELECT IFNULL(SUM(payamount),0) INTO v_temp_paidinamount
-
+    #SET v_paidinamount =
+    #v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin +
+    #v_pa_zhifubao;
+   SELECT IFNULL(SUM(payamount),0) INTO v_temp_paidinamount
    FROM t_temp_settlement_detail
-
    WHERE payway IN (SELECT itemid FROM v_revenuepayway);
-
  
-
    SET v_paidinamount = v_temp_paidinamount - v_da_mebervalueadd;
-
     #     modified by caicai
     #     为保证POS清机单上的优免金额和这里的优免相同，将折扣金额去掉
     #     SELECT ifnull(sum(a.payamount), 0)
@@ -516,45 +525,12 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     #     WHERE
     #       a.couponid = b.id
     #       AND b.type = '02';
-  IF pi_sb > -1 THEN
-        SELECT
-          IFNULL(sum(payamount), 0) into v_ssamount
-        FROM
-          t_settlement_detail sd
-        LEFT JOIN t_order o ON sd.orderid = o.orderid
-        WHERE
-          o.branchid = pi_branchid
-        AND o.begintime BETWEEN v_date_start
-        AND v_date_end
-        AND sd.payway IN (
-          SELECT
-            itemid
-          FROM
-            `v_revenuepayway`
-        ) AND o.shiftid = pi_sb;
-      ELSE
-       SELECT
-          IFNULL(sum(payamount), 0) into v_ssamount
-        FROM
-          t_settlement_detail sd
-        LEFT JOIN t_order o ON sd.orderid = o.orderid
-        WHERE
-          o.branchid = pi_branchid
-        AND o.begintime BETWEEN v_date_start
-        AND v_date_end
-        AND sd.payway IN (
-          SELECT
-            itemid
-          FROM
-            `v_revenuepayway`
-        );
-      END IF;
-    SET v_da_free =
-    v_sa_shouldamount + v_oa_shouldamount - v_ssamount;
-
+    #SET v_da_free =
+   # v_sa_shouldamount + v_oa_shouldamount - v_paidinamount - v_da_roundoff - v_da_integralconsum - v_da_meberTicket -
+    #v_da_discount - v_da_fraction - v_da_give - v_da_mebervalueadd - v_da_meberDishPriceFree;
     SELECT
-      count(1),
-      sum(a.personNum)
+      COUNT(1),
+      SUM(a.personNum)
     INTO
       v_other_tablecount, v_other_tableperson
     FROM
@@ -623,34 +599,19 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       FROM t_temp_order
       WHERE orderstatus <> 2;
     END IF;
-
     SET v_bill_nums = v_closed_bill_nums + v_no_bill_nums;
-
     SET v_bill_shouldamount = v_closed_bill_shouldamount + v_no_bill_shouldamount;
-
     SET v_person_nums = v_closed_person_nums + v_no_person_nums;
-
     IF v_sa_ordercount > 0
     THEN
-
       SET v_sa_attendance =
-      v_sa_settlementnum / (timestampdiff(DAY, v_date_start, v_date_end) + 1) / v_other_tableperson * 100;
-
-
-      SET v_sa_overtaiwan = v_sa_ordercount / (timestampdiff(DAY, v_date_start, v_date_end) + 1) / v_other_tablecount *
+      v_sa_settlementnum / (TIMESTAMPDIFF(DAY, v_date_start, v_date_end) + 1) / v_other_tableperson * 100;
+      SET v_sa_overtaiwan = v_sa_ordercount / (TIMESTAMPDIFF(DAY, v_date_start, v_date_end) + 1) / v_other_tablecount *
                             100;
-
-
       SET v_sa_tableconsumption = (v_paidinamount - v_oa_paidinamount) / v_sa_ordercount;
-
-
       SET v_sa_shouldaverage = v_sa_shouldamount / v_sa_settlementnum;
-
-
       SET v_sa_paidinaverage = (v_paidinamount - v_oa_paidinamount) / v_sa_settlementnum;
-
-
-      SELECT sum(timestampdiff(SECOND, begintime, endtime)) / v_sa_ordercount / 60
+      SELECT SUM(TIMESTAMPDIFF(SECOND, begintime, endtime)) / v_sa_ordercount / 60
       INTO
         v_sa_avgconsumtime
       FROM
@@ -660,17 +621,12 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
         AND endtime IS NOT NULL
         AND orderstatus = 3;
     END IF;
-
     IF v_oa_ordercount > 0
     THEN
-
       SET v_oa_avgprice = v_oa_paidinamount / v_oa_ordercount;
     END IF;
-
     SET v_ma_total = v_da_meberTicket + v_da_integralconsum + v_pa_paidinamount;
-
     SET v_other_viporderpercent = v_other_vipordercount / (v_sa_ordercount + v_oa_ordercount) * 100;
-
     DROP TEMPORARY TABLE IF EXISTS t_temp_res;
     CREATE TEMPORARY TABLE t_temp_res
     (
@@ -719,11 +675,11 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       personnums             DOUBLE(13, 2),
       zaitaishu              INT(11),
       kaitaishu              INT(11),
-      memberDishPriceFree    DOUBLE(13, 2)
+      memberDishPriceFree    DOUBLE(13, 2),
+			taocanyouhui					 DOUBLE(13, 2)
     )
       ENGINE = MEMORY
       DEFAULT CHARSET = utf8;
-
     INSERT INTO t_temp_res VALUES
       (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount - v_paidinamount,
                                               v_pa_cash, v_pa_credit, v_pa_card, v_pa_icbc_card, v_pa_weixin,
@@ -740,7 +696,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                                                                                         v_oa_ordercount, v_oa_avgprice,
         v_other_vipordercount, v_other_viporderpercent, v_ma_total, v_closed_bill_nums, v_closed_bill_shouldamount,
         v_closed_person_nums, v_no_bill_nums, v_no_bill_shouldamount, v_no_person_nums, v_bill_nums,
-       v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu, v_da_meberDishPriceFree);
+       v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu, v_da_meberDishPriceFree,v_taocanyouhui);
     SELECT *
     FROM
       t_temp_res;
@@ -2396,8 +2352,11 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS p_report_yyfx_yysjtj$$
-CREATE PROCEDURE p_report_yyfx_yysjtj(IN  pi_branchid INT(11), 
+
+
+DROP PROCEDURE IF EXISTS `p_report_yyfx_yysjtj`$$
+
+CREATE PROCEDURE `p_report_yyfx_yysjtj`(IN  pi_branchid INT(11), 
                                       IN  pi_xslx     SMALLINT, 
                                       IN  pi_ksrq     DATETIME, 
                                       IN  pi_jsrq     DATETIME, 
@@ -2445,17 +2404,17 @@ BEGIN
 
   #设置循环次数,处理开始结算时间
   IF pi_xslx = 0 THEN
-    SET v_statistictime = date_format(pi_ksrq, '%Y-%m-%d');
-    SET v_date_start = str_to_date(concat(v_statistictime, '00:00:00'), '%Y-%m-%d %H:%i:%s');
-    SET v_date_end = str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
-    SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
-    SET v_loop_num = timestampdiff(DAY, v_date_start, v_date_end) + 1;
+    SET v_statistictime = DATE_FORMAT(pi_ksrq, '%Y-%m-%d');
+    SET v_date_start = STR_TO_DATE(CONCAT(v_statistictime, '00:00:00'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_end = STR_TO_DATE(CONCAT(DATE_FORMAT(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_interval = DATE_SUB(DATE_ADD(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
+    SET v_loop_num = TIMESTAMPDIFF(DAY, v_date_start, v_date_end) + 1;
   ELSEIF pi_xslx = 1 THEN
-    SET v_statistictime = date_format(pi_ksrq, '%Y-%m');
-    SET v_date_start = str_to_date(concat(v_statistictime, '-01 00:00:00'), '%Y-%m-%d %H:%i:%s');
-    SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
-    SET v_date_end = date_sub(date_add(str_to_date(concat(date_format(pi_jsrq, '%Y-%m'), '-01 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 MONTH), INTERVAL 1 SECOND);
-    SET v_loop_num = timestampdiff(MONTH, v_date_start, v_date_end) + 1;
+    SET v_statistictime = DATE_FORMAT(pi_ksrq, '%Y-%m');
+    SET v_date_start = STR_TO_DATE(CONCAT(v_statistictime, '-01 00:00:00'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_interval = DATE_SUB(DATE_ADD(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+    SET v_date_end = DATE_SUB(DATE_ADD(STR_TO_DATE(CONCAT(DATE_FORMAT(pi_jsrq, '%Y-%m'), '-01 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+    SET v_loop_num = TIMESTAMPDIFF(MONTH, v_date_start, v_date_end) + 1;
   ELSE
     SELECT NULL;
     LEAVE label_main;
@@ -2503,7 +2462,8 @@ BEGIN
     childdishtype TINYINT,
     primarykey VARCHAR(50),
     superkey VARCHAR(50),
-    dishtype TINYINT
+    dishtype TINYINT,
+		pricetype DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   # 向临时订单详情内存表中放值
@@ -2516,11 +2476,12 @@ BEGIN
        , b.primarykey
        , b.superkey
        , b.dishtype
+			 , b.pricetype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
-    a.orderid = b.orderid
-    AND orignalprice > 0;
+    a.orderid = b.orderid;
+    #AND orignalprice > 0;
  -- 计算套餐金额开始
    DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
    CREATE TEMPORARY TABLE t_temp_taocan
@@ -2528,12 +2489,12 @@ BEGIN
     primarykey VARCHAR(50),
     orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
-  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+  #INSERT INTO t_temp_taocan SELECT superkey,SUM(dishnum*orignalprice) FROM t_temp_order_detail  WHERE dishtype = 2 AND superkey <> primarykey GROUP BY superkey;
+  #UPDATE t_temp_order_detail d,t_temp_taocan c SET d.orignalprice = c.orignalprice  WHERE c.primarykey = d.primarykey;
    --  计算套餐金额结束 
 
   # 删除套餐明细
-  delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+  #DELETE FROM t_temp_order_detail WHERE dishtype =2 AND superkey <> primarykey;
 
   #为订单详情表创建索引
   CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
@@ -2599,16 +2560,17 @@ BEGIN
   DO
 
     #计算应收
-    SELECT ifnull(sum(a.orignalprice * a.dishnum), 0)
+    SELECT IFNULL(SUM(a.orignalprice * a.dishnum), 0)
     INTO
       v_shouldamount
     FROM
-      t_temp_order_detail a left join t_temp_order b on a.orderid = b.orderid
+      t_temp_order_detail a LEFT JOIN t_temp_order b ON a.orderid = b.orderid
     WHERE
-      b.begintime BETWEEN v_date_start AND v_date_interval;
+      b.begintime BETWEEN v_date_start AND v_date_interval
+		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey <> a.primarykey));
 
     #计算实收（含虚增）
-    SELECT ifnull(sum(payamount), 0)
+    SELECT IFNULL(SUM(payamount), 0)
     INTO
       v_paidinamount
     FROM
@@ -2617,7 +2579,7 @@ BEGIN
       begintime BETWEEN v_date_start AND v_date_interval;
 
     #计算虚增
-    SELECT ifnull(sum(Inflated), 0)
+    SELECT IFNULL(SUM(Inflated), 0)
     INTO
       v_inflated
     FROM
@@ -2626,8 +2588,8 @@ BEGIN
       begintime BETWEEN v_date_start AND v_date_interval;
 
     #设置订单数和人数
-    SELECT IFNULL(count(orderid),0) #堂吃的订单数量
-         , IFNULL(sum(womanNum + childNum + mannum),0) #堂吃的就餐总人数
+    SELECT IFNULL(COUNT(orderid),0) #堂吃的订单数量
+         , IFNULL(SUM(womanNum + childNum + mannum),0) #堂吃的就餐总人数
     INTO
       v_table_num, v_sa_settlementnum
     FROM
@@ -2642,13 +2604,13 @@ BEGIN
     INSERT INTO t_temp_res VALUES (v_statistictime, v_shouldamount, v_paidinamount - v_inflated, v_shouldamount - v_paidinamount + v_inflated,v_person_con,v_table_num);
 
     IF pi_xslx = 0 THEN
-      SET v_date_start = date_add(v_date_start, INTERVAL 1 DAY);
-      SET v_date_interval = date_add(v_date_interval, INTERVAL 1 DAY);
-      SET v_statistictime = date_format(v_date_start, '%Y-%m-%d');
+      SET v_date_start = DATE_ADD(v_date_start, INTERVAL 1 DAY);
+      SET v_date_interval = DATE_ADD(v_date_interval, INTERVAL 1 DAY);
+      SET v_statistictime = DATE_FORMAT(v_date_start, '%Y-%m-%d');
     ELSE
-      SET v_date_start = date_add(v_date_start, INTERVAL 1 MONTH);
-      SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
-      SET v_statistictime = date_format(v_date_start, '%Y-%m');
+      SET v_date_start = DATE_ADD(v_date_start, INTERVAL 1 MONTH);
+      SET v_date_interval = DATE_SUB(DATE_ADD(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+      SET v_statistictime = DATE_FORMAT(v_date_start, '%Y-%m');
     END IF;
 
     SET v_loop_num = v_loop_num - 1;
