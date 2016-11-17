@@ -2496,9 +2496,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		
 		                    //如果是叫起的单子需要更新状态为0
 		                    if ("1".equals(type)) {
-		                        map0.put("primarykey", pd.getPrimarykey());
-		                    	tbPrintObjDao.updateDishByPrimaryKey(map0);
-		                    	tbPrintObjDao.updateDetailByPrimaryKey(map0);
+		                    	for (PrintDish printDish : pdList) {
+		                    		map0.put("primarykey", printDish.getPrimarykey());
+		                    		tbPrintObjDao.updateDishByPrimaryKey(map0);
+		                    		tbPrintObjDao.updateDetailByPrimaryKey(map0);
+								}
 		                    }
 		                    
 		                    for (PrintDish printDish : pdList) {
