@@ -73,10 +73,10 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("orderid", orderId);
 					map.put("before_cleartime", DateUtils.formatDateToString(before_clearTime));
-					map.put("before_shouldamount", before_shouldamount);
+					map.put("before_shouldamount", new BigDecimal(before_shouldamount).setScale(2,BigDecimal.ROUND_HALF_DOWN));
 					map.put("before_paidamount", before_paidamount);
 					map.put("after_cleartime", DateUtils.formatDateToString(after_clearTime));
-					map.put("after_shouldamount", after_shouldamount);
+					map.put("after_shouldamount", new BigDecimal(after_shouldamount).setScale(2,BigDecimal.ROUND_HALF_DOWN));
 					map.put("after_paidamount", after_paidamount);
 					map.put("timedifference", timedifference);
 					map.put("paidindifference", paidindifference);
