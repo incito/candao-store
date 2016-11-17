@@ -66,6 +66,9 @@
 		<if test=" userid != null and userid!='' ">
 	    AND too.userid =#{userid}
 	    </if>
+	    <if test="shiftid != null and shiftid != -1">
+	    AND too.shiftid = #{shiftid}
+	    </if>
 		GROUP BY too.userid
 		ORDER BY waiterId asc
 	</select>
@@ -82,6 +85,9 @@
 		AND too.begintime &lt;= #{endTime}
 		<if test=" userid != null and userid!='' ">
 	    AND too.userid =#{userid}
+	    </if>
+	    <if test="shiftid != null and shiftid != -1">
+	    AND too.shiftid = #{shiftid}
 	    </if>
 	    AND too.orderstatus = 3
 		AND td.itemid IN(SELECT itemid FROM v_revenuepayway)
@@ -103,10 +109,7 @@
 			  		<if test=" userid != null and userid!='' ">
 	      			AND too.userid =#{userid}
 	   				</if>
-			  		<if test="shiftid==-1">
-	    			AND too.shiftid IN (0,1)
-	    			</if>
-	    			<if test="shiftid!=-1">
+	    			<if test="shiftid != null and shiftid!=-1">
 					AND too.shiftid = #{shiftid}
 					</if>) AS tooo
 		      LEFT JOIN t_b_employee em ON tooo.userid = em.job_number 
@@ -125,10 +128,7 @@
 			 <if test=" userid != null and userid!='' ">
 	      	 AND ttoo.userid =#{userid}
 	   		 </if>
-			 <if test="shiftid==-1">
-	    	 AND ttoo.shiftid IN (0,1)
-	    	 </if>
-	    	 <if test="shiftid!=-1">
+	    	 <if test="shiftid !=null and shiftid!=-1">
 			 AND ttoo.shiftid = #{shiftid}
 			 </if>
 			 GROUP BY ttoo.userid
