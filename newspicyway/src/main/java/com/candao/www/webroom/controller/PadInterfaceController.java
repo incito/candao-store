@@ -797,7 +797,7 @@ public class PadInterfaceController {
         // 计算订单的实收、优免等
         orderOpService.calcOrderAmount(orderid);
         // 内部直接调用计算实收，POS不再调用
-        debitamout(orderid);
+        orderSettleService.calDebitAmount(orderid);
         // 修改投诉表信息
         new Thread(new Runnable() {
             public void run() {
@@ -883,7 +883,7 @@ public class PadInterfaceController {
         // 计算订单的实收、优免等
         orderOpService.calcOrderAmount(orderid);
         // 内部直接调用计算实收，POS不再调用
-        debitamout(orderid);
+        orderSettleService.calDebitAmount(orderid);
         // 修改投诉表信息
         new Thread(new Runnable() {
             public void run() {
@@ -903,25 +903,6 @@ public class PadInterfaceController {
             logger.error("结算失败，result :" + map.get("mes"));
             return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
         }
-    }
-
-    /**
-     * 处理实收
-     *
-     * @param orderId
-     * @return
-     */
-    private String debitamout(final String orderId) {
-        executor.execute(new Runnable() {
-            public void run() {
-                try {
-                    orderSettleService.calDebitAmount(orderId);
-                } catch (Exception e) {
-                    logger.error("计算实收失败，订单号：" + orderId, e, "");
-                }
-            }
-        });
-        return Constant.SUCCESSMSG;
     }
 
     /**
