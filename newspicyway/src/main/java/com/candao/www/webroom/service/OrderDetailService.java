@@ -53,4 +53,6 @@ public interface OrderDetailService {
 	public String cleantableSimply(Table table);
 	
 	public int deleteordreDetailByOrderid(String orderid);
+	 Map<String, Object> findOrderByInfo(String orderid);
+	
 }

@@ -1819,7 +1819,7 @@ public class PadInterfaceController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/serviceChange", method = RequestMethod.POST)
 	@ResponseBody
-	public void updateServiceCharge(@RequestBody String jsonString, HttpServletRequest request,
+	public ModelAndView updateServiceCharge(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
 		ModelAndView mav = new ModelAndView();
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
@@ -1828,13 +1828,14 @@ public class PadInterfaceController {
 		charge.setAutho((String) params.get("autho"));
 		charge.setChargeOn(Integer.valueOf(String.valueOf(params.get("chargeOn"))));
 		charge.setChargeAmount(new BigDecimal(String.valueOf(params.get("chargeAmount"))));
-		charge.setIsCustom(Integer.valueOf(String.valueOf(params.get("isCustom"))));
+		charge.setIsCustom(1);
 		int i = chargeService.updateChargeInfo(charge);
 		if (i > 0) {
 			mav.addObject(ReturnMap.getSuccessMap("修改成功！"));
 		} else {
 			mav.addObject(ReturnMap.getFailureMap("修改失败！"));
 		}
+		return mav;
 	}
 
     /**
