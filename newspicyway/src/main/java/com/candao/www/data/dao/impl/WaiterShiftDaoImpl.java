@@ -24,11 +24,6 @@ public class WaiterShiftDaoImpl implements WaiterShiftDao {
 	}
 
 	@Override
-	public List<Map<String, Object>> getOrderInflated(Map<String, Object> paramMap) {
-		return daoSupport.find(PREFIX + ".getOrderInflated", paramMap);
-	}
-	
-	@Override
 	public List<Map<String, Object>> getOrderInfoGroupByWaiter(Map<String, Object> paramMap) {
 		return daoSupport.find(PREFIX + ".getOrderInfoGroupByWaiter", paramMap);
 	}
@@ -51,5 +46,15 @@ public class WaiterShiftDaoImpl implements WaiterShiftDao {
 	@Override
 	public List<Map<String, Object>> getOrderInfoGroupByOrder(Map<String, Object> paramMap) {
 		return daoSupport.find(PREFIX + ".getOrderInfoGroupByOrder", paramMap);
+	}
+
+	@Override
+	public List<Map<String, Object>> getOrderInflateInfo(Map<String, Object> paramMap) {
+		return daoSupport.find(PREFIX + ".getOrderInflateInfo", paramMap);
+	}
+
+	@Override
+	public List<Map<String, Object>> getOrderInflated(Map<String, Object> paramMap) {
+		return daoSupport.find(PREFIX + ".getOrderInflated", paramMap);
 	}
 }

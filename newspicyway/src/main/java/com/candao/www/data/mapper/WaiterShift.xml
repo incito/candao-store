@@ -54,6 +54,21 @@
 	<select id="getSettlementInfo"  resultType="java.util.Map">
 		SELECT itemid as itemId,itemDesc as itemDesc FROM v_revenuepayway where itemid not in(13,30) order by itemSort asc
 	</select>
+	<select id="getOrderInflateInfo" parameterType="java.util.Map"  resultType="java.util.Map">
+		SELECT too.userid as waiterId,
+			SUM(tom.inflated) as inflate
+		FROM t_order_member tom
+		LEFT JOIN t_order too ON too.orderid = tom.orderid
+		WHERE too.branchid = #{branchId}
+		AND too.begintime >= #{beginTime}
+		AND too.begintime &lt;= #{endTime}
+		AND too.orderstatus = 3
+		<if test=" userid != null and userid!='' ">
+	    AND too.userid =#{userid}
+	    </if>
+		GROUP BY too.userid
+		ORDER BY waiterId asc
+	</select>
 	<select id="getOrderSettlementInfo" parameterType="java.util.Map"  resultType="java.util.Map">
     	SELECT SUM(tsd.payamount) as actualAmount,
     		too.userid as waiterId,
@@ -68,6 +83,7 @@
 		<if test=" userid != null and userid!='' ">
 	    AND too.userid =#{userid}
 	    </if>
+	    AND too.orderstatus = 3
 		AND td.itemid IN(SELECT itemid FROM v_revenuepayway)
 		AND td.type = 'PAYWAY'
 		GROUP BY tsd.payway,too.userid
