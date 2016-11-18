@@ -1,6 +1,7 @@
 
 var tbPrinterAreaList=[];
 var flag_prev =0;
+var take_outTable=[];//外卖咖啡台
 /************
  * 工具类 utils
  ************/
@@ -1399,6 +1400,8 @@ var customTable={
 	/*获取所以餐台数据*/
 	getTableJson:function () {
 		var tmpJson =[];
+		take_outTable=[]//外卖咖啡台餐桌数组
+		tableJson=[];//全部餐台数组
         $.ajax({
             url: global_Path+'/table/getTypeAndTableMap.json',
             method: 'POST',
@@ -1409,7 +1412,23 @@ var customTable={
                 $.each(res, function (index, item) {
                     $.each(item, function (key, obj) {
                         var tmpJson1 = JSON.parse(key);
-                        //debugger
+						var  take_out=[]
+						//遍历餐台为咖啡台或者外卖台的餐台
+						$.each(obj, function (ke, val) {
+							if (val.tabletype == '2' || val.tabletype == '3') {
+								take_out.push(obj[ke])
+							}
+						})
+						//外卖咖啡台的数组
+						if (take_out.length > 0) {
+							var a = {
+								'areaid': tmpJson1.areaid,
+								'areaname': tmpJson1.areaname,
+								'areaSort': tmpJson1.areaSort,
+								'tables': take_out
+							}
+							take_outTable.push(a)
+						}
                         var abc={
                             'areaid':tmpJson1.areaid,
                             'areaname':tmpJson1.areaname,
@@ -1439,6 +1458,17 @@ var customTable={
 					$(".nav-counter" ).sortable('enable')
 					$(".nav-counter-tab" ).sortable('enable');
 				}
+				//改变过滤后的餐台数值
+				$('#nav-tables li').each(function () {
+					var me=$(this);
+					$.each(take_outTable,function (key,val) {
+						if(me.attr('id')==val.areaid){
+							var text=me.find('span').eq(1).text().split('(')[1].split(')')[0]-val.tables.length
+							me.find('span').eq(1).text('('+text+')')
+						}
+					})
+
+				})
 				that.areaDrag();
 
 				that.tableDrag();
