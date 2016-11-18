@@ -18,14 +18,11 @@
  		AND too.begintime >= #{beginTime}
  		AND too.begintime &lt;= #{endTime}
  		AND (tod.dishtype &lt;> 2 or (tod.primarykey &lt;> tod.superkey and tod.dishtype = 2))
- 		<if test="shiftid==-1">
-	    AND too.shiftid IN (0,1)
-	    </if>
-	    <if test="shiftid!=-1">
+ 		<if test="shiftid != null and shiftid != -1">
 		AND too.shiftid = #{shiftid}
 		</if>
  		GROUP BY too.orderid
- 		ORDER BY orderId ASC
+ 		ORDER BY orderId DESC
 	</select>
 	<select id="getOrderSettlementInfoDetail" parameterType="java.util.Map"  resultType="java.util.Map">
 		SELECT too.orderid AS orderId,
@@ -42,14 +39,11 @@
  		AND too.begintime &lt;= #{endTime}
  		AND tsd.payway IN (SELECT itemid FROM v_revenuepayway)
  		AND td.type='PAYWAY'
- 		<if test="shiftid==-1">
-	    AND too.shiftid IN (0,1)
-	    </if>
-	    <if test="shiftid!=-1">
+ 		<if test="shiftid != null and shiftid != -1">
 		AND too.shiftid = #{shiftid}
 		</if>
  		GROUP BY tsd.payway,too.orderid
- 		ORDER BY orderId ASC ,td.itemSort ASC
+ 		ORDER BY orderId DESC ,td.itemSort ASC
 	</select>
 	<select id="getSettlementInfo"  resultType="java.util.Map">
 		SELECT itemid as itemId,itemDesc as itemDesc FROM v_revenuepayway where itemid not in(13,30) order by itemSort asc
@@ -71,6 +65,24 @@
 	    </if>
 		GROUP BY too.userid
 		ORDER BY waiterId asc
+	</select>
+	<select id="getOrderInflateInfoByOrder" parameterType="java.util.Map"  resultType="java.util.Map">
+		SELECT too.orderid as orderId,
+			SUM(tom.inflated) as inflate
+		FROM t_order_member tom
+		LEFT JOIN t_order too ON too.orderid = tom.orderid
+		WHERE too.branchid = #{branchId}
+		AND too.begintime >= #{beginTime}
+		AND too.begintime &lt;= #{endTime}
+		AND too.orderstatus = 3
+		<if test=" userid != null and userid!='' ">
+	    AND too.userid =#{userid}
+	    </if>
+	    <if test="shiftid != null and shiftid != -1">
+	    AND too.shiftid = #{shiftid}
+	    </if>
+		GROUP BY too.orderid
+		ORDER BY orderId DESC
 	</select>
 	<select id="getOrderSettlementInfo" parameterType="java.util.Map"  resultType="java.util.Map">
     	SELECT SUM(tsd.payamount) as actualAmount,

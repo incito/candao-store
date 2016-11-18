@@ -370,9 +370,9 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
 
 #套餐优惠
 	SELECT 
-		IFNULL(SUM(CASE WHEN superkey=primarykey THEN 0 ELSE orignalprice END),0)
+		IFNULL(SUM(CASE WHEN superkey=primarykey THEN 0 ELSE orignalprice*dishnum END),0)
 		-
-		IFNULL(SUM(CASE WHEN superkey<>primarykey THEN 0 ELSE orignalprice END),0)
+		IFNULL(SUM(CASE WHEN superkey<>primarykey THEN 0 ELSE orignalprice*dishnum END),0)
 	INTO v_taocanyouhui
 	FROM t_temp_order_detail a,t_temp_order b
 	WHERE dishtype = 2

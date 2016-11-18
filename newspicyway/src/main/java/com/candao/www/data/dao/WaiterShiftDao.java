@@ -27,12 +27,20 @@ public interface WaiterShiftDao {
 	
 	/**
 	 * 
-	 * 查询订单虚增
+	 * 查询订单虚增,以服务员分组
 	 * 
 	 * @param paramMap
 	 * @return
 	 */
 	public List<Map<String,Object>> getOrderInflateInfo(Map<String,Object> paramMap); 
+	/**
+	 * 
+	 * 查询订单虚增
+	 * 
+	 * @param paramMap
+	 * @return
+	 */
+	public List<Map<String,Object>> getOrderInflateInfoByOrder(Map<String,Object> paramMap); 
 	/**
 	 * 
 	 * 查询订单虚增

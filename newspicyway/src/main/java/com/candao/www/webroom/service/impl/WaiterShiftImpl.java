@@ -183,7 +183,11 @@ public class WaiterShiftImpl implements WaiterShiftService {
 		}
 		//订单信息查询
     	List<Map<String,Object>> orderInfoList = shiftDao.getOrderInfoGroupByOrder(paramMap);
-    	Map<String,Map<String,Object>> returnInfos = configureOrderInfo(orderInfoList);//结算方式信息查询
+    	Map<String,Map<String,Object>> returnInfos = configureOrderInfo(orderInfoList);
+    	//会员卡虚增
+    	List<Map<String,Object>> inflateInfo = shiftDao.getOrderInflateInfoByOrder(paramMap);
+    	configureSettlementInfo(returnInfos,inflateInfo);
+    	//结算方式信息查询
     	List<Map<String,Object>> orderSettlementList = shiftDao.getOrderSettlementInfoDetail(paramMap);
     	System.out.println(returnInfos.size());
     	configureSettlementInfo(returnInfos,orderSettlementList,settlementSort,returnInfoList);
