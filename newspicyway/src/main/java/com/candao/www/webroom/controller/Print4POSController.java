@@ -81,11 +81,11 @@ public class Print4POSController {
                 Map<String, Object> params = new HashMap<>();
                 params.put("orderid", orderId);
                 Map<String, Object> map = orderService.calGetOrderInfo(params);
-                // dataserver接口
-                res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
-                        aUserId, orderId, printType);
-                res = parseDSJson(res);
-                print4posService.printPreSettlement(map, printType, res, aUserId, deviceid);
+//                // dataserver接口
+//                res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
+//                        aUserId, orderId, printType);
+//                res = parseDSJson(res);
+                print4posService.printPreSettlement(map, printType, aUserId, deviceid);
             } else {// 结账客用
                 res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
                         aUserId, orderId, printType);
