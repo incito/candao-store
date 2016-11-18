@@ -18,6 +18,7 @@ import com.candao.www.webroom.service.TorderDetailPreferentialService;
 import com.candao.www.webroom.service.impl.TipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -144,6 +145,7 @@ public class OrderOpServiceImpl implements OrderOpService {
 
     }
 
+	@Transactional(propagation = Propagation.REQUIRED)
     @Override
     public String calcOrderAmount(String orderId) {
 //    	caleTableAmountMapper.updateOrderDetailPayAmount(orderId);
@@ -153,7 +155,8 @@ public class OrderOpServiceImpl implements OrderOpService {
 //        }else{
 //        	return "0";
 //        }
-        caleTableAmountMapper.pCaleTableAmount(orderId);
+		caleTableAmountMapper.pCaleTableAmount(orderId);
+        
         return "1";
     }
 
