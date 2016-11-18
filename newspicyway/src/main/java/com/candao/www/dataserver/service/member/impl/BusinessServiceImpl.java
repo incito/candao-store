@@ -520,7 +520,7 @@ public class BusinessServiceImpl implements BusinessService {
      */
     private String getJbNo() {
         Date workDateDate = WorkDateUtil.getWorkDate1();
-        String preStr = "JS000401" + DateUtils.toString(workDateDate, "yyMMdd");
+        String preStr = "JS000401"+Constant.BRANCH.BRANCH_ID + DateUtils.toString(workDateDate, "yyMMdd");
         String maxClassNoToday = nodeClassMapper.getMaxClassNoToday(preStr);
         if (StringUtil.isEmpty(maxClassNoToday)) {
             maxClassNoToday = preStr + "0001";
