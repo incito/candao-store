@@ -70,7 +70,7 @@ var reporting={
     PrintItemSell:function () {//消费品项打印
         var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag"),
             that=this,
-            TipListPrintLength=$('#getTipList tbody').find('tr').length;
+            TipListPrintLength=$('#getItemSellDetail tbody').find('tr').length;
 
         if(TipListPrintLength<1){
             utils.printError.alert('没有需要打印的报表数据')
