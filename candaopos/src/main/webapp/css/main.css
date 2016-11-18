@@ -6,11 +6,6 @@ html{
   	margin: auto auto;
   	padding: 8px;
 }
-.exit-sys{
-	position: absolute;
-  	right: 10px;
-  	cursor: pointer;
-}
 .menu-top div{
 	display: inline-block;
 	margin-left: 10px;

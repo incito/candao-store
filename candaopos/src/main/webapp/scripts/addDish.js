@@ -431,10 +431,18 @@ var AddDish = {
 
 				return  status;
 			})();
-			if($('.fishpot-dialog .taste li.active').length > 0 && numInpStatus) {
-				btn.removeClass('disabled');
+			if($('.fishpot-dialog .taste li').length > 0) {
+				if($('.fishpot-dialog .taste li.active').length > 0 && numInpStatus) {
+					btn.removeClass('disabled');
+				} else {
+					btn.addClass('disabled');
+				}
 			} else {
-				btn.addClass('disabled');
+				if(numInpStatus) {
+					btn.removeClass('disabled');
+				} else {
+					btn.addClass('disabled');
+				}
 			}
 		};
 

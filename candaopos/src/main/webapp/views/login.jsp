@@ -21,7 +21,7 @@
 </head>
 <body>
 	<header>
-		<div class="fl">餐道</div>
+		<div class="fl logo">餐道</div>
 		<div class="fr">欢迎登录餐道POS收银系统</div>
 	</header>
 	<article>
@@ -67,7 +67,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<div class="fl">餐道</div>
+					<div class="fl logo">餐道</div>
 					<div class="fr">零找金输入</div>
 				</div>
 				<div class="modal-body" style="padding-top: 0px;">

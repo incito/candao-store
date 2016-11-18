@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
 	// Copyright 2014-2015 Twitter, Inc.
 	// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -35,6 +36,8 @@ $(document).ready(function(){
 			});
 		})
 	};
+
+
     /*判断直接访问页面是否登录*/
     if(!document.referrer){
 	//if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid') ||!document.referrer){
@@ -60,6 +63,7 @@ $(document).ready(function(){
 		}
 
 	}
+
 
 	//input验证
 	$('input[validtype]').on('input propertychange focus', function() {
@@ -1333,14 +1337,39 @@ utils.openCash = function (type) {
 
 	}
 
-}
+};
 
 utils.getUuid = function(){
 	var len=32;//32长度
 	var radix=16;//16进制
 	var chars='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');var uuid=[],i;radix=radix||chars.length;if(len){for(i=0;i<len;i++)uuid[i]=chars[0|Math.random()*radix];}else{var r;uuid[8]=uuid[13]=uuid[18]=uuid[23]='-';uuid[14]='4';for(i=0;i<36;i++){if(!uuid[i]){r=0|Math.random()*16;uuid[i]=chars[(i==19)?(r&0x3)|0x8:r];}}}
 	return uuid.join('');
-}
+};
+
+utils.toggleFullScreen = function(target) {
+	var $target = $(target);
+	if (!document.fullscreenElement &&    // alternative standard method
+		!document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
+		if (document.documentElement.requestFullscreen) {
+			document.documentElement.requestFullscreen();
+		} else if (document.documentElement.mozRequestFullScreen) {
+			document.documentElement.mozRequestFullScreen();
+		} else if (document.documentElement.webkitRequestFullscreen) {
+			document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+		}
+		$target.text('普通模式');
+	} else {
+		if (document.cancelFullScreen) {
+			document.cancelFullScreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.webkitCancelFullScreen) {
+			document.webkitCancelFullScreen();
+		}
+		$target.text('全屏模式');
+	}
+};
+
 
 
 

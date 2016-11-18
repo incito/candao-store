@@ -581,8 +581,8 @@ var Order = {
             var total = 0;
             $('.pay-div .J-pay-val').each(function () {
                 var $me = $(this);
-                if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'cash') {
-                    total += parseFloat($me.val());
+                if ($me.attr('iptType') !== 'cash') {
+                    total += parseFloat($me.val().length > 0 ? $me.val() : 0);
                 }
             });
             return total;
@@ -590,29 +590,18 @@ var Order = {
 
 
         var _updateCash = function(val){
-            //if(parseFloat(val) === parseFloat($cash.attr('prepayamount'))) {
-            //    return false
-            //}
-
-            //是小数
-            //if((parseFloat(val) - parseInt(val,10)) > 0 ? true : false) {
-            //    $cash.val(parseFloat(val));
-            //} else {
-            //    $cash.val(parseInt(val, 10));
-            //}
             var val = val;
+
+            if(/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
+                val = parseInt(val);
+            }
             $cash.val(val);
             if(/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
                 val = parseInt(val);
             }
 
-            var giveChange = (function(){
-                //var v = parseFloat(val - shouldAmount).toFixed(2);
-                //if(totalOtherPay >= shouldAmount) {
-                //    v = val;
-                //}
-                //return v;
 
+            var giveChange = (function(){
                 var v = 0;
                 if(totalOtherPay >  shouldAmount) {
                     v = val;
@@ -625,16 +614,17 @@ var Order = {
                 }
                 return v;
             })();
-            var needPay = parseFloat(shouldAmount - cash - totalOtherPay);
+            var needPay = parseFloat(shouldAmount - parseFloat(val) - totalOtherPay);
             var isGiveChange = giveChange > 0 ? true : false;
             var tipAmount = parseFloat($('#tip-amount').text());
             var amount = parseFloat($('#amount').text());
+            var prefAmount = parseFloat($('#discount-amount').text());
             var tipAmountCac = (function(){
                 var v = 0;
                 if(totalOtherPay >  amount) {
                     v = val;
                 } else {
-                    v = parseFloat(val) - (amount - totalOtherPay)
+                    v = parseFloat(val) - (amount - totalOtherPay) +  prefAmount;
                 }
 
                 if(v > tipAmount) {
@@ -708,7 +698,7 @@ var Order = {
                     $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
                     _updateCash(shouldAmount - totalOtherPay);
-                    $paytotal.find('.payamount').find('span').text(shouldAmount - totalOtherPay);
+                    $paytotal.find('.payamount').find('span').text(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
                     $paytotal.find('.payamount').removeClass('hide');
                 }
             }
@@ -1011,19 +1001,18 @@ var Order = {
 
     //抹零不处理
     consumInfo: function () {
-        var that = this;
         var $moneyWipeAmount = $('.pay-total .moneyWipeAmount span');
         var $shouldAmount = $('#should-amount');
         var $discountAmount= $('#discount-amount');
         var moneyWipeAmount = $moneyWipeAmount.text();
         var $target = $('.paytype-input input[name=cash]');
         if ($moneyWipeAmount.length === 0 || moneyWipeAmount === '0') return false;
+        $shouldAmount.text((parseFloat($shouldAmount.text()) + parseFloat(consts.moneyWipeAmount)).toFixed(2));
+        $discountAmount.text((parseFloat($discountAmount.text()) - parseFloat(consts.moneyWipeAmount)).toFixed(2));
+        $target.val((parseFloat($target.val()) + parseFloat(consts.moneyWipeAmount)).toFixed(2));
+        $('.payamount span').text($target.val());
         $moneyWipeAmount.parents('li').remove();
         consts.moneyWipeAmount = 0.0;
-        $shouldAmount.text((parseFloat($shouldAmount.text()) + parseFloat(moneyWipeAmount)).toFixed(2));
-        $discountAmount.text((parseFloat($discountAmount.text()) - parseFloat(moneyWipeAmount)).toFixed(2));
-        $target.val((parseFloat($target.val()) + parseFloat(moneyWipeAmount)).toFixed(2));
-        $('.payamount span').text($target.val());
     },
 
     //取消订单
@@ -1499,6 +1488,8 @@ var Order = {
         var totalHtml = '<ul class="pay-total"> ';
 
         consts.moneyWipeAmount = moneyWipeAmount;
+        consts.moneyDisType = data.moneyDisType; //0 不处理; 1 四舍五入; 2 抹零
+        consts.moneyWipeName = data.moneyWipeName;
 
         //设置统计
         $('#discount-amount').text(amount);
@@ -1513,7 +1504,30 @@ var Order = {
 
         totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账<i class="spangap">:</i><span>' + toalDebitAmount + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免<i class="spangap">:</i><span>' + toalFreeAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零<i class="spangap">:</i><span>' + moneyWipeAmount + '</span></li> ';
+
+        totalHtml += (function(){
+            var ret = [];
+            var wipeAmount = parseFloat(consts.moneyWipeAmount);
+            ret.push('<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">');
+            if(consts.moneyDisType === '1') {
+                if(moneyWipeAmount > 0) {
+                    ret.push('<b>舍去</b><i class="spangap">:</i>');
+                    ret.push('<span>' + wipeAmount.toFixed(2) + '</span>');
+                } else {
+                    ret.push('<b>舍入</b><i class="spangap">:</i>');
+                    ret.push('<span>' + Math.abs(wipeAmount).toFixed(2) + '</span>');
+                }
+            } else if(consts.moneyDisType === '2') {
+                ret.push('<b>抹零</b><i class="spangap">:</i>');
+                ret.push('<span>' + wipeAmount.toFixed(2) + '</span>');
+            } else {
+                return '';
+            }
+            ret.push('</li>');
+            return ret.join('');
+        })();
+
+
         totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整<i class="spangap">:</i><span>' + adjAmout + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收<i class="spangap">:</i><span>' + toalDebitAmountMany + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + parseFloat(payamount).toFixed(2) + '</span></li> ';
@@ -1880,11 +1894,10 @@ var Order = {
         //打印发票信息
         var invoiceMsg=function () {
             if(invoice_Flag.flag!=''){
-                utils.loading.remove();
-                utils.loading.open('打印发票信息');
                 $('#Invoice-title').modal('show');
                 focusIpt=$('#Invoice-title .invoiceMoney');
                 $('#Invoice-title #Invoice-title-btnOk ').click(function () {
+                    utils.loading.open('打印发票信息');
                     $.ajax({
                         url: _config.interfaceUrl.PrintInvoice,
                         method: 'POST',
@@ -1897,6 +1910,7 @@ var Order = {
                         }),
                         success: function (res) {
                             console.log(res)
+                            utils.loading.remove();
                             if(res.result=='0'){
                                 _fn()
                             }
@@ -1912,7 +1926,7 @@ var Order = {
             else {
                 _fn()
             }
-        }
+        };
 
         var doSettlementModal = widget.modal.alert({
             cls: 'fade in',
@@ -2028,16 +2042,33 @@ var Order = {
                         })()
                     }];
 
-                    //抹零
-                    result.push({
-                        "payWay": "7",
-                        "payAmount": parseFloat(consts.moneyWipeAmount),
-                        "memerberCardNo": "",
-                        "bankCardNo": "",
-                        "couponnum": "0",
-                        "couponid": "",
-                        "coupondetailid": ""
-                    });
+                    if(consts.moneyDisType === '2') {
+                        //抹零
+                        result.push({
+                            "payWay": "7",
+                            "payAmount": parseFloat(consts.moneyWipeAmount),
+                            "memerberCardNo": "",
+                            "bankCardNo": "",
+                            "couponnum": "0",
+                            "couponid": "",
+                            "coupondetailid": ""
+                        });
+                    }
+
+                    if(consts.moneyDisType === '1') {
+                        //四舍五入
+                        result.push({
+                            "payWay": "20",
+                            "payAmount": parseFloat(consts.moneyWipeAmount),
+                            "memerberCardNo": "",
+                            "bankCardNo": "",
+                            "couponnum": "0",
+                            "couponid": "",
+                            "coupondetailid": ""
+                        });
+                    }
+
+
 
                     //挂账多收
                     if(!$('.toalDebitAmountMany').hasClass('hide')) {

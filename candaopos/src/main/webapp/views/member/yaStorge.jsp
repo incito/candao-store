@@ -37,7 +37,7 @@
     }
 </style>
 <header>
-    <div class="fl">餐道</div>
+    <div class="fl logo">餐道</div>
     <div class="fr" onclick="goBack();">返回</div>
 </header>
 <article>

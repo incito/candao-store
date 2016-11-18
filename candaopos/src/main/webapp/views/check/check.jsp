@@ -34,7 +34,7 @@
     }
 </style>
 <header>
-    <div class="fl">餐道</div>
+    <div class="fl logo">餐道</div>
     <div class="fr close-win" data-dismiss="modal" onclick="window.location.href='../main.jsp';">返回</div>
 </header>
 <article style="overflow: hidden">
