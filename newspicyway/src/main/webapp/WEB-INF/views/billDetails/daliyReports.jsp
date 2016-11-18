@@ -102,6 +102,19 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal fade dialog in " id="prompt-dialog"
+		data-backdrop="static">
+		<div class="modal-dialog"
+			style="margin-top: 100px; position: absolute; left: 35%; width: 250px;">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div style="text-align: center;">
+						<p id="prompt-msg">处理中，请稍后...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div id="daliyChart"></div>
 	<script type="text/javascript">
 		var shiftid;
