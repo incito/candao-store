@@ -930,7 +930,7 @@ function paidInAmount(result) {
 		legend_data = item.settlementDescList;//[ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
 		tr += '<tr id="settlementDesc">';
 		$.each(legend_data,function(i,data){
-			tr += '<th width="14%">'+data+'</th>';
+			tr += '<th  nowrap="nowrap">'+data+'</th>';
 		});
 		tr += '</tr>';
 		$("#settlementDesc").replaceWith(tr);
@@ -940,7 +940,7 @@ function paidInAmount(result) {
 				value : data,
 				name : legend_data[i]
 			});
-			tb += '<td>'+data+'</td>';
+			tb += '<td  nowrap="nowrap">'+data+'</td>';
 		});
 		tb += '</tr>';
 	}
@@ -2118,7 +2118,7 @@ function getWaiterAssessData(){
 			var tr = result.data.tr;
 			var htm = '';
 			$.each(tr,function(i,item){
-				htm += '<th class="ss">实收/'+dellrTrim(item)+'</th>';
+				htm += '<th nowrap="nowrap" class="ss">实收/'+dellrTrim(item)+'</th>';
 			});
 			$(".ss").remove();
 			$("#waiter-assess-tb thead tr").append(htm);
@@ -2126,23 +2126,23 @@ function getWaiterAssessData(){
 			if(data != null && data.length>0){
 				$.each(data, function(i, item){
 					htm += '<tr ondblclick="showWaiterSecPage(\''+item.waiterId+'\')">'
-						+ '<td>'+item.waiterId+'</td>'
-						+ '<td>'+item.waiterName+'</td>'
-						+ '<td>'+item.tableNum+'</td>'
-						+ '<td>'+item.custNum+'</td>'
-						+ '<td>'+item.shouldAmount+'</td>'
-						+ '<td>'+item.actualAmountTotal+'</td>'
-						+ '<td>'+item.shouldPre+'</td>'
-						+ '<td>'+item.actualPre+'</td>';
+						+ '<td nowrap="nowrap">'+item.waiterId+'</td>'
+						+ '<td nowrap="nowrap">'+item.waiterName+'</td>'
+						+ '<td nowrap="nowrap">'+item.tableNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.custNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldAmount+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualAmountTotal+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldPre+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualPre+'</td>';
 					$.each(item.settlements,function(i,item){
-						htm += '<td>'+item+'</td>';
+						htm += '<td nowrap="nowrap">'+item+'</td>';
 					});
 					htm += '</tr>';
 				});
 				$("#waiter-assess-tb tbody").html(htm);
 				initDatatableConfig();
 			}else{
-				htm += '<tr><td colspan="16">无数据</td></tr>';
+				htm += '<tr><td colspan="100">无数据</td></tr>';
 				$("#waiter-assess-tb tbody").html(htm);
 			}
 		}else{
@@ -2168,25 +2168,25 @@ function getWaiterDetails(){
 			var tr = result.data.tr;
 			var htm = '';
 			$.each(tr,function(i,item){
-				htm += '<th class="ssd">实收/'+dellrTrim(item)+'</th>';
+				htm += '<th nowrap="nowrap" class="ssd">实收/'+dellrTrim(item)+'</th>';
 			});
 			$(".ssd").remove();
 			$("#waiterassess-details-tb thead tr").append(htm);
 			htm = '';
 			if(data != null && data.length>0){
 				$.each(data, function(i, item){
-					htm += '<tr><td>'+item.orderId+'</td>'
-						+ '<td>'+item.tableNo+'</td>'
-						+ '<td>'+item.custNum+'</td>'
-						+ '<td>'+item.shouldAmount+'</td>'
-						+ '<td>'+item.actualAmountTotal+'</td>';
+					htm += '<tr><td nowrap="nowrap">'+item.orderId+'</td>'
+						+ '<td nowrap="nowrap">'+item.tableNo+'</td>'
+						+ '<td nowrap="nowrap">'+item.custNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldAmount+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualAmountTotal+'</td>';
 					$.each(item.settlements,function(i,item){
-						htm += '<td>'+item+'</td>';
+						htm += '<td nowrap="nowrap">'+item+'</td>';
 					});
 					htm += '</tr>';
 				});
 			}else{
-				htm = '<tr><td colspan="5">无数据</td></tr>';
+				htm = '<tr><td colspan="100">无数据</td></tr>';
 			}
 			$("#waiterassess-details-tb tbody").html(htm);
 		}else{
