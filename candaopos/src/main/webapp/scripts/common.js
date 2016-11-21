@@ -101,6 +101,7 @@ $(document).ready(function(){
 		$(this).find('input[autofocus]').focus();
 	})
 
+
 });
 javascript:window.history.forward(1);
 
@@ -566,6 +567,7 @@ widget.keyboard = function(opts){
 			if(me.hasClass('btn-action') || focusIpt === null) return false;
 			var focusVal = focusIpt.val();
 			var keyVal = $(this).text();
+			var keyType = $(this).attr('type');
 
 			var agt=navigator.userAgent.toLowerCase();
 			var ie = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1) && (agt.indexOf("omniweb") == -1));
@@ -590,7 +592,7 @@ widget.keyboard = function(opts){
 					}
 					focusIpt.focus();
 				}
-			}else if(keyVal == "C"){
+			}else if(keyVal == "C" &&keyType){
 				focusIpt.val("");
 				focusIpt.focus();
 			}else{
@@ -1199,10 +1201,10 @@ utils.printAbnormal={
 						arry.push(data.data[i])
 					}
                     if(data.data[i].statusTitle.indexOf('上盖打开')>-1){
-                        arr.push(data.data[i])
+						arry.push(data.data[i])
                     }
                     if(data.data[i].statusTitle.indexOf('打印纸已用尽')>-1){
-                        arr.push(data.data[i])
+						arry.push(data.data[i])
                     }
 				};
 				if(arry.length>0){

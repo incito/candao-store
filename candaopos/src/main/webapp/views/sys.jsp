@@ -25,15 +25,15 @@
 	</script>
 </head>
 <body>
-	<div class="modal-dialog main-modal-dialog" style="height: 600px;" id="sys-modal"
+	<div class="modal-dialog main-modal-dialog" style="height: 600px; width:960px" id="sys-modal"
 		data-backdrop="static" >
 		<div class="modal-content">
 			<div class="modal-body">
-				<header>
-					<div class="fl logo">餐道</div>
+				<header style="min-width:960px">
+					<div class="fl">餐道</div>
 					<div class="fr close-win" data-dismiss="modal">返回</div>
 				</header>
-				<article style="height: 540px;">
+				<article style="height: 540px;min-width: 960px;">
 					<div class="content">
 						<div class="g-l J-g-menu print_list">
 							<ul>

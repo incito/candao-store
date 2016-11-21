@@ -1,6 +1,8 @@
 var g_eatType = "EAT-IN";//堂食
 var tackOUttable=[];//外卖咖啡外卖台
 var tablesCurPager = 1;
+var tableAreaSelect=-1;//选中的是那个分区
+var roomtype_prev = 0;//左右切换的Index
 
 var MainPage = {
 
@@ -170,7 +172,7 @@ var MainPage = {
 		//});
 
 		/*餐台分类事件*/
-		var roomtype_prev = 0;
+
 		var navRoomTypes = $("#nav-room-types");
 
 		dom.roomTypeNav.delegate('li', 'click', function() {
@@ -178,6 +180,7 @@ var MainPage = {
 			me.siblings().removeClass("active").end().addClass('active');
 			me.addClass("active");
 			that.CurrentArea = me.attr('areaid');
+			tableAreaSelect=me.attr('areaid');
 			that.setTables(that.CurrentTalbeType,me.attr('areaid'));
 		});
 
@@ -187,9 +190,9 @@ var MainPage = {
 				navRoomTypes.find("li").eq(roomtype_prev).css("margin-left", "-10%");
 				navRoomTypes.find("li").eq(roomtype_prev+1).click();
 				roomtype_prev++;
+				$(".nav-type-prev").removeClass('unclick');
 				if (roomtype_prev == count - 10) {
 					$(".nav-type-next").addClass('unclick');
-					$(".nav-type-prev").removeClass('unclick');
 				}
 			}
 		});
@@ -199,9 +202,9 @@ var MainPage = {
 				navRoomTypes.find("li").eq(roomtype_prev-1).css("margin-left","0");
 				navRoomTypes.find("li").eq(roomtype_prev-1).click();
 				roomtype_prev--;
+				$(".nav-type-next").removeClass('unclick');
 				if (roomtype_prev == 0) {
 					$(".nav-type-prev").addClass('unclick');
-					$(".nav-type-next").removeClass('unclick');
 				}
 			}
 		});
@@ -243,7 +246,6 @@ var MainPage = {
 								arry.push(data.OrderJson[i])
 							}
 						}
-						debugger
 						orderLength=arry.length
 					}
 				});
@@ -619,6 +621,7 @@ var MainPage = {
 				var tables = _getTablesArr(allTables);
 				var navRoomTypesArr = [];
 				var navRoomTypes = $('#nav-room-types');
+				navRoomTypes.attr('inited', 'fasle');
 
 				//设置餐桌统计
 				$('.J-table-nums').find('.all .num').text(tables.all.length)
@@ -627,18 +630,47 @@ var MainPage = {
 
 				//设置区域
 				if(navRoomTypes.attr('inited') !== 'true'){
-					navRoomTypesArr.push('<li class="active" areaid="-1">全部</li>')
-					$.each(res.data, function(key, val){
-						//判断分区下是否存在餐台
-						if(val.tables){
-							navRoomTypesArr.push('<li areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
-						}
+					if(tableAreaSelect!=-1){
+						navRoomTypesArr.push('<li  areaid="-1">全部</li>')
+						$.each(res.data, function(key, val){
+							//判断分区下是否存在餐台
+							if(val.tables  ){
+								if(tableAreaSelect==val.areaid){
+									navRoomTypesArr.push('<li class="active" areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
+								}
+								else {
+									navRoomTypesArr.push('<li  areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
+								}
 
-					});
+							}
+
+						});
+					}
+					else {
+						navRoomTypesArr.push('<li class="active"  areaid="-1">全部</li>')
+						$.each(res.data, function(key, val){
+							//判断分区下是否存在餐台
+							if(val.tables){
+								navRoomTypesArr.push('<li  areaid="' + val.areaid  + '">' + val.areaname  + '</li>');
+							}
+
+						});
+					}
+
+
 					navRoomTypes.attr('inited', 'true');
 					navRoomTypes.html(utils.array.unique(navRoomTypesArr).join(''));
 					if (navRoomTypesArr.length>10) {//当区域数组大于10时，移除不能点击样式
-							$(".nav-type-next").removeClass('unclick');
+						$(".nav-type-next").removeClass('unclick');
+					}
+					if(roomtype_prev>0){
+						for(var i=0;i<roomtype_prev;i++){
+							$('#nav-room-types li').eq(i).css('margin-left',"-10%");
+						}
+
+					}
+					if($('#nav-room-types li').length-roomtype_prev=='10'){
+						$(".nav-type-next").addClass('unclick');
 					}
 				}
 
@@ -682,7 +714,7 @@ var MainPage = {
 			dataType: "text",
 			success: function (data) {
 				$(".modal-alert:last,.modal-backdrop:last").remove();
-			var	data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+				var	data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
 				if(data.Data === '0') {//清机失败
 					widget.modal.alert({
 						cls: 'fade in',
@@ -745,6 +777,7 @@ var MainPage = {
 		var Uncleandata=that.getFindUncleanPosList();
 		var arrylength=Uncleandata.LocalArry.length-1;
 		var LocalArry=Uncleandata.LocalArry;
+		$("#J-btn-checkout-dialog").modal('hide')
 		if(Uncleandata.LocalArry.length>0){
 			$("#J-btn-checkout-dialog").load("../views/check/impower.jsp",{'title':'清机授权','userNmae':Uncleandata.LocalArry[arrylength].username,'usernameDisble':'2','cbd':'MainPage.clearAllcheckOut()','userRightNo':'030204'});
 			$("#J-btn-checkout-dialog").modal('show')
