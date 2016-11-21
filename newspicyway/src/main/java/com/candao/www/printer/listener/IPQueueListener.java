@@ -29,7 +29,7 @@ public class IPQueueListener implements ApplicationContextAware {
 
     private Log log = LogFactory.getLog(getClass());
 
-    public final static Integer pageNum = 200;
+    public final static Integer pageNum = 150;
 
     @Autowired
     private PrinterListenerManager printerListenerManager;
@@ -80,13 +80,13 @@ public class IPQueueListener implements ApplicationContextAware {
         int length = objects.length;
         for (int pos = 0; pos < length - 1; pos += pageNum) {
             if (pos > 0)
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             boolean flag = pos + pageNum < length;
             Object[] temp = ArrayUtils.subarray(objects, pos, flag  ? pos + pageNum : length);
             //切刀命令
             com.candao.www.printer.v2.PrintData<Boolean> code = new com.candao.www.printer.v2.PrintData<>();
             code.setData(flag);
-            ArrayUtils.add(temp,code);
+            temp = ArrayUtils.add(temp,code);
             print(temp, printObj);
         }
     }
