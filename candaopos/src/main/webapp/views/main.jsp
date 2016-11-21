@@ -237,7 +237,7 @@
                         <div>
                             <span>服务员编号:</span>
                             <input type="text" validType='number'
-                                   class="form-control serverName J-server-name">
+                                   class="form-control serverName J-server-name" autofocus>
                         </div>
                         <%--<div>--%>
                         <%--<span>桌号:</span>--%>

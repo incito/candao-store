@@ -75,7 +75,7 @@
 						<form action="">
 							<div class="form-group" style="margin-top: 8px;">
 								<span class="span-user">零找金金额:</span>
-								<input id="change_val" value="" name="change_val" onfocus="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; Login.keyUp(this)" onkeyup="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; Login.keyUp(this)" type="text" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
+								<input id="change_val" value="" autofocus name="change_val" onfocus="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; Login.keyUp(this)" onkeyup="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; Login.keyUp(this)" type="text" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
 							</div>
 							<div class="form-group space" style="margin-top: 138px;">
 								<input type="button" value="&nbsp;取&nbsp;消&nbsp;" data-dismiss="modal" class="btn btn-default btn-lg">

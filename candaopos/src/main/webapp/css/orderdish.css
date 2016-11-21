@@ -288,6 +288,7 @@ input[type=search] {
 }
 .btn.disabled{
 	pointer-events: none;
+	opacity: .65!important;
 }
 .main-div .main-oper-btns .btn.place-order{
 	float: right;

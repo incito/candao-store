@@ -213,11 +213,11 @@
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" disabled validType='intAndFloat2' class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
+							<input type="text" disabled validType='intAndFloat2' class="form-control  J-pay-val"  iptType="memberCash" id="memberCash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
+							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val"    iptType="memberJf"  id="memberJf">
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
@@ -324,7 +324,7 @@
 	                    <div class="form-group coupname">团购券</div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">使用数量:</span>
-	                    	<input type="text"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   class="form-control J-pref-ipt padding-left">
+	                    	<input type="text"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" autofocus  class="form-control J-pref-ipt padding-left">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -416,7 +416,7 @@
 					<div class="dialog-sm-info">
 						<div class="form-group">
 							<span class="inpt-span">退菜数量:</span>
-							<input type="text" id="backDishNumIpt"      class="form-control padding-left">
+							<input type="text" id="backDishNumIpt"   autofocus   class="form-control padding-left">
 						</div>
 						<div class="virtual-keyboard">
 							<ul>
@@ -459,7 +459,7 @@
 	                    <div class="form-group coupname"><span id="coup-name">称重菜品</span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">称重数量:</span>
-	                    	<input type="text" class="form-control padding-left" onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')" id="weight-num">
+	                    	<input type="text" class="form-control padding-left" autofocus onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')" id="weight-num">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -579,7 +579,7 @@
 					<div class="dialog-sm-info">
 						<div class="form-group">
 							<span class="inpt-span">钱箱密码:</span>
-							<input type="text" class="form-control padding-left J-num">
+							<input type="text" class="form-control padding-left J-num" autofocus>
 						</div>
 						<div class="virtual-keyboard">
 							<ul>
@@ -628,7 +628,7 @@
 								<li>账单金额：<span class="orderMoney"></span></li>
 								<li>发票金额：
 									<span class="plus_sign minus">-</span>
-									<input type="text" class="invoiceMoney" style='width: 70px;margin:0 5px;padding-left:5px;height: 28px;border: none;'>
+									<input type="text" class="invoiceMoney"  autofocus style='width: 70px;margin:0 5px;padding-left:5px;height: 28px;border: none;'>
 									<span class="plus_sign Add_key">+</span>
 								</li>
 							</ul>
