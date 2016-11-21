@@ -36,7 +36,7 @@
 	<div id="order-modal"
 		data-backdrop="static" >
 		<header>
-			<div class="fl">餐道</div>
+			<div class="fl logo">餐道</div>
 			<div class="fr close-win" onclick="Order.closeOrder()">关闭</div>
 		</header>
 		<div class="content">
@@ -201,7 +201,7 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" disabled validType='number' class="form-control J-pay-val" name="bank"  iptType="bank">
+							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val" name="bank"  iptType="bank">
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
@@ -213,11 +213,11 @@
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" disabled validType='number' class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
+							<input type="text" disabled validType='intAndFloat2' class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" disabled validType='number' class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
+							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
@@ -235,7 +235,7 @@
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
-							<input type="text" validType='number' disabled class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
+							<input type="text" validType='intAndFloat2' disabled class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
@@ -246,7 +246,7 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" validType='number'   class="form-control J-pay-val" name="alipay" iptType="alipay">
+							<input type="text" validType='intAndFloat2'   class="form-control J-pay-val" name="alipay" iptType="alipay">
 						</div>
 					</div>
 					<!-- 微信支付 -->
@@ -257,7 +257,7 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" validType='number'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
+							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
 						</div>
 					</div>
 					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">

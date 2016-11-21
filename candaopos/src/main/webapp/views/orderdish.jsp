@@ -31,7 +31,7 @@
 <input type="hidden" value="<%=tableno%>" name="tableno">
 	<div id="adddish">
 		<header>
-			<div class="fl">餐道</div>
+			<div class="fl logo">餐道</div>
 			<div class="fr close-win"  onclick="window.location.href='../views/main.jsp';">关闭</div>
 		</header>
 		<div class="content">
