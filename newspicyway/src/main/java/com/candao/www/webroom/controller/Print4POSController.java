@@ -154,7 +154,7 @@ public class Print4POSController {
 
     private String parseDSJson(String src) {
         if (StringUtil.isEmpty(src)) {
-            return null;
+            return "";
         }
 //        按继俊要求处理dataserver不标准json
         if (src.contains("{\"result\":[")){

@@ -81,7 +81,12 @@ public class IPQueueListener implements ApplicationContextAware {
         for (int pos = 0; pos < length - 1; pos += pageNum) {
             if (pos > 0)
                 Thread.sleep(2000);
-            Object[] temp = ArrayUtils.subarray(objects, pos, pos + pageNum < length ? pos + pageNum : length);
+            boolean flag = pos + pageNum < length;
+            Object[] temp = ArrayUtils.subarray(objects, pos, flag  ? pos + pageNum : length);
+            //切刀命令
+            com.candao.www.printer.v2.PrintData<Boolean> code = new com.candao.www.printer.v2.PrintData<>();
+            code.setData(flag);
+            ArrayUtils.add(temp,code);
             print(temp, printObj);
         }
     }
