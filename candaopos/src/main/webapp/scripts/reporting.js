@@ -34,12 +34,14 @@ var reporting={
                 dataType: "json",
                 data:{"flag":flag},
                 success: function (data) {
+                    console.log(data)
                     var total=data.data.length,count=0,sum=0;
                     for( var i=0;i<total;i++) {
                         count+=Number(data.data[i].dishCount);
                         sum+=Number(data.data[i].totlePrice);
 
                     };
+
                     $('#getItemSellDetail .demo').pagination({
                         dataSource: data.data,
                         pageSize: 11,
@@ -59,6 +61,10 @@ var reporting={
                             $("#getItemSellDetail tbody").html(str);
                         }
                     });
+                    /*如果没有数据分页显示统计1/1*/
+                    if(data.data.length<1){
+                        $('#getItemSellDetail .demo .J-paginationjs-nav').text('1/1')
+                    }
 
                     $("#getItemSellDetail .reportingInfo i").eq(0).text(total);
                     $("#getItemSellDetail .reportingInfo i").eq(1).text(count.toFixed(1));
@@ -130,6 +136,10 @@ var reporting={
                         $("#getTipList tbody").html(str);
                     }
                 });
+                /*如果没有数据分页显示统计1/1*/
+                if(data.data.length<1){
+                    $('#getTipList .demo .J-paginationjs-nav').text('1/1')
+                }
                 $("#getTipList .reportingInfo i").eq(0).text(total);
                 $("#getTipList .reportingInfo i").eq(1).text(count.toFixed(1));
                 $("#getTipList .reportingInfo i").eq(2).text(sum.toFixed(2));

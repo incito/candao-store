@@ -93,6 +93,7 @@ $(document).ready(function(){
 	});
 
 
+
 });
 javascript:window.history.forward(1);
 
@@ -555,13 +556,14 @@ widget.keyboard = function(opts){
 			if(me.hasClass('btn-action') || focusIpt === null) return false;
 			var focusVal = focusIpt.val();
 			var keyVal = $(this).text();
+			var keyType = $(this).attr('type');
 
 			if(keyVal == "←"){
 				if(focusVal.length>0){
 					focusIpt.val(focusVal.substring(0,focusVal.length-1));
 					focusIpt.focus();
 				}
-			}else if(keyVal == "C"){
+			}else if(keyVal == "C" &&keyType){
 				focusIpt.val("");
 				focusIpt.focus();
 			}else{
@@ -1166,10 +1168,10 @@ utils.printAbnormal={
 						arry.push(data.data[i])
 					}
                     if(data.data[i].statusTitle.indexOf('上盖打开')>-1){
-                        arr.push(data.data[i])
+						arry.push(data.data[i])
                     }
                     if(data.data[i].statusTitle.indexOf('打印纸已用尽')>-1){
-                        arr.push(data.data[i])
+						arry.push(data.data[i])
                     }
 				};
 				if(arry.length>0){
