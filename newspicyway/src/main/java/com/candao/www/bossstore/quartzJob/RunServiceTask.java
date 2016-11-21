@@ -34,8 +34,9 @@ public class RunServiceTask {
         clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
         clientInfo.setCommand("order");
         clientInfo.setRequestType("syncService");
-        clientInfo.setData(orderService.getCurrServiceData().toString());
-        logger.info("服务情况统计数据查询："+orderService.getCurrServiceData().toString());
+        String temp = orderService.getCurrServiceData().toString();
+        clientInfo.setData(temp);
+        logger.info("服务情况统计数据查询："+temp);
         JSONObject requestObject = JSONObject.fromObject(clientInfo);
         String link = PropertiesUtils.getValue("cloudLink");
         HttpUtils.getHttpPost(link, requestObject);

@@ -808,12 +808,14 @@ function strToFloat(str){
 
 /** *******************营业数据明细报表 START***************************************** */
 function initDaliyData() {
+	$("#prompt-dialog").modal("show");
 	if(compareBeginEndTime()){
 		$.post(global_Path + "/daliyReports/getDayReportList.json", {
 			beginTime : beginTime,
 			endTime : endTime,
 			shiftid : shiftid
 		}, function(result) {
+			$("#prompt-dialog").modal("hide");
 			incomeStatistics(result);
 			paidInAmount(result);
 			discountAmount(result);

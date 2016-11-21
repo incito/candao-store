@@ -81,17 +81,17 @@ public class Print4POSController {
                 Map<String, Object> params = new HashMap<>();
                 params.put("orderid", orderId);
                 Map<String, Object> map = orderService.calGetOrderInfo(params);
-                // dataserver接口
-                res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
-                        aUserId, orderId, printType);
-                res = parseDSJson(res);
-                print4posService.printPreSettlement(map, printType, res, aUserId, deviceid);
+//                // dataserver接口
+//                res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
+//                        aUserId, orderId, printType);
+//                res = parseDSJson(res);
+                print4posService.printPreSettlement(map, printType, aUserId, deviceid);
             } else {// 结账客用
                 res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
                         aUserId, orderId, printType);
                 res = parseDSJson(res);
                 List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-                settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+                settlementInfos.add(JSON.parseObject(res, SettlementInfo4Pos.class));
                 print4posService.print(settlementInfos, printType, deviceid);
             }
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class Print4POSController {
                     aUserId, jsOrder, posId);
             res = parseDSJson(res);
             List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-            settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+            settlementInfos.add(JSON.parseObject(res, SettlementInfo4Pos.class));
             print4posService.printClearMachine(settlementInfos,posId);
         } catch (Exception e) {
             msg = e.getMessage();
@@ -140,7 +140,7 @@ public class Print4POSController {
             res = parse("getMemberSaleInfo", orderInfo, new Class[]{String.class, String.class}, aUserId, orderId);
             res = parseDSJson(res);
             List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-            settlementInfos = JSON.parseArray(res, SettlementInfo4Pos.class);
+            settlementInfos.add(JSON.parseObject(res, SettlementInfo4Pos.class));
             print4posService.printMemberSaleInfo(settlementInfos,deviceid);
         } catch (Exception e) {
             msg = e.getMessage();
@@ -154,13 +154,14 @@ public class Print4POSController {
 
     private String parseDSJson(String src) {
         if (StringUtil.isEmpty(src)) {
-            return null;
+            return "";
         }
-        JSONObject obj = JSON.parseObject(src);
-        if (!obj.containsKey(RESULT)) {
-            return null;
+//        按继俊要求处理dataserver不标准json
+        if (src.contains("{\"result\":[")){
+            int length = src.length();
+            src = src.substring(12,length-3);
         }
-        return obj.get(RESULT).toString();
+        return src;
     }
 
     /**

@@ -29,6 +29,8 @@ public class IPQueueListener implements ApplicationContextAware {
 
     private Log log = LogFactory.getLog(getClass());
 
+    public final static Integer pageNum = 200;
+
     @Autowired
     private PrinterListenerManager printerListenerManager;
 
@@ -56,13 +58,37 @@ public class IPQueueListener implements ApplicationContextAware {
         }
         if (data != null) {
             try {
-                print(data.convert(), obj);
+                printByPage(data.convert(), obj);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("打印失败!订单号：" + obj.getOrderNo(), e);
             }
         }
 
+    }
+
+    /**
+     *  分页打印
+     * @param objects
+     * @param printObj
+     * @throws Exception
+     */
+    private void printByPage(Object[] objects, PrintObj printObj) throws Exception {
+        if (ArrayUtils.isEmpty(objects) || printObj == null) {
+            throw new RuntimeException("解析后的打印数据为空！");
+        }
+        int length = objects.length;
+        for (int pos = 0; pos < length - 1; pos += pageNum) {
+            if (pos > 0)
+                Thread.sleep(2000);
+            boolean flag = pos + pageNum < length;
+            Object[] temp = ArrayUtils.subarray(objects, pos, flag  ? pos + pageNum : length);
+            //切刀命令
+            com.candao.www.printer.v2.PrintData<Boolean> code = new com.candao.www.printer.v2.PrintData<>();
+            code.setData(flag);
+            ArrayUtils.add(temp,code);
+            print(temp, printObj);
+        }
     }
 
     private QueueListener detemineListener(ListenerType listenerType, PrinterListenerManager listenerManager)
@@ -84,6 +110,7 @@ public class IPQueueListener implements ApplicationContextAware {
 
     private void print(final Object[] src, final PrintObj obj) throws Exception {
         Object[] buffer = null;
+
         if (!StringUtil.isEmpty(obj.getRePeatID())){
             Class type = src.getClass();
             int arrayLength = Array.getLength(src);
