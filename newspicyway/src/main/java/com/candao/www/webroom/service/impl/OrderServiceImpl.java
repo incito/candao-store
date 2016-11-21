@@ -156,10 +156,10 @@ public class OrderServiceImpl implements OrderService {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("tableNo", tOrder.getTableNo());
-		// map.put("status", "0");
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		String tableType = (String) resultMap.get(0).get("tabletype");
 		tableType = tableType == null ? "" : tableType;
+		
 		if (!resultMap.isEmpty() && !"2".equals(tableType) && !"3".equals(tableType)) {
 			Map<String, Object> validateResult = userService.validateLoginTypeByAccount(tOrder.getUsername(),
 					PropertiesUtils.getValue("logintype.030101"));
@@ -171,41 +171,27 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 
-		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
-		if (tbOpenBizLog == null) {
-			// mapRet.put("result", "3");
-			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空");
-			logger.error("开台失败，开业记录为空");
-			return JacksonJsonMapper.objectToJson(mapRet);
-		}
-
 		if (resultMap == null || resultMap.size() == 0 || resultMap.size() > 1) {
-			// logger.error("开台失败！ 查找不到桌台");
 			mapRet = ReturnMap.getFailureMap("开台失败！ 查找不到桌台");
 			return JacksonJsonMapper.objectToJson(mapRet);
 		}
 		if (!"0".equals(String.valueOf(resultMap.get(0).get("status")))) {
 			logger.error("开台失败，桌台状态不对！0");
-			// mapRet.put("result", "1");
 			mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
 			return JacksonJsonMapper.objectToJson(mapRet);
 		}
-		// 1.预定桌子
+		
+		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
+		if (tbOpenBizLog == null) {
+			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空");
+			logger.error("开台失败，开业记录为空");
+			return JacksonJsonMapper.objectToJson(mapRet);
+		}
 
-		// boolean bTable = tableService.updateStatus(tTable);
-		// if(!bTable){
-		// mapRet.put("result", "1");
-		// return JacksonJsonMapper.objectToJson(mapRet);
-		// }
-
-		// 2.生成订单号码 正在下单
-		// String orderId = IdentifierUtils.getId().generate().toString();
+		
 		String tableId = String.valueOf(resultMap.get(0).get("tableid"));
-
 		int shiftid = 0;
-
 		String currentTime = DateUtils.getCurrentTime();
-
 		List<Map<String, Object>> listDict = dictionaryDao.getDatasByType("BIZPERIODDATE");
 		if (listDict == null || listDict.size() == 0) {
 			shiftid = 0;
@@ -296,6 +282,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setOrderNum(maxOrderNum);
 		order.setIsFree(tOrder.getIsFree());
 		order.setNumOfMeals(tOrder.getNumOfMeals());
+	
 		torderMapper.insert(order);
 
 		TbTable tTable = new TbTable();
@@ -312,28 +299,8 @@ public class OrderServiceImpl implements OrderService {
 			tTable.setStatus(Constant.TABLESTATUS.FREE_STATUS);
 		}
 		tableService.updateStatus(tTable);
-
-		// 设定用户排序数量限定
-		// String user_order_num =
-		// PropertiesUtils.getValue("user_order_num");
-		//// int orderNum = 0;
-		// if(user_order_num != null){
-		// orderNum = Integer.parseInt(user_order_num);
-		// }
-		// 查询当前t_user 表最大的排序数目
-		// select max(ordernum) from t_user
-		// TbUser tbUser = userService.findById(tOrder.getUsername());
-
 		User tbUser = userService.findMaxOrderNum();
-
 		userService.updateUserOrderNum(tOrder.getUsername(), tbUser.getOrderNum());
-
-		// if(tbUser != null && (tbUser.getOrderNum() == 0 ||
-		// tbUser.getOrderNum() < orderNum)){
-		//// if( tbUser.getOrdernum() < orderNum){
-		// userService.updateUserOrderNum(tOrder.getUsername(),tbUser.getOrderNum());
-		//// }
-		// }
 
 		TbDataDictionary dd = datadictionaryService.findById("backpsd");
 		TbDataDictionary vipaddress = datadictionaryService.findById("vipaddress");
@@ -341,30 +308,13 @@ public class OrderServiceImpl implements OrderService {
 		TbDataDictionary delaytime = datadictionaryService.findById("delaytime");
 
 		Map<String, Object> result = new HashMap<>();
-		// result.put("result", "0");
 		result.put("orderid", orderId);
 		result.put("backpsd", dd == null ? "" : dd.getItemid());// 退菜密码
 
 		result.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址
 		result.put("locktime", locktime == null ? "" : locktime.getItemid()); // 屏保锁屏时间
 		result.put("delaytime", delaytime == null ? "" : delaytime.getItemid()); // 屏保停留时间
-		// 添加日志
-		// Tworklog tworklog = new Tworklog();
-		// tworklog.setWorkid(UUID.randomUUID().toString());
-		// List<Map<String, Object>> list =
-		// datadictionaryService.getDatasByType("WORKTYPE");
-		// for(int i=0;i<list.size();i++){
-		// if(list.get(i).get("itemDesc").equals("开桌")){
-		// tworklog.setWorktype(list.get(i).get("itemid").toString());
-		// };
-		// }
-		// tworklog.setUserid(tOrder.getUsername());
-		// tworklog.setBegintime(new Date());
-		// tworklog.setEndtime(new Date());
-		// tworklog.setIpaddress("127.0.0.1");
-		// tworklog.setStatus(1);
-		// tworklog.setTableid(tOrder.getTableNo());
-		// workLogService.saveLog(tworklog);
+	
 
 		// 开台前清空当前台的操作日记
 		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());

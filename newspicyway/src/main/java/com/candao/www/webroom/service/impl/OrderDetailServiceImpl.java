@@ -495,7 +495,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 transactionManager.rollback(status);
             }
 //            return getResult("3", "服务器异常 ", "");
-            return ReturnMap.getFailureMap("服务器异常");
+            return ReturnMap.getFailureMap("服务器异常，请联系餐到管理员");
         }
 
     }
