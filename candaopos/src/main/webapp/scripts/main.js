@@ -528,7 +528,6 @@ var MainPage = {
 		var isYesterdayEndWork = utils.storage.getter('isYesterdayEndWork') === '1' ? false : true;
 
 		function _getTablesArr(res){
-
 			var isOpend = false;
 			var tablesAll = [];
 			var tablesFree = [];
@@ -686,6 +685,7 @@ var MainPage = {
 						showNavigator: true,
 						pageNumber: tablesCurPager,
 						callback: function(data,pagination) {
+
 							tablesCurPager = pagination.pageNumber
 							$("#standard-tables").html(data.join(''));
 						}
