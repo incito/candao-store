@@ -25,6 +25,16 @@ public class PosJS implements Serializable{
 
 	private String payway;
 
+	public String getItemid() {
+		return itemid;
+	}
+
+	public void setItemid(String itemid) {
+		this.itemid = itemid;
+	}
+
+	private String itemid;
+
 	public String getBankcardno() {
 		return bankcardno;
 	}
