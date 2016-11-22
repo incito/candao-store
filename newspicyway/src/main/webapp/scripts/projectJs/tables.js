@@ -991,7 +991,9 @@ function check_area(){
 	return flag;
 } 
 function delAreaAndTables(){
-	if($('.counter-detail-box').length<1){
+	delArea();
+	/*新接口直接删除*/
+	/*if($('.counter-detail-box').length<1){
 		delArea();
 		return false
 	}
@@ -1011,13 +1013,13 @@ function delAreaAndTables(){
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
 		}
-	});
+	});*/
 }
 function delArea(){
 	$.ajax({
 		type:"post",
 		async:false,
-		url : global_Path+"/tableArea/delete/"+$("#nav-tables .active").attr("id")+".json",
+		url : global_Path+"/tableArea/delTablesAndArea/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
 			if(result.code=='0'){
