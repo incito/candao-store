@@ -97,17 +97,29 @@ var AddDish = {
 		//菜品分类向左向右按钮
 		$(".nav-dishtype-next").click(function(){
 			var count = $dishType.find( "li.nav-dish-type").length;
+
 			if (flag_prev < count - 6) {
-				$dishType .find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
-				$dishType .find("li.nav-dish-type").eq(flag_prev+1).click();
+				$dishType.find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
+				$dishType.find("li.nav-dish-type").eq(flag_prev+1).click();
 				flag_prev++;
+				$(".nav-dishtype-prev").removeClass('disabled');
+				console.log(flag_prev);
+				if(flag_prev === (count - 6)) {
+					$(this).addClass('disabled');
+				}
 			}
+
 		});
 		$(".nav-dishtype-prev").click(function(){
-			if(flag_prev>=1){
+			if(flag_prev>0){
 				$dishType.find("li.nav-dish-type").eq(flag_prev-1).css("margin-left","0");
 				$dishType.find("li.nav-dish-type").eq(flag_prev-1).click();
 				flag_prev--;
+				console.log(flag_prev);
+				$(".nav-dishtype-next").removeClass('disabled');
+				if(flag_prev === 0) {
+					$(this).addClass('disabled');
+				}
 			}
 		});
 
@@ -537,7 +549,7 @@ var AddDish = {
 
 		var _setSubmitStatus = function(){
 			var btn = dom.combodishialog.find('.btn-save');
-			if(dom.combodishialog.find('.group-title').length === dom.combodishialog.find('.fited').length ) {
+			if(dom.combodishialog.find('.group-title').length === 0 || (dom.combodishialog.find('.group-title').length === dom.combodishialog.find('.fited').length) ) {
 				btn.removeClass('disabled');
 			} else {
 				btn.addClass('disabled');
@@ -704,6 +716,8 @@ var AddDish = {
 		});
 
 		dom.combodishialog.modal('show');
+
+		_setSubmitStatus();
 	},
 
 	//获取菜品分类
@@ -728,6 +742,11 @@ var AddDish = {
 						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b>' + v.itemdesc + '</li>';
 					});
 					$(".nav-dish-types").html(htm);
+					if($(".nav-dish-types").find( "li.nav-dish-type").length > 6) {
+						$(".nav-dishtype-prev").addClass('disabled');
+					} else {
+						$(".nav-dishtype-prev, .nav-dishtype-next").addClass('disabled');
+					}
 
 				} else {
 					widget.modal.alert({

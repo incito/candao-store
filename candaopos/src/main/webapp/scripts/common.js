@@ -82,9 +82,9 @@ $(document).ready(function(){
 				}
 			}
 
-			//整数5位 小数2位
+			//整数10位 小数2位
 			if(type === 'intAndFloat2') {
-				if(!(/^[0-9]{1,5}$/g.test(me.val()) || /^[0-9]{1,5}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,5}\.$/g.test(me.val()))) {
+				if(!(/^[0-9]{1,10}$/g.test(me.val()) || /^[0-9]{1,10}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,10}\.$/g.test(me.val()))) {
 					me.val(val.substr(0, me.val().length-1))
 				}
 			}
@@ -92,10 +92,14 @@ $(document).ready(function(){
 	});
 
 
-	$('.modal').on('show.bs.modal,shown.bs.modal', function() {
+	$('.modal').on('show.bs.modal', function() {
 		$('body').css('padding-right', '0');
 	});
 
+	$('.modal').on('shown.bs.modal', function () {
+		$('body').css('padding-right', '0');
+		$(this).find('input[autofocus]').focus();
+	})
 
 
 });
@@ -553,6 +557,9 @@ widget.keyboard = function(opts){
 		_bindEvent();
 	}
 
+
+
+
 	function _bindEvent (){
 		doc.undelegate(opts.target + ' ' + opts.chirdSelector,'click');
 		doc.delegate(opts.target + ' ' + opts.chirdSelector,'click', function(){
@@ -562,17 +569,39 @@ widget.keyboard = function(opts){
 			var keyVal = $(this).text();
 			var keyType = $(this).attr('type');
 
+			var agt=navigator.userAgent.toLowerCase();
+			var ie = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1) && (agt.indexOf("omniweb") == -1));
+			var myArea = focusIpt === null ? '' : focusIpt[0];
+			var selection;
+			if (!ie){
+				if (myArea.selectionStart!= undefined) {
+					selection = {
+						x:myArea.selectionStart,
+						y:myArea.selectionEnd,
+						l:myArea.selectionEnd - myArea.selectionStart
+					}
+				}
+			}
+
 			if(keyVal == "←"){
 				if(focusVal.length>0){
-					focusIpt.val(focusVal.substring(0,focusVal.length-1));
+					if(selection.l > 0) {
+						focusIpt.val(focusVal.substring(0,selection.x) + focusVal.substring(selection.y,focusVal.length));
+					} else {
+						focusIpt.val(focusVal.substring(0,focusVal.length-1));
+					}
 					focusIpt.focus();
 				}
 			}else if(keyVal == "C" &&keyType){
 				focusIpt.val("");
 				focusIpt.focus();
 			}else{
-				focusVal += keyVal;
-				focusIpt.val(focusVal);
+				if(selection.l > 0) {
+					focusIpt.val(focusVal.substring(0,selection.x) +  keyVal + focusVal.substring(selection.y,focusVal.length));
+				} else {
+					focusVal += keyVal;
+					focusIpt.val(focusVal);
+				}
 				focusIpt.focus();
 			}
 
@@ -637,7 +666,7 @@ widget.textAreaModal = function(opts){
 
 	var html = '<div class="fl ">其他原因：</div>' +
 		'<div class="fr">还可以输入<span class="J-count">20</span>字</div>' +
-		'<textarea class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
+		'<textarea autofocus class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
 		'<div class="btn-operate  ">' +
 		'<button class="btn in-btn135 clear-btn J-clear" style="float: left;" type="button">清空</button>' +
 			'<div style="text-align: right;">' +

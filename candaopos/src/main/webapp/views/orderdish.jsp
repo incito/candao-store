@@ -98,11 +98,11 @@
 			</div>
 			<div class="main-div">
 				<div class="form-group dish-type">
-					<div class="nav-type-prev nav-dishtype-prev">
+					<div class="nav-type-prev btn nav-dishtype-prev">
 						<span class="glyphicon glyphicon-chevron-left"></span>
 					</div>
 					<ul class="nav-types nav-dish-types"></ul>
-					<div class="nav-type-next nav-type nav-dishtype-next">
+					<div class="nav-type-next btn nav-type nav-dishtype-next">
 						<span class="glyphicon glyphicon-chevron-right"></span>
 					</div>
 				</div>
@@ -142,13 +142,13 @@
 				<div class="form-group dishes">
 					<div class="dishes-content"></div>
 					<div class="page-btns">
-						<div class="page-btn prev-btn">
+						<div class="page-btn btn prev-btn">
 							<span class="glyphicon glyphicon-chevron-up"></span>
 						</div>
 						<div class="page-info">
 							<span id="curr-page1">0</span>/<span id="pages-len1">0</span>
 						</div>
-						<div class="page-btn next-btn">
+						<div class="page-btn btn next-btn">
 							<span class="glyphicon glyphicon-chevron-down"></span>
 						</div>
 					</div>
@@ -181,7 +181,7 @@
 	                    <div class="form-group dishname">菜品名称：<span class="dish-name"></span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">菜品数量:</span>
-	                    	<input type="text"  class="form-control padding-left J-num dish-amount">
+	                    	<input type="text"  class="form-control padding-left J-num dish-amount" autofocus>
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>

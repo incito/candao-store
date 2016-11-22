@@ -126,7 +126,7 @@ var OpenPage = {
                                     }
                                 };
                                 if(noCheack.length>0){
-                                    widget.modal.alert({
+                                    var modalIns = widget.modal.alert({
                                         cls: 'fade in',
                                         content:'<div style="text-align: left;font-size: 20px;font-weight:bold ">昨日还有未结账的餐台，请先登录收银员账号结账，然后进行清机和结业。</div>',
                                         title:'',
@@ -138,6 +138,9 @@ var OpenPage = {
                                             window.location = "../views/login.jsp"
                                         }
                                     });
+                                    $('#' + modalIns.id).find('.close').click(function(){
+                                        window.location = "../views/login.jsp";
+                                    })
                                 }
                                 else {
                                     widget.modal.alert({

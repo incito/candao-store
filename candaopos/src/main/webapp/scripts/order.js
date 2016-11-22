@@ -612,10 +612,9 @@ var Order = {
                 if(v < 0) {
                     v = 0;
                 }
-                return v;
+                return parseFloat(parseFloat(v).toFixed(2)) ;
             })();
             var needPay = parseFloat(shouldAmount - parseFloat(val) - totalOtherPay);
-            var isGiveChange = giveChange > 0 ? true : false;
             var tipAmount = parseFloat($('#tip-amount').text());
             var amount = parseFloat($('#amount').text());
             var prefAmount = parseFloat($('#discount-amount').text());
@@ -648,7 +647,8 @@ var Order = {
                 $paytotal.find('.needPay').addClass('hide');
             }
 
-            if (isGiveChange) {
+            console.log(giveChange);
+            if (giveChange > 0) {
                 $paytotal.find('.giveChange span').text(parseFloat(giveChange).toFixed(2));
                 $paytotal.find('.giveChange').removeClass('hide');
                 $('.the-change-span').text(parseFloat(giveChange).toFixed(2));
@@ -697,15 +697,11 @@ var Order = {
                     $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
                     $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
-                    _updateCash(shouldAmount - totalOtherPay);
+                    _updateCash(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
                     $paytotal.find('.payamount').find('span').text(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
                     $paytotal.find('.payamount').removeClass('hide');
                 }
             }
-            //console.log('应收:' + shouldAmount);
-            //console.log('现金:' + cash);
-            //console.log('其他收入:' +totalOtherPay);
-            //console.log('needpay:' + needPay);
         }
     },
 
@@ -1496,7 +1492,6 @@ var Order = {
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
         $('#cash input').val(payamount);
-        $('#cash input').attr('prepayamount',payamount);
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
@@ -1668,9 +1663,9 @@ var Order = {
                                     tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname,14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
                             });
-                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter').removeClass('disabled');
+                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
                         } else {
-                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter').addClass('disabled');
+                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter,#backDish').addClass('disabled');
                         }
 
                         $body.html(tr);
