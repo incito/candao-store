@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.Socket;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ytq on 2016/3/15.
@@ -100,6 +97,15 @@ public class OpenCashServiceImpl implements OpenCashService {
                         orderjson.put("vOut", DateUtils.toString(vOutDate, dateFormat));
                     }
                 }
+                //处理优惠明细
+                //优惠金额=套餐优惠+会员价优惠+会员储值虚增+赠菜+会员积分消费+优免（特价菜金额+折扣券+代金券+团购+手工优免）+雅座优惠+抹零+赠菜券*+四舍五入
+                Object preferenceDetail = orderJsonList.get(0).get("preferenceDetail");
+                List<String>preferenceDetailList=new ArrayList<>();
+                StringTokenizer token=new StringTokenizer(preferenceDetail.toString(),"|");
+                while(token.hasMoreElements()){
+                    preferenceDetailList.add( token.nextElement().toString());
+                }
+                orderJsonList.get(0).put("preferenceDetail",preferenceDetailList);
                 responseJsonData.setOrderJson(orderJsonList);
             }
             responseJsonData.setJsJson(jsJsonList);

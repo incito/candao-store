@@ -14,6 +14,7 @@ INSERT INTO `t_dictionary` (`dictid`,`itemid`,`itemDesc`,`itemSort`,`status`,`ty
 VALUES 
 ('15074F08-29A9-5728-B156-CABEA64201E9','0','辛辣道特殊优惠',	'1','1','NEWSPICYWAYPRE','双拼立减','50781820d9e64c778cec80eecc40e238');
 
+DROP TABLE IF EXISTS `t_payway_set`;
 CREATE TABLE `t_payway_set` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(11) DEFAULT NULL COMMENT '支付方式ID',
