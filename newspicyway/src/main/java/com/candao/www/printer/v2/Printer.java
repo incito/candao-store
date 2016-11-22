@@ -193,20 +193,12 @@ public class Printer {
             outputStream.flush();
             writer.flush();
         }
-        boolean isCut = true;
-        Object cutObj = msg[msg.length - 1];
-        if(cutObj instanceof PrintData){
-        	PrintData<Boolean> isCutObj = (PrintData<Boolean>)cutObj;
-        	isCut = !isCutObj.getData();
-        }
-        if(isCut){
-	        //省纸
-	        outputStream.write(PrinterConstant.getLineN((byte) 3));
-	        outputStream.write(new byte[]{10});
-	        outputStream.flush();
-	        outputStream.write(PrinterConstant.CUT);
-	        outputStream.flush();
-        }
+        //省纸
+        outputStream.write(PrinterConstant.getLineN((byte) 3));
+        outputStream.write(new byte[]{10});
+        outputStream.flush();
+        outputStream.write(PrinterConstant.CUT);
+        outputStream.flush();
         handleDuplicate(msg);
 //        outputStream.write(PrinterConstant.BEL);
     }
