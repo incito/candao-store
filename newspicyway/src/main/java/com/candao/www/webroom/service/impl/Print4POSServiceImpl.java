@@ -145,7 +145,24 @@ public class Print4POSServiceImpl implements Print4POSService {
             return;
         }
         PrintObj obj = new PrintObj();
+        List<OrderInfo4Pos> orderInfo4Poses = settlementInfos.get(0).getOrderJson();
+        List<String> prferenceDetails = orderInfo4Poses.get(0).getPreferenceDetail();
+        List<Map<String,Object>> prefers = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(prferenceDetails)){
+            String[] key = {"套餐优惠","会员价优惠","会员储值虚增","赠菜","会员积分消费","优免","雅座优惠","抹零","四舍五入"};
+            String[] value = prferenceDetails.toArray(new String[prferenceDetails.size()]);
+
+            for (int i = 0; i < key.length; i++) {
+                Map<String,Object> temp = new HashMap<>();
+                temp.put("key",key[i]);
+                temp.put("value",i < value.length ? value[i]:"");
+                prefers.add(temp);
+            }
+        }
         obj.setSettlementInfo4Pos(settlementInfos.get(0));
+        Map<String,Object> prefer = new HashMap<>();
+        prefer.put("prefer",prefers);
+        obj.setPosData(prefer);
         obj.setListenerType(Constant.ListenerType.ClearMachineDataTemplate);
 
         // TODO

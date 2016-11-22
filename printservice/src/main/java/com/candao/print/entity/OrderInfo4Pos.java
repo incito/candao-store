@@ -1,6 +1,8 @@
 package com.candao.print.entity;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public class OrderInfo4Pos implements Serializable,Cloneable{
 
@@ -180,6 +182,26 @@ public class OrderInfo4Pos implements Serializable,Cloneable{
     private String zdAmount;
     
     private String accountsReceivableSubtotal;
+
+    public List<Map<String, Object>> getPrefers() {
+        return prefers;
+    }
+
+    public void setPrefers(List<Map<String, Object>> prefers) {
+        this.prefers = prefers;
+    }
+
+    private List<Map<String,Object>> prefers;
+
+    public List<String> getPreferenceDetail() {
+        return preferenceDetail;
+    }
+
+    public void setPreferenceDetail(List<String> preferenceDetail) {
+        this.preferenceDetail = preferenceDetail;
+    }
+
+    private List<String> preferenceDetail;
 
     public String getAgeperiod() {
         return ageperiod;
@@ -1081,4 +1103,5 @@ public class OrderInfo4Pos implements Serializable,Cloneable{
 	public void setOrderday(String orderday) {
 		this.orderday = orderday;
 	}
+
 }
