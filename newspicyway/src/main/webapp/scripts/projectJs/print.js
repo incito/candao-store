@@ -97,7 +97,7 @@ $(document).ready(function(){
 		initPrinter();
 		$(".modal-title").text("添加打印配置");
 		$("#printConfig-add-dialog").modal("show");
-		/*默认显示*/
+		/*默认显示添加*/
 		$('#print-groupdishes').removeClass('hidden');
 	});
 	/*打印单据选择*/
