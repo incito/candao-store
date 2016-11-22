@@ -97,6 +97,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	background: #fff;
 }
 .coupon-box .active{
 	background: #FF5803;

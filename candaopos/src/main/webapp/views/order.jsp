@@ -23,7 +23,7 @@
 	<link rel="stylesheet" href="../css/orderdish.css">
 	<link rel="stylesheet" href="../css/order.css">
 </head>
-<body id="order" style="overflow-y: scroll">
+<body id="order" style="overflow-y: hidden">
 
 <%
 	String orderid = request.getParameter("orderid");
