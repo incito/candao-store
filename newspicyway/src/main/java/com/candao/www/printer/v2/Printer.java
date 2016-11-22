@@ -28,7 +28,7 @@ public class Printer {
     /**
      * 打印机响应超时时间 单位秒
      */
-    private static final Charset CHARSET = Charset.forName("GBK");
+    protected static final Charset CHARSET = Charset.forName("GBK");
     /**
      * 打印机空闲间隔，超过该时间会发起打印机状态检查
      */
@@ -122,18 +122,18 @@ public class Printer {
                             continue;
                         }
                         /*开始打印*/
-                        logger.info("[" + ip + "]开始打印");
+                        logger.info("[" + ip + "]开始发送内容");
                         /*开启一票一控*/
                         outputStream.write(PrinterConstant.AUTO_STATUS);
                         int rowCount = doPrint(msg, outputStream);
                         /*检查打印结果*/
-                        logger.info("[" + ip + "]打印结束，检查打印结果");
+                        logger.info("[" + ip + "]内容发送完成，检查打印结果");
                         state = PrintControl.CheckJob(8000*getPageCount(rowCount), inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
                         if (state == PrintControl.STATUS_PRINT_DONE) {
-                            logger.info("[" + ip + "]打印完成");
+                            logger.info("[" + ip + "]打印成功");
                             result.setCode(state);
                             doCommand(outputStream);
                             break;
@@ -339,7 +339,7 @@ public class Printer {
                 PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回
                 if (state == PrintControl.STATUS_PRINT_DONE) {
-                    logger.info("[" + ip + "]打印完成");
+                    logger.info("[" + ip + "]打印成功");
                 } else {
                     logger.info("[" + ip + "]打印不成功:" + state);
                 }
