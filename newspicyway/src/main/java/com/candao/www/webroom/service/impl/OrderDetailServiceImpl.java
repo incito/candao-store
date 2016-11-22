@@ -1933,6 +1933,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         String orderId = urgeDish.getOrderNo();
         String discardUserId = urgeDish.getDiscardUserId();
         String discardReason = urgeDish.getDiscardReason();
+        String userName = urgeDish.getUserName() == null ? "" : urgeDish.getUserName();
         if (discardUserId == null) {
             discardUserId = urgeDish.getUserName();
         }
@@ -1972,6 +1973,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
             orderDetail.setDiscardReason(discardReason);
             orderDetail.setDiscardUserId(discardUserId);
+            orderDetail.setUserName(userName);
             urgeNum = detailNum.subtract(urgeDish.getDishNum());
             String dishType = orderDetail.getDishtype();
             int isMaster = orderDetail.getIsmaster();
@@ -2120,6 +2122,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetailDel.setSuperkey(urgeDish.getPrimarykey());
                         orderDetailDel.setDiscardUserId(discardUserId);
                         orderDetailDel.setDiscardReason(discardReason);
+                        orderDetailDel.setUserName(userName);
                         torderDetailMapper.updateDiscardDishSetUserId(orderDetailDel);
 
                         Map<String, Object> deleteMap = new HashMap<String, Object>();
@@ -2184,6 +2187,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             orderDetail.setOrderid(orderId);
             orderDetail.setDiscardUserId(discardUserId);
             orderDetail.setDiscardReason(discardReason);
+            orderDetail.setUserName(userName);
             torderDetailMapper.updateDiscardDishUserIdOnce(orderDetail);
 
             Map<String, Object> deleteMap = new HashMap<String, Object>();
@@ -2246,6 +2250,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             TorderDetail uporderDetail = new TorderDetail();
             uporderDetail.setDiscardUserId(orderDetail.getDiscardUserId());
             uporderDetail.setDiscardReason(orderDetail.getDiscardReason());
+            uporderDetail.setUserName(orderDetail.getUserName());
             uporderDetail.setPrimarykey(primarykey);
             torderDetailMapper.updateFishpotReason(uporderDetail);
         }
