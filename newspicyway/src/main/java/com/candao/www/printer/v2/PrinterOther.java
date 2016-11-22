@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
@@ -75,38 +76,31 @@ public class PrinterOther extends Printer {
 
     @Override
     protected int doPrint(Object[] msg, OutputStream outputStream) throws IOException {
-        outputStream.write(PrinterConstant.AUTO_STATUS);
-        //added by caicai
-        //省纸
-        /*outputStream.write(new byte[]{27, 27});*/
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, CHARSET);
         int rowCount=0;
         int pauseCount=0;
         for (Object o : msg) {
             if (null == o) {
                 o = "";
             }
-            byte[] line;
             if (o instanceof Byte) {
-                line = new byte[]{(byte) o};
+                outputStream.write(new byte[]{(byte) o});
             } else if (o instanceof byte[]) {
-                line = (byte[]) o;
+                outputStream.write((byte[]) o);
             } else {
-                line = o.toString().getBytes(CHARSET);
-//                if(!o.equals("\r\n")) {
-                    rowCount++;
-//                }
+                writer.write(o.toString());
+                rowCount++;
             }
-            outputStream.write(line);
             outputStream.flush();
+            writer.flush();
             //打印一页停顿1s
             if(rowCount>0&&rowCount%pageNum==0&&pauseCount!=rowCount){
                 pauseCount=rowCount;
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                sleep(3000);
             }
+        }
+        if(pauseCount!=0){
+            sleep(3000);
         }
         outputStream.write(PrinterConstant.getLineN((byte) 4));
         outputStream.write(new byte[]{10});
@@ -115,6 +109,14 @@ public class PrinterOther extends Printer {
 //        outputStream.write(PrinterConstant.BEL);
         outputStream.flush();
         return rowCount;
+    }
+
+    private void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            logger.error("--",e);
+        }
     }
 
     @Override
