@@ -1,11 +1,5 @@
 package com.candao.www.printer.v2;
 
-import com.candao.print.entity.PrinterConstant;
-import com.candao.print.utils.PrintControl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,6 +11,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
+
+import com.candao.print.entity.PrinterConstant;
+import com.candao.print.utils.PrintControl;
 
 /**
  * 打印机实例
@@ -60,6 +61,10 @@ public class Printer {
      * 打印历史ID记录
      */
     private List<String> historyIds = new ArrayList<>();
+    /**
+     * 分页大小
+     */
+    protected int pageNum=200;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -120,10 +125,10 @@ public class Printer {
                         logger.info("[" + ip + "]开始打印");
                         /*开启一票一控*/
                         outputStream.write(PrinterConstant.AUTO_STATUS);
-                        doPrint(msg, outputStream);
+                        int rowCount = doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
-                        state = PrintControl.CheckJob(8000, inputStream, getIp());
+                        state = PrintControl.CheckJob(8000*getPageCount(rowCount), inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
@@ -175,10 +180,15 @@ public class Printer {
         }
         return result;
     }
+    protected int getPageCount(int rowCount){
+        int mod=rowCount%pageNum;
+        return mod>0?(rowCount/pageNum+1):rowCount/pageNum;
+    }
 
-    protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
+    protected int doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         msg = checkDuplicate(msg);
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "GBK");
+        int rowCount=0;
         for (Object o : msg) {
             if (null == o) {
                 o = "";
@@ -189,6 +199,7 @@ public class Printer {
                 outputStream.write((byte[]) o);
             } else {
                 writer.write(o.toString());
+                rowCount++;
             }
             outputStream.flush();
             writer.flush();
@@ -200,7 +211,7 @@ public class Printer {
         outputStream.write(PrinterConstant.CUT);
         outputStream.flush();
         handleDuplicate(msg);
-//        outputStream.write(PrinterConstant.BEL);
+        return rowCount;
     }
 
     /**
@@ -321,9 +332,9 @@ public class Printer {
                 }
                  /*开启一票一控*/
                 outputStream.write(PrinterConstant.AUTO_STATUS);
-                doPrint(msg, outputStream);
+                int rowCount = doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
-                state = PrintControl.CheckJob(8000, inputStream, getIp());
+                state = PrintControl.CheckJob(8000*getPageCount(rowCount), inputStream, getIp());
                 result.setCode(state);
                 PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回
