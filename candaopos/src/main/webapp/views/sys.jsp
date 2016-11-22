@@ -73,7 +73,7 @@
 										</tbody>
 									</table>
 										<div class="foot-menu" style="position: fixed;bottom: 0px;width: 70px;right: 40px;">
-											<div class=""  style="margin-right: 10px;background: #fff;height: 40px; line-height:40px;border-radius: 5px;width: 100%;text-align: center">刷新(<span id="show"></span>)</div>
+											<div class=""  style="margin-right: 10px;background: #fff;height: 40px; line-height:40px;border-radius: 5px;width: 100%;text-align: center;cursor: pointer" onclick="cashbox.clickNo()">刷新(<span id="show"></span>)</div>
 										</div>
 								</div>
 
@@ -210,6 +210,15 @@
 				},1000);
 				$('#show').text(startSec);
 			}
+		},
+		/*手动点击刷新*/
+		clickNo:function () {
+			var  that=this;
+			clearTimeout(timerClear);//清楚setTimeout
+			that.getPrintDetail();
+			that.abc()
+
+
 		}
 	}
 </script>

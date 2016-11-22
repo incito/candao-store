@@ -67,7 +67,7 @@
 				<div class="form-group form-group-nor" >
 					<span class="form-label">充值金额:</span>
 					<div class="form-group-info">
-						<input value=""   name="repwd" id="rechargeMoney"  placeholder="100.00" type="text" class="form-control" >
+						<input value=""   name="repwd" id="rechargeMoney"  type="text" class="form-control" >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
