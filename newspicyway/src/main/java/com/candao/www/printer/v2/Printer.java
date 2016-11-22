@@ -25,7 +25,7 @@ public class Printer {
     /**
      * 打印机响应超时时间 单位秒
      */
-    private static final Charset CHARSET = Charset.forName("GBK");
+    protected static final Charset CHARSET = Charset.forName("GBK");
     /**
      * 打印机空闲间隔，超过该时间会发起打印机状态检查
      */
@@ -54,6 +54,10 @@ public class Printer {
      * 停止打印标示
      */
     private volatile boolean stop = false;
+    /**
+     * 分页大小
+     */
+    protected int pageNum=200;
 
     /**
      * 打印方法，阻塞式，打印完成时返回
@@ -112,10 +116,10 @@ public class Printer {
                         }
                         /*开始打印*/
                         logger.info("[" + ip + "]开始打印");
-                        doPrint(msg, outputStream);
+                        int rowCount = doPrint(msg, outputStream);
                         /*检查打印结果*/
                         logger.info("[" + ip + "]打印结束，检查打印结果");
-                        state = PrintControl.CheckJob(8000, inputStream, getIp());
+                        state = PrintControl.CheckJob(8000*getPageCount(rowCount), inputStream, getIp());
                         PrinterStatusManager.stateMonitor(state, this);
                         logger.info("[" + ip + "]打印结果:" + state);
                         //打印完成则返回
@@ -167,12 +171,17 @@ public class Printer {
         }
         return result;
     }
+    protected int getPageCount(int rowCount){
+        int mod=rowCount%pageNum;
+        return mod>0?(rowCount/pageNum+1):rowCount/pageNum;
+    }
 
-    protected void doPrint(Object[] msg, OutputStream outputStream) throws IOException {
+    protected int doPrint(Object[] msg, OutputStream outputStream) throws IOException {
         outputStream.write(PrinterConstant.AUTO_STATUS);
         //added by caicai
         //省纸
         /*outputStream.write(new byte[]{27, 27});*/
+        int rowCount=0;
         for (Object o : msg) {
             if (null == o) {
                 o = "";
@@ -184,6 +193,7 @@ public class Printer {
                 line = (byte[]) o;
             } else {
                 line = o.toString().getBytes(CHARSET);
+                rowCount++;
             }
             outputStream.write(line);
             outputStream.flush();
@@ -194,6 +204,7 @@ public class Printer {
         outputStream.write(PrinterConstant.CUT);
 //        outputStream.write(PrinterConstant.BEL);
         outputStream.flush();
+        return rowCount;
     }
 
     /**
@@ -248,9 +259,9 @@ public class Printer {
                     result.setCode(state);
                     return result;
                 }
-                doPrint(msg, outputStream);
+                int rowCount = doPrint(msg, outputStream);
                 logger.info("[" + ip + "]检查打印结果");
-                state = PrintControl.CheckJob(8000, inputStream, getIp());
+                state = PrintControl.CheckJob(8000*getPageCount(rowCount), inputStream, getIp());
                 result.setCode(state);
                 PrinterStatusManager.stateMonitor(state, this);
                 //打印完成则返回

@@ -74,6 +74,50 @@ public class PrinterOther extends Printer {
     }
 
     @Override
+    protected int doPrint(Object[] msg, OutputStream outputStream) throws IOException {
+        outputStream.write(PrinterConstant.AUTO_STATUS);
+        //added by caicai
+        //省纸
+        /*outputStream.write(new byte[]{27, 27});*/
+        int rowCount=0;
+        int pauseCount=0;
+        for (Object o : msg) {
+            if (null == o) {
+                o = "";
+            }
+            byte[] line;
+            if (o instanceof Byte) {
+                line = new byte[]{(byte) o};
+            } else if (o instanceof byte[]) {
+                line = (byte[]) o;
+            } else {
+                line = o.toString().getBytes(CHARSET);
+//                if(!o.equals("\r\n")) {
+                    rowCount++;
+//                }
+            }
+            outputStream.write(line);
+            outputStream.flush();
+            //打印一页停顿1s
+            if(rowCount>0&&rowCount%pageNum==0&&pauseCount!=rowCount){
+                pauseCount=rowCount;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        outputStream.write(PrinterConstant.getLineN((byte) 4));
+        outputStream.write(new byte[]{10});
+        outputStream.flush();
+        outputStream.write(PrinterConstant.CUT);
+//        outputStream.write(PrinterConstant.BEL);
+        outputStream.flush();
+        return rowCount;
+    }
+
+    @Override
     public PrintResult tryPrint(Object[] msg, long time) {
         {
             PrintResult result = new PrintResult();
