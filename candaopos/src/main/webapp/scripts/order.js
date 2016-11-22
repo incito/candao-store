@@ -1244,8 +1244,8 @@ var Order = {
 
     //点菜
     takeOrder: function () {
-        var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno + '&type=' + g_eatType;
-        window.location.href = encodeURI(encodeURI(url));
+        var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(consts.tableno)) + '&type=' + g_eatType;
+        window.location.href = url;
     },
 
     /**
@@ -2257,9 +2257,8 @@ var Order = {
                                     })
                                 }).then(function(data){
                                     console.log('餐道会员会员消费');
-                                    utils.loading.open('保存会员消费…');
                                     if(data.Retcode == '1') {
-                                        widget.modal.alert({
+                                       var alertMemIns =  widget.modal.alert({
                                             cls: 'fade in',
                                             content: '<strong>' + data.RetInfo + '</strong>',
                                             width: 500,
@@ -2267,8 +2266,97 @@ var Order = {
                                             btnOkTxt: '',
                                             btnCancelTxt: '确定'
                                         });
-                                        debugger;
                                         //反结算
+                                        if(consts.vipType === '1'){
+                                            $.ajax({
+                                                url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
+                                                method: 'POST',
+                                                contentType: "application/json",
+                                                data: JSON.stringify({
+                                                    'orderid': consts.orderid,
+                                                }),
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    var rebackMemberinfo=data;
+                                                    if(rebackMemberinfo.cardno !=undefined){
+                                                        $.ajax({
+                                                            url:consts.memberAddr.vipcandaourl + _config.interfaceUrl.VoidSaleCanDao,//餐道会员取消会员消费
+                                                            method: 'POST',
+                                                            contentType: "application/json",
+                                                            data: JSON.stringify({
+                                                                "Serial":rebackMemberinfo.orderid,//订单号
+                                                                "TraceCode":rebackMemberinfo.serial,//会员交易号
+                                                                "SUPERPWD":"",
+                                                                "cardno":rebackMemberinfo.cardno,//会员卡号
+                                                                "password":"",
+                                                                "branch_id":rebackMemberinfo.business,//租户id
+                                                                "securityCode":""
+                                                            }),
+                                                            dataType: "json",
+                                                            success: function (msg) {
+                                                                if(msg.Retcode!=0){
+                                                                    utils.printError.alert('会员反结算失败')
+                                                                }
+                                                                else {
+                                                                    //成功
+                                                                    rebackOrderOk()
+                                                                }
+                                                            },
+                                                        })
+                                                    }
+                                                }
+                                            })
+                                        }
+                                        /*雅座会员反结算*/
+                                        if(consts.vipType == '2'){
+                                            $.ajax({
+                                                url:consts.memberAddr.vipotherurl + _config.interfaceUrl.YaVoidSaleCanDao + consts.orderid + '/0/111111/',//雅座会员取消会员消费
+                                                type: "get",
+                                                dataType: "json",
+                                                success: function (msg) {
+                                                    if(msg.Data=='1'){
+                                                        rebackOrderOk();
+                                                    }
+                                                    else {
+                                                        utils.printError.alert(msg.Info)
+                                                    }
+                                                }
+                                            })
+                                        }
+
+
+                                        //会员反结结算成功后执行后台账单反结算
+                                        function rebackOrderOk() {
+                                            $.ajax({
+                                                url: _config.interfaceUrl.AntiSettlementOrder,//反结算
+                                                method: 'POST',
+                                                contentType: "application/json",
+                                                data: JSON.stringify({
+                                                    'reason':'会员结算失败，系统自动反结',
+                                                    'orderNo': consts.orderid,
+                                                    'userName': utils.storage.getter('aUserid')
+                                                }),
+                                                dataType: "json",
+                                                success:function (data) {
+                                                    if(data.result==='0'){
+                                                    }
+                                                    else {
+                                                        widget.modal.alert({
+                                                            cls: 'fade in',
+                                                            content:'<strong>反结算失败，请稍后再试</strong>',
+                                                            width:500,
+                                                            height:500,
+                                                            btnOkTxt: '',
+                                                            btnCancelTxt: '确定'
+                                                        });
+                                                    }
+
+                                                }
+                                            })
+                                        }
+
+                                        return false;
+
                                     } else {
                                         //保存会员消费
                                         return $.ajax({
@@ -2296,23 +2384,30 @@ var Order = {
                                             })
                                         });
                                     }
-                                }).then(function(){
-                                    that.printPay(2);
-                                    utils.loading.open('打印会员消费…');
-                                    //打印会员消费
-                                    return $.ajax({
-                                        url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
-                                        method: 'get',
-                                        contentType: "application/json",
-                                        dataType: 'json',
-                                        async: false,
-                                        success: function(res3){
-                                            console.log('打印会员消费');
-                                            console.log(res3);
-                                        }
-                                    });
-                                }).then(function(){
-                                    invoiceMsg()//发票信息
+                                }).then(function(data){
+                                    if(data) {
+                                        that.printPay(2);
+                                        //打印会员消费
+                                        return $.ajax({
+                                            url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
+                                            method: 'get',
+                                            contentType: "application/json",
+                                            dataType: 'json',
+                                            async: false,
+                                            success: function(res3){
+                                                console.log('打印会员消费');
+                                                console.log(res3);
+                                            }
+                                        });
+                                    } else {
+                                        return false;
+                                    }
+
+                                }).then(function(data){
+                                    if(data){
+                                        invoiceMsg()//发票信息
+                                    }
+
                                 });
                             } else {
                                 that.printPay(2);

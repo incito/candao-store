@@ -219,7 +219,7 @@ var checkOrder={
         jumpfjs:function(user) {
             var memberAddress = JSON.parse(utils.storage.getter('memberAddress')),//会员地址
                 vipType=utils.storage.getter('vipType');//会员类型1为餐道2为雅座
-            /*雅座会员反结算*/
+            /*餐道会员反结算*/
             if(cheackorderParameter.memberno  && vipType=='1'){
                 $.ajax({
                     url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
@@ -297,8 +297,8 @@ var checkOrder={
                         $('#c-mod-fjs').modal("hide");
                         if(data.result==='0'){
                             $('#c-mod-fjs').modal("hide");
-                            var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
-                            window.location.href=encodeURI(encodeURI(_url));
+                            var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(cheackorderParameter.tableno))+'&referer=1&type='+cheackorderParameter.type+''
+                            window.location.href=_url;
                         }
                         else {
                             $('#c-mod-fjs').modal("hide");
@@ -450,8 +450,8 @@ var checkOrder={
         function _clearingOk() {
             var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
             if(userRight){
-                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
-                window.location.href=encodeURI(encodeURI(_url));
+                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(cheackorderParameter.tableno))+'&referer=1&type='+cheackorderParameter.type+''
+                window.location.href=_url;
             }
             else {
                 that.errorAlert('您没有收银权限')
