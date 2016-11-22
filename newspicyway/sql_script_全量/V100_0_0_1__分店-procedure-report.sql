@@ -6071,7 +6071,7 @@ read_loop:
          , number
          , share
          , thousandstimes
-         , orignalprice
+         , CAST(orignalprice AS CHAR) as orignalprice
          , turnover
     FROM
       t_temp_res;
