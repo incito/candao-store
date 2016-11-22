@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.Socket;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,10 @@ public class OpenCashServiceImpl implements OpenCashService {
             LOGGER.info("###getClearMachineData userId={},jsOrder={},posId={}###", aUserId, jsOrder, posId);
             String classNo = jsOrder;
             if ("".equals(classNo)) {
-                classNo = nodeClassMapper.getMaxClassNo();
+                Map<String,Object> param = new HashMap<>();
+                param.put("operatorID",aUserId);
+                param.put("posID",posId);
+                classNo = nodeClassMapper.getMaxClassNo(param);
             }
             Integer tipTotalAmount = nodeClassMapper.getTipTotalAmountByClassNo(classNo);
             List<Map> orderJsonList = nodeClassMapper.getNodeClassByNo(classNo, tipTotalAmount);
