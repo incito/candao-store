@@ -61,9 +61,6 @@
 		    <if test="_parameter.containsKey('remark1')">  
 		      ,remark1 = #{remark1}
 		     </if>
-		     <if test="_parameter.containsKey('cardno')">  
-		      ,cardno = #{cardno}
-		     </if>
 		      <if test="_parameter.containsKey('remark2')">  
 		      ,remark2 = #{remark2}
 		     </if>
