@@ -207,25 +207,25 @@ public class PadInterfaceController {
                     + (order.getWomanNum() == null ? 0 : order.getWomanNum()));
         }
 
-        String returnStr = orderService.startOrder(order);
+        
+        String returnStr = "";
+        try {
+        	returnStr = orderService.startOrder(order);
+        	 JSONObject returnobject = JSONObject.fromObject(returnStr);
+             if (!StringUtils.isBlank(order.getIsShield()) && order.getIsShield().equals("0")
+                     && returnobject.containsKey("code") && !StringUtils.isBlank(returnobject.getString("code"))
+                     && returnobject.getString("code").equals("0")) {
+                     Map<String, Object> map = returnobject.getJSONObject("data");
+                     String orderid = map.get("orderid") == null ? "" : map.get("orderid").toString();
+                     if (!StringUtils.isBlank(orderid)) {
+                         giftService.updateOrderStatus(orderid);
+                     }
+             }
+		} catch (Exception e) {
+			logger.error("开台失败（内部系统错误）：",e.fillInStackTrace());
+			returnStr=JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("开台系统内部错误，请您联系餐道管理员为你检查！"));
+		}
 
-        JSONObject returnobject = JSONObject.fromObject(returnStr);
-
-        if (!StringUtils.isBlank(order.getIsShield()) && order.getIsShield().equals("0")
-                && returnobject.containsKey("code") && !StringUtils.isBlank(returnobject.getString("code"))
-                && returnobject.getString("code").equals("0")) {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = returnobject.getJSONObject("data");
-                String orderid = map.get("orderid") == null ? "" : map.get("orderid").toString();
-                if (!StringUtils.isBlank(orderid)) {
-                    giftService.updateOrderStatus(orderid);
-                }
-
-            } catch (Exception ex) {
-                logger.error("--->开台失败！", ex);
-            }
-        }
         logger.info("开台返回结果：" + returnStr);
         return returnStr;
     }
@@ -791,34 +791,41 @@ public class PadInterfaceController {
         jsonRecordService.insertJsonRecord(record);
 
         SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
-        String result = orderSettleService.settleOrder(settlementInfo);
+       
+        try {
+        	String result = orderSettleService.settleOrder(settlementInfo);
 
-        final String orderid = settlementInfo.getOrderNo();
-        // 计算订单的实收、优免等
-        orderOpService.calcOrderAmount(orderid);
-        // 内部直接调用计算实收，POS不再调用
-        orderSettleService.calDebitAmount(orderid);
-        // 修改投诉表信息
-        new Thread(new Runnable() {
-            public void run() {
-                callWaiterService.updateCallStatus(orderid);
+            final String orderid = settlementInfo.getOrderNo();
+            // 计算订单的实收、优免等
+            orderOpService.calcOrderAmount(orderid);
+            // 内部直接调用计算实收，POS不再调用
+            orderSettleService.calDebitAmount(orderid);
+            // 修改投诉表信息
+            new Thread(new Runnable() {
+                public void run() {
+                    callWaiterService.updateCallStatus(orderid);
+                }
+            }).start();
+
+            if ("0".equals(result)) {
+                logger.info("结算成功，调用进销存接口");
+                String psicallback = psicallback(settlementInfo, 0);
+
+                  //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
+                 //在此处转换
+            	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
+            	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
+                return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
+            } else {
+            	Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
+                logger.error("结算失败，result :" + map.get("mes"));
+                return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
             }
-        }).start();
-
-        if ("0".equals(result)) {
-            logger.info("结算成功，调用进销存接口");
-            String psicallback = psicallback(settlementInfo, 0);
-
-              //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
-             //在此处转换
-        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
-        	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
-            return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
-        } else {
-        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
-            logger.error("结算失败，result :" + map.get("mes"));
-            return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
-        }
+		} catch (Exception e) {
+			logger.error("结账异常（运行时异常）：",e.fillInStackTrace());
+			 return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("结账发现未知异常，请联系餐道管理员帮您解决！"));
+		}
+        
     }
 
     // 进销存回调
@@ -920,7 +927,13 @@ public class PadInterfaceController {
         jsonRecordService.insertJsonRecord(record);
 
         SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
-        String result = orderSettleService.rebackSettleOrder(settlementInfo);
+        String result = "";
+        try {
+        	result=orderSettleService.rebackSettleOrder(settlementInfo);
+		} catch (Exception e) {
+			logger.error("反结算失败(系统内部错误):",e.fillInStackTrace());
+			return Constant.FAILUREMSG;
+		}
 
         if ("0".equals(result)) {
             logger.info("反结算成功，调用进销存反结算接口，是否使用微信支付： " + result);

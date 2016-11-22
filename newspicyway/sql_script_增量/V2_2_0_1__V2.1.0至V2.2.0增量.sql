@@ -9,8 +9,8 @@ AND itemid IN(0,1,5,8,13,17,18,30);
 -- 更新文案
 UPDATE t_dictionary SET itemDesc='会员卡' where type='PAYWAY' and itemid='8';
 UPDATE t_dictionary SET itemDesc='挂账支付' where type='PAYWAY' and itemid='13';
---新辣道配置优惠特殊优惠
-INSERT INTO `t_dictionary` (`dictid`,`itemid`,`itemDesc`,`itemSort`,`status`,`type`,`typename`,`item_value`)
+-- 新辣道配置优惠特殊优惠
+INSERT IGNORE INTO `t_dictionary` (`dictid`,`itemid`,`itemDesc`,`itemSort`,`status`,`type`,`typename`,`item_value`)
 VALUES 
 ('15074F08-29A9-5728-B156-CABEA64201E9','0','辛辣道特殊优惠',	'1','1','NEWSPICYWAYPRE','双拼立减','50781820d9e64c778cec80eecc40e238');
 
