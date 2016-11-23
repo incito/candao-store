@@ -22,6 +22,7 @@ import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.security.controller.BaseController;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.service.OrderService;
+import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.webroom.service.impl.CallWaiterServiceImpl;
 import com.candao.www.webroom.service.OrderMemberService;
 
@@ -31,8 +32,8 @@ public class MemberController extends BaseController{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 	
-	@Autowired
-	private OrderService orderService ;
+    @Autowired
+    OrderSettleService orderSettleService;
 	
 	@Autowired
 	private OrderMemberService orderMemberService ;
@@ -112,7 +113,7 @@ public class MemberController extends BaseController{
 			}
 
             // 计算菜品实收
-            orderSettleService.calDebitAmount(orderid);
+            orderSettleService.calDebitAmount(tOrderMember.getOrderid());
 			
 			resultmap.put("Retcode", "0");
 			resultmap.put("RetInfo", "会员消费分店保存成功");
