@@ -1,5 +1,5 @@
 -- status:启用：1，禁用：0 ；charges_status：计算实收：1，不计算实收：0；
-UPDATE t_dictionary SET STATUS = 0 , charges_status ='0'
+UPDATE t_dictionary SET charges_status ='0'
 WHERE TYPE='PAYWAY'
 AND itemid NOT IN(0,1,5,8,13,17,18,30);
 
