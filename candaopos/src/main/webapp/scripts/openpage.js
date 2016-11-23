@@ -265,29 +265,58 @@ var OpenPage = {
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
                 if (data.Data == '1') {
                     /*结业数据上传*/
-                    /*$.ajax({
-                        url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
-                        type: "get",
-                        dataType: 'text',
-                        data: {
-                            'synkey': 'candaosynkey'
-                        },
-                        success: function (msg) {
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content: '<strong>' + data.Info + ',即将退出程序</strong>',
-                                width: 500,
-                                height: 500,
-                                btnOkTxt: '确定',
-                                btnCancelTxt: '',
-                                btnOkCb: function () {
-                                    $(".modal-alert:last,.modal-backdrop:last").remove();
-                                    window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid');
-                                    utils.clearLocalStorage.clearSelect();
+                    /*function _EndWorkSyncData() {
+                        $.ajax({
+                            url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
+                            method: 'POST',
+                            contentType: "application/json",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                'synkey': 'candaosynkey'
+                            }),
+                            success: function (msg) {
+                                //成功
+                                if (msg.code == '0000') {
+                                    widget.modal.alert({
+                                        cls: 'fade in',
+                                        content: '<strong>' + data.Info + ',即将退出程序</strong>',
+                                        width: 500,
+                                        height: 500,
+                                        btnOkTxt: '确定',
+                                        btnCancelTxt: '',
+                                        btnOkCb: function () {
+                                            $(".modal-alert:last,.modal-backdrop:last").remove();
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
+                                            utils.clearLocalStorage.clearSelect();//清空缓存
+                                        }
+                                    });
+                                    $('.modal-alert:last .modal-header .close').hide();//隐藏X关闭按钮
                                 }
-                            });
-                        }
-                    });*/
+                                //失败
+                                else {
+                                    widget.modal.alert({
+                                        cls: 'fade in printError endwork',
+                                        content: '<strong style="text-align: left">上传营业数据失败，请重新上传！<br/>失败原因：' + msg.message + '</strong><br> <br><span style="font-size: 12px;line-height: 25px;padding: 20px 50px 0px 50px;">您可以选择”重新上传“立即重传，或者点击关闭按钮等待系统在凌晨1点到9点自动上传</span>',
+                                        width: 500,
+                                        height: 500,
+                                        btnOkTxt: '重新上传',
+                                        btnCancelTxt: '关闭',
+                                        btnOkCb: function () {
+                                            $(".modal-alert:last,.modal-backdrop:last").remove();
+                                            _EndWorkSyncData();
+                                        },
+                                        btnCancelCb: function () {
+                                            $(".modal-alert:last,.modal-backdrop:last").remove();
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
+                                            utils.clearLocalStorage.clearSelect();//清空缓存
+                                        }
+                                    });
+                                    $('.modal-alert:last .modal-header .close').hide();//隐藏X关闭按钮
+                                }
+                            }
+                        });
+                    }*/
+
                     widget.modal.alert({
                         cls: 'fade in',
                         content: '<strong>' + data.Info + ',即将退出程序</strong>',
@@ -297,7 +326,7 @@ var OpenPage = {
                         btnCancelTxt: '',
                         btnOkCb: function () {
                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid')+'&cashIp='+JSON.parse(utils.storage.getter('config')).OpenCashIp;
+                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
                             utils.clearLocalStorage.clearSelect();
                         }
                     });
@@ -355,11 +384,11 @@ var OpenPage = {
             cache: false,
         }).then(function (res) {
             utils.storage.setter('config', res.split("*/")[1]);
-            var config=JSON.parse(utils.storage.getter('config'));
+            var config = JSON.parse(utils.storage.getter('config'));
             /*设置钱箱地址*/
-            var cashIp=utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
-            config['OpenCashIp']=cashIp
-            utils.storage.setter('config',JSON.stringify(config))
+            var cashIp = utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
+            config['OpenCashIp'] = cashIp
+            utils.storage.setter('config', JSON.stringify(config))
         });
 
         //获取会员配置地址
