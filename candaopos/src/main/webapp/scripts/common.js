@@ -12,7 +12,7 @@ $(document).ready(function(){
 		document.querySelector('head').appendChild(msViewportStyle);
 	}
     $(document).bind("ajaxSend", function () {
-			utils.loading.open('正在加载…')
+		utils.loading.open('正在加载…')
 
     }).bind("ajaxComplete", function () {
       utils.loading.remove();
@@ -103,7 +103,7 @@ $(document).ready(function(){
 
 
 });
-javascript:window.history.forward(1);
+
 
 /************
  * 配置项

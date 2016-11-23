@@ -152,11 +152,11 @@
 			</div>
 			<div class="main-div">
 				<div class="dish-type">
-					<div class="nav-type-prev nav-pretype-prev">
+					<div class="nav-type-prev nav-pretype-prev btn">
 						<span class="glyphicon glyphicon-chevron-left"></span>
 					</div>
 					<ul class="nav-types nav-pref-types"></ul>
-					<div class="nav-type-next nav-type nav-pretype-next">
+					<div class="nav-type-next nav-type nav-pretype-next btn">
 						<span class="glyphicon glyphicon-chevron-right"></span>
 					</div>
 				</div>
@@ -201,7 +201,7 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val" name="bank"  iptType="bank">
+							<input type="text"  validType='intAndFloat2' class="form-control J-pay-val" name="bank"  iptType="bank">
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
@@ -235,7 +235,7 @@
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
-							<input type="text" validType='intAndFloat2' disabled class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
+							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
@@ -274,7 +274,7 @@
 							<li>.</li><li>0</li><li>00</li>
 						</ul>
 						<ul>
-							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
+							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
 						</ul>
 					</div>
 
@@ -292,7 +292,7 @@
 							<li>S</li><li>T</li><li>U</li><li>V</li><li>W</li><li>X</li>
 						</ul>
 						<ul>
-							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
+							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
 						</ul>
 					</div>
 				</div>

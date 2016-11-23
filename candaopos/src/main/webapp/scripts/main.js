@@ -62,8 +62,8 @@ var MainPage = {
 				focusIpt = dom.openDialog.find('.J-server-name')
 				return false;
 			}
-			var url = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + me.attr('tableno')  + '&type=in';
-			window.location.href = encodeURI(encodeURI(url));
+			var url = "../views/order.jsp?orderid=" + me.attr('orderid') + '&personnum=' + me.attr('personnum') + '&tableno=' + encodeURIComponent(encodeURIComponent(me.attr('tableno')))  + '&type=in';
+			window.location.href = url;
 		});
 
 		/**
@@ -135,9 +135,9 @@ var MainPage = {
 					dataType:'json',
 					success: function(res){
 						if(res.code === '0') {
-							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $('.J-tableware-num').val() + '&tableno=' + $target.attr('tableno')  + '&type=in';
+							var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $('.J-tableware-num').val() + '&tableno=' + encodeURIComponent(encodeURIComponent($target.attr('tableno')))  + '&type=in';
 							dom.openDialog.modal('hide');
-							window.location.href = encodeURI(encodeURI(url));
+							window.location.href = url;
 						} else {
 							widget.modal.alert({
 								cls: 'fade in',
@@ -458,8 +458,8 @@ var MainPage = {
 				}).then(function(data){
 					var  data=JSON.parse(data.substring(12, data.length - 3));
 					if(data.Data === '1') {
-						var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=0&tableno=' + tableNo + '&type=out';
-						window.location.href = encodeURI(encodeURI(url));
+						var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=0&tableno=' + encodeURIComponent(encodeURIComponent(tableNo)) + '&type=out';
+						window.location.href = url;
 					} else {
 						widget.modal.alert({
 							content:'<strong>设置为外卖接口错误</strong>',
@@ -540,27 +540,31 @@ var MainPage = {
 				if(areaid === val.areaid || areaid === '-1') {
 					if(isOpend) {
 						time = '';
-						if(val.begintime === undefined) return;
-						var hm = (new Date().getTime() - (new Date(val.begintime.replace(new RegExp("-","gm"),"/"))).getTime());//得到毫秒数
-						//计算出小时数
-						var leave1=hm%(24*3600*1000);    //计算天数后剩余的毫秒数
-						var hours=Math.floor(leave1/(3600*1000));//计算相差分钟数
-						var leave2=leave1%(3600*1000);       //计算小时数后剩余的毫秒数
-						var minutes=Math.floor(leave2/(60*1000));
-						if(hours <= 0 ) {
-							time += '00:'
-						} else if(hours > 10) {
-							time += hours + ':'
+						if(val.begintime === undefined) {
+							time = '';
 						} else {
-							time += '0' + hours + ':'
-						}
+							var hm = (new Date().getTime() - (new Date(val.begintime.replace(new RegExp("-","gm"),"/"))).getTime());//得到毫秒数
+							//计算出小时数
+							var leave1=hm%(24*3600*1000);    //计算天数后剩余的毫秒数
+							var hours=Math.floor(leave1/(3600*1000));//计算相差分钟数
+							var leave2=leave1%(3600*1000);       //计算小时数后剩余的毫秒数
+							var minutes=Math.floor(leave2/(60*1000));
+							if(hours <= 0 ) {
+								time += '00:'
+							} else if(hours > 10) {
+								time += hours + ':'
+							} else {
+								time += '0' + hours + ':'
+							}
 
-						if(minutes <= 0) {
-							time += '00'
-						} else if(minutes > 10) {
-							time += minutes
-						} else {
-							time += '0' + minutes
+							if(minutes <= 0) {
+								time += '00'
+							} else if(minutes > 10) {
+								time += minutes
+							} else {
+								time += '0' + minutes
+							}
+
 						}
 
 						tmp = '<li class="opened" orderid="'+ val.orderid  + '" personNum="'+ val.custnum  + '" tableno="' + val.tableNo + '" areaid="' + val.areaid + '">'+ val.tableNo +

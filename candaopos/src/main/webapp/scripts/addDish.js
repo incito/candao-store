@@ -739,7 +739,7 @@ var AddDish = {
 							that.renderDishes(v.itemid);
 						}
 
-						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b>' + v.itemdesc + '</li>';
+						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b>' + v.itemdesc.split('#')[0] + '</li>';
 					});
 					$(".nav-dish-types").html(htm);
 					if($(".nav-dish-types").find( "li.nav-dish-type").length > 6) {
@@ -786,10 +786,10 @@ var AddDish = {
 
 					if(idCondition && (v.py.indexOf(searchKey.toUpperCase()) !== -1)) {
 						oBuffer.append('<div class="dish-info" pid="' + key + '">'
-							+ '<div class="dish-name">' + v.title
+							+ '<div class="dish-name">' + v.title.split('#')[0]
 							+ '</div>'
 							+ '<hr>'
-							+ '<div class="dish-price">' + (v.price === undefined ? '' : v.price) + '/' + v.unit + '</div>'
+							+ '<div class="dish-price">' + (v.price === undefined ? '' : v.price) + '/' + v.unit.split('#')[0] + '</div>'
 							+ '</div>');
 					}
 				});
@@ -857,7 +857,8 @@ var AddDish = {
 
 		var dish_avoids = dish.dish_avoids;
 		var taste = dish.taste;
-		var showname = dishname;
+		var showname = utils.string.cutString(dishname.split('#')[0],14);
+
 		if(taste != null && taste != ""){
 			showname = showname+"("+taste+")";
 		}
@@ -1164,7 +1165,8 @@ var AddDish = {
 				var cid = dom.noteDialog.attr('cid');
 				var dish = dishCartMap.get(cid);
 				var dishname = dish.title || dish.dishname;
-				var showname = dishname;
+
+				var showname = utils.string.cutString(dishname.split('#')[0],14);
 				var taste = $("#note-dialog .taste ul li.active").text().trim();
 				if(taste.length > 0){
 					showname += "("+taste+")";
@@ -1414,12 +1416,16 @@ var AddDish = {
 								dom.guadanDialog.modal('hide');
 								var  data=JSON.parse(data.substring(12, data.length - 3));
 								if(data.Data === '1'){
-									widget.modal.alert({
+									var modalIns = widget.modal.alert({
 										content:'<strong>设置外卖挂单成功,挂单单号:[' + consts.orderid  + ']</strong>',
+										btnCancelTxt: '',
 										btnOkCb: function(){
 											window.location.href = "../views/main.jsp"
 										}
 									});
+									$('#' + modalIns.id).find('.close').click(function(){
+										window.location = "../views/main.jsp";
+									})
 								} else {
 									widget.modal.alert({
 										content:'<strong>设置外卖挂单失败,挂单单号:[' + consts.orderid  + ']</strong>',
@@ -1488,7 +1494,7 @@ var AddDish = {
 
 		widget.loadPage({
 			obj : "#sel-dish-table tbody tr",
-			listNum : 16,
+			listNum : 12,
 			currPage : 0,
 			totleNums : $("#sel-dish-table tbody tr").length,
 			curPageObj : "#adddish #curr-page",
@@ -1759,11 +1765,11 @@ function getUuid(){
 }
 
 function goToOrder(tips){
-	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno  + '&type=' + g_eatType;
+	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(consts.tableno )) + '&type=' + g_eatType;
 	if(tips !== undefined && tips.length > 0) {
 		url += '&tips=' + tips;
 	}
-	window.location.href = encodeURI(encodeURI(url));
+	window.location.href = url;
 }
 
 $(document).ready(function(){
