@@ -1935,7 +1935,8 @@ var Order = {
                     orderId: consts.orderid,
                     type:1
                 })
-            }).then(function(){
+            }).then(function(dataMsg){
+                //console.log(dataMsg)
 
             });
 
@@ -1948,6 +1949,7 @@ var Order = {
         //打印发票信息
         var invoiceMsg=function () {
             if(invoice_Flag.flag!=''){
+                utils.loading.remove();
                 $('#Invoice-title').modal('show');
                 focusIpt=$('#Invoice-title .invoiceMoney');
                 $('#Invoice-title #Invoice-title-btnOk ').click(function () {
@@ -1963,7 +1965,7 @@ var Order = {
                             amount:$.trim($('#Invoice-title .invoiceMoney').val()),
                         }),
                         success: function (res) {
-                            console.log(res)
+                            //console.log(res)
                             utils.loading.remove();
                             if(res.result=='0'){
                                 _fn()

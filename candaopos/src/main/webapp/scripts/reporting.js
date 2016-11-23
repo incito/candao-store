@@ -34,7 +34,7 @@ var reporting={
                 dataType: "json",
                 data:{"flag":flag},
                 success: function (data) {
-                    console.log(data)
+                    //console.log(data)
                     var total=data.data.length,count=0,sum=0;
                     for( var i=0;i<total;i++) {
                         count+=Number(data.data[i].dishCount);
@@ -52,7 +52,7 @@ var reporting={
                             var str="";
                             for( var i=0;i<data.length;i++) {
                                 str+='<tr>';
-                                str+='   <td width="476">'+data[i].dishName+'</td>';
+                                str+='   <td width="476">'+data[i].dishName.split('#')[0]+'</td>';
                                 str+='   <td width="200">'+data[i].dishCount+'</td>';
                                 str+='   <td width="200">'+data[i].totlePrice+'</td>';
                                 str+='</tr>';

@@ -67,7 +67,7 @@
 				<div class="form-group form-group-nor" >
 					<span class="form-label">充值金额:</span>
 					<div class="form-group-info">
-						<input value=""   name="repwd" id="rechargeMoney"  placeholder="100.00" type="text" class="form-control" >
+						<input value=""   name="repwd" id="rechargeMoney"  type="text" class="form-control" >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
@@ -111,9 +111,9 @@
 		target: '.virtual-keyboard-base'
 	});
 	member.getCouponList();
-	$('.pay-type-select li').click(function () {
+	/*$('.pay-type-select li').click(function () {
 		$(this).addClass('active').siblings('li').removeClass('active');
-	});
+	});*/
 	$('.btn-Save,.virtual-keyboard-ok').click(function () {
 		member.stored_value()
 	})
@@ -121,8 +121,13 @@
 		var rechargeMoney=$.trim($('#rechargeMoney').val());
 		var presentvalue=$.trim($('.coupon-List .active').attr('presentvalue'));//赠送比例
 		var dealvalue=$.trim($('.coupon-List .active').attr('dealvalue'));//满多少赠送
-		if(member.ismoney(rechargeMoney)===true && presentvalue!=''&& dealvalue!=''){
-			$('.giveMoney').text(parseInt(rechargeMoney/dealvalue)*presentvalue)
+		if(member.ismoney(rechargeMoney)===true && presentvalue!=''){
+			if(dealvalue){
+				$('.giveMoney').text(parseInt(rechargeMoney/dealvalue)*presentvalue)
+			}
+			else {
+				$('.giveMoney').text(presentvalue)
+			}
 		}
 		else {
 			$('.giveMoney').text(0)

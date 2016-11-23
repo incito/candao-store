@@ -119,9 +119,10 @@ var member = {
             if (flag_prev < count - 8) {
                 $dishType.find(".coupon-item").eq(flag_prev).css({'margin-left': '-142px'}).hide();
                 flag_prev++;
+                $(".coupon-box .prev").removeClass('unclick');
                 if (flag_prev == count - 8) {
                     $(".coupon-box .next").addClass('unclick');
-                    $(".coupon-box .prev").removeClass('unclick');
+
 
                 }
 
@@ -131,9 +132,10 @@ var member = {
             if (flag_prev >= 1) {
                 $dishType.find(".coupon-item").eq(flag_prev - 1).css({'margin-left': '2px'}).show();
                 flag_prev--;
+                $(".coupon-box .next").removeClass('unclick');
                 if (flag_prev == 0) {
                     $(".coupon-box .prev").addClass('unclick');
-                    $(".coupon-box .next").removeClass('unclick');
+
                 }
 
             }
@@ -148,6 +150,21 @@ var member = {
             }
             else {
                 $(this).addClass('active').siblings('.coupon-item').removeClass('active');
+                var rechargeMoney=$.trim($('#rechargeMoney').val());
+                var presentvalue=$.trim($(this).attr('presentvalue'));//赠送比例
+                var dealvalue=$.trim($(this).attr('dealvalue'));//满多少赠送
+                if(rechargeMoney!=''&& member.ismoney(rechargeMoney)===true){
+                    if(dealvalue){
+                        $('.giveMoney').text(parseInt(rechargeMoney/dealvalue)*presentvalue)
+                    }
+                    else {
+                        $('.giveMoney').text(presentvalue)
+                    }
+
+                }
+                else {
+                    $('.giveMoney').text(0)
+                }
             }
 
         })
@@ -235,7 +252,7 @@ var member = {
                     }
                 }
                 if (res.retcode == 1) {
-                    that.errorAlert('会员查询错：' + res.retInfo)
+                    that.errorAlert('会员查询错误：' + res.retInfo)
                 }
             }
         })

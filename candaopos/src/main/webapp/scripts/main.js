@@ -411,7 +411,7 @@ var MainPage = {
 
 		if(ret.length === 0 && retNormal.length === 0){
 			widget.modal.alert({
-				content:'<strong>获取外卖餐台接口错误</strong>',
+				content:'<strong>后台没有配置普通外卖台，请联系管理员</strong>',
 				btnOkTxt: '',
 				btnCancelTxt: '确定'
 			});
@@ -816,23 +816,30 @@ var MainPage = {
 				$("#J-btn-checkout-dialog").modal('hide')
 				var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
 				if(data.Data=='1'){
-					/*$.ajax({
-					 url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
-					 method: 'GET',
-					 contentType: "application/json",
-					 dataType: 'json',
-					 data:{
-					 'synkey':'candaosynkey'
-					 },
-					 success: function (data) {
-					 alert("2222")
-					 console.log(data)
-					 },
-					 error:function (data) {
-					 console.log(data)
-					 alert("1111")
-					 }
-					 });*/
+				    /*结业数据上传*/
+                    /*$.ajax({
+                        url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
+                        type: "get",
+                        dataType: 'text',
+                        data: {
+                            'synkey': 'candaosynkey'
+                        },
+                        success: function (msg) {
+                            widget.modal.alert({
+                                cls: 'fade in',
+                                content: '<strong>' + data.Info + ',即将退出程序</strong>',
+                                width: 500,
+                                height: 500,
+                                btnOkTxt: '确定',
+                                btnCancelTxt: '',
+                                btnOkCb: function () {
+                                    $(".modal-alert:last,.modal-backdrop:last").remove();
+                                    window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid');
+                                    utils.clearLocalStorage.clearSelect();
+                                }
+                            });
+                        }
+                    });*/
 					widget.modal.alert({
 						cls: 'fade in',
 						content:'<strong>'+data.Info+',即将退出程序</strong>',
@@ -842,7 +849,7 @@ var MainPage = {
 						btnCancelTxt: '',
 						btnOkCb:function () {
 							$(".modal-alert:last,.modal-backdrop:last").remove();
-							window.location = '../views/openpage.jsp?ipaddress='+utils.storage.getter('ipaddress')+'&posid='+utils.storage.getter('posid');
+							window.location = '../views/openpage.jsp?ipaddress='+utils.storage.getter('ipaddress')+'&posid='+utils.storage.getter('posid')+'&cashIp='+JSON.parse(utils.storage.getter('config')).OpenCashIp;
 							utils.clearLocalStorage.clearSelect();
 						}
 					});
