@@ -833,7 +833,15 @@ var MainPage = {
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
                 if (data.Data == '1') {
                     /*结业数据上传*/
-                   /* function _EndWorkSyncData() {
+                    widget.modal.alert({
+                        cls: 'fade in',
+                        content: '<strong>结业数据上传中，请稍后</strong>',
+                        width: 500,
+                        height: 500,
+                        hasBtns: false,
+                    });
+                    _EndWorkSyncData();
+                    function _EndWorkSyncData() {
                         $.ajax({
                             url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
                             method: 'POST',
@@ -843,8 +851,9 @@ var MainPage = {
                                 'synkey': 'candaosynkey'
                             }),
                             success: function (msg) {
+                                $(".modal-alert:last,.modal-backdrop:last").remove();
                                 //成功
-                                if(msg.code=='0000'){
+                                if (msg.code == '0000') {
                                     widget.modal.alert({
                                         cls: 'fade in',
                                         content: '<strong>' + data.Info + ',即将退出程序</strong>',
@@ -854,7 +863,7 @@ var MainPage = {
                                         btnCancelTxt: '',
                                         btnOkCb: function () {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                    window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
                                             utils.clearLocalStorage.clearSelect();//清空缓存
                                         }
                                     });
@@ -871,11 +880,11 @@ var MainPage = {
                                         btnCancelTxt: '关闭',
                                         btnOkCb: function () {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                                           _EndWorkSyncData();
+                                            _EndWorkSyncData();
                                         },
-                                        btnCancelCb:function () {
+                                        btnCancelCb: function () {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                    window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
                                             utils.clearLocalStorage.clearSelect();//清空缓存
                                         }
                                     });
@@ -883,23 +892,10 @@ var MainPage = {
                                 }
                             }
                         });
-                    }*/
-
-                    widget.modal.alert({
-                        cls: 'fade in printError',
-                        content: '<strong>' + data.Info + ',即将退出程序</strong>',
-                        width: 500,
-                        height: 500,
-                        btnOkTxt: '确定',
-                        btnCancelTxt: '',
-                        btnOkCb: function () {
-                            $(".modal-alert:last,.modal-backdrop:last").remove();
-                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
-                            utils.clearLocalStorage.clearSelect();
-                        }
-                    });
+                    }
                 }
                 else {
+                    $(".modal-alert:last,.modal-backdrop:last").remove();
                     widget.modal.alert({
                         cls: 'fade in',
                         content: '<strong>' + data.Info + '</strong>',
