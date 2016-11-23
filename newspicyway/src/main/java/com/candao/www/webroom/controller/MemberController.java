@@ -110,6 +110,9 @@ public class MemberController extends BaseController{
 			}else{
 				orderMemberService.saveOrderMember(tOrderMember);
 			}
+
+            // 计算菜品实收
+            orderSettleService.calDebitAmount(orderid);
 			
 			resultmap.put("Retcode", "0");
 			resultmap.put("RetInfo", "会员消费分店保存成功");
