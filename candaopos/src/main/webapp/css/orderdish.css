@@ -591,3 +591,22 @@ input[type=search] {
 	border-radius: 3px;
 	color: #FFFFFF;
 }
+
+.hori-lf-div {
+	width: 305px;
+	float: left;
+}
+.hori-lf-div span {
+	position: absolute;
+	font-size: 14px;
+	color: #B0B0B0;
+	margin: 8px 0 0 8px;
+}
+.hori-lf-div input {
+	height: 38px;
+	margin-bottom: 18px;
+	padding-left: 85px;
+}
+.hori-rf-div {
+	float:right;
+}

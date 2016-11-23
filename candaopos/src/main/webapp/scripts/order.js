@@ -1732,13 +1732,20 @@ var Order = {
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
                                 var groupid = utils.getUuid();
+                                var dishname = '';
                                 if(v.dishes !== undefined) {
                                     tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" +  v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0],14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     $.each(v.dishes, function(k1, v1){
                                         tr += "<tr groupid='" + groupid + "' ispot='" +  v1.ispot + "' grouptype='" +  v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname.split('#')[0],14) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     })
                                 } else {
-                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0],14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    if(/临时菜/.test(v.dishname)) {
+                                        dishname = '(' + v.taste + ')' + v.dishname.split('#')[0]
+                                    } else {
+                                        dishname = v.dishname.split('#')[0]
+                                    }
+
+                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(dishname,14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
                             });
                             $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
@@ -2372,7 +2379,7 @@ var Order = {
                                                 "userid": utils.storage.getter('aUserid'),
                                                 "business": utils.storage.getter('branch_id'),
                                                 "terminal": utils.storage.getter('posid'),
-                                                "serial": that.ya_formatDate(new Date(),'yyyyMMddHHmmssffff'),
+                                                "serial": data.TraceCode,
                                                 "businessname": utils.storage.getter('branch_branchname'),
                                                 "score": scoreAdd - parseFloat(jf),
                                                 "coupons": 0.0,

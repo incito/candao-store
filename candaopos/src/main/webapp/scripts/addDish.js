@@ -14,7 +14,8 @@ var dom = {
 	noteDialog: $('#note-dialog'),//备注对话框
 	combodishialog: $('#combodish-dialog'),//套餐,
 	selCompanyDialog: $('#selCompany-dialog'),
-	guadanDialog: $("#guadan-dialog")
+	guadanDialog: $("#guadan-dialog"),
+	lscDialog: $('#lsc-dialog')
 };
 
 var consts = {
@@ -28,7 +29,6 @@ var consts = {
 var AddDish = {
 
 	init: function () {
-
 		dishCartMap = new utils.HashMap();
 		dishesMap = new utils.HashMap();
 
@@ -168,6 +168,49 @@ var AddDish = {
 							if(dish.imagetitle.length > 0) {
 								that.initNoteDialog(2, dish);
 								return false;
+							}
+
+							//临时菜
+							if($('li[itemid="' + dish.itemid + '"] span').text() === "pos专用菜品"  && dish.title === "临时菜") {
+								dish.temporary = '1';
+								dom.lscDialog.find('input').val('');
+								dom.lscDialog.off('click','.J-btn-submit').on('click','.J-btn-submit', function(){
+									if($.trim(dom.lscDialog.find('.note-name').val()).length === 0) {
+										widget.modal.alert({
+											content:'<strong>菜名不能为空,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if($.trim(dom.lscDialog.find('.price').val()).length === 0 || parseFloat(dom.lscDialog.find('.price').val()) === 0) {
+										widget.modal.alert({
+											content:'<strong>价格(元)不能为空或者为零,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if($.trim(dom.lscDialog.find('.dishnum').val()).length === 0 || parseFloat(dom.lscDialog.find('.dishnum').val()) === 0) {
+										widget.modal.alert({
+											content:'<strong>数量(份)不能为空或者为零,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+
+									dish.dishnum =  dom.lscDialog.find('.dishnum').val();
+									dish.orderprice = dish.orignalprice =  dom.lscDialog.find('.price').val();
+									dish.price = parseFloat(dish.dishnum) * parseFloat(dish.orderprice);
+									dish.taste = dish.orignalprice =  $.trim(dom.lscDialog.find('.note-name').val());
+
+									that.addDish(dish);
+
+									dom.lscDialog.modal('hide');
+								});
+								dom.lscDialog.modal('show');
+								return  false;
 							}
 
 							//普通菜品
@@ -739,7 +782,7 @@ var AddDish = {
 							that.renderDishes(v.itemid);
 						}
 
-						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b>' + v.itemdesc.split('#')[0] + '</li>';
+						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b><span>' + v.itemdesc.split('#')[0] + '</span></li>';
 					});
 					$(".nav-dish-types").html(htm);
 					if($(".nav-dish-types").find( "li.nav-dish-type").length > 6) {
@@ -860,7 +903,12 @@ var AddDish = {
 		var showname = utils.string.cutString(dishname.split('#')[0],14);
 
 		if(taste != null && taste != ""){
-			showname = showname+"("+taste+")";
+			if(dish.temporary === '1') {
+				showname = "("+taste+")" + showname;
+			} else {
+				showname = showname+"("+taste+")";
+			}
+
 		}
 		var avoidStr = "";
 		if(dish_avoids != null && dish_avoids !=""){
@@ -882,13 +930,24 @@ var AddDish = {
 		$("#sel-dish-table tbody tr").removeClass("selected");
 		//单品
 		if(dishtype === 0) {
+			//临时菜
+			if(dish.temporary === '1') {
+				tr = "<tr class='selected' cid='" + cid + "'>"
+					+ "<td class='dishname' name='"+dishname+"' >"
+					+ showname
+					+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
+					+ price
+					+ "</td></tr>";
+			} else {
+				tr = "<tr class='selected' cid='" + cid + "'>"
+					+ "<td class='dishname' name='"+dishname+"' >"
+					+ showname
+					+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
+					+ price
+					+ "</td></tr>";
+			}
 
-			tr = "<tr class='selected' cid='" + cid + "'>"
-				+ "<td class='dishname' name='"+dishname+"' >"
-				+ showname
-				+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
-				+ price
-				+ "</td></tr>";
+
 		}
 		//鱼锅
 		else if(dishtype === 1) {
@@ -1168,8 +1227,15 @@ var AddDish = {
 
 				var showname = utils.string.cutString(dishname.split('#')[0],14);
 				var taste = $("#note-dialog .taste ul li.active").text().trim();
+				if(dish.temporary === '1') {
+					taste = dish.taste;
+				}
 				if(taste.length > 0){
-					showname += "("+taste+")";
+					if(dish.temporary === '1') {
+						showname = "("+taste+")" + showname;
+					} else {
+						showname = showname+"("+taste+")";
+					}
 				}
 				if(note1.length > 0) {
 					showname += "("+note1+")";
@@ -1260,7 +1326,7 @@ var AddDish = {
 			var row = {
 				"printtype": '0',
 				"pricetype": pricetype,//0：普通 1：赠菜
-				"orderprice": type === 1 ? '0' : dish.price,//菜品价格
+				"orderprice": type === 1 ? '0' : dish.price,//菜品单价
 				"orignalprice": dish.price,//菜品单价
 				"dishid": dish.dishid,
 				"userName": user,
@@ -1279,6 +1345,15 @@ var AddDish = {
 				"freeauthorize": freeauthorize, //赠菜授权人工号
 				"freereason": freereason, //赠菜原因
 			};
+
+			if(dish.temporary === '1') {
+				console.log(dish);
+				row = $.extend(row,{
+					"dishnum":  parseFloat(dish.dishnum) * parseFloat(dish.orderprice),
+					"orderprice": type === 1 ? '0' : '1',//菜品价格
+					"orignalprice": '1'
+				});
+			}
 			//如果是鱼锅
 			if(dish.dishtype === 1) {
 				row = $.extend(row,{
