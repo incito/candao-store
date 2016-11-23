@@ -1157,13 +1157,16 @@ var Order = {
     },
 
     //退菜 0:单个 1:整单
-    backDish: function (type) {
+    backDish: function (type,cb) {
         var that = this;
         var $target = $("#order-dish-table tr.selected");
         var tableId = $('[name=tableno]').val();
         var userId = $('#user').val();
         var orderNo = $('[name=orderid]').val();
         var params = {};
+        if(userId==undefined){
+            userId=utils.storage.getter('aUserid')
+        }
 
         var discardReason = (function () {
             var str = '';
@@ -1216,6 +1219,7 @@ var Order = {
                     utils.loading.remove();
                     $("#backfood-right .modal-dialog").remove();
                     that.updateOrder();
+                    cb && cb();
                 } else {
                     widget.modal.alert({
                         cls: 'fade in',
@@ -2504,22 +2508,26 @@ var Order = {
      * 关闭结算
      */
     closeOrder: function(){
+        var that=this;
         var _cancelOrder = function(){
-            $.ajax({
-                url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
-                method: 'get'
-            }).then(function(data){
-                var  data = data.result[0];
-                if(data.Data === '1') {
-                    window.location.href = './main.jsp'
-                } else {
-                    widget.modal.alert({
-                        content:'<strong>取消外卖账单接口错误</strong>',
-                        btnOkTxt: '',
-                        btnCancelTxt: '确定'
-                    });
-                }
+            that.backDish(1,function () {
+                $.ajax({
+                    url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
+                    method: 'get'
+                }).then(function(data){
+                    var  data = data.result[0];
+                    if(data.Data === '1') {
+                        window.location.href = './main.jsp'
+                    } else {
+                        widget.modal.alert({
+                            content:'<strong>取消外卖账单接口错误</strong>',
+                            btnOkTxt: '',
+                            btnCancelTxt: '确定'
+                        });
+                    }
+                })
             })
+
         };
         if(g_eatType === 'in') {
             window.location.href = './main.jsp'

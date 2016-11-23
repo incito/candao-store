@@ -188,6 +188,7 @@ _config.interfaceUrl = {
 	CancelOrder: "/newspicyway/datasnap/rest/TServerMethods1/cancelOrder/", <!--外卖取消账单-->
 	SetTakeoutOrderOnAccount: "/newspicyway/datasnap/rest/TServerMethods1/putOrder/", <!--外卖挂单-->
 	SetOrderTakeout: "/newspicyway/datasnap/rest/TServerMethods1/wmOrder/", <!--设置订单为外卖单。-->
+	EndWorkSyncData:'/newspicyway/padinterface/jdesyndata.json', <!--结业数据上传-->
 
 	PrintPay: "/newspicyway/print4POS/getOrderInfo", <!--打印预结，结算，客用-->
 	PrintClearMachine: "/newspicyway/print4POS/getClearMachineData", <!--打印清机单-->
