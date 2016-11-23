@@ -5835,7 +5835,7 @@ BEGIN
        , a.dishid
        , a.dishtype
        , a.dishunit
-       , a.debitamount
+       , a.orignalprice
        , a.ispot
        , a.parentkey
        , a.childdishtype
@@ -6198,7 +6198,7 @@ BEGIN
        , a.childdishtype
        , a.primarykey
        , a.superkey
-       , a.debitamount
+       , a.orignalprice
   FROM
     t_temp_order b, t_order_detail a
   WHERE
