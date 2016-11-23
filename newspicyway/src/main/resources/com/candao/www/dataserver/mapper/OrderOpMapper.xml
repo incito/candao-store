@@ -17,7 +17,7 @@
     <select id="getOrderJson" resultType="java.util.HashMap">
       SELECT a.*,c.tableName,e.areaNo,e.areaname,f.fullname,g.payamount,womanNum+mannum AS pnum,
       CASE WHEN a.fulldiscountrate>0 THEN h.couponname ELSE '' END AS couponname3,f.fullName,IFNULL(p.payamount,0) AS payamount2,
-      #{zdAmount} AS zdAmount,#{tipAmount} as tipAmount,(SELECT chargeAmount FROM t_service_charge where orderid=#{orderId}) as serviceAmount,
+      #{zdAmount} AS zdAmount,#{tipAmount} as tipAmount,
       IFNULL(t.receivables,0) AS tipAmount,IFNULL(t.paid,0) AS tipPaid FROM t_order a
       INNER JOIN t_table c ON(a.currenttableid=c.tableid)  LEFT JOIN t_tablearea e ON(e.areaid=c.areaid)
       LEFT JOIN (SELECT a.job_number,b.name AS fullName FROM t_b_employee a INNER JOIN t_b_user b ON(a.user_id=b.id) WHERE a.branch_id = ( SELECT branchid FROM t_branch_info LIMIT 0,1)) f ON(a.userid=f.job_number)
