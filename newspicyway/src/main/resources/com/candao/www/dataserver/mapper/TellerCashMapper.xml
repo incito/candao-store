@@ -53,11 +53,11 @@
     <select id="selectItemMoney" resultType="String" parameterType="String">
        SELECT IFNULL( sum(a.orignalprice * a.dishnum), 0 ) + IFNULL(sum(sc.chargeAmount), 0)
        FROM t_order_detail a INNER JOIN t_order b ON (a.orderid = b.orderid) LEFT JOIN t_service_charge sc ON b.orderid = sc.orderid
-        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR ismaster=0 AND  a.dishtype=2)
+        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR (ismaster=0 AND  a.dishtype=2))
     </select>
     <select id="selectPreferenceMoney" resultType="Map" parameterType="Map">
         SELECT (SUM(c1)-SUM(c2)) as taocanyouhui,(SUM(c3)-SUM(c4))as huiyuanyouhui,SUM(c5)as huiyuanxuzeng,
-          SUM(c6)as huiyuanjifen,SUM(c7)as youmian,SUM(c8)as moling,SUM(c9)as sishewuru,SUM(c10) as zengcai,SUM(c11) as yazuoyouhui FROM(
+          SUM(c6)as huiyuanjifen,(SUM(c7)-SUM(c11) )as youmian,SUM(c8)as moling,SUM(c9)as sishewuru,SUM(c10) as zengcai,SUM(c11) as yazuoyouhui FROM(
         -- 套餐品项价
         SELECT IFNULL(SUM(a.orignalprice*a.dishnum), 0) as c1,0 as c2,0 as c3,0 as c4,0 as c5,0 as c6,0 as c7,0 as c8,0 as c9,0 as c10,0 as c11 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=0 AND a.dishtype=2
         UNION ALL
@@ -65,10 +65,10 @@
         SELECT 0,IFNULL(SUM(a.orignalprice*a.dishnum), 0),0,0,0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1 AND a.dishtype=2
         UNION ALL
         -- 单品、套餐原价
-        SELECT 0,0,IFNULL(SUM(a.orignalprice*a.dishnum), 0),0,0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1
+        SELECT 0,0,IFNULL(SUM(a.orignalprice*a.dishnum), 0),0,0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1  AND pricetype!=1
         UNION ALL
         -- 单品、套餐会员价
-        SELECT 0,0,0,IFNULL(SUM(a.orderprice*a.dishnum), 0),0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1
+        SELECT 0,0,0,IFNULL(SUM(a.orderprice*a.dishnum), 0),0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1  AND pricetype!=1
         UNION ALL
         -- 会员虚增
         SELECT 0,0,0,0,IFNULL(SUM(a.inflated), 0),0,0,0,0,0,0 FROM t_order_member a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a.valid=0

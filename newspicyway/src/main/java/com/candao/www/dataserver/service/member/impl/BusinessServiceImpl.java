@@ -230,9 +230,9 @@ public class BusinessServiceImpl implements BusinessService {
         //合计
         String TotalMoney = itemMoney;
         float TotalMoneyFloat = StringUtil.str2Float(TotalMoney, 0);
-        //计入收入合计
+        //计入收入合计 实收-虚增
         String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate, userId);
-        float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
+        float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0)- StringUtil.str2Float(preferenceDetail.get("huiyuanxuzeng"), 0);
         // 不计收入合计
         float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat + removeMoneyFloat * 2;
         clearMachineMapper.insert(userId, insertDate);
@@ -278,7 +278,7 @@ public class BusinessServiceImpl implements BusinessService {
         param.put("removeMoney", removeMoney);
         param.put("ratedPreferenceMoney", ratedPreferenceMoney);
         param.put("accountsReceivableTotal", accountsReceivableTotal);
-        param.put("includedMoneyTotal", includedMoneyTotal);
+        param.put("includedMoneyTotal", includedMoneyTotalFloat);
         param.put("noIncludedMoneyTotal", noIncludedMoneyTotal);
         param.put("TotalMoney", TotalMoney);
         param.put("tableware", tableware);
