@@ -149,7 +149,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         List<String> prferenceDetails = orderInfo4Poses.get(0).getPreferenceDetail();
         List<Map<String,Object>> prefers = new ArrayList<>();
         if (!CollectionUtils.isEmpty(prferenceDetails)){
-            String[] key = {"套餐优惠","会员价优惠","会员储值虚增","赠菜","会员积分消费","优免","雅座优惠","抹零","四舍五入"};
+            String[] key = {"套餐优惠","会员价优惠","会员储值虚增","赠菜","会员积分消费","优免","会员劵优惠","抹零","四舍五入"};
             String[] value = prferenceDetails.toArray(new String[prferenceDetails.size()]);
 
             for (int i = 0; i < key.length; i++) {
