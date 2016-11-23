@@ -229,10 +229,6 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     //外卖实收
                     Map<String,Object> waimaiActualAmountMap = sortSettlements(waimaiActualSettlements,settlementSort,thActualAmount);
                     BigDecimal waimaiTotalAmount = new BigDecimal(waimaiActualAmountMap.get("actualTotalAmount")+"");
-                    //平均实收
-                    BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
-                    BigDecimal actualPre = actualTotalAmount.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
-					businssRport.setPaidinaverage(actualPre+"");
                     //虚增
                     String inflate = orderInflate.get("inflated")+"";
                     BigDecimal inflateDecimal = new BigDecimal(inflate).setScale(2, BigDecimal.ROUND_HALF_DOWN);
@@ -253,7 +249,11 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					businssRport.setDiscountamount(shouldAmountDecimal.subtract(actualTotalAmountPure)+"");
 					//实收列表值td
 					List<String> settlements = (List<String>) actualAmountMap.get("settlements");
-					settlements.set(settlementSort.get("8"), businssRport.getMerbervaluenet()+"");
+					settlements.set(settlementSort.get("8"), actualTotalAmountPure+"");
+                    //平均实收
+                    BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
+                    BigDecimal actualPre = actualTotalAmountPure.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
+					businssRport.setPaidinaverage(actualPre+"");
 					//封装
 					businssRport.setSettlementDescList(settlementDescList);
 					businssRport.setSettlements((List<String>)actualAmountMap.get("settlements"));

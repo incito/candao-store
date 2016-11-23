@@ -1872,12 +1872,26 @@ function initItemTb(datalist) {
  */
 function showItemSubTb(id, dishType, itemdesc, typedesc) {
 	$("#p-item-id").val(id);
+	$("#_id").val(id);
+	$("#dish_type").val(dishType);
 	$("#p-dish-type").val(dishType);
 	$("#item-desc").text(itemdesc);
 	$("#dish-type-desc").text(typedesc);
 	$("#item-details-dialog").modal("show");
 	initItemSubTb(id, dishType);
 
+}
+/**
+ * 品项销售明细子表 导出
+ * @param f
+ */
+function exportItemReportDetail() {
+	$("#_shiftid").val(shiftid);
+	$("#_beginTime").val(beginTime);
+	$("#_endTime").val(endTime);
+	$("#_searchType").val(searchType);
+	$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportPXXSMXBZB.json");
+	$("#itemDetailForm").submit();
 }
 //初始化子表数据
 function initItemSubTb(id, dishType) {
