@@ -22,3 +22,5 @@ CREATE TABLE `t_payway_set` (
   `sort` int(11) DEFAULT NULL COMMENT '排序字段',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+-- 清空t_device表
+TRUNCATE TABLE T_DEVICE;
