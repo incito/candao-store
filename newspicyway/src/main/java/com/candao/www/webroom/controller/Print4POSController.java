@@ -118,7 +118,7 @@ public class Print4POSController {
             res = parseDSJson(res);
             List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
             settlementInfos.add(JSON.parseObject(res, SettlementInfo4Pos.class));
-            print4posService.printClearMachine(settlementInfos,posId);
+            print4posService.printClearMachine(settlementInfos, posId);
         } catch (Exception e) {
             msg = e.getMessage();
             flag = false;
@@ -141,12 +141,17 @@ public class Print4POSController {
             res = parseDSJson(res);
             List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
             settlementInfos.add(JSON.parseObject(res, SettlementInfo4Pos.class));
-            print4posService.printMemberSaleInfo(settlementInfos,deviceid);
+            print4posService.printMemberSaleInfo(settlementInfos, deviceid);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            msg = "订单信息不完整";
+            flag = false;
+            e.printStackTrace();
+            log.error("---------------------------->", e);
         } catch (Exception e) {
             msg = e.getMessage();
             flag = false;
             e.printStackTrace();
-            log.error("", e);
+            log.error("---------------------------->", e);
         }
 
         return getResponseMsg("", msg, flag);
@@ -157,9 +162,9 @@ public class Print4POSController {
             return "";
         }
 //        按继俊要求处理dataserver不标准json
-        if (src.contains("{\"result\":[")){
+        if (src.contains("{\"result\":[")) {
             int length = src.length();
-            src = src.substring(12,length-3);
+            src = src.substring(12, length - 3);
         }
         return src;
     }
@@ -179,7 +184,7 @@ public class Print4POSController {
         try {
             res = parse("getItemSellDetail", padInterface, new Class[]{String.class}, flag);
             ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
-            print4posService.printItemSellDetail(resultInfo4Pos,deviceid);
+            print4posService.printItemSellDetail(resultInfo4Pos, deviceid);
         } catch (Exception e) {
             msg = e.getMessage();
             sucess = false;
@@ -205,7 +210,7 @@ public class Print4POSController {
         try {
             res = parse("TipList", tipController, new Class[]{String.class}, flag);
             ResultTip4Pos resultInfo4Pos = JSON.parseObject(res, ResultTip4Pos.class);
-            print4posService.printTip(resultInfo4Pos,deviceid);
+            print4posService.printTip(resultInfo4Pos, deviceid);
         } catch (Exception e) {
             msg = e.getMessage();
             sucess = false;
