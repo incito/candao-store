@@ -1842,7 +1842,7 @@ function getUuid(){
 function goToOrder(tips){
 	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(consts.tableno )) + '&type=' + g_eatType;
 	if(tips !== undefined && tips.length > 0) {
-		url += '&tips=' + tips;
+		url += '&tips=' + encodeURIComponent(encodeURIComponent(tips));
 	}
 	window.location.href = url;
 }
