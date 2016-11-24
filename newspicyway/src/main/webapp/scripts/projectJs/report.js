@@ -7,6 +7,14 @@ $(document).ready(function(){
 
 });
 /**
+ * 去掉字符串前后空格
+ * @param str
+ * @returns
+ */
+function dellrTrim(str){
+	return str.replace(/(^\s*)|(\s*$)/g, "");
+}
+/**
  * 切换查询类型的时候，为searchType赋值
  * @param type
  * @param o
@@ -800,12 +808,14 @@ function strToFloat(str){
 
 /** *******************营业数据明细报表 START***************************************** */
 function initDaliyData() {
+	$("#prompt-dialog").modal("show");
 	if(compareBeginEndTime()){
 		$.post(global_Path + "/daliyReports/getDayReportList.json", {
 			beginTime : beginTime,
 			endTime : endTime,
 			shiftid : shiftid
 		}, function(result) {
+			$("#prompt-dialog").modal("hide");
 			incomeStatistics(result);
 			paidInAmount(result);
 			discountAmount(result);
@@ -916,6 +926,36 @@ function paidInAmount(result) {
 	var legend_data = [];
 	var series_data = [];
 	var tb = "";
+	var tr = "";
+	if (result != null && result.length > 0) {
+		var item = result[0];
+		legend_data = item.settlementDescList;//[ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
+		tr += '<tr id="settlementDesc">';
+		$.each(legend_data,function(i,data){
+			tr += '<th  nowrap="nowrap">'+data+'</th>';
+		});
+		tr += '</tr>';
+		$("#settlementDesc").replaceWith(tr);
+		tb += '<tr>';
+		$.each(item.settlements,function(i,data){
+			series_data.push({
+				value : data,
+				name : legend_data[i]
+			});
+			tb += '<td  nowrap="nowrap">'+data+'</td>';
+		});
+		tb += '</tr>';
+	}
+	$("#paidIn_tb tbody").html(tb);
+
+	// 实收总额统计图表
+	var domMain = document.getElementById('daliy_shishou_main');
+	_pieChart('实收总额统计', domMain, legend_data, series_data, 0);
+}
+/*function paidInAmount(result) {
+	var legend_data = [];
+	var series_data = [];
+	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
 		legend_data = [ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
@@ -960,7 +1000,7 @@ function paidInAmount(result) {
 	// 实收总额统计图表
 	var domMain = document.getElementById('daliy_shishou_main');
 	_pieChart('实收总额统计', domMain, legend_data, series_data, 0);
-}
+}*/
 /**
  * 折扣总额
  * @param result
@@ -971,8 +1011,8 @@ function discountAmount(result) {
 	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
-		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员优惠', '赠送金额',
-				'会员储值消费虚增' ];
+		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员价优惠','抹零','四舍五入', '赠送金额',
+				'会员储值消费虚增','套餐优惠', ];
 		series_data.push({
 			value : strToFloat(item.bastfree),
 			name : legend_data[0]
@@ -990,30 +1030,40 @@ function discountAmount(result) {
 			name : legend_data[3]
 		});
 		series_data.push({
-			value : strToFloat(item.give),
+			value : strToFloat(item.fraction),
 			name : legend_data[4]
 		});
 		series_data.push({
-			value : strToFloat(item.mebervalueadd),
+			value : strToFloat(item.roundoff),
 			name : legend_data[5]
 		});
-		if(item.handerWay != null && item.handerWay != ""){
-			legend_data.push(item.handerWay);
-			series_data.push({
-				value : Math.abs(strToFloat(item.handervalue)),
-				name : item.handerWay
-			});
-		}
-		tb = '<tr><td>' + item.bastfree + '</td><td>' + item.integralconsum
-				+ '</td><td>' + item.meberTicket + '</td><td>'
-				+ item.memberDishPriceFree + '</td>';
-		if(item.handerWay != null && item.handerWay != ""){
+		series_data.push({
+			value : strToFloat(item.give),
+			name : legend_data[6]
+		});
+		series_data.push({
+			value : strToFloat(item.mebervalueadd),
+			name : legend_data[7]
+		});
+		series_data.push({
+			value : strToFloat(item.taocanyouhui),
+			name : legend_data[8]
+		});
+		tb = '<tr><td>' + item.bastfree + '</td><td>' + item.integralconsum+'</td>'
+				+ '<td>' + item.meberTicket + '</td>'
+				+ '<td>'+item.memberDishPriceFree + '</td>'
+				+ '<td>'+item.fraction+'</td>'
+				+ '<td>'+item.roundoff+'</td>'
+				+ '<td>'+strToFloat(item.give)+'</td>'
+				+ '<td>' + item.mebervalueadd + '</td>'
+				+ '<td>' + item.taocanyouhui + '</td>';
+		/*if(item.handerWay != null && item.handerWay != ""){
 			$("#dynamic-col").text(item.handerWay);
 			tb += '<td>' + item.handervalue + '</td>';
 		}else{
 			$("#dynamic-col").css("display", "none");
-		}
-		tb += '<td>'+strToFloat(item.give)+'</td><td>' + item.mebervalueadd + '</td></tr>';
+		}*/
+		tb += '</tr>';
 	}
 	$("#discount_tb tbody").html(tb);
 
@@ -1998,7 +2048,7 @@ function initDatatableConfig(){
 /**
  * 获取数据
  */
-function getWaiterAssessData(){
+/*function getWaiterAssessData(){
 	if(oTable !=null){
 		oTable.fnClearTable(false);
 	}
@@ -2050,6 +2100,57 @@ function getWaiterAssessData(){
 			alert(result.desc);
 		}
 	},'json');
+}*/
+
+function getWaiterAssessData(){
+	if(oTable !=null){
+		oTable.fnClearTable(false);
+	}
+	beginTime = $("#beginTime").val();
+	endTime = $("#endTime").val();
+	shiftid = $("#shiftid").val();
+	$.get(global_Path+"/waiter/shift.json", {
+		beginTime: beginTime,
+		endTime: endTime,
+		shiftid: shiftid
+	}, function(result){
+		console.log(result);
+		if(result.flag == 1){
+			var data = result.data.td;
+			var tr = result.data.tr;
+			var htm = '';
+			$.each(tr,function(i,item){
+				htm += '<th nowrap="nowrap" class="ss">实收/'+dellrTrim(item)+'</th>';
+			});
+			$(".ss").remove();
+			$("#waiter-assess-tb thead tr").append(htm);
+			htm = '';
+			if(data != null && data.length>0){
+				$.each(data, function(i, item){
+					htm += '<tr ondblclick="showWaiterSecPage(\''+item.waiterId+'\')">'
+						+ '<td nowrap="nowrap">'+item.waiterId+'</td>'
+						+ '<td nowrap="nowrap">'+item.waiterName+'</td>'
+						+ '<td nowrap="nowrap">'+item.tableNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.custNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldAmount+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualAmountTotal+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldPre+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualPre+'</td>';
+					$.each(item.settlements,function(i,item){
+						htm += '<td nowrap="nowrap">'+item+'</td>';
+					});
+					htm += '</tr>';
+				});
+				$("#waiter-assess-tb tbody").html(htm);
+				initDatatableConfig();
+			}else{
+				htm += '<tr><td colspan="100">无数据</td></tr>';
+				$("#waiter-assess-tb tbody").html(htm);
+			}
+		}else{
+			alert(result.desc);
+		}
+	},'json');
 }
 function showWaiterSecPage(userid){
 	$("#p_userid").val(userid);
@@ -2065,26 +2166,29 @@ function getWaiterDetails(){
 		userid: $("#p_userid").val()
 	}, function(result){
 		if(result.flag == 1){
-			var data = result.data;
+			var data = result.data.td;
+			var tr = result.data.tr;
 			var htm = '';
+			$.each(tr,function(i,item){
+				htm += '<th nowrap="nowrap" class="ssd">实收/'+dellrTrim(item)+'</th>';
+			});
+			$(".ssd").remove();
+			$("#waiterassess-details-tb thead tr").append(htm);
+			htm = '';
 			if(data != null && data.length>0){
 				$.each(data, function(i, item){
-					htm += '<tr><td>'+item.orderid+'</td>'
-						+ '<td>'+item.tableids+'</td>'
-						+ '<td>'+item.custnum+'</td>'
-						+ '<td>'+item.shouldamount+'</td>'
-						+ '<td>'+item.paidinamount+'</td>'
-						+ '<td>'+item.xjamount+'</td>'
-						+ '<td>'+item.yhkamount+'</td>'
-						//+ '<td>'+item.mlamount+'</td>'
-						+ '<td>'+item.hykxfamount+'</td>'
-						//+ '<td>'+item.hyjfxfamount+'</td>'
-						+ '<td>'+item.gz2amount+'</td>'
-						+ '<td>'+item.wxzfamount+'</td>'
-						+ '<td>'+item.zfbzfamount+'</td></tr>';
+					htm += '<tr><td nowrap="nowrap">'+item.orderId+'</td>'
+						+ '<td nowrap="nowrap">'+item.tableNo+'</td>'
+						+ '<td nowrap="nowrap">'+item.custNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldAmount+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualAmountTotal+'</td>';
+					$.each(item.settlements,function(i,item){
+						htm += '<td nowrap="nowrap">'+item+'</td>';
+					});
+					htm += '</tr>';
 				});
 			}else{
-				htm = '<tr><td colspan="5">无数据</td></tr>';
+				htm = '<tr><td colspan="100">无数据</td></tr>';
 			}
 			$("#waiterassess-details-tb tbody").html(htm);
 		}else{

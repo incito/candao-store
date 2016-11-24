@@ -88,6 +88,20 @@ $(document).ready(function(){
 					me.val(val.substr(0, me.val().length-1))
 				}
 			}
+			//数字英文中文，以及# 20位字符
+			if(type==='noPecial'){
+			//^[A-Za-z0-9\u4e00-\u9fa5]
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#]{1,20} *$/g
+				if(val!=''){
+					if(!abc.test(val)){
+						me.val(val.substr(0, me.val().length-1))
+					}
+
+				}
+
+
+
+			}
 		}
 	});
 
@@ -220,7 +234,7 @@ _config.interfaceUrl = {
 	VipChangePsw: "/newspicyway/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
 	GetCouponList: "/newspicyway/memberpreferential/posPreferentialList.json", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
-	UnVoidSale: "/newspicyway/padinterface/getconfiginfos", <!--餐道会员反结算成功，门店反结算失败，取消会员反结-->
+	UnVoidSale: "newspicyway/member/UnVoidSale", <!--餐道会员反结算成功，门店反结算失败，取消会员反结-->
 
 
     /*雅座接口*/

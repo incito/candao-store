@@ -1,6 +1,7 @@
 
 var tbPrinterAreaList=[];
 var flag_prev =0;
+var take_outTable=[];//外卖咖啡台
 /************
  * 工具类 utils
  ************/
@@ -576,7 +577,7 @@ function del() {
 //			url : global_Path + "/dish/delete/"+$("#showDishId").val()+".json",
 			dataType : "json",
 			success : function(result) {
-				if(result=='删除成功'){
+				if(result.code=='0'){
 					$(".img-close").click();
 					oneclickTableType($("#nav-tables .active").attr("id"));
 					customTable.getTableJson();//重新获取餐台数据
@@ -586,7 +587,7 @@ function del() {
 				else {
 						widget.modal.alert({
 							cls: 'fade in',
-							content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result+'</div>',
+							content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
 							width:360,
 							height:500,
 							btnOkTxt: '确定 ',
@@ -691,28 +692,35 @@ function save_table() {
 		contentType:'application/json;charset=UTF-8',
 	    data:JSON.stringify(tableInfo),
 		dataType : "json",
-		success : function(result) {	
-			
-			$(".img-close").click();
-			oneclickTableType($("#nav-tables .active").attr("id"));
-            customTable.getTableJson()//添加餐台重新赋值
-			var printeridHave=[];
-			var printerHave=[];
-			$.each(tbPrinterAreaList,function(i,item){
-				if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
-					item.tableid=result.tableid;
-					printeridHave.push(item.printerid);
-					printerHave.push(item);
+		success : function(result) {
+	    	/*成功*/
+			if(result.code=='0'){
+				$(".img-close").click();
+				oneclickTableType($("#nav-tables .active").attr("id"));
+				customTable.getTableJson()//添加餐台重新赋值
+				var printeridHave=[];
+				var printerHave=[];
+				$.each(tbPrinterAreaList,function(i,item){
+					if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
+						item.tableid=result.data.tableid;
+						printeridHave.push(item.printerid);
+						printerHave.push(item);
+					}
+				});
+				if(printerHave!=""&&$("#tableid").val()==""){
+					addPrinterArea(printerHave);
 				}
-			});
-			if(printerHave!=""&&$("#tableid").val()==""){
-				addPrinterArea(printerHave);
+				if($("#editTitle2").text() === "添加餐台") {
+					var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
+					$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
+					console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+				}
 			}
-			if($("#editTitle2").text() === "添加餐台") {
-				var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1);
-				$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
-				console.log($("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(-1));
+			/*失败*/
+			else {
+				customTable.errorAlert(result.msg)
 			}
+
 
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -903,6 +911,7 @@ function editArea(id){
 	});
 }
 var areaLength;
+/*保存分区*/
 function save_Area(){
 	var areaInfo = {};
 	areaInfo["" + "areaname" + ""] = $("#areanameB").val();
@@ -915,8 +924,14 @@ function save_Area(){
 		contentType:'application/json;charset=UTF-8',
 	    data:JSON.stringify(areaInfo),
 		dataType : "json",
-		success : function(result) {	
-			window.location.reload();
+		success : function(result) {
+			if(result.code=='0'){
+				window.location.reload();
+			}
+			else {
+				customTable.errorAlert(result.msg)
+			}
+
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
@@ -976,7 +991,9 @@ function check_area(){
 	return flag;
 } 
 function delAreaAndTables(){
-	if($('.counter-detail-box').length<1){
+	delArea();
+	/*新接口直接删除*/
+	/*if($('.counter-detail-box').length<1){
 		delArea();
 		return false
 	}
@@ -986,51 +1003,31 @@ function delAreaAndTables(){
 		url : global_Path+"/table/deleteTablesByAreaid/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
-			if(result=='删除成功'){
+			if(result.code=='0'){
 					delArea()
 			}
 			else {
-				widget.modal.alert({
-					cls: 'fade in',
-					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">删除分区失败</div>',
-					width:360,
-					height:500,
-					btnOkTxt: '确定 ',
-					btnCancelTxt: '',
-					btnOkCb:function () {
-						$('.modal-alert:last,.fade:last').remove()
-					}
-				});
+				customTable.errorAlert(result.msg)
 			}
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert(errorThrown);
 		}
-	});
+	});*/
 }
 function delArea(){
 	$.ajax({
 		type:"post",
 		async:false,
-		url : global_Path+"/tableArea/delete/"+$("#nav-tables .active").attr("id")+".json",
+		url : global_Path+"/tableArea/delTablesAndArea/"+$("#nav-tables .active").attr("id")+".json",
 		dataType : "json",
 		success : function(result) {
-			if(result=='删除成功'){
+			if(result.code=='0'){
 				updateAreaOrder();
 				window.location.reload();
 			}
 			else {
-				widget.modal.alert({
-					cls: 'fade in',
-					content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result+'</div>',
-					width:360,
-					height:500,
-					btnOkTxt: '确定 ',
-					btnCancelTxt: '',
-					btnOkCb:function () {
-						$('.modal-alert:last,.fade:last').remove()
-					}
-				});
+				customTable.errorAlert(result.msg)
 			}
 
 		},
@@ -1405,6 +1402,8 @@ var customTable={
 	/*获取所以餐台数据*/
 	getTableJson:function () {
 		var tmpJson =[];
+		take_outTable=[]//外卖咖啡台餐桌数组
+		tableJson=[];//全部餐台数组
         $.ajax({
             url: global_Path+'/table/getTypeAndTableMap.json',
             method: 'POST',
@@ -1415,7 +1414,23 @@ var customTable={
                 $.each(res, function (index, item) {
                     $.each(item, function (key, obj) {
                         var tmpJson1 = JSON.parse(key);
-                        //debugger
+						var  take_out=[]
+						//遍历餐台为咖啡台或者外卖台的餐台
+						$.each(obj, function (ke, val) {
+							if (val.tabletype == '2' || val.tabletype == '3') {
+								take_out.push(obj[ke])
+							}
+						})
+						//外卖咖啡台的数组
+						if (take_out.length > 0) {
+							var a = {
+								'areaid': tmpJson1.areaid,
+								'areaname': tmpJson1.areaname,
+								'areaSort': tmpJson1.areaSort,
+								'tables': take_out
+							}
+							take_outTable.push(a)
+						}
                         var abc={
                             'areaid':tmpJson1.areaid,
                             'areaname':tmpJson1.areaname,
@@ -1445,6 +1460,17 @@ var customTable={
 					$(".nav-counter" ).sortable('enable')
 					$(".nav-counter-tab" ).sortable('enable');
 				}
+				//改变过滤后的餐台数值
+				$('#nav-tables li').each(function () {
+					var me=$(this);
+					$.each(take_outTable,function (key,val) {
+						if(me.attr('id')==val.areaid){
+							var text=me.find('span').eq(1).text().split('(')[1].split(')')[0]-val.tables.length
+							me.find('span').eq(1).text('('+text+')')
+						}
+					})
+
+				})
 				that.areaDrag();
 
 				that.tableDrag();
@@ -1660,6 +1686,20 @@ var customTable={
                 }
             });
 
-    }
+    },
+	/*错误信息弹窗*/
+	errorAlert:function (msg) {
+		widget.modal.alert({
+			cls: 'fade in',
+			content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+msg+'</div>',
+			width:360,
+			height:500,
+			btnOkTxt: '确定 ',
+			btnCancelTxt: '',
+			btnOkCb:function () {
+				$('.modal-alert:last,.fade:last').remove()
+			}
+		});
+	},
 
 }
