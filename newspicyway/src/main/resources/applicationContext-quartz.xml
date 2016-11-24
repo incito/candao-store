@@ -8,7 +8,6 @@
     
 
 	
-	<!-- ×¢½âÊ½task£¡ Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="1" />
 	<task:scheduler id="scheduler" pool-size="1" />
 	<task:annotation-driven executor="executor" scheduler="scheduler" />
