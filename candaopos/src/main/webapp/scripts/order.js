@@ -1736,13 +1736,20 @@ var Order = {
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
                                 var groupid = utils.getUuid();
+                                var dishname = '';
                                 if(v.dishes !== undefined) {
                                     tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" +  v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0],14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     $.each(v.dishes, function(k1, v1){
                                         tr += "<tr groupid='" + groupid + "' ispot='" +  v1.ispot + "' grouptype='" +  v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname.split('#')[0],14) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     })
                                 } else {
-                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0],14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    if(/临时菜/.test(v.dishname)) {
+                                        dishname = '(' + v.taste + ')' + v.dishname.split('#')[0]
+                                    } else {
+                                        dishname = v.dishname.split('#')[0]
+                                    }
+
+                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(dishname,14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
                             });
                             $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
@@ -2272,66 +2279,8 @@ var Order = {
                                             btnOkTxt: '',
                                             btnCancelTxt: '确定'
                                         });
-                                        //反结算
-                                        if(consts.vipType === '1'){
-                                            $.ajax({
-                                                url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
-                                                method: 'POST',
-                                                contentType: "application/json",
-                                                data: JSON.stringify({
-                                                    'orderid': consts.orderid,
-                                                }),
-                                                dataType: "json",
-                                                success: function (data) {
-                                                    var rebackMemberinfo=data;
-                                                    if(rebackMemberinfo.cardno !=undefined){
-                                                        $.ajax({
-                                                            url:consts.memberAddr.vipcandaourl + _config.interfaceUrl.VoidSaleCanDao,//餐道会员取消会员消费
-                                                            method: 'POST',
-                                                            contentType: "application/json",
-                                                            data: JSON.stringify({
-                                                                "Serial":rebackMemberinfo.orderid,//订单号
-                                                                "TraceCode":rebackMemberinfo.serial,//会员交易号
-                                                                "SUPERPWD":"",
-                                                                "cardno":rebackMemberinfo.cardno,//会员卡号
-                                                                "password":"",
-                                                                "branch_id":rebackMemberinfo.business,//租户id
-                                                                "securityCode":""
-                                                            }),
-                                                            dataType: "json",
-                                                            success: function (msg) {
-                                                                if(msg.Retcode!=0){
-                                                                    utils.printError.alert('会员反结算失败')
-                                                                }
-                                                                else {
-                                                                    //成功
-                                                                    rebackOrderOk()
-                                                                }
-                                                            },
-                                                        })
-                                                    }
-                                                }
-                                            })
-                                        }
-                                        /*雅座会员反结算*/
-                                        if(consts.vipType == '2'){
-                                            $.ajax({
-                                                url:consts.memberAddr.vipotherurl + _config.interfaceUrl.YaVoidSaleCanDao + consts.orderid + '/0/111111/',//雅座会员取消会员消费
-                                                type: "get",
-                                                dataType: "json",
-                                                success: function (msg) {
-                                                    if(msg.Data=='1'){
-                                                        rebackOrderOk();
-                                                    }
-                                                    else {
-                                                        utils.printError.alert(msg.Info)
-                                                    }
-                                                }
-                                            })
-                                        }
-
-
-                                        //会员反结结算成功后执行后台账单反结算
+                                        rebackOrderOk();
+                                        //后台账单反结算
                                         function rebackOrderOk() {
                                             $.ajax({
                                                 url: _config.interfaceUrl.AntiSettlementOrder,//反结算
@@ -2349,7 +2298,7 @@ var Order = {
                                                     else {
                                                         widget.modal.alert({
                                                             cls: 'fade in',
-                                                            content:'<strong>反结算失败，请稍后再试</strong>',
+                                                            content:'<strong>系统自动反结失败，请稍后再试</strong>',
                                                             width:500,
                                                             height:500,
                                                             btnOkTxt: '',
@@ -2376,7 +2325,7 @@ var Order = {
                                                 "userid": utils.storage.getter('aUserid'),
                                                 "business": utils.storage.getter('branch_id'),
                                                 "terminal": utils.storage.getter('posid'),
-                                                "serial": that.ya_formatDate(new Date(),'yyyyMMddHHmmssffff'),
+                                                "serial": data.TraceCode,
                                                 "businessname": utils.storage.getter('branch_branchname'),
                                                 "score": scoreAdd - parseFloat(jf),
                                                 "coupons": 0.0,

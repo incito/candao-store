@@ -365,6 +365,66 @@
 	</div>
 	<!-- 赠菜权限 -->
 	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="givefood-right" style="overflow: auto;"></div>
+
+	<!-- 临时菜 -->
+	<div class="modal fade default-dialog  in" id="lsc-dialog" data-backdrop="static">
+		<div class="modal-dialog" style="width: 695px;">
+			<div class="modal-content">
+				<div class="dialog-sm-header">
+					<div class="modal-title">餐道</div>
+					<img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('lsc-dialog')">
+				</div>
+				<div class="modal-body f-oh">
+					<div class="modal-body">
+						<div class="hori-lf-div">
+							<div>
+								<span>备注菜名:</span>
+								<input type="text"   class="form-control note-name" autofocus="">
+							</div>
+							<div>
+								<span>价格(元):</span>
+								<input type="text" validtype="intAndFloat2" class="form-control price">
+							</div>
+							<div>
+								<span>数量(份):</span>
+								<input type="text" validtype="intAndFloat2" class="form-control dishnum">
+							</div>
+							<div class="">
+								<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+								</button>
+								<button class="btn btn-save in-btn135 J-btn-submit" type="button">确认开台
+								</button>
+							</div>
+						</div>
+						<div class="hori-rf-div">
+							<div class="virtual-keyboard">
+								<ul>
+									<li>1</li>
+									<li>2</li>
+									<li>3</li>
+								</ul>
+								<ul>
+									<li>4</li>
+									<li>5</li>
+									<li>6</li>
+								</ul>
+								<ul>
+									<li>7</li>
+									<li>8</li>
+									<li>9</li>
+								</ul>
+								<ul>
+									<li>.</li>
+									<li>0</li>
+									<li>←</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	 <!-- 套餐 -->
 	 <div class="modal fade default-dialog combodish-dialog in" id="combodish-dialog"  data-backdrop="static">
 	    <div class="modal-dialog">
