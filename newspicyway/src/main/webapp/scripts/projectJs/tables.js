@@ -732,7 +732,7 @@ function save_table() {
         var chargeType = $('.serviceCharge_count_select').val()//服务费计算方式 0比例 1 固定 2 时长
         tableInfo['chargeType'] = chargeType;//是否开启服务费 0关闭 1开启
         if (chargeType == '0') {//服务费计算方式 0比例
-            var chargeRateRule = $('.serviceCharge_count_select').val()//0:实收 1:应收
+            var chargeRateRule = $('.serviceCharge_Real_Price').val()//0:实收 1:应收
             var chargeRate = $.trim($('.serviceCharge_count_timer').val())//比例计算方式 比率
             tableInfo['chargeRateRule'] = chargeRateRule;//0:实收 1:应收
             tableInfo['chargeRate'] = chargeRate;//比例计算方式 比率 数字100%
@@ -1849,6 +1849,7 @@ var customTable = {
     },
     /*餐台服务费开启关闭*/
     serviceCharge_onoff: function () {
+        var that=this;
         $('#serviceCharge_onoff input').click(function () {
             var me = $(this).val();
             $('.serviceCharge_count_timer_tip').text('')//错误信息
@@ -1898,6 +1899,11 @@ var customTable = {
                 window.location.reload();//刷新页面
             }
             if (me == '1') {
+                if(serviceTablesJson.length<'1'){
+                    that.errorAlert('该门店不存在服务费餐台');
+                    $('#allTables').addClass('tables-type-active')
+                    return false
+                }
                 $('#serviceTables').addClass('tables-type-active')
                 $('#nav-tables').html('');
                 /*清空餐台区域和显示餐台*/

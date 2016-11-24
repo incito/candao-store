@@ -189,7 +189,7 @@
                     <div class="form-group" id="serviceCharge_count" style="display: none">
                         <label class="col-xs-4 control-label">计算方式：</label>
                         <div class="col-xs-2" style="padding-right: 2px">
-                            <select class="form-control serviceCharge_count_select" style="padding: 2px 2px ">
+                            <select class="form-control serviceCharge_count_select" style="padding: 2px 0px ">
                                 <option value="0">比例</option>
                                 <option value="1">固定</option>
                                 <option value="2">时长</option>
@@ -199,7 +199,7 @@
                         <div class="col-xs-6 serviceCharge_count_proportion"
                              style="padding-left: 2px;padding-right: 2px;">
                             <div class="col-xs-5" style="padding-left: 2px;padding-right: 2px">
-                                <select class="form-control" style="padding: 2px 2px; ">
+                                <select class="form-control serviceCharge_Real_Price" style="padding: 2px 0px; ">
                                     <option value="0">应收金额</option>
                                     <option value="1">实收金额</option>
                                 </select>
