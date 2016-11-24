@@ -88,6 +88,19 @@ $(document).ready(function(){
 					me.val(val.substr(0, me.val().length-1))
 				}
 			}
+
+
+			if(type === 'intAndFloat3') {
+				if(!(/^[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,2}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,2}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
+
+			if(type === 'intAndFloat4') {
+				if(!(/^[0-9]{1,4}$/g.test(me.val()) || /^[0-9]{1,4}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,4}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
 			//数字英文中文，以及#
 			if(type==='noPecial'){
 				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#]*$/g

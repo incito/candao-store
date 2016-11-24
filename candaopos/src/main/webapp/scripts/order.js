@@ -862,6 +862,7 @@ var Order = {
                                 right: 5
                             });
                         } else {
+                            dom.membershipCard.attr('isLogin','false');
                             widget.modal.alert({
                                 cls: 'fade in',
                                 content: '<strong>' + res2.msg + '</strong>',
@@ -938,6 +939,7 @@ var Order = {
                                 right: 5
                             });
                         } else {
+                            dom.membershipCard.attr('isLogin','false');
                             widget.modal.alert({
                                 cls: 'fade in',
                                 content: '<strong>' + res2.msg + '</strong>',
