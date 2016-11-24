@@ -2,18 +2,18 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.candao.www.dataserver.mapper.NodeClassMapper">
-    <select id="getMaxClassNo" resultType="java.lang.String">
-        select max(classno) from t_nodeclass
-        <where>
-            <trim prefixOverrides="and">
-                <if test="posID != null and posID != '' ">
-                    AND posID = #{posID}
-                </if>
-                <if test="operatorID != null and operatorID != ''">
-                    AND operatorID = #{operatorID}
-                </if>
-            </trim>
-        </where>
+    <select id="getMaxClassNo" resultType="java.lang.String" parameterType="java.util.HashMap">
+      select max(classno) from t_nodeclass
+      <where>
+          <trim prefixOverrides="and">
+              <if test="posID != null and posID != '' ">
+                  AND posID = #{posID}
+              </if>
+              <if test="operatorID != null and operatorID != ''">
+                  AND operatorID = #{operatorID}
+              </if>
+          </trim>
+      </where>
     </select>
     <select id="getMaxClassNoToday" resultType="java.lang.String" parameterType="String">
         select max(classno) from t_nodeclass where classno like '${preStr}%'
@@ -31,15 +31,16 @@
         WHERE classno =#{jsOrder}
     </select>
     <select id="getJsListJsonByNo" resultType="java.util.HashMap">
-        SELECT orderid,IFNULL(SUM(couponNum),0) AS couponNum,incometype,membercardno,bankcardno,payway,
-        IFNULL(SUM(payamount),0) AS payamount,itemDesc FROM t_nodeclass_detail a
-        LEFT JOIN (SELECT itemid,itemDesc FROM t_dictionary WHERE TYPE='PAYWAY')b
-        ON(a.payway=b.itemid) WHERE payway&lt;&gt;7 AND a.payamount&lt;&gt;0 AND a.classno=#{jsOrder}
-        GROUP BY orderid,couponNum,incometype,payway,itemDesc,membercardno,bankcardno
+        SELECT b.itemid,b.itemDesc,sum(a.payamount) as payamount
+        FROM t_nodeclass_detail a
+        RIGHT JOIN v_revenuepayway b on a.payway=b.itemid
+        where   a.classno=#{jsOrder} AND a.payamount!=0
+        GROUP BY b.itemid
     </select>
     <insert id="insert" parameterType="map">
-         INSERT INTO t_nodeclass (classNo, posID, operatorID, operatorName, vIn, vOut, prettyCash, lastNonTable, lastNonDeposit, tBeginPeople, tBeginTableTotal, tNonClosingTable, tNonClosingMoney, tNonClosingDeposit, tClosingTable, tClosingPeople, tPresentedMoney, tRFoodMoney, itemMoney, serviceMoney, roomMoney, lowConsComp, preferenceMoney, accountsReceivableSubtotal, removeMoney, ratedPreferenceMoney, accountsReceivableTotal, includedMoneyTotal, noIncludedMoneyTotal, TotalMoney, tableware, drinks, drinksSmokeNoodle, todayTurnover, priterTime,ipaddress,workdate,shiftid,authorizer)
-        VALUES (#{classNo}, #{posID}, #{operatorID}, #{operatorName}, #{vIn}, #{vOut}, #{prettyCash}, #{lastNonTable}, #{lastNonDeposit}, #{tBeginPeople}, #{tBeginTableTotal}, #{tNonClosingTable}, #{tNonClosingMoney}, #{tNonClosingDeposit}, #{tClosingTable}, #{tClosingPeople}, #{tPresentedMoney}, #{tRFoodMoney}, #{itemMoney}, #{serviceMoney}, #{roomMoney}, #{lowConsComp}, #{preferenceMoney}, #{accountsReceivableSubtotal}, #{removeMoney}, #{ratedPreferenceMoney}, #{accountsReceivableTotal}, #{includedMoneyTotal}, #{noIncludedMoneyTotal}, #{TotalMoney}, #{tableware}, #{drinks}, #{drinksSmokeNoodle}, #{todayTurnover}, #{priterTime},#{ipaddress},#{workdate},#{shiftid},#{authorizer})
+         INSERT INTO t_nodeclass (classNo, posID, operatorID, operatorName, vIn, vOut, prettyCash, lastNonTable, lastNonDeposit, tBeginPeople, tBeginTableTotal, tNonClosingTable, tNonClosingMoney, tNonClosingDeposit, tClosingTable, tClosingPeople, tPresentedMoney, tRFoodMoney, itemMoney, serviceMoney, roomMoney, lowConsComp, preferenceMoney, accountsReceivableSubtotal, removeMoney, ratedPreferenceMoney, accountsReceivableTotal, includedMoneyTotal, noIncludedMoneyTotal, TotalMoney, tableware, drinks, drinksSmokeNoodle, todayTurnover, priterTime,ipaddress,workdate,shiftid,authorizer,preferenceDetail)
+        VALUES (#{classNo}, #{posID}, #{operatorID}, #{operatorName}, #{vIn}, #{vOut}, #{prettyCash}, #{lastNonTable}, #{lastNonDeposit}, #{tBeginPeople}, #{tBeginTableTotal}, #{tNonClosingTable}, #{tNonClosingMoney}, #{tNonClosingDeposit}, #{tClosingTable}, #{tClosingPeople}, #{tPresentedMoney}, #{tRFoodMoney}, #{itemMoney}, #{serviceMoney}, #{roomMoney}, #{lowConsComp}, #{preferenceMoney}, #{accountsReceivableSubtotal}, #{removeMoney}, #{ratedPreferenceMoney}, #{accountsReceivableTotal}, #{includedMoneyTotal}, #{noIncludedMoneyTotal}, #{TotalMoney}, #{tableware}, #{drinks},
+        #{drinksSmokeNoodle}, #{todayTurnover}, #{priterTime},#{ipaddress},#{workdate},#{shiftid},#{authorizer},#{preferenceDetail})
 
     </insert>
 </mapper>

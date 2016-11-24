@@ -1,9 +1,5 @@
 package com.candao.www.dataserver.service.dish;
 
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-
 /**
  * Created by ytq on 2016/3/18.
  */

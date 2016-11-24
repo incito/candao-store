@@ -50,6 +50,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	public List<Map<String, Object>> getDatasByType(String type) {
 		return tbdatadictionaryDao.getDatasByType(type);
 	}
+	@Override
+	public List<Map<String, Object>> getDatasByTypeIgnoreStatus(String type) {
+		return tbdatadictionaryDao.getDatasByTypeIgnoreStatus(type);
+	}
 	
 	/**
 	 * 获取通知消息类型

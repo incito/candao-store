@@ -34,8 +34,9 @@ public class RunTableOrderTask {
         clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
         clientInfo.setCommand("order");
         clientInfo.setRequestType("syncTableOrder");
-        clientInfo.setData(orderService.getTableOrderData().toString());
-        logger.info("统计当天所有的桌子的订单信息数据查询："+orderService.getTableOrderData().toString());
+        String temp = orderService.getTableOrderData().toString();
+        clientInfo.setData(temp);
+        logger.info("统计当天所有的桌子的订单信息数据查询："+temp);
         JSONObject requestObject = JSONObject.fromObject(clientInfo);
         String link = PropertiesUtils.getValue("cloudLink");
         HttpUtils.getHttpPost(link, requestObject);

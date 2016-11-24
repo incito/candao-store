@@ -114,22 +114,22 @@ public class TableController extends BaseController{
 		boolean b = false;
 		TbTable tbTable = new TbTable();
 		tbTable.setAreaid((String) tableMap.get("areaid"));
-		
+
 		tbTable.setCustPrinter((String) tableMap.get("printerid"));
 		String fixprice = (String) tableMap.get("fixprice");
-		
-		tbTable.setFixprice( new BigDecimal((String) (fixprice== "" ? "0":fixprice)));
+
+		tbTable.setFixprice(new BigDecimal((String) (fixprice == "" ? "0" : fixprice)));
 		String minprice = (String) tableMap.get("minprice");
-		tbTable.setMinprice( new BigDecimal ((String) (minprice== "" ? "0":minprice)));
+		tbTable.setMinprice(new BigDecimal((String) (minprice == "" ? "0" : minprice)));
 		String personNum = (String) tableMap.get("personNum");
-		tbTable.setPersonNum( new Integer((String) (personNum== "" ? "0":personNum)));
+		tbTable.setPersonNum(new Integer((String) (personNum == "" ? "0" : personNum)));
 		tbTable.setTableid((String) tableMap.get("tableid"));
 		tbTable.setTableName((String) tableMap.get("tableName"));
 		tbTable.setTableNo((String) tableMap.get("tableNo"));
 		tbTable.setTabletype((String) tableMap.get("tabletype"));
-		
+
 		String id = tbTable.getTableid();
-	
+
 		//只是获取页面的数据
 		try {
 			if (ValidateUtils.isEmpty(id)) {// 增加
@@ -140,27 +140,20 @@ public class TableController extends BaseController{
 				//0空闲
 				b = tableService.save(tbTable);
 				map.put("tableid", tbTable.getTableid());
+				return JSON.toJSONString(getResponseStr(map, b ? "添加成功" : "添加失败", b));
 			} else {// 修改
-				b = tableService.update(tbTable);
+				TbTable temp = tableService.findById(id);
+				if (temp.getStatus() == null || 1 != temp.getStatus().intValue()) {
+					b = tableService.update(tbTable);
+					return JSON.toJSONString(getResponseStr(null, b ? "修改成功" : "修改失败", b));
+				} else {
+					return JSON.toJSONString(getResponseStr(null, "不能修改已经开台餐台信息", false));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return JSON.toJSONString(getResponseStr(null, e.getMessage(), false));
 		}
-	
-		if (b) {
-			if (ValidateUtils.isEmpty(id)) {
-				map.put("maessge", "添加成功");
-			} else {
-				map.put("maessge", "修改成功");
-			}
-		} else {
-			if (ValidateUtils.isEmpty(id)) {
-				map.put("maessge", "添加失败");
-			} else {
-				map.put("maessge", "修改失败");
-			}
-		}
-		return JacksonJsonMapper.objectToJson(map);
 	}
 	
 	public static void main(String args[]){
@@ -248,9 +241,9 @@ public class TableController extends BaseController{
 		boolean b = tableService.deleteById(id);
 		ModelAndView mav = new ModelAndView("table/table");
 		if (b) {
-			mav.addObject("message", "删除成功");
+			mav.addAllObjects(getResponseStr(null,"删除成功",true));
 		} else {
-			mav.addObject("message", "删除失败");
+			mav.addAllObjects(getResponseStr(null,"删除失败",false));
 		}
 		return mav;
 	}
@@ -260,9 +253,9 @@ public class TableController extends BaseController{
 		boolean b = tableService.deleteTablesByAreaid(areaid);
 		ModelAndView mav = new ModelAndView("table/table");
 		if (b) {
-			mav.addObject("message", "删除成功");
+			mav.addAllObjects(getResponseStr(null,"删除成功",true));
 		} else {
-			mav.addObject("message", "删除失败");
+			mav.addAllObjects(getResponseStr(null,"删除失败",false));
 		}
 		return mav;
 	}

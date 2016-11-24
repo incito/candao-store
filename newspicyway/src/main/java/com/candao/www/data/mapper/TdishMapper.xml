@@ -617,9 +617,10 @@ from t_dish t ,t_basicdata tb where t.source=tb.id and t.status=1 and t.dishtype
 	
    	<select id="getDishListByType" resultMap="findResultMap"
 	parameterType="map">
-	SELECT t.dishid,t.title,t.dishNo,b.itemDesc,t.dishtype,u.price,u.vipprice,u.unit,t.headSort unitflag  
-	FROM t_basicdata b ,t_dish t,t_dish_dishtype ty LEFT JOIN t_dish_unit u on ty.dishid=u.dishid
+	SELECT DISTINCT t.dishid,t.title,t.dishNo,b.itemDesc,t.dishtype,u.price,u.vipprice,u.unit,t.headSort unitflag  
+	FROM t_basicdata b ,t_dish t, t_template_dishunit td,t_dish_dishtype ty LEFT JOIN t_dish_unit u on ty.dishid=u.dishid
 	 where ty.columnId=#{columnid,jdbcType=VARCHAR} 
+	and td.dishid = t.dishid and td.menuid = (select menuid from v_currmenu)
 	and ty.dishid=t.dishid 
 	<if test="flag != null and flag=='1'.toString()">
 	and t.dishtype!='1'

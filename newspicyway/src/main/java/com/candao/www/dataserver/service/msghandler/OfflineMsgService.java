@@ -10,7 +10,6 @@ import java.util.List;
  * Created by ytq on 2016/3/17.
  */
 public interface OfflineMsgService extends MsgHandler {
-    Integer save(OfflineMsg offlineMsg);
 
     Integer save(List<OfflineMsg> offlineMsgList, Boolean isSingle);
 
@@ -18,7 +17,6 @@ public interface OfflineMsgService extends MsgHandler {
 
     List<OfflineMsg> getAllOffLineMsg(String group, String id);
 
-    void deleteById(String id);
 
     void deleteMsgByExpireTime(final Date curDate);
 }

@@ -282,6 +282,16 @@
             order by itemSort asc
         </where>
     </select>
+    <!--查询分类下的子项  忽略状态 -->
+    <select id="getDatasByTypeIgnoreStatus" resultMap="findResultMap" parameterType="map">
+        select * from t_dictionary
+        <where>
+            <if test="type != null and type != ''">
+               type=#{type}
+            </if>
+            order by itemSort asc
+        </where>
+    </select>
     
         <!--查询分类下的子项  -->
     <select id="getDicListByType" resultMap="findResultMap" parameterType="map">

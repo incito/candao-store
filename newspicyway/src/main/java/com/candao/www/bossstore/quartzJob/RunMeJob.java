@@ -1,5 +1,9 @@
 package com.candao.www.bossstore.quartzJob;
 
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+@Component
 public class RunMeJob {
 	private RunMeTask runMeTask;
     private RunCurrMonTask runCurrMonTask;
@@ -41,7 +45,7 @@ public class RunMeJob {
 	public void setTableOrderTask(RunTableOrderTask tableOrderTask) {
 		this.tableOrderTask = tableOrderTask;
 	}
-
+	@Scheduled(cron="0 0/5 * * * ?") 
 	protected void executeInternal(){
 		System.out.println("------------------this is ok-------------");
 		try {

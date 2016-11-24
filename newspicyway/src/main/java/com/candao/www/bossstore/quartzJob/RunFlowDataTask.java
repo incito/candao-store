@@ -34,8 +34,9 @@ public class RunFlowDataTask {
 		clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
 		clientInfo.setCommand("order");
 		clientInfo.setRequestType("syncCurrFlowData");
-		clientInfo.setData(orderService.getCurrDayFlowData().toString());
-		logger.info("当日流水数据查询："+orderService.getCurrDayFlowData().toString());
+		String temp = orderService.getCurrDayFlowData().toString();
+		clientInfo.setData(temp);
+		logger.info("当日流水数据查询："+temp);
         JSONObject requestObject = JSONObject.fromObject(clientInfo);
         String link = PropertiesUtils.getValue("cloudLink");
 	 	HttpUtils.getHttpPost(link, requestObject);
