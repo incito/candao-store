@@ -43,7 +43,7 @@
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">姓名:</span>
-							<input value="" id="nmae" name="name"  type="text" class="form-control" autocomplete="off">
+							<input value="" id="nmae" validType='noPecial2' maxlength="20" name="name"  type="text" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">姓别:</span>
