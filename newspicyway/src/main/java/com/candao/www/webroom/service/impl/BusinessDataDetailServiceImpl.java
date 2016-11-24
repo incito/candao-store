@@ -249,7 +249,7 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					businssRport.setDiscountamount(shouldAmountDecimal.subtract(actualTotalAmountPure)+"");
 					//实收列表值td
 					List<String> settlements = (List<String>) actualAmountMap.get("settlements");
-					settlements.set(settlementSort.get("8"), actualTotalAmountPure+"");
+					settlements.set(settlementSort.get("8"), hykAmountDecimal.subtract(inflateDecimal)+"");
                     //平均实收
                     BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
                     BigDecimal actualPre = actualTotalAmountPure.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
