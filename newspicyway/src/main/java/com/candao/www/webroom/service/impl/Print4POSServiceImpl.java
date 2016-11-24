@@ -431,7 +431,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         Assert.notEmpty(map, "固定优惠不能为空");
         List<Map<String, Object>> res = new LinkedList<>();
         String[] name = {"优免", "会员积分消费", "会员券消费", "会员优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增"};
-        String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "malingincom", "give",
+        String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "fraction", "give",
                 "handervalue", "mebervalueadd"};
         for (int i = 0; i < name.length; i++) {
             Map<String, Object> temp = new HashMap<>();
