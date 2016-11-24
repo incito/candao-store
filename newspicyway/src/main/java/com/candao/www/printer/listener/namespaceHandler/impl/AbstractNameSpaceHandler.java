@@ -327,10 +327,11 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
                         fields = temp.getClass().getDeclaredField(pros[j]);
                         fields.setAccessible(true);
                         temp = fields.get(temp);
-                    }catch (NoSuchFieldException e){
-                        e.printStackTrace();
-                        log.error("-------------------->",e);
+                    } catch (NoSuchFieldException e) {
                         temp = "";
+                        e.printStackTrace();
+                        log.error("-------------------->");
+                        log.error("Object:" + temp + ";Field:" + pros[j], e);
                     }
                 }
             }
