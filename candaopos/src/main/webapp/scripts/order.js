@@ -106,7 +106,17 @@ var Order = {
                     }
                 }
             } else {
-                that.doSettlement();
+                if(parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
+                    var alertIns = widget.modal.alert({
+                        content:'<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                        btnOkCb: function(){
+                            alertIns.close();
+                            that.doSettlement();
+                        }
+                    });
+                } else {
+                    that.doSettlement();
+                }
             }
         });
 
@@ -2129,8 +2139,6 @@ var Order = {
                             "coupondetailid": ""
                         });
                     }
-
-
 
                     //挂账多收
                     if(!$('.toalDebitAmountMany').hasClass('hide')) {
