@@ -379,7 +379,7 @@
 						<div class="hori-lf-div">
 							<div>
 								<span>备注菜名:</span>
-								<input type="text" validType='noPecial'   class="form-control note-name" autofocus="">
+								<input type="text" validType='noPecial' maxlength="20"   class="form-control note-name" autofocus="">
 							</div>
 							<div>
 								<span>价格(元):</span>

@@ -88,19 +88,27 @@ $(document).ready(function(){
 					me.val(val.substr(0, me.val().length-1))
 				}
 			}
-			//数字英文中文，以及# 20位字符
+			//数字英文中文，以及#
 			if(type==='noPecial'){
-			//^[A-Za-z0-9\u4e00-\u9fa5]
-				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#]{1,20} *$/g
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#]*$/g
+				if(val!=''){
+					if(!abc.test(val)){
+						me.val(val.substr(0, me.val().length-1));
+					}
+					//me.val(me.val().replace(/'/g,''));
+				}
+
+			}
+
+			//数字英文中文，以及#@.
+			if(type==='noPecial2'){
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#\@\.]*$/g
 				if(val!=''){
 					if(!abc.test(val)){
 						me.val(val.substr(0, me.val().length-1))
 					}
-
+					//me.val(me.val().replace(/'/g,''));
 				}
-
-
-
 			}
 		}
 	});
