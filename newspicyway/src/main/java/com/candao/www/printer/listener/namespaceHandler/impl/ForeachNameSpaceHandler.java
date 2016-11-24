@@ -67,7 +67,6 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 		List<Row> rows = new ArrayList<>();
 		for (Map<String, Object> row : getRowDefination()) {
 			// 更换模板
-//			super.setRowDefine(row);
 			super.setRowDefine(row);
 			if (value.contains(XmlReaderContext.PROPERTYSEPERATOR)) {
 				String valueCopy = new String(value.getBytes());
@@ -85,6 +84,11 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 						params.put(item, object);
 						rows.addAll(super.parseRow(params));
 					}
+				} else {
+					log.error("---------------------------> ForeachName模板格式错误,元素的值必须是一个集合");
+					Map<String, Object> params = new HashMap<>();
+					params.put(item, temp);
+					rows.addAll(super.parseRow(params));
 				}
 			}
 		}

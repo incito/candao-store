@@ -47,7 +47,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 
     public static final String ROW_TAG_NAME = "row:row";
 
-    private final Log log = LogFactory.getLog(getClass());
+    protected final Log log = LogFactory.getLog(getClass());
 
     private final static int CLONE_LEVER = -1;
 
@@ -122,9 +122,9 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
                 }
                 return temp.toArray(new Integer[temp.size()]);
             }
-        } else if(XmlReaderContext.PRIMITIVE_BOOLEAN.equals(name)){
-            boolean flag  = false;
-            if (XmlReaderContext.PLACEHOLDER_TRUE.equals(value.toString())){
+        } else if (XmlReaderContext.PRIMITIVE_BOOLEAN.equals(name)) {
+            boolean flag = false;
+            if (XmlReaderContext.PLACEHOLDER_TRUE.equals(value.toString())) {
                 flag = true;
             }
             return flag;
@@ -298,7 +298,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
      */
     protected Object getDesiredFieldValue(Object obj, String[] pros, int fromindex) throws Exception {
         if (obj == null || ArrayUtils.isEmpty(pros)) {
-            return null;
+            return "";
         }
         Object temp = obj;
         for (int j = fromindex; j < pros.length; j++) {
@@ -311,17 +311,27 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
                 Method method = temp.getClass().getMethod(methodName, (Class<?>[]) (paramsValue == null ? null : paramsValue[1]));
                 temp = method.invoke(temp, paramsValue == null ? null : paramsValue[0]);
             } else {//属性
-                if (Map.class.isAssignableFrom(temp.getClass())) {
+                if (StringUtils.isEmpty(temp)) {
+                    temp = "";
+                } else if (Map.class.isAssignableFrom(temp.getClass())) {
                     temp = ((Map) temp).get(pros[j]);
                 } else if (Collection.class.isAssignableFrom(temp.getClass())) {
+                    //待定，是否抛出异常
                     throw new Exception("不能解析集合");
                 } else if (temp.getClass().isArray()) {
+                    //待定，是否抛出异常
                     throw new Exception("不能解析数组");
                 } else {
-                    Field fields;
-                    fields = temp.getClass().getDeclaredField(pros[j]);
-                    fields.setAccessible(true);
-                    temp = fields.get(temp);
+                    try {
+                        Field fields;
+                        fields = temp.getClass().getDeclaredField(pros[j]);
+                        fields.setAccessible(true);
+                        temp = fields.get(temp);
+                    }catch (NoSuchFieldException e){
+                        e.printStackTrace();
+                        log.error("-------------------->",e);
+                        temp = "";
+                    }
                 }
             }
         }
