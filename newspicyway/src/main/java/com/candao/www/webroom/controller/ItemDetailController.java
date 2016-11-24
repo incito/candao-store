@@ -109,8 +109,10 @@ public class ItemDetailController {
      * @return
      */
     private Map<String,Object> setParameter(Map<String,Object> params){
+    	if(params.get("branchId")==null){
         String branchid = PropertiesUtils.getValue("current_branch_id");
-        params.put("branchId", branchid);
+        	params.put("branchId", branchid);
+        }
 		if(params.get("dishType") == null || "".equals(params.get("dishType"))){
 			params.put("dishType", -1);
 		}
@@ -160,14 +162,34 @@ public class ItemDetailController {
 		//设置参数
 		Map<String,Object> map = setParameter(params);
 		//查询门店名称
-		String branchid = PropertiesUtils.getValue("current_branch_id");
+		String branchid = params.get("branchId")+"";
         String branchname = itemDetailService.getBranchName(branchid);
         map.put("branchname", branchname);
 		List<Map<String,Object>> itemList = itemDetailService.itemDetailProcedure(map);
-		List<Map<String,Object>> itemDetail = itemDetailService.itemSubDetailProcedure(map);
-		exportItemDetailService.createExcel(request,response,itemList,itemDetail,params);
+		//List<Map<String,Object>> itemDetail = itemDetailService.itemSubDetailProcedure(map);
+		exportItemDetailService.createExcel(request,response,itemList,params);
 	}
-	
+	/**
+     * 品项销售明细表导出
+	 * @author weizhifang
+	 * @since 2015-5-30
+     * @param request
+     * @param response
+     * @param params
+     * @throws Exception
+     */
+	@RequestMapping(value="exportPXXSMXBZB")
+	@ResponseBody
+	public void exportPXXSMXBZB(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> params) throws Exception{
+		//设置参数
+		Map<String,Object> map = setParameter(params);
+		//查询门店名称
+		String branchid = params.get("branchId")+"";
+        String branchname = itemDetailService.getBranchName(branchid);
+        map.put("branchname", branchname);
+		List<Map<String,Object>> itemDetail = itemDetailService.itemSubDetailProcedure(map);
+		exportItemDetailService.createExcelSub(request,response,itemDetail,params);
+	}
 	/**
 	 * 品项导出拼数据
 	 * @param beginTime

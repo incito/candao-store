@@ -2624,8 +2624,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
             Map<String,Object> map=new HashMap<>();
             map.put("dishName",detail.get("title"));
-            map.put("dishCount",detail.get("number"));
-            map.put("totlePrice",detail.get("orignalprice"));
+            BigDecimal danpin = new BigDecimal(detail.get("danpinnumber").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal taocan = new BigDecimal(detail.get("taocannumber").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            map.put("dishCount",danpin.add(taocan));
+            //map.put("totlePrice",detail.get("orignalprice"));
+            map.put("totlePrice", detail.get("debitamount"));
             result.add(map);
         }
         return result;

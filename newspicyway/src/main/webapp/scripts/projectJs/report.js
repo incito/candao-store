@@ -1850,11 +1850,9 @@ function initItemTb(datalist) {
 					+ '<td width="20%">'
 					+ obj.itemDesc
 					+ '</td>'
-					+ '<td width="15%">'
-					+ typedesc
-					+ '</td>'
 					+ '<td width="15%">' + obj.number
 					+ '</td><td>'+obj.thousandstimes+'</td><td>'+obj.orignalprice
+					+ '</td><td>'+obj.debitamount
  					+'</td>'
 					+ '<td width="15%">'
 					+ turnover.toFixed(2)
@@ -1862,7 +1860,7 @@ function initItemTb(datalist) {
 					+ '</tr>';
 		});
 	}else{
-		tHtml += '<tr><td colspan="6">没有数据</td></tr>';
+		tHtml += '<tr><td colspan="7">没有数据</td></tr>';
 	}
 
 	$("#items_tb tbody").html(tHtml);
@@ -1911,8 +1909,10 @@ function initItemSubTb(id, dishType) {
 			subTbody += "<td>" + item.dishNo + "</td>";
 			subTbody += "<td>" + item.price + "</td>";
 			subTbody += "<td>" + item.unit + "</td>";
-			subTbody += "<td>" + item.number + "</td>";
+			subTbody += "<td>" + item.danpinnumber + "</td>";
+			subTbody += "<td>" + item.taocannumber + "</td>";
 			subTbody += "<td>" + item.thousandstimes+"</td><td>"+item.orignalprice+"</td>";
+			subTbody += "<td>"+item.debitamount+"</td>";
 			subTbody += "<td>" + turnover.toFixed(2) + "</td>";//
 			subTbody += "</tr>";
 		});
