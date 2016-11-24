@@ -73,6 +73,6 @@
 	</insert>
     <!-- 查询挂账单位 -->
     <select id="getBillUnit" parameterType="java.util.Map"  resultType="java.util.Map">
-	    SELECT DISTINCT T.bankcardno from newspicyway.t_settlement_detail T WHERE T.payway=13 AND T.payamount !=0 AND LENGTH(T.bankcardno) > 0
+	    SELECT DISTINCT T.bankcardno from t_settlement_detail T WHERE T.payway=13 AND T.payamount !=0 AND LENGTH(T.bankcardno) > 0
     </select>
 </mapper>

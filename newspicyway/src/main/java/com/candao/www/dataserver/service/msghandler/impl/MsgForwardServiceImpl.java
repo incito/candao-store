@@ -132,41 +132,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         }
     }
 
-    @Override
-    @Transactional
-    public String broadCastOk(String client, String msgId) {
-        LOGGER.info("###broadCastOk client={},msgId={}###", client, msgId);
-        ResponseData responseData = new ResponseData();
-        try {
-        /*    msgProcessMapper.saveSyncClient(client, msgId);
-            //清除历史记录
-            String msgId_500 = (Integer.valueOf(msgId) - 500) + "";
-            msgProcessMapper.deleteSyncClient(msgId_500);
-            Integer msgType = msgProcessMapper.selectMsgTypeByMsgId(msgId);
-            if (null != msgType) {
-                if (((msgType == 1002) || (msgType == 1005)) || ((msgType > 2000) && (msgType < 3000))) {
-                    msgProcessMapper.updateSyncMsgRec(msgId);
-                    msgProcessMapper.updateSyncMsgByMsgType1002();
-                }
-                String msg = String.format("%s;%s", msgId, "ok");
-                Map<String, List<String>> target = new HashMap<>();
-                for (final DeviceObject deviceObject : deviceObjectService.getAllDevice()) {
-                    if (target.containsKey(deviceObject.getDeviceGroup())) {
-                        target.get(deviceObject.getDeviceGroup()).add(deviceObject.getDeviceId());
-                    } else {
-                        target.put(deviceObject.getDeviceGroup(), new ArrayList<String>() {{
-                            add(deviceObject.getDeviceId());
-                        }});
-                    }
-                }
-                communicationService.forwardMsg(target, msg);
-
-            }*/
-        } catch (Exception e) {
-            LOGGER.error("###broadCastOk client={},msgId={},error={}###", client, msgId, e.getCause().getStackTrace());
-        }
-        return JSON.toJSONString(new ResultData(JSON.toJSONString(responseData)));
-    }
+  
 
     /**
      * watch老版本广播用
@@ -309,29 +275,7 @@ public class MsgForwardServiceImpl implements MsgForwardService, MsgHandler {
         return result;
     }
 
-    @Override
-    public Result sendMsgAsyn(String imei, String msgId, Object msgData, int expireSeconds, boolean isSingle) {
-        String msg = "";
-        if (null != msgData) {
-            msg = JSON.toJSONString(msgData);
-        }
-        LOGGER.info("#### sendMsgAsyn imei={} msgId={},msg={},expireSeconds={} isSingle={}###", imei, msgId, msg, expireSeconds, isSingle);
-        try {
-            List<DeviceObject> devices = new ArrayList<>();
-            DeviceObject deivce = deviceObjectService.getDeviceByMeId(imei);
-            if (null == deivce) {
-                LOGGER.info("设备[" + imei + "]不存在");
-                return new Result(false, "设备不存在");
-            }
-            devices.add(deivce);
-            broadCastMsgDevices(devices, msg, msgId, expireSeconds, isSingle);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("#### sendMsgAsyn###", e);
-            return new Result(false, "发送离线消息异常");
-        }
-        return new Result();
-    }
+  
 
     @Override
     public Result sendMsgAsynWithOrderId(String orderId, String msgId, Object msgData, int expireSeconds, boolean isSingle) {

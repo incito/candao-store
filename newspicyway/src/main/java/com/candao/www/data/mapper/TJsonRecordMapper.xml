@@ -8,7 +8,7 @@
   </resultMap>
  
   <insert id="insertJsonRecord" parameterType="com.candao.www.data.model.TJsonRecord" >
-      INSERT INTO newspicyway.t_json_record
+      INSERT INTO t_json_record
 		(
 		 json
 		 ,inserttime

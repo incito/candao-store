@@ -1,10 +1,12 @@
 package com.candao.www.security.controller;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.HtmlUtils;
@@ -83,6 +85,14 @@ public class BaseController {
       
     }
     return params;
+  }
+
+  protected Map<String,Object> getResponseStr(Object data,String msg,boolean isSucess){
+    Map<String,Object> res = new HashMap<>();
+    res.put("code",isSucess ? 0 : 1);
+    res.put("data",data);
+    res.put("msg",msg);
+    return res;
   }
 
   

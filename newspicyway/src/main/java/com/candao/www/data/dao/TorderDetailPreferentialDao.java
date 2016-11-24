@@ -23,7 +23,8 @@ public interface TorderDetailPreferentialDao {
 
 	public int deleteBachInfo(List<TorderDetailPreferential> detailPreferentials);
 	public int deleteDetilPreFerInfo(Map<String, Object> params);
-
+  public  int  deleteForXinladao(Map<String, Object> params);
+	
 	public List<TorderDetailPreferential> getTorderDetailSbyOrderid(Map<String, Object> params);
 	
 	public BigDecimal  statisticALLDiscount(String orderid);

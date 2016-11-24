@@ -13,21 +13,6 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private DeviceMapper deviceMapper;
 
-    @Override
-    public Integer save(Device device) {
-        return deviceMapper.save(device);
-    }
-
-    @Override
-    public void update(Device device) {
-        deviceMapper.update(device);
-    }
-
-    @Override
-    public boolean isExistDevice(String group, String id) {
-        return deviceMapper.countByGroupAndId(group, id) > 0;
-    }
-
     public synchronized void saveOrUpdateDevice(Device device) {
         if (deviceMapper.countByGroupAndId(device.getDeviceGroup(), device.getDeviceId()) > 0) {
             deviceMapper.update(device);
@@ -41,10 +26,6 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceMapper.getDeviceById(id);
     }
 
-    @Override
-    public Device getByGroupAndId(String group, String id) {
-        return deviceMapper.getByGroupAndId(group, id);
-    }
 
     @Override
     public void handler(DeviceObject deviceObject, String serialNumber, String msg) {

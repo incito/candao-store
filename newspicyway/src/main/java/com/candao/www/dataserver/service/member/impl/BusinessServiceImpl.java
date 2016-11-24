@@ -211,27 +211,30 @@ public class BusinessServiceImpl implements BusinessService {
         int lowConsComp = 0;
         // 定额优惠金额
         int ratedPreferenceMoney = 0;
-        //品项消费
+        //品项消费=品项原价+其他收费项（包间费、服务费等）（套餐品项原价）
         String itemMoney = tellerCashMapper.selectItemMoney(insertDate, userId);
         float itemMoneyFloat = StringUtil.str2Float(itemMoney, 0);
-        //优惠金额
-        String preferenceMoney = tellerCashMapper.selectPreferenceMoney(insertDate, userId);
-        float preferenceMoneyFloat = StringUtil.str2Float(preferenceMoney, 0);
-        //应收小计=品项总额-优惠金额。
-        float accountsReceivableSubtotal = itemMoneyFloat - preferenceMoneyFloat;
+        //优惠金额=套餐优惠+会员价优惠+会员储值虚增+赠菜+会员积分消费+优免（特价菜金额+折扣券+代金券+团购+手工优免）+雅座优惠+抹零+赠菜券*+四舍五入
+        Map<String, Object> preferenceDetail = tellerCashMapper.selectPreferenceMoney(insertDate, userId);
+        float preferenceDetailTotal = 0;
+        for (Map.Entry preference : preferenceDetail.entrySet()) {
+            preferenceDetailTotal += Float.valueOf(preference.getValue().toString());
+        }
+        //应收小计=品项总额
+        float accountsReceivableSubtotal = itemMoneyFloat;
         //抹零金额
         String removeMoney = tellerCashMapper.selectRemoveMoney(insertDate, userId);
         float removeMoneyFloat = StringUtil.str2Float(removeMoney, 0);
         // 应收合计
-        float accountsReceivableTotal = accountsReceivableSubtotal - removeMoneyFloat;
+        float accountsReceivableTotal = itemMoneyFloat;
         //合计
-        String TotalMoney = tellerCashMapper.selectTotalMoney(insertDate, userId);
+        String TotalMoney = itemMoney;
         float TotalMoneyFloat = StringUtil.str2Float(TotalMoney, 0);
-        //计入收入合计
+        //计入收入合计 实收-虚增
         String includedMoneyTotal = tellerCashMapper.selectIncludedTotalMoney(insertDate, userId);
-        float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0);
+        float includedMoneyTotalFloat = StringUtil.str2Float(includedMoneyTotal, 0)- StringUtil.str2Float(preferenceDetail.get("huiyuanxuzeng"), 0);
         // 不计收入合计
-        float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat+removeMoneyFloat*2;
+        float noIncludedMoneyTotal = TotalMoneyFloat - includedMoneyTotalFloat + removeMoneyFloat * 2;
         clearMachineMapper.insert(userId, insertDate);
         settlementDetailMapper.setClear(userId, insertDate);
         tellerCashMapper.updateStatus(ip, userId);
@@ -270,12 +273,12 @@ public class BusinessServiceImpl implements BusinessService {
         param.put("serviceMoney", serviceMoney);
         param.put("roomMoney", roomMoney);
         param.put("lowConsComp", lowConsComp);
-        param.put("preferenceMoney", preferenceMoney);
+        param.put("preferenceMoney", preferenceDetailTotal);
         param.put("itemMaccountsReceivableSubtotaloney", accountsReceivableSubtotal);
         param.put("removeMoney", removeMoney);
         param.put("ratedPreferenceMoney", ratedPreferenceMoney);
         param.put("accountsReceivableTotal", accountsReceivableTotal);
-        param.put("includedMoneyTotal", includedMoneyTotal);
+        param.put("includedMoneyTotal", includedMoneyTotalFloat);
         param.put("noIncludedMoneyTotal", noIncludedMoneyTotal);
         param.put("TotalMoney", TotalMoney);
         param.put("tableware", tableware);
@@ -287,6 +290,8 @@ public class BusinessServiceImpl implements BusinessService {
         param.put("workdate", openDate);
         param.put("shiftid", getShiftID());
         param.put("authorizer", authorizer);
+        //优惠明细
+        param.put("preferenceDetail", getPreferenceDetail(preferenceDetail));
         nodeClassMapper.insert(param);
 
         // 结算方式明细    把
@@ -520,7 +525,7 @@ public class BusinessServiceImpl implements BusinessService {
      */
     private String getJbNo() {
         Date workDateDate = WorkDateUtil.getWorkDate1();
-        String preStr = "JS000401" + DateUtils.toString(workDateDate, "yyMMdd");
+        String preStr = "JS000401" + Constant.BRANCH.BRANCH_ID + DateUtils.toString(workDateDate, "yyMMdd");
         String maxClassNoToday = nodeClassMapper.getMaxClassNoToday(preStr);
         if (StringUtil.isEmpty(maxClassNoToday)) {
             maxClassNoToday = preStr + "0001";
@@ -558,6 +563,13 @@ public class BusinessServiceImpl implements BusinessService {
         return result;
     }
 
-    public static void main(String[] args) {
+    private String getPreferenceDetail(Map preferenceDetail) {
+        //优惠金额=套餐优惠+会员价优惠+会员储值虚增+赠菜+会员积分消费+优免（特价菜金额+折扣券+代金券+团购+手工优免）+雅座优惠+抹零+赠菜券*+四舍五入
+        StringBuilder sb = new StringBuilder();
+        String delim = "|";
+        sb.append(preferenceDetail.get("taocanyouhui")).append(delim).append(preferenceDetail.get("huiyuanyouhui")).append(delim).append(preferenceDetail.get("huiyuanxuzeng"))
+                .append(delim).append(preferenceDetail.get("zengcai")).append(delim).append(preferenceDetail.get("huiyuanjifen")).append(delim).append(preferenceDetail.get("youmian"))
+                .append(delim).append(preferenceDetail.get("yazuoyouhui")).append(delim).append(preferenceDetail.get("moling")).append(delim).append(preferenceDetail.get("sishewuru"));
+        return sb.toString();
     }
 }

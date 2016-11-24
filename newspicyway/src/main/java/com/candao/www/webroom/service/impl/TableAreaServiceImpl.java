@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.data.dao.TbTableDao;
+import com.candao.www.data.model.TbTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +13,16 @@ import com.candao.common.page.Page;
 import com.candao.www.data.dao.TbTableAreaDao;
 import com.candao.www.data.model.TbTableArea;
 import com.candao.www.webroom.service.TableAreaService;
+import org.springframework.util.CollectionUtils;
+
 @Service
 public class TableAreaServiceImpl implements TableAreaService {
 @Autowired
   private TbTableAreaDao tableAreaDao;
+
+	@Autowired
+	private TbTableDao tableDao;
+
 	@Override
 	public Page<Map<String, Object>> grid(Map<String, Object> params, int current, int pagesize) {
 		return tableAreaDao.page(params, current, pagesize);
@@ -68,6 +76,28 @@ public class TableAreaServiceImpl implements TableAreaService {
 	public List<Map<String, Object>> findTableCountAndAreaname() {
 		// TODO Auto-generated method stub
 		return tableAreaDao.findTableCountAndAreaname();
+	}
+
+	@Override
+	public void delTablesAndArea(String areaid) {
+		boolean flag = false;
+		Map param = new HashMap();
+		param.put("areaid", areaid);
+		List<Map<String,Object>> tables = tableDao.find(param);
+		if (CollectionUtils.isEmpty(tables)) {
+			flag = 0 < tableAreaDao.delete(areaid);
+			if (!flag)
+				throw new RuntimeException("删除餐台分区失败");
+		} else {
+			for (Map<String,Object> table : tables) {
+				if ("1".equals(String.valueOf(table.get("status"))))
+					throw new RuntimeException("删除餐台分区失败(存在已开台餐台)");
+				flag = 0 < tableDao.delete(String.valueOf(table.get("tableid")));
+				if (!flag) {
+					throw new RuntimeException("删除餐台分区失败(删除餐台失败)");
+				}
+			}
+		}
 	}
 }
 
