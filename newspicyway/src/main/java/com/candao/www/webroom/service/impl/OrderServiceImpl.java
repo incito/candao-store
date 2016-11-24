@@ -23,7 +23,6 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.print.dao.TbPrinterManagerDao;
 import com.candao.print.entity.PrintObj;
 import com.candao.www.constant.Constant;
-import com.candao.www.data.dao.TServiceChargeDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
 import com.candao.www.data.dao.TbPrintObjDao;
 import com.candao.www.data.dao.TbTableDao;
@@ -58,8 +57,10 @@ import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.DishUnitService;
 import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.OpenBizService;
+import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TServiceChargeService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 
@@ -125,8 +126,10 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private TbTableDao tableDao;
 
+	 @Autowired
+	 private OrderDetailService orderDetailService;
 	@Autowired
-	private TServiceChargeDao serviceChargeDao;
+	private TServiceChargeService chargeService;
 
 	public Torder findOrderByTableId(Torder order) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1200,7 +1203,7 @@ public class OrderServiceImpl implements OrderService {
 				mapRet.put("rows", getMapData(orderid));// 获取订单数据
 			}
 			// 或POS使用数据订单信息
-			Map<String, Object> userOrderInfo = findOrderByInfo(orderid);
+			Map<String, Object> userOrderInfo = orderDetailService.findOrderByInfo(orderid);
 			mapRet.put("userOrderInfo", userOrderInfo);
 			// 优惠信息
 			params.put("branchid", branchid);
@@ -1212,67 +1215,19 @@ public class OrderServiceImpl implements OrderService {
 							: String.valueOf(userOrderInfo.get("memberno"));
 			params.put("memberno", menberNo);
 			OperPreferentialResult result = preResult(params);
-			mapRet.put("preferentialInfo", result);
+			
 			// 服务费信息
-			TServiceCharge serviceCharge = serviceCharge(orderid, userOrderInfo,
+			TServiceCharge serviceCharge =chargeService.serviceCharge(orderid, userOrderInfo,
 					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
 			mapRet.put("serviceCharge", serviceCharge);
+			//加上服务费
+			if(serviceCharge!=null&&serviceCharge.getChargeOn()!=0){
+				result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));	
+			}
+			mapRet.put("preferentialInfo", result);
 		}
 
 		return ReturnMap.getSuccessMap(mapRet);
-	}
-
-	private TServiceCharge serviceCharge(String orderid, Map<String, Object> userOrderInfo, BigDecimal payDecimal,
-			BigDecimal MenuDecimal) {
-		Map<String, Object> serParams = new HashMap<>();
-		serParams.put("orderId", orderid);
-
-		BigDecimal calcServiceCharge = null;
-		int chargeOn = userOrderInfo.get("chargeOn") == null ? 0 : (int) userOrderInfo.get("chargeOn");
-		int chargeType = userOrderInfo.get("chargeType") == null ? 0 : (int) userOrderInfo.get("chargeType");
-		int chargeRateRule = userOrderInfo.get("chargeRateRule") == null ? 0
-				: (int) userOrderInfo.get("chargeRateRule");
-		int chargeRate = userOrderInfo.get("chargeRate") == null ? 0 : (int) userOrderInfo.get("chargeRate");
-		String chargeTime = userOrderInfo.get("chargeTime") == null ? "" : (String) userOrderInfo.get("chargeTime");
-		TServiceCharge servceCharageBean = null;
-		if (chargeOn != 0) {
-			servceCharageBean = serviceChargeDao.getChargeInfo(serParams);
-			if (servceCharageBean == null || (servceCharageBean != null && servceCharageBean.getIsCustom() == 0
-					&& servceCharageBean.getChargeOn() == 1)) {
-				Map<String, Object> params = new HashMap<>();
-				params.put("itemid", chargeType);
-				params.put("type", "TABLECHARGE");
-				List<Object> dataDictionary = dictionaryDao.find(params);
-				if (!dataDictionary.isEmpty()) {
-					// 0比例 1 固定 2 时长
-					calcServiceCharge = StrategyFactory.INSTANCE.calcServiceCharge(userOrderInfo, payDecimal,
-							MenuDecimal);
-				}
-			} else if (servceCharageBean.getIsCustom() == 1 && servceCharageBean.getChargeOn() == 1) {
-				calcServiceCharge = servceCharageBean.getChargeAmount();
-			}
-
-			if (servceCharageBean == null) {
-				servceCharageBean = new TServiceCharge(orderid, chargeOn, chargeType, chargeRateRule, chargeRate,
-						chargeTime);
-				servceCharageBean.setChargeAmount(calcServiceCharge);
-				servceCharageBean.setAutho("");
-				long id = serviceChargeDao.insertChargeInfo(servceCharageBean);
-				servceCharageBean.setId(id);
-			} else {
-				servceCharageBean.setChargeAmount(calcServiceCharge);
-				try {
-					serviceChargeDao.updateChargeInfo(servceCharageBean);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-
-		}
-
-		return servceCharageBean;
-
 	}
 
 	/**
@@ -1295,52 +1250,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
-	private Map<String, Object> findOrderByInfo(String orderid) {
-		// orderInvoiceTitle 发票抬头
-		// orderStatus; 订单状态
-		// tableStatus 餐桌状态
-		// customerNumber 多少人
-		Map<String, Object> outresultMap = new HashMap<>();
-		List<Map<String, Object>> resultMapList = torderDetailMapper.findOrderByInfo(orderid);
-		if (resultMapList != null && !resultMapList.isEmpty()) {
-			List<Object> tipMapList = torderDetailMapper.findOrderByTip(orderid);
-			Map<String, Object> resultMap = resultMapList.get(0);
-			Map<String, Object> tipMap = !tipMapList.isEmpty() ? (Map<String, Object>) tipMapList.get(0) : null;
-			outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
-			outresultMap.put("orderStatus", resultMap.get("orderstatus"));
-			outresultMap.put("tableStatus", resultMap.get("status"));
-			outresultMap.put("isFree", (Boolean) resultMap.get("isfree") ? "1" : "0");
-			outresultMap.put("numOfMeals", resultMap.get("num_of_meals"));
-			outresultMap.put("customerNumber", resultMap.get("custnum"));
-			outresultMap.put("womanNum", resultMap.get("womanNum"));
-			outresultMap.put("childNum", resultMap.get("childNum"));
-			outresultMap.put("mannum", resultMap.get("mannum"));
-			outresultMap.put("memberno", resultMap.get("memberno"));
-			outresultMap.put("begintime", DateUtils.formatDateToString((Date) resultMap.get("begintime")));
-			Date date = (Date) resultMap.get("endtime");
-			outresultMap.put("endtime", date == null ? "" : DateUtils.formatDateToString(date));
-			outresultMap.put("areaname", resultMap.get("areaname"));
-			outresultMap.put("tableName", resultMap.get("tableName"));
-			outresultMap.put("fullName", resultMap.get("userid"));
-			outresultMap.put("waiterName", resultMap.get("name"));
-			// 小费相关
-			outresultMap.put("tipWaiterNum", tipMap != null ? tipMap.get("waiter_number") : "");
-			outresultMap.put("tipWaiterName", tipMap != null ? tipMap.get("name") : "");
-			/** 预打印 **/
-			int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
-			outresultMap.put("befprintcount", printcount + 1);
-
-			/** 服务费 **/
-			outresultMap.put("chargeOn", resultMap.get("chargeOn"));
-			outresultMap.put("chargeType", resultMap.get("chargeType"));
-			outresultMap.put("chargeRateRule", resultMap.get("chargeRateRule"));
-			outresultMap.put("chargeRate", resultMap.get("chargeRate"));
-			outresultMap.put("chargeAmount", resultMap.get("chargeAmount"));
-			outresultMap.put("chargeTime", resultMap.get("chargeTime"));
-		}
-		outresultMap.put("orderid", orderid);
-		return outresultMap;
-	}
+	
 
 	/**
 	 * 计算优惠信息

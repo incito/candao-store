@@ -18,7 +18,7 @@ public class TServiceCharge  implements Serializable {
 	private int chargeRateRule;//服务规则规则 '0:实收 1:应收'
 	private int  chargeRate;//'比例计算方式 比率'
 	private String chargeTime;//时长计算方式 时长(分钟单位)'
-	private BigDecimal chargeAmount;//'服务费金额' 
+	private BigDecimal chargeAmount=new BigDecimal("0");//'服务费金额' 
 	private int isCustom;//是否自定义服务费0系统默认 1手动修改
 	private String autho;//小费修改人
 	private Date ctime;//创建时间
