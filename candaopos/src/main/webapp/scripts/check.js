@@ -248,11 +248,12 @@ var checkOrder={
                                     }),
                                     dataType: "json",
                                     success: function (msg) {
+                                        rebackMemberinfo.TraceCode=msg.TraceCode//重新赋值TraceCode会员交易号
                                         if(msg.Retcode!=0){
                                             utils.printError.alert('会员反结算失败')
                                         }
                                         else {
-                                            rebackOrderOk()
+                                            rebackOrderOk(rebackMemberinfo)
                                         }
                                     },
                                 })
@@ -281,7 +282,7 @@ var checkOrder={
                 rebackOrderOk();
             }
             //会员反结结算成功后执行后台账单反结算
-            function rebackOrderOk() {
+            function rebackOrderOk(rebackMemberinfo) {
                 $.ajax({
                     url: _config.interfaceUrl.AntiSettlementOrder,//反结算
                     method: 'POST',
@@ -302,14 +303,31 @@ var checkOrder={
                         }
                         else {
                             $('#c-mod-fjs').modal("hide");
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content:'<strong>反结算失败，请稍后再试</strong>',
-                                width:500,
-                                height:500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
+                            if(rebackMemberinfo){
+                                $.ajax({
+                                    url:memberAddress.vipcandaourl + _config.interfaceUrl.UnVoidSale,//取消会员反结算
+                                    method: 'POST',
+                                    contentType: "application/json",
+                                    data: JSON.stringify({
+                                        'cardno':rebackMemberinfo.cardno,//会员卡号,
+                                        'deal_no':rebackMemberinfo.TraceCode,//会员反结算成功的交易号
+                                        'tracecode':rebackMemberinfo.serial//会员反结算前的交易号
+                                    }),
+                                    dataType: "json",
+                                    success:function (msg) {
+                                        if(msg.Retcode=='0'){
+                                            utils.printError('反结算失败，请稍后再试')
+                                        }
+                                        else {
+                                            utils.printError(msg.RetInfo)
+                                        }
+                                    }
+                                })
+                                return false
+                            }
+                            utils.printError('反结算失败，请稍后再试')
+
+
                         }
 
                     }

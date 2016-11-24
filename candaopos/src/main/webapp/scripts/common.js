@@ -220,6 +220,7 @@ _config.interfaceUrl = {
 	VipChangePsw: "/newspicyway/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
 	GetCouponList: "/newspicyway/memberpreferential/posPreferentialList.json", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
+	UnVoidSale: "/newspicyway/padinterface/getconfiginfos", <!--餐道会员反结算成功，门店反结算失败，取消会员反结-->
 
 
     /*雅座接口*/
