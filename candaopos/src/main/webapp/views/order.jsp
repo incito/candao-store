@@ -208,7 +208,7 @@
 					<div class="paytype-input membership-card hide"
 						 id="membership-card">
 						<div class="form-group" style="display: inline-flex;">
-							<input type="text" class="form-control card-number J-pay-name" name="cardNumber" placeholder="卡号">
+							<input type="text" class="form-control card-number J-pay-name" validtype="noPecial" maxlength="30" name="cardNumber" placeholder="卡号">
 							<button class="btn login-btn disabled">登录</button>
 						</div>
 						<div class="form-group">
@@ -242,7 +242,7 @@
 					<div class="paytype-input pay-treasure hide" id="pay-treasure">
 						<div class="form-group">
 							<span>支付宝:</span>
-							<input type="text" class="form-control J-pay-name" name="alipayName" >
+							<input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="alipayName" >
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
@@ -253,7 +253,7 @@
 					<div class="paytype-input wechat-pay hide" id="wechat-pay">
 						<div class="form-group">
 							<span>微信号:</span>
-							<input type="text"   class="form-control J-pay-name" name="wpayName">
+							<input type="text"   class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="wpayName">
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
