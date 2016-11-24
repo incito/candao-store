@@ -224,10 +224,10 @@ public class TipController {
         timeMap.put("endTime", endTime);
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            int tipMoney = 0;
+            float tipMoney = 0;
             Map<String, Object> result = tipService.TipListByTime(timeMap);
             if (result != null && result.containsKey("tipMoney") && !"".equals(result.get("tipMoney"))) {
-                tipMoney = Integer.valueOf(result.get("tipMoney") + "");
+                tipMoney = Float.valueOf(result.get("tipMoney") + "");
             }
             resultMap.put("result", 0);
             resultMap.put("msg", "获取数据成功");

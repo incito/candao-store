@@ -68,7 +68,10 @@ public class NotifyServiceImpl implements NotifyService {
         if (null == resultMapList || resultMapList.isEmpty()) {
             return null;
         }
-        msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
+        Map<String, Object> data = new HashMap<>(1);
+        String orderid = String.valueOf(resultMapList.get(0).get("orderid"));
+        data.put("orderId", orderid);
+        msgForwardService.sendMsgAsynWithOrderId(orderid, MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), data, 4 * 60 * 60, false);
 
         return null;
     }
@@ -81,14 +84,17 @@ public class NotifyServiceImpl implements NotifyService {
         if (null == resultMapList || resultMapList.isEmpty()) {
             return null;
         }
-        Map<Object, Object> order = orderMapper.findOne(resultMapList.get(0).get("orderid").toString());
+        Object orderid = resultMapList.get(0).get("orderid");
+        Map<Object, Object> order = orderMapper.findOne(String.valueOf(orderid));
         if (null == order) {
             return new Result(false, "该订单不存在");
         }
         if (null != meid && meid.equals(order.get("meid"))) {
             return new Result(false, "源MEID和目标MEID相同,不发送");
         }
-        msgForwardService.sendMsgAsynWithOrderId(String.valueOf(resultMapList.get(0).get("orderid")), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), "", 4 * 60 * 60, false);
+        Map<String, Object> data = new HashMap<>(1);
+        data.put("orderId", orderid);
+        msgForwardService.sendMsgAsynWithOrderId(String.valueOf(orderid), MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), data, 4 * 60 * 60, false);
 
         return null;
     }
@@ -99,6 +105,7 @@ public class NotifyServiceImpl implements NotifyService {
         data.put("tableNo", tableNo);
         data.put("dishId", dishId);
         data.put("giftLogId", giftLogId);
+        data.put("orderId", receiveOrderId);
         return msgForwardService.sendMsgSynWithOrderId(receiveOrderId, MsgForwardTran.msgConfig.getProperty("MSF_ID.GIFT_SEND"), data);
     }
 
