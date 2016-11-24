@@ -1176,6 +1176,7 @@ var Order = {
         var userId = $('#user').val();
         var orderNo = $('[name=orderid]').val();
         var params = {};
+        utils.PromptAlert('退菜中，请稍后')
         if(userId==undefined){
             userId=utils.storage.getter('aUserid')
         }
@@ -1218,7 +1219,6 @@ var Order = {
 
         dom.backfoodDialog.modal('hide');
         $("#backfood-right").modal('hide');
-        utils.loading.open('退菜中...');
         $.ajax({
             url: _config.interfaceUrl.BackDish,
             method: 'POST',
@@ -1228,7 +1228,7 @@ var Order = {
             global: false,
             success: function (res) {
                 if (res.code === '0') {
-                    utils.loading.remove();
+                    $(".modal-alert:last,.modal-backdrop:last").remove();//移除提示信息
                     $("#backfood-right .modal-dialog").remove();
                     that.updateOrder();
                     cb && cb();

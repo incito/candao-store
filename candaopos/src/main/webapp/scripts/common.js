@@ -1131,7 +1131,7 @@ utils.reprintClear={//打印清机单
 	get:function () {
 		var posId=utils.storage.getter('posid'),jsorder=" ";
 		$.ajax({
-			url:_config.interfaceUrl.PrintClearMachine+'/'+ utils.storage.getter('aUserid') + '+/'+jsorder+'/'+utils.storage.getter('posid')+'/',
+			url:_config.interfaceUrl.PrintClearMachine+'/'+ utils.storage.getter('aUserid') + '/'+jsorder+'/'+utils.storage.getter('posid')+'/',
 			type: "get",
 			success: function (data) {
                 if(data.result=='0'){
@@ -1437,6 +1437,17 @@ utils.toggleFullScreen = function(target) {
 		$target.text('全屏模式');
 	}
 };
+
+/*过渡性弹窗*/
+utils.PromptAlert=function (msg) {
+	widget.modal.alert({
+		cls: 'fade in',
+		content:'<strong>'+msg+'</strong>',
+		width:500,
+		height:500,
+		hasBtns:false,
+	});
+}
 
 
 

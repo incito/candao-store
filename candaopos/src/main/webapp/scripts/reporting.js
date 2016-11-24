@@ -35,6 +35,10 @@ var reporting={
                 data:{"flag":flag},
                 success: function (data) {
                     //console.log(data)
+                    if(data.result=='1'){
+                        utils.printError.alert(data.mag);
+                        return false
+                    }
                     var total=data.data.length,count=0,sum=0;
                     for( var i=0;i<total;i++) {
                         count+=Number(data.data[i].dishCount);
@@ -109,6 +113,10 @@ var reporting={
             dataType: "json",
             data: {"flag": flag},
             success: function (data) {
+                if(data.result=='1'){
+                    utils.printError.alert(data.mag);
+                    return false
+                }
                 var str = "", total = data.data.length, count = 0, sum = 0;
                 for (var i = 0; i < total; i++) {
                     count += Number(data.data[i].serviceCount);
