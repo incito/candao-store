@@ -379,15 +379,15 @@
 						<div class="hori-lf-div">
 							<div>
 								<span>备注菜名:</span>
-								<input type="text" validType='noPecial'   class="form-control note-name" autofocus="">
+								<input type="text" validType='noPecial' maxlength="20"   class="form-control note-name" autofocus="">
 							</div>
 							<div>
 								<span>价格(元):</span>
-								<input type="text" validtype="intAndFloat2" class="form-control price">
+								<input type="text" validtype="intAndFloat4" class="form-control price">
 							</div>
 							<div>
 								<span>数量(份):</span>
-								<input type="text" validtype="intAndFloat2" class="form-control dishnum">
+								<input type="text" validtype="intAndFloat3" class="form-control dishnum">
 							</div>
 							<div class="">
 								<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消

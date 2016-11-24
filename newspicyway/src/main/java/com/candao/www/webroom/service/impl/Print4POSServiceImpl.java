@@ -12,6 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.candao.print.entity.*;
 import com.candao.www.data.model.*;
@@ -144,7 +145,24 @@ public class Print4POSServiceImpl implements Print4POSService {
             return;
         }
         PrintObj obj = new PrintObj();
+        List<OrderInfo4Pos> orderInfo4Poses = settlementInfos.get(0).getOrderJson();
+        List<String> prferenceDetails = orderInfo4Poses.get(0).getPreferenceDetail();
+        List<Map<String,Object>> prefers = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(prferenceDetails)){
+            String[] key = {"套餐优惠","会员价优惠","会员储值消费虚增","赠菜","会员积分消费","优免","会员劵优惠","抹零","四舍五入"};
+            String[] value = prferenceDetails.toArray(new String[prferenceDetails.size()]);
+
+            for (int i = 0; i < key.length; i++) {
+                Map<String,Object> temp = new HashMap<>();
+                temp.put("key",key[i]);
+                temp.put("value",i < value.length ? value[i]:"");
+                prefers.add(temp);
+            }
+        }
         obj.setSettlementInfo4Pos(settlementInfos.get(0));
+        Map<String,Object> prefer = new HashMap<>();
+        prefer.put("prefer",prefers);
+        obj.setPosData(prefer);
         obj.setListenerType(Constant.ListenerType.ClearMachineDataTemplate);
 
         // TODO
@@ -444,7 +462,6 @@ public class Print4POSServiceImpl implements Print4POSService {
         Assert.notEmpty(map, "接口返回空！");
         String json = JSON.toJSONString(map);
         Map<String, Object> temp = JSON.parseObject(json, Map.class);
-        List<Map<String, Object>> order = JSON.parseObject(params[1], List.class);
 
         if (temp.containsKey("code")) {
             if ("0".equals(temp.get("code"))) {
@@ -499,21 +516,24 @@ public class Print4POSServiceImpl implements Print4POSService {
                                 }*/
                             }
                         }
+                        // 优惠（元）
+                        /*Map<String, Object> orderJson = ((List<Map<String, Object>>) order.get(0).get("OrderJson")).get(0);
+                        String free = resolveNullType(orderJson.get("discountamount"));
+                        posdata.put("totalfree", free);*/
+                        // 品项费
+                        String pxFee = resolveNullType(prefer.get("menuAmount"));
+                        posdata.put("pxFee", pxFee);
+                        //小费
+                        String tip = resolveNullType(prefer.get("tipAmount"));
+                        posdata.put("tip",tip);
                     }
                     //结算备注
                     posdata.put("settlementInfo", settlementInfo);
                     //优惠备注
                     posdata.put("preferListInfo", preferListInfo);
-                    // 优惠（元）
-                    Map<String, Object> orderJson = ((List<Map<String, Object>>) order.get(0).get("OrderJson")).get(0);
-                    String free = resolveNullType(orderJson.get("discountamount"));
-                    posdata.put("totalfree", free);
-                    // 品项费
-                    String pxFee = stringAdd(free, resolveNullType(orderJson.get("dueamount")));
-                    posdata.put("pxFee", pxFee);
                     // 打印人
                     Map<String, Object> param = new HashMap<>();
-                    param.put("jobNumber", params[2]);
+                    param.put("jobNumber", params[1]);
                     List<User> users = userService.queryUserList(param);
                     posdata.put("printname", users.get(0).getName());
 
@@ -525,7 +545,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // TODO
                     param.clear();
                     param.put("printertype", "10");
-                    param.put("deviceid", params[3]);
+                    param.put("deviceid", params[2]);
                     sendToPrint(param, obj);
 //                    // 更新打印数量
 //                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
