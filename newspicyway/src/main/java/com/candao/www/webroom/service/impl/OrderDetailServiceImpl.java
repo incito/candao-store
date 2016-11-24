@@ -2498,15 +2498,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 							}
 		                    //加入打印队列
 		                    new Thread(new PrintThread(printObj)).run();
-		
-		                    //如果是叫起的单子需要更新状态为0
-		                    if ("1".equals(type)) {
-		                    	for (PrintDish printDish : pdList) {
-		                    		map0.put("primarykey", printDish.getPrimarykey());
-		                    		tbPrintObjDao.updateDishByPrimaryKey(map0);
-		                    		tbPrintObjDao.updateDetailByPrimaryKey(map0);
-								}
-		                    }
 		                    
 		                    for (PrintDish printDish : pdList) {
 		                        printedmap.put(printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
@@ -2514,6 +2505,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                }
 	                }	
 	            }
+                //如果是叫起的单子需要更新状态为0
+                if ("1".equals(type)) {
+                	for (PrintDish printDish : printdishList) {
+                		map0.put("primarykey", printDish.getPrimarykey());
+                		tbPrintObjDao.updateDishByPrimaryKey(map0);
+                		tbPrintObjDao.updateDetailByPrimaryKey(map0);
+                	}
+                }
             }
         }
         return Constant.SUCCESSMSG;
