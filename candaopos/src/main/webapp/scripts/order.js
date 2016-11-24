@@ -1164,7 +1164,7 @@ var Order = {
         var userId = $('#user').val();
         var orderNo = $('[name=orderid]').val();
         var params = {};
-        utils.printError.alert('退菜中，请稍后...')
+        utils.PromptAlert('退菜中，请稍后')
         if(userId==undefined){
             userId=utils.storage.getter('aUserid')
         }
