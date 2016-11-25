@@ -5814,7 +5814,7 @@ BEGIN
     primarykey VARCHAR(50),
     superkey VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  IF isPOS=1 THEN
+  IF isPOS=0 THEN
 		INSERT INTO t_temp_order_detail
 		SELECT a.orderid
 				 , a.dishnum
@@ -5850,7 +5850,7 @@ BEGIN
 			t_temp_order b, t_order_detail a
 		WHERE
 			b.orderid = a.orderid
-			AND a.dishtype<>2 OR (a.dishtype=2 AND a.superkey<>a.primarykey);
+			AND (a.dishtype<>2 OR (a.dishtype=2 AND a.superkey<>a.primarykey));
 	END IF;
 	
     #AND a.orignalprice > 0;
