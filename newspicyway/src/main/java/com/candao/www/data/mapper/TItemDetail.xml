@@ -25,6 +25,7 @@
             #{endTime,jdbcType=TIMESTAMP,mode=IN},
             #{id,jdbcType=VARCHAR,mode=IN},
             #{dishType,jdbcType=VARCHAR,mode=IN},
+            1,
             #{result,jdbcType=VARCHAR,mode=OUT}
           )
         }

@@ -5697,14 +5697,9 @@ DELIMITER ;
 DELIMITER $$
 
 
-
-
-
 DROP PROCEDURE IF EXISTS `p_report_pxxsmxb_zhixiang`$$
 
-
-
-CREATE PROCEDURE `p_report_pxxsmxb_zhixiang`(IN  pi_branchid INT(11),IN  pi_sb       SMALLINT,IN  pi_ksrq     DATETIME,IN  pi_jsrq     DATETIME,IN  pi_pl       VARCHAR(50),IN  pi_pxlx     INT,OUT po_errmsg   VARCHAR(100))
+CREATE PROCEDURE `p_report_pxxsmxb_zhixiang`(IN  pi_branchid INT(11),IN  pi_sb       SMALLINT,IN  pi_ksrq     DATETIME,IN  pi_jsrq     DATETIME,IN  pi_pl       VARCHAR(50),IN  pi_pxlx     INT,IN isPOS INT,OUT po_errmsg   VARCHAR(100))
 label_main:
 BEGIN 
   DECLARE v_total_count DOUBLE(13, 2) DEFAULT 0;
@@ -5819,24 +5814,45 @@ BEGIN
     primarykey VARCHAR(50),
     superkey VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  
-  INSERT INTO t_temp_order_detail
-  SELECT a.orderid
-       , a.dishnum
-       , a.dishid
-       , a.dishtype
-       , a.dishunit
-       , a.orignalprice
-			 , a.debitamount
-       , a.ispot
-       , a.parentkey
-       , a.childdishtype
-       , a.primarykey
-       , a.superkey
-  FROM
-    t_temp_order b, t_order_detail a
-  WHERE
-    b.orderid = a.orderid;
+  IF isPOS=1 THEN
+		INSERT INTO t_temp_order_detail
+		SELECT a.orderid
+				 , a.dishnum
+				 , a.dishid
+				 , a.dishtype
+				 , a.dishunit
+				 , a.orignalprice
+				 , a.debitamount
+				 , a.ispot
+				 , a.parentkey
+				 , a.childdishtype
+				 , a.primarykey
+				 , a.superkey
+		FROM
+			t_temp_order b, t_order_detail a
+		WHERE
+			b.orderid = a.orderid;
+	ELSE
+		INSERT INTO t_temp_order_detail
+		SELECT a.orderid
+				 , a.dishnum
+				 , a.dishid
+				 , a.dishtype
+				 , a.dishunit
+				 , a.orignalprice
+				 , a.debitamount
+				 , a.ispot
+				 , a.parentkey
+				 , a.childdishtype
+				 , a.primarykey
+				 , a.superkey
+		FROM
+			t_temp_order b, t_order_detail a
+		WHERE
+			b.orderid = a.orderid
+			AND a.dishtype<>2 OR (a.dishtype=2 AND a.superkey<>a.primarykey);
+	END IF;
+	
     #AND a.orignalprice > 0;
    -- 计算套餐金额开始
    #DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
@@ -5992,8 +6008,6 @@ read_loop:
       t_temp_res;
   END IF;
 END$$
-
-
 
 DELIMITER ;
 
