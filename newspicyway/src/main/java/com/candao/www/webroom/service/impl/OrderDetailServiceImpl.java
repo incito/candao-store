@@ -15,6 +15,7 @@ import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.model.Order;
@@ -1908,6 +1909,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         //是否打印单据
         boolean isPrint = true;
+        //外卖咖啡时的订单号
+        String orderno = urgeDish.getOrderNo();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
         List<Map<String, Object>> tableList = tableService.find(params);
@@ -1922,6 +1925,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         tableType = tableType == null ? "" : tableType.trim();
         if (!StringUtils.isEmpty(tableType)) {
             if (TABLETYPE.COFFEETABLE.equals(tableType) || TABLETYPE.TAKEOUT.equals(tableType) || TABLETYPE.TAKEOUT_COFFEE.equals(tableType)) {
+                if(!StringUtil.isEmpty(orderno)){
+                    urgeDish.setOrderNo(orderno);
+                }
                 Map<String, Object> param = new HashMap<>();
                 param.put("orderid", urgeDish.getOrderNo());
                 Map<String, Object> res = settlementMapper.fingHistory(param);
