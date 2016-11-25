@@ -1142,8 +1142,15 @@ public class OrderServiceImpl implements OrderService {
 			//如果是外卖订单，强制绑定对应餐台
 			doBindTableForTakeOutFood(orderid);
 
+			
 			if (!params.containsKey("clean")) {
-				mapRet.put("rows", getMapData(orderid));// 获取订单数据
+				 List<Map<String, Object>> menuData = getMapData(orderid);
+				mapRet.put("rows",menuData);// 获取订单数据
+				if(menuData==null||menuData.isEmpty()){
+					Map<String, Object> delPreFerInfoMap=new HashMap<>();
+					delPreFerInfoMap.put("orderid", orderid);
+					detailPreferentialDao.deleteDetilPreFerInfo(delPreFerInfoMap);
+				}
 			}
 			// 或POS使用数据订单信息
 			Map<String, Object> userOrderInfo = findOrderByInfo(orderid);
@@ -1157,6 +1164,7 @@ public class OrderServiceImpl implements OrderService {
 					: String.valueOf(userOrderInfo.get("memberno")).equals("null") ? ""
 							: String.valueOf(userOrderInfo.get("memberno"));
 			params.put("memberno", menberNo);
+			
 			OperPreferentialResult result = preResult(params);
 			mapRet.put("preferentialInfo", result);
 		}
