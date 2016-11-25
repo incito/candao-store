@@ -719,7 +719,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner + '' + utils.storage.getter('aUserid') + '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('fullname') + '/',
+            url: _config.interfaceUrl.Clearner +''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('fullname')+'/',
             type: "get",
             dataType: "text",
             success: function (data) {
