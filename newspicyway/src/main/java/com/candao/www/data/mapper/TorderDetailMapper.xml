@@ -958,7 +958,7 @@
             #{endTime,jdbcType=TIMESTAMP,mode=IN},
             -1,
             -1,
-            0,
+            1,
             #{result,jdbcType=VARCHAR,mode=OUT}
           )
         }
