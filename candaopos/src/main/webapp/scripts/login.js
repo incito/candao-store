@@ -80,7 +80,7 @@ var Login = {
                     if(res.code === '0') {
                         utils.storage.setter('fullname', res.data.fullname);
                         utils.storage.setter('loginTime', res.data.loginTime);
-                        utils.storage.setter('aUserid', dom.user.val());
+                        utils.storage.setter('aUserid',  $.trim(dom.user.val()));
                         utils.storage.setter('aUserid', dom.user.val(),1)//设置sessionStorage
                         that.setUserRight($.trim(dom.user.val()));
                         that.getBranchInfo();

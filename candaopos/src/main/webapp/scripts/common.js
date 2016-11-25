@@ -1129,9 +1129,9 @@ utils.getUrl={//获取浏览器参数
  */
 utils.reprintClear={//打印清机单
 	get:function () {
-		var posId=utils.storage.getter('posid'),jsorder=" ";
+		var posId=utils.storage.getter('posid'),jsorder=" ",aUserid=utils.storage.getter('aUserid');
 		$.ajax({
-			url:_config.interfaceUrl.PrintClearMachine+'/'+ utils.storage.getter('aUserid') + '/'+jsorder+'/'+utils.storage.getter('posid')+'/',
+			url:_config.interfaceUrl.PrintClearMachine+'/'+aUserid+'/'+jsorder+'/'+posId+'/',
 			type: "get",
 			success: function (data) {
                 if(data.result=='0'){
