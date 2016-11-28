@@ -1472,8 +1472,8 @@ var Order = {
                 $.each(data, function (k, v) {
                     var cls = v.dishnum > 0 ? '' : 'display:none';
                     if (parseInt(v.orderprice, 10) > 0) {
-                        htm += "<li style='" + cls + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
-                            "<span class='dishname'>" + v.dishname + "</span>" +
+                        htm += "<li style='" + cls + "' dishname='" + v.dishname + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
+                            "<span class='dishname'>" + v.dishname.split('#')[0] + "</span>" +
                             "<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
                             "</li>";
                     }

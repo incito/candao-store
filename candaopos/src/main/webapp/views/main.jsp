@@ -151,7 +151,8 @@
         </ul>
     </div>
     <div class="exit-sys">退出系统</div>
-    <%--<div class="toggle-full" onclick="utils.toggleFullScreen(this);">全屏模式</div>--%>
+<%--<div class="toggle-full" onclick="utils.toggleFullScreen(this);">全屏模式</div>--%>
+    <%--<div class="toggle-full" onclick="minimizeWindow()">最小化</div>--%>
 </header>
 <article>
     <div class="rooms-type">
