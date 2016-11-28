@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.candao.www.security.controller.BaseController;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +144,7 @@ import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("/padinterface")
-public class PadInterfaceController {
+public class PadInterfaceController extends BaseController{
 
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,
             new ArrayBlockingQueue<Runnable>(5000));
@@ -736,25 +737,29 @@ public class PadInterfaceController {
      */
     @RequestMapping("/cleantable")
     @ResponseBody
-    public String cleantable(@RequestBody Table table, HttpServletRequest reqeust) {
+    public Map<String, Object> cleantable(@RequestBody Table table, HttpServletRequest reqeust) {
 
         TJsonRecord record = new TJsonRecord();
         record.setJson(JacksonJsonMapper.objectToJson(table));
         record.setPadpath("cleantable");
         jsonRecordService.insertJsonRecord(record);
-        TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-        if (tbTable != null) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("orderid", tbTable.getOrderid());
-            params.put("clear", "1");
-            torderDetailPreferentialService.deleteDetilPreFerInfo(params);
-        }
-        String cleantable = orderDetailService.cleantable(table);
 
-		return cleantable;
-	}
-	
-	@RequestMapping("/inoderCleanTable")
+        boolean flag = true;
+        String msg = "清台成功";
+        try {
+            orderDetailService.cleantable(table);
+        } catch (Exception e) {
+            flag = false;
+            msg = e.getMessage();
+            e.printStackTrace();
+            loggers.error("-------------------->");
+            loggers.error("清台失败", e);
+        }
+
+        return getResponseStr(null, msg, flag);
+    }
+
+    @RequestMapping("/inoderCleanTable")
 	@ResponseBody
 	public String inoderCleanTable(@RequestBody Table table, HttpServletRequest reqeust){
 		TJsonRecord record = new TJsonRecord();
@@ -774,9 +779,20 @@ public class PadInterfaceController {
 			params.put("clear", "1");
 			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
 		}
-		String cleantable = orderDetailService.cleantable(table);
 
-		return cleantable;
+        String msg = "清台成功";
+        boolean flag = true;
+        try {
+            orderDetailService.cleantable(table);
+        } catch (Exception e) {
+            flag = false;
+            msg = e.getMessage();
+            e.printStackTrace();
+            loggers.error("------------------------->");
+            loggers.error("清台失败", e);
+        }
+
+        return JSON.toJSONString(getResponseStr(null, msg, flag));
 	}
 
     /**

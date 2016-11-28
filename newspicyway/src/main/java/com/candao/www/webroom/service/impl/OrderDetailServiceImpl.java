@@ -160,41 +160,92 @@ public class OrderDetailServiceImpl implements OrderDetailService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public String cleantable(Table table) {
-        String tableNo = table.getTableNo();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("tableNo", tableNo);
-        List<Map<String, Object>> resultMapList = tableService.find(map);
-        if (resultMapList == null || resultMapList.size() == 0) {
-            log.error("-->resultMapList为空(查询table为空)，参数tableNo为：" + tableNo);
-            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+    public void cleantable(Table table) {
+        String orderno = table.getOrderNo();
+        Assert.hasLength(orderno,"参数错误,订单号为空");
+        Map<String,Object> order = orderService.findOrderById(orderno);
+        Assert.notEmpty(order,"查询不到该订单");
+        String orderstatu = String.valueOf(order.get("orderstatus"));
+        if (!"0".equals(orderstatu))
+            throw new RuntimeException("订单状态不正确");
+        Map<String,Object> param = new HashMap<>();
+        param.put("tableid",order.get("currenttableid"));
+        List<Map<String,Object>>tables = tableService.find(param);
+        Assert.notEmpty(tables,"找不到目标餐台");
+
+        if (tables.size() > 1 )
+            throw new RuntimeException("目标餐台有多条记录");
+
+        String tabletype =String.valueOf(tables.get(0).get("tabletype"));
+        switch (tabletype){
+            case TABLETYPE.NORMAL:
+                cleanNormalTable(order);
+                break;
+            case TABLETYPE.PRIVATEROOM:
+                cleanNormalTable(order);
+                break;
+            case TABLETYPE.TAKEOUT:
+                cleanTakeOutTable(order);
+                break;
+            case TABLETYPE.TAKEOUT_COFFEE:
+                cleanTakeOutTable(order);
+                break;
+            case TABLETYPE.COFFEETABLE:
+                cleanTakeOutTable(order);
+                break;
+            default:
+                throw new RuntimeException("不能清空该类型餐台");
         }
+    }
+
+    private void cleanNormalTable(Map<String, Object> order) {
+        Assert.notEmpty(order, "参数错误,订单为空");
+        String tableId = String.valueOf(order.get("currenttableid"));
+        Assert.hasLength(tableId, "参数错误,餐台为空");
+        String orderId = String.valueOf(order.get("orderid"));
+        Assert.hasLength(orderId, "参数错误，订单号为空");
+
         // 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
         //计算菜单订单下面财大个数如果大与0 表示不能 清台
-        long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
+        long menuNum = tableService.getMenuInfoByCount(order);
         if (menuNum > 0) {
-            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单下还有菜品，不能清台"));
+            throw new RuntimeException("订单下还有菜品，不能清台");
         }
-        Map<String, Object> tableMap = resultMapList.get(0);
-        String tableId = String.valueOf(tableMap.get("tableid"));
-
         //通知PAD清台
-        notifyService.notifyClearTable(tableNo);
-
+        notifyService.notifyClearTable(tableId);
+        //清台
         TbTable tbTable = new TbTable();
         tbTable.setTableid(tableId);
         tbTable.setStatus(0);
-        tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
         tableService.updateCleanStatus(tbTable);
+        //订单
+        Torder torder = new Torder();
+        torder.setOrderid(orderId);
+        torder.setOrderstatus(2);
+        torder.setEndtime(new Date());
+        torderMapper.update(torder);
+    }
 
-        if (tableMap.get("orderid") != null) {
-            Torder torder = new Torder();
-            torder.setOrderid(String.valueOf(tableMap.get("orderid")));
-            torder.setOrderstatus(2);
-            torder.setEndtime(new Date());
-            torderMapper.update(torder);
+    private void cleanTakeOutTable(Map<String, Object> order) {
+        Assert.notEmpty(order, "参数错误,订单为空");
+        String tableId = String.valueOf(order.get("currenttableid"));
+        Assert.hasLength(tableId, "参数错误,餐台为空");
+        String orderId = String.valueOf(order.get("orderid"));
+        Assert.hasLength(orderId, "参数错误，订单号为空");
+
+        // 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
+        //计算菜单订单下面财大个数如果大与0 表示不能 清台
+        long menuNum = tableService.getMenuInfoByCount(order);
+        if (menuNum > 0) {
+            throw new RuntimeException("订单下还有菜品，不能清台");
         }
-        return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("清台成功"));
+
+        //订单
+        Torder torder = new Torder();
+        torder.setOrderid(orderId);
+        torder.setOrderstatus(2);
+        torder.setEndtime(new Date());
+        torderMapper.update(torder);
     }
 
     @Override
