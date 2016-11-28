@@ -835,6 +835,7 @@ BEGIN
   update t_order_detail set payamount=0, discountamount=0,predisamount=0  where ((status<>5 and  (not (orderprice>0))) or (status=5))  and orderid=v_orderid;
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
+  SELECT IFNULL(chargeAmount,0)+v_dueamount INTO v_dueamount FROM t_service_charge where orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(SELECT itemid FROM `v_payway` where `chargeStatus` = 1);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
