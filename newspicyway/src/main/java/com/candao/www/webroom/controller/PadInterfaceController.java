@@ -1,5 +1,48 @@
 package com.candao.www.webroom.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.alibaba.fastjson.JSON;
 import com.candao.common.dto.ResultDto;
 import com.candao.common.enums.ResultMessage;
@@ -17,7 +60,20 @@ import com.candao.www.data.dao.TbUserInstrumentDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.dao.TtellerCashDao;
-import com.candao.www.data.model.*;
+import com.candao.www.data.model.EmployeeUser;
+import com.candao.www.data.model.TJsonRecord;
+import com.candao.www.data.model.TbDataDictionary;
+import com.candao.www.data.model.TbMessageInstrument;
+import com.candao.www.data.model.TbOpenBizLog;
+import com.candao.www.data.model.TbTable;
+import com.candao.www.data.model.TbUserInstrument;
+import com.candao.www.data.model.Tdish;
+import com.candao.www.data.model.Tinvoice;
+import com.candao.www.data.model.ToperationLog;
+import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.TorderDetail;
+import com.candao.www.data.model.TtellerCash;
+import com.candao.www.data.model.User;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.common.Constants;
@@ -31,33 +87,43 @@ import com.candao.www.utils.HttpRequestor;
 import com.candao.www.utils.ImageCompress;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
-import com.candao.www.webroom.model.*;
-import com.candao.www.webroom.service.*;
+import com.candao.www.webroom.model.BasePadResponse;
+import com.candao.www.webroom.model.LoginInfo;
+import com.candao.www.webroom.model.OperPreferentialResult;
+import com.candao.www.webroom.model.Order;
+import com.candao.www.webroom.model.PadConfig;
+import com.candao.www.webroom.model.SettlementInfo;
+import com.candao.www.webroom.model.SqlData;
+import com.candao.www.webroom.model.Table;
+import com.candao.www.webroom.model.TableStatus;
+import com.candao.www.webroom.model.UrgeDish;
+import com.candao.www.webroom.service.CallWaiterService;
+import com.candao.www.webroom.service.ComboDishService;
+import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.DishService;
+import com.candao.www.webroom.service.DishTypeService;
+import com.candao.www.webroom.service.GiftLogService;
+import com.candao.www.webroom.service.InvoiceService;
+import com.candao.www.webroom.service.JsonRecordService;
+import com.candao.www.webroom.service.MenuService;
+import com.candao.www.webroom.service.MessageInstrumentService;
+import com.candao.www.webroom.service.NotifyService;
+import com.candao.www.webroom.service.OpenBizService;
+import com.candao.www.webroom.service.OrderDetailService;
+import com.candao.www.webroom.service.OrderService;
+import com.candao.www.webroom.service.OrderSettleService;
+import com.candao.www.webroom.service.PadConfigService;
+import com.candao.www.webroom.service.PaywayService;
+import com.candao.www.webroom.service.PicturesService;
+import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TableAreaService;
+import com.candao.www.webroom.service.TableService;
+import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.webroom.service.TorderDetailPreferentialService;
+import com.candao.www.webroom.service.UserInstrumentService;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
-import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import net.sf.json.JSONObject;
 
 /**
  * 所有pad 端处理的接口
@@ -789,9 +855,8 @@ public class PadInterfaceController {
         record.setJson(settlementStrInfo);
         record.setPadpath("settleorder");
         jsonRecordService.insertJsonRecord(record);
-
         SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
-       
+        logger.info("结账开始=====》"+settlementInfo.getOrderNo());
         try {
         	String result = orderSettleService.settleOrder(settlementInfo);
 
@@ -810,19 +875,19 @@ public class PadInterfaceController {
             if ("0".equals(result)) {
                 logger.info("结算成功，调用进销存接口");
                 String psicallback = psicallback(settlementInfo, 0);
-
                   //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
                  //在此处转换
             	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
             	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
+            	  logger.info("结账结束成功=====》"+settlementInfo.getOrderNo());
                 return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
             } else {
             	Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
-                logger.error("结算失败，result :" + map.get("mes"));
+                logger.error("结算结束异常:" + map.get("mes"));
                 return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
             }
 		} catch (Exception e) {
-			logger.error("结账异常（运行时异常）：",e.fillInStackTrace());
+			logger.error("结算结束异常（运行时异常）：",e);
 			 return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("结账发现未知异常，请联系餐道管理员帮您解决！"));
 		}
         

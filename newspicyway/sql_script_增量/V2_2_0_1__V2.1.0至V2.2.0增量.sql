@@ -1,5 +1,5 @@
 -- status:启用：1，禁用：0 ；charges_status：计算实收：1，不计算实收：0；
-UPDATE t_dictionary SET STATUS = 0 , charges_status ='0'
+UPDATE t_dictionary SET charges_status ='0'
 WHERE TYPE='PAYWAY'
 AND itemid NOT IN(0,1,5,8,13,17,18,30);
 
@@ -22,3 +22,5 @@ CREATE TABLE `t_payway_set` (
   `sort` int(11) DEFAULT NULL COMMENT '排序字段',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+-- 清空t_device表
+TRUNCATE TABLE T_DEVICE;

@@ -1,5 +1,14 @@
 package com.candao.www.printer.listener;
 
+import java.lang.reflect.Array;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
 import com.candao.common.utils.Constant;
 import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.entity.PrintData;
@@ -10,16 +19,6 @@ import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.printer.v2.Printer;
 import com.candao.www.printer.v2.PrinterManager;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
-import java.lang.reflect.Array;
-
 /**
  * Created by Administrator on 2016-6-13.
  */
@@ -28,8 +27,6 @@ public class IPQueueListener implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     private Log log = LogFactory.getLog(getClass());
-
-    public final static Integer pageNum = 150;
 
     @Autowired
     private PrinterListenerManager printerListenerManager;
@@ -58,37 +55,13 @@ public class IPQueueListener implements ApplicationContextAware {
         }
         if (data != null) {
             try {
-                printByPage(data.convert(), obj);
+                print(data.convert(), obj);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("打印失败!订单号：" + obj.getOrderNo(), e);
             }
         }
 
-    }
-
-    /**
-     *  分页打印
-     * @param objects
-     * @param printObj
-     * @throws Exception
-     */
-    private void printByPage(Object[] objects, PrintObj printObj) throws Exception {
-        if (ArrayUtils.isEmpty(objects) || printObj == null) {
-            throw new RuntimeException("解析后的打印数据为空！");
-        }
-        int length = objects.length;
-        for (int pos = 0; pos < length - 1; pos += pageNum) {
-            if (pos > 0)
-                Thread.sleep(1000);
-            boolean flag = pos + pageNum < length;
-            Object[] temp = ArrayUtils.subarray(objects, pos, flag  ? pos + pageNum : length);
-            //切刀命令
-            com.candao.www.printer.v2.PrintData<Boolean> code = new com.candao.www.printer.v2.PrintData<>();
-            code.setData(flag);
-            temp = ArrayUtils.add(temp,code);
-            print(temp, printObj);
-        }
     }
 
     private QueueListener detemineListener(ListenerType listenerType, PrinterListenerManager listenerManager)

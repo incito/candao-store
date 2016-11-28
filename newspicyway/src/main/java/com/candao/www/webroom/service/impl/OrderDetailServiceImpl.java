@@ -15,6 +15,7 @@ import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.model.Order;
@@ -1908,6 +1909,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         //是否打印单据
         boolean isPrint = true;
+        //外卖咖啡时的订单号
+        String orderno = urgeDish.getOrderNo();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
         List<Map<String, Object>> tableList = tableService.find(params);
@@ -1922,6 +1925,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         tableType = tableType == null ? "" : tableType.trim();
         if (!StringUtils.isEmpty(tableType)) {
             if (TABLETYPE.COFFEETABLE.equals(tableType) || TABLETYPE.TAKEOUT.equals(tableType) || TABLETYPE.TAKEOUT_COFFEE.equals(tableType)) {
+                if(!StringUtil.isEmpty(orderno)){
+                    urgeDish.setOrderNo(orderno);
+                }
                 Map<String, Object> param = new HashMap<>();
                 param.put("orderid", urgeDish.getOrderNo());
                 Map<String, Object> res = settlementMapper.fingHistory(param);
@@ -1933,6 +1939,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         String orderId = urgeDish.getOrderNo();
         String discardUserId = urgeDish.getDiscardUserId();
         String discardReason = urgeDish.getDiscardReason();
+        String userName = urgeDish.getUserName() == null ? "" : urgeDish.getUserName();
         if (discardUserId == null) {
             discardUserId = urgeDish.getUserName();
         }
@@ -1972,6 +1979,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
             orderDetail.setDiscardReason(discardReason);
             orderDetail.setDiscardUserId(discardUserId);
+            orderDetail.setUserName(userName);
             urgeNum = detailNum.subtract(urgeDish.getDishNum());
             String dishType = orderDetail.getDishtype();
             int isMaster = orderDetail.getIsmaster();
@@ -2120,6 +2128,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetailDel.setSuperkey(urgeDish.getPrimarykey());
                         orderDetailDel.setDiscardUserId(discardUserId);
                         orderDetailDel.setDiscardReason(discardReason);
+                        orderDetailDel.setUserName(userName);
                         torderDetailMapper.updateDiscardDishSetUserId(orderDetailDel);
 
                         Map<String, Object> deleteMap = new HashMap<String, Object>();
@@ -2184,6 +2193,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             orderDetail.setOrderid(orderId);
             orderDetail.setDiscardUserId(discardUserId);
             orderDetail.setDiscardReason(discardReason);
+            orderDetail.setUserName(userName);
             torderDetailMapper.updateDiscardDishUserIdOnce(orderDetail);
 
             Map<String, Object> deleteMap = new HashMap<String, Object>();
@@ -2246,6 +2256,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             TorderDetail uporderDetail = new TorderDetail();
             uporderDetail.setDiscardUserId(orderDetail.getDiscardUserId());
             uporderDetail.setDiscardReason(orderDetail.getDiscardReason());
+            uporderDetail.setUserName(orderDetail.getUserName());
             uporderDetail.setPrimarykey(primarykey);
             torderDetailMapper.updateFishpotReason(uporderDetail);
         }
@@ -2493,15 +2504,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 							}
 		                    //加入打印队列
 		                    new Thread(new PrintThread(printObj)).run();
-		
-		                    //如果是叫起的单子需要更新状态为0
-		                    if ("1".equals(type)) {
-		                    	for (PrintDish printDish : pdList) {
-		                    		map0.put("primarykey", printDish.getPrimarykey());
-		                    		tbPrintObjDao.updateDishByPrimaryKey(map0);
-		                    		tbPrintObjDao.updateDetailByPrimaryKey(map0);
-								}
-		                    }
 		                    
 		                    for (PrintDish printDish : pdList) {
 		                        printedmap.put(printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
@@ -2509,6 +2511,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                }
 	                }	
 	            }
+                //如果是叫起的单子需要更新状态为0
+                if ("1".equals(type)) {
+                	for (PrintDish printDish : printdishList) {
+                		map0.put("primarykey", printDish.getPrimarykey());
+                		tbPrintObjDao.updateDishByPrimaryKey(map0);
+                		tbPrintObjDao.updateDetailByPrimaryKey(map0);
+                	}
+                }
             }
         }
         return Constant.SUCCESSMSG;
@@ -2619,9 +2629,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 continue;
             }
             Map<String,Object> map=new HashMap<>();
-            map.put("dishName",detail.get("title"));
-            map.put("dishCount",detail.get("number"));
-            map.put("totlePrice",detail.get("orignalprice"));
+            map.put("dishName",detail.get("title")+"("+detail.get("unit")+")");
+            BigDecimal danpin = new BigDecimal(detail.get("danpinnumber").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal taocan = new BigDecimal(detail.get("taocannumber").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            map.put("dishCount",danpin.add(taocan));
+            //map.put("totlePrice",detail.get("orignalprice"));
+            map.put("totlePrice", detail.get("debitamount"));
             result.add(map);
         }
         return result;
