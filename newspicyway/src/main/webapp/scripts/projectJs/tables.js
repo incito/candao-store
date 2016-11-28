@@ -1,4 +1,6 @@
 
+var choesetable=sessionStorage.getItem('choesetable')
+sessionStorage.clear();
 var tbPrinterAreaList=[];
 var flag_prev =0;
 var take_outTable=[];//外卖咖啡台
@@ -6,6 +8,18 @@ var take_outTable=[];//外卖咖啡台
  * 工具类 utils
  ************/
 var utils = utils || {};
+utils.storage = {
+	getter: function (key) {
+		return sessionStorage.getItem(key);
+	},
+	setter: function (key, val) {
+		return sessionStorage.setItem(key, val);
+
+	},
+	remove: function(key){
+			return sessionStorage.removeItem(key);
+	}
+};
 $(document).ready(function(){
 	$(document).bind('ajaxError',function () {
 		if($('.errorAlert').length<1){
@@ -22,6 +36,20 @@ $(document).ready(function(){
 			});
 		}
 	});
+	//utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'));
+	if(choesetable){
+		$('#nav-tables li').each(function () {
+			var me=$(this);
+			if(me.attr('id')==choesetable){
+				me.click();
+				//utils.storage.setter('choesetable',me.attr('id'));
+				return false;
+			}
+		})
+	}
+	else {
+		utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'));
+	}
 	/*餐台分类鼠标滚动*/	
 	var dom =$("#nav-tables")[0];
     var user_agent = navigator.userAgent;
@@ -36,13 +64,13 @@ $(document).ready(function(){
 
     }	
 	
-	$("#personNum").change(function(){
+	$("#personNum").keyup(function(){
 		$("#personNum_tip").text("");
 	});
-	$("#tableName").change(function(){
+	$("#tableName").keyup(function(){
 		$("#tableName_tip").text("");
 	});
-	$("#areanameB").change(function(){
+	$("#areanameB").keyup(function(){
 		$("#areanameB_tip").text("");
 	});
 	findPrinterArea();
@@ -67,6 +95,7 @@ $(document).ready(function(){
 				
 				submitHandler : function(form) {
 					var vcheck = true;
+					var val=$("#tableName").val().trim();
 					if ($("#personNum").val().trim() == "") {
 						$("#personNum_tip").text("就餐人数不能为空");
 						$("#personNum").focus();
@@ -79,6 +108,17 @@ $(document).ready(function(){
 						$("#tableName").focus();
 						$("#tableName").addClass("error");
 						vcheck = false;
+					}
+					else {
+						//只能输入数字以及中英文字符
+						var abc=/^[A-Za-z0-9\u4E00-\u9FA5]*$/g
+							if(!abc.test(val)){
+								//$("#tableName").val(val.substr(0, $("#tableName").val().length-1));
+								$("#tableName_tip").text("餐台名称只能输入数字以及中英文字符");
+								$("#tableName").focus();
+								$("#tableName").addClass("error");
+								vcheck = false;
+							}
 					}
 
 					if($("#minp").is(":checked") && ($('#minprice').val() === '0' ||  $('#minprice').val() === '')) {
@@ -104,12 +144,24 @@ $(document).ready(function(){
 			{
 				submitHandler : function(form) {
 					var vcheck = true;
+					var val=$("#areanameB").val().trim()
 					if ($("#areanameB").val().trim() == "") {
 						$("#areanameB_tip").text("分区名称不能为空");
 						 $("#areanameB").focus();
 						 $("#areanameB").addClass("error");
 						vcheck = false;
-					} 
+					}
+					else {
+						//只能输入数字以及中英文字符
+						var abc=/^[A-Za-z0-9\u4E00-\u9FA5]*$/g
+						if(!abc.test(val)){
+							//$("#areanameB").val(val.substr(0, $("#areanameB").val().length-1));
+							$("#areanameB_tip").text("分区名称只能输入数字以及中英文字符").css('font-size','12px');
+							$("#areanameB").focus();
+							$("#areanameB").addClass("error");
+							vcheck = false;
+						}
+					}
 					if (vcheck) {
 						if(check_area()){
 							save_Area();
@@ -808,6 +860,7 @@ function init_object(){
 function  oneclickTableType(id){
 	$(".nav-counter li").removeClass("active");
 	$("#"+id).addClass("active");
+	utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'))
 	/*自定义排序点击隐藏咖啡和外卖台*/
 	if($('#dinnerTable').attr('isclicktype')){//自定义排序时切换分区用tableJson缓存数据
 		var _html=''
