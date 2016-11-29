@@ -2117,9 +2117,6 @@ function initDatatableConfig(){
 }*/
 
 function getWaiterAssessData(){
-	if(oTable !=null){
-		oTable.fnClearTable(false);
-	}
 	beginTime = $("#beginTime").val();
 	endTime = $("#endTime").val();
 	shiftid = $("#shiftid").val();
@@ -2129,6 +2126,9 @@ function getWaiterAssessData(){
 		shiftid: shiftid
 	}, function(result){
 		console.log(result);
+		if(oTable !=null){
+			oTable.fnClearTable(false);
+		}
 		if(result.flag == 1){
 			var data = result.data.td;
 			var tr = result.data.tr;
