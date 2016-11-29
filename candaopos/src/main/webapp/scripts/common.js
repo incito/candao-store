@@ -140,6 +140,8 @@ $(document).ready(function(){
 });
 
 
+
+
 /************
  * 配置项
  * basePath
@@ -267,6 +269,7 @@ _config.interfaceUrl = {
 
 	/*pos配置*/
 	Config:'/newspicyway/pos/scripts/config.json',<!--雅座会员激活-->
+	Log: '/newspicyway/padinterface/log'
 };
 //优惠分类
 _config.preferential = {
@@ -282,7 +285,113 @@ _config.preferential = {
 };
 
 
+/**
+ * 日志
+ */
+var Log = (function () {
+	var data = [];
+	var options = {
+		time: 5000,//间隔时间
+		dataLen: 10
+	};
+	var preLength = 0;
+	//1:DEBUG 2:INFO 3:WARN 4:ERROR
+	var send = function (level, msg) {
+		if(utils.storage.getter('log') !== null && utils.storage.getter('log').length > 0){
+			data = JSON.parse(utils.storage.getter('log'));
+		}
+		data.push({
+			time: utils.date.current(),
+			level: level,
+			info: msg
+		});
+		utils.storage.setter('log', JSON.stringify(data));
+		console.log(data.length);
+	};
+	var show = function () {
+		return data
+	};
 
+	var upload = function(){
+		if(data.length < options.dataLen) {
+			return false;
+		}
+		console.log('preLength:' + preLength);
+		if(preLength !== data.length ) {
+			$.ajax({
+				url: _config.interfaceUrl.Log,
+				method:'post',
+				type:'json',
+				contentType: 'application/json',
+				data: JSON.stringify(data)
+			}).then(function(){
+				console.log('upload success');
+				data = [];
+				preLength = 0;
+				utils.storage.setter('log', '');
+			});
+		}
+	};
+
+	var timeTask = setInterval(function () {
+		upload();
+	}, options.time);
+
+	return {
+		send: send,
+		show: show,
+		upload: upload
+	}
+})();
+
+
+window.onerror = function (msg, url, line, col, error) {
+	//没有URL不上报！上报也不知道错误
+	if (msg != "Script error." && !url) {
+		return true;
+	}
+	//采用异步的方式
+	//我遇到过在window.onunload进行ajax的堵塞上报
+	//由于客户端强制关闭webview导致这次堵塞上报有Network Error
+	//我猜测这里window.onerror的执行流在关闭前是必然执行的
+	//而离开文章之后的上报对于业务来说是可丢失的
+	//所以我把这里的执行流放到异步事件去执行
+	//脚本的异常数降低了10倍
+	setTimeout(function () {
+		var data = {};
+		//不一定所有浏览器都支持col参数
+		col = col || (window.event && window.event.errorCharacter) || 0;
+
+		data.url = url;
+		data.line = line;
+		data.col = col;
+		if (!!error && !!error.stack) {
+			//如果浏览器有堆栈信息
+			//直接使用
+			data.msg = error.stack.toString();
+		} else if (!!arguments.callee) {
+			//尝试通过callee拿堆栈信息
+			var ext = [];
+			var f = arguments.callee.caller, c = 3;
+			//这里只拿三层堆栈信息
+			while (f && (--c > 0)) {
+				ext.push(f.toString());
+				if (f === f.caller) {
+					break;//如果有环
+				}
+				f = f.caller;
+			}
+			ext = ext.join(",");
+			data.msg = ext;
+		}
+		Log.send(4, data)
+	}, 0);
+
+	return true;
+};
+setInterval(function () {
+	Log.send(1, '操作提示:' + utils.date.current())
+}, 1000)
 /************
  * 组件类
  ************/
