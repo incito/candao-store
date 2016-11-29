@@ -57,8 +57,8 @@ public enum StrategyFactory {
 
 	/**
 	 * 计算实收金额 优免金额 挂账金额 小费
-	 * @param chargeService 
-	 * 
+	 * @param chargeService
+	 *
 	 * @param orderDetailPreferentialDao
 	 * 
 	 * @param caleTableAmountMapper
@@ -93,7 +93,7 @@ public enum StrategyFactory {
 			if(servceCharageBean!=null&&servceCharageBean.getChargeOn()!=0){
 				dueamount=dueamount.subtract(servceCharageBean.getChargeAmount());
 			}
-			
+
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
 			// 原始价格

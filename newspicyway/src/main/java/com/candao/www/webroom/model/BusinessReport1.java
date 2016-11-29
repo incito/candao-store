@@ -60,6 +60,16 @@ public class BusinessReport1 {
 	private String zaitaishu = "0"; //在台数
 	private String kaitaishu = "0"; //开台数
 	private String shouldamountTakeout="0";  //   外卖统计(应收）
+	private String taocanyouhui = "0";
+	
+	public String getTaocanyouhui() {
+		return taocanyouhui;
+	}
+
+	public void setTaocanyouhui(String taocanyouhui) {
+		this.taocanyouhui = taocanyouhui;
+	}
+
 	public String getMemberDishPriceFree() {
 		return memberDishPriceFree;
 	}

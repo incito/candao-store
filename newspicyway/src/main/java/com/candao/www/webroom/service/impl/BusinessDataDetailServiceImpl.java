@@ -148,10 +148,10 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						businssRport.setAvgpriceTakeout(ToolsUtil.formatTwoDecimal(businessR.get(i).get("avgprice_takeout") + ""));
 					}
 
-//#折扣(抹零）
+					//#折扣(抹零）
 
 					if (businessR.get(i).get("fraction") != null) {
-						businssRport.setMalingincom(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
+						businssRport.setFraction(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
 					}
 //					会员消费合计
 					if (businessR.get(i).get("membertotal") != null) {
@@ -170,6 +170,10 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     if (businessR.get(i).get("give") != null) {// 赠送
                         businssRport.setGive(ToolsUtil.formatTwoDecimal(businessR.get(i).get("give").toString()));
                     }
+                    
+                    if (businessR.get(i).get("taocanyouhui") != null) {// 赠送
+                        businssRport.setTaocanyouhui(ToolsUtil.formatTwoDecimal(businessR.get(i).get("taocanyouhui").toString()));
+                    }
 
 					/*if (judgePayforType() == 0) {   //表示 不处理
 
@@ -180,11 +184,8 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						businssRport.setHanderWay("抹零");
 						businssRport.setHandervalue(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
 					}*/
-                    if(businessR.get(i).get("roundoff") != null){ //已结账单数
+                    if(businessR.get(i).get("roundoff") != null){ //四舍五入
                         businssRport.setRoundoff(ToolsUtil.formatTwoDecimal(businessR.get(i).get("roundoff").toString()));
-                    }
-                    if(businessR.get(i).get("fraction") != null){ //已结账单数
-                        businssRport.setRoundoff(ToolsUtil.formatTwoDecimal(businessR.get(i).get("fraction").toString()));
                     }
 					if(businessR.get(i).get("closedbillnums") != null){ //已结账单数
                     	businssRport.setClosedordermums(ToolsUtil.formatTwoDecimal(businessR.get(i).get("closedbillnums").toString()));
@@ -228,10 +229,6 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     //外卖实收
                     Map<String,Object> waimaiActualAmountMap = sortSettlements(waimaiActualSettlements,settlementSort,thActualAmount);
                     BigDecimal waimaiTotalAmount = new BigDecimal(waimaiActualAmountMap.get("actualTotalAmount")+"");
-                    //平均实收
-                    BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
-                    BigDecimal actualPre = actualTotalAmount.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
-					businssRport.setPaidinaverage(actualPre+"");
                     //虚增
                     String inflate = orderInflate.get("inflated")+"";
                     BigDecimal inflateDecimal = new BigDecimal(inflate).setScale(2, BigDecimal.ROUND_HALF_DOWN);
@@ -252,7 +249,11 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					businssRport.setDiscountamount(shouldAmountDecimal.subtract(actualTotalAmountPure)+"");
 					//实收列表值td
 					List<String> settlements = (List<String>) actualAmountMap.get("settlements");
-					settlements.set(settlementSort.get("8"), hykAmountDecimal+"");
+					settlements.set(settlementSort.get("8"), hykAmountDecimal.subtract(inflateDecimal)+"");
+                    //平均实收
+                    BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
+                    BigDecimal actualPre = actualTotalAmountPure.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
+					businssRport.setPaidinaverage(actualPre+"");
 					//封装
 					businssRport.setSettlementDescList(settlementDescList);
 					businssRport.setSettlements((List<String>)actualAmountMap.get("settlements"));
@@ -593,11 +594,11 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 						mapList.add(map);
 					//}
 					//折扣优惠
-					map = new HashMap<>();
+					/*map = new HashMap<>();
 					map.put("key", "折扣优惠");
 					map.put("title", "折扣总额统计");
 					map.put("value",businessR.get(i).getDiscount());
-					mapList.add(map);
+					mapList.add(map);*/
 					//会员优惠
 					map = new HashMap<>();
 					map.put("key", "会员优惠");
@@ -616,6 +617,11 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					map.put("key", "会员储值消费虚增");
 					map.put("title", "折扣总额统计");
 					map.put("value",businessR.get(i).getMebervalueadd());
+					mapList.add(map);
+					map = new HashMap<>();
+					map.put("key", "套餐优惠");
+					map.put("title", "折扣总额统计");
+					map.put("value",businessR.get(i).getTaocanyouhui());
 					mapList.add(map);
 
 //					//桌数（桌）

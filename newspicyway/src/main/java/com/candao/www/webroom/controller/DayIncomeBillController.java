@@ -273,6 +273,7 @@ public class DayIncomeBillController<V, K> {
 
 		String branchid= PropertiesUtils.getValue("current_branch_id");
 		params.put("branchId", branchid);
+		params.put("result","@result");
 		List<BusinessReport1> reportlist = businessDataDetailService
 				.isgetBusinessDetail1(params);
 		ModelAndView mav = new ModelAndView();

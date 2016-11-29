@@ -78,6 +78,8 @@ public class PosServiceImpl implements PosService {
             Map<String, Object> param = new HashMap<>();
             param.put("devicecode", tPrinterDevice.getDevicecode());
             validateByCode(param, false);
+            //删除中间表
+            deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
             //新增
             tPrinterDevice.setDeviceid(UUID.randomUUID().toString());
             tPrinterDevice.setDevicestatus(0);
@@ -92,13 +94,14 @@ public class PosServiceImpl implements PosService {
             //修改
             TPrinterDevice list = tPrinterDeviceMapper.selectByPrimaryKey(tPrinterDevice.getDeviceid());
 
-            if (list == null || list.getDevicestatus() == 1)
+            if (list == null || list.getDevicestatus() == 1) {
                 throw new RuntimeException("不存在该pos");
+            }
+            //删除中间表
+            deletePOSPrinterByCode(list.getDevicecode());
 
             tPrinterDeviceMapper.updateByPrimaryKeySelective(tPrinterDevice);
         }
-        //删除中间表
-        deletePOSPrinterByCode(tPrinterDevice.getDevicecode());
         //新增中间表
         savePOSPrinter(tPrinterDevice.getPrinters());
     }

@@ -316,8 +316,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
                 } else if (Map.class.isAssignableFrom(temp.getClass())) {
                     temp = ((Map) temp).get(pros[j]);
                 } else if (Collection.class.isAssignableFrom(temp.getClass())) {
-                    //待定，是否抛出异常
-                    throw new Exception("不能解析集合");
+                    temp = ((List) temp).get(0);
                 } else if (temp.getClass().isArray()) {
                     //待定，是否抛出异常
                     throw new Exception("不能解析数组");

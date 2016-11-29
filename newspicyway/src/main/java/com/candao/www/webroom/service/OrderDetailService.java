@@ -24,7 +24,7 @@ public interface OrderDetailService {
 	public TorderDetail findOne(Map<String, String> mapDetail);
 
 
-	public String cleantable(Table table);
+	public void cleantable(Table table);
 
 
 	public String updateorderprice(Order order);

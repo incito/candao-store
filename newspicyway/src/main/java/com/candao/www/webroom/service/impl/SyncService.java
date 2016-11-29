@@ -144,6 +144,10 @@ public class SyncService {
                     List<Map<String, Object>> payways = new ArrayList<>();
                     for(Map<String,Object> dictionary:value){
                             if("payway".equalsIgnoreCase(dictionary.get("type").toString())){
+                                Object chargesStatus = dictionary.get("charges_status");
+                                if(StringUtils.isEmpty(chargesStatus)||"null".equals(chargesStatus)){
+                                    dictionary.put("charges_status",getChargeStatus(dictionary.get("itemid").toString()));
+                                }
                                 payways.add(dictionary);
                             }
                     }
@@ -179,6 +183,15 @@ public class SyncService {
 
     }
 
+    private int getChargeStatus(String itemId){
+        String[] itemIds={"0","1","5","8","13","17","18","30"};
+        for(String i:itemIds){
+            if(i.equals(itemId)){
+                return 1;
+            }
+        }
+        return 0;
+    }
     /**
      * 根据JSON数据拼装sql
      *

@@ -839,7 +839,7 @@ BEGIN
   select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(SELECT itemid FROM `v_payway` where `chargeStatus` = 1);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
-  select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid;
+  select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR tod.dishtype=1 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid;
   update t_order set dueamount=v_dueamount,wipeamount=v_dueamount-floor(v_dueamount),ssamount=v_ssamount,gzamount=v_gzamount,ymamount=v_ymamount,freeamount=v_originalOrderAmount where orderid=v_orderid;
 END
 $$

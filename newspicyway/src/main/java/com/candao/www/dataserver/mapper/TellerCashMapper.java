@@ -33,7 +33,7 @@ public interface TellerCashMapper {
 
     String selectItemMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
 
-    String selectPreferenceMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
+    Map<String,Object> selectPreferenceMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
 
     String selectRemoveMoney(@Param("beginTime") Date beginTime,@Param("userId")String userId);
 

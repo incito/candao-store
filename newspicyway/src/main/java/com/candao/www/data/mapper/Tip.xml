@@ -92,7 +92,7 @@ WHERE t.insertime BETWEEN#{startTime} and #{endTime}
 	</select>
      <select id="getTipMoney" parameterType="java.util.Map" resultType="String">
             SELECT
-            paid as  tipMoney
+            case #{paid} WHEN  1 then paid ELSE  receivables END  as  tipMoney
             FROM t_b_tip t
             WHERE t.orderid=#{orderId} and branchid=#{branchId} limit 1
         </select>
