@@ -79,6 +79,7 @@ var Order = {
         var that = this;
 
         $('.J-btn-settlement').click(function(){
+            Log.send(2, '点击结账按钮');
             if(parseFloat($('.needPay span').text()) > 0){
                 if(parseFloat($('.needPay span').text()) > parseFloat($('#tip-amount').text())) {
                     widget.modal.alert({
@@ -122,6 +123,7 @@ var Order = {
 
         //点击- +修改发票金额
         $('#Invoice-title .plus_sign').click(function () {
+            Log.send(2, '修改发票金额');
             var se=$(this),
                 _thisVal=parseFloat($.trim($('#Invoice-title .invoiceMoney').val()));
             /*减号*/
@@ -1244,7 +1246,6 @@ var Order = {
                 }
             }
         });
-
     },
 
     //切换小键盘

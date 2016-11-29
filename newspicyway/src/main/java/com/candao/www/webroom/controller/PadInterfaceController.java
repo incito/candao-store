@@ -1,6 +1,7 @@
 package com.candao.www.webroom.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.candao.common.dto.ResultDto;
 import com.candao.common.enums.ResultMessage;
 import com.candao.common.exception.AuthException;
@@ -38,6 +39,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.asm.commons.Method;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -3318,6 +3320,19 @@ public class PadInterfaceController {
         }
         return JacksonJsonMapper.objectToJson(basePadResponse);
     }
+    @RequestMapping(value = "/log",method = RequestMethod.POST)
+    @ResponseBody
+    public String log(@RequestBody  String logs){
+        Map result;
+        try {
+            List<LogData>logDatas= (List<LogData>)JSON.parseObject(logs,new TypeReference<ArrayList<LogData>>(){});
+            h5LogService.log(logDatas);
+            result=ReturnMap.getSuccessMap();
+        }catch (Exception e){
+            result=ReturnMap.getFailureMap("系统内部错误");
+        }
+        return JSON.toJSONString(result);
+    }
 
     // end config
 
@@ -3458,5 +3473,7 @@ public class PadInterfaceController {
 
     @Autowired
     private TableAreaService tableAreaService;
+    @Autowired
+    private H5LogService h5LogService;
 
 }

@@ -150,7 +150,7 @@
     <aop:config>  
         <aop:aspect id="WorkLogAdvice" ref="aoplogbean">  
             <aop:pointcut id="businessService"  
-                expression="execution(* com.candao.www.*.service.*.*(..))" />  
+                expression="execution(* com.candao.www.*.service.*.*(..)) and !execution(* com.candao.www.webroom.service.impl.H5LogServiceImpl.*(..))" />
             <aop:before pointcut-ref="businessService" method="doBefore"/>  
             <aop:after pointcut-ref="businessService" method="doAfter"/>  
             <aop:around pointcut-ref="businessService" method="doAround"/>  

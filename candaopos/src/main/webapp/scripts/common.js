@@ -193,6 +193,8 @@ var keydownEnter=null
     });
 
 
+
+
 /************
  * 配置项
  * basePath
@@ -203,123 +205,124 @@ var _config = _config || {};
 _config.projectName = 'pos';
 _config.basePath = '/newspicyway/pos/';
 _config.interfaceUrl = {
-    AuthorizeLogin: "/newspicyway/padinterface/login.json", <!--授权登录-->
-    GivePrefer: "/newspicyway/padinterface/givePrefer.json", <!--获取已经使用的赠菜-->
-    GetUserRight: "/newspicyway/padinterface/userrights.json", <!--获取用户权限-->
-    GetAllTableInfos: "/newspicyway/padinterface/querytables.json", <!--获取所有餐桌信息-->
-    GetSystemSetData: "/newspicyway/padinterface/getSystemSetData.json", <!--获取系统设置-->
-    VerifyUser: "/newspicyway/padinterface/verifyuser.json", <!--验证用户是否存在-->
-    OpenTable: "/newspicyway/padinterface/setorder.json", <!--餐桌开台-->
-    GetOrderInvoice: "/newspicyway/padinterface/findInvoiceByOrderid.json", <!--获取订单发票-->
-    UpdateOrderInvoice: "/newspicyway/padinterface/updateInvoice.json", <!--更新发票信息-->
-    GetDishGroupInfos: "/newspicyway/padinterface/getMenuColumn.json", <!--获取菜品分类信息-->
-    GetCouponInfos: "/newspicyway/padinterface/getPreferentialList.json", <!--获取优惠券信息-->
-    CalcDiscountAmount: "/newspicyway/padinterface/usePreferentialItem.json", <!--使用优惠券-->
-    DelPreferential: "/newspicyway/padinterface/delPreferentialItem.json", <!--删除优惠券-->
-    GetOrderInfo: "/newspicyway/padinterface/getOrderInfo.json", <!--获取餐台账单明细（新接口）-->
-    OrderDish: "/newspicyway/padinterface/bookorderList.json", <!--菜品下单-->
-    OrderDishCf: "/newspicyway/padinterface/placeOrder.json", <!--菜品下单（咖啡）-->
-    GetMenuComboDish: "/newspicyway/padinterface/getMenuCombodish.json", <!--获取套餐内菜品-->
-    PayTheBill: "/newspicyway/padinterface/settleorder.json", <!--结账-->
-    PayTheBillCf: "/newspicyway/padinterface/checkout.json", <!--咖啡模式结账-->
-    GetAllBankInfo: "/newspicyway/bankinterface/getallbank.json", <!--获取所有银行-->
-    GetAllOnCpyAccountInfo: "/newspicyway/padinterface/getCooperationUnit.json", <!--获取所有可挂账单位-->
-    GetTradeTime: "/newspicyway/padinterface/getOpenEndTime.json", <!--获取营业时间-->
-    CheckTheLastEndWork: "/newspicyway/padinterface/isYesterdayEndWork.json", <!--检测上一次是否结业-->
-    GetAllUnclearnPosInfoes: "/newspicyway/padinterface/findUncleanPosList.json", <!--获取所有未结业POS信息-->
-    GetOrderMemberInfo: "/newspicyway/member/GetOrderMember.json", <!--获取订单会员信息-->
-    GetReportTipInfo: "/newspicyway/tip/tipList.json", <!--获取小费统计信息-->
-    GetReportDishInfo: "/newspicyway/padinterface/getItemSellDetail.json", <!--获取品项销售统计信息-->
-    GetBranchInfo: "/newspicyway/padinterface/getbranchinfo.json", <!--获取分店店铺信息-->
-    MemberLogin: "/newspicyway/member/MemberLogin.json", <!--餐道会员登入-->
-    MemberLogout: "/newspicyway/member/MemberLogout.json", <!--餐道会员登出-->
-    AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--保存会员消费-->
-    ClearTable: "/newspicyway/padinterface/cleantable.json", <!--清台-->
-    ClearTableCf: "/newspicyway/padinterface/cleanTableSimply.json", <!--咖啡模式的清台-->
-    AntiSettlementOrder: "/newspicyway/padinterface/rebacksettleorder.json", <!--反结算账单-->
-    BackDish: "/newspicyway/padinterface/discarddish.json", <!--退菜-->
-    UpdateDishWeigh: "/newspicyway/padinterface/updateDishWeight.json", <!--更新菜品重量-->
-    TipBill: "/newspicyway/tip/tipBilling.json", <!--小费结算-->
-    SetCouponFavor: "/newspicyway/padinterface/setPreferentialFavor.json", <!--设置不常用优惠-->
-    //GetTableInfoByTableType: "/newspicyway/padinterface/getTableByType.json", <!--根据餐桌类型获取餐桌信息-->
-    GetTableInfoByTableType: "/newspicyway/padinterface/getTableAndType.json", <!--获取全部餐台信息-->
-    GetPrinterList: "/newspicyway/pos/printerlist.json", <!--获取打印机状态列表-->
-    GetItemForList: "/newspicyway/itemDetail/getItemForList.json", <!-- 获取营业明细（品类、金额）-->
-    GetGrouponForList: "/newspicyway/preferentialAnalysisCharts/findPreferential.json", <!--获取营业明细(团购券)-->
-    GetDayReportList: "/newspicyway/daliyReports/getDayReportList.json", <!-- 获取营业明细（其它）-->
-    GetGzdwForList: "/newspicyway/gisterBill/getBillCount.json", <!--获取营业明细（获取挂账单位）-->
-    GetTipMoney: "/newspicyway/tip/tipListByTime.json", <!--获取小费总额-->
-    RestaurantOpened: "/newspicyway/datasnap/rest/TServerMethods1/OpenUp/", <!--店铺开业，分查询是否开业和开业-->
-    PettyCashInput: "/newspicyway/datasnap/rest/TServerMethods1/InputTellerCash/", <!--零找金，分查询是否输入过零找金和输入零找金-->
-    ConsumInfo: "/newspicyway/padinterface/consumInfo.json", <!-- 统计信息 -->
-    GetTableDishInfos: "/newspicyway/datasnap/rest/TServerMethods1/GetOrder/", <!--获取餐桌菜单上的所有菜品信息-->
-    GetTableDishInfoByOrderId: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderByOrderid/", <!--获取餐桌菜单上的所有菜品信息-->
-    GetDinnerWareInfo: "/newspicyway/datasnap/rest/TServerMethods1/getCJFood/", <!--获取餐具的数据-->
-    GetAllDishInfos: "/newspicyway/datasnap/rest/TServerMethods1/getAllWmFood/", <!--获取所有菜品信息-->
-    GetDishStatus: "/newspicyway/datasnap/rest/TServerMethods1/getFoodStatus/", <!--获取菜品的状态，是否估清-->
-    GetFavorable: "/newspicyway/datasnap/rest/TServerMethods1/getFavorale/", <!--获取优惠信息-->
-    Clearner: "/newspicyway/datasnap/rest/TServerMethods1/clearMachine/", <!--清机-->
-    EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业不需要传递参数-->
-    SaveCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/saveOrderPreferential/", <!--保存优惠券信息-->
-    GetSavedCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderCouponList/", <!--获取保存的优惠券信息-->
-    BroadcastMsg: "/newspicyway/datasnap/rest/TServerMethods1/broadcastmsg/", <!--广播消息-->
-    GetBackDishInfo: "/newspicyway/datasnap/rest/TServerMethods1/getBackDishInfo/", <!--退菜-->
-    GetPrintOrderInfo: "/newspicyway/datasnap/rest/TServerMethods1/getOrderInfo/", <!--获取打印用订单信息-->
-    GetClearPosInfo: "/newspicyway/datasnap/rest/TServerMethods1/getClearMachineData/", <!--获取打印用清机单信息-->
-    CheckAntiSettleOrder: "/newspicyway/datasnap/rest/TServerMethods1/rebackorder/", <!--检测是否允许反结算账单-->
-    SetMemberPrice: "/newspicyway/datasnap/rest/TServerMethods1/setMemberPrice/", <!--设置成会员价-->
-    SetNormalPrice: "/newspicyway/datasnap/rest/TServerMethods1/setMemberPrice2/", <!--设置成正常价-->
-    GetMemberPrintPayInfo: "/newspicyway/datasnap/rest/TServerMethods1/getMemberSaleInfo/", <!--获取会员消费打印信息-->
-    OpenCash: "/newspicyway/datasnap/rest/TServerMethods1/OpenCash/", <!--开钱箱-->
-    QueryOrderInfo: "/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/", <!--账单查询-->
-    GetFishPotDish: "/newspicyway/datasnap/rest/TServerMethods1/getGroupDetail/", <!--获取鱼锅信息-->
-    CancelOrder: "/newspicyway/datasnap/rest/TServerMethods1/cancelOrder/", <!--外卖取消账单-->
-    SetTakeoutOrderOnAccount: "/newspicyway/datasnap/rest/TServerMethods1/putOrder/", <!--外卖挂单-->
-    SetOrderTakeout: "/newspicyway/datasnap/rest/TServerMethods1/wmOrder/", <!--设置订单为外卖单。-->
-    EndWorkSyncData: '/newspicyway/padinterface/jdesyndata.json', <!--结业数据上传-->
+	AuthorizeLogin: "/newspicyway/padinterface/login.json", <!--授权登录-->
+	GivePrefer: "/newspicyway/padinterface/givePrefer.json", <!--获取已经使用的赠菜-->
+	GetUserRight: "/newspicyway/padinterface/userrights.json", <!--获取用户权限-->
+	GetAllTableInfos: "/newspicyway/padinterface/querytables.json", <!--获取所有餐桌信息-->
+	GetSystemSetData: "/newspicyway/padinterface/getSystemSetData.json", <!--获取系统设置-->
+	VerifyUser: "/newspicyway/padinterface/verifyuser.json", <!--验证用户是否存在-->
+	OpenTable: "/newspicyway/padinterface/setorder.json", <!--餐桌开台-->
+	GetOrderInvoice: "/newspicyway/padinterface/findInvoiceByOrderid.json", <!--获取订单发票-->
+	UpdateOrderInvoice: "/newspicyway/padinterface/updateInvoice.json", <!--更新发票信息-->
+	GetDishGroupInfos: "/newspicyway/padinterface/getMenuColumn.json", <!--获取菜品分类信息-->
+	GetCouponInfos: "/newspicyway/padinterface/getPreferentialList.json", <!--获取优惠券信息-->
+	CalcDiscountAmount: "/newspicyway/padinterface/usePreferentialItem.json", <!--使用优惠券-->
+	DelPreferential: "/newspicyway/padinterface/delPreferentialItem.json", <!--删除优惠券-->
+	GetOrderInfo: "/newspicyway/padinterface/getOrderInfo.json", <!--获取餐台账单明细（新接口）-->
+	OrderDish: "/newspicyway/padinterface/bookorderList.json", <!--菜品下单-->
+	OrderDishCf: "/newspicyway/padinterface/placeOrder.json", <!--菜品下单（咖啡）-->
+	GetMenuComboDish: "/newspicyway/padinterface/getMenuCombodish.json", <!--获取套餐内菜品-->
+	PayTheBill: "/newspicyway/padinterface/settleorder.json", <!--结账-->
+	PayTheBillCf: "/newspicyway/padinterface/checkout.json", <!--咖啡模式结账-->
+	GetAllBankInfo: "/newspicyway/bankinterface/getallbank.json", <!--获取所有银行-->
+	GetAllOnCpyAccountInfo: "/newspicyway/padinterface/getCooperationUnit.json", <!--获取所有可挂账单位-->
+	GetTradeTime: "/newspicyway/padinterface/getOpenEndTime.json", <!--获取营业时间-->
+	CheckTheLastEndWork: "/newspicyway/padinterface/isYesterdayEndWork.json", <!--检测上一次是否结业-->
+	GetAllUnclearnPosInfoes: "/newspicyway/padinterface/findUncleanPosList.json", <!--获取所有未结业POS信息-->
+	GetOrderMemberInfo: "/newspicyway/member/GetOrderMember.json", <!--获取订单会员信息-->
+	GetReportTipInfo: "/newspicyway/tip/tipList.json", <!--获取小费统计信息-->
+	GetReportDishInfo: "/newspicyway/padinterface/getItemSellDetail.json", <!--获取品项销售统计信息-->
+	GetBranchInfo: "/newspicyway/padinterface/getbranchinfo.json", <!--获取分店店铺信息-->
+	MemberLogin: "/newspicyway/member/MemberLogin.json", <!--餐道会员登入-->
+	MemberLogout: "/newspicyway/member/MemberLogout.json", <!--餐道会员登出-->
+	AddMemberSaleInfo: "/newspicyway/member/AddOrderMember.json", <!--保存会员消费-->
+	ClearTable: "/newspicyway/padinterface/cleantable.json", <!--清台-->
+	ClearTableCf: "/newspicyway/padinterface/cleanTableSimply.json", <!--咖啡模式的清台-->
+	AntiSettlementOrder: "/newspicyway/padinterface/rebacksettleorder.json", <!--反结算账单-->
+	BackDish: "/newspicyway/padinterface/discarddish.json", <!--退菜-->
+	UpdateDishWeigh: "/newspicyway/padinterface/updateDishWeight.json", <!--更新菜品重量-->
+	TipBill: "/newspicyway/tip/tipBilling.json", <!--小费结算-->
+	SetCouponFavor: "/newspicyway/padinterface/setPreferentialFavor.json", <!--设置不常用优惠-->
+	//GetTableInfoByTableType: "/newspicyway/padinterface/getTableByType.json", <!--根据餐桌类型获取餐桌信息-->
+	GetTableInfoByTableType: "/newspicyway/padinterface/getTableAndType.json", <!--获取全部餐台信息-->
+	GetPrinterList: "/newspicyway/pos/printerlist.json", <!--获取打印机状态列表-->
+	GetItemForList: "/newspicyway/itemDetail/getItemForList.json", <!-- 获取营业明细（品类、金额）-->
+	GetGrouponForList: "/newspicyway/preferentialAnalysisCharts/findPreferential.json", <!--获取营业明细(团购券)-->
+	GetDayReportList: "/newspicyway/daliyReports/getDayReportList.json", <!-- 获取营业明细（其它）-->
+	GetGzdwForList: "/newspicyway/gisterBill/getBillCount.json", <!--获取营业明细（获取挂账单位）-->
+	GetTipMoney: "/newspicyway/tip/tipListByTime.json", <!--获取小费总额-->
+	RestaurantOpened: "/newspicyway/datasnap/rest/TServerMethods1/OpenUp/", <!--店铺开业，分查询是否开业和开业-->
+	PettyCashInput: "/newspicyway/datasnap/rest/TServerMethods1/InputTellerCash/", <!--零找金，分查询是否输入过零找金和输入零找金-->
+	ConsumInfo: "/newspicyway/padinterface/consumInfo.json", <!-- 统计信息 -->
+	GetTableDishInfos: "/newspicyway/datasnap/rest/TServerMethods1/GetOrder/", <!--获取餐桌菜单上的所有菜品信息-->
+	GetTableDishInfoByOrderId: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderByOrderid/", <!--获取餐桌菜单上的所有菜品信息-->
+	GetDinnerWareInfo: "/newspicyway/datasnap/rest/TServerMethods1/getCJFood/", <!--获取餐具的数据-->
+	GetAllDishInfos: "/newspicyway/datasnap/rest/TServerMethods1/getAllWmFood/", <!--获取所有菜品信息-->
+	GetDishStatus: "/newspicyway/datasnap/rest/TServerMethods1/getFoodStatus/", <!--获取菜品的状态，是否估清-->
+	GetFavorable: "/newspicyway/datasnap/rest/TServerMethods1/getFavorale/", <!--获取优惠信息-->
+	Clearner: "/newspicyway/datasnap/rest/TServerMethods1/clearMachine/", <!--清机-->
+	EndWork: "/newspicyway/datasnap/rest/TServerMethods1/endWork/", <!--结业不需要传递参数-->
+	SaveCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/saveOrderPreferential/", <!--保存优惠券信息-->
+	GetSavedCouponInfo: "/newspicyway/datasnap/rest/TServerMethods1/GetOrderCouponList/", <!--获取保存的优惠券信息-->
+	BroadcastMsg: "/newspicyway/datasnap/rest/TServerMethods1/broadcastmsg/", <!--广播消息-->
+	GetBackDishInfo: "/newspicyway/datasnap/rest/TServerMethods1/getBackDishInfo/", <!--退菜-->
+	GetPrintOrderInfo: "/newspicyway/datasnap/rest/TServerMethods1/getOrderInfo/", <!--获取打印用订单信息-->
+	GetClearPosInfo: "/newspicyway/datasnap/rest/TServerMethods1/getClearMachineData/", <!--获取打印用清机单信息-->
+	CheckAntiSettleOrder: "/newspicyway/datasnap/rest/TServerMethods1/rebackorder/", <!--检测是否允许反结算账单-->
+	SetMemberPrice: "/newspicyway/datasnap/rest/TServerMethods1/setMemberPrice/", <!--设置成会员价-->
+	SetNormalPrice: "/newspicyway/datasnap/rest/TServerMethods1/setMemberPrice2/", <!--设置成正常价-->
+	GetMemberPrintPayInfo: "/newspicyway/datasnap/rest/TServerMethods1/getMemberSaleInfo/", <!--获取会员消费打印信息-->
+	OpenCash: "/newspicyway/datasnap/rest/TServerMethods1/OpenCash/", <!--开钱箱-->
+	QueryOrderInfo: "/newspicyway/datasnap/rest/TServerMethods1/getAllOrderInfo2/", <!--账单查询-->
+	GetFishPotDish: "/newspicyway/datasnap/rest/TServerMethods1/getGroupDetail/", <!--获取鱼锅信息-->
+	CancelOrder: "/newspicyway/datasnap/rest/TServerMethods1/cancelOrder/", <!--外卖取消账单-->
+	SetTakeoutOrderOnAccount: "/newspicyway/datasnap/rest/TServerMethods1/putOrder/", <!--外卖挂单-->
+	SetOrderTakeout: "/newspicyway/datasnap/rest/TServerMethods1/wmOrder/", <!--设置订单为外卖单。-->
+	EndWorkSyncData:'/newspicyway/padinterface/jdesyndata.json', <!--结业数据上传-->
 
-    PrintPay: "/newspicyway/print4POS/getOrderInfo", <!--打印预结，结算，客用-->
-    PrintClearMachine: "/newspicyway/print4POS/getClearMachineData", <!--打印清机单-->
-    PrintMemberSale: "/newspicyway/print4POS/getMemberSaleInfo", <!-- 打印会员消费-->
-    PrintMemberStore: "/newspicyway/print4POS/StoreCardToNewPos.json", <!--打印会员储值-->
-    PrintItemSell: "/newspicyway/print4POS/getItemSellDetail.json", <!--打印品项销售统计报表-->
-    PrintTip: "/newspicyway/print4POS/tipList.json", <!--打印小费统计报表-->
-    PrintBusinessDetail: "/newspicyway/print4POS/printBusinessDetail.json", <!--打印营业报表明细-->
-    PrintInvoice: "/newspicyway/print4POS/printInvoice.json", <!--打印发票单-->
-    <!--云接口-->
-    QueryCanDao: "/newspicyway/memberManager/findByParams.json", <!--餐道会员查询-->
-    StorageCanDao: "/newspicyway/deal/StoreCardToNewPos.json", <!--餐道会员储值-->
-    ModifyPwdCanDao: "/newspicyway/memberManager/MemberEdit.json", <!--修改密码-->
-    SendVerifyCode: "/newspicyway/memberManager/sendAccountByMobile.json", <!--发送验证码-->
-    MobileRepeatCheck: "/newspicyway/memberManager/validateTbMemberManager.json", <!--验证手机号是否重复-->
-    RegistCanDao: "/newspicyway/memberManager/save.json", <!--餐道会员会员注册-->
-    ReportLossCanDao: "/newspicyway/deal/CardLose.json", <!--餐道会员会员挂失-->
-    CancelCanDao: "/newspicyway/memberManager/delete.json", <!--餐道会员会员注销-->
-    SaleCanDao: "/newspicyway/deal/MemberSale.json", <!--餐道会员会员消费-->
-    VoidSaleCanDao: "/newspicyway/deal/VoidSale.json", <!--餐道会员取消消费-->
-    SendMsgAsyn: "/newspicyway/datasnap/rest/TServerMethods1/sendMsgAsyn/", <!--给pad发送清台消息-->
+	PrintPay: "/newspicyway/print4POS/getOrderInfo", <!--打印预结，结算，客用-->
+	PrintClearMachine: "/newspicyway/print4POS/getClearMachineData", <!--打印清机单-->
+	PrintMemberSale: "/newspicyway/print4POS/getMemberSaleInfo", <!-- 打印会员消费-->
+	PrintMemberStore: "/newspicyway/print4POS/StoreCardToNewPos.json", <!--打印会员储值-->
+	PrintItemSell: "/newspicyway/print4POS/getItemSellDetail.json", <!--打印品项销售统计报表-->
+	PrintTip: "/newspicyway/print4POS/tipList.json", <!--打印小费统计报表-->
+	PrintBusinessDetail: "/newspicyway/print4POS/printBusinessDetail.json", <!--打印营业报表明细-->
+	PrintInvoice: "/newspicyway/print4POS/printInvoice.json", <!--打印发票单-->
+	<!--云接口-->
+	QueryCanDao: "/newspicyway/memberManager/findByParams.json", <!--餐道会员查询-->
+	StorageCanDao: "/newspicyway/deal/StoreCardToNewPos.json", <!--餐道会员储值-->
+	ModifyPwdCanDao: "/newspicyway/memberManager/MemberEdit.json", <!--修改密码-->
+	SendVerifyCode: "/newspicyway/memberManager/sendAccountByMobile.json", <!--发送验证码-->
+	MobileRepeatCheck: "/newspicyway/memberManager/validateTbMemberManager.json", <!--验证手机号是否重复-->
+	RegistCanDao: "/newspicyway/memberManager/save.json", <!--餐道会员会员注册-->
+	ReportLossCanDao: "/newspicyway/deal/CardLose.json", <!--餐道会员会员挂失-->
+	CancelCanDao: "/newspicyway/memberManager/delete.json", <!--餐道会员会员注销-->
+	SaleCanDao: "/newspicyway/deal/MemberSale.json", <!--餐道会员会员消费-->
+	VoidSaleCanDao: "/newspicyway/deal/VoidSale.json", <!--餐道会员取消消费-->
+	SendMsgAsyn: "/newspicyway/datasnap/rest/TServerMethods1/sendMsgAsyn/", <!--给pad发送清台消息-->
 
-    CancelLossCanDao: "/newspicyway/deal/UnCardLose", <!--餐道会员会员解除挂失-->
-    VipChangeCardNum: "/newspicyway/memberCardService/cardNoByModify.json", <!--修改会员卡号-->
-    VipChangeInfo: "/newspicyway/memberService/unCardLoseService.json", <!--修改会员基本信息-->
-    VipQuery: "/newspicyway/memberCardService/getCardNoByMobile.json", <!--会员查询(一户多卡)-->
-    VipInsertCard: "/newspicyway/memberCardService/bindingCardService.json", <!--新增会员实体卡号-->
-    VipCheckCard: "/newspicyway/memberManager/byUserTouse.json", <!--判断会员实体卡-->
-    VipChangePsw: "/newspicyway/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
-    GetCouponList: "/newspicyway/memberpreferential/posPreferentialList.json", <!--获取优惠列表-->
+	CancelLossCanDao: "/newspicyway/deal/UnCardLose", <!--餐道会员会员解除挂失-->
+	VipChangeCardNum: "/newspicyway/memberCardService/cardNoByModify.json", <!--修改会员卡号-->
+	VipChangeInfo: "/newspicyway/memberService/unCardLoseService.json", <!--修改会员基本信息-->
+	VipQuery: "/newspicyway/memberCardService/getCardNoByMobile.json", <!--会员查询(一户多卡)-->
+	VipInsertCard: "/newspicyway/memberCardService/bindingCardService.json", <!--新增会员实体卡号-->
+	VipCheckCard: "/newspicyway/memberManager/byUserTouse.json", <!--判断会员实体卡-->
+	VipChangePsw: "/newspicyway/memberManager/MemberEdit.json", <!--会员密码修改（新）-->
+	GetCouponList: "/newspicyway/memberpreferential/posPreferentialList.json", <!--获取优惠列表-->
     GetMemberAddress: "/newspicyway/padinterface/getconfiginfos", <!--请求会员地址-->
-    UnVoidSale: "newspicyway/member/UnVoidSale", <!--餐道会员反结算成功，门店反结算失败，取消会员反结-->
+	UnVoidSale: "newspicyway/member/UnVoidSale", <!--餐道会员反结算成功，门店反结算失败，取消会员反结-->
 
 
     /*雅座接口*/
-    SaleYa: '/datasnap/rest/TServerMethods1/Sale/',
-    Yafindmember: '/datasnap/rest/TServerMethods1/QueryBalance/', <!--雅座会员查询-->
-    Yarecharge: '/datasnap/rest/TServerMethods1/StoreCardDeposit/', <!--雅座会员储值-->
-    YaCardActive: '/datasnap/rest/TServerMethods1/CardActive/', <!--雅座会员激活-->
-    YaVoidSaleCanDao: '/datasnap/rest/TServerMethods1/VoidSale/', <!--雅座会员反结算-->
+	SaleYa: '/datasnap/rest/TServerMethods1/Sale/',
+	Yafindmember:'/datasnap/rest/TServerMethods1/QueryBalance/',<!--雅座会员查询-->
+	Yarecharge:'/datasnap/rest/TServerMethods1/StoreCardDeposit/',<!--雅座会员储值-->
+	YaCardActive:'/datasnap/rest/TServerMethods1/CardActive/',<!--雅座会员激活-->
+	YaVoidSaleCanDao:'/datasnap/rest/TServerMethods1/VoidSale/',<!--雅座会员反结算-->
 
-    /*pos配置*/
-    Config: '/newspicyway/pos/scripts/config.json', <!--雅座会员激活-->
+	/*pos配置*/
+	Config:'/newspicyway/pos/scripts/config.json',<!--雅座会员激活-->
+	Log: '/newspicyway/padinterface/log'
 };
 //优惠分类
 _config.preferential = {
@@ -335,11 +338,118 @@ _config.preferential = {
 };
 
 
+/**
+ * 日志
+ */
+var Log = (function () {
+	var data = [];
+	var options = {
+		time: 5000,//间隔时间
+		dataLen: 10
+	};
+	var preLength = 0;
+	//1:DEBUG 2:INFO 3:WARN 4:ERROR
+	var send = function (level, msg) {
+		if(utils.storage.getter('log') !== null && utils.storage.getter('log').length > 0){
+			data = JSON.parse(utils.storage.getter('log'));
+		}
+		data.push({
+			time: utils.date.current(),
+			level: level,
+			info: msg
+		});
+		utils.storage.setter('log', JSON.stringify(data));
+		console.log(data.length);
+	};
+	var show = function () {
+		return data
+	};
+
+	var upload = function(){
+		if(data.length < options.dataLen) {
+			return false;
+		}
+		console.log('preLength:' + preLength);
+		if(preLength !== data.length ) {
+			$.ajax({
+				url: _config.interfaceUrl.Log,
+				method:'post',
+				type:'json',
+				contentType: 'application/json',
+				data: JSON.stringify(data)
+			}).then(function(){
+				console.log('upload success');
+				data = [];
+				preLength = 0;
+				utils.storage.setter('log', '');
+			});
+		}
+	};
+
+	var timeTask = setInterval(function () {
+		upload();
+	}, options.time);
+
+	return {
+		send: send,
+		show: show,
+		upload: upload
+	}
+})();
+
+
+window.onerror = function (msg, url, line, col, error) {
+	//没有URL不上报！上报也不知道错误
+	if (msg != "Script error." && !url) {
+		return true;
+	}
+	//采用异步的方式
+	//我遇到过在window.onunload进行ajax的堵塞上报
+	//由于客户端强制关闭webview导致这次堵塞上报有Network Error
+	//我猜测这里window.onerror的执行流在关闭前是必然执行的
+	//而离开文章之后的上报对于业务来说是可丢失的
+	//所以我把这里的执行流放到异步事件去执行
+	//脚本的异常数降低了10倍
+	setTimeout(function () {
+		var data = {};
+		//不一定所有浏览器都支持col参数
+		col = col || (window.event && window.event.errorCharacter) || 0;
+
+		data.url = url;
+		data.line = line;
+		data.col = col;
+		if (!!error && !!error.stack) {
+			//如果浏览器有堆栈信息
+			//直接使用
+			data.msg = error.stack.toString();
+		} else if (!!arguments.callee) {
+			//尝试通过callee拿堆栈信息
+			var ext = [];
+			var f = arguments.callee.caller, c = 3;
+			//这里只拿三层堆栈信息
+			while (f && (--c > 0)) {
+				ext.push(f.toString());
+				if (f === f.caller) {
+					break;//如果有环
+				}
+				f = f.caller;
+			}
+			ext = ext.join(",");
+			data.msg = ext;
+		}
+		Log.send(4, data)
+	}, 0);
+
+	return true;
+};
+setInterval(function () {
+	Log.send(1, '操作提示:' + utils.date.current())
+}, 1000)
 /************
  * 组件类
  ************/
 function goBack() {
-    window.location = document.referrer
+	window.location=document.referrer
 
 }
 var widget = widget || {};
@@ -367,173 +477,175 @@ var widget = widget || {};
  * - `show()`  对hide的modal 显示
  * */
 widget.modal = function () {
-    var _tplHtml =
-        '<div class="modal dialog-normal bg-gray created-modal [Cls]" id="[Id]">' +
-        '<div class="modal-content" style="width:[Width]px;margin: 30px auto;">' +
-        '<div class="modal-header">' +
-        '<span class="close" data-dismiss="modal">×</span>' +
-        '<h5 class="modal-title"><i class="icon-exclamation-sign"></i> [Title]</h5>' +
-        '</div>' +
-        '<div class="modal-body">' +
-        '[Content]' +
-        '</div>' +
-        '<div class="modal-footer" >' +
-        '<button type="button" class="btn-base btn-base-sm cancel" data-dismiss="modal">[BtnCancelTxt]</button>' +
-        '<button type="button" class="btn-base btn-yellow btn-base-sm ok">[BtnOkTxt]</button>' +
-        '</div>' +
-        '</div>';
-    '</div>';
+	var _tplHtml =
+		'<div class="modal dialog-normal bg-gray created-modal [Cls]" id="[Id]">' +
+		'<div class="modal-content" style="width:[Width]px;margin: 30px auto;">' +
+		'<div class="modal-header">' +
+		'<span class="close" data-dismiss="modal">×</span>' +
+		'<h5 class="modal-title"><i class="icon-exclamation-sign"></i> [Title]</h5>' +
+		'</div>' +
+		'<div class="modal-body">' +
+		'[Content]' +
+		'</div>' +
+		'<div class="modal-footer" >' +
+		'<button type="button" class="btn-base btn-base-sm cancel" data-dismiss="modal">[BtnCancelTxt]</button>' +
+		'<button type="button" class="btn-base btn-yellow btn-base-sm ok">[BtnOkTxt]</button>' +
+		'</div>' +
+		'</div>';
+	'</div>';
 
 
-    var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm');
+	var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm');
 
-    var _alert = function (options) {
-        var id = _dialog(options);
-        var modal = $('#' + id);
-        modal.addClass('modal-alert');
+	var _alert = function (options) {
+		var id = _dialog(options);
+		var modal = $('#' + id);
+		modal.addClass('modal-alert');
 
-        return {
-            id: id,
-            hide: function () {
-                modal.modal('hide');
-            },
-            close: function () {
-                _close(id);
-            },
-            show: function () {
-                modal.modal('show');
-            }
-        };
-    };
+		return {
+			id: id,
+			hide: function(){
+				modal.modal('hide');
+			},
+			close: function(){
+				_close(id);
+			},
+			show:function(){
+				modal.modal('show');
+			}
+		};
+	};
 
-    var _confirm = function (options) {
-        var id = _dialog(options);
-        var modal = $('#' + id);
-        modal.addClass('modal-confirm');
-        return {
-            id: id,
-            hide: function () {
-                modal.modal('hide');
-            },
-            close: function () {
-                _close(id);
-            },
-            show: function () {
-                modal.modal('show');
-            }
-        };
-    };
-
-
-    var _getId = function () {
-        var date = new Date();
-        return 'mdl' + date.valueOf();
-    };
-
-    var _close = function (id) {
-        var $modal = $('#' + id);
-        $modal.next().remove();
-        $modal.remove();
-    };
-
-    var _dialog = function (options) {
-        var modalId = _getId();
-        var ops = {
-            content: "提示内容",
-            title: "操作提示",
-            width: 500,
-            height: 'auto',
-            auto: false,
-            cls: '',
-            hasBtns: true,
-            btnCancelTxt: '取消',
-            btnOkTxt: '确定',
-            vertical: true,
-            onReady: null,
-            hasFooter: true,
-            btnOkCb: function () {
-                _close(modalId);
-            },
-            btnCancelCb: function () {
-                _close(modalId);
-            }
-
-        };
-
-        ops = $.extend({}, ops, options);
-
-        var html = _tplHtml.replace(reg, function (node, key) {
-            return {
-                Id: modalId,
-                Title: ops.title,
-                Cls: ops.cls,
-                Width: ops.width,
-                Content: ops.content,
-                BtnCancelTxt: ops.btnCancelTxt,
-                BtnOkTxt: ops.btnOkTxt,
-            }[key];
-        });
+	var _confirm = function (options) {
+		var id = _dialog(options);
+		var modal = $('#' + id);
+		modal.addClass('modal-confirm');
+		return {
+			id: id,
+			hide: function(){
+				modal.modal('hide');
+			},
+			close: function(){
+				_close(id);
+			},
+			show:function(){
+				modal.modal('show');
+			}
+		};
+	};
 
 
-        $('body').append(html);
-
-        var $modal = $('#' + modalId);
-
-        //按钮逻辑
-        if (!ops.hasBtns) {
-            $modal.find('.modal-footer').remove();
-        } else {
-
-            if (ops.btnOkTxt === '') {
-                $modal.find('.ok').remove();
-            } else {
-                $modal.find('.ok').bind('click', function () {
-                    if ($(this).hasClass('disabled')) return false;
-                    ops.btnOkCb && ops.btnOkCb.call(this);
-                })
-            }
 
 
-            if (!ops.hasFooter) {
-                $modal.find('.modal-footer').remove();
-            }
+	var _getId = function () {
+		var date = new Date();
+		return 'mdl' + date.valueOf();
+	};
 
-            if (ops.btnCancelTxt === '') {
-                $modal.find('.cancel').remove();
-            } else {
-                $modal.find('.cancel').bind('click', function () {
-                    ops.btnCancelCb && ops.btnCancelCb.call(this);
-                    _close(modalId);
-                })
-            }
-        }
-        ops.onReady && ops.onReady.call(this);
+	var _close = function(id){
+		var $modal = $('#' + id);
+		$modal.next().remove();
+		$modal.remove();
+	};
 
-        //关闭按钮
-        $modal.find('.close').bind('click', function () {
-            _close(modalId);
-        });
+	var _dialog = function (options) {
+		var modalId = _getId();
+		var ops = {
+			content: "提示内容",
+			title: "操作提示",
+			width: 500,
+			height: 'auto',
+			auto: false,
+			cls:'',
+			hasBtns: true,
+			btnCancelTxt: '取消',
+			btnOkTxt: '确定',
+			vertical: true,
+			onReady: null,
+			hasFooter: true,
+			btnOkCb: function(){
+				_close(modalId);
+			},
+			btnCancelCb:function(){
+				_close(modalId);
+			}
 
-        if (ops.vertical) {
-            $modal.css({
-                'display': 'flex',
-                'align-items': 'center'
-            });
-        }
+		};
 
-        $modal.next('.modal-backdrop').addClass('.modal-backdrop-' + modalId);
-        $modal.modal({
-            width: ops.width,
-            backdrop: 'static'
-        });
-        $('body').css('padding-right', '0');
+		ops = $.extend({},ops, options);
 
-        return modalId;
-    };
-    return {
-        alert: _alert,
-        confirm: _confirm
-    }
+		var html = _tplHtml.replace(reg, function (node, key) {
+			return {
+				Id: modalId,
+				Title: ops.title,
+				Cls: ops.cls,
+				Width: ops.width,
+				Content: ops.content,
+				BtnCancelTxt: ops.btnCancelTxt,
+				BtnOkTxt: ops.btnOkTxt,
+			}[key];
+		});
+
+
+		$('body').append(html);
+
+		var $modal = $('#' + modalId);
+
+		//按钮逻辑
+		if(!ops.hasBtns) {
+			$modal.find('.modal-footer').remove();
+		} else {
+
+			if(ops.btnOkTxt === '') {
+				$modal.find('.ok').remove();
+			} else {
+				$modal.find('.ok').bind('click', function(){
+					if($(this).hasClass('disabled')) return false;
+					ops.btnOkCb && ops.btnOkCb.call(this);
+				})
+			}
+
+
+			if(!ops.hasFooter) {
+				$modal.find('.modal-footer').remove();
+			}
+
+			if(ops.btnCancelTxt === ''){
+				$modal.find('.cancel').remove();
+			} else {
+				$modal.find('.cancel').bind('click', function(){
+					ops.btnCancelCb && ops.btnCancelCb.call(this);
+					_close(modalId);
+				})
+			}
+		}
+		ops.onReady && ops.onReady.call(this);
+
+		//关闭按钮
+		$modal.find('.close').bind('click', function(){
+			_close(modalId);
+		});
+
+		if(ops.vertical) {
+			$modal.css({
+				'display': 'flex',
+				'align-items': 'center'
+			});
+		}
+
+		$modal.next('.modal-backdrop').addClass('.modal-backdrop-' + modalId);
+		$modal.modal({
+			width: ops.width,
+			backdrop: 'static'
+		});
+		$('body').css('padding-right', '0');
+
+		return modalId;
+	};
+	return {
+		alert: _alert,
+		confirm: _confirm
+	}
 }();
 /*
  * pagination.js 2.0.7
@@ -545,375 +657,81 @@ widget.modal = function () {
  * Copyright 2014-2100, superRaytin
  * Released under the MIT license.
  */
-!function (a, b) {
-    function c(a) {
-        throw new Error("Pagination: " + a)
-    }
-
-    function d(a) {
-        a.dataSource || c('"dataSource" is required.'), "string" == typeof a.dataSource ? "undefined" == typeof a.totalNumber ? c('"totalNumber" is required.') : b.isNumeric(a.totalNumber) || c('"totalNumber" is incorrect. (Number)') : j.isObject(a.dataSource) && ("undefined" == typeof a.locator ? c('"dataSource" is an Object, please specify "locator".') : "string" == typeof a.locator || b.isFunction(a.locator) || c("" + a.locator + " is incorrect. (String | Function)"))
-    }
-
-    function e(a) {
-        var c = ["go", "previous", "next", "disable", "enable", "refresh", "show", "hide", "destroy"];
-        b.each(c, function (b, c) {
-            a.off(i + c)
-        }), a.data("pagination", {}), b(".paginationjs", a).remove()
-    }
-
-    function f(a, b) {
-        return ("object" == (b = typeof a) ? null == a && "null" || Object.prototype.toString.call(a).slice(8, -1) : b).toLowerCase()
-    }
-
-    "undefined" == typeof b && c("Pagination requires jQuery.");
-    var g = "pagination", h = "addHook", i = "__pagination-";
-    b.fn.pagination && (g = "pagination2"), b.fn[g] = function (f) {
-        if ("undefined" == typeof f)return this;
-        var g = b(this), h = {
-            initialize: function () {
-                var a = this;
-                if (g.data("pagination") || g.data("pagination", {}), a.callHook("beforeInit") !== !1) {
-                    g.data("pagination").initialized && b(".paginationjs", g).remove(), a.disabled = !!l.disabled;
-                    var c = a.model = {pageRange: l.pageRange, pageSize: l.pageSize};
-                    a.parseDataSource(l.dataSource, function (b) {
-                        if (a.sync = j.isArray(b), a.sync && (c.totalNumber = l.totalNumber = b.length), c.totalPage = a.getTotalPage(), !(l.hideWhenLessThanOnePage && c.totalPage <= 1)) {
-                            var d = a.render(!0);
-                            l.className && d.addClass(l.className), c.el = d, g["bottom" === l.position ? "append" : "prepend"](d), a.observer(), g.data("pagination").initialized = !0, a.callHook("afterInit", d)
-                        }
-                    })
-                }
-            }, render: function (a) {
-                var c = this, d = c.model, e = d.el || b('<div class="paginationjs"></div>'), f = a !== !0;
-                c.callHook("beforeRender", f);
-                var g = d.pageNumber || l.pageNumber, h = l.pageRange, i = d.totalPage, j = g - h, k = g + h;
-                return k > i && (k = i, j = i - 2 * h, j = 1 > j ? 1 : j), 1 >= j && (j = 1, k = Math.min(2 * h + 1, i)), e.html(c.createTemplate({
-                    currentPage: g,
-                    pageRange: h,
-                    totalPage: i,
-                    rangeStart: j,
-                    rangeEnd: k
-                })), c.callHook("afterRender", f), e
-            }, createTemplate: function (a) {
-                var c, d, e = this, f = a.currentPage, g = a.totalPage, h = a.rangeStart, i = a.rangeEnd, j = l.totalNumber, k = l.showPrevious, m = l.showNext, n = l.showPageNumbers, o = l.showNavigator, p = l.showGoInput, q = l.showGoButton, r = l.pageLink, s = l.prevText, t = l.nextText, u = l.ellipsisText, v = l.goButtonText, w = l.classPrefix, x = l.activeClassName, y = l.disableClassName, z = l.ulClassName, A = b.isFunction(l.formatNavigator) ? l.formatNavigator() : l.formatNavigator, B = b.isFunction(l.formatGoInput) ? l.formatGoInput() : l.formatGoInput, C = b.isFunction(l.formatGoButton) ? l.formatGoButton() : l.formatGoButton, D = b.isFunction(l.autoHidePrevious) ? l.autoHidePrevious() : l.autoHidePrevious, E = b.isFunction(l.autoHideNext) ? l.autoHideNext() : l.autoHideNext, F = b.isFunction(l.header) ? l.header() : l.header, G = b.isFunction(l.footer) ? l.footer() : l.footer, H = "", I = '<input type="text" class="J-paginationjs-go-pagenumber">', J = '<input type="button" class="J-paginationjs-go-button" value="' + v + '">';
-                if (F && (c = e.replaceVariables(F, {
-                        currentPage: f,
-                        totalPage: g,
-                        totalNumber: j
-                    }), H += c), k || n || m) {
-                    if (H += '<div class="paginationjs-pages">', H += z ? '<ul class="' + z + '">' : "<ul>", k && (1 === f ? D || (H += '<li class="' + w + "-prev " + y + '"><a>' + s + "</a></li>") : H += '<li class="' + w + '-prev J-paginationjs-previous" data-num="' + (f - 1) + '" title="Previous page"><a href="' + r + '">' + s + "</a></li>"), n) {
-                        if (3 >= h)for (d = 1; h > d; d++)H += d == f ? '<li class="' + w + "-page J-paginationjs-page " + x + '" data-num="' + d + '"><a>' + d + "</a></li>" : '<li class="' + w + '-page J-paginationjs-page" data-num="' + d + '"><a href="' + r + '">' + d + "</a></li>"; else l.showFirstOnEllipsisShow && (H += '<li class="' + w + "-page " + w + '-first J-paginationjs-page" data-num="1"><a href="' + r + '">1</a></li>'), H += '<li class="' + w + "-ellipsis " + y + '"><a>' + u + "</a></li>";
-                        for (d = h; i >= d; d++)H += d == f ? '<li class="' + w + "-page J-paginationjs-page " + x + '" data-num="' + d + '"><a>' + d + "</a></li>" : '<li class="' + w + '-page J-paginationjs-page" data-num="' + d + '"><a href="' + r + '">' + d + "</a></li>";
-                        if (i >= g - 2)for (d = i + 1; g >= d; d++)H += '<li class="' + w + '-page J-paginationjs-page" data-num="' + d + '"><a href="' + r + '">' + d + "</a></li>"; else H += '<li class="' + w + "-ellipsis " + y + '"><a>' + u + "</a></li>", l.showLastOnEllipsisShow && (H += '<li class="' + w + "-page " + w + '-last J-paginationjs-page" data-num="' + g + '"><a href="' + r + '">' + g + "</a></li>")
-                    }
-                    m && (f == g ? E || (H += '<li class="' + w + "-next " + y + '"><a>' + t + "</a></li>") : H += '<li class="' + w + '-next J-paginationjs-next" data-num="' + (f + 1) + '" title="Next page"><a href="' + r + '">' + t + "</a></li>"), H += "</ul></div>"
-                }
-                return o && A && (c = e.replaceVariables(A, {
-                    currentPage: f,
-                    totalPage: g,
-                    totalNumber: j
-                }), H += '<div class="' + w + '-nav J-paginationjs-nav">' + c + "</div>"), p && B && (c = e.replaceVariables(B, {
-                    currentPage: f,
-                    totalPage: g,
-                    totalNumber: j,
-                    input: I
-                }), H += '<div class="' + w + '-go-input">' + c + "</div>"), q && C && (c = e.replaceVariables(C, {
-                    currentPage: f,
-                    totalPage: g,
-                    totalNumber: j,
-                    button: J
-                }), H += '<div class="' + w + '-go-button">' + c + "</div>"), G && (c = e.replaceVariables(G, {
-                    currentPage: f,
-                    totalPage: g,
-                    totalNumber: j
-                }), H += c), H
-            }, go: function (a, c) {
-                function d(a) {
-                    if (e.callHook("beforePaging", h) === !1)return !1;
-                    if (f.direction = "undefined" == typeof f.pageNumber ? 0 : h > f.pageNumber ? 1 : -1, f.pageNumber = h, e.render(), e.disabled && !e.sync && e.enable(), g.data("pagination").model = f, b.isFunction(l.formatResult)) {
-                        var d = b.extend(!0, [], a);
-                        j.isArray(a = l.formatResult(d)) || (a = d)
-                    }
-                    g.data("pagination").currentPageData = a, e.doCallback(a, c), e.callHook("afterPaging", h), 1 == h && e.callHook("afterIsFirstPage"), h == f.totalPage && e.callHook("afterIsLastPage")
-                }
-
-                var e = this, f = e.model;
-                if (!e.disabled) {
-                    var h = a, i = l.pageSize, k = f.totalPage;
-                    if (h = parseInt(h), !(!h || 1 > h || h > k)) {
-                        if (e.sync)return void d(e.getDataSegment(h));
-                        var m = {}, n = l.alias || {};
-                        m[n.pageSize ? n.pageSize : "pageSize"] = i, m[n.pageNumber ? n.pageNumber : "pageNumber"] = h;
-                        var o = {
-                            type: "get",
-                            cache: !1,
-                            data: {},
-                            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                            dataType: "json",
-                            async: !0
-                        };
-                        b.extend(!0, o, l.ajax), b.extend(o.data || {}, m), o.url = l.dataSource, o.success = function (a) {
-                            d(e.filterDataByLocator(a))
-                        }, o.error = function (a, b, c) {
-                            l.formatAjaxError && l.formatAjaxError(a, b, c), e.enable()
-                        }, e.disable(), b.ajax(o)
-                    }
-                }
-            }, doCallback: function (a, c) {
-                var d = this, e = d.model;
-                b.isFunction(c) ? c(a, e) : b.isFunction(l.callback) && l.callback(a, e)
-            }, destroy: function () {
-                this.callHook("beforeDestroy") !== !1 && (this.model.el.remove(), g.off(), b("#paginationjs-style").remove(), this.callHook("afterDestroy"))
-            }, previous: function (a) {
-                this.go(this.model.pageNumber - 1, a)
-            }, next: function (a) {
-                this.go(this.model.pageNumber + 1, a)
-            }, disable: function () {
-                var a = this, b = a.sync ? "sync" : "async";
-                a.callHook("beforeDisable", b) !== !1 && (a.disabled = !0, a.model.disabled = !0, a.callHook("afterDisable", b))
-            }, enable: function () {
-                var a = this, b = a.sync ? "sync" : "async";
-                a.callHook("beforeEnable", b) !== !1 && (a.disabled = !1, a.model.disabled = !1, a.callHook("afterEnable", b))
-            }, refresh: function (a) {
-                this.go(this.model.pageNumber, a)
-            }, show: function () {
-                var a = this;
-                a.model.el.is(":visible") || a.model.el.show()
-            }, hide: function () {
-                var a = this;
-                a.model.el.is(":visible") && a.model.el.hide()
-            }, replaceVariables: function (a, b) {
-                var c;
-                for (var d in b) {
-                    var e = b[d], f = new RegExp("<%=\\s*" + d + "\\s*%>", "img");
-                    c = (c || a).replace(f, e)
-                }
-                return c
-            }, getDataSegment: function (a) {
-                var b = l.pageSize, c = l.dataSource, d = l.totalNumber, e = b * (a - 1) + 1, f = Math.min(a * b, d);
-                return c.slice(e - 1, f)
-            }, getTotalPage: function () {
-                return Math.ceil(l.totalNumber / l.pageSize)
-            }, getLocator: function (a) {
-                var d;
-                return "string" == typeof a ? d = a : b.isFunction(a) ? d = a() : c('"locator" is incorrect. (String | Function)'), d
-            }, filterDataByLocator: function (a) {
-                var d, e = this.getLocator(l.locator);
-                if (j.isObject(a)) {
-                    try {
-                        b.each(e.split("."), function (b, c) {
-                            d = (d ? d : a)[c]
-                        })
-                    } catch (f) {
-                    }
-                    d ? j.isArray(d) || c("dataSource." + e + " must be an Array.") : c("dataSource." + e + " is undefined.")
-                }
-                return d || a
-            }, parseDataSource: function (a, d) {
-                var e = this, f = arguments;
-                j.isObject(a) ? d(l.dataSource = e.filterDataByLocator(a)) : j.isArray(a) ? d(l.dataSource = a) : b.isFunction(a) ? l.dataSource(function (a) {
-                    b.isFunction(a) && c('Unexpect parameter of the "done" Function.'), f.callee.call(e, a, d)
-                }) : "string" == typeof a ? (/^https?|file:/.test(a) && (l.ajaxDataType = "jsonp"), d(a)) : c('Unexpect data type of the "dataSource".')
-            }, callHook: function (c) {
-                var d, e = g.data("pagination"), f = Array.prototype.slice.apply(arguments);
-                return f.shift(), l[c] && b.isFunction(l[c]) && l[c].apply(a, f) === !1 && (d = !1), e.hooks && e.hooks[c] && b.each(e.hooks[c], function (b, c) {
-                    c.apply(a, f) === !1 && (d = !1)
-                }), d !== !1
-            }, observer: function () {
-                var a = this, d = a.model.el;
-                g.on(i + "go", function (d, e, f) {
-                    e = parseInt(b.trim(e)), e && (b.isNumeric(e) || c('"pageNumber" is incorrect. (Number)'), a.go(e, f))
-                }), d.delegate(".J-paginationjs-page", "click", function (c) {
-                    var d = b(c.currentTarget), e = b.trim(d.attr("data-num"));
-                    return !e || d.hasClass(l.disableClassName) || d.hasClass(l.activeClassName) ? void 0 : a.callHook("beforePageOnClick", c, e) === !1 ? !1 : (a.go(e), a.callHook("afterPageOnClick", c, e), l.pageLink ? void 0 : !1)
-                }), d.delegate(".J-paginationjs-previous", "click", function (c) {
-                    var d = b(c.currentTarget), e = b.trim(d.attr("data-num"));
-                    return e && !d.hasClass(l.disableClassName) ? a.callHook("beforePreviousOnClick", c, e) === !1 ? !1 : (a.go(e), a.callHook("afterPreviousOnClick", c, e), l.pageLink ? void 0 : !1) : void 0
-                }), d.delegate(".J-paginationjs-next", "click", function (c) {
-                    var d = b(c.currentTarget), e = b.trim(d.attr("data-num"));
-                    return e && !d.hasClass(l.disableClassName) ? a.callHook("beforeNextOnClick", c, e) === !1 ? !1 : (a.go(e), a.callHook("afterNextOnClick", c, e), l.pageLink ? void 0 : !1) : void 0
-                }), d.delegate(".J-paginationjs-go-button", "click", function () {
-                    var c = b(".J-paginationjs-go-pagenumber", d).val();
-                    return a.callHook("beforeGoButtonOnClick", event, c) === !1 ? !1 : (g.trigger(i + "go", c), void a.callHook("afterGoButtonOnClick", event, c))
-                }), d.delegate(".J-paginationjs-go-pagenumber", "keyup", function (c) {
-                    if (13 === c.which) {
-                        var e = b(c.currentTarget).val();
-                        if (a.callHook("beforeGoInputOnEnter", c, e) === !1)return !1;
-                        g.trigger(i + "go", e), b(".J-paginationjs-go-pagenumber", d).focus(), a.callHook("afterGoInputOnEnter", c, e)
-                    }
-                }), g.on(i + "previous", function (b, c) {
-                    a.previous(c)
-                }), g.on(i + "next", function (b, c) {
-                    a.next(c)
-                }), g.on(i + "disable", function () {
-                    a.disable()
-                }), g.on(i + "enable", function () {
-                    a.enable()
-                }), g.on(i + "refresh", function (b, c) {
-                    a.refresh(c)
-                }), g.on(i + "show", function () {
-                    a.show()
-                }), g.on(i + "hide", function () {
-                    a.hide()
-                }), g.on(i + "destroy", function () {
-                    a.destroy()
-                }), l.triggerPagingOnInit && g.trigger(i + "go", Math.min(l.pageNumber, a.model.totalPage))
-            }
-        };
-        if (g.data("pagination") && g.data("pagination").initialized === !0) {
-            if (b.isNumeric(f))return g.trigger.call(this, i + "go", f, arguments[1]), this;
-            if ("string" == typeof f) {
-                var k = Array.prototype.slice.apply(arguments);
-                switch (k[0] = i + k[0], f) {
-                    case"previous":
-                    case"next":
-                    case"go":
-                    case"disable":
-                    case"enable":
-                    case"refresh":
-                    case"show":
-                    case"hide":
-                    case"destroy":
-                        g.trigger.apply(this, k);
-                        break;
-                    case"getSelectedPageNum":
-                        return g.data("pagination").model ? g.data("pagination").model.pageNumber : g.data("pagination").attributes.pageNumber;
-                    case"getTotalPage":
-                        return g.data("pagination").model.totalPage;
-                    case"getSelectedPageData":
-                        return g.data("pagination").currentPageData;
-                    case"isDisabled":
-                        return g.data("pagination").model.disabled === !0;
-                    default:
-                        c("Pagination do not provide action: " + f)
-                }
-                return this
-            }
-            e(g)
-        } else j.isObject(f) || c("Illegal options");
-        var l = b.extend({}, arguments.callee.defaults, f);
-        return d(l), h.initialize(), this
-    }, b.fn[g].defaults = {
-        totalNumber: 1,
-        pageNumber: 1,
-        pageSize: 10,
-        pageRange: 2,
-        showPrevious: !0,
-        showNext: !0,
-        showPageNumbers: !0,
-        showNavigator: !1,
-        showGoInput: !1,
-        showGoButton: !1,
-        pageLink: "",
-        prevText: "&laquo;",
-        nextText: "&raquo;",
-        ellipsisText: "...",
-        goButtonText: "Go",
-        classPrefix: "paginationjs",
-        activeClassName: "active",
-        disableClassName: "disabled",
-        inlineStyle: !0,
-        formatNavigator: "<%= currentPage %> / <%= totalPage %>",
-        formatGoInput: "<%= input %>",
-        formatGoButton: "<%= button %>",
-        position: "bottom",
-        autoHidePrevious: !1,
-        autoHideNext: !1,
-        triggerPagingOnInit: !0,
-        hideWhenLessThanOnePage: !1,
-        showFirstOnEllipsisShow: !0,
-        showLastOnEllipsisShow: !0,
-        callback: function () {
-        }
-    }, b.fn[h] = function (a, d) {
-        arguments.length < 2 && c("Missing argument."), b.isFunction(d) || c("callback must be a function.");
-        var e = b(this), f = e.data("pagination");
-        f || (e.data("pagination", {}), f = e.data("pagination")), !f.hooks && (f.hooks = {}), f.hooks[a] = f.hooks[a] || [], f.hooks[a].push(d)
-    }, b[g] = function (a, d) {
-        arguments.length < 2 && c("Requires two parameters.");
-        var e;
-        return e = "string" != typeof a && a instanceof jQuery ? a : b(a), e.length ? (e.pagination(d), e) : void 0
-    };
-    var j = {};
-    b.each(["Object", "Array"], function (a, b) {
-        j["is" + b] = function (a) {
-            return f(a) === b.toLowerCase()
-        }
-    }), "function" == typeof define && define.amd && define(function () {
-        return b
-    })
-}(this, window.jQuery);
+!function(a,b){function c(a){throw new Error("Pagination: "+a)}function d(a){a.dataSource||c('"dataSource" is required.'),"string"==typeof a.dataSource?"undefined"==typeof a.totalNumber?c('"totalNumber" is required.'):b.isNumeric(a.totalNumber)||c('"totalNumber" is incorrect. (Number)'):j.isObject(a.dataSource)&&("undefined"==typeof a.locator?c('"dataSource" is an Object, please specify "locator".'):"string"==typeof a.locator||b.isFunction(a.locator)||c(""+a.locator+" is incorrect. (String | Function)"))}function e(a){var c=["go","previous","next","disable","enable","refresh","show","hide","destroy"];b.each(c,function(b,c){a.off(i+c)}),a.data("pagination",{}),b(".paginationjs",a).remove()}function f(a,b){return("object"==(b=typeof a)?null==a&&"null"||Object.prototype.toString.call(a).slice(8,-1):b).toLowerCase()}"undefined"==typeof b&&c("Pagination requires jQuery.");var g="pagination",h="addHook",i="__pagination-";b.fn.pagination&&(g="pagination2"),b.fn[g]=function(f){if("undefined"==typeof f)return this;var g=b(this),h={initialize:function(){var a=this;if(g.data("pagination")||g.data("pagination",{}),a.callHook("beforeInit")!==!1){g.data("pagination").initialized&&b(".paginationjs",g).remove(),a.disabled=!!l.disabled;var c=a.model={pageRange:l.pageRange,pageSize:l.pageSize};a.parseDataSource(l.dataSource,function(b){if(a.sync=j.isArray(b),a.sync&&(c.totalNumber=l.totalNumber=b.length),c.totalPage=a.getTotalPage(),!(l.hideWhenLessThanOnePage&&c.totalPage<=1)){var d=a.render(!0);l.className&&d.addClass(l.className),c.el=d,g["bottom"===l.position?"append":"prepend"](d),a.observer(),g.data("pagination").initialized=!0,a.callHook("afterInit",d)}})}},render:function(a){var c=this,d=c.model,e=d.el||b('<div class="paginationjs"></div>'),f=a!==!0;c.callHook("beforeRender",f);var g=d.pageNumber||l.pageNumber,h=l.pageRange,i=d.totalPage,j=g-h,k=g+h;return k>i&&(k=i,j=i-2*h,j=1>j?1:j),1>=j&&(j=1,k=Math.min(2*h+1,i)),e.html(c.createTemplate({currentPage:g,pageRange:h,totalPage:i,rangeStart:j,rangeEnd:k})),c.callHook("afterRender",f),e},createTemplate:function(a){var c,d,e=this,f=a.currentPage,g=a.totalPage,h=a.rangeStart,i=a.rangeEnd,j=l.totalNumber,k=l.showPrevious,m=l.showNext,n=l.showPageNumbers,o=l.showNavigator,p=l.showGoInput,q=l.showGoButton,r=l.pageLink,s=l.prevText,t=l.nextText,u=l.ellipsisText,v=l.goButtonText,w=l.classPrefix,x=l.activeClassName,y=l.disableClassName,z=l.ulClassName,A=b.isFunction(l.formatNavigator)?l.formatNavigator():l.formatNavigator,B=b.isFunction(l.formatGoInput)?l.formatGoInput():l.formatGoInput,C=b.isFunction(l.formatGoButton)?l.formatGoButton():l.formatGoButton,D=b.isFunction(l.autoHidePrevious)?l.autoHidePrevious():l.autoHidePrevious,E=b.isFunction(l.autoHideNext)?l.autoHideNext():l.autoHideNext,F=b.isFunction(l.header)?l.header():l.header,G=b.isFunction(l.footer)?l.footer():l.footer,H="",I='<input type="text" class="J-paginationjs-go-pagenumber">',J='<input type="button" class="J-paginationjs-go-button" value="'+v+'">';if(F&&(c=e.replaceVariables(F,{currentPage:f,totalPage:g,totalNumber:j}),H+=c),k||n||m){if(H+='<div class="paginationjs-pages">',H+=z?'<ul class="'+z+'">':"<ul>",k&&(1===f?D||(H+='<li class="'+w+"-prev "+y+'"><a>'+s+"</a></li>"):H+='<li class="'+w+'-prev J-paginationjs-previous" data-num="'+(f-1)+'" title="Previous page"><a href="'+r+'">'+s+"</a></li>"),n){if(3>=h)for(d=1;h>d;d++)H+=d==f?'<li class="'+w+"-page J-paginationjs-page "+x+'" data-num="'+d+'"><a>'+d+"</a></li>":'<li class="'+w+'-page J-paginationjs-page" data-num="'+d+'"><a href="'+r+'">'+d+"</a></li>";else l.showFirstOnEllipsisShow&&(H+='<li class="'+w+"-page "+w+'-first J-paginationjs-page" data-num="1"><a href="'+r+'">1</a></li>'),H+='<li class="'+w+"-ellipsis "+y+'"><a>'+u+"</a></li>";for(d=h;i>=d;d++)H+=d==f?'<li class="'+w+"-page J-paginationjs-page "+x+'" data-num="'+d+'"><a>'+d+"</a></li>":'<li class="'+w+'-page J-paginationjs-page" data-num="'+d+'"><a href="'+r+'">'+d+"</a></li>";if(i>=g-2)for(d=i+1;g>=d;d++)H+='<li class="'+w+'-page J-paginationjs-page" data-num="'+d+'"><a href="'+r+'">'+d+"</a></li>";else H+='<li class="'+w+"-ellipsis "+y+'"><a>'+u+"</a></li>",l.showLastOnEllipsisShow&&(H+='<li class="'+w+"-page "+w+'-last J-paginationjs-page" data-num="'+g+'"><a href="'+r+'">'+g+"</a></li>")}m&&(f==g?E||(H+='<li class="'+w+"-next "+y+'"><a>'+t+"</a></li>"):H+='<li class="'+w+'-next J-paginationjs-next" data-num="'+(f+1)+'" title="Next page"><a href="'+r+'">'+t+"</a></li>"),H+="</ul></div>"}return o&&A&&(c=e.replaceVariables(A,{currentPage:f,totalPage:g,totalNumber:j}),H+='<div class="'+w+'-nav J-paginationjs-nav">'+c+"</div>"),p&&B&&(c=e.replaceVariables(B,{currentPage:f,totalPage:g,totalNumber:j,input:I}),H+='<div class="'+w+'-go-input">'+c+"</div>"),q&&C&&(c=e.replaceVariables(C,{currentPage:f,totalPage:g,totalNumber:j,button:J}),H+='<div class="'+w+'-go-button">'+c+"</div>"),G&&(c=e.replaceVariables(G,{currentPage:f,totalPage:g,totalNumber:j}),H+=c),H},go:function(a,c){function d(a){if(e.callHook("beforePaging",h)===!1)return!1;if(f.direction="undefined"==typeof f.pageNumber?0:h>f.pageNumber?1:-1,f.pageNumber=h,e.render(),e.disabled&&!e.sync&&e.enable(),g.data("pagination").model=f,b.isFunction(l.formatResult)){var d=b.extend(!0,[],a);j.isArray(a=l.formatResult(d))||(a=d)}g.data("pagination").currentPageData=a,e.doCallback(a,c),e.callHook("afterPaging",h),1==h&&e.callHook("afterIsFirstPage"),h==f.totalPage&&e.callHook("afterIsLastPage")}var e=this,f=e.model;if(!e.disabled){var h=a,i=l.pageSize,k=f.totalPage;if(h=parseInt(h),!(!h||1>h||h>k)){if(e.sync)return void d(e.getDataSegment(h));var m={},n=l.alias||{};m[n.pageSize?n.pageSize:"pageSize"]=i,m[n.pageNumber?n.pageNumber:"pageNumber"]=h;var o={type:"get",cache:!1,data:{},contentType:"application/x-www-form-urlencoded; charset=UTF-8",dataType:"json",async:!0};b.extend(!0,o,l.ajax),b.extend(o.data||{},m),o.url=l.dataSource,o.success=function(a){d(e.filterDataByLocator(a))},o.error=function(a,b,c){l.formatAjaxError&&l.formatAjaxError(a,b,c),e.enable()},e.disable(),b.ajax(o)}}},doCallback:function(a,c){var d=this,e=d.model;b.isFunction(c)?c(a,e):b.isFunction(l.callback)&&l.callback(a,e)},destroy:function(){this.callHook("beforeDestroy")!==!1&&(this.model.el.remove(),g.off(),b("#paginationjs-style").remove(),this.callHook("afterDestroy"))},previous:function(a){this.go(this.model.pageNumber-1,a)},next:function(a){this.go(this.model.pageNumber+1,a)},disable:function(){var a=this,b=a.sync?"sync":"async";a.callHook("beforeDisable",b)!==!1&&(a.disabled=!0,a.model.disabled=!0,a.callHook("afterDisable",b))},enable:function(){var a=this,b=a.sync?"sync":"async";a.callHook("beforeEnable",b)!==!1&&(a.disabled=!1,a.model.disabled=!1,a.callHook("afterEnable",b))},refresh:function(a){this.go(this.model.pageNumber,a)},show:function(){var a=this;a.model.el.is(":visible")||a.model.el.show()},hide:function(){var a=this;a.model.el.is(":visible")&&a.model.el.hide()},replaceVariables:function(a,b){var c;for(var d in b){var e=b[d],f=new RegExp("<%=\\s*"+d+"\\s*%>","img");c=(c||a).replace(f,e)}return c},getDataSegment:function(a){var b=l.pageSize,c=l.dataSource,d=l.totalNumber,e=b*(a-1)+1,f=Math.min(a*b,d);return c.slice(e-1,f)},getTotalPage:function(){return Math.ceil(l.totalNumber/l.pageSize)},getLocator:function(a){var d;return"string"==typeof a?d=a:b.isFunction(a)?d=a():c('"locator" is incorrect. (String | Function)'),d},filterDataByLocator:function(a){var d,e=this.getLocator(l.locator);if(j.isObject(a)){try{b.each(e.split("."),function(b,c){d=(d?d:a)[c]})}catch(f){}d?j.isArray(d)||c("dataSource."+e+" must be an Array."):c("dataSource."+e+" is undefined.")}return d||a},parseDataSource:function(a,d){var e=this,f=arguments;j.isObject(a)?d(l.dataSource=e.filterDataByLocator(a)):j.isArray(a)?d(l.dataSource=a):b.isFunction(a)?l.dataSource(function(a){b.isFunction(a)&&c('Unexpect parameter of the "done" Function.'),f.callee.call(e,a,d)}):"string"==typeof a?(/^https?|file:/.test(a)&&(l.ajaxDataType="jsonp"),d(a)):c('Unexpect data type of the "dataSource".')},callHook:function(c){var d,e=g.data("pagination"),f=Array.prototype.slice.apply(arguments);return f.shift(),l[c]&&b.isFunction(l[c])&&l[c].apply(a,f)===!1&&(d=!1),e.hooks&&e.hooks[c]&&b.each(e.hooks[c],function(b,c){c.apply(a,f)===!1&&(d=!1)}),d!==!1},observer:function(){var a=this,d=a.model.el;g.on(i+"go",function(d,e,f){e=parseInt(b.trim(e)),e&&(b.isNumeric(e)||c('"pageNumber" is incorrect. (Number)'),a.go(e,f))}),d.delegate(".J-paginationjs-page","click",function(c){var d=b(c.currentTarget),e=b.trim(d.attr("data-num"));return!e||d.hasClass(l.disableClassName)||d.hasClass(l.activeClassName)?void 0:a.callHook("beforePageOnClick",c,e)===!1?!1:(a.go(e),a.callHook("afterPageOnClick",c,e),l.pageLink?void 0:!1)}),d.delegate(".J-paginationjs-previous","click",function(c){var d=b(c.currentTarget),e=b.trim(d.attr("data-num"));return e&&!d.hasClass(l.disableClassName)?a.callHook("beforePreviousOnClick",c,e)===!1?!1:(a.go(e),a.callHook("afterPreviousOnClick",c,e),l.pageLink?void 0:!1):void 0}),d.delegate(".J-paginationjs-next","click",function(c){var d=b(c.currentTarget),e=b.trim(d.attr("data-num"));return e&&!d.hasClass(l.disableClassName)?a.callHook("beforeNextOnClick",c,e)===!1?!1:(a.go(e),a.callHook("afterNextOnClick",c,e),l.pageLink?void 0:!1):void 0}),d.delegate(".J-paginationjs-go-button","click",function(){var c=b(".J-paginationjs-go-pagenumber",d).val();return a.callHook("beforeGoButtonOnClick",event,c)===!1?!1:(g.trigger(i+"go",c),void a.callHook("afterGoButtonOnClick",event,c))}),d.delegate(".J-paginationjs-go-pagenumber","keyup",function(c){if(13===c.which){var e=b(c.currentTarget).val();if(a.callHook("beforeGoInputOnEnter",c,e)===!1)return!1;g.trigger(i+"go",e),b(".J-paginationjs-go-pagenumber",d).focus(),a.callHook("afterGoInputOnEnter",c,e)}}),g.on(i+"previous",function(b,c){a.previous(c)}),g.on(i+"next",function(b,c){a.next(c)}),g.on(i+"disable",function(){a.disable()}),g.on(i+"enable",function(){a.enable()}),g.on(i+"refresh",function(b,c){a.refresh(c)}),g.on(i+"show",function(){a.show()}),g.on(i+"hide",function(){a.hide()}),g.on(i+"destroy",function(){a.destroy()}),l.triggerPagingOnInit&&g.trigger(i+"go",Math.min(l.pageNumber,a.model.totalPage))}};if(g.data("pagination")&&g.data("pagination").initialized===!0){if(b.isNumeric(f))return g.trigger.call(this,i+"go",f,arguments[1]),this;if("string"==typeof f){var k=Array.prototype.slice.apply(arguments);switch(k[0]=i+k[0],f){case"previous":case"next":case"go":case"disable":case"enable":case"refresh":case"show":case"hide":case"destroy":g.trigger.apply(this,k);break;case"getSelectedPageNum":return g.data("pagination").model?g.data("pagination").model.pageNumber:g.data("pagination").attributes.pageNumber;case"getTotalPage":return g.data("pagination").model.totalPage;case"getSelectedPageData":return g.data("pagination").currentPageData;case"isDisabled":return g.data("pagination").model.disabled===!0;default:c("Pagination do not provide action: "+f)}return this}e(g)}else j.isObject(f)||c("Illegal options");var l=b.extend({},arguments.callee.defaults,f);return d(l),h.initialize(),this},b.fn[g].defaults={totalNumber:1,pageNumber:1,pageSize:10,pageRange:2,showPrevious:!0,showNext:!0,showPageNumbers:!0,showNavigator:!1,showGoInput:!1,showGoButton:!1,pageLink:"",prevText:"&laquo;",nextText:"&raquo;",ellipsisText:"...",goButtonText:"Go",classPrefix:"paginationjs",activeClassName:"active",disableClassName:"disabled",inlineStyle:!0,formatNavigator:"<%= currentPage %> / <%= totalPage %>",formatGoInput:"<%= input %>",formatGoButton:"<%= button %>",position:"bottom",autoHidePrevious:!1,autoHideNext:!1,triggerPagingOnInit:!0,hideWhenLessThanOnePage:!1,showFirstOnEllipsisShow:!0,showLastOnEllipsisShow:!0,callback:function(){}},b.fn[h]=function(a,d){arguments.length<2&&c("Missing argument."),b.isFunction(d)||c("callback must be a function.");var e=b(this),f=e.data("pagination");f||(e.data("pagination",{}),f=e.data("pagination")),!f.hooks&&(f.hooks={}),f.hooks[a]=f.hooks[a]||[],f.hooks[a].push(d)},b[g]=function(a,d){arguments.length<2&&c("Requires two parameters.");var e;return e="string"!=typeof a&&a instanceof jQuery?a:b(a),e.length?(e.pagination(d),e):void 0};var j={};b.each(["Object","Array"],function(a,b){j["is"+b]=function(a){return f(a)===b.toLowerCase()}}),"function"==typeof define&&define.amd&&define(function(){return b})}(this,window.jQuery);
 
 /**
  * loadPage mini分页
  */
-widget.loadPage = function (options) {
-    var settings = $.extend({
-        obj: null,
-        listNum: 14,
-        currPage: 0,
-        totleNums: 0,
-        curPageObj: null,
-        pagesLenObj: null,
-        prevBtnObj: null,
-        nextBtnObj: null,
-        callback: null
-    }, options);
+widget.loadPage = function(options){
+	var settings = $.extend({
+		obj: null,
+		listNum: 14,
+		currPage: 0,
+		totleNums: 0,
+		curPageObj: null,
+		pagesLenObj: null,
+		prevBtnObj: null,
+		nextBtnObj: null,
+		callback: null
+	}, options);
 
-    var doc = $(document);
-    var $obj = $(settings.obj);
-    var listNum = settings.listNum;
-    var currPage = settings.currPage;
-    var totleNums = settings.totleNums;
-    var pagesLen = Math.ceil(totleNums / listNum);
-
-
-    var goToPage = function (currPage) {
-        for (var i = 0; i < totleNums; i++) {
-            $($obj[i]).addClass("hide");
-        }
-        for (var i = currPage * listNum; i < (currPage + 1) * listNum; i++) {
-            if ($obj[i]) $($obj[i]).removeClass("hide");
-        }
-        pageNum = pagesLen == 0 ? 0 : (currPage + 1);
-
-        $(settings.curPageObj).text(pageNum);
-        $(settings.pagesLenObj).text(pagesLen);
+	var doc = $(document);
+	var $obj = $(settings.obj);
+	var listNum = settings.listNum;
+	var currPage = settings.currPage;
+	var totleNums = settings.totleNums;
+	var pagesLen = Math.ceil(totleNums / listNum);
 
 
-        if (pageNum == 1 || pageNum == 0) {
-            $(settings.prevBtnObj).addClass("disabled");
-        } else {
-            $(settings.prevBtnObj).removeClass("disabled");
-        }
-        if (pageNum < pagesLen) {
-            $(settings.nextBtnObj).removeClass("disabled");
-        } else {
-            $(settings.nextBtnObj).addClass("disabled");
-        }
-    };
 
-    goToPage(currPage);
+	var goToPage = function(currPage){
+		for (var i = 0; i < totleNums; i++) {
+			$($obj[i]).addClass("hide");
+		}
+		for (var i = currPage * listNum; i < (currPage + 1) * listNum; i++) {
+			if ($obj[i]) $($obj[i]).removeClass("hide");
+		}
+		pageNum = pagesLen == 0 ? 0 : (currPage + 1);
+
+		$(settings.curPageObj).text(pageNum);
+		$(settings.pagesLenObj).text(pagesLen);
 
 
-    doc.undelegate(settings.prevBtnObj, 'click');
-    doc.undelegate(settings.nextBtnObj, 'click');
-    doc.delegate(settings.prevBtnObj, 'click', function () {
-        if ($(this).hasClass("disabled")) {
-            return false;
-        }
-        goToPage(--currPage)
-    });
 
-    doc.delegate(settings.nextBtnObj, 'click', function () {
-        if ($(this).hasClass("disabled")) {
-            return false;
-        }
-        goToPage(++currPage)
-    });
+		if (pageNum == 1 || pageNum == 0) {
+			$(settings.prevBtnObj).addClass("disabled");
+		} else {
+			$(settings.prevBtnObj).removeClass("disabled");
+		}
+		if (pageNum < pagesLen) {
+			$(settings.nextBtnObj).removeClass("disabled");
+		} else {
+			$(settings.nextBtnObj).addClass("disabled");
+		}
+	};
 
-    settings.callback && settings.callback();
+	goToPage(currPage);
 
-    return currPage;
+
+	doc.undelegate(settings.prevBtnObj, 'click');
+	doc.undelegate(settings.nextBtnObj, 'click');
+	doc.delegate(settings.prevBtnObj, 'click', function(){
+		if($(this).hasClass("disabled")){
+			return false;
+		}
+		goToPage(--currPage)
+	});
+
+	doc.delegate(settings.nextBtnObj, 'click', function(){
+		if($(this).hasClass("disabled")){
+			return false;
+		}
+		goToPage(++currPage)
+	});
+
+	settings.callback && settings.callback();
+
+	return currPage;
 };
 
 /**
@@ -923,152 +741,152 @@ widget.loadPage = function (options) {
  */
 
 var focusIpt = null;
-widget.keyboard = function (opts) {
-    var defautlopts = {
-        target: '.virtual-keyboard',
-        chirdSelector: 'li',
-        cb: $.noop
-    };
-    var doc = $(document);
-    var opts = $.extend({}, defautlopts, opts);
+widget.keyboard = function(opts){
+	var defautlopts = {
+		target: '.virtual-keyboard',
+		chirdSelector: 'li',
+		cb: $.noop
+	};
+	var doc = $(document);
+	var opts = $.extend({},defautlopts, opts);
 
-    var $target = $(opts.target);
+	var $target = $(opts.target);
+	function _init(){
+		$target.attr('keyboard-type', opts.type);
+		_bindEvent();
+	}
 
-    function _init() {
-        $target.attr('keyboard-type', opts.type);
-        _bindEvent();
-    }
 
 
-    function _bindEvent() {
-        doc.undelegate(opts.target + ' ' + opts.chirdSelector, 'click');
-        doc.delegate(opts.target + ' ' + opts.chirdSelector, 'click', function () {
-            var me = $(this);
-            if (me.hasClass('btn-action') || focusIpt === null) return false;
-            var focusVal = focusIpt.val();
-            var keyVal = $(this).text();
-            var keyType = $(this).attr('type');
 
-            var agt = navigator.userAgent.toLowerCase();
-            var ie = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1) && (agt.indexOf("omniweb") == -1));
-            var myArea = focusIpt === null ? '' : focusIpt[0];
-            var selection;
-            if (!ie) {
-                if (myArea.selectionStart != undefined) {
-                    selection = {
-                        x: myArea.selectionStart,
-                        y: myArea.selectionEnd,
-                        l: myArea.selectionEnd - myArea.selectionStart
-                    }
-                }
-            }
+	function _bindEvent (){
+		doc.undelegate(opts.target + ' ' + opts.chirdSelector,'click');
+		doc.delegate(opts.target + ' ' + opts.chirdSelector,'click', function(){
+			var me = $(this);
+			if(me.hasClass('btn-action') || focusIpt === null) return false;
+			var focusVal = focusIpt.val();
+			var keyVal = $(this).text();
+			var keyType = $(this).attr('type');
 
-            if (keyVal == "←") {
-                if (focusVal.length > 0) {
-                    if (selection.l > 0) {
-                        focusIpt.val(focusVal.substring(0, selection.x) + focusVal.substring(selection.y, focusVal.length));
-                    } else {
-                        focusIpt.val(focusVal.substring(0, focusVal.length - 1));
-                    }
-                    focusIpt.focus();
-                }
-            } else if (keyVal == "C" && keyType) {
-                focusIpt.val("");
-                focusIpt.focus();
-            } else {
-                if (selection.l > 0) {
-                    focusIpt.val(focusVal.substring(0, selection.x) + keyVal + focusVal.substring(selection.y, focusVal.length));
-                } else {
-                    focusVal += keyVal;
-                    focusIpt.val(focusVal);
-                }
-                focusIpt.focus();
-            }
+			var agt=navigator.userAgent.toLowerCase();
+			var ie = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1) && (agt.indexOf("omniweb") == -1));
+			var myArea = focusIpt === null ? '' : focusIpt[0];
+			var selection;
+			if (!ie){
+				if (myArea.selectionStart!= undefined) {
+					selection = {
+						x:myArea.selectionStart,
+						y:myArea.selectionEnd,
+						l:myArea.selectionEnd - myArea.selectionStart
+					}
+				}
+			}
 
-            opts.cb && opts.cb();
-        });
-        doc.undelegate('input[type=text],input[type=password],input[type=search]', 'focus');
-        doc.delegate('input[type=text],input[type=password],input[type=search]', 'focus', function () {
-            focusIpt = $(this);
-        });
+			if(keyVal == "←"){
+				if(focusVal.length>0){
+					if(selection.l > 0) {
+						focusIpt.val(focusVal.substring(0,selection.x) + focusVal.substring(selection.y,focusVal.length));
+					} else {
+						focusIpt.val(focusVal.substring(0,focusVal.length-1));
+					}
+					focusIpt.focus();
+				}
+			}else if(keyVal == "C" &&keyType){
+				focusIpt.val("");
+				focusIpt.focus();
+			}else{
+				if(selection.l > 0) {
+					focusIpt.val(focusVal.substring(0,selection.x) +  keyVal + focusVal.substring(selection.y,focusVal.length));
+				} else {
+					focusVal += keyVal;
+					focusIpt.val(focusVal);
+				}
+				focusIpt.focus();
+			}
 
-    }
+			opts.cb && opts.cb();
+		});
+		doc.undelegate('input[type=text],input[type=password],input[type=search]','focus');
+		doc.delegate('input[type=text],input[type=password],input[type=search]','focus', function(){
+			focusIpt = $(this);
+		});
 
-    return _init()
+	}
+	return _init()
 };
 
 /**
  * textarea输入modal
  * @returns {{show}}
  */
-widget.textAreaModal = function (opts) {
-    var modalIns = null;
-    var note_count = 20;
-    var doc = $(document);
+widget.textAreaModal = function(opts){
+	var modalIns = null;
+	var note_count = 20;
+	var doc = $(document);
 
-    var defautlopts = {
-        title: '请输入原因',
-        cls: 'textareaModal default-dialog',
-        note: '',
-        taregt: null,
-        cb: null
-    };
-    var opts = $.extend({}, defautlopts, opts);
+	var defautlopts = {
+		title: '请输入原因',
+		cls: 'textareaModal default-dialog',
+		note: '',
+		taregt: null,
+		cb: null
+	};
+	var opts = $.extend({},defautlopts, opts);
 
-    doc.undelegate('.textareaModal .btn-save', 'click');
-    doc.delegate('.textareaModal .btn-save', 'click', function () {
-        opts.target.val($('.textareaModal .J-textarea').val());
-        modalIns.close();
-    });
+	doc.undelegate('.textareaModal .btn-save','click');
+	doc.delegate('.textareaModal .btn-save','click', function(){
+		opts.target.val($('.textareaModal .J-textarea').val());
+		modalIns.close();
+	});
 
-    doc.undelegate('.textareaModal .J-textarea', 'keyup');
-    doc.delegate('.textareaModal .J-textarea', 'keyup', function () {
-        var me = $(this);
-        var value = me.val();
-        var c = note_count;
-        if (value != null && value != "") {
-            c = note_count - value.length;
-        }
-        if (c <= 0) {
-            c = 0;
-        }
-        $(".J-count").text(c);
-    });
+	doc.undelegate('.textareaModal .J-textarea','keyup');
+	doc.delegate('.textareaModal .J-textarea','keyup', function(){
+		var me = $(this);
+		var value = me.val();
+		var c = note_count;
+		if(value != null && value != ""){
+			c = note_count-value.length;
+		}
+		if(c <=0){
+			c = 0;
+		}
+		$(".J-count").text(c);
+	});
 
-    doc.undelegate('.textareaModal .J-clear', 'click');
-    doc.delegate('.textareaModal .J-clear', 'click', function () {
-        $('.textareaModal .J-textarea').val('');
-        $('.J-count').text(note_count);
-    });
+	doc.undelegate('.textareaModal .J-clear','click');
+	doc.delegate('.textareaModal .J-clear','click', function(){
+		$('.textareaModal .J-textarea').val('');
+		$('.J-count').text(note_count);
+	});
 
-    doc.delegate('.textareaModal .btn-cancel ', 'click', function () {
-        modalIns.close();
-    });
+	doc.delegate('.textareaModal .btn-cancel ','click', function(){
+		modalIns.close();
+	});
 
-    var html = '<div class="fl ">其他原因：</div>' +
-        '<div class="fr">还可以输入<span class="J-count">20</span>字</div>' +
-        '<textarea autofocus class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
-        '<div class="btn-operate  ">' +
-        '<button class="btn in-btn135 clear-btn J-clear" style="float: left;" type="button">清空</button>' +
-        '<div style="text-align: right;">' +
-        '<button class="btn btn-cancel in-btn135" type="button" >取消</button>' +
-        '<button class="btn btn-save in-btn135 ml5" type="button">确认</button>' +
-        '</div>' +
-        '</div>';
+	var html = '<div class="fl ">其他原因：</div>' +
+		'<div class="fr">还可以输入<span class="J-count">20</span>字</div>' +
+		'<textarea autofocus class="form-control J-textarea" maxlength="20" rows="5" cols="80">' + opts.note + '</textarea>' +
+		'<div class="btn-operate  ">' +
+		'<button class="btn in-btn135 clear-btn J-clear" style="float: left;" type="button">清空</button>' +
+			'<div style="text-align: right;">' +
+				'<button class="btn btn-cancel in-btn135" type="button" >取消</button>' +
+				'<button class="btn btn-save in-btn135 ml5" type="button">确认</button>' +
+			'</div>' +
+		'</div>';
 
-    return {
-        show: function () {
-            modalIns = widget.modal.alert({
-                cls: opts.cls,
-                content: html,
-                width: 600,
-                height: 500,
-                btnOkTxt: '',
-                hasFooter: false,
-                btnCancelTxt: ''
-            });
-        }
-    }
+	return {
+		show: function(){
+			modalIns = widget.modal.alert({
+				cls: opts.cls,
+				content:html,
+				width:600,
+				height:500,
+				btnOkTxt: '',
+				hasFooter: false,
+				btnCancelTxt: ''
+			});
+		}
+	}
 };
 
 
@@ -1078,18 +896,18 @@ widget.textAreaModal = function (opts) {
  * @returns {*}
  */
 var SetBotoomIfon = {
-    init: function () {
-        this.setSysInfo();
-    },
-    setSysInfo: function () {
-        $('.J-sys-info')
-            .find('.branch-num').text(utils.storage.getter('branch_branchcode'))
-            .end().find('.user-info').text(utils.storage.getter('fullname') + ' ' + utils.storage.getter('aUserid'));
+	init: function(){
+		this.setSysInfo();
+	},
+	setSysInfo: function(){
+		$('.J-sys-info')
+			.find('.branch-num').text(utils.storage.getter('branch_branchcode'))
+			.end().find('.user-info').text(utils.storage.getter('fullname') + ' ' + utils.storage.getter('aUserid'));
 
-        setInterval(function () {
-            $('.J-sys-info').find('.time').text(utils.date.current());
-        }, 1000)
-    }
+		setInterval(function(){
+			$('.J-sys-info').find('.time').text(utils.date.current());
+		},1000)
+	}
 }
 /**
  * 右下角弹窗
@@ -1099,52 +917,52 @@ var SetBotoomIfon = {
  height: 200,高度
  right:5,右边
  */
-var rightBottomPop = {
-    alert: function (opts) {
-        var that = this;
-        //取当前浏览器窗口大小
-        var windowWidth = $(document).width();
-        var windowHeight = $(document).height();
-        //参数和默认值
-        var defaults = {
-            title: "提示信息",
-            content: " ",
-            width: 320,
-            height: 200,
-            right: 5,
-        };
-        var opts = $.extend({}, defaults, opts);
-        //弹窗的大小
-        var html = "<div class='rightBottomPop' style='width:" + opts.width + "px;height:" + opts.height + "px;bottom:" + (-opts.height) + "px;right:" + opts.right + "px;'>" +
-            "<div class='rightBottomPop-title'>" +
-            "<div class='rightBottomPop-title_left' ><b>" + opts.title + "</b></div>" +
-            "<div class='rightBottomPop-title_right' onclick='rightBottomPop.close(this)'>×</div>" +
-            "<div style='clear:both'></div>" +
-            "</div>" +
-            "<div class='rightBottomPop-content'>" + opts.content + "</div>" +
-            "</div>";
-        $("body").append(html);
-        var lengthCon = $(".rightBottomPop").length
-        for (var i = 0; i < lengthCon; i++) {
-            //$(".rightBottomPop").eq(i).animate({bottom:i*opts.height},1500);
-            $(".rightBottomPop").eq(i).css("bottom", i * opts.height);
-        }
-        setTimeout(function () {
-            $('.rightBottomPop').remove()
-        }, 1000);
-    },
-    close: function (a) {
-        $(a).parent().parent().remove();
-        var lengthCon = $(".rightBottomPop").length;
-        if (lengthCon > 0) {
-            var height = $(".rightBottomPop").css("height");
-            height = height.substring(0, height.length - 2)
-            for (var i = 0; i < lengthCon; i++) {
-                $(".rightBottomPop").eq(i).animate({bottom: i * height}, 1500);
-                $(".rightBottomPop").eq(i).css("bottom", i * height)
-            }
-        }
-    }
+var rightBottomPop ={
+	alert:function (opts) {
+		var that=this;
+		//取当前浏览器窗口大小
+		var  windowWidth=$(document).width();
+		var windowHeight=$(document).height();
+		//参数和默认值
+		var defaults = {
+			title:"提示信息",
+			content:" ",
+			width: 320,
+			height: 200,
+			right:5,
+		};
+		var opts = $.extend({},defaults, opts);
+		//弹窗的大小
+		var html="<div class='rightBottomPop' style='width:"+opts.width+"px;height:"+opts.height+"px;bottom:"+(-opts.height)+"px;right:"+opts.right+"px;'>"+
+			"<div class='rightBottomPop-title'>" +
+			"<div class='rightBottomPop-title_left' ><b>"+opts.title+"</b></div>" +
+			"<div class='rightBottomPop-title_right' onclick='rightBottomPop.close(this)'>×</div>" +
+			"<div style='clear:both'></div>"+
+			"</div>" +
+			"<div class='rightBottomPop-content'>" + opts.content+ "</div>"+
+			"</div>";
+		$("body").append(html);
+		var lengthCon=$(".rightBottomPop").length
+		for( var i=0;i<lengthCon;i++){
+			//$(".rightBottomPop").eq(i).animate({bottom:i*opts.height},1500);
+			$(".rightBottomPop").eq(i).css("bottom",i*opts.height);
+		}
+		setTimeout(function() {
+			$('.rightBottomPop').remove()
+		}, 1000);
+	},
+	close:function (a) {
+		$(a).parent().parent().remove();
+		var lengthCon=$(".rightBottomPop").length;
+		if(lengthCon>0){
+			var height=$(".rightBottomPop").css("height");
+			height=height.substring(0,height.length-2)
+			for( var i=0;i<lengthCon;i++){
+				$(".rightBottomPop").eq(i).animate({bottom:i*height},1500);
+				$(".rightBottomPop").eq(i).css("bottom",i*height)
+			}
+		}
+	}
 
 }
 /************
@@ -1152,664 +970,645 @@ var rightBottomPop = {
  ************/
 var utils = utils || {};
 utils.array = {
-    indexOf: function (ret, val) {
-        for (var i = 0; i < ret.length; i++) {
-            if (ret[i] == val) return i;
-        }
-        return -1;
-    },
+	indexOf : function(ret,val) {
+		for (var i = 0; i < ret.length; i++) {
+			if (ret[i] == val) return i;
+		}
+		return -1;
+	},
 
-    remove: function (ret, val) {
-        var index = ret.indexOf(val);
-        if (index > -1) {
-            ret.splice(index, 1);
-        }
-    },
+	remove: function(ret, val) {
+		var index = ret.indexOf(val);
+		if (index > -1) {
+			ret.splice(index, 1);
+		}
+	},
 
-    unique: function (ret) {
-        var n = []; //一个新的临时数组
-        for (var i = 0; i < ret.length; i++) //遍历当前数组
-        {
-            //如果当前数组的第i已经保存进了临时数组，那么跳过，
-            //否则把当前项push到临时数组里面
-            if (n.indexOf(ret[i]) == -1) n.push(ret[i]);
-        }
-        return n;
-    }
+	unique:  function(ret) {
+		var n = []; //一个新的临时数组
+		for(var i = 0; i < ret.length; i++) //遍历当前数组
+		{
+			//如果当前数组的第i已经保存进了临时数组，那么跳过，
+			//否则把当前项push到临时数组里面
+			if (n.indexOf(ret[i]) == -1) n.push(ret[i]);
+		}
+		return n;
+	}
 };
 utils.object = {
-    isEmptyObject: function (obj) {
-        for (var key in obj) {
-            return false
-        }
-        return true
-    }
+	isEmptyObject: function(obj){
+		for (var key in obj) {
+			return false
+		}
+		return true
+	}
 };
 utils.string = {
-    buffer: function () {
-        function StringBuffer() {
-            this.__strings__ = new Array();
-        }
-
-        StringBuffer.prototype.append = function (str) {
-            this.__strings__.push(str);
-            return this;    //方便链式操作
-        };
-        StringBuffer.prototype.toString = function () {
-            return this.__strings__.join("");
-        };
-        return new StringBuffer();
-    },
-    cutString: function (str, len) {
-        //length属性读出来的汉字长度为1
-        if (str.length * 2 <= len) {
-            return str;
-        }
-        var strlen = 0;
-        var s = "";
-        for (var i = 0; i < str.length; i++) {
-            s = s + str.charAt(i);
-            if (str.charCodeAt(i) > 128) {
-                strlen = strlen + 2;
-                if (strlen >= len) {
-                    return s.substring(0, s.length - 1) + "...";
-                }
-            } else {
-                strlen = strlen + 1;
-                if (strlen >= len) {
-                    return s.substring(0, s.length - 2) + "...";
-                }
-            }
-        }
-        return s;
-    }
+	buffer: function(){
+		function StringBuffer() {
+			this.__strings__ = new Array();
+		}
+		StringBuffer.prototype.append = function (str) {
+			this.__strings__.push(str);
+			return this;    //方便链式操作
+		};
+		StringBuffer.prototype.toString = function () {
+			return this.__strings__.join("");
+		};
+		return new StringBuffer();
+	},
+	cutString: function (str, len) {
+		//length属性读出来的汉字长度为1
+		if(str.length*2 <= len) {
+			return str;
+		}
+		var strlen = 0;
+		var s = "";
+		for(var i = 0;i < str.length; i++) {
+			s = s + str.charAt(i);
+			if (str.charCodeAt(i) > 128) {
+				strlen = strlen + 2;
+				if(strlen >= len){
+					return s.substring(0,s.length-1) + "...";
+				}
+			} else {
+				strlen = strlen + 1;
+				if(strlen >= len){
+					return s.substring(0,s.length-2) + "...";
+				}
+			}
+		}
+		return s;
+	}
 };
 
 
 /**
  * Map
  */
-utils.HashMap = function () {
-    /** 存放键的数组(遍历用到) */
-    this.keys = new Array();
-    //创建一个对象
-    var obj = new Object();
-    /**
-     * 判断Map是否为空
-     */
-    this.isEmpty = function () {
-        return this.keys.length == 0;
-    };
+utils.HashMap = function(){
+	/** 存放键的数组(遍历用到) */
+	this.keys = new Array();
+	//创建一个对象
+	var obj = new Object();
+	/**
+	 * 判断Map是否为空
+	 */
+	this.isEmpty = function(){
+		return this.keys.length == 0;
+	};
 
-    /**
-     * 判断对象中是否包含给定Key
-     */
-    this.containsKey = function (key) {
-        return (key in obj);
-    };
+	/**
+	 * 判断对象中是否包含给定Key
+	 */
+	this.containsKey=function(key){
+		return (key in obj);
+	};
 
-    /**
-     * 判断对象中是否包含给定的Value
-     */
-    this.containsValue = function (value) {
-        for (var key in obj) {
-            if (obj[key] == value) {
-                return true;
-            }
-        }
-        return false;
-    };
+	/**
+	 * 判断对象中是否包含给定的Value
+	 */
+	this.containsValue=function(value){
+		for(var key in obj){
+			if(obj[key] == value){
+				return true;
+			}
+		}
+		return false;
+	};
 
-    /**
-     *向map中添加数据
-     */
-    this.put = function (key, value) {
-        if (!this.containsKey(key)) {
-            this.keys.push(key);
-        }
-        obj[key] = value;
-    };
+	/**
+	 *向map中添加数据
+	 */
+	this.put=function(key,value){
+		if(!this.containsKey(key)){
+			this.keys.push(key);
+		}
+		obj[key] = value;
+	};
 
-    /**
-     * 根据给定的Key获得Value
-     */
-    this.get = function (key) {
-        return this.containsKey(key) ? obj[key] : null;
-    };
+	/**
+	 * 根据给定的Key获得Value
+	 */
+	this.get=function(key){
+		return this.containsKey(key)?obj[key]:null;
+	};
 
-    /**
-     * 根据给定的Key删除一个值
-     */
-    this.remove = function (key) {
-        if (this.containsKey(key) && (delete obj[key])) {
-            length--;
-        }
-    };
+	/**
+	 * 根据给定的Key删除一个值
+	 */
+	this.remove=function(key){
+		if(this.containsKey(key)&&(delete obj[key])){
+			length--;
+		}
+	};
 
-    /**
-     * 获得Map中的所有Value
-     */
-    this.values = function () {
-        var _values = new Array();
-        for (var key in obj) {
-            _values.push(obj[key]);
-        }
-        return _values;
-    };
+	/**
+	 * 获得Map中的所有Value
+	 */
+	this.values=function(){
+		var _values= new Array();
+		for(var key in obj){
+			_values.push(obj[key]);
+		}
+		return _values;
+	};
 
-    /**
-     * 获得Map中的所有Key
-     */
-    this.keySet = function () {
-        var _keys = new Array();
-        for (var key in obj) {
-            _keys.push(key);
-        }
-        return _keys;
-    };
+	/**
+	 * 获得Map中的所有Key
+	 */
+	this.keySet=function(){
+		var _keys = new Array();
+		for(var key in obj){
+			_keys.push(key);
+		}
+		return _keys;
+	};
 
-    /**
-     * 获得Map的长度
-     */
-    this.size = function () {
-        return this.keys.length;
-    };
+	/**
+	 * 获得Map的长度
+	 */
+	this.size = function(){
+		return this.keys.length;
+	};
 
-    /**
-     * 清空Map
-     */
-    this.clear = function () {
-        this.keys = new Array();
-        obj = new Object();
-    };
+	/**
+	 * 清空Map
+	 */
+	this.clear = function(){
+		this.keys = new Array();
+		obj = new Object();
+	};
 
-    /**
-     * 遍历Map,执行处理函数
-     *
-     * @param {Function}
-     *            回调函数 function(key,value,index){..}
-     */
-    this.each = function (fn) {
-        if (typeof fn != 'function') {
-            return;
-        }
-        var len = this.keys.length;
-        for (var i = 0; i < len; i++) {
-            var k = this.keys[i];
-            fn(k, this.get(k), i);
-        }
-    };
+	/**
+	 * 遍历Map,执行处理函数
+	 *
+	 * @param {Function}
+	 *            回调函数 function(key,value,index){..}
+	 */
+	this.each = function(fn) {
+		if (typeof fn != 'function') {
+			return;
+		}
+		var len =this.keys.length;
+		for (var i = 0; i < len; i++) {
+			var k = this.keys[i];
+			fn(k, this.get(k), i);
+		}
+	};
 };
 /**
  * localStorage
  */
 utils.storage = {
-    getter: function (key, type) {
-        if (type) {
-            return sessionStorage.getItem(_config.projectName + '_' + key);
-        }
-        else {
-            return localStorage.getItem(_config.projectName + '_' + key);
-        }
+	getter: function (key,type) {
+		if(type){
+			return sessionStorage.getItem( _config.projectName + '_' + key);
+		}
+		else {
+			return localStorage.getItem( _config.projectName + '_' + key);
+		}
 
-    },
-    setter: function (key, val, type) {
-        if (type) {
-            return sessionStorage.setItem(_config.projectName + '_' + key, val);
+	},
+	setter: function (key, val,type) {
+		if(type){
+			return sessionStorage.setItem(_config.projectName + '_' + key, val);
 
-        } else {
-            return localStorage.setItem(_config.projectName + '_' + key, val);
-        }
-    },
-    remove: function (key, type) {
-        if (type) {
-            return sessionStorage.removeItem(_config.projectName + '_' + key);
-        }
-        else {
-            return localStorage.removeItem(_config.projectName + '_' + key);
-        }
+		}else {
+			return localStorage.setItem(_config.projectName + '_' + key, val);
+		}
+	},
+	remove: function(key,type){
+		if(type){
+			return sessionStorage.removeItem(_config.projectName + '_' + key);
+		}
+		else {
+			return localStorage.removeItem(_config.projectName + '_' + key);
+		}
 
-    }
+	}
 };
 /**
  * date
  */
 utils.date = {
-    current: function () {
-        var date = new Date();
-        var seperator1 = "-";
-        var seperator2 = ":";
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var strDate = date.getDate();
-        var hours = date.getHours();
-        var mins = date.getMinutes();
-        var secs = date.getSeconds();
-        if (month >= 1 && month <= 9) {
-            month = "0" + month;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-            strDate = "0" + strDate;
-        }
-        if (hours >= 0 && hours <= 9) {
-            hours = "0" + hours;
-        }
-        if (secs >= 0 && secs <= 9) {
-            secs = "0" + secs;
-        }
-        if (mins >= 0 && mins <= 9) {
-            mins = "0" + mins;
-        }
+	current: function() {
+		var date = new Date();
+		var seperator1 = "-";
+		var seperator2 = ":";
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var strDate = date.getDate();
+		var hours = date.getHours();
+		var mins = date.getMinutes();
+		var secs = date.getSeconds();
+		if (month >= 1 && month <= 9) {
+			month = "0" + month;
+		}
+		if (strDate >= 0 && strDate <= 9) {
+			strDate = "0" + strDate;
+		}
+		if (hours >= 0 && hours <= 9) {
+			hours = "0" + hours;
+		}
+		if (secs >= 0 && secs <= 9) {
+			secs = "0" + secs;
+		}if (mins >= 0 && mins <= 9) {
+			mins = "0" + mins;
+		}
 
-        var currentdate = year + seperator1 + month + seperator1 + strDate
-            + " " + hours + seperator2 + mins
-            + seperator2 + secs;
-        return currentdate;
-    },
+		var currentdate = year + seperator1 + month + seperator1 + strDate
+			+ " " + hours + seperator2 + mins
+			+ seperator2 + secs;
+		return currentdate;
+	},
 
 
 }
 /**
  * utils.userRight.get(username,key)传入参数:用户名称，权限名称;返回 true false
  */
-utils.userRight = {
-    get: function (username, key) {
-        var aUserid = utils.storage.getter('aUserid'), user_rights;//获取缓存用户名称
-        if (username == aUserid) {
-            user_rights = JSON.parse(utils.storage.getter('user_rights'));
-            if (user_rights[key] == "1") {
-                return true
-            }
-            else {
-                return false
-            }
-        }
-        else {//从服务器获取
-            var result = null;
-            $.ajax({
-                url: _config.interfaceUrl.GetUserRight,
-                method: 'POST',
-                contentType: "application/json",
-                data: JSON.stringify({
-                    username: username
-                }),
-                dataType: 'json',
-                async: false,
-                success: function (res) {
-                    if (res.result === '0') {
-                        user_rights = res.rights;
-                        if (user_rights[key] == "1") {
-                            result = true;
-                        }
-                        else {
-                            result = false
-                        }
-                    } else {
-                        widget.modal.alert({
-                            cls: 'fade in',
-                            content: '<strong>' + res.msg + '</strong>',
-                            width: 500,
-                            height: 500,
-                            btnOkTxt: '',
-                            btnCancelTxt: '确定'
-                        });
-                    }
-                }
-            });
-            return result
-        }
-    }
+utils.userRight={
+     get:function (username, key) {
+		var aUserid=utils.storage.getter('aUserid'),user_rights;//获取缓存用户名称
+     	if(username==aUserid){
+     		user_rights=JSON.parse(utils.storage.getter('user_rights'));
+			if(user_rights[key]=="1"){
+				return true
+			}
+			else {
+				return false
+			}
+		}
+		else {//从服务器获取
+			var result = null;
+			$.ajax({
+				url: _config.interfaceUrl.GetUserRight,
+				method: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify({
+					username: username
+				}),
+				dataType:'json',
+				async: false,
+				success: function(res){
+					if(res.result === '0') {
+						user_rights=res.rights;
+						if(user_rights[key]=="1"){
+							result=true;
+						}
+						else {
+							result=false
+						}
+					} else {
+						widget.modal.alert({
+							cls: 'fade in',
+							content:'<strong>' + res.msg + '</strong>',
+							width:500,
+							height:500,
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+					}
+				}
+			});
+			return result
+		}
+	 }
 }
 /**
  * utils.getUrl.get(name)传入参数:要获取参数的名称
  */
-utils.getUrl = {//获取浏览器参数
-    get: function (name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var r = window.location.search.substr(1).match(reg);
-        if (r != null)return unescape(r[2]);
-        return null;
-    }
+utils.getUrl={//获取浏览器参数
+	get:function (name) {
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null)return  unescape(r[2]); return null;
+	}
 }
 /**
  * utils.getUrl.get()//打印清机单
  */
-utils.reprintClear = {//打印清机单
-    get: function () {
-        var posId = utils.storage.getter('posid'), jsorder = " ", aUserid = utils.storage.getter('aUserid');
-        $.ajax({
-            url: _config.interfaceUrl.PrintClearMachine + '/' + aUserid + '/' + jsorder + '/' + posId + '/',
-            type: "get",
-            success: function (data) {
-                if (data.result == '0') {
+utils.reprintClear={//打印清机单
+	get:function () {
+		var posId=utils.storage.getter('posid'),jsorder=" ",aUserid=utils.storage.getter('aUserid');
+		$.ajax({
+			url:_config.interfaceUrl.PrintClearMachine+'/'+aUserid+'/'+jsorder+'/'+posId+'/',
+			type: "get",
+			success: function (data) {
+                if(data.result=='0'){
                     rightBottomPop.alert({
-                        content: "清机单打印完成",
+                        content:"清机单打印完成",
                     })
                 }
                 else {
                     utils.printError.alert('清机单打印失败，请稍后重试')
                 }
-            }
-        });
-    }
+			}
+		});
+	}
 }
-utils.clearLocalStorage = {
-    clear: function (key) {//清除传递的指定
-        if (key == undefined) {
-            localStorage.clear();
-        }
-        else {
-            for (var i in key) {
-                utils.storage.remove(key[i])
-            }
-        }
+utils.clearLocalStorage={
+	clear:function (key) {//清除传递的指定
+		if(key==undefined){
+			localStorage.clear();
+		}
+		else {
+			for(var i in key){
+				utils.storage.remove(key[i])
+			}
+		}
 
-    },
-    clearSelect: function () {//清除固定的缓存
-        var clearLocal = {
-            'aUserid': 'aUserid',
-            'branch_branchcode': 'branch_branchcode',
-            'branch_branchid': 'branch_branchid',
-            'branch_branchaddress': 'branch_branchaddress',
-            'branch_branchname': 'branch_branchname',
-            'branch_id': 'branch_id',
-            'branch_insertime': 'branch_insertime',
-            'branch_managerid': 'branch_managerid',
-            'branch_managername': 'branch_managername',
-            'branch_managertel': 'branch_managertel',
-            'branch_padversion': 'branch_padversion',
-            'branch_serverversion': 'branch_serverversion',
-            'branch_tenantid': 'branch_tenantid',
-            'branch_updatetime': 'branch_updatetime',
-            'checkout_fullname': 'checkout_fullname',
-            'fullname': 'fullname',
-            'loginTime': 'loginTime',
-            'user_rights': 'user_rights',
-            'setTentimes': 'setTentimes',
-            'tenTimes': 'tenTimes'
-        }
-        for (var i in clearLocal) {
-            utils.storage.remove(clearLocal[i])
-        }
-    }
+	},
+	clearSelect:function () {//清除固定的缓存
+		var clearLocal={
+				'aUserid':'aUserid',
+				'branch_branchcode':'branch_branchcode',
+				'branch_branchid':'branch_branchid',
+				'branch_branchaddress':'branch_branchaddress',
+			    'branch_branchname':'branch_branchname',
+			    'branch_id':'branch_id',
+			    'branch_insertime':'branch_insertime',
+			    'branch_managerid':'branch_managerid',
+			    'branch_managername':'branch_managername',
+			    'branch_managertel':'branch_managertel',
+			    'branch_padversion':'branch_padversion',
+			    'branch_serverversion':'branch_serverversion',
+			    'branch_tenantid':'branch_tenantid',
+			    'branch_updatetime':'branch_updatetime',
+			    'checkout_fullname':'checkout_fullname',
+			    'fullname':'fullname',
+			    'loginTime':'loginTime',
+			    'user_rights':'user_rights',
+			    'setTentimes':'setTentimes',
+			    'tenTimes':'tenTimes'
+			}
+		for(var i in clearLocal){
+			utils.storage.remove(clearLocal[i])
+		}
+	}
 }
-utils.loading = {
-    open: function (msg) {
-        var str = '<div class="lading-shade" ></div><div class="spinner">' +
-            '<div class="rect1"></div>' +
-            '<div class="rect2"></div>' +
-            '<div class="rect3"></div>' +
-            '<div class="rect4"></div>' +
-            '<div class="rect5"></div>' +
-            '<p>' + msg + '</p>'
-        '</div>';
-        if ($('.spinner').length < 1) {
-            $('body').append(str);
-        } else {
-            $('.spinner p').html(msg);
-        }
-    },
-    remove: function () {
-        $('.lading-shade,.spinner').remove();
-    }
+utils.loading ={
+	open:function (msg) {
+			var str='<div class="lading-shade" ></div><div class="spinner">'+
+				'<div class="rect1"></div>'+
+				'<div class="rect2"></div>'+
+				'<div class="rect3"></div>'+
+				'<div class="rect4"></div>'+
+				'<div class="rect5"></div>'+
+				'<p>'+msg+'</p>'
+			'</div>';
+		if($('.spinner').length<1){
+			$('body').append(str);
+		} else {
+			$('.spinner p').html(msg);
+		}
+	},
+	remove:function () {
+		$('.lading-shade,.spinner').remove();
+	}
 }
-utils.printError = {//打印失败
-    alert: function (msg) {
+utils.printError={//打印失败
+    alert:function (msg) {
         widget.modal.alert({
             cls: 'fade in printError',
-            content: '<strong>' + msg + '</strong>',
-            width: 500,
-            height: 500,
+            content:'<strong>'+msg+'</strong>',
+            width:500,
+            height:500,
             btnOkTxt: '',
             btnCancelTxt: '确定'
         });
     }
 }
 /*打印机异常*/
-utils.printAbnormal = {
-    int: function () {
-        this.get();
-    },
-    get: function () {//获取打印机列表
-        var that = this, timedata = '';
-        $.ajax({
-            url: _config.interfaceUrl.GetPrinterList,
-            type: "get",
-            dataType: "json",
-            async: false,
-            global: false,
-            success: function (data) {
-                var arry = [];
-                for (var i = 0; i < data.data.length; i++) {
-                    if (data.data[i].status == '5') {
-                        arry.push(data.data[i])
+utils.printAbnormal={
+	int:function () {
+		this.get();
+	},
+	get:function () {//获取打印机列表
+		var that = this,timedata='';
+		$.ajax({
+			url:_config.interfaceUrl.GetPrinterList,
+			type: "get",
+			dataType: "json",
+			async:false,
+			global: false,
+			success: function (data) {
+				var arry=[];
+				for( var i=0;i<data.data.length;i++) {
+					if(data.data[i].status=='5'){
+						arry.push(data.data[i])
+					}
+                    if(data.data[i].statusTitle.indexOf('上盖打开')>-1){
+						arry.push(data.data[i])
                     }
-                    if (data.data[i].statusTitle.indexOf('上盖打开') > -1) {
-                        arry.push(data.data[i])
+                    if(data.data[i].statusTitle.indexOf('打印纸已用尽')>-1){
+						arry.push(data.data[i])
                     }
-                    if (data.data[i].statusTitle.indexOf('打印纸已用尽') > -1) {
-                        arry.push(data.data[i])
-                    }
-                }
-                ;
-                if (arry.length > 0) {
-                    var str = '<div id="printAbnormal">检测到' + arry.length + '个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
-                    str += '<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
-                    if ($("#printAbnormal").length < 1) {
-                        widget.modal.alert({
-                            cls: 'fade in printAbnormal',
-                            content: str,
-                            title: '打印机连接异常',
-                            width: 300,
-                            height: 400,
-                            btnOkTxt: '',
-                            btnCancelTxt: '确定',
-                            btnCancelCb: function () {
-                                if ($('.printAbnormalinput').prop("checked") == true) {
-                                    that.set(10 * 60 * 1000)
-                                }
-                                else {
-                                    that.set(60 * 1000)
-                                }
-                            }
-                        });
-                    }
-                    $('.printAbnormal .modal-header span').hide();
-                    utils.storage.setter('printAbnormal', true);
-                    $('.J-btn-sys').css({'background': '#FF5803', 'color': '#fff'})//系统设置高亮
+				};
+				if(arry.length>0){
+					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
+						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
+					if($("#printAbnormal").length<1){
+						widget.modal.alert({
+							cls: 'fade in printAbnormal',
+							content:str,
+							title:'打印机连接异常',
+							width:300,
+							height:400,
+							btnOkTxt: '',
+							btnCancelTxt: '确定',
+							btnCancelCb:function () {
+								if($('.printAbnormalinput').prop("checked")==true){
+									that.set(10*60*1000)
+								}
+								else {
+									that.set(60*1000)
+								}
+							}
+						});
+					}
+					$('.printAbnormal .modal-header span').hide();
+					utils.storage.setter('printAbnormal',true);
+					$('.J-btn-sys').css({'background': '#FF5803','color': '#fff'})//系统设置高亮
                     $('.print_list li').eq(0).find('i').show()//显示感叹号！
-                }
-                else {
-                    utils.storage.remove('printAbnormal')
-                    $('.J-btn-sys').css({'background': '#fff', 'color': '#000'})
+				}
+				else {
+					utils.storage.remove('printAbnormal')
+					$('.J-btn-sys').css({'background': '#fff','color': '#000'})
                     $('.print_list li').eq(0).find('i').hide()//隐藏感叹号！
-                }
+				}
 
-            },
-        });
+			},
+		});
 
-    },
-    set: function (time) {
-        var that = this, timeLeft = time;//这里设定的时间是;
-        setTentimes = time
-    }
+	},
+	set:function (time) {
+		var that=this,timeLeft=time;//这里设定的时间是;
+		setTentimes=time
+	}
 
 }
-var setTentimes = utils.storage.getter('setTentimes')
-if (setTentimes == null || setTentimes == 0) {
-    setTentimes = 60 * 1000
+var setTentimes=utils.storage.getter('setTentimes')
+if(setTentimes==null||setTentimes==0){
+	setTentimes=60*1000
 }
 /*定时任务检查打印是否异常*/
-/*setInterval(function () {
-    if (setTentimes > 0) {
-        setTentimes = setTentimes - 1000
-        utils.storage.setter('setTentimes', setTentimes);
-        //console.log(utils.storage.getter('setTentimes'))
-    }
-    if (setTentimes == 0 && $("#printAbnormal").length < 1) {
-        setTentimes = 60 * 1000
-        var hrefLink = document.location.href;
-        if (hrefLink.indexOf('login.jsp') > -1 || hrefLink.indexOf('openpage.jsp') > -1) {
+setInterval(function () {
+	if(setTentimes>0){
+		setTentimes =setTentimes-1000
+		utils.storage.setter('setTentimes',setTentimes);
+		//console.log(utils.storage.getter('setTentimes'))
+	}
+	if(setTentimes==0 && $("#printAbnormal").length<1){
+		    setTentimes=60*1000
+			var hrefLink=document.location.href;
+			if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
 
-        } else {
-            utils.printAbnormal.int();
-        }
-    }
-}, 1000);*/
+			}else {
+				utils.printAbnormal.int();
+			}
+	}
+},1000);
 /*多张会员卡选择
- * 传入参数为对象
- * {'data':data,传入卡号列表['卡号一','卡号二']
- * 'callback':回调方法，如果回调方法需要再次调用查询会员卡号，回调方法的参数名必须为'chooseNo'}
- * */
-utils.chooseMember = {
-    choose: function (msg) {
-        var chooseNo = null
-        var str = ' <div class="coupon-cnt">';
-        for (var i = 0; i < msg.data.length; i++) {
-            str += '<div class="memberChoose-item">' + msg.data[i] + '</div>';
-        }
-        str += '</div>';
-        widget.modal.alert({
-            cls: 'fade in memberChoose',
-            content: str,
-            width: 520,
-            height: 500,
-            title: '请选择会员卡',
-            btnOkTxt: '确定',
-            btnCancelTxt: '取消',
-            btnOkCb: function () {
-                if ($('.memberChoose-active').length < 1) {
-                    utils.printError.alert('请选择会员卡号')
-                }
-                else {
-                    $(".modal-alert:last,.modal-backdrop:last").remove();
-                    eval(msg.callback)
-                }
+* 传入参数为对象
+* {'data':data,传入卡号列表['卡号一','卡号二']
+* 'callback':回调方法，如果回调方法需要再次调用查询会员卡号，回调方法的参数名必须为'chooseNo'}
+* */
+utils.chooseMember={
+	choose:function (msg) {
+		var chooseNo=null
+		var str=' <div class="coupon-cnt">';
+		for(var i=0 ;i<msg.data.length;i++){
+			str+='<div class="memberChoose-item">'+msg.data[i]+'</div>';
+		}
+		str+='</div>';
+		widget.modal.alert({
+			cls: 'fade in memberChoose',
+			content:str,
+			width:520,
+			height:500,
+			title:'请选择会员卡',
+			btnOkTxt: '确定',
+			btnCancelTxt: '取消',
+			btnOkCb:function () {
+				if($('.memberChoose-active').length<1){
+					utils.printError.alert('请选择会员卡号')
+				}
+				else {
+					$(".modal-alert:last,.modal-backdrop:last").remove();
+					eval(msg.callback)
+				}
 
-            }
-        });
-        $('body').on('click', '.memberChoose-item', function () {
-            $(this).addClass('memberChoose-active').siblings('.memberChoose-item').removeClass('memberChoose-active');
-            chooseNo = $(this).text()
-        });
-    }
+			}
+		});
+		$('body').on('click','.memberChoose-item',function () {
+			$(this).addClass('memberChoose-active').siblings('.memberChoose-item').removeClass('memberChoose-active');
+			chooseNo= $(this).text()
+		});
+	}
 }
 /**
  * 弹钱箱
  * @param type 0:需通过配置判断是否需要设置密码 1:强制弹绕过密码验证(结账时使用)
  */
 utils.openCash = function (type) {
-    var _openCash = function () {
-        $.ajax({
-            url: _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp + '/',
-            method: 'GET',
-            contentType: "application/json",
-            dataType: 'json',
-            async: false,
-            success: function (res) {
-                if (res.result[0] === '1') {//成功
-                    rightBottomPop.alert({content: '打开钱箱成功!'})
-                } else {
-                    widget.modal.alert({
-                        cls: 'fade in',
-                        content: '<strong>' + res.Info + '</strong>',
-                        width: 500,
-                        height: 500,
-                        btnOkTxt: '',
-                        btnCancelTxt: '确定'
-                    });
-                }
+	var _openCash = function(){
+		$.ajax({
+			url: _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/',
+			method: 'GET',
+			contentType: "application/json",
+			dataType: 'json',
+			async: false,
+			success: function (res) {
+				if (res.result[0] === '1') {//成功
+					rightBottomPop.alert({content: '打开钱箱成功!'})
+				} else {
+					widget.modal.alert({
+						cls: 'fade in',
+						content: '<strong>' + res.Info + '</strong>',
+						width: 500,
+						height: 500,
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+				}
 
-            }
-        });
-    };
+			}
+		});
+	};
 
-    //强制弹或者不需要密码
-    if (type === 1 || utils.storage.getter('cashbox') == '0') {
-        _openCash();
-    } else {
-        var html = '<div class="dialog-sm-info"> <div class="form-group"><p style="text-align: left;color:red;" class="err"></p> <span class="inpt-span" style="left:10px;">钱箱密码:</span> <input type="password" class="form-control padding-left J-pwd"> </div> <div class="virtual-keyboard"> <ul> <li>1</li><li>2</li><li>3</li> </ul> <ul> <li>4</li><li>5</li><li>6</li> </ul> <ul> <li>7</li><li>8</li><li>9</li> </ul> <ul> <li>.</li><li>0</li><li>←</li> </ul> </div> </div>';
-        var cashModal = widget.modal.alert({
-            cls: 'default-dialog',
-            content: html,
-            width: 340,
-            title: '钱箱密码验证',
-            btnOkCb: function () {
-                var val = $.trim($("#" + cashModal.id).find('.J-pwd').val());
-                var $tip = $("#" + cashModal.id).find('.err');
-                if (val.length < 1) {
-                    $tip.text('密码不能为空');
-                    return false;
-                }
+	//强制弹或者不需要密码
+	if(type === 1 || utils.storage.getter('cashbox') == '0') {
+		_openCash();
+	} else {
+		var html = '<div class="dialog-sm-info"> <div class="form-group"><p style="text-align: left;color:red;" class="err"></p> <span class="inpt-span" style="left:10px;">钱箱密码:</span> <input type="password" class="form-control padding-left J-pwd"> </div> <div class="virtual-keyboard"> <ul> <li>1</li><li>2</li><li>3</li> </ul> <ul> <li>4</li><li>5</li><li>6</li> </ul> <ul> <li>7</li><li>8</li><li>9</li> </ul> <ul> <li>.</li><li>0</li><li>←</li> </ul> </div> </div>';
+		var  cashModal = widget.modal.alert({
+			cls: 'default-dialog',
+			content: html,
+			width:340,
+			title: '钱箱密码验证',
+			btnOkCb: function(){
+				var val = $.trim($("#" +cashModal.id).find('.J-pwd').val());
+				var $tip = $("#" +cashModal.id).find('.err');
+				if(val.length < 1) {
+					$tip.text('密码不能为空');
+					return false;
+				}
 
-                if (val === JSON.parse(utils.storage.getter('config')).OpenCashPWD) {
-                    _openCash();
-                    cashModal.close();
-                } else {
-                    $tip.text('密码错误');
-                }
-            }
-        })
+				if(val === JSON.parse(utils.storage.getter('config')).OpenCashPWD) {
+					_openCash();
+					cashModal.close();
+				} else {
+					$tip.text('密码错误');
+				}
+			}
+		})
 
-    }
+	}
 
 };
 
-utils.getUuid = function () {
-    var len = 32;//32长度
-    var radix = 16;//16进制
-    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-    var uuid = [], i;
-    radix = radix || chars.length;
-    if (len) {
-        for (i = 0; i < len; i++)uuid[i] = chars[0 | Math.random() * radix];
-    } else {
-        var r;
-        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-        uuid[14] = '4';
-        for (i = 0; i < 36; i++) {
-            if (!uuid[i]) {
-                r = 0 | Math.random() * 16;
-                uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-            }
-        }
-    }
-    return uuid.join('');
+utils.getUuid = function(){
+	var len=32;//32长度
+	var radix=16;//16进制
+	var chars='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');var uuid=[],i;radix=radix||chars.length;if(len){for(i=0;i<len;i++)uuid[i]=chars[0|Math.random()*radix];}else{var r;uuid[8]=uuid[13]=uuid[18]=uuid[23]='-';uuid[14]='4';for(i=0;i<36;i++){if(!uuid[i]){r=0|Math.random()*16;uuid[i]=chars[(i==19)?(r&0x3)|0x8:r];}}}
+	return uuid.join('');
 };
 
-utils.toggleFullScreen = function (target) {
-    var $target = $(target);
-    if (!document.fullscreenElement &&    // alternative standard method
-        !document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-            document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-        $target.text('普通模式');
-    } else {
-        if (document.cancelFullScreen) {
-            document.cancelFullScreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
-            document.webkitCancelFullScreen();
-        }
-        $target.text('全屏模式');
-    }
+utils.toggleFullScreen = function(target) {
+	var $target = $(target);
+	if (!document.fullscreenElement &&    // alternative standard method
+		!document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
+		if (document.documentElement.requestFullscreen) {
+			document.documentElement.requestFullscreen();
+		} else if (document.documentElement.mozRequestFullScreen) {
+			document.documentElement.mozRequestFullScreen();
+		} else if (document.documentElement.webkitRequestFullscreen) {
+			document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+		}
+		$target.text('普通模式');
+	} else {
+		if (document.cancelFullScreen) {
+			document.cancelFullScreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.webkitCancelFullScreen) {
+			document.webkitCancelFullScreen();
+		}
+		$target.text('全屏模式');
+	}
 };
 
 /*过渡性弹窗*/
-utils.PromptAlert = function (msg) {
-    widget.modal.alert({
-        cls: 'fade in',
-        content: '<strong>' + msg + '</strong>',
-        width: 500,
-        height: 500,
-        hasBtns: false,
-    });
+utils.PromptAlert=function (msg) {
+	widget.modal.alert({
+		cls: 'fade in',
+		content:'<strong>'+msg+'</strong>',
+		width:500,
+		height:500,
+		hasBtns:false,
+	});
 }
 
 
