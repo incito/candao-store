@@ -317,7 +317,7 @@
 
 	<select id="findOne" parameterType="map" resultMap="findResultMap">
 	  select 
-    <include refid="Base_Column_List" />
+    <include refid="Base_Column_List" />,ordertype,payway
     from t_order 	   where 	    orderid=#{id}  limit 1
 	</select>
 	<select id="findOneOrderInfo" parameterType="map" resultMap="findResultMap">
