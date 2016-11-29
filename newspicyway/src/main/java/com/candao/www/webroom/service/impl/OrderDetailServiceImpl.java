@@ -191,7 +191,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 cleanTakeOutTable(order);
                 break;
             case TABLETYPE.COFFEETABLE:
-                cleanTakeOutTable(order);
+                cleanNormalTable(order);
                 break;
             default:
                 throw new RuntimeException("不能清空该类型餐台");
@@ -222,6 +222,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Torder torder = new Torder();
         torder.setOrderid(orderId);
         torder.setOrderstatus(2);
+        //并台问题
+        torder.setOrderid(orderId);
         torder.setEndtime(new Date());
         torderMapper.update(torder);
     }
@@ -1971,22 +1973,30 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             log.error("-->tableList为空，参数tableNo为" + urgeDish.getCurrenttableid());
             return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("没有找到桌台"));
         }
+
         //咖啡模式，外卖模式反结算以后才打印打印退菜单
         String tableType = (String) tableList.get(0).get("tabletype");
         tableType = tableType == null ? "" : tableType.trim();
         if (!StringUtils.isEmpty(tableType)) {
             if (TABLETYPE.COFFEETABLE.equals(tableType) || TABLETYPE.TAKEOUT.equals(tableType) || TABLETYPE.TAKEOUT_COFFEE.equals(tableType)) {
-                if(!StringUtil.isEmpty(orderno)){
+                //外卖单订单号以调用参数为准
+                if (!StringUtil.isEmpty(orderno)) {
                     urgeDish.setOrderNo(orderno);
                 }
-                Map<String, Object> param = new HashMap<>();
-                param.put("orderid", urgeDish.getOrderNo());
-                Map<String, Object> res = settlementMapper.fingHistory(param);
-                if (MapUtils.isEmpty(res)) {
-                    isPrint = false;
+                Map<String, Object> mapStatus = torderMapper.findOne(urgeDish.getOrderNo());
+                //排除外卖挂单
+                if (!(!TABLETYPE.COFFEETABLE.equals(tableType) && "3".equals(String.valueOf(mapStatus.get("payway"))) &&
+                        "2".equals(String.valueOf(mapStatus.get("ordertype"))))) {
+                    Map<String, Object> param = new HashMap<>();
+                    param.put("orderid", urgeDish.getOrderNo());
+                    Map<String, Object> res = settlementMapper.fingHistory(param);
+                    if (MapUtils.isEmpty(res)) {
+                        isPrint = false;
+                    }
                 }
             }
         }
+
         String orderId = urgeDish.getOrderNo();
         String discardUserId = urgeDish.getDiscardUserId();
         String discardReason = urgeDish.getDiscardReason();
@@ -2000,6 +2010,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             log.error("-->订单状态为:" + mapStatus.get("orderstatus") + "-->订单Id为：" + orderId);
             return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单状态不正确"));
         }
+
         String actionType = urgeDish.getActionType();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("orderno", orderId);
