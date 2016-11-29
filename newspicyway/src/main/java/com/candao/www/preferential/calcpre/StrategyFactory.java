@@ -13,11 +13,13 @@ import com.candao.common.exception.SysException;
 import com.candao.common.utils.DateUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.TServiceChargeService;
 
 /**
  * 
@@ -55,6 +57,7 @@ public enum StrategyFactory {
 
 	/**
 	 * 计算实收金额 优免金额 挂账金额 小费
+	 * @param chargeService 
 	 * 
 	 * @param orderDetailPreferentialDao
 	 * 
@@ -66,7 +69,7 @@ public enum StrategyFactory {
 	 * @param orderMapper
 	 *            (核心计算方式)
 	 */
-	public void calcAmount(TorderDetailPreferentialDao orderDetailPreferentialDao,
+	public void calcAmount(TServiceChargeService chargeService, TorderDetailPreferentialDao orderDetailPreferentialDao,
 			CaleTableAmountMapper caleTableAmountMapper, String orderid, DataDictionaryService dataDictionaryService,
 			OperPreferentialResult preferentialResult, OrderMapper orderMapper, OrderOpMapper orderOpMapper,
 			String itemid) {
@@ -83,6 +86,14 @@ public enum StrategyFactory {
 			float zaAmount = orderOpMapper.getZdAmountByOrderId(orderid);
 			preferentialResult.setZdAmount(new BigDecimal(zaAmount));
 			// 全单总价（不包含小费）
+			//不包含服务费
+			Map<String, Object> serParams = new HashMap<>();
+			serParams.put("orderId", orderid);
+			TServiceCharge servceCharageBean=chargeService.getChargeInfo(serParams);
+			if(servceCharageBean!=null&&servceCharageBean.getChargeOn()!=0){
+				dueamount=dueamount.subtract(servceCharageBean.getChargeAmount());
+			}
+			
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
 			// 原始价格

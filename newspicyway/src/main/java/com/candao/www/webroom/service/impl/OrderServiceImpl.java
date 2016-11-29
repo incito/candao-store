@@ -1216,6 +1216,7 @@ public class OrderServiceImpl implements OrderService {
 			params.put("memberno", menberNo);
 			OperPreferentialResult result = preResult(params);
 			
+			
 			// 服务费信息
 			TServiceCharge serviceCharge =chargeService.serviceCharge(orderid, userOrderInfo,
 					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
@@ -1272,20 +1273,6 @@ public class OrderServiceImpl implements OrderService {
 		// 新辣道特殊新编码处理
 		if (PropertiesUtils.getValue("tenant_id").equals("100011")) {
 			autoPre(orderid, params.get("memberno"), operPreferentialResult);
-			// if (allDetailPre == null || allDetailPre.isEmpty()) {
-			// autoPre(orderid,params.get("memberno"), operPreferentialResult);
-			// } else {
-			// boolean falg = false;
-			// for (TorderDetailPreferential branchDataSyn : allDetailPre) {
-			// if (branchDataSyn.getIsCustom() == 2) {
-			// falg = true;
-			// break;
-			// }
-			// }
-			// if (!falg) {
-			//
-			// }
-			// }
 		}
 
 		// 需要得到已经是有优惠的值
@@ -1318,7 +1305,7 @@ public class OrderServiceImpl implements OrderService {
 			calALLAmout(setMap, operPreferentialResult);
 		}
 
-		StrategyFactory.INSTANCE.calcAmount(detailPreferentialDao, caleTableAmountMapper, orderid,
+		StrategyFactory.INSTANCE.calcAmount(chargeService,detailPreferentialDao, caleTableAmountMapper, orderid,
 				dataDictionaryService, operPreferentialResult, orderMapper, orderOpMapper,
 				(String) params.get("itemid"));
 		return operPreferentialResult;

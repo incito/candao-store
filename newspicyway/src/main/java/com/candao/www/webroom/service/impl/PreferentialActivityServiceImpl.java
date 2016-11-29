@@ -1073,9 +1073,10 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!params.containsKey("resultAmount")) {
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
-						StrategyFactory.INSTANCE.calcAmount(orderDetailPreferentialDao, caleTableAmountMapper, orderid,
+						StrategyFactory.INSTANCE.calcAmount(chargeService,orderDetailPreferentialDao, caleTableAmountMapper, orderid,
 								dataDictionaryService, result, orderMapper, orderOpMapper,
 								(String) params.get("itemid"));
+						
 						Map<String, Object> userOrderInfo = orderDetailService.findOrderByInfo(orderid);
 						TServiceCharge serviceCharge =chargeService.serviceCharge(orderid, userOrderInfo,
 								result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
