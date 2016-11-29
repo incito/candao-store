@@ -61,15 +61,15 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     @Override
-    public Result notifyClearTable(final String tableNo) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("tableNo", tableNo);
-        List<Map<String, Object>> resultMapList = tableService.find(map);
-        if (null == resultMapList || resultMapList.isEmpty()) {
-            return null;
-        }
+    public Result notifyClearTable(final String orderno) {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("tableNo", tableNo);
+//        List<Map<String, Object>> resultMapList = tableService.find(map);
+//        if (null == resultMapList || resultMapList.isEmpty()) {
+//            return null;
+//        }
         Map<String, Object> data = new HashMap<>(1);
-        String orderid = String.valueOf(resultMapList.get(0).get("orderid"));
+        String orderid = String.valueOf(orderno);
         data.put("orderId", orderid);
         msgForwardService.sendMsgAsynWithOrderId(orderid, MsgForwardTran.msgConfig.getProperty("MSF_ID.CLEAN_TABLE"), data, 4 * 60 * 60, false);
 

@@ -212,7 +212,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             throw new RuntimeException("订单下还有菜品，不能清台");
         }
         //通知PAD清台
-        notifyService.notifyClearTable(tableId);
+        notifyService.notifyClearTable(orderId);
         //清台
         TbTable tbTable = new TbTable();
         tbTable.setTableid(tableId);
