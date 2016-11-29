@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.text.StrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,9 @@ import com.candao.inorder.utils.LiunxSSHScpclientUtil;
 import com.candao.inorder.utils.print.PrintQueueUtil;
 import com.candao.www.data.dao.TbTableDao;
 import com.candao.www.data.dao.TdishDao;
+import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.Tdish;
+import com.candao.www.data.model.Torder;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.webroom.model.Order;
 import com.candao.www.webroom.service.impl.OrderDetailServiceImpl;
@@ -75,6 +76,8 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 
 	@Autowired
 	private TbTableDao tbTableDao;
+	@Autowired
+	private TorderMapper torderMapper ;
 
 	@Autowired
 	private TdishDao tdishDao;
@@ -95,6 +98,8 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 		Map<String, Object> queryArea = new HashMap<String, Object>();
 		queryArea.put("tableNo", orders.getCurrenttableid());
 		List<Map<String, Object>> resultMap = tbTableDao.find(queryArea);
+		Torder  torder =torderMapper.get(orders.getOrderid());
+		orders.setCustnum(torder.getCustnum());
 		// 获取对应吉旺餐台号
 		int areaNo = (int) resultMap.get(0).get("areaNo");
 		// 返回添加状态
@@ -212,16 +217,16 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 			// 吉旺用户名称
 			TblEmployee emloyee = employeeDao.queryForEmpNo(orderDetailMap.get(menu.getItem()).getUserName());
 			/** 点菜的名称 **/
-			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq1(), checkNum,
-					candaoDishMap, detail, order.getGlobalsperequire());
-			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq2(), checkNum,
-					candaoDishMap, detail, order.getGlobalsperequire());
-			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq3(), checkNum,
-					candaoDishMap, detail, order.getGlobalsperequire());
-			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq4(), checkNum,
-					candaoDishMap, detail, order.getGlobalsperequire());
-			setPrintMes(emloyee, printALLMap, order.getCurrenttableid(), printMes, menu, menu.getPrintq5(), checkNum,
-					candaoDishMap, detail, order.getGlobalsperequire());
+			setPrintMes(emloyee, printALLMap,  printMes, menu, menu.getPrintq1(), checkNum,
+					candaoDishMap, detail,order );
+			setPrintMes(emloyee, printALLMap,  printMes, menu, menu.getPrintq2(), checkNum,
+					candaoDishMap, detail,order);
+			setPrintMes(emloyee, printALLMap, printMes, menu, menu.getPrintq3(), checkNum,
+					candaoDishMap, detail,order);
+			setPrintMes(emloyee, printALLMap, printMes, menu, menu.getPrintq4(), checkNum,
+					candaoDishMap, detail,order);
+			setPrintMes(emloyee, printALLMap, printMes, menu, menu.getPrintq5(), checkNum,
+					candaoDishMap, detail,order);
 		}
 		// 封装成数据流
 		Map<String, String> printMesBytes = new HashMap<String, String>();
@@ -303,16 +308,19 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 		return dishIdToDetail;
 	}
 
-	private void setPrintMes(TblEmployee emloyee, Map<String, TblPrintqueue> printALLMap, String tableid,
+	private void setPrintMes(TblEmployee emloyee, Map<String, TblPrintqueue> printALLMap, 
 			Map<String, List<LinuxPrintEmpBean>> printMes, TblMenu menu, String queueNo, String checkNum,
-			Map<String, String> candaoDishMap, TorderDetail detail, String globalsperequire) throws IOException {
+			Map<String, String> candaoDishMap, TorderDetail detail, Order order) throws IOException {
+		String tableid= order.getCurrenttableid();
+		String globalsperequire=  order.getGlobalsperequire();
 		String dishNum = detail.getDishnum();
 		String dishUnit = detail.getDishunit();
+		String cover=String.valueOf(order.getCustnum());
 		/** 当前菜品个数 **/
 		if (!queueNo.trim().equals("0")) {
 			LinuxPrintEmpBean empBean = new LinuxPrintEmpBean(
 					CommonUtil.getFomartGBK(printALLMap.get(queueNo).getNames3()), tableid,
-					CommonUtil.getFomartGBK(emloyee.getShortname3()), String.valueOf("5"), checkNum,
+					CommonUtil.getFomartGBK(emloyee.getShortname3()), cover, checkNum,
 					CommonUtil.yearMonthFomart(), CommonUtil.dateTimeFomart(), dishNum,
 					CommonUtil.getFomartGBK(menu.getName3()));
 
@@ -374,7 +382,7 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 		// 订单号规则 如果
 		TblCheck check = new TblCheck(date, nextCheckNo, outLet, 0, "", 1);
 		check.setOpentime(new Date());
-		check.setOpenstation(Integer.valueOf(inorderStation));
+		check.setOpenstation(Integer.valueOf(inorderStation)); 
 		check.setOpenstationref(Integer.valueOf(inorderStation));
 		check.setOpenperiod(checkPeriodDao.queryCurrentPeriod().getPeriodno());// 营业时间
 		check.setFloor(floor);
@@ -388,6 +396,7 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 		check.setChecktot(0);// 付款总额
 		check.setItemtot(0);
 
+		check.setCover(orders.getCustnum());
 		check.setIspaid(0);
 		check.setVoidMes("0");
 		check.setIsmodified(1);
