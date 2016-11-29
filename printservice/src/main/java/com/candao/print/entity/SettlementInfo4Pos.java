@@ -147,8 +147,9 @@ public class SettlementInfo4Pos implements Serializable {
             OrderInfo4Pos orderinfo = orderJson.get(0);
             String dueamount = orderinfo.getDueamount();
             String ssamount = orderinfo.getSsamount();
+            String serviceMoney = orderinfo.getServiceAmount();
             if (!StringUtils.isEmpty(dueamount)) {
-                settlementInfos.add(getSettlementInfo("总额:", "￥" + dueamount));
+                settlementInfos.add(getSettlementInfo("总额:", "￥" + (null==serviceMoney?dueamount:new BigDecimal(dueamount).add(new BigDecimal(serviceMoney)))));
             }
             switch (type) {
                 case 1: {
