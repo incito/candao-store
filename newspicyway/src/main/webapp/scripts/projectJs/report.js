@@ -1131,7 +1131,6 @@ function exportReportDaliy() {
 /** *******************营业数据明细报表 END***************************************** */
 /** *******************结算方式明细报表 START*************************************** */
 function initPaywayData() {
-	$(".legend-custom-div").remove();
 	if(compareBeginEndTime()){
 		var tb = "";
 		$.post(global_Path + "/settlementOption/settlementOptionList.json", {
@@ -1139,6 +1138,7 @@ function initPaywayData() {
 			endTime : endTime,
 			shiftid : shiftid
 		}, function(result) {
+			$(".legend-custom-div").remove();
 			var legend_data = [];
 			var num_series_data = [];
 			var price_series_data = [];
