@@ -2484,17 +2484,23 @@ var Order = {
         if(g_eatType === 'in') {
             window.location.href = './main.jsp'
         } else {
-            if($('#order-dish-table tbody tr').length > 0)  {
-                var modal = widget.modal.alert({
-                    content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
-                    btnOkCb: function(){
-                        modal.close();
-                        _cancelOrder();
-                    }
-                });
-            } else {
-                _cancelOrder()
+            if(utils.getUrl.get('referer')==='1'){
+                window.location.href = './check/check.jsp'
             }
+            else {
+                if($('#order-dish-table tbody tr').length > 0)  {
+                    var modal = widget.modal.alert({
+                        content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
+                        btnOkCb: function(){
+                            modal.close();
+                            _cancelOrder();
+                        }
+                    });
+                } else {
+                    _cancelOrder()
+                }
+            }
+
         }
 
     }
