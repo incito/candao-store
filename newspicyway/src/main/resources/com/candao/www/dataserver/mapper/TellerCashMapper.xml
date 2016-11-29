@@ -51,9 +51,9 @@
         where b.begintime&gt;=#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectItemMoney" resultType="String" parameterType="String">
-        SELECT IFNULL( sum(a.orignalprice * a.dishnum), 0 )
-         FROM t_order_detail a INNER JOIN t_order b ON (a.orderid = b.orderid)
-         WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR (ismaster=0 AND  a.dishtype=2))
+       SELECT IFNULL( sum(a.orignalprice * a.dishnum), 0 ) + IFNULL(sum(sc.chargeAmount), 0)
+       FROM t_order_detail a INNER JOIN t_order b ON (a.orderid = b.orderid) LEFT JOIN t_service_charge sc ON b.orderid = sc.orderid AND  sc.chargeOn=1
+        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR (ismaster=0 AND  a.dishtype=2))
 
     </select>
     <select id="selectPreferenceMoney" resultType="Map" parameterType="Map">
