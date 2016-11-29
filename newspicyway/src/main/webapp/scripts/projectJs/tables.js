@@ -1,236 +1,235 @@
 var tbPrinterAreaList = [];
 var flag_prev = 0;
 var serviceTablesJson = [];//有餐台服务费的餐台集合
-var tableJson=[];//全部餐台
-var tbPrinterAreaList=[];
-var take_outTable=[];//外卖咖啡台
+var tableJson = [];//全部餐台
+var tbPrinterAreaList = [];
+var take_outTable = [];//外卖咖啡台
 /************
  * 工具类 utils
  ************/
 var utils = utils || {};
 utils.storage = {
-	getter: function (key) {
-		return sessionStorage.getItem(key);
-	},
-	setter: function (key, val) {
-		return sessionStorage.setItem(key, val);
+    getter: function (key) {
+        return sessionStorage.getItem(key);
+    },
+    setter: function (key, val) {
+        return sessionStorage.setItem(key, val);
 
-	},
-	remove: function(key){
-			return sessionStorage.removeItem(key);
-	}
+    },
+    remove: function (key) {
+        return sessionStorage.removeItem(key);
+    }
 };
-$(document).ready(function(){
-	$(document).bind('ajaxError',function () {
-		if($('.errorAlert').length<1){
-			widget.modal.alert({
-				cls: 'fade in errorAlert',
-				content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">后台服务错误，请稍后重试</div>',
-				width:360,
-				height:500,
-				btnOkTxt: '确定 ',
-				btnCancelTxt: '',
-				btnOkCb:function () {
-					$('.modal-alert:last,.fade:last').remove()
-				}
-			});
-		}
-	});
-	//utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'));
-	if(choesetable){
-		$('#nav-tables li').each(function () {
-			var me=$(this);
-			if(me.attr('id')==choesetable){
-				me.click();
-				//utils.storage.setter('choesetable',me.attr('id'));
-				return false;
-			}
-		})
-	}
-	else {
-		utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'));
-	}
-	/*餐台分类鼠标滚动*/	
-	var dom =$("#nav-tables")[0];
+$(document).ready(function () {
+    $(document).bind('ajaxError', function () {
+        if ($('.errorAlert').length < 1) {
+            widget.modal.alert({
+                cls: 'fade in errorAlert',
+                content: '<div><img src="../images/del-tip.png" style="margin-right: 20px">后台服务错误，请稍后重试</div>',
+                width: 360,
+                height: 500,
+                btnOkTxt: '确定 ',
+                btnCancelTxt: '',
+                btnOkCb: function () {
+                    $('.modal-alert:last,.fade:last').remove()
+                }
+            });
+        }
+    });
+    //utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'));
+    if (choesetable) {
+        $('#nav-tables li').each(function () {
+            var me = $(this);
+            if (me.attr('id') == choesetable) {
+                me.click();
+                //utils.storage.setter('choesetable',me.attr('id'));
+                return false;
+            }
+        })
+    }
+    else {
+        utils.storage.setter('choesetable', $('#nav-tables .active').attr('id'));
+    }
+    /*餐台分类鼠标滚动*/
+    var dom = $("#nav-tables")[0];
     var user_agent = navigator.userAgent;
-    if(user_agent.indexOf("Firefox")!=-1){// Firefox
-            dom.addEventListener("DOMMouseScroll",addEvent_T,!1);
+    if (user_agent.indexOf("Firefox") != -1) {// Firefox
+        dom.addEventListener("DOMMouseScroll", addEvent_T, !1);
 
-    } else if(user_agent.indexOf("MSIE")!=-1){// Firefox
-             dom.attachEvent("onmousewheel",addEvent_T,!1);
+    } else if (user_agent.indexOf("MSIE") != -1) {// Firefox
+        dom.attachEvent("onmousewheel", addEvent_T, !1);
 
-    }else{
-             dom.addEventListener("mousewheel",addEvent_T,!1);
+    } else {
+        dom.addEventListener("mousewheel", addEvent_T, !1);
 
-    }	
-	
-	$("#personNum").keyup(function(){
-		$("#personNum_tip").text("");
-	});
-	$("#tableName").keyup(function(){
-		$("#tableName_tip").text("");
-	});
-	$("#areanameB").keyup(function(){
-		$("#areanameB_tip").text("");
-	});
+    }
+
+    $("#personNum").keyup(function () {
+        $("#personNum_tip").text("");
+    });
+    $("#tableName").keyup(function () {
+        $("#tableName_tip").text("");
+    });
+    $("#areanameB").keyup(function () {
+        $("#areanameB_tip").text("");
+    });
     /*当餐台服务费开启时候，输入清空提示信息*/
     $(".serviceCharge_count_timer,.serviceCharge_count_timer1,.serviceCharge_count_timer2").keyup(function () {
         $(".serviceCharge_count_timer_tip").text("");
     });
-	findPrinterArea();
-	$("img.img-close").hover(function(){
-	 	$(this).attr("src",global_Path+"/images/close-active.png");
-	},function(){
-			$(this).attr("src",global_Path+"/images/close-sm.png");
-	});
-	 var temp = document.getElementById('nav-tables');
-	 	temp.oncontextmenu = function ()
-	    {
-	        return false;
-	    };
+    findPrinterArea();
+    $("img.img-close").hover(function () {
+        $(this).attr("src", global_Path + "/images/close-active.png");
+    }, function () {
+        $(this).attr("src", global_Path + "/images/close-sm.png");
+    });
+    var temp = document.getElementById('nav-tables');
+    temp.oncontextmenu = function () {
+        return false;
+    };
 
-	    document.querySelector(".tables-right-tab").oncontextmenu=function(){
-	    	return false;
-	    };
+    document.querySelector(".tables-right-tab").oncontextmenu = function () {
+        return false;
+    };
 
-	showAndHidden();
-	$("#add-form1").validate(
-			{
+    showAndHidden();
+    $("#add-form1").validate(
+        {
 
-				submitHandler : function(form) {
-					var vcheck = true;
-					var val=$("#tableName").val().trim();
-					if ($("#personNum").val().trim() == "") {
-						$("#personNum_tip").text("就餐人数不能为空");
-						$("#personNum").focus();
-						$("#personNum").addClass("error");
-						vcheck = false;
-					}
-					if ($("#tableName").val().trim() == "") {
-						$("#tableName_tip").text("餐台名称不能为空");
+            submitHandler: function (form) {
+                var vcheck = true;
+                var val = $("#tableName").val().trim();
+                if ($("#personNum").val().trim() == "") {
+                    $("#personNum_tip").text("就餐人数不能为空");
+                    $("#personNum").focus();
+                    $("#personNum").addClass("error");
+                    vcheck = false;
+                }
+                if ($("#tableName").val().trim() == "") {
+                    $("#tableName_tip").text("餐台名称不能为空");
 
-						$("#tableName").focus();
-						$("#tableName").addClass("error");
-						vcheck = false;
-					}
-					else {
-						//只能输入数字以及中英文字符
-						var abc=/^[A-Za-z0-9\u4E00-\u9FA5]*$/g
-							if(!abc.test(val)){
-								//$("#tableName").val(val.substr(0, $("#tableName").val().length-1));
-								$("#tableName_tip").text("餐台名称只能输入数字以及中英文字符");
-								$("#tableName").focus();
-								$("#tableName").addClass("error");
-								vcheck = false;
-							}
-					}
-                    var chargeOn = $('#serviceCharge_onoff input:checked').val();//是否开启服务费 0关闭 1开启
-                    if (chargeOn == "1") {
-                        var chargeType = $('.serviceCharge_count_select').val()//服务费计算方式 0比例 1 固定 2 时长
-                        if ($(".serviceCharge_count_timer").val().trim() == "" && chargeType == '0') {
-                            $(".serviceCharge_count_timer_tip").text("服务费比例不能为空");
+                    $("#tableName").focus();
+                    $("#tableName").addClass("error");
+                    vcheck = false;
+                }
+                else {
+                    //只能输入数字以及中英文字符
+                    var abc = /^[A-Za-z0-9\u4E00-\u9FA5]*$/g
+                    if (!abc.test(val)) {
+                        //$("#tableName").val(val.substr(0, $("#tableName").val().length-1));
+                        $("#tableName_tip").text("餐台名称只能输入数字以及中英文字符");
+                        $("#tableName").focus();
+                        $("#tableName").addClass("error");
+                        vcheck = false;
+                    }
+                }
+                var chargeOn = $('#serviceCharge_onoff input:checked').val();//是否开启服务费 0关闭 1开启
+                if (chargeOn == "1") {
+                    var chargeType = $('.serviceCharge_count_select').val()//服务费计算方式 0比例 1 固定 2 时长
+                    if ($(".serviceCharge_count_timer").val().trim() == "" && chargeType == '0') {
+                        $(".serviceCharge_count_timer_tip").text("服务费比例不能为空");
 
+                        $(".serviceCharge_count_timer").focus();
+                        $(".serviceCharge_count_timer").addClass("error");
+                        vcheck = false;
+                    }
+                    if ($(".serviceCharge_count_timer").val().trim() != "" && chargeType == '0') {
+                        var reg = /^(100|[1-9]\d|\d)$/ //只能输入0-100的整数
+                        reg.lastIndex = 0;//正则开始为0
+                        var val = $.trim($(".serviceCharge_count_timer").val());
+                        if (reg.test(val) === false) {
+                            $(".serviceCharge_count_timer").val().trim()
+                            $(".serviceCharge_count_timer_tip").text("服务费比例只能输入0~100的整数");
                             $(".serviceCharge_count_timer").focus();
                             $(".serviceCharge_count_timer").addClass("error");
                             vcheck = false;
                         }
-                        if ($(".serviceCharge_count_timer").val().trim() != "" && chargeType == '0') {
-                            var reg = /^(100|[1-9]\d|\d)$/ //只能输入0-100的整数
-                            reg.lastIndex = 0;//正则开始为0
-                            var val = $.trim($(".serviceCharge_count_timer").val());
-                            if (reg.test(val) === false) {
-                                $(".serviceCharge_count_timer").val().trim()
-                                $(".serviceCharge_count_timer_tip").text("服务费比例只能输入0~100的整数");
-                                $(".serviceCharge_count_timer").focus();
-                                $(".serviceCharge_count_timer").addClass("error");
-                                vcheck = false;
-                            }
 
-                        }
+                    }
 
-                        if ($(".serviceCharge_count_timer1").val().trim() == "" && chargeType == '1') {
-                            $(".serviceCharge_count_timer_tip").text("服务费金额不能为空");
+                    if ($(".serviceCharge_count_timer1").val().trim() == "" && chargeType == '1') {
+                        $(".serviceCharge_count_timer_tip").text("服务费金额不能为空");
+
+                        $(".serviceCharge_count_timer1").focus();
+                        $(".serviceCharge_count_timer1").addClass("error");
+                        vcheck = false;
+                    }
+                    if ($(".serviceCharge_count_timer1").val().trim() != "" && chargeType == '1') {
+                        var val = $.trim($(".serviceCharge_count_timer1").val());
+                        if (customTable.ismoney(val) === false) {
+                            $(".serviceCharge_count_timer_tip").text("服务费金额只能输入最多两位小数或整数");
 
                             $(".serviceCharge_count_timer1").focus();
                             $(".serviceCharge_count_timer1").addClass("error");
                             vcheck = false;
                         }
-                        if ($(".serviceCharge_count_timer1").val().trim() != "" && chargeType == '1') {
-                            var val = $.trim($(".serviceCharge_count_timer1").val());
-                            if (customTable.ismoney(val) === false) {
-                                $(".serviceCharge_count_timer_tip").text("服务费金额只能输入最多两位小数或整数");
 
-                                $(".serviceCharge_count_timer1").focus();
-                                $(".serviceCharge_count_timer1").addClass("error");
-                                vcheck = false;
-                            }
-
-                        }
-                        if ($(".serviceCharge_count_timer2").val().trim() == "" && chargeType == '2') {
-                            $(".serviceCharge_count_timer_tip").text("服务费金额不能为空");
+                    }
+                    if ($(".serviceCharge_count_timer2").val().trim() == "" && chargeType == '2') {
+                        $(".serviceCharge_count_timer_tip").text("服务费金额不能为空");
+                        $(".serviceCharge_count_timer2").focus();
+                        $(".serviceCharge_count_timer2").addClass("error");
+                        vcheck = false;
+                    }
+                    if ($(".serviceCharge_count_timer2").val().trim() != "" && chargeType == '2') {
+                        var val = $.trim($(".serviceCharge_count_timer2").val());
+                        if (customTable.ismoney(val) === false) {
+                            $(".serviceCharge_count_timer_tip").text("服务费金额只能输入最多两位小数或整数");
                             $(".serviceCharge_count_timer2").focus();
                             $(".serviceCharge_count_timer2").addClass("error");
                             vcheck = false;
                         }
-                        if ($(".serviceCharge_count_timer2").val().trim() != "" && chargeType == '2') {
-                            var val = $.trim($(".serviceCharge_count_timer2").val());
-                            if (customTable.ismoney(val) === false) {
-                                $(".serviceCharge_count_timer_tip").text("服务费金额只能输入最多两位小数或整数");
-                                $(".serviceCharge_count_timer2").focus();
-                                $(".serviceCharge_count_timer2").addClass("error");
-                                vcheck = false;
-                            }
 
-                        }
                     }
-					if($("#minp").is(":checked") && ($('#minprice').val() === '0' ||  $('#minprice').val() === '')) {
-						vcheck = false;
-						$('#minConsu_tip').text('必须大于0');
-					}
+                }
+                if ($("#minp").is(":checked") && ($('#minprice').val() === '0' || $('#minprice').val() === '')) {
+                    vcheck = false;
+                    $('#minConsu_tip').text('必须大于0');
+                }
 
-					if($("#fixp").is(":checked") && ($('#fixprice').val() === '0' ||  $('#fixprice').val() === '')) {
-						vcheck = false;
-						$('#fixConsu_tip').text('必须大于0');
-					}
+                if ($("#fixp").is(":checked") && ($('#fixprice').val() === '0' || $('#fixprice').val() === '')) {
+                    vcheck = false;
+                    $('#fixConsu_tip').text('必须大于0');
+                }
 
-					
-					if (vcheck) {
-                        $(".serviceCharge_count_timer_tip").text('')//提示信息为空;
-						if(check_validate()){
-							save_table();
-						}else{
-						}
-					}
-				}
-	});
- 	$("#add-form2").validate(
-			{
-				submitHandler : function(form) {
-                    var vcheck = true;
-                    var val=$("#areanameB").val().trim()
-                    if ($("#areanameB").val().trim() == "") {
-                        $("#areanameB_tip").text("分区名称不能为空");
+
+                if (vcheck) {
+                    $(".serviceCharge_count_timer_tip").text('')//提示信息为空;
+                    if (check_validate()) {
+                        save_table();
+                    } else {
+                    }
+                }
+            }
+        });
+    $("#add-form2").validate(
+        {
+            submitHandler: function (form) {
+                var vcheck = true;
+                var val = $("#areanameB").val().trim()
+                if ($("#areanameB").val().trim() == "") {
+                    $("#areanameB_tip").text("分区名称不能为空");
+                    $("#areanameB").focus();
+                    $("#areanameB").addClass("error");
+                    vcheck = false;
+                }
+                else {
+                    //只能输入数字以及中英文字符
+                    var abc = /^[A-Za-z0-9\u4E00-\u9FA5]*$/g
+                    if (!abc.test(val)) {
+                        //$("#areanameB").val(val.substr(0, $("#areanameB").val().length-1));
+                        $("#areanameB_tip").text("分区名称只能输入数字以及中英文字符").css('font-size', '12px');
                         $("#areanameB").focus();
                         $("#areanameB").addClass("error");
                         vcheck = false;
                     }
-                    else {
-                        //只能输入数字以及中英文字符
-                        var abc=/^[A-Za-z0-9\u4E00-\u9FA5]*$/g
-                        if(!abc.test(val)){
-                            //$("#areanameB").val(val.substr(0, $("#areanameB").val().length-1));
-                            $("#areanameB_tip").text("分区名称只能输入数字以及中英文字符").css('font-size','12px');
-                            $("#areanameB").focus();
-                            $("#areanameB").addClass("error");
-                            vcheck = false;
-                        }
+                }
+                if (vcheck) {
+                    if (check_area()) {
+                        save_Area();
+                    } else {
                     }
-					if (vcheck) {
-						if(check_area()){
-							save_Area();
-						}else{
-					}
-				}
+                }
 
             }
         });
@@ -667,28 +666,6 @@ function del() {
         async: false,
         url: global_Path + "/table/delete/" + $("#showTableId").val() + ".json",
 //			url : global_Path + "/dish/delete/"+$("#showDishId").val()+".json",
-			dataType : "json",
-			success : function(result) {
-				if(result.code=='0'){
-					$(".img-close").click();
-					oneclickTableType($("#nav-tables .active").attr("id"));
-					customTable.getTableJson();//重新获取餐台数据
-					var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0]-(1);
-					$("#nav-tables .active").find("span").eq(1).text("("+tableNum+")");
-				}
-				else {
-						widget.modal.alert({
-							cls: 'fade in',
-							content:'<div><img src="../images/del-tip.png" style="margin-right: 20px">'+result.msg+'</div>',
-							width:360,
-							height:500,
-							btnOkTxt: '确定 ',
-							btnCancelTxt: '',
-							btnOkCb:function () {
-								$('.modal-alert:last,.fade:last').remove()
-							}
-						});
-					}
         dataType: "json",
         success: function (result) {
             if (result.code == '0') {
@@ -698,7 +675,7 @@ function del() {
                 var tableNum = $("#nav-tables .active").find("span").eq(1).text().split("(")[1].split(")")[0] - (1);
                 $("#nav-tables .active").find("span").eq(1).text("(" + tableNum + ")");
 
-                if(tableNum=='0'&& $('.counter-content-title .tables-type-active').attr('type') == '1'){
+                if (tableNum == '0' && $('.counter-content-title .tables-type-active').attr('type') == '1') {
                     $('.counter-content-title .tables-type-active').click()
                 }
                 else {
@@ -935,16 +912,16 @@ function doEdit(id) {
             if (result.minprice == 0.00) {
                 result.minprice = "";
             } else {
-                $("#minp").prop("checked",true);
-                checkit(true,'minp')
+                $("#minp").prop("checked", true);
+                checkit(true, 'minp')
 
             }
             $("#fixpriceLable").html('<input type="checkbox" id="fixp" onclick="checkit(this.checked,this.id)" >固定使用费：');
             if (result.fixprice == 0.00) {
                 result.fixprice = "";
             } else {
-                $("#fixp").prop("checked",true);
-                checkit(true,'fixp')
+                $("#fixp").prop("checked", true);
+                checkit(true, 'fixp')
             }
 
             $("#tableid").val(result.tableid);
@@ -971,8 +948,8 @@ function init_object() {
     $("#minprice").attr("disabled", true);
     $("#fixprice").attr("disabled", true);
 
-    $("#minp").prop("checked",false);
-    $("#fixp").prop("checked",false);
+    $("#minp").prop("checked", false);
+    $("#fixp").prop("checked", false);
     $("#minprice").next("span").css({"color": "#CECECE"});
     $(".minpCheckboxSpan").css({"color": " #CECECE"});
     $("#fixprice").next("span").css({"color": "#CECECE"});
@@ -1001,51 +978,54 @@ function init_object() {
 /**
  * 单击分类事件
  */
-function  oneclickTableType(id){
-	$(".nav-counter li").removeClass("active");
-	$("#"+id).addClass("active");
-	utils.storage.setter('choesetable',$('#nav-tables .active').attr('id'))
-	/*自定义排序点击隐藏咖啡和外卖台*/
-	if($('#dinnerTable').attr('isclicktype')){//自定义排序时切换分区用tableJson缓存数据
-		var _html=''
-		$(".counter-detail-box").remove();
-		$.each(tableJson,function(index,item){
-			if(id==item.areaid){
-				item.tables.sort(function(a,b){return a.position-b.position});//按照position排序
-				for(var i=0;i<item.tables.length;i++ ){
-					_html+="<div class='counter-detail-box' tabletype='"+item.tables[i].tabletype+"' id='"+item.tables[i].tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>";
-					_html+="<p  >"+item.tables[i].tableName+"</p>";
-					_html+=	"<p  >("+item.tables[i].personNum+"人桌)</p>";
-					_html+=	"<i class='icon-remove hidden'  onclick='delTablesDetail("+"&apos;"+item.tables[i].tableid+"&apos;"+","+"&apos;"+item.tables[i].tableName+"&apos;"+",event)'></i></div>";
-				}
-				$('#tables-detailMain-Add').before(_html)
-				customTable.isHide();
-				return false
-			}
-		});
-		return false
-	}
-	$.ajax({
-		url : global_Path + "/table/getTablesByTableType/"+id+".json",
-		type : "post",
-		datatype : "json",
-		contentType : "application/json; charset=utf-8",
-		success : function(result) {
-		    //console.log(result)
-			$(".counter-detail-box").remove();
-			$.each(result,function(index,item){
-				$('#tables-detailMain-Add').before("<div class='counter-detail-box' tabletype='"+item.tabletype+"' id='"+item.tableid+"' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>"+
-				"<p  >"+item.tableName+"</p>"+
-				"<p  >("+item.personNum+"人桌)</p>"+
-				"<i class='icon-remove hidden'  onclick='delTablesDetail("+"&apos;"+item.tableid+"&apos;"+","+"&apos;"+item.tableName+"&apos;"+",event)'></i></div>");
-				/*$('#'+item.tableid).dblclick(function(){
-					doEdit($(this).attr("id"));
-				})*/;
-			});
-			/*自定义排序点击隐藏咖啡和外卖台*/
-			if($('#dinnerTable').attr('isclicktype')){
-				customTable.isHide();
-			}
+function oneclickTableType(id) {
+    $(".nav-counter li").removeClass("active");
+    $("#" + id).addClass("active");
+    utils.storage.setter('choesetable', $('#nav-tables .active').attr('id'))
+    /*自定义排序点击隐藏咖啡和外卖台*/
+    if ($('#dinnerTable').attr('isclicktype')) {//自定义排序时切换分区用tableJson缓存数据
+        var _html = ''
+        $(".counter-detail-box").remove();
+        $.each(tableJson, function (index, item) {
+            if (id == item.areaid) {
+                item.tables.sort(function (a, b) {
+                    return a.position - b.position
+                });//按照position排序
+                for (var i = 0; i < item.tables.length; i++) {
+                    _html += "<div class='counter-detail-box' tabletype='" + item.tables[i].tabletype + "' id='" + item.tables[i].tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>";
+                    _html += "<p  >" + item.tables[i].tableName + "</p>";
+                    _html += "<p  >(" + item.tables[i].personNum + "人桌)</p>";
+                    _html += "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tables[i].tableid + "&apos;" + "," + "&apos;" + item.tables[i].tableName + "&apos;" + ",event)'></i></div>";
+                }
+                $('#tables-detailMain-Add').before(_html)
+                customTable.isHide();
+                return false
+            }
+        });
+        return false
+    }
+    $.ajax({
+        url: global_Path + "/table/getTablesByTableType/" + id + ".json",
+        type: "post",
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (result) {
+            //console.log(result)
+            $(".counter-detail-box").remove();
+            $.each(result, function (index, item) {
+                $('#tables-detailMain-Add').before("<div class='counter-detail-box' tabletype='" + item.tabletype + "' id='" + item.tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>" +
+                    "<p  >" + item.tableName + "</p>" +
+                    "<p  >(" + item.personNum + "人桌)</p>" +
+                    "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tableid + "&apos;" + "," + "&apos;" + item.tableName + "&apos;" + ",event)'></i></div>");
+                /*$('#'+item.tableid).dblclick(function(){
+                 doEdit($(this).attr("id"));
+                 })*/
+                ;
+            });
+            /*自定义排序点击隐藏咖啡和外卖台*/
+            if ($('#dinnerTable').attr('isclicktype')) {
+                customTable.isHide();
+            }
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1108,123 +1088,123 @@ function editArea(id) {
 }
 var areaLength;
 /*保存分区*/
-function save_Area(){
-	var areaInfo = {};
-	areaInfo["" + "areaname" + ""] = $("#areanameB").val();
-	areaInfo["" + "areaid" + ""] = $("#areaidB").val();
-	areaLength= $("#nav-tables").find("li").length+1;
-	$.ajax({
-		type:"post",
-		async:false,
-		url : global_Path+'/tableArea/save/'+areaLength+".json",
-		contentType:'application/json;charset=UTF-8',
-	    data:JSON.stringify(areaInfo),
-		dataType : "json",
-		success : function(result) {
-			if(result.code=='0'){
-				window.location.reload();
-			}
-			else {
-				customTable.errorAlert(result.msg)
-			}
+function save_Area() {
+    var areaInfo = {};
+    areaInfo["" + "areaname" + ""] = $("#areanameB").val();
+    areaInfo["" + "areaid" + ""] = $("#areaidB").val();
+    areaLength = $("#nav-tables").find("li").length + 1;
+    $.ajax({
+        type: "post",
+        async: false,
+        url: global_Path + '/tableArea/save/' + areaLength + ".json",
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify(areaInfo),
+        dataType: "json",
+        success: function (result) {
+            if (result.code == '0') {
+                window.location.reload();
+            }
+            else {
+                customTable.errorAlert(result.msg)
+            }
 
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(errorThrown);
-		}
-	});
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
 }
-function check_validate(){
-	var TN = $("#tableName").val();
-	$("#tableNo").val(TN);
-	  	var flag=true;
-	$.ajax({
-		type : "post",
-		async : false,
-		data:{
-    	    tableid:$("#tableid").val(),
-    	    tableName:$("#tableName").val()
-		},
-		url : global_Path+"/table/validateTable.json",
-		dataType : "json",
-		success : function(result) {
-			if(result.message=='餐台名称不能重复'){
-				$("#tableName_tip").text(result.messageDetail);
-				$("#tableName").focus();
-				flag=false;
-			}
-			}
-		
-	});
-	return flag;
-} 
-function check_area(){
-	var TN = $("#areanameB").val();
-	$("#areaNoB").val(TN);
-	  	var flag=true;
-	$.ajax({
-		type : "post",
-		async : false,
-		data:{
-			areaid:$("#areaidB").val(),
-    	    areaname:$("#areanameB").val()
-		},
-		url : global_Path+"/tableArea/validateArea.json",
-		dataType : "json",
-		success : function(result) {
-			
-			if(result.message=='分区名称不能重复'){
-				 $("#login").focus();
-				$("#areanameB_tip").text(result.message);
-				$("#areanameB").focus();
-				flag=false;
-			}
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(errorThrown);
-		}
-	});
-	return flag;
-} 
-function delAreaAndTables(){
-	delArea();
-	/*新接口直接删除*/
-	/*if($('.counter-detail-box').length<1){
-		delArea();
-		return false
-	}
-	$.ajax({
-		type:"post",
-		async:false,
-		url : global_Path+"/table/deleteTablesByAreaid/"+$("#nav-tables .active").attr("id")+".json",
-		dataType : "json",
-		success : function(result) {
-			if(result.code=='0'){
-					delArea()
-			}
-			else {
-				customTable.errorAlert(result.msg)
-			}
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(errorThrown);
-		}
-	});*/
+function check_validate() {
+    var TN = $("#tableName").val();
+    $("#tableNo").val(TN);
+    var flag = true;
+    $.ajax({
+        type: "post",
+        async: false,
+        data: {
+            tableid: $("#tableid").val(),
+            tableName: $("#tableName").val()
+        },
+        url: global_Path + "/table/validateTable.json",
+        dataType: "json",
+        success: function (result) {
+            if (result.message == '餐台名称不能重复') {
+                $("#tableName_tip").text(result.messageDetail);
+                $("#tableName").focus();
+                flag = false;
+            }
+        }
+
+    });
+    return flag;
 }
-function delArea(){
-	$.ajax({
-		type:"post",
-		async:false,
-		url : global_Path+"/tableArea/delTablesAndArea/"+$("#nav-tables .active").attr("id")+".json",
-		dataType : "json",
-		success : function(result) {
-			if(result.code=='0'){
-				updateAreaOrder();
-				window.location.reload();
-			}
-			else {
-				customTable.errorAlert(result.msg)
-			}
+function check_area() {
+    var TN = $("#areanameB").val();
+    $("#areaNoB").val(TN);
+    var flag = true;
+    $.ajax({
+        type: "post",
+        async: false,
+        data: {
+            areaid: $("#areaidB").val(),
+            areaname: $("#areanameB").val()
+        },
+        url: global_Path + "/tableArea/validateArea.json",
+        dataType: "json",
+        success: function (result) {
+
+            if (result.message == '分区名称不能重复') {
+                $("#login").focus();
+                $("#areanameB_tip").text(result.message);
+                $("#areanameB").focus();
+                flag = false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+    return flag;
+}
+function delAreaAndTables() {
+    delArea();
+    /*新接口直接删除*/
+    /*if($('.counter-detail-box').length<1){
+     delArea();
+     return false
+     }
+     $.ajax({
+     type:"post",
+     async:false,
+     url : global_Path+"/table/deleteTablesByAreaid/"+$("#nav-tables .active").attr("id")+".json",
+     dataType : "json",
+     success : function(result) {
+     if(result.code=='0'){
+     delArea()
+     }
+     else {
+     customTable.errorAlert(result.msg)
+     }
+     },
+     error : function(XMLHttpRequest, textStatus, errorThrown) {
+     alert(errorThrown);
+     }
+     });*/
+}
+function delArea() {
+    $.ajax({
+        type: "post",
+        async: false,
+        url: global_Path + "/tableArea/delTablesAndArea/" + $("#nav-tables .active").attr("id") + ".json",
+        dataType: "json",
+        success: function (result) {
+            if (result.code == '0') {
+                updateAreaOrder();
+                window.location.reload();
+            }
+            else {
+                customTable.errorAlert(result.msg)
+            }
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1594,23 +1574,23 @@ var customTable = {
     },
     /*获取所以餐台数据*/
     getTableJson: function () {
-        serviceTablesJson=[];
+        serviceTablesJson = [];
         var tmpJson = [];
-        take_outTable=[]//外卖咖啡台餐桌数组
-        tableJson=[];//全部餐台数组
+        take_outTable = []//外卖咖啡台餐桌数组
+        tableJson = [];//全部餐台数组
         $.ajax({
             url: global_Path + '/table/getTypeAndTableMap.json',
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
-            async :false,
+            async: false,
             success: function (res) {
                 //console.log(res)
                 $.each(res, function (index, item) {
                     $.each(item, function (key, obj) {
                         var tmpJson1 = JSON.parse(key);
                         var chargeOff = [];//有餐台服务费
-                        var  take_out=[];
+                        var take_out = [];
                         $.each(obj, function (k, v) {
                             if (v.chargeOn == '1') {
                                 chargeOff.push(obj[k])
@@ -1637,7 +1617,7 @@ var customTable = {
                             'areaSort': tmpJson1.areaSort,
                             'tables': obj
                         }
-                            //全部餐台
+                        //全部餐台
                         tmpJson.push(abcd);
                         //有服务费的餐台
                         if (chargeOff.length > 0) {
@@ -1671,7 +1651,7 @@ var customTable = {
     isClick: function () {
         var that = this, cont = 0;
         $('#dinnerTable').click(function () {
-            if($('.counter-content-title .tables-type-active').attr('type') == '1'){
+            if ($('.counter-content-title .tables-type-active').attr('type') == '1') {
                 that.errorAlert('在服务费餐台分类下，不能自定义餐台排序')
                 return false
             }
@@ -1688,11 +1668,11 @@ var customTable = {
                 }
                 //改变过滤后的餐台数值
                 $('#nav-tables li').each(function () {
-                    var me=$(this);
-                    $.each(take_outTable,function (key,val) {
-                        if(me.attr('id')==val.areaid){
-                            var text=me.find('span').eq(1).text().split('(')[1].split(')')[0]-val.tables.length
-                            me.find('span').eq(1).text('('+text+')')
+                    var me = $(this);
+                    $.each(take_outTable, function (key, val) {
+                        if (me.attr('id') == val.areaid) {
+                            var text = me.find('span').eq(1).text().split('(')[1].split(')')[0] - val.tables.length
+                            me.find('span').eq(1).text('(' + text + ')')
                         }
                     })
 
@@ -1915,7 +1895,7 @@ var customTable = {
     },
     /*餐台服务费开启关闭*/
     serviceCharge_onoff: function () {
-        var that=this;
+        var that = this;
         $('#serviceCharge_onoff input').click(function () {
             var me = $(this).val();
             $('.serviceCharge_count_timer_tip').text('')//错误信息
@@ -1965,7 +1945,7 @@ var customTable = {
                 window.location.reload();//刷新页面
             }
             if (me == '1') {
-                if(serviceTablesJson.length<'1'){
+                if (serviceTablesJson.length < '1') {
                     that.errorAlert('该门店不存在服务费餐台');
                     $('#allTables').addClass('tables-type-active')
                     return false
