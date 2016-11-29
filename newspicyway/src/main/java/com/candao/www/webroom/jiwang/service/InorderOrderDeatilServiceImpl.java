@@ -158,8 +158,8 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 
 		// 吉旺更新餐台操作
 		if (result != null) {
-			inorderTable.setChecktot((double) result.get("allItemtot"));
-			inorderTable.setItemtot((double) result.get("allItemtot"));
+			inorderTable.setChecktot(inorderTable.getChecktot()+(double) result.get("allItemtot"));
+			inorderTable.setItemtot(inorderTable.getItemtot()+(double) result.get("allItemtot"));
 			checkTableDao.updateCheckForTot(inorderTable);
 
 			Map<String, String> printMap;
