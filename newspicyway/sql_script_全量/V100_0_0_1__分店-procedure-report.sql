@@ -18,8 +18,8 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     --
     -- 返回数据举例（只返回一条数据）：
     -- 3895.00 3636.00 259.00 3895 0 0 0 14.50 0 0 0 0.5 0.5 0.5 9 432.78 28 129.86	139.11 0.41	0.70 31 0.00 0.00	0.00 0.00	0.00
-
-    DECLARE v_date_start DATETIME;
+	DECLARE v_taocanyouhui					DOUBLE(13, 2) DEFAULT 0;    
+	DECLARE v_date_start DATETIME;
     DECLARE v_date_end DATETIME;
     DECLARE v_paidinamount DOUBLE(13, 2) DEFAULT 0; #实收
 
@@ -203,31 +203,26 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       WHERE
         a.orderid = b.orderid
         AND b.orignalprice > 0;
-
-    DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
-    CREATE TEMPORARY TABLE t_temp_taocan
-    (
-      primarykey   VARCHAR(50),
-      orignalprice DOUBLE(13, 2)
-    )
-      ENGINE = MEMORY
-      DEFAULT CHARSET = utf8
-      MAX_ROWS = 1000000;
-
-    INSERT INTO t_temp_taocan SELECT
-                                superkey,
-                                sum(dishnum * orignalprice)
-                              FROM t_temp_order_detail
-                              WHERE dishtype = 2 AND superkey <> primarykey
-                              GROUP BY superkey;
-
-    UPDATE t_temp_order_detail d, t_temp_taocan c
-    SET d.orignalprice = c.orignalprice
-    WHERE c.primarykey = d.primarykey;
-
-    DELETE FROM t_temp_order_detail
-    WHERE dishtype = 2 AND superkey <> primarykey;
-
+    #DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   # CREATE TEMPORARY TABLE t_temp_taocan
+   # (
+   #   primarykey   VARCHAR(50),
+   #   orignalprice DOUBLE(13, 2)
+  #  )
+  #    ENGINE = MEMORY
+   #   DEFAULT CHARSET = utf8
+   #   MAX_ROWS = 1000000;
+   # INSERT INTO t_temp_taocan SELECT
+   #                             superkey,
+  #                              SUM(dishnum * orignalprice)
+    #                          FROM t_temp_order_detail
+    #                          WHERE dishtype = 2 AND superkey <> primarykey
+     #                         GROUP BY superkey;
+  #  UPDATE t_temp_order_detail d, t_temp_taocan c
+   # SET d.orignalprice = c.orignalprice
+    #WHERE c.primarykey = d.primarykey;
+    #DELETE FROM t_temp_order_detail
+    #WHERE dishtype = 2 AND superkey <> primarykey;
     DROP TEMPORARY TABLE IF EXISTS t_temp_settlement_detail;
     CREATE TEMPORARY TABLE t_temp_settlement_detail
     (
@@ -358,20 +353,31 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     WHERE
       a.orderid = b.orderid
       AND b.orignalprice > 0
-      AND a.orderstatus = 3;
-
+      AND a.orderstatus = 3
+      AND (b.dishtype<>2
+		OR (b.dishtype = 2 AND b.superkey <> b.primarykey));
     # 会员登录后菜价变化
-    SELECT sum((ifnull(b.orignalprice, 0) - ifnull(b.orderprice, 0)) * b.dishnum)
+    SELECT SUM((IFNULL(b.orignalprice, 0) - IFNULL(b.orderprice, 0)) * b.dishnum)
     INTO
       v_da_meberDishPriceFree
     FROM
       t_temp_order a, t_temp_order_detail b
     WHERE
       a.orderid = b.orderid
-      AND b.orignalprice > 0
-      AND b.orderprice > 0
-      AND a.orderstatus = 3;
+      AND b.pricetype = 0
+      AND a.orderstatus = 3
+			AND (b.dishtype <> 2 OR(b.dishtype =2 AND b.superkey = b.primarykey));
 
+#套餐优惠
+	SELECT 
+		IFNULL(SUM(CASE WHEN superkey=primarykey THEN 0 ELSE orignalprice*dishnum END),0)
+		-
+		IFNULL(SUM(CASE WHEN superkey<>primarykey THEN 0 ELSE orignalprice*dishnum END),0)
+	INTO v_taocanyouhui
+	FROM t_temp_order_detail a,t_temp_order b
+	WHERE dishtype = 2
+	AND a.orderid = b.orderid
+	AND b.orderstatus = 3;
     SELECT
       ifnull(sum(Inflated), 0),
       ifnull(sum(
@@ -487,25 +493,28 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                      payamount
                  ELSE
                    0
+                 END), 0),
+      IFNULL(SUM(
+                 CASE
+                 WHEN payway = 6
+                   THEN
+                     payamount
+                 ELSE
+                   0
                  END), 0)
+
     INTO
-      v_pa_cash, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_other_vipordercount, v_pa_weixin, v_pa_zhifubao
+      v_pa_cash, v_pa_card, v_pa_icbc_card, v_pa_credit, v_pa_paidinamount, v_da_integralconsum, v_da_meberTicket, v_da_fraction, v_da_roundoff, v_other_vipordercount, v_pa_weixin, v_pa_zhifubao,v_da_free
     FROM
       t_temp_settlement_detail;
-
-   -- SET v_paidinamount =
-   -- v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin +
-   -- v_pa_zhifubao;
-	SELECT IFNULL(SUM(payamount),0) INTO v_temp_paidinamount
-
+    #SET v_paidinamount =
+    #v_pa_cash + v_pa_credit + v_pa_card + v_pa_paidinamount - v_da_mebervalueadd + v_pa_icbc_card + v_pa_weixin +
+    #v_pa_zhifubao;
+   SELECT IFNULL(SUM(payamount),0) INTO v_temp_paidinamount
    FROM t_temp_settlement_detail
-
    WHERE payway IN (SELECT itemid FROM v_revenuepayway);
-
  
-
    SET v_paidinamount = v_temp_paidinamount - v_da_mebervalueadd;
-
     #     modified by caicai
     #     为保证POS清机单上的优免金额和这里的优免相同，将折扣金额去掉
     #     SELECT ifnull(sum(a.payamount), 0)
@@ -516,45 +525,12 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     #     WHERE
     #       a.couponid = b.id
     #       AND b.type = '02';
-  IF pi_sb > -1 THEN
-        SELECT
-          IFNULL(sum(payamount), 0) into v_ssamount
-        FROM
-          t_settlement_detail sd
-        LEFT JOIN t_order o ON sd.orderid = o.orderid
-        WHERE
-          o.branchid = pi_branchid
-        AND o.begintime BETWEEN v_date_start
-        AND v_date_end
-        AND sd.payway IN (
-          SELECT
-            itemid
-          FROM
-            `v_revenuepayway`
-        ) AND o.shiftid = pi_sb;
-      ELSE
-       SELECT
-          IFNULL(sum(payamount), 0) into v_ssamount
-        FROM
-          t_settlement_detail sd
-        LEFT JOIN t_order o ON sd.orderid = o.orderid
-        WHERE
-          o.branchid = pi_branchid
-        AND o.begintime BETWEEN v_date_start
-        AND v_date_end
-        AND sd.payway IN (
-          SELECT
-            itemid
-          FROM
-            `v_revenuepayway`
-        );
-      END IF;
-    SET v_da_free =
-    v_sa_shouldamount + v_oa_shouldamount - v_ssamount;
-
+    #SET v_da_free =
+   # v_sa_shouldamount + v_oa_shouldamount - v_paidinamount - v_da_roundoff - v_da_integralconsum - v_da_meberTicket -
+    #v_da_discount - v_da_fraction - v_da_give - v_da_mebervalueadd - v_da_meberDishPriceFree;
     SELECT
-      count(1),
-      sum(a.personNum)
+      COUNT(1),
+      SUM(a.personNum)
     INTO
       v_other_tablecount, v_other_tableperson
     FROM
@@ -623,34 +599,19 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       FROM t_temp_order
       WHERE orderstatus <> 2;
     END IF;
-
     SET v_bill_nums = v_closed_bill_nums + v_no_bill_nums;
-
     SET v_bill_shouldamount = v_closed_bill_shouldamount + v_no_bill_shouldamount;
-
     SET v_person_nums = v_closed_person_nums + v_no_person_nums;
-
     IF v_sa_ordercount > 0
     THEN
-
       SET v_sa_attendance =
-      v_sa_settlementnum / (timestampdiff(DAY, v_date_start, v_date_end) + 1) / v_other_tableperson * 100;
-
-
-      SET v_sa_overtaiwan = v_sa_ordercount / (timestampdiff(DAY, v_date_start, v_date_end) + 1) / v_other_tablecount *
+      v_sa_settlementnum / (TIMESTAMPDIFF(DAY, v_date_start, v_date_end) + 1) / v_other_tableperson * 100;
+      SET v_sa_overtaiwan = v_sa_ordercount / (TIMESTAMPDIFF(DAY, v_date_start, v_date_end) + 1) / v_other_tablecount *
                             100;
-
-
       SET v_sa_tableconsumption = (v_paidinamount - v_oa_paidinamount) / v_sa_ordercount;
-
-
       SET v_sa_shouldaverage = v_sa_shouldamount / v_sa_settlementnum;
-
-
       SET v_sa_paidinaverage = (v_paidinamount - v_oa_paidinamount) / v_sa_settlementnum;
-
-
-      SELECT sum(timestampdiff(SECOND, begintime, endtime)) / v_sa_ordercount / 60
+      SELECT SUM(TIMESTAMPDIFF(SECOND, begintime, endtime)) / v_sa_ordercount / 60
       INTO
         v_sa_avgconsumtime
       FROM
@@ -660,17 +621,12 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
         AND endtime IS NOT NULL
         AND orderstatus = 3;
     END IF;
-
     IF v_oa_ordercount > 0
     THEN
-
       SET v_oa_avgprice = v_oa_paidinamount / v_oa_ordercount;
     END IF;
-
     SET v_ma_total = v_da_meberTicket + v_da_integralconsum + v_pa_paidinamount;
-
     SET v_other_viporderpercent = v_other_vipordercount / (v_sa_ordercount + v_oa_ordercount) * 100;
-
     DROP TEMPORARY TABLE IF EXISTS t_temp_res;
     CREATE TEMPORARY TABLE t_temp_res
     (
@@ -719,11 +675,11 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       personnums             DOUBLE(13, 2),
       zaitaishu              INT(11),
       kaitaishu              INT(11),
-      memberDishPriceFree    DOUBLE(13, 2)
+      memberDishPriceFree    DOUBLE(13, 2),
+			taocanyouhui					 DOUBLE(13, 2)
     )
       ENGINE = MEMORY
       DEFAULT CHARSET = utf8;
-
     INSERT INTO t_temp_res VALUES
       (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount - v_paidinamount,
                                               v_pa_cash, v_pa_credit, v_pa_card, v_pa_icbc_card, v_pa_weixin,
@@ -740,7 +696,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                                                                                         v_oa_ordercount, v_oa_avgprice,
         v_other_vipordercount, v_other_viporderpercent, v_ma_total, v_closed_bill_nums, v_closed_bill_shouldamount,
         v_closed_person_nums, v_no_bill_nums, v_no_bill_shouldamount, v_no_person_nums, v_bill_nums,
-       v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu, v_da_meberDishPriceFree);
+       v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu, v_da_meberDishPriceFree,v_taocanyouhui);
     SELECT *
     FROM
       t_temp_res;
@@ -2396,8 +2352,11 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS p_report_yyfx_yysjtj$$
-CREATE PROCEDURE p_report_yyfx_yysjtj(IN  pi_branchid INT(11), 
+
+
+DROP PROCEDURE IF EXISTS `p_report_yyfx_yysjtj`$$
+
+CREATE PROCEDURE `p_report_yyfx_yysjtj`(IN  pi_branchid INT(11), 
                                       IN  pi_xslx     SMALLINT, 
                                       IN  pi_ksrq     DATETIME, 
                                       IN  pi_jsrq     DATETIME, 
@@ -2445,17 +2404,17 @@ BEGIN
 
   #设置循环次数,处理开始结算时间
   IF pi_xslx = 0 THEN
-    SET v_statistictime = date_format(pi_ksrq, '%Y-%m-%d');
-    SET v_date_start = str_to_date(concat(v_statistictime, '00:00:00'), '%Y-%m-%d %H:%i:%s');
-    SET v_date_end = str_to_date(concat(date_format(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
-    SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
-    SET v_loop_num = timestampdiff(DAY, v_date_start, v_date_end) + 1;
+    SET v_statistictime = DATE_FORMAT(pi_ksrq, '%Y-%m-%d');
+    SET v_date_start = STR_TO_DATE(CONCAT(v_statistictime, '00:00:00'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_end = STR_TO_DATE(CONCAT(DATE_FORMAT(pi_jsrq, '%Y-%m-%d'), '23:59:59'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_interval = DATE_SUB(DATE_ADD(v_date_start, INTERVAL 1 DAY), INTERVAL 1 SECOND);
+    SET v_loop_num = TIMESTAMPDIFF(DAY, v_date_start, v_date_end) + 1;
   ELSEIF pi_xslx = 1 THEN
-    SET v_statistictime = date_format(pi_ksrq, '%Y-%m');
-    SET v_date_start = str_to_date(concat(v_statistictime, '-01 00:00:00'), '%Y-%m-%d %H:%i:%s');
-    SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
-    SET v_date_end = date_sub(date_add(str_to_date(concat(date_format(pi_jsrq, '%Y-%m'), '-01 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 MONTH), INTERVAL 1 SECOND);
-    SET v_loop_num = timestampdiff(MONTH, v_date_start, v_date_end) + 1;
+    SET v_statistictime = DATE_FORMAT(pi_ksrq, '%Y-%m');
+    SET v_date_start = STR_TO_DATE(CONCAT(v_statistictime, '-01 00:00:00'), '%Y-%m-%d %H:%i:%s');
+    SET v_date_interval = DATE_SUB(DATE_ADD(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+    SET v_date_end = DATE_SUB(DATE_ADD(STR_TO_DATE(CONCAT(DATE_FORMAT(pi_jsrq, '%Y-%m'), '-01 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+    SET v_loop_num = TIMESTAMPDIFF(MONTH, v_date_start, v_date_end) + 1;
   ELSE
     SELECT NULL;
     LEAVE label_main;
@@ -2503,7 +2462,8 @@ BEGIN
     childdishtype TINYINT,
     primarykey VARCHAR(50),
     superkey VARCHAR(50),
-    dishtype TINYINT
+    dishtype TINYINT,
+		pricetype DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   # 向临时订单详情内存表中放值
@@ -2516,11 +2476,12 @@ BEGIN
        , b.primarykey
        , b.superkey
        , b.dishtype
+			 , b.pricetype
   FROM
     t_temp_order a, t_order_detail b
   WHERE
-    a.orderid = b.orderid
-    AND orignalprice > 0;
+    a.orderid = b.orderid;
+    #AND orignalprice > 0;
  -- 计算套餐金额开始
    DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
    CREATE TEMPORARY TABLE t_temp_taocan
@@ -2528,12 +2489,12 @@ BEGIN
     primarykey VARCHAR(50),
     orignalprice DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
-  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+  #INSERT INTO t_temp_taocan SELECT superkey,SUM(dishnum*orignalprice) FROM t_temp_order_detail  WHERE dishtype = 2 AND superkey <> primarykey GROUP BY superkey;
+  #UPDATE t_temp_order_detail d,t_temp_taocan c SET d.orignalprice = c.orignalprice  WHERE c.primarykey = d.primarykey;
    --  计算套餐金额结束 
 
   # 删除套餐明细
-  delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
+  #DELETE FROM t_temp_order_detail WHERE dishtype =2 AND superkey <> primarykey;
 
   #为订单详情表创建索引
   CREATE INDEX ix_t_temp_order_detail_begintime ON t_temp_order_detail (begintime);
@@ -2599,16 +2560,17 @@ BEGIN
   DO
 
     #计算应收
-    SELECT ifnull(sum(a.orignalprice * a.dishnum), 0)
+    SELECT IFNULL(SUM(a.orignalprice * a.dishnum), 0)
     INTO
       v_shouldamount
     FROM
-      t_temp_order_detail a left join t_temp_order b on a.orderid = b.orderid
+      t_temp_order_detail a LEFT JOIN t_temp_order b ON a.orderid = b.orderid
     WHERE
-      b.begintime BETWEEN v_date_start AND v_date_interval;
+      b.begintime BETWEEN v_date_start AND v_date_interval
+		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey <> a.primarykey));
 
     #计算实收（含虚增）
-    SELECT ifnull(sum(payamount), 0)
+    SELECT IFNULL(SUM(payamount), 0)
     INTO
       v_paidinamount
     FROM
@@ -2617,7 +2579,7 @@ BEGIN
       begintime BETWEEN v_date_start AND v_date_interval;
 
     #计算虚增
-    SELECT ifnull(sum(Inflated), 0)
+    SELECT IFNULL(SUM(Inflated), 0)
     INTO
       v_inflated
     FROM
@@ -2626,8 +2588,8 @@ BEGIN
       begintime BETWEEN v_date_start AND v_date_interval;
 
     #设置订单数和人数
-    SELECT IFNULL(count(orderid),0) #堂吃的订单数量
-         , IFNULL(sum(womanNum + childNum + mannum),0) #堂吃的就餐总人数
+    SELECT IFNULL(COUNT(orderid),0) #堂吃的订单数量
+         , IFNULL(SUM(womanNum + childNum + mannum),0) #堂吃的就餐总人数
     INTO
       v_table_num, v_sa_settlementnum
     FROM
@@ -2642,13 +2604,13 @@ BEGIN
     INSERT INTO t_temp_res VALUES (v_statistictime, v_shouldamount, v_paidinamount - v_inflated, v_shouldamount - v_paidinamount + v_inflated,v_person_con,v_table_num);
 
     IF pi_xslx = 0 THEN
-      SET v_date_start = date_add(v_date_start, INTERVAL 1 DAY);
-      SET v_date_interval = date_add(v_date_interval, INTERVAL 1 DAY);
-      SET v_statistictime = date_format(v_date_start, '%Y-%m-%d');
+      SET v_date_start = DATE_ADD(v_date_start, INTERVAL 1 DAY);
+      SET v_date_interval = DATE_ADD(v_date_interval, INTERVAL 1 DAY);
+      SET v_statistictime = DATE_FORMAT(v_date_start, '%Y-%m-%d');
     ELSE
-      SET v_date_start = date_add(v_date_start, INTERVAL 1 MONTH);
-      SET v_date_interval = date_sub(date_add(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
-      SET v_statistictime = date_format(v_date_start, '%Y-%m');
+      SET v_date_start = DATE_ADD(v_date_start, INTERVAL 1 MONTH);
+      SET v_date_interval = DATE_SUB(DATE_ADD(v_date_start, INTERVAL 1 MONTH), INTERVAL 1 SECOND);
+      SET v_statistictime = DATE_FORMAT(v_date_start, '%Y-%m');
     END IF;
 
     SET v_loop_num = v_loop_num - 1;
@@ -5733,31 +5695,24 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS p_report_pxxsmxb_zhixiang$$
-CREATE PROCEDURE p_report_pxxsmxb_zhixiang(IN  pi_branchid INT(11), 
-                                           IN  pi_sb       SMALLINT, 
-                                           IN  pi_ksrq     DATETIME, 
-                                           IN  pi_jsrq     DATETIME, 
-                                           IN  pi_pl       VARCHAR(50), 
-                                           IN  pi_pxlx     INT, 
-                                           OUT po_errmsg   VARCHAR(100))
-    SQL SECURITY INVOKER
-    COMMENT '品项销售明细表'
+
+
+DROP PROCEDURE IF EXISTS `p_report_pxxsmxb_zhixiang`$$
+
+CREATE PROCEDURE `p_report_pxxsmxb_zhixiang`(IN  pi_branchid INT(11),IN  pi_sb       SMALLINT,IN  pi_ksrq     DATETIME,IN  pi_jsrq     DATETIME,IN  pi_pl       VARCHAR(50),IN  pi_pxlx     INT,IN isPOS INT,OUT po_errmsg   VARCHAR(100))
 label_main:
 BEGIN 
-  
-  
-  
-  
-
   DECLARE v_total_count DOUBLE(13, 2) DEFAULT 0;
   DECLARE v_title       VARCHAR(300); 
   DECLARE v_dishNo      VARCHAR(50); 
   DECLARE v_price       DOUBLE(13, 2); 
-  DECLARE v_unit        VARCHAR(50); 
+  DECLARE v_unit        VARCHAR(300); 
   DECLARE v_number      DOUBLE(13, 2); 
+	DECLARE v_danpin_number DOUBLE(13, 2);
+	DECLARE v_taocan_number DOUBLE(13, 2);
   DECLARE v_share       DOUBLE(13, 2); 
   DECLARE v_sum_price   DOUBLE(13, 2); 
+	DECLARE v_debitamount DOUBLE(13, 2);
   DECLARE v_fetch_done  INT DEFAULT FALSE;
   DECLARE v_dishid      VARCHAR(50);
   DECLARE v_dishclass   VARCHAR(50);
@@ -5767,13 +5722,16 @@ BEGIN
   DECLARE v_total_custnum_count    DOUBLE(13, 2); -- 来客总人数
   DECLARE v_total_shouldmount_count    DOUBLE(13, 2); -- 应收总额
   DECLARE v_canju_mount DOUBLE(13, 2); -- 餐具金额
+	DECLARE v_canju_amount DOUBLE(13, 2);
   DECLARE cur_dish_detail CURSOR FOR SELECT a.dishid
                                           , a.dishunit
                                           , a.dishtype
                                           , b.columnid
-                                          , ifnull(sum(a.dishnum), 0)
-                                          , ifnull(max(a.orignalprice), 0)
-																					, ifnull(sum(a.orignalprice*a.dishnum), 0)
+                                          , IFNULL(SUM(CASE WHEN a.dishtype <> 2 THEN a.dishnum ELSE 0 END), 0)
+                                          , IFNULL(SUM(CASE WHEN a.dishtype = 2 THEN a.dishnum ELSE 0 END), 0)
+                                          , IFNULL(MAX(a.orignalprice), 0)
+																					, IFNULL(SUM(a.orignalprice*a.dishnum), 0)
+																					, IFNULL(SUM(a.debitamount),0)
                                      FROM
                                        t_temp_order_detail a, t_dish_dishtype b
                                      WHERE
@@ -5785,40 +5743,32 @@ BEGIN
                                      , b.columnid
                                      ORDER BY
                                        NULL;
-
   DECLARE CONTINUE HANDLER FOR NOT FOUND
   BEGIN
     SET v_fetch_done = TRUE; 
   END;
-
-
   
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
     GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
   END;
-
   
-  IF pi_sb IS NULL OR pi_ksrq IS NULL OR pi_jsrq IS NULL OR pi_pl IS NULL OR pi_pxlx IS NULL THEN
+  IF pi_sb IS NULL OR pi_ksrq IS NULL OR pi_jsrq IS NULL OR pi_pl IS NULL THEN
     SELECT NULL;
     SET po_errmsg = '传入参数不能为空';
     LEAVE label_main;
   END IF;
-
   IF pi_branchid IS NULL THEN
     SELECT NULL;
     SET po_errmsg = '分店ID输入不能为空';
     LEAVE label_main;
   END IF;
-
   SET @@max_heap_table_size = 1024 * 1024 * 400;
   SET @@tmp_table_size = 1024 * 1024 * 400;
-
   
   SET v_date_start = pi_ksrq; 
   SET v_date_end = pi_jsrq; 
-
   
   DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
@@ -5827,7 +5777,6 @@ BEGIN
     custnum INT(11),
     PRIMARY KEY (orderid)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
-
   IF pi_sb > -1 THEN
     INSERT INTO t_temp_order
     SELECT orderid,custnum
@@ -5848,7 +5797,6 @@ BEGIN
       AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
-
   
   DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail
@@ -5857,83 +5805,69 @@ BEGIN
     dishnum DOUBLE(13, 2),
     dishid VARCHAR(40),
     dishtype INT,
-    dishunit VARCHAR(100),
+    dishunit VARCHAR(300),
     orignalprice DOUBLE(13, 2),
+		debitamount DOUBLE(13, 2),
     ispot TINYINT,
     parentkey VARCHAR(40),
     childdishtype TINYINT,
     primarykey VARCHAR(50),
     superkey VARCHAR(50)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-
-  
-  INSERT INTO t_temp_order_detail
-  SELECT a.orderid
-       , a.dishnum
-       , a.dishid
-       , a.dishtype
-       , a.dishunit
-       , a.orignalprice
-       , a.ispot
-       , a.parentkey
-       , a.childdishtype
-       , a.primarykey
-       , a.superkey
-  FROM
-    t_temp_order b, t_order_detail a
-  WHERE
-    b.orderid = a.orderid
-    AND a.orignalprice > 0;
-
+  IF isPOS=0 THEN
+		INSERT INTO t_temp_order_detail
+		SELECT a.orderid
+				 , a.dishnum
+				 , a.dishid
+				 , a.dishtype
+				 , a.dishunit
+				 , a.orignalprice
+				 , a.debitamount
+				 , a.ispot
+				 , a.parentkey
+				 , a.childdishtype
+				 , a.primarykey
+				 , a.superkey
+		FROM
+			t_temp_order b, t_order_detail a
+		WHERE
+			b.orderid = a.orderid;
+	ELSE
+		INSERT INTO t_temp_order_detail
+		SELECT a.orderid
+				 , a.dishnum
+				 , a.dishid
+				 , a.dishtype
+				 , a.dishunit
+				 , a.orignalprice
+				 , a.debitamount
+				 , a.ispot
+				 , a.parentkey
+				 , a.childdishtype
+				 , a.primarykey
+				 , a.superkey
+		FROM
+			t_temp_order b, t_order_detail a
+		WHERE
+			b.orderid = a.orderid
+			AND (a.dishtype<>2 OR (a.dishtype=2 AND a.superkey<>a.primarykey));
+	END IF;
+	
+    #AND a.orignalprice > 0;
    -- 计算套餐金额开始
-   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
-   CREATE TEMPORARY TABLE t_temp_taocan
-  (
-    primarykey VARCHAR(50),
-    orignalprice DOUBLE(13, 2)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
-  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
+   #DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
+   #CREATE TEMPORARY TABLE t_temp_taocan
+  #(
+    #primarykey VARCHAR(50),
+    #orignalprice DOUBLE(13, 2)
+ # ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
+ # INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
+ # update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
    --  计算套餐金额结束 
-
   # 删除套餐明细
-   delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
-
+  # delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
   CREATE INDEX ix_t_tmp_order_detail_dishid ON t_temp_order_detail (dishid);
-
   
-  DROP TEMPORARY TABLE IF EXISTS t_temp_parentkey;
-  CREATE TEMPORARY TABLE t_temp_parentkey
-  (
-    parentkey VARCHAR(40)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-
-  
-  INSERT INTO t_temp_parentkey
-  SELECT DISTINCT parentkey
-  FROM
-    t_temp_order_detail
-  WHERE
-    ispot = 1
-    AND dishnum = 0;
-
-  
-  DELETE
-  FROM
-    t_temp_order_detail
-  WHERE
-    ispot = 1
-    AND dishnum = 0;
-
-  
-  UPDATE t_temp_order_detail a, t_temp_parentkey b
-  SET
-    a.dishtype = 0
-  WHERE
-    a.parentkey = b.parentkey;
-
-  
-
   
   UPDATE t_temp_order_detail a, t_dish b
   SET
@@ -5941,44 +5875,38 @@ BEGIN
   WHERE
     a.dishid = b.dishid
     AND a.dishtype IS NULL;
-
   
-  SELECT ifnull(sum(dishnum), 0)
+  SELECT IFNULL(SUM(dishnum), 0)
   INTO
     v_total_count
   FROM
     t_temp_order_detail;
-
   IF v_total_count <= 0 THEN
     SELECT NULL;
     SET po_errmsg = '数据为空，无查询结果';
     LEAVE label_main;
   END IF;
-
-  SELECT ifnull(sum(custnum), 0)
+  SELECT IFNULL(SUM(custnum), 0)
   INTO
     v_total_custnum_count
   FROM
     t_temp_order;
-
   IF v_total_custnum_count <= 0 THEN
     SELECT NULL;
     SET po_errmsg = '数据为空，无查询结果';
     LEAVE label_main;
   END IF;
-
-  SELECT ifnull(sum(dishnum*orignalprice), 0)
+  SELECT IFNULL(SUM(dishnum*orignalprice), 0)
   INTO
     v_total_shouldmount_count
   FROM
-    t_temp_order_detail;
-
+    t_temp_order_detail
+	WHERE dishtype <> 2 OR ( dishtype = 2 AND superkey <> primarykey);
   IF v_total_shouldmount_count <= 0 THEN
     SELECT NULL;
     SET po_errmsg = '数据为空，无查询结果';
     LEAVE label_main;
   END IF;
-
   
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res
@@ -5988,26 +5916,23 @@ BEGIN
     title VARCHAR(300), 
     dishNo VARCHAR(50), 
     price DOUBLE(13, 2), 
-    unit VARCHAR(50), 
-    number DOUBLE(13, 2), 
+    unit VARCHAR(300), 
+    danpinnumber DOUBLE(13, 2), 
+    taocannumber DOUBLE(13, 2), 
     thousandstimes DOUBLE(13, 2),
     orignalprice DOUBLE(13, 2),
+		debitamount DOUBLE(13, 2),
     turnover DOUBLE(13, 2),
-    share DOUBLE(13, 2) 
+    SHARE DOUBLE(13, 2) 
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
-
-
   
   OPEN cur_dish_detail;
-
 read_loop:
   LOOP
-    FETCH cur_dish_detail INTO v_dishid, v_unit, v_dishtype, v_dishclass, v_number, v_price,v_sum_price;
-
+    FETCH cur_dish_detail INTO v_dishid, v_unit, v_dishtype, v_dishclass, v_danpin_number,v_taocan_number, v_price,v_sum_price,v_debitamount;
     IF v_fetch_done THEN
       LEAVE read_loop;
     END IF;
-
     
     SELECT dishNo
          , title
@@ -6019,26 +5944,24 @@ read_loop:
       dishid = v_dishid
     LIMIT
       1;
-
-    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_number,round(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_sum_price/v_total_shouldmount_count*100, round(v_number / v_total_count * 100, 2));
+		SET v_number = v_danpin_number + v_taocan_number;
+    INSERT INTO t_temp_res VALUES (v_dishclass, v_dishtype, v_title, v_dishNo, v_price, v_unit, v_danpin_number,v_taocan_number,ROUND(v_number / v_total_custnum_count * 1000, 2),v_sum_price,v_debitamount,v_sum_price/v_total_shouldmount_count*100, ROUND(v_number / v_total_count * 100, 2));
   END LOOP;
   COMMIT;
   
   CLOSE cur_dish_detail;
-
   
   IF pi_pl = -1 OR pi_pl = 'DISHES_98' THEN
-    SELECT sum(dishnum)
-         , ifnull(max(orignalprice), 0),ifnull(sum(dishnum*orignalprice), 0)
+    SELECT SUM(CASE WHEN dishtype <> 2 THEN dishnum ELSE 0 END) , SUM(CASE WHEN dishtype = 2 THEN dishnum ELSE 0 END)
+         , IFNULL(MAX(orignalprice), 0),IFNULL(SUM(dishnum*orignalprice), 0),IFNULL(SUM(debitamount),0)
     INTO
-      @cnt, @price,@sumprice
+      @danpin,@taocan, @price,@sumprice,@debit
     FROM
       t_temp_order_detail
     WHERE
       dishid = 'DISHES_98';
-
-    SELECT ifnull(title, '餐具')
-         , ifnull(dishno, '')
+    SELECT IFNULL(title, '餐具')
+         , IFNULL(dishno, '')
     INTO
       @title, @dishno
     FROM
@@ -6047,148 +5970,105 @@ read_loop:
       dishid = 'DISHES_98'
     LIMIT
       1;
-
+		SET @cnt = @danpin + @taocan;
     IF @cnt > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @cnt,round(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@sumprice/v_total_shouldmount_count*100, round(@cnt / v_total_count * 100, 2));
+      INSERT INTO t_temp_res VALUES ('DISHES_98', 0, @title, @dishno, @price, '份', @danpin,@taocan,ROUND(@cnt / v_total_custnum_count * 1000, 2),@sumprice,@debit,@sumprice/v_total_shouldmount_count*100, ROUND(@cnt / v_total_count * 100, 2));
     END IF;
   END IF;
-
-
   
-  IF pi_pl != '-1' AND pi_pxlx != -1 THEN
+  IF pi_pl != '-1' THEN
     SELECT title
          , dishNo
          , price
          , unit
-         , number
-         , share
+         , danpinnumber
+				 , taocannumber
+         , SHARE
          , thousandstimes
          , orignalprice
-         , turnover
-    FROM
-      t_temp_res
-    WHERE
-      columnid = pi_pl
-      AND dishtype = pi_pxlx;
-
-  ELSEIF pi_pl = '-1' AND pi_pxlx != -1 THEN
-    SELECT title
-         , dishNo
-         , price
-         , unit
-         , number
-         , share
-         , thousandstimes
-         , orignalprice
-         , turnover
-    FROM
-      t_temp_res
-    WHERE
-      dishtype = pi_pxlx;
-
-  ELSEIF pi_pl != '-1' AND pi_pxlx = -1 THEN
-    SELECT title
-         , dishNo
-         , price
-         , unit
-         , number
-         , share
-         , thousandstimes
-         , orignalprice
+				 , debitamount
          , turnover
     FROM
       t_temp_res
     WHERE
       columnid = pi_pl;
-
   ELSE
     SELECT title
          , dishNo
          , price
          , unit
-         , number
-         , share
+         , danpinnumber
+				 , taocannumber
+         , SHARE
          , thousandstimes
          , orignalprice
+				 , debitamount
          , turnover
     FROM
       t_temp_res;
-
   END IF;
-
-
-
-
-
-
-
 END$$
+
 DELIMITER ;
 
 DELIMITER $$
-DROP PROCEDURE IF EXISTS p_report_pxxsmxb$$
-CREATE PROCEDURE p_report_pxxsmxb(IN  pi_branchid INT(11), 
-                                  IN  pi_sb       SMALLINT, 
-                                  IN  pi_ksrq     DATETIME, 
-                                  IN  pi_jsrq     DATETIME, 
-                                  IN  pi_pl       VARCHAR(50), 
-                                  IN  pi_lx       VARCHAR(10), 
-                                  OUT po_errmsg   VARCHAR(100))
-    SQL SECURITY INVOKER
-    COMMENT '品项销售明细表'
+
+
+DROP PROCEDURE IF EXISTS `p_report_pxxsmxb`$$
+
+CREATE PROCEDURE `p_report_pxxsmxb`(IN  pi_branchid INT(11),IN  pi_sb       SMALLINT,IN  pi_ksrq     DATETIME,IN  pi_jsrq     DATETIME,IN  pi_pl       VARCHAR(50),IN  pi_lx       VARCHAR(10),OUT po_errmsg   VARCHAR(100))
 label_main:
 BEGIN
-
-
-  
-  
-  
-  
-  
-
-
-  DECLARE v_count       INT;
-  DECLARE v_sum         INT;
-  DECLARE v_total_count DOUBLE(13, 2);
-  DECLARE v_item_desc   VARCHAR(50); 
-  DECLARE v_item_id     VARCHAR(50); 
   DECLARE v_date_start  DATETIME;
   DECLARE v_date_end    DATETIME;
-  DECLARE v_total_custnum_count    DOUBLE(13, 2); -- 来客总人数
-  DECLARE v_total_shouldmount_count    DOUBLE(13, 2); -- 应收总额
+  DECLARE v_sum         INT;
+	DECLARE v_total_count DOUBLE(13, 2);
+	DECLARE v_total_custnum_count DOUBLE(13, 2);
+	DECLARE v_total_shouldmount_count DOUBLE(13, 2);
   DECLARE v_canju_mount DOUBLE(13, 2); -- 餐具金额
-
-  
-  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	DECLARE v_canju_orignalprice DOUBLE(13, 2);
+	DECLARE v_canju_debitamount DOUBLE(13, 2);
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
     SELECT NULL;
     GET DIAGNOSTICS CONDITION 1 po_errmsg = MESSAGE_TEXT;
   END;
-
+	
+	SET v_date_start = pi_ksrq; 
+  SET v_date_end = pi_jsrq; 
+  SET @@max_heap_table_size = 1024 * 1024 * 400;
+  SET @@tmp_table_size = 1024 * 1024 * 400;
 
   IF pi_branchid IS NULL THEN
     SELECT NULL;
     SET po_errmsg = '分店ID输入不能为空';
     LEAVE label_main;
   END IF;
-
-  SET @@max_heap_table_size = 1024 * 1024 * 400;
-  SET @@tmp_table_size = 1024 * 1024 * 400;
-
-  
-  SET v_date_start = pi_ksrq; 
-  SET v_date_end = pi_jsrq; 
-
-  
-  DROP TEMPORARY TABLE IF EXISTS t_temp_order;
+	
+	DROP TEMPORARY TABLE IF EXISTS t_temp_res;
+  CREATE TEMPORARY TABLE t_temp_res
+  (
+    id VARCHAR(50),
+    itemDesc VARCHAR(50),
+    dishtype INT,
+    dishtypetitle VARCHAR(50),
+    number DOUBLE(13, 2),
+    thousandstimes DOUBLE(13, 2),
+    orignalprice DOUBLE(13, 2),
+		debitamount DOUBLE(13, 2),
+    turnover DOUBLE(13, 2),
+    SHARE DOUBLE(13, 2)
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
+	
+	DROP TEMPORARY TABLE IF EXISTS t_temp_order;
   CREATE TEMPORARY TABLE t_temp_order
   (
     orderid VARCHAR(50),
     custnum INT(11),
     PRIMARY KEY (orderid)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
-
-  IF pi_sb > -1 THEN
+	
+	IF pi_sb > -1 THEN
     INSERT INTO t_temp_order
     SELECT orderid,custnum
     FROM
@@ -6208,9 +6088,8 @@ BEGIN
       AND begintime BETWEEN v_date_start AND v_date_end 
       AND orderstatus = 3;
   END IF;
-
-  
-  DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
+	
+	DROP TEMPORARY TABLE IF EXISTS t_temp_order_detail;
   CREATE TEMPORARY TABLE t_temp_order_detail
   (
     orderid VARCHAR(40),
@@ -6222,7 +6101,8 @@ BEGIN
     childdishtype TINYINT,
     primarykey VARCHAR(50),
     superkey VARCHAR(50),
-    orignalprice DOUBLE(13, 2)
+    orignalprice DOUBLE(13, 2),
+		debitamount DOUBLE(13, 2)
   ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
 
   
@@ -6237,216 +6117,94 @@ BEGIN
        , a.primarykey
        , a.superkey
        , a.orignalprice 
+			 , a.debitamount
   FROM
     t_temp_order b, t_order_detail a
   WHERE
-    b.orderid = a.orderid
-    AND a.orignalprice > 0;
-  
-  -- 计算套餐金额开始
-   DROP TEMPORARY TABLE IF EXISTS t_temp_taocan;
-   CREATE TEMPORARY TABLE t_temp_taocan
-  (
-    primarykey VARCHAR(50),
-    orignalprice DOUBLE(13, 2)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-  INSERT INTO t_temp_taocan select superkey,sum(dishnum*orignalprice) from t_temp_order_detail  where dishtype = 2 and superkey <> primarykey group by superkey;
-  update t_temp_order_detail d,t_temp_taocan c set d.orignalprice = c.orignalprice  where c.primarykey = d.primarykey;
-   --  计算套餐金额结束 
+    b.orderid = a.orderid;
 
-  # 删除套餐明细
-  delete from t_temp_order_detail where dishtype =2 and superkey <> primarykey;
-
-  CREATE INDEX ix_t_temp_order_detail_dishid ON t_temp_order_detail (dishid);
-
-  
-  DROP TEMPORARY TABLE IF EXISTS t_temp_parentkey;
-  CREATE TEMPORARY TABLE t_temp_parentkey
-  (
-    parentkey VARCHAR(40)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8 MAX_ROWS = 1000000;
-
-  
-  INSERT INTO t_temp_parentkey
-  SELECT DISTINCT parentkey
-  FROM
-    t_temp_order_detail
-  WHERE
-    ispot = 1
-    AND dishnum = 0;
-
-  
-  DELETE
-  FROM
-    t_temp_order_detail
-  WHERE
-    ispot = 1
-    AND dishnum = 0;
-
-  
-  UPDATE t_temp_order_detail a, t_temp_parentkey b
-  SET
-    a.dishtype = 0
-  WHERE
-    a.parentkey = b.parentkey;
-
-  
-
-
-  
-  UPDATE t_temp_order_detail a, t_dish b
-  SET
-    a.dishtype = b.dishtype
-  WHERE
-    a.dishid = b.dishid
-    AND a.dishtype IS NULL;
-
-  
-  SELECT ifnull(sum(dishnum), 0)
+	SELECT IFNULL(SUM(dishnum), 0)
   INTO
     v_total_count
   FROM
     t_temp_order_detail;
 
-  IF v_total_count <= 0 THEN
+	IF v_total_count <= 0 THEN
     SELECT NULL;
     SET po_errmsg = '数据为空，无查询结果';
     LEAVE label_main;
   END IF;
-
-  SELECT ifnull(sum(custnum), 0)
+	SELECT IFNULL(SUM(custnum), 0)
   INTO
     v_total_custnum_count
   FROM
     t_temp_order;
-
-  IF v_total_custnum_count <= 0 THEN
+	
+	IF v_total_custnum_count <= 0 THEN
     SELECT NULL;
     SET po_errmsg = '数据为空，无查询结果';
     LEAVE label_main;
   END IF;
-
-
-  SELECT ifnull(sum(dishnum*orignalprice), 0)
+	SELECT IFNULL(SUM(dishnum*orignalprice), 0)
   INTO
     v_total_shouldmount_count
   FROM
-    t_temp_order_detail;
-
-  IF v_total_shouldmount_count <= 0 THEN
+    t_temp_order_detail
+	WHERE dishtype <> 2 OR ( dishtype = 2 AND superkey <> primarykey);
+	IF v_total_shouldmount_count <= 0 THEN
     SELECT NULL;
     SET po_errmsg = '数据为空，无查询结果';
     LEAVE label_main;
   END IF;
 
-
-  
-  
-  DROP TEMPORARY TABLE IF EXISTS t_temp_res;
-  CREATE TEMPORARY TABLE t_temp_res
-  (
-    id VARCHAR(50),
-    itemDesc VARCHAR(50),
-    dishtype INT,
-    dishtypetitle VARCHAR(50),
-    number DOUBLE(13, 2),
-    thousandstimes DOUBLE(13, 2),
-    orignalprice DOUBLE(13, 2),
-    turnover DOUBLE(13, 2),
-    share DOUBLE(13, 2)
-  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
-
-
-  INSERT INTO t_temp_res (id, dishType, number,orignalprice)
+	INSERT INTO t_temp_res (id, number,orignalprice,debitamount)
   SELECT b.columnid
-       , a.dishtype
-       , ifnull(sum(a.dishnum), 0), ifnull(sum(a.dishnum*a.orignalprice), 0)
+       , IFNULL(SUM(a.dishnum), 0), IFNULL(SUM(a.dishnum*a.orignalprice), 0),IFNULL(SUM(a.debitamount),0)
   FROM
     t_temp_order_detail a, t_dish_dishtype b
   WHERE
     a.dishid = b.dishid
   GROUP BY
     b.columnid
-  , a.dishtype
-  ORDER BY
-    NULL;
-
-
-  
-  UPDATE t_temp_res
-  SET
-    dishtypetitle =
-    CASE dishType
-    WHEN 0 THEN
-      '单品'
-    WHEN 1 THEN
-      '鱼锅'
-    ELSE
-      '套餐'
-    END;
-  
-  UPDATE t_temp_res t, t_basicdata a
+  ORDER BY b.columnid;
+	
+	UPDATE t_temp_res t, t_basicdata a
   SET
     t.itemDesc = a.itemDesc
   WHERE
     t.Id = a.id
     AND a.status = 1;
-
-  
-  UPDATE t_temp_res
+	UPDATE t_temp_res
   SET
-    share = number / v_total_count * 100,thousandstimes= number/v_total_custnum_count * 1000,turnover = orignalprice/v_total_shouldmount_count*100;
+    SHARE = number / v_total_count * 100,thousandstimes= number/v_total_custnum_count * 1000,turnover = orignalprice/v_total_shouldmount_count*100;
 
-
-  
-  IF pi_pl = -1 OR pi_pl = 'DISHES_98' THEN
-    SELECT ifnull(sum(dishnum), 0),ifnull(sum(dishnum*orignalprice), 0)
+	IF pi_pl = -1 OR pi_pl = 'DISHES_98' THEN
+    SELECT IFNULL(SUM(dishnum), 0),IFNULL(SUM(dishnum*orignalprice), 0),IFNULL(SUM(debitamount),0)
     INTO
-      v_sum,v_canju_mount
+      v_sum,v_canju_mount,v_canju_debitamount
     FROM
       t_temp_order_detail
     WHERE
       dishid = 'DISHES_98';
-
     IF v_sum > 0 THEN
-      INSERT INTO t_temp_res VALUES ('DISHES_98', '餐具', 0, '单品', v_sum,v_sum/v_total_custnum_count*1000,v_canju_mount,v_canju_mount/v_total_shouldmount_count*100,v_sum / v_total_count * 100); -- 字段问题
+      INSERT INTO t_temp_res VALUES ('DISHES_98', '餐具', NULL, NULL, v_sum,v_sum/v_total_custnum_count*1000,v_canju_mount,v_canju_debitamount,v_canju_mount/v_total_shouldmount_count*100,v_sum / v_total_count * 100); -- 字段问题
     END IF;
   END IF;
   COMMIT;
 
-  
-  IF pi_pl = -1 AND pi_lx = -1 THEN
+
+	IF pi_pl = -1 THEN
     SELECT *
     FROM
       t_temp_res;
-  ELSEIF pi_pl != -1 AND pi_lx = -1 THEN
-    SELECT *
-    FROM
-      t_temp_res
-    WHERE
-      Id = pi_pl;
-  ELSEIF pi_pl = -1 AND pi_lx != -1 THEN
-    SELECT *
-    FROM
-      t_temp_res
-    WHERE
-      dishtype = pi_lx;
-  ELSE
-    SELECT *
-    FROM
-      t_temp_res
-    WHERE
-      Id = pi_pl
-      AND dishtype = pi_lx;
+  ELSE 
+		SELECT *
+		FROM
+			t_temp_res
+		WHERE id = pi_pl;
   END IF;
-
-
-
-
-
-
-
 END$$
+
 DELIMITER ;
 
 DELIMITER $$

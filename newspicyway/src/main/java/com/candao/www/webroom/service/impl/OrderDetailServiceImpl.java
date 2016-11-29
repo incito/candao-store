@@ -15,6 +15,7 @@ import com.candao.www.constant.Constant.TABLETYPE;
 import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.model.Order;
@@ -208,41 +209,92 @@ public class OrderDetailServiceImpl implements OrderDetailService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public String cleantable(Table table) {
-        String tableNo = table.getTableNo();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("tableNo", tableNo);
-        List<Map<String, Object>> resultMapList = tableService.find(map);
-        if (resultMapList == null || resultMapList.size() == 0) {
-            log.error("-->resultMapList为空(查询table为空)，参数tableNo为：" + tableNo);
-            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap());
+    public void cleantable(Table table) {
+        String orderno = table.getOrderNo();
+        Assert.hasLength(orderno,"参数错误,订单号为空");
+        Map<String,Object> order = orderService.findOrderById(orderno);
+        Assert.notEmpty(order,"查询不到该订单");
+        String orderstatu = String.valueOf(order.get("orderstatus"));
+        if (!"0".equals(orderstatu))
+            throw new RuntimeException("订单状态不正确");
+        Map<String,Object> param = new HashMap<>();
+        param.put("tableid",order.get("currenttableid"));
+        List<Map<String,Object>>tables = tableService.find(param);
+        Assert.notEmpty(tables,"找不到目标餐台");
+
+        if (tables.size() > 1 )
+            throw new RuntimeException("目标餐台有多条记录");
+
+        String tabletype =String.valueOf(tables.get(0).get("tabletype"));
+        switch (tabletype){
+            case TABLETYPE.NORMAL:
+                cleanNormalTable(order);
+                break;
+            case TABLETYPE.PRIVATEROOM:
+                cleanNormalTable(order);
+                break;
+            case TABLETYPE.TAKEOUT:
+                cleanTakeOutTable(order);
+                break;
+            case TABLETYPE.TAKEOUT_COFFEE:
+                cleanTakeOutTable(order);
+                break;
+            case TABLETYPE.COFFEETABLE:
+                cleanTakeOutTable(order);
+                break;
+            default:
+                throw new RuntimeException("不能清空该类型餐台");
         }
+    }
+
+    private void cleanNormalTable(Map<String, Object> order) {
+        Assert.notEmpty(order, "参数错误,订单为空");
+        String tableId = String.valueOf(order.get("currenttableid"));
+        Assert.hasLength(tableId, "参数错误,餐台为空");
+        String orderId = String.valueOf(order.get("orderid"));
+        Assert.hasLength(orderId, "参数错误，订单号为空");
+
         // 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
         //计算菜单订单下面财大个数如果大与0 表示不能 清台
-        long menuNum = tableService.getMenuInfoByCount(resultMapList.get(0));
+        long menuNum = tableService.getMenuInfoByCount(order);
         if (menuNum > 0) {
-            return JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("订单下还有菜品，不能清台"));
+            throw new RuntimeException("订单下还有菜品，不能清台");
         }
-        Map<String, Object> tableMap = resultMapList.get(0);
-        String tableId = String.valueOf(tableMap.get("tableid"));
-
         //通知PAD清台
-        notifyService.notifyClearTable(tableNo);
-
+        notifyService.notifyClearTable(orderId);
+        //清台
         TbTable tbTable = new TbTable();
         tbTable.setTableid(tableId);
         tbTable.setStatus(0);
-        tbTable.setOrderid(String.valueOf(tableMap.get("orderid") == null ? "" : tableMap.get("orderid")));
         tableService.updateCleanStatus(tbTable);
+        //订单
+        Torder torder = new Torder();
+        torder.setOrderid(orderId);
+        torder.setOrderstatus(2);
+        torder.setEndtime(new Date());
+        torderMapper.update(torder);
+    }
 
-        if (tableMap.get("orderid") != null) {
-            Torder torder = new Torder();
-            torder.setOrderid(String.valueOf(tableMap.get("orderid")));
-            torder.setOrderstatus(2);
-            torder.setEndtime(new Date());
-            torderMapper.update(torder);
+    private void cleanTakeOutTable(Map<String, Object> order) {
+        Assert.notEmpty(order, "参数错误,订单为空");
+        String tableId = String.valueOf(order.get("currenttableid"));
+        Assert.hasLength(tableId, "参数错误,餐台为空");
+        String orderId = String.valueOf(order.get("orderid"));
+        Assert.hasLength(orderId, "参数错误，订单号为空");
+
+        // 统一判断，验证数据一直性，保证PAD数据与数据库数据的菜单信息一直，通过反查询数据库判断---by liangdong 2016-5-30
+        //计算菜单订单下面财大个数如果大与0 表示不能 清台
+        long menuNum = tableService.getMenuInfoByCount(order);
+        if (menuNum > 0) {
+            throw new RuntimeException("订单下还有菜品，不能清台");
         }
-        return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap("清台成功"));
+
+        //订单
+        Torder torder = new Torder();
+        torder.setOrderid(orderId);
+        torder.setOrderstatus(2);
+        torder.setEndtime(new Date());
+        torderMapper.update(torder);
     }
 
     @Override
@@ -544,7 +596,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 transactionManager.rollback(status);
             }
 //            return getResult("3", "服务器异常 ", "");
-            return ReturnMap.getFailureMap("服务器异常");
+            return ReturnMap.getFailureMap("服务器异常，请联系餐到管理员");
         }
 
     }
@@ -1399,7 +1451,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 	//判断是否已经组合打印过
 					String printid = tbPrinter.getPrinterid();
 					Integer obj = printedmap
-							.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
+							.get(pd.getDishId() + pd.getPrimarykey() + printid);
 					if (obj != null && refundDish != 1) {// 退菜单除外
 						continue;// 已经打印过了
 					}
@@ -1467,7 +1519,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     new Thread(new PrintThread(printObj)).run();
 
                     for (PrintDish printDish : pdList) {
-                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
+                        printedmap.put(printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
                     }
                 }
             }
@@ -1476,7 +1528,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 printertypeMap.put("printertype", 4);
                 List<Map> findPrinterByType = tbPrinterManagerDao.find(printertypeMap);
                 List<String> IPList = new ArrayList<String>();
-                if (printers != null && "(退)".equals(printObj.getAbbrbillName())) {
+                if (findPrinterByType != null && "(退)".equals(printObj.getAbbrbillName())) {
                     for (Map tbPrinter : findPrinterByType) {
                         if (IPList != null) {
                             if (IPList.contains(tbPrinter.get("ipaddress"))) {
@@ -1499,8 +1551,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         // executor.execute(new PrintThread(printObj));
                     }
                 }
-                printdishware(listPrint, printObj, map0);
             }
+        }
+        if (refundDish == 1) {
+            printdishware(listPrint, printObj, map0);
         }
     }
 
@@ -1955,6 +2009,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         //是否打印单据
         boolean isPrint = true;
+        //外卖咖啡时的订单号
+        String orderno = urgeDish.getOrderNo();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableNo", urgeDish.getCurrenttableid());
         List<Map<String, Object>> tableList = tableService.find(params);
@@ -1969,6 +2025,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         tableType = tableType == null ? "" : tableType.trim();
         if (!StringUtils.isEmpty(tableType)) {
             if (TABLETYPE.COFFEETABLE.equals(tableType) || TABLETYPE.TAKEOUT.equals(tableType) || TABLETYPE.TAKEOUT_COFFEE.equals(tableType)) {
+                if(!StringUtil.isEmpty(orderno)){
+                    urgeDish.setOrderNo(orderno);
+                }
                 Map<String, Object> param = new HashMap<>();
                 param.put("orderid", urgeDish.getOrderNo());
                 Map<String, Object> res = settlementMapper.fingHistory(param);
@@ -1980,6 +2039,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         String orderId = urgeDish.getOrderNo();
         String discardUserId = urgeDish.getDiscardUserId();
         String discardReason = urgeDish.getDiscardReason();
+        String userName = urgeDish.getUserName() == null ? "" : urgeDish.getUserName();
         if (discardUserId == null) {
             discardUserId = urgeDish.getUserName();
         }
@@ -2019,6 +2079,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
             orderDetail.setDiscardReason(discardReason);
             orderDetail.setDiscardUserId(discardUserId);
+            orderDetail.setUserName(userName);
             urgeNum = detailNum.subtract(urgeDish.getDishNum());
             String dishType = orderDetail.getDishtype();
             int isMaster = orderDetail.getIsmaster();
@@ -2167,6 +2228,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetailDel.setSuperkey(urgeDish.getPrimarykey());
                         orderDetailDel.setDiscardUserId(discardUserId);
                         orderDetailDel.setDiscardReason(discardReason);
+                        orderDetailDel.setUserName(userName);
                         torderDetailMapper.updateDiscardDishSetUserId(orderDetailDel);
 
                         Map<String, Object> deleteMap = new HashMap<String, Object>();
@@ -2231,6 +2293,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             orderDetail.setOrderid(orderId);
             orderDetail.setDiscardUserId(discardUserId);
             orderDetail.setDiscardReason(discardReason);
+            orderDetail.setUserName(userName);
             torderDetailMapper.updateDiscardDishUserIdOnce(orderDetail);
 
             Map<String, Object> deleteMap = new HashMap<String, Object>();
@@ -2293,6 +2356,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             TorderDetail uporderDetail = new TorderDetail();
             uporderDetail.setDiscardUserId(orderDetail.getDiscardUserId());
             uporderDetail.setDiscardReason(orderDetail.getDiscardReason());
+            uporderDetail.setUserName(orderDetail.getUserName());
             uporderDetail.setPrimarykey(primarykey);
             torderDetailMapper.updateFishpotReason(uporderDetail);
         }
@@ -2483,7 +2547,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                  //判断是否已经组合打印过
 							String printid = tbPrinter.getPrinterid();
 							Integer obj = printedmap
-									.get(printObj.getCustomerPrinterIp() + pd.getDishId() + pd.getPrimarykey() + printid);
+									.get(pd.getDishId() + pd.getPrimarykey() + printid);
 							if (obj != null) {
 								continue;// 已经打印过了
 							}
@@ -2540,20 +2604,21 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 							}
 		                    //加入打印队列
 		                    new Thread(new PrintThread(printObj)).run();
-		
-		                    //如果是叫起的单子需要更新状态为0
-		                    if ("1".equals(type)) {
-		                        map0.put("primarykey", pd.getPrimarykey());
-		                    	tbPrintObjDao.updateDishByPrimaryKey(map0);
-		                    	tbPrintObjDao.updateDetailByPrimaryKey(map0);
-		                    }
 		                    
 		                    for (PrintDish printDish : pdList) {
-		                        printedmap.put(printObj.getCustomerPrinterIp() + printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
+		                        printedmap.put(printDish.getDishId() + printDish.getPrimarykey() + printid, 1);//已经打印的菜品
 		                    }
 		                }
 	                }	
 	            }
+                //如果是叫起的单子需要更新状态为0
+                if ("1".equals(type)) {
+                	for (PrintDish printDish : printdishList) {
+                		map0.put("primarykey", printDish.getPrimarykey());
+                		tbPrintObjDao.updateDishByPrimaryKey(map0);
+                		tbPrintObjDao.updateDetailByPrimaryKey(map0);
+                	}
+                }
             }
         }
         return Constant.SUCCESSMSG;
@@ -2660,10 +2725,16 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         List<Map<String, Object>> result=new ArrayList<>();
         for(Map<String,Object> detail:itemSellDetail){
+            if(null==detail){
+                continue;
+            }
             Map<String,Object> map=new HashMap<>();
-            map.put("dishName",detail.get("title"));
-            map.put("dishCount",detail.get("number"));
-            map.put("totlePrice",detail.get("orignalprice"));
+            map.put("dishName",detail.get("title")+"("+detail.get("unit")+")");
+            BigDecimal danpin = new BigDecimal(detail.get("danpinnumber").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal taocan = new BigDecimal(detail.get("taocannumber").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            map.put("dishCount",danpin.add(taocan));
+            //map.put("totlePrice",detail.get("orignalprice"));
+            map.put("totlePrice", detail.get("debitamount"));
             result.add(map);
         }
         return result;

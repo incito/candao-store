@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
@@ -73,6 +74,55 @@ public class PrinterOther extends Printer {
         }
     }
 
+    @Override
+    protected int doPrint(Object[] msg, OutputStream outputStream) throws IOException {
+        //added by caicai
+        //省纸
+        /*outputStream.write(new byte[]{27, 27});*/
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "GBK");
+        int rowCount=0;
+        int pauseCount=0;
+        for (Object o : msg) {
+            if (null == o) {
+                o = "";
+            }
+            if (o instanceof Byte) {
+                outputStream.write(new byte[]{(byte) o});
+            } else if (o instanceof byte[]) {
+                outputStream.write((byte[]) o);
+            } else {
+                writer.write(o.toString());
+                rowCount++;
+            }
+            outputStream.flush();
+            writer.flush();
+            //打印一页停顿3s
+			if (rowCount > 0 && pauseCount != rowCount && rowCount % pageNum == 0) {
+                pauseCount=rowCount;
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                	logger.error(e);
+                }
+            }
+        }
+        //启动了分批打印
+        if(pauseCount > 0)
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        	logger.error(e);
+        }
+        logger.info("=================>内容完毕");
+        outputStream.write(PrinterConstant.getLineN((byte) 3));
+        outputStream.write(new byte[]{10});
+        outputStream.flush();
+        outputStream.write(PrinterConstant.CUT);
+        outputStream.flush();
+        logger.info("=================>切纸指令完毕");
+        return rowCount;
+    }
+    
     @Override
     public PrintResult tryPrint(Object[] msg, long time) {
         {

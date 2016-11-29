@@ -80,11 +80,10 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 
 			// 如果为团购卷
 			if (String.valueOf(paraMap.get("type")).equals("05")) {
-
 				// 是团购又是手动输入的
 				String preferentialAmout = (String) paraMap.get("preferentialAmout");
 				BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
-				if (cashprelAmout.doubleValue() > 0) {
+				if (cashprelAmout.doubleValue() > 0&&String.valueOf(paraMap.get("isCustom")).equals("1")) {
 					// 设置挂账以及优免（团购有挂账 及优免，代金卷只有优免）
 					if (orderTempPrice.compareTo(new BigDecimal("0")) == -1) {
 						torder.setToalDebitAmountMany(cashprelAmout.multiply(new BigDecimal("-1")));
@@ -92,7 +91,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 						torder.setToalDebitAmountMany(orderTempPrice.subtract(cashprelAmout));
 					}
 					orderTempPrice=	orderTempPrice.subtract(cashprelAmout);
-
+					torder.setIsCustom(1);
 					torder.setToalDebitAmount(cashprelAmout);
 
 					torder.setDeAmount(cashprelAmout);

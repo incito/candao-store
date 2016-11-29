@@ -101,7 +101,7 @@
 						</select>
 					</div>
 				</div>
-				<label class="col-xs-1 control-label">品项类型:</label>
+				<!-- <label class="col-xs-1 control-label">品项类型:</label>
 				<div class="col-xs-2">
 					<div class="input-group select-box">
 						<select style="width: 150px; height: 30px;" class="form-control"
@@ -112,7 +112,7 @@
 							<option value="2">套餐</option>
 						</select>
 					</div>
-				</div>
+				</div> -->
 				<div class="col-xs-2">
 					<div class="col-xs-1 report-confirm-btn" id="div1">
 						<button type="button" onclick="initItemDetailsData();"
@@ -128,10 +128,10 @@
 			<thead>
 				<tr>
 					<th>品类</th>
-					<th>品项类型</th>
 					<th>数量</th>
 					<th>千次</th>
-					<th>金额</th>
+					<th>应收金额</th>
+					<th>实收金额</th>
 					<th>营业额占比(%)</th>
 				</tr>
 			</thead>
@@ -146,7 +146,7 @@
 			<div class="modal-header">
 				<div class="modal-title">
 					<span>品项销售详情</span>
-					<!--a href="Javascript:exportReportsItem(1)"><img src="../images/download.png" alt="" /></a-->
+					<a style="float:right;" href="javascript:exportItemReportDetail()"><img src="../images/download.png" alt="" /></a>
 					<img src="../images/close.png" class="img-close" data-dismiss="modal" />
 				</div>
 			</div>
@@ -154,7 +154,7 @@
 				<div>
 					<input type="hidden" id="p-item-id" value="" />
 					<input type="hidden" id="p-dish-type" value="" />
-					<div class="p-desc"><span class="span-desc">品类名称：</span><span id="item-desc"></span>&nbsp;&nbsp;&nbsp;<span class="span-desc p-margin-left">品项类型：</span><span id="dish-type-desc"></span></div>
+					<div class="p-desc"><span class="span-desc">品类名称：</span><span id="item-desc"></span>&nbsp;&nbsp;&nbsp;</div>
 					<table class="ky-table table table-list report_sub_tb" id="item_sub_tb">
 						<thead>
 							<tr>
@@ -162,9 +162,11 @@
 								<th>品项编号</th>
 								<th>单价</th>
 								<th>单位</th>
-								<th>数量</th>
+								<th>单品数量</th>
+								<th>套餐数量</th>
 								<th>千次</th>
-								<th>金额</th>
+								<th>应收金额</th>
+								<th>实收金额</th>
 								<th>营业额占比(%)</th>
 							</tr>
 						</thead>

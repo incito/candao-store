@@ -3,8 +3,8 @@ package com.candao.www.utils;
 public enum ReturnMes {
      SUCCESS("0000","操作成功"),
      ERROR("0001","使用优惠失败!"),
-	SPECIAL_FAIL("1001","当前特价卷没有包含此订单内的菜品!");
-	
+	SPECIAL_FAIL("1001","当前特价卷没有包含此订单内的菜品!"),
+	DISCOUNT_FAIL("2001","当前订单菜品不在此优惠之中！");
 	
 	private String code;
 	private String msg;

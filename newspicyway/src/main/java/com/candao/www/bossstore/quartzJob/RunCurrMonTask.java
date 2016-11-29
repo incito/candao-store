@@ -34,8 +34,9 @@ public class RunCurrMonTask {
 		clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
 		clientInfo.setCommand("order");
 		clientInfo.setRequestType("syncCurrMon");
-		clientInfo.setData(orderService.getBusinessDataByMon().toString());
-		logger.info("本月数据查询："+orderService.getBusinessDataByMon().toString());
+		String temp = orderService.getBusinessDataByMon().toString();
+		clientInfo.setData(temp);
+		logger.info("本月数据查询："+temp);
 		JSONObject requestObject = JSONObject.fromObject(clientInfo);
         String link = PropertiesUtils.getValue("cloudLink");
 	 	HttpUtils.getHttpPost(link, requestObject);

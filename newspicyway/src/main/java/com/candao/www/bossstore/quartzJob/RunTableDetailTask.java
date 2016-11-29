@@ -34,8 +34,9 @@ public class RunTableDetailTask {
         clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
         clientInfo.setCommand("order");
         clientInfo.setRequestType("syncTableDetail");
-        clientInfo.setData(orderService.getCurrDayTableDetail().toString());
-        logger.info("正在使用的桌子的情况数据查询："+orderService.getCurrDayTableDetail().toString());
+        String temp = orderService.getCurrDayTableDetail().toString();
+        clientInfo.setData(temp);
+        logger.info("正在使用的桌子的情况数据查询："+temp);
         JSONObject requestObject = JSONObject.fromObject(clientInfo);
         String link = PropertiesUtils.getValue("cloudLink");
         HttpUtils.getHttpPost(link, requestObject);

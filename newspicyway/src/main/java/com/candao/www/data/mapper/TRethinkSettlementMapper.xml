@@ -24,7 +24,8 @@
         <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
             AND too.endtime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
         </if>
-        AND tsh.reason not in('??????,??????' ,'会员结算失败,系统自动反结','会员结算失败，系统自动反结')
+        AND tsh.reason not like '%??????%'
+        AND tsh.reason not like '%会员结算失败%'
         AND tsdh.payway in (SELECT itemid FROM v_revenuepayway)
 		AND too.orderstatus = 3
         group by tsdh.orderid

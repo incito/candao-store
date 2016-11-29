@@ -806,7 +806,8 @@
 		UPDATE
 		t_order_detail_discard
 		set discarduserid = #{discardUserId},
-		discardreason = #{discardReason}
+		discardreason = #{discardReason},
+		userName = #{userName}
 		WHERE orderid = #{orderid} and
 		superkey = #{superkey}
 	</update>
@@ -824,7 +825,8 @@
 		UPDATE
 		t_order_detail_discard
 		set discarduserid = #{discardUserId},
-		discardreason = #{discardReason}
+		discardreason = #{discardReason},
+		userName = #{userName}
 		WHERE orderdetailid IN (
 		SELECT
 		tod.orderdetailid FROM t_order_detail tod WHERE tod.orderid =
@@ -836,7 +838,8 @@
 		UPDATE
 		t_order_detail_discard
 		set discarduserid = #{discardUserId},
-		discardreason = #{discardReason}
+		discardreason = #{discardReason},
+		userName = #{userName}
 		WHERE primarykey = #{primarykey} or
 		parentkey = #{primarykey}
 
@@ -968,6 +971,7 @@
             #{endTime,jdbcType=TIMESTAMP,mode=IN},
             -1,
             -1,
+            1,
             #{result,jdbcType=VARCHAR,mode=OUT}
           )
         }

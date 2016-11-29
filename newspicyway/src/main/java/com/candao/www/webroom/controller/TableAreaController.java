@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.security.controller.BaseController;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +36,8 @@ import com.candao.www.webroom.service.TableAreaService;
 public class TableAreaController extends BaseController{
 	@Autowired
 	private TableAreaService tableAreaService;
+
+	private Log log = LogFactory.getLog(this.getClass());
 
 	@RequestMapping("/page")
 	@ResponseBody
@@ -199,6 +204,22 @@ public class TableAreaController extends BaseController{
 		}
 		mov.addObject(map);
 		return mov; 
+	}
+
+	@RequestMapping("/delTablesAndArea/{areaid}")
+	@ResponseBody
+	public Map<String, Object> delTablesAndArea(@PathVariable("areaid") String areaid) {
+		if (StringUtil.isEmpty(areaid)) {
+			getResponseStr(null, "参数错误", false);
+		}
+		try {
+			tableAreaService.delTablesAndArea(areaid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("删除餐台区域失败!", e);
+			return getResponseStr(null, e.getMessage(), false);
+		}
+		return getResponseStr(null, "删除成功", true);
 	}
 	
 	

@@ -26,6 +26,7 @@ public class HttpUtils {
             request.addHeader("content-type", "application/json;charset=UTF-8");
             request.setEntity(params);
             httpClient.execute(request);
+            httpClient.close();
         } catch (Exception ex) {
             System.out.printf("网络出错 =?",link);
             logger.error("推送失败:"+ex.getMessage());

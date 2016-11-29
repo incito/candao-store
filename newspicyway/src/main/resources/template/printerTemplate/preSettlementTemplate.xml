@@ -147,39 +147,23 @@
 			</list>
 		</datas>
 	</row:row>
-	<row:row description="优惠">
+	<row:row description="品项费">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>
 		<locations description="分隔符">
 			<list>
-				<value>10</value>
-				<value>10</value>
-				<value>10</value>
-				<value>10</value>
-			</list>
-		</locations>
-		<datas description="分隔符">
-			<list>
-				<value>优惠(元)：</value>
-				<value>#{obj.posData.totalfree}</value>
-				<value>打印人：</value>
-				<value>#{obj.posData.printname}</value>
-			</list>
-		</datas>
-	</row:row>
-	<row:row description="优惠">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="分隔符">
-			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>8</value>
+				<value>12</value>
+				<value>8</value>
+				<value>12</value>
 			</list>
 		</locations>
 		<datas description="分隔符">
 			<list>
 				<value>品项费：</value>
 				<value>#{obj.posData.pxFee}</value>
+				<value>打印人：</value>
+				<value>#{obj.posData.printname}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -414,8 +398,8 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="电话">
 			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>6</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="电话">
@@ -431,8 +415,8 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="地址">
 			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>6</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="地址">

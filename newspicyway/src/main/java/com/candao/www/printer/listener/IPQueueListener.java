@@ -1,5 +1,14 @@
 package com.candao.www.printer.listener;
 
+import java.lang.reflect.Array;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
 import com.candao.common.utils.Constant;
 import com.candao.common.utils.Constant.ListenerType;
 import com.candao.print.entity.PrintData;
@@ -9,16 +18,6 @@ import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.printer.v2.Printer;
 import com.candao.www.printer.v2.PrinterManager;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
-import java.lang.reflect.Array;
 
 /**
  * Created by Administrator on 2016-6-13.
@@ -84,6 +83,7 @@ public class IPQueueListener implements ApplicationContextAware {
 
     private void print(final Object[] src, final PrintObj obj) throws Exception {
         Object[] buffer = null;
+
         if (!StringUtil.isEmpty(obj.getRePeatID())){
             Class type = src.getClass();
             int arrayLength = Array.getLength(src);

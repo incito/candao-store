@@ -361,8 +361,8 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="电话">
 			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>6</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="电话">
@@ -377,8 +377,8 @@
 		<font description="字体大小">SMALL</font>
 		<locations description="地址">
 			<list>
-				<value>10</value>
-				<value>20</value>
+				<value>6</value>
+				<value>30</value>
 			</list>
 		</locations>
 		<datas description="地址">

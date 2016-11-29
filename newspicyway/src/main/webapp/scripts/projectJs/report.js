@@ -808,12 +808,14 @@ function strToFloat(str){
 
 /** *******************营业数据明细报表 START***************************************** */
 function initDaliyData() {
+	$("#prompt-dialog").modal("show");
 	if(compareBeginEndTime()){
 		$.post(global_Path + "/daliyReports/getDayReportList.json", {
 			beginTime : beginTime,
 			endTime : endTime,
 			shiftid : shiftid
 		}, function(result) {
+			$("#prompt-dialog").modal("hide");
 			incomeStatistics(result);
 			paidInAmount(result);
 			discountAmount(result);
@@ -930,7 +932,7 @@ function paidInAmount(result) {
 		legend_data = item.settlementDescList;//[ '会员储值消费净值', '刷他行卡', '刷工行卡', '支付宝', '微信', '挂账', '现金' ];
 		tr += '<tr id="settlementDesc">';
 		$.each(legend_data,function(i,data){
-			tr += '<th width="14%">'+data+'</th>';
+			tr += '<th  nowrap="nowrap">'+data+'</th>';
 		});
 		tr += '</tr>';
 		$("#settlementDesc").replaceWith(tr);
@@ -940,7 +942,7 @@ function paidInAmount(result) {
 				value : data,
 				name : legend_data[i]
 			});
-			tb += '<td>'+data+'</td>';
+			tb += '<td  nowrap="nowrap">'+data+'</td>';
 		});
 		tb += '</tr>';
 	}
@@ -1009,8 +1011,8 @@ function discountAmount(result) {
 	var tb = "";
 	if (result != null && result.length > 0) {
 		var item = result[0];
-		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员优惠','抹零','四舍五入', '赠送金额',
-				'会员储值消费虚增' ];
+		legend_data = [ '优免', '会员积分消费', '会员券消费', '会员价优惠','抹零','四舍五入', '赠送金额',
+				'会员储值消费虚增','套餐优惠', ];
 		series_data.push({
 			value : strToFloat(item.bastfree),
 			name : legend_data[0]
@@ -1043,25 +1045,25 @@ function discountAmount(result) {
 			value : strToFloat(item.mebervalueadd),
 			name : legend_data[7]
 		});
-		if(item.handerWay != null && item.handerWay != ""){
-			legend_data.push(item.handerWay);
-			series_data.push({
-				value : Math.abs(strToFloat(item.handervalue)),
-				name : item.handerWay
-			});
-		}
+		series_data.push({
+			value : strToFloat(item.taocanyouhui),
+			name : legend_data[8]
+		});
 		tb = '<tr><td>' + item.bastfree + '</td><td>' + item.integralconsum+'</td>'
 				+ '<td>' + item.meberTicket + '</td>'
 				+ '<td>'+item.memberDishPriceFree + '</td>'
 				+ '<td>'+item.fraction+'</td>'
-				+ '<td>'+item.roundoff+'</td>';
+				+ '<td>'+item.roundoff+'</td>'
+				+ '<td>'+strToFloat(item.give)+'</td>'
+				+ '<td>' + item.mebervalueadd + '</td>'
+				+ '<td>' + item.taocanyouhui + '</td>';
 		/*if(item.handerWay != null && item.handerWay != ""){
 			$("#dynamic-col").text(item.handerWay);
 			tb += '<td>' + item.handervalue + '</td>';
 		}else{
 			$("#dynamic-col").css("display", "none");
 		}*/
-		tb += '<td>'+strToFloat(item.give)+'</td><td>' + item.mebervalueadd + '</td></tr>';
+		tb += '</tr>';
 	}
 	$("#discount_tb tbody").html(tb);
 
@@ -1848,11 +1850,9 @@ function initItemTb(datalist) {
 					+ '<td width="20%">'
 					+ obj.itemDesc
 					+ '</td>'
-					+ '<td width="15%">'
-					+ typedesc
-					+ '</td>'
 					+ '<td width="15%">' + obj.number
 					+ '</td><td>'+obj.thousandstimes+'</td><td>'+obj.orignalprice
+					+ '</td><td>'+obj.debitamount
  					+'</td>'
 					+ '<td width="15%">'
 					+ turnover.toFixed(2)
@@ -1860,7 +1860,7 @@ function initItemTb(datalist) {
 					+ '</tr>';
 		});
 	}else{
-		tHtml += '<tr><td colspan="6">没有数据</td></tr>';
+		tHtml += '<tr><td colspan="7">没有数据</td></tr>';
 	}
 
 	$("#items_tb tbody").html(tHtml);
@@ -1870,12 +1870,26 @@ function initItemTb(datalist) {
  */
 function showItemSubTb(id, dishType, itemdesc, typedesc) {
 	$("#p-item-id").val(id);
+	$("#_id").val(id);
+	$("#dish_type").val(dishType);
 	$("#p-dish-type").val(dishType);
 	$("#item-desc").text(itemdesc);
 	$("#dish-type-desc").text(typedesc);
 	$("#item-details-dialog").modal("show");
 	initItemSubTb(id, dishType);
 
+}
+/**
+ * 品项销售明细子表 导出
+ * @param f
+ */
+function exportItemReportDetail() {
+	$("#_shiftid").val(shiftid);
+	$("#_beginTime").val(beginTime);
+	$("#_endTime").val(endTime);
+	$("#_searchType").val(searchType);
+	$("#itemDetailForm").attr("action", global_Path + "/itemDetail/exportPXXSMXBZB.json");
+	$("#itemDetailForm").submit();
 }
 //初始化子表数据
 function initItemSubTb(id, dishType) {
@@ -1895,8 +1909,10 @@ function initItemSubTb(id, dishType) {
 			subTbody += "<td>" + item.dishNo + "</td>";
 			subTbody += "<td>" + item.price + "</td>";
 			subTbody += "<td>" + item.unit + "</td>";
-			subTbody += "<td>" + item.number + "</td>";
+			subTbody += "<td>" + item.danpinnumber + "</td>";
+			subTbody += "<td>" + item.taocannumber + "</td>";
 			subTbody += "<td>" + item.thousandstimes+"</td><td>"+item.orignalprice+"</td>";
+			subTbody += "<td>"+item.debitamount+"</td>";
 			subTbody += "<td>" + turnover.toFixed(2) + "</td>";//
 			subTbody += "</tr>";
 		});
@@ -2118,7 +2134,7 @@ function getWaiterAssessData(){
 			var tr = result.data.tr;
 			var htm = '';
 			$.each(tr,function(i,item){
-				htm += '<th class="ss">实收/'+dellrTrim(item)+'</th>';
+				htm += '<th nowrap="nowrap" class="ss">实收/'+dellrTrim(item)+'</th>';
 			});
 			$(".ss").remove();
 			$("#waiter-assess-tb thead tr").append(htm);
@@ -2126,23 +2142,23 @@ function getWaiterAssessData(){
 			if(data != null && data.length>0){
 				$.each(data, function(i, item){
 					htm += '<tr ondblclick="showWaiterSecPage(\''+item.waiterId+'\')">'
-						+ '<td>'+item.waiterId+'</td>'
-						+ '<td>'+item.waiterName+'</td>'
-						+ '<td>'+item.tableNum+'</td>'
-						+ '<td>'+item.custNum+'</td>'
-						+ '<td>'+item.shouldAmount+'</td>'
-						+ '<td>'+item.actualAmountTotal+'</td>'
-						+ '<td>'+item.shouldPre+'</td>'
-						+ '<td>'+item.actualPre+'</td>';
+						+ '<td nowrap="nowrap">'+item.waiterId+'</td>'
+						+ '<td nowrap="nowrap">'+item.waiterName+'</td>'
+						+ '<td nowrap="nowrap">'+item.tableNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.custNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldAmount+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualAmountTotal+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldPre+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualPre+'</td>';
 					$.each(item.settlements,function(i,item){
-						htm += '<td>'+item+'</td>';
+						htm += '<td nowrap="nowrap">'+item+'</td>';
 					});
 					htm += '</tr>';
 				});
 				$("#waiter-assess-tb tbody").html(htm);
 				initDatatableConfig();
 			}else{
-				htm += '<tr><td colspan="16">无数据</td></tr>';
+				htm += '<tr><td colspan="100">无数据</td></tr>';
 				$("#waiter-assess-tb tbody").html(htm);
 			}
 		}else{
@@ -2168,25 +2184,25 @@ function getWaiterDetails(){
 			var tr = result.data.tr;
 			var htm = '';
 			$.each(tr,function(i,item){
-				htm += '<th class="ssd">实收/'+dellrTrim(item)+'</th>';
+				htm += '<th nowrap="nowrap" class="ssd">实收/'+dellrTrim(item)+'</th>';
 			});
 			$(".ssd").remove();
 			$("#waiterassess-details-tb thead tr").append(htm);
 			htm = '';
 			if(data != null && data.length>0){
 				$.each(data, function(i, item){
-					htm += '<tr><td>'+item.orderId+'</td>'
-						+ '<td>'+item.tableNo+'</td>'
-						+ '<td>'+item.custNum+'</td>'
-						+ '<td>'+item.shouldAmount+'</td>'
-						+ '<td>'+item.actualAmountTotal+'</td>';
+					htm += '<tr><td nowrap="nowrap">'+item.orderId+'</td>'
+						+ '<td nowrap="nowrap">'+item.tableNo+'</td>'
+						+ '<td nowrap="nowrap">'+item.custNum+'</td>'
+						+ '<td nowrap="nowrap">'+item.shouldAmount+'</td>'
+						+ '<td nowrap="nowrap">'+item.actualAmountTotal+'</td>';
 					$.each(item.settlements,function(i,item){
-						htm += '<td>'+item+'</td>';
+						htm += '<td nowrap="nowrap">'+item+'</td>';
 					});
 					htm += '</tr>';
 				});
 			}else{
-				htm = '<tr><td colspan="5">无数据</td></tr>';
+				htm = '<tr><td colspan="100">无数据</td></tr>';
 			}
 			$("#waiterassess-details-tb tbody").html(htm);
 		}else{
