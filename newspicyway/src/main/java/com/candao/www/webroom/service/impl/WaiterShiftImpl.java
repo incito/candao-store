@@ -131,13 +131,12 @@ public class WaiterShiftImpl implements WaiterShiftService {
     					actualAmountList.add("0.00");
     				}
     				current = waiterId;
+    			}
+    			if(result.containsKey(waiterId)){
+    				returnInfo = result.get(waiterId);
     			}else{
-	    			if(result.containsKey(waiterId)){
-	    				returnInfo = result.get(waiterId);
-	    			}else{
-	    				returnInfo.put("waiterId", waiterId);
-	    				returnInfo.put("orderId",orderId);
-	    			}
+    				returnInfo.put("waiterId", waiterId);
+    				returnInfo.put("orderId",orderId);
     			}
     			//挂账与挂账2加到一块，微信支付与微信扫码支付相加
     			if("13".equals(itemId)||"5".equals(itemId)){
