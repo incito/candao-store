@@ -251,7 +251,7 @@
 		<datas description="服务费">
 			<list>
 				<value>服务费</value>
-				<value>#{obj.posData.serviceCharge.chargeAmount}</value>
+				<value>#{obj.posData.serviceCharge.reserveChargeAmout}</value>
 			</list>
 		</datas>
 	</row:row>
