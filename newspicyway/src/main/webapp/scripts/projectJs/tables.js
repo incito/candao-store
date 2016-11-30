@@ -1,4 +1,5 @@
-var tbPrinterAreaList = [];
+var choesetable=sessionStorage.getItem('choesetable')
+sessionStorage.clear();
 var flag_prev = 0;
 var serviceTablesJson = [];//有餐台服务费的餐台集合
 var tableJson = [];//全部餐台
