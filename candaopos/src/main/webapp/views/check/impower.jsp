@@ -26,7 +26,7 @@
                     <form action="" >
                         <div class="form-group form-group-base">
                             <span class="form-label">员工编号:</span>
-                            <input value=""id="user"  name="uesr"  type="text" class="form-control" autocomplete="off">
+                            <input value=""id="user"  name="uesr"  type="text" class="form-control" autocomplete="off" autofocus>
                         </div>
                         <div class="form-group form-group-base">
                             <span class="form-label">权限密码:</span>

@@ -1628,6 +1628,10 @@ var Order = {
         totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
         totalHtml += '<li class="hide needPay">还需在收:<span></span></li> ';
+        if(invoice_Flag.flag!=''){
+            totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>'+invoice_Flag.flag+'</span></li> ';
+        }
+
 
         totalHtml += '</ul>';
 

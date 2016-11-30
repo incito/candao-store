@@ -77,6 +77,10 @@ var checkOrder={
                     }
                     data = arry
                 }
+                /*如果数据为零结算，反结算，重印账单。会员交易凭条不能点击*/
+                if(data.length<1){
+                    $('.reprintCheck,.receipt,.c-mod-js,.c-mod-fjs').addClass('disabled').attr('disabled',true)
+                }
 
                 var orderNo = $.trim($("#orderNo").val())
                 var deskNo = $.trim($("#deskNo").val())
@@ -88,6 +92,7 @@ var checkOrder={
                         }
                     }
                     data = arry;
+
                     //console.log(data)
                 }
 

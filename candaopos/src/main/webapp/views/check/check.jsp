@@ -46,7 +46,7 @@
                     <div class="check-key">
                         <div class="form-group form-group-base form-input">
                             <span class="form-label" style="line-height: 40px">账号单:</span>
-                            <input id="orderNo" value="" validType='noPecial2' maxlength="20" name="billNo" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 60px" autocomplete="off">
+                            <input id="orderNo" value="" validType='noPecial2' maxlength="20" name="billNo" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 60px" autocomplete="off" autofocus>
                         </div>
 
                         <div class="form-group form-group-base form-input">

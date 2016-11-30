@@ -184,6 +184,7 @@ var reporting={
         var flag=$("#getTipList .dataSelect-type .active" ).attr("flag"),
             that=this;
         var beginTime=$.trim($(".datetimeStart").val()),endTime=$.trim($(".datetimeEnd").val()),operationname=utils.storage.getter('aUserid');
+        var abc=Date.parse(new Date(beginTime))/1000
         if(beginTime=="" || beginTime==""){
             var str = '<div><strong >开始和结束日期不能为空</strong></div>'
             var alertModal = widget.modal.alert({
@@ -199,6 +200,10 @@ var reporting={
 
             });
             return
+        }
+        if(Date.parse(new Date(endTime))/1000-Date.parse(new Date(beginTime))/1000<0){
+            utils.printError.alert('开始时间不能大于结束时间');
+            return false
         }
         $.ajax({
             url:_config.interfaceUrl.PrintBusinessDetail,

@@ -170,7 +170,7 @@ var keydownEnter=null
                 var me=$('.modal-alert:last .modal-footer').find('button');
                 $(me).each(function () {
                     var abcd=$(this);
-                    if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1){
+                    if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){
                         keydownEnter=abcd;
                     }
                 })
@@ -359,7 +359,7 @@ var Log = (function () {
 			info: msg
 		});
 		utils.storage.setter('log', JSON.stringify(data));
-		console.log(data.length);
+		//console.log(data.length);
 	};
 	var show = function () {
 		return data
@@ -369,16 +369,17 @@ var Log = (function () {
 		if(data.length < options.dataLen) {
 			return false;
 		}
-		console.log('preLength:' + preLength);
+		//console.log('preLength:' + preLength);
 		if(preLength !== data.length ) {
 			$.ajax({
 				url: _config.interfaceUrl.Log,
 				method:'post',
 				type:'json',
+				global: false,
 				contentType: 'application/json',
 				data: JSON.stringify(data)
 			}).then(function(){
-				console.log('upload success');
+				//console.log('upload success');
 				data = [];
 				preLength = 0;
 				utils.storage.setter('log', '');
