@@ -19,10 +19,12 @@ public class TServiceCharge  implements Serializable {
 	private int  chargeRate;//'比例计算方式 比率'
 	private String chargeTime;//时长计算方式 时长(分钟单位)'
 	private BigDecimal chargeAmount=new BigDecimal("0");//'服务费金额' 
+	private BigDecimal reserveChargeAmout=new BigDecimal("0");//预计打印
 	private int isCustom;//是否自定义服务费0系统默认 1手动修改
 	private String autho;//小费修改人
 	private Date ctime;//创建时间
 	private Date mtime;//修改时间
+	private String desc;//服务费描述
 	public TServiceCharge() {
 	}
 	public TServiceCharge(String orderid,int  chargeOn,int chargeType,int chargeRateRule,int chargeRate,String chargeTime) {
@@ -104,6 +106,18 @@ public class TServiceCharge  implements Serializable {
 	}
 	public void setOrderid(String orderid) {
 		this.orderid = orderid;
+	}
+	public BigDecimal getReserveChargeAmout() {
+		return reserveChargeAmout;
+	}
+	public void setReserveChargeAmout(BigDecimal reserveChargeAmout) {
+		this.reserveChargeAmout = reserveChargeAmout;
+	}
+	public String getDesc() {
+		return desc;
+	}
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
   
 	
