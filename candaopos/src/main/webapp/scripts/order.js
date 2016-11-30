@@ -456,7 +456,7 @@ var Order = {
                     $coupnumDialog.modal('show');
                 } else if (type === '07' && free_reason === '0') {
                     //手工 选择赠菜
-                    $givedishDialog.addClass('coupum-cus-give');
+                    $givedishDialog.addClass('coupnum-cus-give');
 
                     //更新可选赠菜信息
                     that.updateGiveDishInfo(function () {
@@ -1156,6 +1156,7 @@ var Order = {
         dom.backfoodDialog.find(".btn-save").unbind("click").on("click", function () {
             if(type === 0) {
                 dom.backfoodDialog.modal('hide');
+                dom.backfoodNumDialog.find('.dishname span').text($("#order-dish-table tr.selected .dishname").text())
                 dom.backfoodNumDialog.modal('show');
                 dom.backfoodNumDialog.find('input[type=text]').val('');
             } else {
@@ -1408,9 +1409,6 @@ var Order = {
             data: JSON.stringify(that.manageUsePref.get()),
             success: function (res) {
                 if (res.code === '0') {
-                    //console.log(res);
-
-
                     that.updateTotal(res.data);
                     //更新已选优惠
                     that.updateSelectedPref(res.data.detailPreferentials, 1);
@@ -1457,7 +1455,6 @@ var Order = {
             })
         ).then(function (res1, res2) {
             var data = res1[0].data.rows;
-            //debugger;
             if (res1[0].code === '0' && res2[0].code === '0') {
                 var htm = '';
                 $.each(data, function (k, v) {
@@ -1469,7 +1466,6 @@ var Order = {
                         }
                     });
                 });
-                console.log(data);
                 $.each(data, function (k, v) {
                     var cls = v.dishnum > 0 ? '' : 'display:none';
                     if (parseInt(v.orderprice, 10) > 0) {
@@ -1960,8 +1956,6 @@ var Order = {
                     type:1
                 })
             }).then(function(dataMsg){
-                //console.log(dataMsg)
-
             });
 
             if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来

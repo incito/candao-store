@@ -383,16 +383,16 @@
 							</div>
 							<div>
 								<span>价格(元):</span>
-								<input type="text" validtype="intAndFloat4" class="form-control price">
+								<input type="text" validtype="intAndFloat4" style="ime-mode: disabled;"  class="form-control price">
 							</div>
 							<div>
 								<span>数量(份):</span>
-								<input type="text" validtype="intAndFloat3" class="form-control dishnum">
+								<input type="text" validtype="intAndFloat3" style="ime-mode: disabled;" class="form-control dishnum">
 							</div>
 							<div class="">
 								<button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 								</button>
-								<button class="btn btn-save in-btn135 J-btn-submit" type="button">确认开台
+								<button class="btn btn-save in-btn135 J-btn-submit" type="button">确认
 								</button>
 							</div>
 						</div>

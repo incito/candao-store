@@ -66,15 +66,23 @@ $(document).ready(function(){
 
 
 	//input验证
-	$('input[validtype]').on('input propertychange focus', function() {
+	$('input[validtype]').on('input propertychange focus change blur', function() {
 		var me = $(this);
 		var val = me.val();
 		var type = me.attr('validtype');
+
+		console.log('input');
+
 		if(type !== undefined) {
 			//纯数字
+			if(/number/.test(type) || /intAndFloat/.test(type)){
+
+			}
+
 			if(type === 'number'){
 				me.val(val.replace(/[^\d]/g,''));
 			}
+
 			//整数3位 小数2位
 			if(type === 'intAndFloat') {
 				if(!(/^[0-9]{1,3}$/g.test(me.val()) || /^[0-9]{1,3}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,3}\.$/g.test(me.val()))) {
@@ -101,9 +109,9 @@ $(document).ready(function(){
 					me.val(val.substr(0, me.val().length-1))
 				}
 			}
-			//数字英文中文，以及#
+			//数字英文中文，以及
 			if(type==='noPecial'){
-				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#]*$/g
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5]*$/g
 				if(val!=''){
 					if(!abc.test(val)){
 						me.val(val.substr(0, me.val().length-1));
@@ -115,7 +123,7 @@ $(document).ready(function(){
 
 			//数字英文中文，以及#@.
 			if(type==='noPecial2'){
-				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\#\@\.]*$/g
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\@\.]*$/g
 				if(val!=''){
 					if(!abc.test(val)){
 						me.val(val.substr(0, me.val().length-1))
@@ -292,7 +300,7 @@ var Log = (function () {
 	var data = [];
 	var options = {
 		time: 5000,//间隔时间
-		dataLen: 10
+		dataLen: 1
 	};
 	var preLength = 0;
 	//1:DEBUG 2:INFO 3:WARN 4:ERROR
@@ -322,7 +330,7 @@ var Log = (function () {
 				url: _config.interfaceUrl.Log,
 				method:'post',
 				type:'json',
-				contentType: 'application/json',
+				contentType: 'application/json,utf-8',
 				data: JSON.stringify(data)
 			}).then(function(){
 				console.log('upload success');
@@ -389,9 +397,9 @@ window.onerror = function (msg, url, line, col, error) {
 
 	return true;
 };
-setInterval(function () {
-	Log.send(1, '操作提示:' + utils.date.current())
-}, 1000)
+//setInterval(function () {
+//	Log.send(1, '操作提示:' + utils.date.current())
+//}, 1000)
 /************
  * 组件类
  ************/
