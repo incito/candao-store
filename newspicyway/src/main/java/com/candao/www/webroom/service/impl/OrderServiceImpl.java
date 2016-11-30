@@ -480,7 +480,7 @@ public class OrderServiceImpl implements OrderService {
 							// str.append(Constant.MessageType.msg_1005+"/"+String.valueOf(orderMap.get("meid")));
 							// System.out.println(str.toString());
 							// new Thread(new TsThread(str.toString())).run();
-							notifyService.notifyClearTable(params.get("tableNo").toString());
+							notifyService.notifyClearTable(orderid);
 						}
 						// 当前pad的meid不为空，更新meid
 						if (params.get("meid") != null) {
