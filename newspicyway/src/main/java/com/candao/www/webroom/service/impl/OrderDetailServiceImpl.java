@@ -265,6 +265,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         //清台
         TbTable tbTable = new TbTable();
         tbTable.setTableid(tableId);
+        tbTable.setOrderid(orderId);
         tbTable.setStatus(0);
         tableService.updateCleanStatus(tbTable);
         //订单
