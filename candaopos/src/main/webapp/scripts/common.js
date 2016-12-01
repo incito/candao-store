@@ -66,7 +66,7 @@ $(document).ready(function () {
 
 
 	//input验证
-	$('input[validtype]').on('input propertychange focus change blur', function() {
+	$('input[validtype]').on('input propertychange focus', function() {
 		var me = $(this);
 		var val = me.val();
 		var type = me.attr('validtype');
@@ -383,6 +383,8 @@ var Log = (function () {
 				url: _config.interfaceUrl.Log,
 				method:'post',
 				type:'json',
+				global: false,
+				contentType: 'application/json',
 				contentType: 'application/json',
 				data: JSON.stringify(data)
 			}).then(function(){
