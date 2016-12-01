@@ -183,6 +183,12 @@ var member = {
             that.errorAlert('查询信息不能为空');
             return
         }
+        Log.send(2, '会员查询回传参数：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.VipQuery,
+                securityCode: '',
+                branch_id: utils.storage.getter('branch_id'),
+                cardno: memberCardno
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.VipQuery,
             method: 'POST',
@@ -196,6 +202,7 @@ var member = {
             success: function (res) {
                 var gender, status;
                 //console.log(res)
+                Log.send(2, '会员查询返回参数：'+JSON.stringify(res));
                 if (res.retcode == 0) {
                     if (res.result.length > 1) {
                         var memberCard = [];
@@ -320,6 +327,13 @@ var member = {
             that.errorAlert('请输入正确的验证嘛');
             return false
         }
+        Log.send(2, '会员修改手机号回传参数：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
+                securityCode: '',
+                branch_id: utils.storage.getter('branch_id'),
+                mobile: oldphone,
+                new_mobile: newphone
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
@@ -332,6 +346,7 @@ var member = {
                 new_mobile: newphone
             }),
             success: function (res) {
+                Log.send(2, '会员修改手机号返回参数：'+JSON.stringify(res));
                 if (res.retcode == 0) {
                     $('#modify-phone-dialog').modal('hide').html('');
                     that.succeedAlert({'info':'修改手机号码成功','callBack':'member.memberSearch($(".member_card").text())'});
@@ -351,6 +366,14 @@ var member = {
             mobile = $.trim($('.base_memberphone').text()),
             gender = $('.radio-box input:checked').val(),
             that = this;
+        Log.send(2, '修改会员基本信息回传参数：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
+                branch_id: utils.storage.getter('branch_id'),
+                mobile: mobile,
+                name: name,
+                gender: gender,
+                birthday: birthday
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
@@ -364,6 +387,7 @@ var member = {
                 birthday: birthday
             }),
             success: function (res) {
+                Log.send(2, '修改会员基本信息返回参数：'+JSON.stringify(res));
                 //console.log(res)
                 if (res.retcode == 0) {
                     $('#modify-base-dialog').modal('hide').html('');
@@ -409,6 +433,13 @@ var member = {
             that.errorAlert('两次输入的密码不一致，请重新输入');
             return false
         }
+        Log.send(2, '修改会员消费密码回传参数：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
+                securityCode: '',
+                branch_id: utils.storage.getter('branch_id'),
+                mobile: mobile,
+                password: Rpassword
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeInfo,
             method: 'POST',
@@ -421,6 +452,7 @@ var member = {
                 password: Rpassword
             }),
             success: function (res) {
+                Log.send(2, '修改会员消费密码返回参数：'+JSON.stringify(res));
                 if (res.retcode == 0) {
                     $('#modify-pwd-dialog').modal('hide').html('');
                     that.errorAlert('修改消费密码成功')
@@ -486,6 +518,11 @@ var member = {
     memberDelete: function (member_card) {
         var that = this;
         $(".modal-alert:last,.modal-backdrop:last").remove();
+        Log.send(2, '会员注销开始：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.CancelCanDao,
+                branch_id: utils.storage.getter('branch_id'),
+                cardno: member_card
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.CancelCanDao,
             method: 'POST',
@@ -496,6 +533,7 @@ var member = {
                 cardno: member_card
             }),
             success: function (res) {
+                Log.send(2, '会员注销接口返回数据：'+JSON.stringify(res));
                 if (res.Retcode == 0) {
                     that.succeedAlert({'info':'注销' + member_card + '成功','callBack':'window.location.href="../member/view.jsp"'});
                 }
@@ -546,7 +584,19 @@ var member = {
             that.errorAlert('两次输入的密码不一致，请重新输入');
             return false
         }
-        ;
+        Log.send(2, '会员注册开始：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.RegistCanDao,
+                securityCode: '',
+                branch_id: utils.storage.getter('branch_id'),
+                mobile: moblie,
+                cardno: '',
+                password: rpsd,
+                name: name,
+                gender: gender,
+                birthday: birthday,
+                channel: '1',
+                branch_addr: utils.storage.getter('branch_branchaddress')
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.RegistCanDao,
             method: 'POST',
@@ -565,6 +615,7 @@ var member = {
                 branch_addr: utils.storage.getter('branch_branchaddress')
             }),
             success: function (res) {
+                Log.send(2, '会员注册接口返回数据：'+JSON.stringify(res));
                 if (res.Retcode == 0) {
                     that.errorAlert('注册会员成功');
                     $('#phone').val('');
@@ -661,6 +712,18 @@ var member = {
         }
 
         function savevale() {
+            Log.send(2, '会员储值开始：'+JSON.stringify({
+                    'url':memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
+                    'Serial':utils.storage.getter('branch_id'),
+                    'branch_id':utils.storage.getter('branch_id'),
+                    'cardno':cardno,
+                    'Amount':Amount,
+                    'TransType':0,
+                    'ChargeType':ChargeType,
+                    'preferential_id':preferential_id,
+                    'giveValue':giveValue,
+                    'securityCode':'',
+                }));
             $.ajax({
                 url:memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
                 method: 'POST',
@@ -678,6 +741,7 @@ var member = {
                     'securityCode':'',
                 }),
                 success: function (res) {
+                    Log.send(2, '会员储值结束返回数据：'+JSON.stringify(res));
                     //console.log(res)
                     if(res.Retcode=='0'){
                         utils.openCash(1);//弹钱箱
@@ -997,12 +1061,14 @@ var ya_Member = {
             }
         });
         function saveBtn() {
+            Log.send(2, '雅座会员储值开始：'+'url:'+  memberAddress.vipotherurl + _config.interfaceUrl.Yarecharge + '' + utils.storage.getter('aUserid') + '/' + cardNumber + '/' + pszAmount + '/' + that.ya_formatDate(new Date(), "yyyyMMddHHmmssffff") + '/0/' + paytype + '/');
             $.ajax({
                 url: memberAddress.vipotherurl + _config.interfaceUrl.Yarecharge + '' + utils.storage.getter('aUserid') + '/' + cardNumber + '/' + pszAmount + '/' + that.ya_formatDate(new Date(), "yyyyMMddHHmmssffff") + '/0/' + paytype + '/',
                 method: 'get',
                 contentType: "application/json",
                 dataType: 'json',
                 success: function (res) {
+                    Log.send(2,'雅座会员储值结束：'+JSON.stringify(res))
                     //console.log(res)
                     if (res.Data == 0) {
                         member.errorAlert(res.Info)

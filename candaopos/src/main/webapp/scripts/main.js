@@ -746,7 +746,7 @@ var MainPage = {
             'posid':utils.storage.getter('posid'),
             'checkout_fullname':utils.storage.getter('checkout_fullname')
         }
-        Log.send(2, '普通清机回传参数有'+JSON.stringify(sendInfo));
+        Log.send(2, '普通清机回传参数有：'+JSON.stringify(sendInfo));
         $("#J-btn-checkout-dialog").modal('hide')
         widget.modal.alert({
             cls: 'fade in',
@@ -762,7 +762,7 @@ var MainPage = {
             success: function (data) {
                 $(".modal-alert:last,.modal-backdrop:last").remove();
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
-                Log.send(2, '清机返回参数有'+JSON.stringify(data));
+                Log.send(2, '清机返回参数有：'+JSON.stringify(data));
                 if (data.Data === '0') {//清机失败
                     widget.modal.alert({
                         cls: 'fade in',
@@ -775,6 +775,7 @@ var MainPage = {
                 }
                 else {//清机成功
                     utils.reprintClear.get()//打印清机单
+                    Log.upload()
                     window.location = "../views/login.jsp";
                 }
             },
@@ -913,6 +914,7 @@ var MainPage = {
                                         btnOkTxt: '确定',
                                         btnCancelTxt: '',
                                         btnOkCb: function () {
+                                            Log.upload()
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
                                             window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
                                             utils.clearLocalStorage.clearSelect();//清空缓存

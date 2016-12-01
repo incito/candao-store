@@ -2851,13 +2851,13 @@ function initWaiterSaleTb(datalist,isFirst){
 					+ dishunit
 					+ '</td>'
 					+ '<td width="12.5%">'
-					+ present.toFixed(0)
+					+ present
 					+ '</td>'
 					+ '<td width="12.5%">'
-					+ discount.toFixed(0)
+					+ discount
 					+ '</td>'
 					+ '<td width="12.5%">'
-					+ num.toFixed(0)
+					+ num
 					+ '</td>'
 					+ '</tr>';
 		});
