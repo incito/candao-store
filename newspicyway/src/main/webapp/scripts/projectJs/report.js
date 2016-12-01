@@ -1131,7 +1131,6 @@ function exportReportDaliy() {
 /** *******************营业数据明细报表 END***************************************** */
 /** *******************结算方式明细报表 START*************************************** */
 function initPaywayData() {
-	$(".legend-custom-div").remove();
 	if(compareBeginEndTime()){
 		var tb = "";
 		$.post(global_Path + "/settlementOption/settlementOptionList.json", {
@@ -1139,6 +1138,7 @@ function initPaywayData() {
 			endTime : endTime,
 			shiftid : shiftid
 		}, function(result) {
+			$(".legend-custom-div").remove();
 			var legend_data = [];
 			var num_series_data = [];
 			var price_series_data = [];
@@ -2117,9 +2117,6 @@ function initDatatableConfig(){
 }*/
 
 function getWaiterAssessData(){
-	if(oTable !=null){
-		oTable.fnClearTable(false);
-	}
 	beginTime = $("#beginTime").val();
 	endTime = $("#endTime").val();
 	shiftid = $("#shiftid").val();
@@ -2129,6 +2126,9 @@ function getWaiterAssessData(){
 		shiftid: shiftid
 	}, function(result){
 		console.log(result);
+		if(oTable !=null){
+			oTable.fnClearTable(false);
+		}
 		if(result.flag == 1){
 			var data = result.data.td;
 			var tr = result.data.tr;
