@@ -75,8 +75,8 @@ var MainPage = {
         });
 
         dom.openDialog.on('input propertychange focus', '.J-male-num, .J-female-num', function () {
-            var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
-            var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
+            var maleNum = (dom.openDialog.find('.J-male-num').val() === '' || dom.openDialog.find('.J-male-num').val() === '.') ? '0' : dom.openDialog.find('.J-male-num').val();
+            var femailNum = (dom.openDialog.find('.J-female-num').val() === '' || dom.openDialog.find('.J-female-num').val() === '.') ? '0' : dom.openDialog.find('.J-female-num').val();
             $('.J-tableware-num').val(parseInt(maleNum, 10) + parseInt(femailNum, 10))
         });
 
@@ -89,6 +89,18 @@ var MainPage = {
                 widget.modal.alert({
                     cls: 'fade in',
                     content: '<strong>请输入就餐人数</strong>',
+                    width: 500,
+                    height: 500,
+                    btnOkTxt: '确定',
+                    btnCancelTxt: ''
+                });
+                return false;
+            }
+
+            if (parseInt(maleNum, 10) + parseInt(femailNum, 10) > 9999) {
+                widget.modal.alert({
+                    cls: 'fade in',
+                    content: '<strong>总人数不能大于9999</strong>',
                     width: 500,
                     height: 500,
                     btnOkTxt: '确定',
@@ -566,7 +578,7 @@ var MainPage = {
                             var minutes = Math.floor(leave2 / (60 * 1000));
                             if (hours <= 0) {
                                 time += '00:'
-                            } else if (hours > 10) {
+                            } else if (hours > 9) {
                                 time += hours + ':'
                             } else {
                                 time += '0' + hours + ':'
@@ -574,7 +586,7 @@ var MainPage = {
 
                             if (minutes <= 0) {
                                 time += '00'
-                            } else if (minutes > 10) {
+                            } else if (minutes > 9) {
                                 time += minutes
                             } else {
                                 time += '0' + minutes

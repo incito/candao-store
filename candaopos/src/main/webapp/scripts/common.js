@@ -62,69 +62,77 @@ $(document).ready(function () {
             }, 3000)
         }
 
-    }
+	}
 
 
-    //input验证
-    $('input[validtype]').on('input propertychange focus', function () {
-        var me = $(this);
-        var val = me.val();
-        var type = me.attr('validtype');
-        if (type !== undefined) {
-            //纯数字
-            if (type === 'number') {
-                me.val(val.replace(/[^\d]/g, ''));
-            }
-            //整数3位 小数2位
-            if (type === 'intAndFloat') {
-                if (!(/^[0-9]{1,3}$/g.test(me.val()) || /^[0-9]{1,3}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,3}\.$/g.test(me.val()))) {
-                    me.val(val.substr(0, me.val().length - 1))
-                }
-            }
+	//input验证
+	$('input[validtype]').on('input propertychange focus', function() {
+		var me = $(this);
+		var val = me.val();
+		var type = me.attr('validtype');
 
-            //整数10位 小数2位
-            if (type === 'intAndFloat2') {
-                if (!(/^[0-9]{1,10}$/g.test(me.val()) || /^[0-9]{1,10}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,10}\.$/g.test(me.val()))) {
-                    me.val(val.substr(0, me.val().length - 1))
-                }
-            }
+		console.log('input');
+
+		if(type !== undefined) {
+			//纯数字
+			if(/number/.test(type) || /intAndFloat/.test(type)){
+
+			}
+
+			if(type === 'number'){
+				me.val(val.replace(/[^\d]/g,''));
+			}
+
+			//整数3位 小数2位
+			if(type === 'intAndFloat') {
+				if(!(/^[0-9]{1,3}$/g.test(me.val()) || /^[0-9]{1,3}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,3}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
+
+			//整数10位 小数2位
+			if(type === 'intAndFloat2') {
+				if(!(/^[0-9]{1,10}$/g.test(me.val()) || /^[0-9]{1,10}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,10}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
 
 
-            if (type === 'intAndFloat3') {
-                if (!(/^[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,2}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,2}\.$/g.test(me.val()))) {
-                    me.val(val.substr(0, me.val().length - 1))
-                }
-            }
+			if(type === 'intAndFloat3') {
+				if(!(/^[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,2}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,2}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
 
-            if (type === 'intAndFloat4') {
-                if (!(/^[0-9]{1,4}$/g.test(me.val()) || /^[0-9]{1,4}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,4}\.$/g.test(me.val()))) {
-                    me.val(val.substr(0, me.val().length - 1))
-                }
-            }
-            //数字英文中文，以及#
-            if (type === 'noPecial') {
-                var abc = /^[A-Za-z0-9\u4E00-\u9FA5\#]*$/g
-                if (val != '') {
-                    if (!abc.test(val)) {
-                        me.val(val.substr(0, me.val().length - 1));
-                    }
-                    //me.val(me.val().replace(/'/g,''));
-                }
+			if(type === 'intAndFloat4') {
+				if(!(/^[0-9]{1,4}$/g.test(me.val()) || /^[0-9]{1,4}\.[0-9]{1,2}$/g.test(me.val()) || /^[0-9]{1,4}\.$/g.test(me.val()))) {
+					me.val(val.substr(0, me.val().length-1))
+				}
+			}
+			//数字英文中文，以及
+			if(type==='noPecial'){
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5]*$/g
+				if(val!=''){
+					if(!abc.test(val)){
+						me.val(val.substr(0, me.val().length-1));
+					}
+					//me.val(me.val().replace(/'/g,''));
+				}
 
-            }
+			}
 
-            //数字英文中文，以及#@.
-            if (type === 'noPecial2') {
-                var abc = /^[A-Za-z0-9\u4E00-\u9FA5\#\@\.]*$/g
-                if (val != '') {
-                    if (!abc.test(val)) {
-                        me.val(val.substr(0, me.val().length - 1))
-                    }
-                    //me.val(me.val().replace(/'/g,''));
-                }
-            }
-        }
-    });
+			//数字英文中文，以及#@.
+			if(type==='noPecial2'){
+				var abc=/^[A-Za-z0-9\u4E00-\u9FA5\@\.]*$/g
+				if(val!=''){
+					if(!abc.test(val)){
+						me.val(val.substr(0, me.val().length-1))
+					}
+					//me.val(me.val().replace(/'/g,''));
+				}
+			}
+		}
+	});
 
 
     $('.modal').on('show.bs.modal', function () {
@@ -212,7 +220,7 @@ var keydownEnter=null
     })
 
 
-    });
+});
 
 
 
@@ -381,7 +389,7 @@ var Log = (function () {
 			info: msg
 		});
 		utils.storage.setter('log', JSON.stringify(data));
-		//console.log(data.length);
+		console.log(data.length);
 	};
 	var show = function () {
 		return data
@@ -391,7 +399,7 @@ var Log = (function () {
 		if(data.length < options.dataLen) {
 			return false;
 		}
-		//console.log('preLength:' + preLength);
+		console.log('preLength:' + preLength);
 		if(preLength !== data.length ) {
 			$.ajax({
 				url: _config.interfaceUrl.Log,
@@ -399,9 +407,10 @@ var Log = (function () {
 				type:'json',
 				global: false,
 				contentType: 'application/json',
+				contentType: 'application/json',
 				data: JSON.stringify(data)
 			}).then(function(){
-				//console.log('upload success');
+				console.log('upload success');
 				data = [];
 				preLength = 0;
 				utils.storage.setter('log', '');
@@ -465,9 +474,9 @@ window.onerror = function (msg, url, line, col, error) {
 
 	return true;
 };
-setInterval(function () {
-	Log.send(1, '操作提示:' + utils.date.current())
-}, 1000)
+//setInterval(function () {
+//	Log.send(1, '操作提示:' + utils.date.current())
+//}, 1000)
 /************
  * 组件类
  ************/

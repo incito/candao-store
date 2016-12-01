@@ -183,7 +183,7 @@
 					<div class="paytype-input cash" id="cash">
 						<div class="form-group">
 							<span>金额：</span>
-							<input type="text" class="form-control J-pay-val" validtype="intAndFloat2" name="cash" iptType="cash">
+							<input type="text" class="form-control J-pay-val"  onpaste="return false" ondragenter="return false" oncontextmenu="return false;" style="ime-mode:disabled" validtype="intAndFloat2" name="cash" iptType="cash">
 						</div>
 						<div class="form-group the-change-div">
 							找零：<span class="the-change-span">0.00</span>
@@ -414,6 +414,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="dialog-sm-info">
+						<div class="form-group dishname" style="font-size: 16px;color: #FF5803;padding-left: 10px;"><span class="dish-name">扇贝</span></div>
 						<div class="form-group">
 							<span class="inpt-span">退菜数量:</span>
 							<input type="text" id="backDishNumIpt"   autofocus   class="form-control padding-left">

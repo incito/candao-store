@@ -100,7 +100,7 @@ footer{
   	display: inline-block;
 }
 .main-div .nav-type-prev span, .main-div .nav-type-next span{
-	color: #000000;
+	color: #333;
 }
 .main-div .nav-type-next{
 	float: right;
@@ -435,14 +435,16 @@ input[type=search] {
 .default-dialog .taste ul {
 	padding: 0;
 	margin: 0;
+	align-items: stretch;
+	flex-direction: row;
+	display: flex;
 }
 .default-dialog .taste ul li{
 	text-align: center;
   	display: inline-block;
   	width: 80px;
-  	height: 40px;
   	background: #FFFFFF;
-  	padding-top: 10px;
+  	padding: 10px 0;
   	margin-right: 4px;
 }
 .input-dialog .modal-dialog{

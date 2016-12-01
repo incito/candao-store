@@ -175,6 +175,8 @@ var AddDish = {
 								dish.temporary = '1';
 								dom.lscDialog.find('input').val('');
 								dom.lscDialog.off('click','.J-btn-submit').on('click','.J-btn-submit', function(){
+									var  price = $.trim(dom.lscDialog.find('.price').val());
+									var  dishnum = $.trim(dom.lscDialog.find('.dishnum').val());
 									if($.trim(dom.lscDialog.find('.note-name').val()).length === 0) {
 										widget.modal.alert({
 											content:'<strong>菜名不能为空,请检查!</strong>',
@@ -183,7 +185,7 @@ var AddDish = {
 										});
 										return false;
 									}
-									if($.trim(dom.lscDialog.find('.price').val()).length === 0 || parseFloat(dom.lscDialog.find('.price').val()) === 0) {
+									if(price.length === 0 || parseFloat(price) === 0) {
 										widget.modal.alert({
 											content:'<strong>价格(元)不能为空或者为零,请检查!</strong>',
 											btnOkTxt: '',
@@ -191,9 +193,25 @@ var AddDish = {
 										});
 										return false;
 									}
-									if($.trim(dom.lscDialog.find('.dishnum').val()).length === 0 || parseFloat(dom.lscDialog.find('.dishnum').val()) === 0) {
+									if(!(/^[0-9]{1,4}$/g.test(price) || /^[0-9]{1,4}\.[0-9]{1,2}$/g.test(price) || /^[0-9]{1,4}\.$/g.test(price))){
+										widget.modal.alert({
+											content:'<strong>请输入正确的价格,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if(dishnum.length === 0 || parseFloat(dishnum) === 0) {
 										widget.modal.alert({
 											content:'<strong>数量(份)不能为空或者为零,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if(!(/^[0-9]{1,2}$/g.test(dishnum) || /^[0-9]{1,2}\.[0-9]{1,2}$/g.test(dishnum) || /^[0-9]{1,2}\.$/g.test(dishnum))){
+										widget.modal.alert({
+											content:'<strong>请输入正确的数量,请检查!</strong>',
 											btnOkTxt: '',
 											btnCancelTxt: '确定'
 										});
@@ -202,7 +220,7 @@ var AddDish = {
 
 									dish.dishnum =  dom.lscDialog.find('.dishnum').val();
 									dish.orderprice = dish.orignalprice =  dom.lscDialog.find('.price').val();
-									dish.price = parseFloat(dish.dishnum) * parseFloat(dish.orderprice);
+									dish.price = parseFloat(parseFloat(dish.dishnum) * parseFloat(dish.orderprice)).toFixed(2);
 									dish.taste = dish.orignalprice =  $.trim(dom.lscDialog.find('.note-name').val());
 
 									that.addDish(dish);
@@ -945,8 +963,6 @@ var AddDish = {
 					+ price
 					+ "</td></tr>";
 			}
-
-
 		}
 		//鱼锅
 		else if(dishtype === 1) {
@@ -957,7 +973,7 @@ var AddDish = {
 				+ price
 				+ "</td></tr>";
 			$.each(dish.dishes, function(k, v){
-				tr += "<tr cid='" + cid + "' groupid='" +  dish.groupid + "'>"
+				tr += "<tr cid='" + cid + "' ispot='" + v.ispot + "' dishid='" +  v.dishid + "'  groupid='" +  dish.groupid + "'>"
 					+ "<td class='dishname' name='"+ v.dishname+"' >"
 					+ v.dishname
 					+ "</td><td class='num'>"+ v.dishnum+"</td><td class='price'>"
@@ -1348,7 +1364,7 @@ var AddDish = {
 			if(dish.temporary === '1') {
 				console.log(dish);
 				row = $.extend(row,{
-					"dishnum":  parseFloat(dish.dishnum) * parseFloat(dish.orderprice),
+					"dishnum":  parseFloat(parseFloat(dish.dishnum) * parseFloat(dish.orderprice)).toFixed(2),
 					"orderprice": type === 1 ? '0' : '1',//菜品价格
 					"orignalprice": '1'
 				});
@@ -1437,6 +1453,7 @@ var AddDish = {
 			}),
 			dataType: 'json',
 		}).then(function(res){
+
 			if (res.code === '0') {
 				//首次点菜 && 餐具设置收费 && 堂食
 				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in') {
@@ -1588,7 +1605,8 @@ var AddDish = {
 	 */
 	updateNum: function (){
 		if($("#sel-dish-table tbody tr.selected").length>0){
-			var cid = $("#sel-dish-table tbody tr.selected").attr("cid");
+			var $target = $("#sel-dish-table tbody tr.selected");
+			var cid = $target.attr("cid");
 			var dishname = dishCartMap.get(cid).dishname || dishCartMap.get(cid).title;
 			var dishtype = dishCartMap.get(cid).dishtype;
 			dom.numDialog.attr("cid",cid);
@@ -1607,7 +1625,7 @@ var AddDish = {
 				}
 			});
 			focusIpt = dom.numDialog.find('.J-num');
-			if(dishtype === 2 || dishtype === 1 ) {
+			if(dishtype === 2 || dishtype === 1 )  {
 				widget.modal.alert({
 					content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
 					btnOkTxt: '',
@@ -1636,7 +1654,16 @@ var AddDish = {
 		var $tr = dom.selDishable.find("tbody tr.selected");
 		var dish = dishCartMap.get($tr.attr("cid"));
 		var totalNum =dish.dishnum;
+		var dishtype = dish.dishtype;
 		var price = dish.price;
+		if(dishtype === 1 && $tr.attr('ispot') === '0') {
+			$.each(dish.dishes, function(k, v){
+				if(v.dishid === $tr.attr('dishid')) {
+					totalNum = v.dishnum;
+					price = v.price;
+				}
+			});
+		}
 		var totalPrice = this.calTotalPrice(totalNum, price);
 		$tr.find("td.price").text(totalPrice.toFixed(2));
 	},
@@ -1654,6 +1681,14 @@ var AddDish = {
 		var num = parseFloat(dish.dishnum);
 		var val = dom.numDialog.find('.J-num').val() === '' ? 0 : parseFloat(dom.numDialog.find('.J-num').val());
 
+		if(dishtype === 1 && $tr.attr('ispot') === '0') {
+			$.each(dish.dishes, function(k, v){
+				if(v.dishid === $tr.attr('dishid')) {
+					num = v.dishnum;
+				}
+			});
+		}
+
 		//修改数量
 		if(type === 0) {
 			num = val;
@@ -1663,34 +1698,57 @@ var AddDish = {
 			num--;
 		}
 
-		if(dishtype === 2 || dishtype === 1 ) {
+		if(dishtype === 2 || dishtype === 1) {
 			if(num > 0) {
-				widget.modal.alert({
-					content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
-					btnOkTxt: '',
-					btnCancelTxt: '确定'
-				});
+				if(dishtype === 2 || (dishtype === 1 && $tr.attr('ispot') === '1' ) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+					widget.modal.alert({
+						content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+					return false;
+				} else {
+					//可以修改的为鱼锅的鱼
+					$tr.find("td.num").text(num);
+					$.each(dish.dishes, function(k, v){
+						console.log(k);
+						if(v.dishid === $tr.attr('dishid')) {
+							v.dishnum = num;
+						}
+					});
+					dishCartMap.put(cid, dish);
+				}
 			} else {
-				dom.selDishable.find('[cid=' + cid  +']').remove();
+				if((dishtype === 2 && $tr.hasClass('main-combo')) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+					dom.selDishable.find('[cid=' + cid  +']').remove();
+					dishCartMap.remove(cid);
+					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
+				} else {
+					widget.modal.alert({
+						content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+					return false;
+				}
+			}
+
+		} else {
+			if(parseFloat(num) <= 0) {
+				$tr.remove();
 				dishCartMap.remove(cid);
 				dom.selDishable.find("tbody tr").eq(0).addClass('selected');
-				this.controlBtns();
+
+			} else {
+				$tr.find("td.num").text(num);
+				dish.dishnum = num;
+				dishCartMap.put(cid, dish);
+
 			}
-			this.updateTotalAmount();
-			return false
 		}
 
-		if(parseFloat(num) <= 0) {
-			$tr.remove();
-			dishCartMap.remove(cid);
-			dom.selDishable.find("tbody tr").eq(0).addClass('selected');
-			this.controlBtns();
-		} else {
-			$tr.find("td.num").text(num);
-			dish.dishnum = num;
-			dishCartMap.put(cid, dish);
-			this.updateTotalPrice();
-		}
+		this.controlBtns();
+		this.updateTotalPrice();
 		this.updateTotalAmount();
 		dom.numDialog.modal("hide");
 	},
