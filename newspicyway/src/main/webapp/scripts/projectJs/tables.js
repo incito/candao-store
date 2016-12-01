@@ -993,15 +993,43 @@ function oneclickTableType(id) {
                     return a.position - b.position
                 });//按照position排序
                 for (var i = 0; i < item.tables.length; i++) {
-                    _html += "<div class='counter-detail-box' tabletype='" + item.tables[i].tabletype + "' id='" + item.tables[i].tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>";
-                    _html += "<p  >" + item.tables[i].tableName + "</p>";
-                    _html += "<p  >(" + item.tables[i].personNum + "人桌)</p>";
-                    _html += "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tables[i].tableid + "&apos;" + "," + "&apos;" + item.tables[i].tableName + "&apos;" + ",event)'></i></div>";
+                    if(item.tables[i].chargeOn=='0'){//没有开启餐台服务费
+                        _html += "<div class='counter-detail-box' tabletype='" + item.tables[i].tabletype + "'"
+                        _html +=    " id='" + item.tables[i].tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>";
+                        _html += "<p  >" + item.tables[i].tableName + "</p>";
+                        _html += "<p  >(" + item.tables[i].personNum + "人桌)</p>";
+                        _html += "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tables[i].tableid + "&apos;" + "," + "&apos;" + item.tables[i].tableName + "&apos;" + ",event)'></i></div>";
+                    }
+                    if(item.tables[i].chargeOn=='1'){//开启餐台服务费添加counter-detailService-box区分
+                        _html += "<div class='counter-detail-box counter-detailService-box' tabletype='" + item.tables[i].tabletype + "'"
+                        _html +=    " id='" + item.tables[i].tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>";
+                        _html += "<p  >" + item.tables[i].tableName + "</p>";
+                        _html += "<p  >(" + item.tables[i].personNum + "人桌)</p>";
+                        _html += "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tables[i].tableid + "&apos;" + "," + "&apos;" + item.tables[i].tableName + "&apos;" + ",event)'></i></div>";
+                    }
+
                 }
                 $('#tables-detailMain-Add').before(_html)
                 customTable.isHide();
                 return false
             }
+        });
+        return false
+    }
+    /*在服务费餐台分类下*/
+    if ($('.counter-content-title .tables-type-active').attr('type') == '1') {
+        $(".counter-detail-box").remove();
+        $.each(serviceTablesJson, function (key, val) {
+            /*当前areaid=选中的分区id并且餐台个数大于0*/
+            if (id == val.areaid){
+                $.each(val.tables, function (index, item) {
+                    $('#tables-detailMain-Add').before("<div class='counter-detail-box counter-detailService-box' tabletype='" + item.tabletype + "' chargeOn='" + item.chargeOn + "' id='" + item.tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>" +
+                        "<p  >" + item.tableName + "</p>" +
+                        "<p  >(" + item.personNum + "人桌)</p>" +
+                        "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tableid + "&apos;" + "," + "&apos;" + item.tableName + "&apos;" + ",event)'></i></div>");
+                })
+            }
+
         });
         return false
     }
@@ -1014,10 +1042,19 @@ function oneclickTableType(id) {
             //console.log(result)
             $(".counter-detail-box").remove();
             $.each(result, function (index, item) {
-                $('#tables-detailMain-Add').before("<div class='counter-detail-box' tabletype='" + item.tabletype + "' id='" + item.tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>" +
-                    "<p  >" + item.tableName + "</p>" +
-                    "<p  >(" + item.personNum + "人桌)</p>" +
-                    "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tableid + "&apos;" + "," + "&apos;" + item.tableName + "&apos;" + ",event)'></i></div>");
+                if (item.chargeOn == '1') {
+                    $('#tables-detailMain-Add').before("<div class='counter-detail-box counter-detailService-box' tabletype='" + item.tabletype + "' chargeOn='" + item.chargeOn + "' id='" + item.tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>" +
+                        "<p  >" + item.tableName + "</p>" +
+                        "<p  >(" + item.personNum + "人桌)</p>" +
+                        "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tableid + "&apos;" + "," + "&apos;" + item.tableName + "&apos;" + ",event)'></i></div>");
+                }
+                else {
+                    $('#tables-detailMain-Add').before("<div class='counter-detail-box' tabletype='" + item.tabletype + "' chargeOn='" + item.chargeOn + "' id='" + item.tableid + "' onmouseover='delDisplay(this)' onmouseout='delHidden(this)'>" +
+                        "<p  >" + item.tableName + "</p>" +
+                        "<p  >(" + item.personNum + "人桌)</p>" +
+                        "<i class='icon-remove hidden'  onclick='delTablesDetail(" + "&apos;" + item.tableid + "&apos;" + "," + "&apos;" + item.tableName + "&apos;" + ",event)'></i></div>");
+                }
+
                 /*$('#'+item.tableid).dblclick(function(){
                  doEdit($(this).attr("id"));
                  })*/
