@@ -49,6 +49,7 @@ import com.candao.www.permit.service.UserService;
 import com.candao.www.preferential.calcpre.StrategyFactory;
 import com.candao.www.utils.OrderDetailParse;
 import com.candao.www.utils.ReturnMap;
+import com.candao.www.utils.ServiceChargeDescUnit;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -487,7 +488,7 @@ public class OrderServiceImpl implements OrderService {
 							// str.append(Constant.MessageType.msg_1005+"/"+String.valueOf(orderMap.get("meid")));
 							// System.out.println(str.toString());
 							// new Thread(new TsThread(str.toString())).run();
-							notifyService.notifyClearTable(params.get("tableNo").toString());
+							notifyService.notifyClearTable(orderid);
 						}
 						// 当前pad的meid不为空，更新meid
 						if (params.get("meid") != null) {
@@ -1178,10 +1179,26 @@ public class OrderServiceImpl implements OrderService {
 			// 服务费信息
 			TServiceCharge serviceCharge =chargeService.serviceCharge(orderid, userOrderInfo,
 					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
-			mapRet.put("serviceCharge", serviceCharge);
+			
 			//加上服务费
-			if(serviceCharge!=null&&serviceCharge.getChargeOn()!=0){
-				result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+			if(serviceCharge!=null){
+				if(serviceCharge.getChargeOn()!=0){
+					result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+					result.setReserveAmout(result.getReserveAmout().add(serviceCharge.getChargeAmount()));
+				}
+				//封装描述
+				List<Map<String, Object>> serviceChargelist = new ArrayList<>();
+				Map<String, Object> serviceChargeMap= new HashMap<>();
+				serviceChargeMap.put("chargeType", serviceCharge.getChargeType());
+				serviceChargeMap.put("chargeRate", serviceCharge.getChargeRate());
+				serviceChargeMap.put("chargeAmount", serviceCharge.getChargeAmount());
+				serviceChargeMap.put("chargeTime", serviceCharge.getChargeTime());
+				serviceChargeMap.put("chargeOn", serviceCharge.getChargeOn());
+				serviceChargelist.add(serviceChargeMap);
+				ServiceChargeDescUnit.handleServiceCharge(serviceChargelist);
+				serviceCharge.setDesc((String)serviceChargeMap.get("chargetDesc"));
+				mapRet.put("serviceCharge", serviceCharge);
+				
 			}
 			mapRet.put("preferentialInfo", result);
 		}

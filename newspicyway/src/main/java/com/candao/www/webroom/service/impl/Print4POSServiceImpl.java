@@ -432,7 +432,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         List<Map<String, Object>> res = new LinkedList<>();
         String[] name = {"优免", "会员积分消费", "会员券消费", "会员优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增"};
         String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "fraction", "give",
-                "handervalue", "mebervalueadd"};
+                "roundoff", "mebervalueadd"};
         for (int i = 0; i < name.length; i++) {
             Map<String, Object> temp = new HashMap<>();
             temp.put("name", name[i]);

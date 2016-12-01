@@ -12,7 +12,6 @@
 		#{chargeAmount,jdbcType=DECIMAL},#{isCustom,jdbcType=TINYINT}, #{autho,jdbcType=VARCHAR},
 		 now());
 	</insert>
-	
 	<update id="updateChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge">
 		UPDATE `t_service_charge`
 		<set>
@@ -48,9 +47,31 @@
 		 <where>
 		 	orderid=#{orderid}
 		 </where>
-		
 	</update>
-
+	
+	<update id="changChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge">
+		UPDATE `t_service_charge`
+		<set>
+			<if test="chargeOn != null">
+				chargeOn=#{chargeOn},
+			</if>
+			<if test="chargeAmount != null and isCustom == 1">
+				chargeAmount=#{chargeAmount},
+			</if>
+			<if test="isCustom != null">
+				isCustom=#{isCustom},
+			</if>
+			<if test="autho != null">
+				autho=#{autho},
+			</if>
+			mtime=now()
+		</set>
+		 <where>
+		 	orderid=#{orderid}
+		 </where>
+	</update>
+	
+    
 	<select id="getChargeInfo" parameterType="map"
 		resultType="com.candao.www.data.model.TServiceCharge">
 		SELECT * FROM t_service_charge 

@@ -29,6 +29,12 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 	public int updateChargeInfo(TServiceCharge chargeInfo) {
 		return serviceChargeDao.updateChargeInfo(chargeInfo);
 	}
+	
+	@Override
+	public int changChargeInfo(TServiceCharge chargeInfo) {
+		// TODO Auto-generated method stub
+		return serviceChargeDao.changChargeInfo(chargeInfo);
+	}
 	@Override
 	public int insertChargeInfo(TServiceCharge charge) {
 		return serviceChargeDao.insertChargeInfo(charge);
@@ -70,8 +76,10 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 				}
 			} else if (servceCharageBean.getIsCustom() == 1 ) {
 				calcServiceCharge = servceCharageBean.getChargeAmount();
+			}else if(servceCharageBean.getIsCustom()==0&&servceCharageBean.getChargeOn()==0){
+				calcServiceCharge= servceCharageBean.getChargeAmount();
 			}
-
+			
 			if (servceCharageBean == null) {
 				servceCharageBean = new TServiceCharge(orderid, chargeOn, chargeType, chargeRateRule, chargeRate,
 						chargeTime);
@@ -80,6 +88,10 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 				long id = serviceChargeDao.insertChargeInfo(servceCharageBean);
 				servceCharageBean.setId(id);
 			} else {
+				servceCharageBean.setChargeType(chargeType);
+				servceCharageBean.setChargeRateRule(chargeRateRule);
+				servceCharageBean.setChargeRate(chargeRate);
+				servceCharageBean.setChargeTime(chargeTime);
 				servceCharageBean.setChargeAmount(calcServiceCharge);
 				try {
 					serviceChargeDao.updateChargeInfo(servceCharageBean);
@@ -91,7 +103,14 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 			}
 
 		}
+		//设置预打印的服务费
+		if(servceCharageBean!=null&&servceCharageBean.getChargeOn()==0){
+			servceCharageBean.setReserveChargeAmout(new BigDecimal("0"));
+		}else if(servceCharageBean!=null&&servceCharageBean.getChargeOn()==1){
+			servceCharageBean.setReserveChargeAmout(servceCharageBean.getChargeAmount());
+		}
 		return servceCharageBean;
 	}
+	
 
 }

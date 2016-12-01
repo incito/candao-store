@@ -1083,7 +1083,7 @@ public class PadInterfaceController extends BaseController{
             int[] tabletypefilter = {2, 3, 4};
             map.put("tabletypefilter", tabletypefilter);// 过滤掉餐台类型为外卖,咖啡的餐台
             List<Map<String, Object>> list = tableService.find(map);
-            handleServiceCharge(list);
+            ServiceChargeDescUnit.handleServiceCharge(list);
 
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(list));
         } catch (Exception e) {
@@ -1093,43 +1093,7 @@ public class PadInterfaceController extends BaseController{
         return jsonString;
     }
 
-    /**
-     * 处理服务费说明
-     * @param list
-     */
-    private void handleServiceCharge(List<Map<String, Object>> list) {
-        for(Map<String, Object> table :list){
-            Object chargeOn=table.get("chargeOn");
-            short chargeOnShort = Short.valueOf(chargeOn.toString());
-            if(chargeOnShort == Constant.SERVICE_CHARGE_ON.OFF){
-                continue;
-            }
-            Object chargeType=table.get("chargeType");
-            if(null==chargeType){
-                continue;
-            }
-            switch (Short.valueOf(chargeType.toString()).shortValue()){
-                case Constant.SERVICE_CHARGE_TYPE.RATE:
-                    Object chargeRate = table.get("chargeRate");
-                    if(null!=chargeRate) {
-                        table.put("chargetDesc", "按菜品价格比例"+chargeRate+"%收取服务费");
-                    }
-                    break;
-                case Constant.SERVICE_CHARGE_TYPE.CONST:
-                    Object chargeAmount = table.get("chargeAmount");
-                    if(null!=chargeAmount) {
-                        table.put("chargetDesc", "收取固定服务费￥"+chargeAmount);
-                    }
-                    break;
-                case Constant.SERVICE_CHARGE_TYPE.TIME:
-                    Object chargeTime = table.get("chargeTime");
-                    if(null!=chargeTime) {
-                        table.put("chargetDesc", "按用餐时长收取服务费￥"+ table.get("chargeAmount")+"/"+chargeTime+"分钟");
-                    }
-                    break;
-            }
-        }
-    }
+  
 
     /**
      * 根据餐台类型查询餐台
@@ -1463,14 +1427,22 @@ public class PadInterfaceController extends BaseController{
     @RequestMapping(value = "/usePreferentialItem", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView usePreferentialItem(@RequestBody String body) {
+    	Map<String, Object> result=new HashMap<>();
         ModelAndView mav = new ModelAndView();
         @SuppressWarnings("unchecked")
         Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-        OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
-        if (result.isFalg()) {
+        OperPreferentialResult operPreferentialResult = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
+        result.put("preferentialInfo", operPreferentialResult);
+        Map<String, Object> serParams = new HashMap<>();
+		serParams.put("orderId", String.valueOf(params.get("orderid")));
+    	  TServiceCharge charageService = chargeService.getChargeInfo(serParams);
+    	  if(charageService!=null){
+    		  result.put("serviceCharge", charageService);
+    	  }
+        if (operPreferentialResult.isFalg()) {
             mav.addObject(ReturnMap.getSuccessMap(result));
         } else {
-            mav.addObject(ReturnMap.getFailureMap(result.getMes(), result));
+            mav.addObject(ReturnMap.getFailureMap(operPreferentialResult.getMes(), result));
         }
 
         return mav;
@@ -1829,8 +1801,8 @@ public class PadInterfaceController extends BaseController{
 		charge.setAutho((String) params.get("autho"));
 		charge.setChargeOn(Integer.valueOf(String.valueOf(params.get("chargeOn"))));
 		charge.setChargeAmount(new BigDecimal(String.valueOf(params.get("chargeAmount"))));
-		charge.setIsCustom(1);
-		int i = chargeService.updateChargeInfo(charge);
+		charge.setIsCustom(Integer.valueOf(String.valueOf(params.get("custom"))));
+		int i = chargeService.changChargeInfo(charge);
 		if (i > 0) {
 			mav.addObject(ReturnMap.getSuccessMap("修改成功！"));
 		} else {

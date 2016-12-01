@@ -251,7 +251,10 @@
 
 
 	   <select id="menuInfoByorderidToCount" parameterType="map" resultType="java.lang.Long">
-	    select COUNT(orderid) FROM t_order_detail WHERE orderid =#{orderid}
+	    select COUNT(orderid) FROM t_order_detail
+	    <if test="orderid !=null and orderid !=''">
+	       WHERE orderid =#{orderid}
+	    </if>
 	   </select>
 
 	<select id="find" parameterType="map" resultMap="findResultMap">
@@ -507,8 +510,8 @@
  </update>
  
   <update id="updateCleanStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status},orderid= null  where    tableid=#{tableid} or
-	   orderid = #{orderid}
+	   update t_table set status = #{status},orderid= null  where status!=5 and (tableid=#{tableid} or
+	   orderid = #{orderid})    
  </update>
  
   <update id="updateStatusByNo" parameterType="com.candao.www.data.model.TbTable">
