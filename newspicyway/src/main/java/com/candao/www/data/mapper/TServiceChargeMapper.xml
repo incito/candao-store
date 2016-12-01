@@ -55,7 +55,7 @@
 			<if test="chargeOn != null">
 				chargeOn=#{chargeOn},
 			</if>
-			<if test="chargeAmount != null and isCustom = 1">
+			<if test="chargeAmount != null and isCustom == 1">
 				chargeAmount=#{chargeAmount},
 			</if>
 			<if test="isCustom != null">

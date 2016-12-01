@@ -76,6 +76,8 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 				}
 			} else if (servceCharageBean.getIsCustom() == 1 ) {
 				calcServiceCharge = servceCharageBean.getChargeAmount();
+			}else if(servceCharageBean.getIsCustom()==0&&servceCharageBean.getChargeOn()==0){
+				calcServiceCharge= servceCharageBean.getChargeAmount();
 			}
 			
 			if (servceCharageBean == null) {
