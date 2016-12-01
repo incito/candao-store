@@ -71,8 +71,7 @@ var Order = {
         //定时更新订单信息
         setInterval(function(){
            Order.updateOrder();
-        },10000)
-
+        },3000)
     },
 
 
@@ -674,6 +673,7 @@ var Order = {
     },
 
     payIptEvent: function(obj){
+        var that = this;
         var me = obj;
         var type = me.attr('iptType');
         var $paytotal = $('.pay-total');
@@ -699,6 +699,7 @@ var Order = {
             if(/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
                 val = parseInt(val);
             }
+
             $cash.val(val);
             if(/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
                 val = parseInt(val);
@@ -1602,10 +1603,10 @@ var Order = {
         consts.moneyWipeName = data.moneyWipeName;
 
         //设置统计
-        $('#discount-amount').text(amount);
-        $('#amount').text(originalOrderAmount)//消费金额;
-        $('#should-amount').text(payamount);
         $('#cash input').val(payamount);
+        $('#discount-amount').text(amount);
+        //$('#amount').text(originalOrderAmount)//消费金额;
+        $('#should-amount').text(payamount);
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
@@ -1707,7 +1708,9 @@ var Order = {
     })(),
 
     updateOrderStatus: 0, //1 正在进行 0 空闲
+    isFirstUpdateOrder: true,
 
+    orderDataPre: null,
 
     /**
      * 更新订单信息
@@ -1734,6 +1737,12 @@ var Order = {
                 success: function (res) {
                     if (res.code === '0') {
                         utils.loading.remove();
+                        if(JSON.stringify(that.orderDataPre) === JSON.stringify(res.data)) {
+                            that.updateOrderStatus = 0;
+                            return false;
+                        } else {
+                            that.orderDataPre = res.data
+                        }
                         if(res.data.userOrderInfo.orderInvoiceTitle!=''){
                            // $('#Invoice-title').modal('show');
                            //focusIpt=$('#Invoice-title .invoiceMoney');
@@ -1833,8 +1842,8 @@ var Order = {
                             btnCancelTxt: '确定'
                         });
                     }
-
                     that.updateOrderStatus = 0;
+                    that.isFirstUpdateOrder = false;
                 },
                 error: function(){
                     that.updateOrderStatus = 0;
