@@ -200,7 +200,9 @@ var MainPage = {
             var count = navRoomTypes.find("li").length;
             if (roomtype_prev < count - 10) {
                 navRoomTypes.find("li").eq(roomtype_prev).css("margin-left", "-10%");
-                navRoomTypes.find("li").eq(roomtype_prev + 1).click();
+                if(parseInt(navRoomTypes.find("li.active").css('margin-left'))  < 0) {
+                    navRoomTypes.find("li").eq(roomtype_prev + 1).click();
+                }
                 roomtype_prev++;
                 $(".nav-type-prev").removeClass('unclick');
                 if (roomtype_prev == count - 10) {
@@ -212,7 +214,9 @@ var MainPage = {
         dom.roomTypeNav.delegate('.nav-type-prev', 'click', function () {
             if (roomtype_prev >= 1) {
                 navRoomTypes.find("li").eq(roomtype_prev - 1).css("margin-left", "0");
-                navRoomTypes.find("li").eq(roomtype_prev - 1).click();
+                if(navRoomTypes.find("li.active").index() ===  (roomtype_prev + 9)) {
+                    navRoomTypes.find("li").eq(navRoomTypes.find("li.active").index() - 1).click();
+                }
                 roomtype_prev--;
                 $(".nav-type-next").removeClass('unclick');
                 if (roomtype_prev == 0) {
