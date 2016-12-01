@@ -389,7 +389,11 @@ var Log = (function () {
 			info: msg
 		});
 		utils.storage.setter('log', JSON.stringify(data));
-		console.log(data.length);
+		console.log({
+			time: utils.date.current(),
+			level: level,
+			info: msg
+		});
 	};
 	var show = function () {
 		return data
@@ -399,7 +403,6 @@ var Log = (function () {
 		if(data.length < options.dataLen) {
 			return false;
 		}
-		console.log('preLength:' + preLength);
 		if(preLength !== data.length ) {
 			$.ajax({
 				url: _config.interfaceUrl.Log,
@@ -476,7 +479,7 @@ window.onerror = function (msg, url, line, col, error) {
 };
 //setInterval(function () {
 //	Log.send(1, '操作提示:' + utils.date.current())
-//}, 1000)
+//}, 100)
 /************
  * 组件类
  ************/
@@ -1571,6 +1574,7 @@ utils.chooseMember={
  */
 utils.openCash = function (type) {
 	var _openCash = function(){
+		Log.send(2, '弹钱箱:' + _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/');
 		$.ajax({
 			url: _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/',
 			method: 'GET',
@@ -1579,7 +1583,7 @@ utils.openCash = function (type) {
 			async: false,
 			success: function (res) {
 				if (res.result[0] === '1') {//成功
-					rightBottomPop.alert({content: '打开钱箱成功!'})
+					rightBottomPop.alert({content: '打开钱箱成功!'});
 				} else {
 					widget.modal.alert({
 						cls: 'fade in',
@@ -1589,6 +1593,7 @@ utils.openCash = function (type) {
 						btnOkTxt: '',
 						btnCancelTxt: '确定'
 					});
+					Log.send(3,'弹钱箱失败:' + JSON.stringify(res) )
 				}
 
 			}
@@ -1618,6 +1623,7 @@ utils.openCash = function (type) {
 					cashModal.close();
 				} else {
 					$tip.text('密码错误');
+					Log.send(2,'密码错误')
 				}
 			}
 		})

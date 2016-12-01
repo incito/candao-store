@@ -100,7 +100,9 @@ var AddDish = {
 
 			if (flag_prev < count - 6) {
 				$dishType.find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
-				$dishType.find("li.nav-dish-type").eq(flag_prev+1).click();
+				if(parseInt($dishType.find("li.nav-dish-type.active").css('margin-left'))  < 0) {
+					$dishType.find("li.nav-dish-type").eq(flag_prev+1).click();
+				}
 				flag_prev++;
 				$(".nav-dishtype-prev").removeClass('disabled');
 				console.log(flag_prev);
@@ -113,7 +115,10 @@ var AddDish = {
 		$(".nav-dishtype-prev").click(function(){
 			if(flag_prev>0){
 				$dishType.find("li.nav-dish-type").eq(flag_prev-1).css("margin-left","0");
-				$dishType.find("li.nav-dish-type").eq(flag_prev-1).click();
+
+				if($dishType.find("li.nav-dish-type.active").index() ===  (flag_prev + 5)) {
+					$dishType.find("li.nav-dish-type").eq($dishType.find("li.active").index() - 1).click();
+				}
 				flag_prev--;
 				console.log(flag_prev);
 				$(".nav-dishtype-next").removeClass('disabled');
