@@ -417,6 +417,10 @@ var MainPage = {
     },
 
     initTakeOutModal: function () {
+        if(tackOUttable.length=='0'){
+            utils.printError.alert('该门店还没有配置外卖台');
+            return false
+        }
         var $modal = $('#J-takeout-dialog');
         var ret = [];
         var retNormal = [];
@@ -444,7 +448,12 @@ var MainPage = {
             $(".take-out-list li").removeClass("active");
             $(this).addClass("active");
         });
-        $modal.modal("show");
+        if(ret.length=='0'){
+            MainPage.setTakeOutOrder(0)
+        }else {
+            $modal.modal("show");
+        }
+
     },
 
     /**
@@ -632,7 +641,7 @@ var MainPage = {
                 }
                 $.each(res.data, function (key, val) {
                     $.each(val.tables, function (k, v) {
-                        if (v.tabletype == '2') {//过滤外卖咖啡外卖
+                        if (v.tabletype == '2') {//过滤外卖台
                             tackOUttable.push(v)
                         }
                         else if (v.tabletype == '3') {//过滤外卖咖啡外卖
@@ -646,7 +655,6 @@ var MainPage = {
                         }
                     })
                 })
-
                 var tables = _getTablesArr(allTables);
                 var navRoomTypesArr = [];
                 var navRoomTypes = $('#nav-room-types');

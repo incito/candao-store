@@ -621,9 +621,8 @@ var AddDish = {
 				btn.addClass('disabled');
 			}
 		};
-
 		dom.combodishialog.find('.J-note').val('');
-		dom.combodishialog.find('.dishname').text(dish.title);
+		dom.combodishialog.find('.dishname').text(dish.title.split('#')[0]);
 
 		$.each(data.rows[0].combo, function(k, v){
 			comboStr += '<h4 class="group-title" groupid="' + v.id + '" startnum="' + v.startnum + '" endnum="' + v.endnum + '">凉菜（' + v.startnum + '选' + v.endnum + '）已选<span class="selnum">0</span></h4>';
@@ -1120,7 +1119,7 @@ var AddDish = {
 
 		if(dish !== undefined) {
 			//菜品信息
-			ret.push('<div class="dish-info"><p class="p1"><span id="note-dishname">' + (dish.title || dish.dishname) + '</span> <span id="note-price" style="margin-left: 100px;">' + dish.price + '</span>元</p></div>');
+			ret.push('<div class="dish-info"><p class="p1"><span id="note-dishname">' + (dish.title.split('#')[0] || dish.dishname.split('#')[0]) + '</span> <span id="note-price" style="margin-left: 100px;">' + dish.price + '</span>元</p></div>');
 			//口味
 			if(tasts.length > 0) {
 				ret.push('<div class="taste"><h6 style="font-weight: bold; font-size: 16px">选择口味</h6><ul>');
