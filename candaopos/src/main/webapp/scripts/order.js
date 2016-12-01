@@ -71,7 +71,7 @@ var Order = {
         //定时更新订单信息
         setInterval(function(){
            Order.updateOrder();
-        },3000)
+        },10000)
 
     },
 
