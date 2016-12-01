@@ -166,20 +166,42 @@ var keydownEnter=null
     })
     $(document).keydown(function(e) {
         if(event.keyCode == "13"){
-            if($('.modal-alert:last').length>0){
-                var me=$('.modal-alert:last .modal-footer').find('button');
-                $(me).each(function () {
-                    var abcd=$(this);
-                    if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){
-                        keydownEnter=abcd;
-                    }
-                })
-            }else if($('.pay-div').length>0){
-                keydownEnter=$('.pay-div #letter-keyboard').find('.J-btn-settlement');
-            }
-            else {
-                keydownEnter=keydownEnter
-            }
+        	if($('.modal').not($('.modal-alert:last')).length>0){
+				$('.modal').each(function () {
+					var bcd=$(this)
+					if(bcd.css("display")=='block'){
+						var me=bcd.find('button');
+						$(me).each(function () {
+							var abcd=$(this);
+							if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){
+								keydownEnter=abcd;
+							}
+						})
+						return false
+					}
+					else if($('.pay-div').length>0){
+						keydownEnter=$('.pay-div #letter-keyboard').find('.J-btn-settlement');
+					}
+					else {
+						keydownEnter=keydownEnter
+					}
+				})
+			}
+
+			if($('.modal-alert:last').length>0){
+				var me=$('.modal-alert:last').find('button')
+				$(me).each(function () {
+					var abcd=$(this);
+					if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){
+						keydownEnter=abcd;
+					}
+				})
+			}
+			else {
+				keydownEnter=keydownEnter
+			}
+
+
             if(keydownEnter){
                 keydownEnter.click();
                 return false
@@ -450,7 +472,32 @@ setInterval(function () {
  * 组件类
  ************/
 function goBack() {
+	var personnum=utils.getUrl.get('personnum');
+	var type=utils.getUrl.get('type');
+	var orderid=utils.getUrl.get('orderid');
+	var tableno=utils.getUrl.get('tableno')
+	/*取消外面订单*/
+	if(personnum=='0'&&type=='out'&&document.referrer.indexOf('main.jsp')>-1){
+		$.ajax({
+			url: _config.interfaceUrl.CancelOrder+''+utils.storage.getter('aUserid')+ '/'+orderid+'/'+tableno+'/',
+			type: "get",
+			async: false,
+			dataType: "text",
+			success: function (data) {
+				data = JSON.parse(data.substring(11, data.length - 2));//从第12个字符开始截取，到最后3位，并且转换为JSON
+				if(data.Data=='1'){
+					window.location=document.referrer
+				}
+				else {
+					utils.printError.alert(data.Info)
+				}
+
+			}
+		});
+		return false
+	}
 	window.location=document.referrer
+	//
 
 }
 var widget = widget || {};
@@ -696,6 +743,7 @@ widget.loadPage = function(options){
 
 		$(settings.curPageObj).text(pageNum);
 		$(settings.pagesLenObj).text(pagesLen);
+		$obj.not(".hide").eq(0).addClass("selected")
 
 
 
@@ -731,8 +779,7 @@ widget.loadPage = function(options){
 	});
 
 	settings.callback && settings.callback();
-
-	return currPage;
+	return currPage
 };
 
 /**
@@ -998,10 +1045,10 @@ utils.array = {
 };
 utils.object = {
 	isEmptyObject: function(obj){
-		for (var key in obj) {
-			return false
-		}
-		return true
+		var t;
+		for (t in obj)
+			return !1;
+		return !0
 	}
 };
 utils.string = {

@@ -1,4 +1,6 @@
 var pref_prev = 0;
+var addDIshCurPager=0;//点菜页面列表页数
+var couponListCurPager=0;//优惠卷页面列表页数
 var invoice_Flag={/*发票信息全局变量*/
     'orderid':'',
     'amount':'',
@@ -67,9 +69,9 @@ var Order = {
         });
 
         //定时更新订单信息
-        //setInterval(function(){
-        //    Order.updateOrder();
-        //},3000)
+        setInterval(function(){
+           Order.updateOrder();
+        },3000)
 
     },
 
@@ -77,6 +79,24 @@ var Order = {
     bindEvent: function () {
 
         var that = this;
+
+        $('.dish-oper-btns .prev-btn').click(function () {
+            addDIshCurPager=parseInt($('#curr-page1').text())
+            addDIshCurPager= addDIshCurPager-2
+        })
+        $('.dish-oper-btns .next-btn').click(function () {
+            addDIshCurPager=parseInt($('#curr-page1').text())
+        })
+        $('.preferential-oper-btns .prev-btn').click(function () {
+            couponListCurPager=parseInt($('#curr-page2').text())
+            couponListCurPager= couponListCurPager-2
+        })
+        $('.preferential-oper-btns .next-btn').click(function () {
+            var $body=$("#sel-preferential-table tbody")
+            $body.find('tr').removeClass("selected");
+            $body.find('tr').not(".hide").eq(0).addClass("selected");
+            couponListCurPager=parseInt($('#curr-page2').text())
+        })
 
         $('.J-btn-settlement').click(function(){
             Log.send(2, '点击结账按钮');
@@ -727,7 +747,7 @@ var Order = {
                 $paytotal.find('.needPay').addClass('hide');
             }
 
-            console.log(giveChange);
+            //console.log(giveChange);
             if (giveChange > 0) {
                 $paytotal.find('.giveChange span').text(parseFloat(giveChange).toFixed(2));
                 $paytotal.find('.giveChange').removeClass('hide');
@@ -1534,7 +1554,7 @@ var Order = {
         widget.loadPage({
             obj: "#sel-preferential-table tbody tr",
             listNum: 6,
-            currPage: 0,
+            currPage: couponListCurPager,
             totleNums: $body.find('tr').length,
             curPageObj: ".preferential-oper-btns .page-info span:first",
             pagesLenObj: ".preferential-oper-btns .page-info span:last",
@@ -1735,7 +1755,10 @@ var Order = {
                             }
                         }
 
-                        if (utils.object.isEmptyObject(res.data)) return false;
+                        if (utils.object.isEmptyObject(res.data)) {
+                            that.updateOrderStatus = 0;
+                            return false;
+                        }
 
                         that.updateTotal(res.data.preferentialInfo);
 
@@ -1779,7 +1802,7 @@ var Order = {
                         widget.loadPage({
                             obj: "#order-dish-table tbody tr",
                             listNum: 6,
-                            currPage: 0,
+                            currPage: addDIshCurPager,
                             totleNums: $body.find('tr').length,
                             curPageObj: "#order-modal #curr-page1",
                             pagesLenObj: "#order-modal #pages-len1",

@@ -73,14 +73,16 @@
         $("#pagestitle").text(title);
         if(usernameDisble==1){
             $('#user').attr('disabled','disabled').val(utils.storage.getter('aUserid'))
+            $('#psd').focus()
         }
         else if(usernameDisble==2){//结业清机
             $('#user').attr('disabled','disabled').val(user_Nmae)
+            $('#psd').focus()
 
         }
 
         else {
-            $('#user').removeAttr('readonly').val('');
+            $('#user').removeAttr('readonly').val('').focus();
         }
         impower.int();
     });
