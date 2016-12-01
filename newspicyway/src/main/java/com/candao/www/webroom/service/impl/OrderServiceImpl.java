@@ -1184,6 +1184,7 @@ public class OrderServiceImpl implements OrderService {
 			if(serviceCharge!=null){
 				if(serviceCharge.getChargeOn()!=0){
 					result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+					result.setReserveAmout(result.getReserveAmout().add(serviceCharge.getChargeAmount()));
 				}
 				//封装描述
 				List<Map<String, Object>> serviceChargelist = new ArrayList<>();
