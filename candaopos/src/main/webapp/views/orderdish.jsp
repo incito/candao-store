@@ -32,7 +32,7 @@
 	<div id="adddish">
 		<header>
 			<div class="fl logo">餐道</div>
-			<div class="fr close-win"  onclick="window.location.href='../views/main.jsp';">关闭</div>
+			<div class="fr close-win"  onclick="goBack()">关闭</div>
 		</header>
 		<div class="content">
 			<div class="left-div">

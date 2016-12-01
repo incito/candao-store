@@ -1624,6 +1624,10 @@ var Order = {
         totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
         totalHtml += '<li class="hide needPay">还需在收:<span></span></li> ';
+        if(invoice_Flag.flag!=''){
+            totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>'+invoice_Flag.flag+'</span></li> ';
+        }
+
 
         totalHtml += '</ul>';
 
@@ -2479,17 +2483,23 @@ var Order = {
         if(g_eatType === 'in') {
             window.location.href = './main.jsp'
         } else {
-            if($('#order-dish-table tbody tr').length > 0)  {
-                var modal = widget.modal.alert({
-                    content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
-                    btnOkCb: function(){
-                        modal.close();
-                        _cancelOrder();
-                    }
-                });
-            } else {
-                _cancelOrder()
+            if(utils.getUrl.get('referer')==='1'){
+                window.location.href = './check/check.jsp'
             }
+            else {
+                if($('#order-dish-table tbody tr').length > 0)  {
+                    var modal = widget.modal.alert({
+                        content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
+                        btnOkCb: function(){
+                            modal.close();
+                            _cancelOrder();
+                        }
+                    });
+                } else {
+                    _cancelOrder()
+                }
+            }
+
         }
 
     }

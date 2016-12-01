@@ -619,7 +619,8 @@ var MainPage = {
              }),*/
             dataType: 'json',
             success: function (res) {
-                var allTables = []//全部餐台（不包括外卖和咖啡外卖台）
+                var allTables = []//全部餐台（不包括外卖和咖啡外卖台以及咖啡台）
+                var coffeeTable=[]//咖啡餐台
                 tackOUttable = []//全部外卖和咖啡外卖台
                 if (res.code == '1') {
                     utils.printError.alert('餐台' + res.msg);
@@ -632,6 +633,9 @@ var MainPage = {
                         }
                         else if (v.tabletype == '3') {//过滤外卖咖啡外卖
                             tackOUttable.push(v)
+                        }
+                        else if (v.tabletype == '4') {//过滤咖啡台
+                            coffeeTable.push(v)
                         }
                         else {
                             allTables.push(v)

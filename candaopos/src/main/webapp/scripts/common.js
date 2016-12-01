@@ -1,66 +1,66 @@
-
-$(document).ready(function(){
-	// Copyright 2014-2015 Twitter, Inc.
-	// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
-		var msViewportStyle = document.createElement('style');
-		msViewportStyle.appendChild(
-			document.createTextNode(
-				'@-ms-viewport{width:auto!important}'
-			)
-		);
-		document.querySelector('head').appendChild(msViewportStyle);
-	}
+$(document).ready(function () {
+    // Copyright 2014-2015 Twitter, Inc.
+    // Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        var msViewportStyle = document.createElement('style');
+        msViewportStyle.appendChild(
+            document.createTextNode(
+                '@-ms-viewport{width:auto!important}'
+            )
+        );
+        document.querySelector('head').appendChild(msViewportStyle);
+    }
     $(document).bind("ajaxSend", function () {
-		utils.loading.open('正在加载…')
+        utils.loading.open('正在加载…')
 
     }).bind("ajaxComplete", function () {
-      utils.loading.remove();
-    }).bind('ajaxError',function () {
-    	if($('.errorAlert').length<1){
-			widget.modal.alert({
-				cls: 'fade in errorAlert',
-				content:'<strong>数据加载失败，请稍后重试</strong>',
-				width:500,
-				height:500,
-				btnOkTxt: '',
-				btnCancelTxt: '确定'
-			});
-		}
+        utils.loading.remove();
+    }).bind('ajaxError', function () {
+        if ($('.errorAlert').length < 1) {
+            widget.modal.alert({
+                cls: 'fade in errorAlert',
+                content: '<strong>数据加载失败，请稍后重试</strong>',
+                width: 500,
+                height: 500,
+                btnOkTxt: '',
+                btnCancelTxt: '确定'
+            });
+        }
 
     });
-	if(utils.getUrl.get('tips')) {
-		$.each(decodeURI(utils.getUrl.get('tips')).split('|'), function(k,v){
-			rightBottomPop.alert({
-				content: v
-			});
-		})
-	};
+    if (utils.getUrl.get('tips')) {
+        $.each(decodeURI(utils.getUrl.get('tips')).split('|'), function (k, v) {
+            rightBottomPop.alert({
+                content: v
+            });
+        })
+    }
+    ;
 
 
     /*判断直接访问页面是否登录*/
-    if(!document.referrer){
-	//if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid') ||!document.referrer){
-		var hrefLink=document.location.href;
-		if(hrefLink.indexOf('login.jsp')>-1 || hrefLink.indexOf('openpage.jsp')>-1){
+    if (!document.referrer) {
+        //if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid') ||!document.referrer){
+        var hrefLink = document.location.href;
+        if (hrefLink.indexOf('login.jsp') > -1 || hrefLink.indexOf('openpage.jsp') > -1) {
 
-		}
-		else {
-			widget.modal.alert({
-				cls: 'fade in',
-				content:'<strong>您还没有登录请先登录,3秒后将自动跳转页面</strong>',
-				width: 500,
-				height: 500,
-				btnOkTxt: '',
-				btnCancelTxt: '确定',
-				btnCancelCb:function () {
-					window.location='../views/openpage.jsp'
-				}
-			});
-			setTimeout(function () {
-				window.location='../views/openpage.jsp'
-			},3000)
-		}
+        }
+        else {
+            widget.modal.alert({
+                cls: 'fade in',
+                content: '<strong>您还没有登录请先登录,3秒后将自动跳转页面</strong>',
+                width: 500,
+                height: 500,
+                btnOkTxt: '',
+                btnCancelTxt: '确定',
+                btnCancelCb: function () {
+                    window.location = '../views/openpage.jsp'
+                }
+            });
+            setTimeout(function () {
+                window.location = '../views/openpage.jsp'
+            }, 3000)
+        }
 
 	}
 
@@ -135,14 +135,67 @@ $(document).ready(function(){
 	});
 
 
-	$('.modal').on('show.bs.modal', function() {
-		$('body').css('padding-right', '0');
-	});
+    $('.modal').on('show.bs.modal', function () {
+        $('body').css('padding-right', '0');
+    });
 
-	$('.modal').on('shown.bs.modal', function () {
-		$('body').css('padding-right', '0');
-		$(this).find('input[autofocus]').focus();
-	})
+    $('.modal').on('shown.bs.modal', function () {
+        $('body').css('padding-right', '0');
+        $(this).find('input[autofocus]').focus();
+    })
+var keydownEnter=null
+    $('body').on('keypress foucs','input',function(event){
+        var me;
+        var ab=$(this).parents('.modal');
+        var ac=$(this).parent();
+        var ad=$(this).parent().parent();
+        var af=$(this).parent().parent().parent();
+        if(ab.length>0){
+            me=ab
+        }else {
+            if(ac.length>0){
+                me=ac
+            }
+            if(ad.length>0){
+                me=ad
+            }
+            if(af.length>0){
+                me=af
+            }
+        }
+            $(me.find('button')).each(function () {
+                var abc=$(this);
+                var abd=abc.text().replace(/\s+/g,"")
+                if(abd=='登录'||abd.indexOf('确')>-1||abd.indexOf('搜索')>-1){
+                    keydownEnter=abc;
+                    return false
+                }
+            })
+    })
+    $(document).keydown(function(e) {
+        if(event.keyCode == "13"){
+            if($('.modal-alert:last').length>0){
+                var me=$('.modal-alert:last .modal-footer').find('button');
+                $(me).each(function () {
+                    var abcd=$(this);
+                    if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){
+                        keydownEnter=abcd;
+                    }
+                })
+            }else if($('.pay-div').length>0){
+                keydownEnter=$('.pay-div #letter-keyboard').find('.J-btn-settlement');
+            }
+            else {
+                keydownEnter=keydownEnter
+            }
+            if(keydownEnter){
+                keydownEnter.click();
+                return false
+            }
+
+
+        }
+    })
 
 
 });
@@ -281,15 +334,15 @@ _config.interfaceUrl = {
 };
 //优惠分类
 _config.preferential = {
-	'05': '团购',
-	'01': '特价',
-	'02': '折扣',
-	'03': '代金券',
-	'04': '礼品券',
-	'88': '会员',
-	'00': '其他优惠',
-	'08': '合作单位',
-	'-1': '不常用'
+    '05': '团购',
+    '01': '特价',
+    '02': '折扣',
+    '03': '代金券',
+    '04': '礼品券',
+    '88': '会员',
+    '00': '其他优惠',
+    '08': '合作单位',
+    '-1': '不常用'
 };
 
 
@@ -300,7 +353,7 @@ var Log = (function () {
 	var data = [];
 	var options = {
 		time: 5000,//间隔时间
-		dataLen: 1
+		dataLen: 10
 	};
 	var preLength = 0;
 	//1:DEBUG 2:INFO 3:WARN 4:ERROR
@@ -330,7 +383,7 @@ var Log = (function () {
 				url: _config.interfaceUrl.Log,
 				method:'post',
 				type:'json',
-				contentType: 'application/json,utf-8',
+				contentType: 'application/json',
 				data: JSON.stringify(data)
 			}).then(function(){
 				console.log('upload success');
