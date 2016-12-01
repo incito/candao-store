@@ -752,7 +752,7 @@ widget.loadPage = function(options){
 
 		$(settings.curPageObj).text(pageNum);
 		$(settings.pagesLenObj).text(pagesLen);
-		$obj.not(".hide").eq(0).addClass("selected")
+		//$obj.not(".hide").eq(0).addClass("selected")
 
 
 

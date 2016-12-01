@@ -1,6 +1,8 @@
 var pref_prev = 0;
 var addDIshCurPager=0;//点菜页面列表页数
 var couponListCurPager=0;//优惠卷页面列表页数
+var orderdishtableInfoselect=0//选中的菜谱列表的第几个
+var selpreferentialtableInfoselect=0//选中的优惠列表的第几个
 var invoice_Flag={/*发票信息全局变量*/
     'orderid':'',
     'amount':'',
@@ -71,7 +73,7 @@ var Order = {
         //定时更新订单信息
         setInterval(function(){
            Order.updateOrder();
-        },3000)
+        },5000)
 
     },
 
@@ -344,11 +346,14 @@ var Order = {
             me.siblings().removeClass("selected").end().addClass("selected");
 
             if (me.parents('table').attr('id') === 'order-dish-table') {
+                orderdishtableInfoselect=me.index();
                 if (me.attr('dishstatus') === '1') {
                     $btnWeigh.removeClass('disabled');
                 } else {
                     $btnWeigh.addClass('disabled');
                 }
+            }else {
+                selpreferentialtableInfoselect=me.index();
             }
         });
 
@@ -1558,7 +1563,7 @@ var Order = {
             nextBtnObj: ".preferential-oper-btns .next-btn",
             callback: function () {
                 $body.find('tr').removeClass("selected");
-                $body.find('tr').not(".hide").eq(0).addClass("selected");
+                $body.find('tr').not(".hide").eq(selpreferentialtableInfoselect).addClass("selected");
             }
         });
 
@@ -1806,7 +1811,7 @@ var Order = {
                             nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
                             callback: function () {
                                 $body.find('tr').removeClass("selected");
-                                $body.find('tr').not(".hide").eq(0).addClass('selected');
+                                $body.find('tr').not(".hide").eq(orderdishtableInfoselect).addClass('selected');
                                 if($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
                                     $("#weigh-dish").removeClass('disabled');
                                 } else {

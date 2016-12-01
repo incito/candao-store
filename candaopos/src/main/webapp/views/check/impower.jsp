@@ -71,6 +71,7 @@
     $(function () {
         $('#user').removeAttr('readonly').val('');
         $("#pagestitle").text(title);
+        impower.int();
         if(usernameDisble==1){
             $('#user').attr('disabled','disabled').val(utils.storage.getter('aUserid'))
             $('#psd').focus()
@@ -84,7 +85,6 @@
         else {
             $('#user').removeAttr('readonly').val('').focus();
         }
-        impower.int();
     });
     var impower={
         int:function () {
