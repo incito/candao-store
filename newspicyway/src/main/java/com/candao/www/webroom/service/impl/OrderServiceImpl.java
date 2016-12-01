@@ -1181,8 +1181,10 @@ public class OrderServiceImpl implements OrderService {
 					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
 			
 			//加上服务费
-			if(serviceCharge!=null&&serviceCharge.getChargeOn()!=0){
-				result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+			if(serviceCharge!=null){
+				if(serviceCharge.getChargeOn()!=0){
+					result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+				}
 				//封装描述
 				List<Map<String, Object>> serviceChargelist = new ArrayList<>();
 				Map<String, Object> serviceChargeMap= new HashMap<>();
