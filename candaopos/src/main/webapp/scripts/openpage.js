@@ -386,6 +386,29 @@ var OpenPage = {
             config['OpenCashIp'] = cashIp
             utils.storage.setter('config', JSON.stringify(config))
         });
+        /*获取营业时间*/
+        $.ajax({
+            url: _config.interfaceUrl.GetTradeTime,
+            type: "get",
+            dataType: 'text',
+            success: function (res) {
+                var res = JSON.parse(res);
+                if(res.result=='0'){
+                    utils.storage.setter('getOpenEndTime',JSON.stringify(res.detail))//会员地址状态 viptype 1为餐道会员 2为雅坐会员
+                }
+                else {
+                    utils.printError.alert('获取营业时间失败')
+                }
+                /*var member = {
+                    'vipcandaourl': res.data.vipcandaourl,//餐道
+                    'vipotherurl': res.data.vipotherurl//雅座
+                }
+
+                utils.storage.setter('vipType', res.data.viptype)//会员地址状态 viptype 1为餐道会员 2为雅坐会员
+                utils.storage.setter('memberAddress', JSON.stringify(member))//设置会员地址
+                utils.storage.setter('vipstatus', res.data.vipstatus)//会员是否开启*/
+            }
+        });
 
         //获取会员配置地址
         $.ajax({
@@ -398,8 +421,10 @@ var OpenPage = {
                     'vipcandaourl': res.data.vipcandaourl,//餐道
                     'vipotherurl': res.data.vipotherurl//雅座
                 }
+
                 utils.storage.setter('vipType', res.data.viptype)//会员地址状态 viptype 1为餐道会员 2为雅坐会员
                 utils.storage.setter('memberAddress', JSON.stringify(member))//设置会员地址
+                utils.storage.setter('vipstatus', res.data.vipstatus)//会员是否开启
             }
         });
 
