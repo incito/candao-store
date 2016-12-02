@@ -536,7 +536,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     Map<String, Object> param = new HashMap<>();
                     param.put("jobNumber", params[1]);
                     List<User> users = userService.queryUserList(param);
-                    posdata.put("printname", users.get(0).getName());
+                    posdata.put("printname", CollectionUtils.isEmpty(users) ? "" : resolveNullType(users.get(0).getName()));
 
                     // 电话地址
                     posdata.put("branchName", resolveNullType(branchInfo.get("branchname")));
