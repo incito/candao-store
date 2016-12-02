@@ -85,7 +85,7 @@
     <select id="queryOrderDetail" parameterType="map" resultType="map">
         SELECT
 			td.title AS itemdesc,
-			round(sum(tod.dishnum)) AS count,
+			sum(tod.dishnum) AS count,
 			tod.dishunit AS dishunit,
 			IFNULL(round(tod.orderprice,2), 0.00) AS price,
 			IFNULL(round(tod.orderprice * sum(tod.dishnum),2),0.00)  AS amount
