@@ -51,10 +51,14 @@
         where b.begintime&gt;=#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectItemMoney" resultType="String" parameterType="String">
-       SELECT IFNULL( sum(a.orignalprice * a.dishnum), 0 ) + (select IFNULL(sum(chargeAmount),0) from t_service_charge where orderid=b.orderid AND  chargeOn=1)
-       FROM t_order_detail a INNER JOIN t_order b ON (a.orderid = b.orderid)
-        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR (ismaster=0 AND  a.dishtype=2))
-
+        SELECT IFNULL( sum(amount+service), 0 )
+        FROM(
+            SELECT IFNULL( sum(a.orignalprice * a.dishnum), 0 ) amount,IFNULL(c.chargeAmount,0)as service
+            FROM t_order_detail a INNER JOIN t_order b ON (a.orderid = b.orderid)
+            left JOIN t_service_charge c on b.orderid=c.orderid AND c.chargeOn=1
+            WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR (ismaster=0 AND  a.dishtype=2))
+            GROUP BY b.orderid
+         )t
     </select>
     <select id="selectPreferenceMoney" resultType="Map" parameterType="Map">
         SELECT CONVERT(SUM(c1)-SUM(c2),DECIMAL(10,2)) as taocanyouhui,CONVERT(SUM(c3)-SUM(c4),DECIMAL(10,2)) as huiyuanyouhui,CONVERT(SUM(c5),DECIMAL(10,2)) as huiyuanxuzeng,
