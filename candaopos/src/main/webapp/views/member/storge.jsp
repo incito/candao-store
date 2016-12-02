@@ -167,6 +167,7 @@
 		$('#rechargeMoblie').val('').attr('readonly',false)
 	}
 	$('.btn_cancel').click(function () {
+		Log.upload();
 		if(getUrlcardMember){
 			window.location.href='../member/view.jsp?cardMember='+getUrlcardMember+'';
 		}

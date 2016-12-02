@@ -484,6 +484,7 @@ window.onerror = function (msg, url, line, col, error) {
  * 组件类
  ************/
 function goBack() {
+	Log.upload();
 	var personnum=utils.getUrl.get('personnum');
 	var type=utils.getUrl.get('type');
 	var orderid=utils.getUrl.get('orderid');
@@ -755,7 +756,7 @@ widget.loadPage = function(options){
 
 		$(settings.curPageObj).text(pageNum);
 		$(settings.pagesLenObj).text(pagesLen);
-		$obj.not(".hide").eq(0).addClass("selected")
+		//$obj.not(".hide").eq(0).addClass("selected")
 
 
 

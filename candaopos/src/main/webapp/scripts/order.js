@@ -1,6 +1,8 @@
 var pref_prev = 0;
 var addDIshCurPager=0;//点菜页面列表页数
 var couponListCurPager=0;//优惠卷页面列表页数
+var orderdishtableInfoselect=0//选中的菜谱列表的第几个
+var selpreferentialtableInfoselect=0//选中的优惠列表的第几个
 var invoice_Flag={/*发票信息全局变量*/
     'orderid':'',
     'amount':'',
@@ -98,6 +100,7 @@ var Order = {
         })
 
         $('.J-btn-settlement').click(function(){
+            Log.send(2, '点击结账按钮');
             if(parseFloat($('.needPay span').text()) > 0){
                 if(parseFloat($('.needPay span').text()) > parseFloat($('#tip-amount').text())) {
                     widget.modal.alert({
@@ -360,7 +363,7 @@ var Order = {
             var name = me.find('.dish-name').text();
             var type = $('.nav-pref-type.active').attr('preid') !== '-1'; // true:设置  false:恢复
             if(type) {
-                tips = '设置[' + name + ']为不常用优惠(设置后可在不常用优惠分类里查看、使用)'
+                tips = '设置[' + name + ']为不常用优惠(设置后可在对应分类查看,使用)'
             } else {
                 tips = '恢复[' + name + ']为常用优惠(恢复后可在对应分类查看,使用)'
             }
@@ -1564,7 +1567,7 @@ var Order = {
             nextBtnObj: ".preferential-oper-btns .next-btn",
             callback: function () {
                 $body.find('tr').removeClass("selected");
-                $body.find('tr').not(".hide").eq(0).addClass("selected");
+                $body.find('tr').not(".hide").eq(selpreferentialtableInfoselect).addClass("selected");
             }
         });
 
@@ -1820,7 +1823,7 @@ var Order = {
                             nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
                             callback: function () {
                                 $body.find('tr').removeClass("selected");
-                                $body.find('tr').not(".hide").eq(0).addClass('selected');
+                                $body.find('tr').not(".hide").eq(orderdishtableInfoselect).addClass('selected');
                                 if($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
                                     $("#weigh-dish").removeClass('disabled');
                                 } else {
@@ -2044,6 +2047,7 @@ var Order = {
                             amount:$.trim($('#Invoice-title .invoiceMoney').val()),
                         }),
                         success: function (res) {
+                            //console.log(res)
                             utils.loading.remove();
                             if(res.result=='0'){
                                 _fn()
