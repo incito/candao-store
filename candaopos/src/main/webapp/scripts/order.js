@@ -673,7 +673,6 @@ var Order = {
     },
 
     payIptEvent: function(obj){
-        var that = this;
         var me = obj;
         var type = me.attr('iptType');
         var $paytotal = $('.pay-total');
@@ -1603,10 +1602,10 @@ var Order = {
         consts.moneyWipeName = data.moneyWipeName;
 
         //设置统计
-        $('#cash input').val(payamount);
         $('#discount-amount').text(amount);
-        //$('#amount').text(originalOrderAmount)//消费金额;
+        $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
+        $('#cash input').val(payamount);
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
@@ -1650,7 +1649,7 @@ var Order = {
         totalHtml += '<li class="hide debitAmount" payway="5">挂账支付:<span></span></li> ';
         totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
-        totalHtml += '<li class="hide needPay">还需在收:<span></span></li> ';
+        totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
         if(invoice_Flag.flag!=''){
             totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>'+invoice_Flag.flag+'</span></li> ';
         }
@@ -1963,7 +1962,7 @@ var Order = {
         var _fn = function(){
 
             //如果有小费
-            if(parseInt($('.tipAmount span').text(), 10) > 0){
+            if(parseFloat($('.tipAmount span').text()) >= 0){
                 utils.loading.open('上传小费信息');
                 Log.send(2, '上传小费信息:' +  JSON.stringify({"paid": $('.tipAmount span').text(), "orderid": consts.orderid}));
                 $.ajax({
