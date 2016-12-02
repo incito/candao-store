@@ -702,6 +702,12 @@ function save_table() {
 				var printerHave=[];
 				$.each(tbPrinterAreaList,function(i,item){
 					if(item.areaid==$("#nav-tables .active").attr("id")&&printeridHave.indexOf(item.printerid) == -1){
+						if ($("#editTitle2").text() === "添加餐台") {
+							item.tableid = result.data.tableid;
+						}
+						else {
+							item.tableid = tableInfo.areaid;
+						}
 						item.tableid=result.data.tableid;
 						printeridHave.push(item.printerid);
 						printerHave.push(item);

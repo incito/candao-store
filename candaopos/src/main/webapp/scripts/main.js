@@ -463,8 +463,15 @@ var MainPage = {
      */
     setTakeOutOrder: function (type) {
         var tableNo = '';
+        var tackout=[];
         if (type === 0) {
-            tableNo = $('.take-out-list-normal').find('li').eq(0).text();
+            if($('.take-out-list-normal li').length>0){
+                tableNo = $('.take-out-list-normal').find('li').eq(0).text();
+            }else {
+                utils.printError.alert('后台没有配置普通外卖台，请联系管理员');
+                return false
+            }
+
         } else {
             tableNo = $('.take-out-list').find('li.active').text();
         }
