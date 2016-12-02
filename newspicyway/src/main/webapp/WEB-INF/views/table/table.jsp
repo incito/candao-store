@@ -178,11 +178,11 @@
                                                                                                  name="kaiq"
                                                                                                  checked="checked"
                                                                                                  value="0"><span
-                                   >关闭</span></label>
+                            >关闭</span></label>
                             <label class="col-xs-4 control-label" style="text-align:left"><input type="radio"
                                                                                                  name="kaiq"
                                                                                                  value="1"><span
-                                    >开启</span></label>
+                            >开启</span></label>
                         </div>
                     </div>
                     <%--服务费--计算方式--%>
@@ -200,8 +200,8 @@
                              style="padding-left: 2px;padding-right: 2px;">
                             <div class="col-xs-5" style="padding-left: 2px;padding-right: 2px">
                                 <select class="form-control serviceCharge_Real_Price" style="padding: 2px 0px; ">
-                                    <option value="0">应收金额</option>
-                                    <option value="1">实收金额</option>
+                                    <option value="0">实收金额</option>
+                                    <option value="1">应收金额</option>
                                 </select>
                             </div>
                             <div class="col-xs-6" style="padding-left: 2px;padding-right: 2px;width: 72px">

@@ -1988,6 +1988,10 @@ var customTable = {
                     $('#allTables').addClass('tables-type-active')
                     return false
                 }
+                if($('#dinnerTable').attr('isclickType')){
+                    that.errorAlert('在服务费餐台分类下，不能自定义餐台排序');
+                    return false
+                }
                 $('#serviceTables').addClass('tables-type-active')
                 $('#nav-tables').html('');
                 /*清空餐台区域和显示餐台*/
