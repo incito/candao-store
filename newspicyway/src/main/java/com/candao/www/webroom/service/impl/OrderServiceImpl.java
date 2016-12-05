@@ -127,8 +127,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private TbTableDao tableDao;
 
-	 @Autowired
-	 private OrderDetailService orderDetailService;
+	@Autowired
+	private OrderDetailService orderDetailService;
 	@Autowired
 	private TServiceChargeService chargeService;
 
@@ -195,7 +195,6 @@ public class OrderServiceImpl implements OrderService {
 			logger.error("开台失败，开业记录为空");
 			return JacksonJsonMapper.objectToJson(mapRet);
 		}
-
 
 		String tableId = String.valueOf(resultMap.get(0).get("tableid"));
 		int shiftid = 0;
@@ -322,7 +321,6 @@ public class OrderServiceImpl implements OrderService {
 		result.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址
 		result.put("locktime", locktime == null ? "" : locktime.getItemid()); // 屏保锁屏时间
 		result.put("delaytime", delaytime == null ? "" : delaytime.getItemid()); // 屏保停留时间
-
 
 		// 开台前清空当前台的操作日记
 		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());
@@ -1150,12 +1148,11 @@ public class OrderServiceImpl implements OrderService {
 			// 如果是外卖订单，强制绑定对应餐台
 			doBindTableForTakeOutFood(orderid);
 
-
 			if (!params.containsKey("clean")) {
-				 List<Map<String, Object>> menuData = getMapData(orderid);
-				mapRet.put("rows",menuData);// 获取订单数据
-				if(menuData==null||menuData.isEmpty()){
-					Map<String, Object> delPreFerInfoMap=new HashMap<>();
+				List<Map<String, Object>> menuData = getMapData(orderid);
+				mapRet.put("rows", menuData);// 获取订单数据
+				if (menuData == null || menuData.isEmpty()) {
+					Map<String, Object> delPreFerInfoMap = new HashMap<>();
 					delPreFerInfoMap.put("orderid", orderid);
 					detailPreferentialDao.deleteDetilPreFerInfo(delPreFerInfoMap);
 				}
@@ -1175,20 +1172,21 @@ public class OrderServiceImpl implements OrderService {
 
 			OperPreferentialResult result = preResult(params);
 
-
 			// 服务费信息
-			TServiceCharge serviceCharge =chargeService.serviceCharge(orderid, userOrderInfo,
+			TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
 					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
-			
-			//加上服务费
-			if(serviceCharge!=null){
-				if(serviceCharge.getChargeOn()!=0){
+
+			// 加上服务费
+			if (serviceCharge != null) {
+				if (serviceCharge.getChargeOn() != 0) {
 					result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
 					result.setReserveAmout(result.getReserveAmout().add(serviceCharge.getChargeAmount()));
+					result.setResMenuAndServeChargeAmount(
+							result.getResMenuAndServeChargeAmount().add(serviceCharge.getChargeAmount()));
 				}
-				//封装描述
+				// 封装描述
 				List<Map<String, Object>> serviceChargelist = new ArrayList<>();
-				Map<String, Object> serviceChargeMap= new HashMap<>();
+				Map<String, Object> serviceChargeMap = new HashMap<>();
 				serviceChargeMap.put("chargeType", serviceCharge.getChargeType());
 				serviceChargeMap.put("chargeRate", serviceCharge.getChargeRate());
 				serviceChargeMap.put("chargeAmount", serviceCharge.getChargeAmount());
@@ -1196,9 +1194,9 @@ public class OrderServiceImpl implements OrderService {
 				serviceChargeMap.put("chargeOn", serviceCharge.getChargeOn());
 				serviceChargelist.add(serviceChargeMap);
 				ServiceChargeDescUnit.handleServiceCharge(serviceChargelist);
-				serviceCharge.setDesc((String)serviceChargeMap.get("chargetDesc"));
+				serviceCharge.setDesc((String) serviceChargeMap.get("chargetDesc"));
 				mapRet.put("serviceCharge", serviceCharge);
-				
+
 			}
 			mapRet.put("preferentialInfo", result);
 		}
@@ -1225,8 +1223,6 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 	}
-
-
 
 	/**
 	 * 计算优惠信息
@@ -1280,7 +1276,7 @@ public class OrderServiceImpl implements OrderService {
 			calALLAmout(setMap, operPreferentialResult);
 		}
 
-		StrategyFactory.INSTANCE.calcAmount(chargeService,detailPreferentialDao, caleTableAmountMapper, orderid,
+		StrategyFactory.INSTANCE.calcAmount(chargeService, detailPreferentialDao, caleTableAmountMapper, orderid,
 				dataDictionaryService, operPreferentialResult, orderMapper, orderOpMapper,
 				(String) params.get("itemid"));
 		return operPreferentialResult;
@@ -1316,13 +1312,13 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-	private void autoPre(String orderid,  Object  memberno, OperPreferentialResult operPreferentialResult) {
+	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult) {
 
-		//查询新拿到配置优惠
-		Map<String, Object> newspicywayPre=new HashMap<>();
+		// 查询新拿到配置优惠
+		Map<String, Object> newspicywayPre = new HashMap<>();
 		newspicywayPre.put("type", "NEWSPICYWAYPRE");
 		newspicywayPre.put("itemid", "0");
-		 List<Map<String, Object>> reslut = dictionaryDao.find(newspicywayPre);
+		List<Map<String, Object>> reslut = dictionaryDao.find(newspicywayPre);
 
 		Map<String, Object> setMap = new HashMap<>();
 		setMap.put("orderid", orderid);

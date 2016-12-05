@@ -94,6 +94,7 @@ public enum StrategyFactory {
 				dueamount=dueamount.subtract(servceCharageBean.getChargeAmount());
 			}
 
+			preferentialResult.setResMenuAndServeChargeAmount(dueamount);
 			preferentialResult.setMenuAmount(dueamount);
 			preferentialResult.setTipAmount(tipAmount);
 			// 原始价格

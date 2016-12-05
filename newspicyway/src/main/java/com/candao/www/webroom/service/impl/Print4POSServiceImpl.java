@@ -489,7 +489,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         //组合结算备注
                         settlementInfo = new ArrayList<>();
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
-                        String[] value = {resolveNullType(prefer.get("menuAmount")),
+                        String[] value = {resolveNullType(prefer.get("resMenuAndServeChargeAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
                                 stringAdd(resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
