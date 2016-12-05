@@ -171,7 +171,9 @@
 			   chargeTime=#{chargeTime},
 			   chargeAmount=#{chargeAmount}
 	   </set>
-	   where 
+	   where
+		(status IS NULL OR status != 5)
+		AND
 	    tableid=#{tableid} 
 	</update>
 	<delete id="delete" parameterType="map">
@@ -479,7 +481,7 @@
  </select>
 	
  <update id="updateStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status},orderid =#{orderid} where    tableid=#{tableid}
+	   update t_table set status = #{status},orderid =#{orderid} where  (status IS NULL OR status != 5) AND tableid=#{tableid}
  </update>
  
  <update id="updateTableById" parameterType="java.util.Map">
@@ -490,7 +492,9 @@
 	 	,status = #{status}
 	 	</if>
     </set>
- 	where tableid=#{tableid}
+ 	where
+	 (status IS NULL OR status != 5)
+	 AND tableid=#{tableid}
  </update>
  
  <update id="updateTableByOrderId" parameterType="java.util.Map">
@@ -501,27 +505,29 @@
 	 	,status = #{status}
 	 	</if>
     </set>
- 	where orderid=#{oldorderid}
+ 	where
+	 (status IS NULL OR status != 5)
+	 AND orderid=#{oldorderid}
  </update>
  
  
   <update id="updateSettleStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status}  where    orderid =#{orderid}
+	   update t_table set status = #{status}  where  (status IS NULL OR status != 5) AND orderid =#{orderid}
  </update>
  
   <update id="updateCleanStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status},orderid= null  where status!=5 and (tableid=#{tableid} or
+	   update t_table set status = #{status},orderid= null  where (status IS NULL OR status != 5) and (tableid=#{tableid} or
 	   orderid = #{orderid})    
  </update>
  
   <update id="updateStatusByNo" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status} where    orderid =#{orderid}
+	   update t_table set status = #{status} where  (status IS NULL OR status != 5) AND orderid =#{orderid}
  </update>
  
   <update id="updateAllStatus" parameterType="java.util.Map">
 	    <if test="ids != null and ids.size !=0">
 	      update t_table set status = #{status} ,orderid = #{orderid}
-	       where    tableid in 	          
+	       where (status IS NULL OR status != 5) AND tableid in
 	       <foreach item="item" index="index" collection="ids" 
                          open="(" separator="," close=")">
                         #{item}
@@ -530,7 +536,7 @@
  </update>
  
    <update id="updateSettleOrderNull" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set orderid = null ,status ='0'  where    tableid !=#{tableid} and orderid = #{orderid}
+	   update t_table set orderid = null ,status ='0' where (status IS NULL OR status != 5) AND tableid !=#{tableid} and orderid = #{orderid}
  </update>
  <update id="updateByOrderNo" parameterType="map">
  		UPDATE t_table
