@@ -21,6 +21,8 @@ var MainPage = {
 
         this.bindEvent();
 
+        this.getOpenEndTime();
+
         //加载虚拟键盘组件
         widget.keyboard();
 
@@ -463,8 +465,15 @@ var MainPage = {
      */
     setTakeOutOrder: function (type) {
         var tableNo = '';
+        var tackout=[];
         if (type === 0) {
-            tableNo = $('.take-out-list-normal').find('li').eq(0).text();
+            if($('.take-out-list-normal li').length>0){
+                tableNo = $('.take-out-list-normal').find('li').eq(0).text();
+            }else {
+                utils.printError.alert('后台没有配置普通外卖台，请联系管理员');
+                return false
+            }
+
         } else {
             tableNo = $('.take-out-list').find('li.active').text();
         }
@@ -990,6 +999,27 @@ var MainPage = {
             findUncleanPosList: findUncleanPosList,
             LocalArry: LocalArry,
             OtherArry: OtherArry,
+        }
+    },
+    /*营业时间,提示结业时间到了*/
+    getOpenEndTime:function () {
+        var getOpenEndTime=JSON.parse(utils.storage.getter('getOpenEndTime'))
+        var time=utils.date.current();
+        var endTime=''
+        if(getOpenEndTime.datetype=='T'){
+            endTime=time.split(' ')[0]+' '+getOpenEndTime.endtime
+        }
+        if(getOpenEndTime.datetype=='N'){
+            var a=time.split(' ')[0]
+            var b=parseInt(a.substring(8,a.length))+1;
+            if(b<10){
+                b='0'+b
+            }
+            endTime=a.substring(8,2)+b+' '+getOpenEndTime.endtime
+
+        }
+        if(Date.parse(new Date(endTime))-Date.parse(new Date(time))<0){
+            utils.printError.alert('结业时间到了,请及时结业')
         }
     }
 };
