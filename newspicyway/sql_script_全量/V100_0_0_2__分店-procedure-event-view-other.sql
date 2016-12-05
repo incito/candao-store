@@ -311,6 +311,7 @@ BEGIN DECLARE v_fetch_done     NUMERIC DEFAULT 0;
 
   DECLARE v_sdetailid      VARCHAR(50);
   DECLARE v_payamount      DECIMAL(10, 2);
+  DECLARE v_serviceAmount      DECIMAL(10, 2); #服务费
   DECLARE v_payway         INT(2);
   DECLARE v_couponNum      INT(3);
   DECLARE v_ys_amount      DECIMAL(10, 2);
@@ -491,8 +492,9 @@ loop_label:
   WHERE
     debitamount IS NULL;
 
+  SELECT chargeAmount INTO v_serviceAmount FROM t_service_charge where orderid=i_orderid and chargeOn=1 ;
   #把四舍五入的零头调完美
-  SELECT ifnull(sum(t.payamount) - v_xz_amount, 0)
+  SELECT ifnull(sum(t.payamount) - v_xz_amount-v_serviceAmount, 0)
   INTO
     @amount1
   FROM
