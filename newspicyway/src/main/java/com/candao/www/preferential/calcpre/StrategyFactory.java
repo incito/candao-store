@@ -209,7 +209,7 @@ public enum StrategyFactory {
 			long intervalTime = 0;
 			// 算出分钟数
 			try {
-				if (endtime != null && !endtime.isEmpty()&& "3".equals(userOrderInfo.get("orderStatus"))) {
+				if ((endtime != null && !endtime.isEmpty())|| "3".equals(userOrderInfo.get("orderStatus"))) {
 					intervalTime = DateUtils.stringToDate(endtime).getTime()
 							- DateUtils.stringToDate(begintime).getTime();
 				} else {
