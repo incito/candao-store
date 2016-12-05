@@ -73,7 +73,7 @@ var Order = {
         //定时更新订单信息
         setInterval(function(){
            Order.updateOrder();
-        },3000)
+        },1000)
     },
 
 
@@ -1136,27 +1136,35 @@ var Order = {
                 btnCancelTxt: '确定'
             });
         } else {
-            $.ajax({
-                url: _config.interfaceUrl.ClearTable,
-                method: 'POST',
-                contentType: "application/json",
-                data: JSON.stringify({
-                    tableNo: $('[name=tableno]').val()
-                }),
-                dataType: 'json',
-                success: function (res) {
-                    if (res.code === '0') {
-                        window.location.href = './main.jsp'
-                    } else {
-                        widget.modal.alert({
-                            cls: 'fade in',
-                            content: '<strong>' + res.msg + '</strong>',
-                            width: 500,
-                            height: 500,
-                            btnOkTxt: '',
-                            btnCancelTxt: '确定'
-                        });
-                    }
+            widget.modal.alert({
+                cls: 'fade in',
+                content: '<strong>确定取消桌号:' + consts.tableno  + '的账单吗?</strong>',
+                width: 500,
+                height: 500,
+                btnOkCb: function(){
+                    $.ajax({
+                        url: _config.interfaceUrl.ClearTable,
+                        method: 'POST',
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            tableNo: $('[name=tableno]').val()
+                        }),
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code === '0') {
+                                window.location.href = './main.jsp'
+                            } else {
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content: '<strong>' + res.msg + '</strong>',
+                                    width: 500,
+                                    height: 500,
+                                    btnOkTxt: '',
+                                    btnCancelTxt: '确定'
+                                });
+                            }
+                        }
+                    });
                 }
             });
         }

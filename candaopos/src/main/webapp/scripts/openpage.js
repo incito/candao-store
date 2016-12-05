@@ -395,6 +395,7 @@ var OpenPage = {
             success: function (res) {
                 var res = JSON.parse(res);
                 var member = {
+                    'vipstatus': res.data.vipstatus,
                     'vipcandaourl': res.data.vipcandaourl,//餐道
                     'vipotherurl': res.data.vipotherurl//雅座
                 }

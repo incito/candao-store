@@ -1461,7 +1461,7 @@ var AddDish = {
 
 			if (res.code === '0') {
 				//首次点菜 && 餐具设置收费 && 堂食
-				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in') {
+				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in' && res.data.userOrderInfo.isFree === '0') {
 					rows.push({
 						"printtype": "0",
 						"pricetype": 0,//0：普通 1：赠菜
