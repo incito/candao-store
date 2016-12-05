@@ -92,11 +92,11 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 	private Map<String, Object> singleDishs(List<TorderDetail> singleDishs,
 			TbPreferentialActivityDao tbPreferentialActivityDao, Map<String, Object> params, String orderid,
 			Map<String, Object> paraMap, TdishDao tdishDao, TorderDetailPreferentialDao orderDetailPreferentialDao) {
-		
-		Map<String, Object> singleDishsMap=new HashMap<>();
+
+		Map<String, Object> singleDishsMap = new HashMap<>();
 		singleDishsMap.putAll(params);
 		singleDishsMap.put("name", "第二扎半价");
-		
+
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 
@@ -123,9 +123,14 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				String dishId = torderDetail.getDishid();
 				BigDecimal tempAmount = torderDetail.getOrderprice() == null ? new BigDecimal("0")
 						: torderDetail.getOrderprice();
+				double dishNum = Double.valueOf(torderDetail.getDishnum());
 				if (dishIDColumindMap.containsKey(dishId)) {
+					if (dishNum > 1&&i==0) {
+						amount = amount
+								.add(new BigDecimal(dishNum - 1).multiply(tempAmount).multiply(new BigDecimal("0.5")));
+					}
 					if (i > 0) {
-						amount=amount.add(tempAmount.multiply(new BigDecimal("0.5")));
+						amount = amount.add(tempAmount.multiply(new BigDecimal("0.5")));
 					}
 					i++;
 				}
@@ -159,13 +164,13 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			Map<String, Object> paraMap, TorderDetailPreferentialDao orderDetailPreferentialDao) {
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-		
-		//获取配置ID
-		
-		 HashMap<String, Object> doublePotPrams=new HashMap<>();
-		 doublePotPrams.putAll(params);
-		 doublePotPrams.put("preferential", paraMap.get("doubSpellPreId"));
-		 
+
+		// 获取配置ID
+
+		HashMap<String, Object> doublePotPrams = new HashMap<>();
+		doublePotPrams.putAll(params);
+		doublePotPrams.put("preferential", paraMap.get("doubSpellPreId"));
+
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal("0");
@@ -189,7 +194,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				detailPreferentials.add(torder);
 			}
 		}
-	    paraMap.remove("doubSpellPreId");
+		paraMap.remove("doubSpellPreId");
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
 		return result;
