@@ -123,9 +123,15 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				String dishId = torderDetail.getDishid();
 				BigDecimal tempAmount = torderDetail.getOrderprice() == null ? new BigDecimal("0")
 						: torderDetail.getOrderprice();
+				double dishNum = Double.valueOf(torderDetail.getDishnum());
 				if (dishIDColumindMap.containsKey(dishId)) {
+					if (dishNum > 1 && i == 0) {
+						amount = amount
+								.add(new BigDecimal(dishNum - 1).multiply(tempAmount).multiply(new BigDecimal("0.5")));
+					}
 					if (i > 0) {
-						amount=amount.add(tempAmount.multiply(new BigDecimal("0.5")));
+						amount = amount
+								.add(tempAmount.multiply(new BigDecimal(dishNum)).multiply(new BigDecimal("0.5")));
 					}
 					i++;
 				}
