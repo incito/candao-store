@@ -24,7 +24,7 @@
         a.orderid,
         e.title,
         d.dishnum AS num,
-        d.dishnum * d.orignalprice AS amount,
+       convert( d.dishnum * d.orignalprice,DECIMAL (10,2)) AS amount,
         d.sperequire
         FROM t_order_detail d
         INNER JOIN t_order a
