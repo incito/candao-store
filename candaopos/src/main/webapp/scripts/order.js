@@ -73,7 +73,7 @@ var Order = {
         //定时更新订单信息
         setInterval(function(){
            Order.updateOrder();
-        },1000)
+        },4000)
     },
 
 
@@ -289,6 +289,7 @@ var Order = {
                 "primarykey": $target.attr('primarykey'),
                 "dishnum": $.trim($('#weight-num').val())
             };
+            Log.send(2, '称重:' + JSON.stringify(params));
             $.ajax({
                 url: _config.interfaceUrl.UpdateDishWeigh,
                 method: 'POST',
@@ -300,6 +301,7 @@ var Order = {
                         $("#weight-dialog").modal('hide');
                         that.updateOrder();
                     } else {
+                        Log.send(3, '称重:' + res.msg);
                         widget.modal.alert({
                             cls: 'fade in',
                             content: '<strong>' + res.msg + '</strong>',
@@ -371,6 +373,10 @@ var Order = {
             var alertModal = widget.modal.alert({
                 content: '<strong>' + tips + '</strong>',
                 btnOkCb: function () {
+                    Log.send(2, '分类调整:' + JSON.stringify({
+                            "preferential": me.attr('preferential'),
+                            "operationtype": type ? '1' : '0'
+                        }));
                     $.ajax({
                         url: _config.interfaceUrl.SetCouponFavor,
                         method: 'post',
@@ -387,6 +393,7 @@ var Order = {
                                 content: '分类调整成功'
                             })
                         } else {
+                            Log.send(3, '分类调整失败');
                             rightBottomPop.alert({
                                 content: '分类调整失败'
                             })
@@ -509,6 +516,11 @@ var Order = {
             var target = $('#sel-preferential-table tbody tr.selected');
             var isClear = me.attr('id') === 'clear-pref';
             if (me.hasClass('disabled')) return false;
+            Log.send(2, '删除或清空优惠:' + JSON.stringify({
+                    clear: isClear ? '1' : '0',
+                    DetalPreferentiald: target.attr('preid'),
+                    orderid: target.attr('orderid')
+                }));
             $.ajax({
                 url: _config.interfaceUrl.DelPreferential,
                 method: 'POST',
@@ -527,6 +539,7 @@ var Order = {
                         //更新已选优惠
                         that.updateSelectedPref(res.data.preferentialInfo.detailPreferentials, 0);
                     } else {
+                        Log.send(3, '删除或清空优惠失败:' + res.msg);
                         widget.modal.alert({
                             cls: 'fade in',
                             content: '<strong>' + res.msg + '</strong>',
@@ -828,169 +841,340 @@ var Order = {
 
         if (optype) {//登录
             if (consts.vipType === '1') {//餐道会员
-                $.when(
-                    $.ajax({
-                        url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.QueryCanDao,
-                        method: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json',
-                        data: JSON.stringify({
-                            "branch_id": utils.storage.getter('branch_id'),
-                            "cardno": cardNumber,
-                            "password": '',
-                            "securityCode": ''
-                        })
-                    }),
-                    $.ajax({
-                        url: _config.interfaceUrl.MemberLogin,
-                        method: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json',
-                        data: JSON.stringify({
-                            "mobile": cardNumber,
-                            "orderid": consts.orderid,
-                        })
+                Log.send(2, '餐道会员信息查询:' + JSON.stringify({
+                        "branch_id": utils.storage.getter('branch_id'),
+                        "cardno": cardNumber,
+                        "password": '',
+                        "securityCode": ''
+                    }));
+                Log.send(2, '餐道会员登录:' + JSON.stringify({
+                        "mobile": cardNumber,
+                        "orderid": consts.orderid,
+                    }));
+
+
+                $.ajax({
+                    url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.QueryCanDao,
+                    method: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        "branch_id": utils.storage.getter('branch_id'),
+                        "cardno": cardNumber,
+                        "password": '',
+                        "securityCode": ''
                     })
-                    )
-                    .then(function (res1, res2) {
-                        //查询
-                        console.log('查询');
-                        var res1 = res1[0];
-                        if (res1.Retcode === '0') {
-                            $('#StoreCardBalance').html('<b>' + res1.StoreCardBalance + '</b>(' + res1.CardLevel + ')');
-                            $('#IntegralOverall').text(res1.IntegralOverall);
-                            btn.text('退出');
-                            btn.addClass('btn-login-out');
-                            btn.removeClass('disabled');
-                            ipt.attr('disabled', 'disabled');
-                            consts.memberInfo = res1;
+                }).then(function(res1){
+                    Log.send(2, '餐道会员信息查询返回:' + JSON.stringify(res1));
+                    if (res1.Retcode === '0') {
+                        $('#StoreCardBalance').html('<b>' + res1.StoreCardBalance + '</b>(' + res1.CardLevel + ')');
+                        $('#IntegralOverall').text(res1.IntegralOverall);
+                        btn.text('退出');
+                        btn.addClass('btn-login-out');
+                        btn.removeClass('disabled');
+                        ipt.attr('disabled', 'disabled');
+                        consts.memberInfo = res1;
+                        $.ajax({
+                            url: _config.interfaceUrl.MemberLogin,
+                            method: 'POST',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                "mobile": cardNumber,
+                                "orderid": consts.orderid,
+                            })
+                        }).then(function(){
+                            Log.send(2, '餐道会员登录返回:' + JSON.stringify(res2));
+                            if (res2.code === '0') {
+                               //重新刷新订单信息
+                                that.updateOrder();
+                                dom.membershipCard.attr('isLogin','true');
+
+                                rightBottomPop.alert({
+                                    title: "提示信息",
+                                    content: res2.msg,
+                                    width: 320,
+                                    height: 200,
+                                    right: 5
+                                });
+                            } else {
+                                dom.membershipCard.attr('isLogin','false');
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content: '<strong>' + res2.msg + '</strong>',
+                                    width: 500,
+                                    height: 500,
+                                    btnOkTxt: '',
+                                    btnCancelTxt: '确定'
+                                });
+                            }
+                        });
 
 
-                            //重新刷新订单信息
-                            that.updateOrder();
 
-                            rightBottomPop.alert({
-                                title: "提示信息",
-                                content: res1.RetInfo,
-                                width: 320,
-                                height: 200,
-                                right: 5
-                            });
-                        } else {
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content: '<strong>' + res1.RetInfo + '</strong>',
-                                width: 500,
-                                height: 500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
-                        }
+                        rightBottomPop.alert({
+                            title: "提示信息",
+                            content: res1.RetInfo,
+                            width: 320,
+                            height: 200,
+                            right: 5
+                        });
+                    } else {
+                        widget.modal.alert({
+                            cls: 'fade in',
+                            content: '<strong>' + res1.RetInfo + '</strong>',
+                            width: 500,
+                            height: 500,
+                            btnOkTxt: '',
+                            btnCancelTxt: '确定'
+                        });
+                    }
+                })
 
-                        //登录
-                        var res2 = res2[0];
-                        if (res2.code === '0') {
-
-                            dom.membershipCard.attr('isLogin','true');
-
-                            rightBottomPop.alert({
-                                title: "提示信息",
-                                content: res2.msg,
-                                width: 320,
-                                height: 200,
-                                right: 5
-                            });
-                        } else {
-                            dom.membershipCard.attr('isLogin','false');
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content: '<strong>' + res2.msg + '</strong>',
-                                width: 500,
-                                height: 500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
-                        }
-                    });
+                //$.when(
+                //    $.ajax({
+                //        url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.QueryCanDao,
+                //        method: 'POST',
+                //        contentType: "application/json; charset=utf-8",
+                //        dataType: 'json',
+                //        data: JSON.stringify({
+                //            "branch_id": utils.storage.getter('branch_id'),
+                //            "cardno": cardNumber,
+                //            "password": '',
+                //            "securityCode": ''
+                //        })
+                //    }),
+                //    $.ajax({
+                //        url: _config.interfaceUrl.MemberLogin,
+                //        method: 'POST',
+                //        contentType: "application/json; charset=utf-8",
+                //        dataType: 'json',
+                //        data: JSON.stringify({
+                //            "mobile": cardNumber,
+                //            "orderid": consts.orderid,
+                //        })
+                //    })
+                //    )
+                //    .then(function (res1, res2) {
+                //        //查询
+                //        console.log('查询');
+                //        var res1 = res1[0];
+                //        Log.send(2, '餐道会员信息查询返回:' + JSON.stringify(res1));
+                //        if (res1.Retcode === '0') {
+                //            $('#StoreCardBalance').html('<b>' + res1.StoreCardBalance + '</b>(' + res1.CardLevel + ')');
+                //            $('#IntegralOverall').text(res1.IntegralOverall);
+                //            btn.text('退出');
+                //            btn.addClass('btn-login-out');
+                //            btn.removeClass('disabled');
+                //            ipt.attr('disabled', 'disabled');
+                //            consts.memberInfo = res1;
+                //            //重新刷新订单信息
+                //            that.updateOrder();
+                //
+                //            rightBottomPop.alert({
+                //                title: "提示信息",
+                //                content: res1.RetInfo,
+                //                width: 320,
+                //                height: 200,
+                //                right: 5
+                //            });
+                //        } else {
+                //            widget.modal.alert({
+                //                cls: 'fade in',
+                //                content: '<strong>' + res1.RetInfo + '</strong>',
+                //                width: 500,
+                //                height: 500,
+                //                btnOkTxt: '',
+                //                btnCancelTxt: '确定'
+                //            });
+                //        }
+                //
+                //        //登录
+                //        var res2 = res2[0];
+                //        Log.send(2, '餐道会员登录返回:' + JSON.stringify(res2));
+                //        if (res2.code === '0') {
+                //
+                //            dom.membershipCard.attr('isLogin','true');
+                //
+                //            rightBottomPop.alert({
+                //                title: "提示信息",
+                //                content: res2.msg,
+                //                width: 320,
+                //                height: 200,
+                //                right: 5
+                //            });
+                //        } else {
+                //            dom.membershipCard.attr('isLogin','false');
+                //            widget.modal.alert({
+                //                cls: 'fade in',
+                //                content: '<strong>' + res2.msg + '</strong>',
+                //                width: 500,
+                //                height: 500,
+                //                btnOkTxt: '',
+                //                btnCancelTxt: '确定'
+                //            });
+                //        }
+                //    });
             } else {//雅座
-                $.when(
-                    $.ajax({
-                        url: consts.memberAddr.vipotherurl + _config.interfaceUrl.Yafindmember + cardNumber,
-                        method: 'GET',
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json'
-                    }),
-                    $.ajax({
-                        url: _config.interfaceUrl.MemberLogin,
-                        method: 'POST',
-                        contentType: "application/json; charset=utf-8",
-                        dataType: 'json',
-                        data: JSON.stringify({
-                            "mobile": cardNumber,
-                            "orderid": consts.orderid,
-                        })
-                    })
-                    )
-                    .then(function (res1, res2) {
-                        //查询
-                        console.log('查询');
-                        var res1 = res1[0];
-                        if (res1.Data === '1') {
-                            $('#StoreCardBalance').html('<b>' + res1.psStoredCardsBalance/100 + '</b>');
-                            $('#IntegralOverall').text(res1.psIntegralAvail/100);
-                            btn.text('退出');
-                            btn.addClass('btn-login-out');
-                            btn.removeClass('disabled');
-                            ipt.attr('disabled', 'disabled');
-                            consts.memberInfo = res1;
-                            //重新刷新订单信息
-                            that.updateOrder();
+                Log.send(2, '雅座会员登录:' + JSON.stringify({
+                        "mobile": cardNumber,
+                        "orderid": consts.orderid,
+                    }));
+                $.ajax({
+                    url: consts.memberAddr.vipotherurl + _config.interfaceUrl.Yafindmember + cardNumber,
+                    method: 'GET',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json'
+                }).then(function(res1){
+                    //查询
+                    var res1 = res1[0];
+                    Log.send(2, '雅座会员查询返回:' + JSON.stringify(res1));
+                    if (res1.Data === '1') {
+                        $('#StoreCardBalance').html('<b>' + res1.psStoredCardsBalance/100 + '</b>');
+                        $('#IntegralOverall').text(res1.psIntegralAvail/100);
+                        btn.text('退出');
+                        btn.addClass('btn-login-out');
+                        btn.removeClass('disabled');
+                        ipt.attr('disabled', 'disabled');
+                        consts.memberInfo = res1;
+                        $.ajax({
+                            url: _config.interfaceUrl.MemberLogin,
+                            method: 'POST',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                "mobile": cardNumber,
+                                "orderid": consts.orderid,
+                            })
+                        }).then(function(res2){
+                            Log.send(2, '雅座会员登录返回:' + JSON.stringify(res2));
+                            if (res2.code === '0') {
 
-                            rightBottomPop.alert({
-                                title: "提示信息",
-                                content: '雅座会员查询成功',
-                                width: 320,
-                                height: 200,
-                                right: 5
-                            });
-                        } else {
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content: '<strong>雅座会员查询失败</strong>',
-                                width: 500,
-                                height: 500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
-                        }
+                                dom.membershipCard.attr('isLogin','true');
+                                   //重新刷新订单信息
+                                that.updateOrder();
+                                rightBottomPop.alert({
+                                    title: "提示信息",
+                                    content: res2.msg,
+                                    width: 320,
+                                    height: 200,
+                                    right: 5
+                                });
+                            } else {
+                                dom.membershipCard.attr('isLogin','false');
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content: '<strong>' + res2.msg + '</strong>',
+                                    width: 500,
+                                    height: 500,
+                                    btnOkTxt: '',
+                                    btnCancelTxt: '确定'
+                                });
+                            }
+                        });
 
-                        //登录
-                        var res2 = res2[0];
-                        if (res2.code === '0') {
 
-                            dom.membershipCard.attr('isLogin','true');
-
-                            rightBottomPop.alert({
-                                title: "提示信息",
-                                content: res2.msg,
-                                width: 320,
-                                height: 200,
-                                right: 5
-                            });
-                        } else {
-                            dom.membershipCard.attr('isLogin','false');
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content: '<strong>' + res2.msg + '</strong>',
-                                width: 500,
-                                height: 500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
-                        }
-                    });
+                        rightBottomPop.alert({
+                            title: "提示信息",
+                            content: '雅座会员查询成功',
+                            width: 320,
+                            height: 200,
+                            right: 5
+                        });
+                    } else {
+                        widget.modal.alert({
+                            cls: 'fade in',
+                            content: '<strong>雅座会员查询失败</strong>',
+                            width: 500,
+                            height: 500,
+                            btnOkTxt: '',
+                            btnCancelTxt: '确定'
+                        });
+                    }
+                });
+                //$.when(
+                //    $.ajax({
+                //        url: consts.memberAddr.vipotherurl + _config.interfaceUrl.Yafindmember + cardNumber,
+                //        method: 'GET',
+                //        contentType: "application/json; charset=utf-8",
+                //        dataType: 'json'
+                //    }),
+                //    $.ajax({
+                //        url: _config.interfaceUrl.MemberLogin,
+                //        method: 'POST',
+                //        contentType: "application/json; charset=utf-8",
+                //        dataType: 'json',
+                //        data: JSON.stringify({
+                //            "mobile": cardNumber,
+                //            "orderid": consts.orderid,
+                //        })
+                //    })
+                //    )
+                //    .then(function (res1, res2) {
+                //        //查询
+                //        var res1 = res1[0];
+                //        Log.send(2, '雅座会员查询返回:' + JSON.stringify(res1));
+                //        if (res1.Data === '1') {
+                //            $('#StoreCardBalance').html('<b>' + res1.psStoredCardsBalance/100 + '</b>');
+                //            $('#IntegralOverall').text(res1.psIntegralAvail/100);
+                //            btn.text('退出');
+                //            btn.addClass('btn-login-out');
+                //            btn.removeClass('disabled');
+                //            ipt.attr('disabled', 'disabled');
+                //            consts.memberInfo = res1;
+                //            //重新刷新订单信息
+                //            that.updateOrder();
+                //
+                //            rightBottomPop.alert({
+                //                title: "提示信息",
+                //                content: '雅座会员查询成功',
+                //                width: 320,
+                //                height: 200,
+                //                right: 5
+                //            });
+                //        } else {
+                //            widget.modal.alert({
+                //                cls: 'fade in',
+                //                content: '<strong>雅座会员查询失败</strong>',
+                //                width: 500,
+                //                height: 500,
+                //                btnOkTxt: '',
+                //                btnCancelTxt: '确定'
+                //            });
+                //        }
+                //
+                //        //登录
+                //        var res2 = res2[0];
+                //        Log.send(2, '雅座会员登录返回:' + JSON.stringify(res2));
+                //        if (res2.code === '0') {
+                //
+                //            dom.membershipCard.attr('isLogin','true');
+                //
+                //            rightBottomPop.alert({
+                //                title: "提示信息",
+                //                content: res2.msg,
+                //                width: 320,
+                //                height: 200,
+                //                right: 5
+                //            });
+                //        } else {
+                //            dom.membershipCard.attr('isLogin','false');
+                //            widget.modal.alert({
+                //                cls: 'fade in',
+                //                content: '<strong>' + res2.msg + '</strong>',
+                //                width: 500,
+                //                height: 500,
+                //                btnOkTxt: '',
+                //                btnCancelTxt: '确定'
+                //            });
+                //        }
+                //    });
             }
         } else {//登出
+            Log.send(2, '会员登出:' + JSON.stringify({
+                    "moblie": cardNumber,
+                    "orderid": consts.orderid,
+                }));
             $.ajax({
                 url: _config.interfaceUrl.MemberLogout,
                 method: 'POST',
@@ -1001,6 +1185,7 @@ var Order = {
                     "orderid": consts.orderid,
                 })
             }).then(function (res) {
+                Log.send(2, '会员登出:' + JSON.stringify(res));
                 if (res.code === '0') {
                     rightBottomPop.alert({
                         title: "提示信息",
@@ -1106,6 +1291,7 @@ var Order = {
         });
     },
 
+    consumInfoFlag : false,
     //抹零不处理
     consumInfo: function () {
         var $moneyWipeAmount = $('.pay-total .moneyWipeAmount span');
@@ -1120,6 +1306,8 @@ var Order = {
         $('.payamount span').text($target.val());
         $moneyWipeAmount.parents('li').remove();
         consts.moneyWipeAmount = 0.0;
+        this.consumInfoFlag = true;
+        this.updateOrder();
     },
 
     //取消订单
@@ -1136,6 +1324,7 @@ var Order = {
                 btnCancelTxt: '确定'
             });
         } else {
+            Log.send(2, '取消订单:' + $('[name=tableno]').val());
             widget.modal.alert({
                 cls: 'fade in',
                 content: '<strong>确定取消桌号:' + consts.tableno  + '的账单吗?</strong>',
@@ -1151,6 +1340,7 @@ var Order = {
                         }),
                         dataType: 'json',
                         success: function (res) {
+                            Log.send(2, '取消订单:' + JSON.stringify(res));
                             if (res.code === '0') {
                                 window.location.href = './main.jsp'
                             } else {
@@ -1259,6 +1449,7 @@ var Order = {
 
         dom.backfoodDialog.modal('hide');
         $("#backfood-right").modal('hide');
+        Log.send(2, '退菜:' + JSON.stringify(params));
         $.ajax({
             url: _config.interfaceUrl.BackDish,
             method: 'POST',
@@ -1267,6 +1458,7 @@ var Order = {
             dataType: 'json',
             global: false,
             success: function (res) {
+                Log.send(2, '退菜:' + JSON.stringify(res));
                 if (res.code === '0') {
                     $(".modal-alert:last,.modal-backdrop:last").remove();//移除提示信息
                     $("#backfood-right .modal-dialog").remove();
@@ -1335,6 +1527,12 @@ var Order = {
             id = '05';
         }
 
+        Log.send(2, '通过分类获取优惠券信息:' + JSON.stringify({
+                machineno: utils.storage.getter('ipaddress'),
+                userid: utils.storage.getter('aUserid'),
+                orderid: '0',
+                typeid: id
+            }));
         $.ajax({
             url: _config.interfaceUrl.GetCouponInfos,
             method: 'POST',
@@ -1350,6 +1548,7 @@ var Order = {
                 utils.loading.open('获取优惠券信息…')
             },
             success: function (res) {
+                Log.send(2, '通过分类获取优惠券信息:' + JSON.stringify(res));
                 var htm = '';
                 $.each(res, function (k, v) {
                     htm += '<div style="background-color:' + v.color + '" class="preferential-info"' +
@@ -1437,6 +1636,7 @@ var Order = {
                 });
             }
         }
+        Log.send(2, '添加优惠:' + JSON.stringify(that.manageUsePref.get()));
         $.ajax({
             url: _config.interfaceUrl.CalcDiscountAmount,
             method: 'POST',
@@ -1445,6 +1645,7 @@ var Order = {
             dataType: 'json',
             data: JSON.stringify(that.manageUsePref.get()),
             success: function (res) {
+                Log.send(2, '添加优惠:' + JSON.stringify(res));
                 if (res.code === '0') {
                     that.updateTotal(res.data);
                     //更新已选优惠
@@ -1491,6 +1692,7 @@ var Order = {
                 })
             })
         ).then(function (res1, res2) {
+            //Log.send(2, '更新赠菜信息:' + JSON.stringify(res));
             var data = res1[0].data.rows;
             if (res1[0].code === '0' && res2[0].code === '0') {
                 var htm = '';
@@ -1727,6 +1929,18 @@ var Order = {
      */
     updateOrder: function () {
         var that = this;
+        var params = {
+            orderid: consts.orderid
+        };
+        if(that.consumInfoFlag) {
+            params = $.extend(params, {
+                itemid: '0'
+            })
+        } else {
+            params = $.extend(params, {
+                itemid: JSON.parse(utils.storage.getter('ROUNDING'))[0].itemid
+            })
+        }
         if(that.updateOrderStatus === 1) {
             return false;
         } else {
@@ -1735,9 +1949,7 @@ var Order = {
                 url: _config.interfaceUrl.GetOrderInfo,
                 method: 'POST',
                 contentType: "application/json",
-                data: JSON.stringify({
-                    orderid: consts.orderid
-                }),
+                data: JSON.stringify(params),
                 beforeSend: function(){
                     utils.loading.open('更新订单信息…')
                 },
@@ -2024,7 +2236,6 @@ var Order = {
             });
 
 
-            Log.upload();
             if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
                 goBack()
             } else {

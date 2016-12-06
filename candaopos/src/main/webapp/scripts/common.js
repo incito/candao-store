@@ -71,8 +71,6 @@ $(document).ready(function () {
 		var val = me.val();
 		var type = me.attr('validtype');
 
-		console.log('input');
-
 		if(type !== undefined) {
 			//纯数字
 			if(/number/.test(type) || /intAndFloat/.test(type)){
@@ -410,10 +408,9 @@ var Log = (function () {
 				type:'json',
 				global: false,
 				contentType: 'application/json',
-				contentType: 'application/json',
 				data: JSON.stringify(data)
 			}).then(function(){
-				console.log('upload success');
+				console.log('Upload success');
 				data = [];
 				preLength = 0;
 				utils.storage.setter('log', '');
