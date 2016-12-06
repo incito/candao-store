@@ -5369,7 +5369,7 @@ BEGIN
       INSERT INTO t_temp_res (tableid, stime, svalue)
       SELECT tableid
            , date_format(v_date_start, '%Y/%m/%d')
-           , sum(dishnum * orignalprice)
+           , sum(dishnum * orignalprice)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid in(select orderid from t_temp_order where begintime BETWEEN v_date_start AND v_date_interval) and chargeOn=1)
       FROM
         t_temp_order_detail
       WHERE
