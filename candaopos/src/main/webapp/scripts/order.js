@@ -1266,12 +1266,24 @@ var Order = {
 
     //type:1 预结单 2: 结账单 3:客用单
     printPay: function (type) {
+        var that = this;
+        var params = {};
+        if(that.consumInfoFlag) {
+            params = $.extend(params, {
+                itemid: '0'
+            })
+        } else {
+            params = $.extend(params, {
+                itemid: JSON.parse(utils.storage.getter('ROUNDING'))[0].itemid
+            })
+        }
         Log.send(2,'打印:' + _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/' + utils.storage.getter('posid'))
         $.ajax({
             url: _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/' + utils.storage.getter('posid'),
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
+            data: JSON.stringify(params),
             async: false,
             success: function (res) {
                 var str = (function(){
