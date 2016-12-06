@@ -9199,6 +9199,10 @@ BEGIN
     IFNULL(SUM(tod.dishnum * tod.orderprice), 0.00) INTO v_totalconsumption
   FROM t_order_detail tod
   WHERE orderid = pi_orderid AND pricetype <> 1;
+  #服务费
+	SELECT IFNULL(SUM(chargeAmount),0)+v_totalconsumption into v_totalconsumption
+	from t_service_charge
+	where orderid=pi_orderid and chargeOn=1;
 
   #added by caicai
   #SELECT
