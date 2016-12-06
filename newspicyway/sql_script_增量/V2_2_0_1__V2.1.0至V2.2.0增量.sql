@@ -25,4 +25,4 @@ CREATE TABLE `t_payway_set` (
 -- 清空t_device表
 TRUNCATE TABLE T_DEVICE;
 -- 修改会员地址
-UPDATE `t_b_padconfig` SET vipcandaourl='http://chainstore.candaochina.com/newspicyway/' WHERE id=1;
+UPDATE `t_b_padconfig` SET vipcandaourl='http://chainstore.candaochina.com' WHERE id=1;
