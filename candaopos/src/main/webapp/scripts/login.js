@@ -65,6 +65,12 @@ var Login = {
 
         //登录
         $('.J-login-form-submit').click(function(){
+            Log.send(2, '登录参数:' + JSON.stringify({
+                    username: $.trim(dom.user.val()),
+                    password: hex_md5($.trim(dom.pwd.val())),
+                    macAddress: utils.storage.getter('ipaddress'),//IP地址
+                    loginType: '030201'
+                }));
             $.ajax({
                 url: _config.interfaceUrl.AuthorizeLogin,
                 method: 'POST',
@@ -77,6 +83,7 @@ var Login = {
                 }),
                 dataType:'json',
                 success: function(res){
+                    Log.send(2, '登录返回:' + JSON.stringify(res));
                     if(res.code === '0') {
                         utils.storage.setter('fullname', res.data.fullname);
                         utils.storage.setter('loginTime', res.data.loginTime);
@@ -92,6 +99,7 @@ var Login = {
                                 dataType: "text",
                                 success: function (data) {
                                     var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                                    Log.send(2, '验证零找金:' + JSON.stringify(data));
                                     if(data.Data=='0'){
                                         $("#change_val").val("");
                                         focusIpt = $('#change_val');
@@ -105,6 +113,7 @@ var Login = {
                         }
                         else {
                             if(utils.storage.getter('isYesterdayEndWork')==='1'){
+                                Log.send(2, '请登录收银员账号，以便餐台结账')
                                 widget.modal.alert({
                                     cls: 'fade in',
                                     content:'<div style="text-align: center;font-size: 20px;font-weight:bold ">请登录收银员账号，以便餐台结账。</div>',
@@ -146,6 +155,7 @@ var Login = {
     },
 
     setUserRight: function(username){
+        Log.send(2, 'GetUserRight: ' + username)
         $.ajax({
             url: _config.interfaceUrl.GetUserRight,
             method: 'POST',
@@ -156,6 +166,7 @@ var Login = {
             dataType:'json',
             async: false,
             success: function(res){
+                Log.send(2, 'GetUserRight:' +  JSON.stringify(res));
                 if(res.result === '0') {
                     utils.storage.setter('user_rights', JSON.stringify(res.rights));
                 } else {
@@ -213,12 +224,14 @@ var Login = {
     },
 
     toMain: function(){
+        Log.send(2,' InputTellerCash:' + _config.interfaceUrl.PettyCashInput+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('ipaddress')+'/'+$.trim($('#change_val').val())+'/1/');
         $.ajax({
             url: _config.interfaceUrl.PettyCashInput+''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('ipaddress')+'/'+$.trim($('#change_val').val())+'/1/',
             type: "get",
             dataType: "text",
             success: function (data) {
                 var  data=JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                Log.send(2, 'InputTellerCash' + JSON.stringify(data))
                 if(data.Data=='1'){
                     window.location = "../views/main.jsp";
                     $("#thechange-dialog").modal("hide");

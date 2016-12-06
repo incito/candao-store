@@ -42,12 +42,15 @@ var OpenPage = {
             return false
         }
         var iSuserRight = utils.userRight.get($.trim($('#manager_num').val()), '030202');
+        Log.send(2, '验证开业权限iSuserRight:' + iSuserRight);
         if (iSuserRight) {//验证是否有开业权限，iSuserRight为true时验证零找金，false直接跳转登录页面
+            Log.send(2, '验证开业权限url:' + _config.interfaceUrl.RestaurantOpened + '' + $.trim($('#manager_num').val()) + '/' + $.trim($('#perm_pwd').val()) + '/' + utils.storage.getter('ipaddress') + '/1/');
             $.ajax({
                 url: _config.interfaceUrl.RestaurantOpened + '' + $.trim($('#manager_num').val()) + '/' + $.trim($('#perm_pwd').val()) + '/' + utils.storage.getter('ipaddress') + '/1/',
                 method: 'GET',
                 dataType: 'text',
                 success: function (res) {
+                    Log.send(2, '验证开业权限返回:' + res);
                     var res = JSON.parse(res.substring(12, res.length - 3));
                     if (res.Data === '1') {//开业
                         $("#mg-login-dialog").modal("hide");
@@ -70,6 +73,7 @@ var OpenPage = {
             return false
         }
         else {
+            Log.send(3, '开业失败，您没有开业权限')
             utils.printError.alert('开业失败，您没有开业权限')
         }
 
@@ -82,11 +86,13 @@ var OpenPage = {
             dataType: 'text',
             success: function (res) {
                 var res = JSON.parse(res.substring(12, res.length - 3));
+                Log.send(2, '是否为开业返回:' + JSON.stringify(res));
                 if (res.Data === '1') {//开业
                     window.location = "../views/login.jsp";
                 }
             },
             error: function () {
+                Log.send(3, '获取当日结业信息失败');
                 widget.modal.alert({
                     cls: 'fade in',
                     content: '<strong>获取当日结业信息失败</strong>',
@@ -105,8 +111,10 @@ var OpenPage = {
             method: 'GET',
             dataType: 'json',
             success: function (res) {
+                Log.send(2, '昨天是否结业返回:' + JSON.stringify(res));
                 if (res['result'] === '0') {//昨天已经结业返回成功
                     if (res['detail']) {//昨天已经结业
+                        Log.send(2, '昨天已经结业返回成功,昨天已经结业');
                         $("#openTo").show();
                         utils.storage.setter('isYesterdayEndWork', '0');//设置昨天是否结业状态0为已结业，1为未结业；
                         that.isOpen();
@@ -114,12 +122,14 @@ var OpenPage = {
                     else {//昨天没有结业
                         utils.storage.setter('isYesterdayEndWork', '1');//设置昨天是否结业状态0为已结业，1为未结业；
                         $("#openTo").hide();
+                        Log.send(2, '昨天没有结业');
                         $.ajax({//查询是否有为结业的餐台
                             url: _config.interfaceUrl.GetAllTableInfos,
                             method: 'GET',
                             dataType: 'json',
                             success: function (res) {
                                 var noCheack = [];//没有结账的餐台数组
+                                Log.send(2,'查询是否有为结业的餐台返回:' + JSON.stringify(res));
                                 for (var i = 0; i < res.data.length; i++) {
                                     if (res.data[i].status === '1') {
                                         noCheack.push(res.data[i]);
@@ -194,6 +204,7 @@ var OpenPage = {
             $("#J-btn-checkout-dialog").modal('show')
         }
         if (Uncleandata.LocalArry.length == 0 && Uncleandata.OtherArry.length > 0) {
+            Log.send(2, '还有其他POS机未清机,请到其他POS机上先清机');
             widget.modal.alert({
                 cls: 'fade in',
                 content: '<strong>还有其他POS机未清机,<br><br>请到其他POS机上先清机</strong>',
@@ -229,12 +240,14 @@ var OpenPage = {
             height: 500,
             hasBtns: false,
         });
+        Log.send(2, '清机' + _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('checkout_fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/')
         $.ajax({
             url: _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('checkout_fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
             type: "get",
             dataType: "text",
             success: function (data) {
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                Log.send(2, '清机返回:' + JSON.stringify(data));
                 if (data.Data === '0') {//清机失败
                     $(".modal-alert:last,.modal-backdrop:last").remove();
                     widget.modal.alert({
@@ -247,6 +260,7 @@ var OpenPage = {
                     });
                 }
                 else {//清机成功
+                    Log.send(2, '清机成功, 打印清机单');
                     utils.reprintClear.get()//打印清机单
                     $(".modal-alert:last,.modal-backdrop:last").remove();
                     that.checkout()
@@ -263,6 +277,7 @@ var OpenPage = {
             success: function (data) {
                 $("#J-btn-checkout-dialog").modal('hide')
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                Log.send(2, '结业返回:' + JSON.stringify(data));
                 if (data.Data == '1') {
                     /*结业数据上传*/
                     widget.modal.alert({
@@ -274,6 +289,9 @@ var OpenPage = {
                     });
                     _EndWorkSyncData();
                     function _EndWorkSyncData() {
+                        Log.send(2, '结业数据上传:' + JSON.stringify({
+                                'synkey': 'candaosynkey'
+                            }));
                         $.ajax({
                             url: _config.interfaceUrl.EndWorkSyncData,//结业数据上传
                             method: 'POST',
@@ -284,8 +302,10 @@ var OpenPage = {
                             }),
                             success: function (msg) {
                                 //成功
+                                Log.send(2, '结业数据上传返回:' + JSON.stringify(msg));
                                 $(".modal-alert:last,.modal-backdrop:last").remove();
                                 if (msg.code == '0000') {
+                                    Log.send(2, '结业数据上传:' + data.Info + ',即将退出程序');
                                     widget.modal.alert({
                                         cls: 'fade in',
                                         content: '<strong>' + data.Info + ',即将退出程序</strong>',
@@ -297,12 +317,14 @@ var OpenPage = {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
                                             window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
                                             utils.clearLocalStorage.clearSelect();//清空缓存
+                                            Log.send(2, '清空缓存');
                                         }
                                     });
                                     $('.modal-alert:last .modal-header .close').hide();//隐藏X关闭按钮
                                 }
                                 //失败
                                 else {
+                                    Log.send(2, '上传营业数据失败，请重新上传！');
                                     widget.modal.alert({
                                         cls: 'fade in printError endwork',
                                         content: '<strong style="text-align: left">上传营业数据失败，请重新上传！<br/>失败原因：' + msg.message + '</strong><br> <br><span style="font-size: 12px;line-height: 25px;padding: 20px 50px 0px 50px;">您可以选择”重新上传“立即重传，或者点击关闭按钮等待系统在凌晨1点到9点自动上传</span>',
@@ -341,14 +363,15 @@ var OpenPage = {
         });
     },
     getFindUncleanPosList: function () {//获取未清机数据列表
-        var findUncleanPosList, LocalArry = [], OtherArry = []
+        var findUncleanPosList, LocalArry = [], OtherArry = [];
         $.ajax({
             url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
             type: "get",
             async: false,
             dataType: "text",
             success: function (data) {
-                findUncleanPosList = JSON.parse(data)
+                findUncleanPosList = JSON.parse(data);
+                Log.send(2, '获取未清机数据列表:' + JSON.stringify(data));
                 if (findUncleanPosList.result === '0') {
                     LocalArry = [];//本机数组集合
                     OtherArry = [];//其他pos登录集合
@@ -384,7 +407,8 @@ var OpenPage = {
             /*设置钱箱地址*/
             var cashIp = utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
             config['OpenCashIp'] = cashIp
-            utils.storage.setter('config', JSON.stringify(config))
+            utils.storage.setter('config', JSON.stringify(config));
+            Log.send(2, '设置配置信息' + JSON.stringify(config))
         });
         /*获取营业时间*/
         $.ajax({
@@ -392,6 +416,7 @@ var OpenPage = {
             type: "get",
             dataType: 'text',
             success: function (res) {
+                Log.send(2, '获取营业时间' + JSON.stringify(res));
                 var res = JSON.parse(res);
                 if(res.result=='0'){
                     utils.storage.setter('getOpenEndTime',JSON.stringify(res.detail))//会员地址状态 viptype 1为餐道会员 2为雅坐会员
@@ -416,6 +441,7 @@ var OpenPage = {
             type: "get",
             dataType: 'text',
             success: function (res) {
+                Log.send(2, '获取会员配置地址' + res);
                 var res = JSON.parse(res);
                 var member = {
                     'vipstatus': res.data.vipstatus,
@@ -431,11 +457,13 @@ var OpenPage = {
 
         //银行信息
         $.get(_config.interfaceUrl.GetAllBankInfo).then(function (res) {
+            Log.send(2, '银行信息' + JSON.stringify(res));
             utils.storage.setter('banklist', JSON.stringify(res));
         });
 
         //门店信息
         $.get(_config.interfaceUrl.GetBranchInfo).then(function (res) {
+            Log.send(2, '门店信息' + JSON.stringify(res));
             if (res.code === '0') {
                 $.each(res.data, function (k, v) {
                     utils.storage.setter('branch_' + k, v);
@@ -463,6 +491,7 @@ var OpenPage = {
                 }
             )
         }).then(function (res) {
+            Log.send(2, '零头信息:' + JSON.stringify(res));
             utils.storage.setter('ROUNDING', JSON.stringify(res.rows));
         });
 
@@ -477,6 +506,7 @@ var OpenPage = {
                 }
             )
         }).then(function (res) {
+            Log.send(2, '忌口:' + JSON.stringify(res));
             utils.storage.setter('JI_KOU_SPECIAL', JSON.stringify(res.rows));
         });
 
@@ -491,6 +521,7 @@ var OpenPage = {
                 }
             )
         }).then(function (res) {
+            Log.send(2, '餐具:' + JSON.stringify(res));
             utils.storage.setter('DISHES2', JSON.stringify(res.rows));
         });
 
@@ -500,6 +531,7 @@ var OpenPage = {
             contentType: "application/json",
             dataType: 'text',
         }).then(function (res) {
+            Log.send(2, 'GetDinnerWareInfo:' + JSON.stringify(res));
             utils.storage.setter('DISHES', JSON.stringify(JSON.parse(res.substring(12, res.length - 3)).OrderJson));
         });
 
@@ -511,6 +543,7 @@ var OpenPage = {
             contentType: "application/json",
             dataType: 'json',
         }).then(function (res) {
+            Log.send(2, '挂账单位:' + JSON.stringify(res));
             utils.storage.setter('payCompany', JSON.stringify(res));
         });
     }

@@ -34,8 +34,9 @@ $(document).ready(function () {
                 content: v
             });
         })
-    }
-    ;
+    };
+
+
 
 
     /*判断直接访问页面是否登录*/
@@ -215,8 +216,7 @@ var keydownEnter=null
 
 
         }
-    })
-
+    });
 
 });
 

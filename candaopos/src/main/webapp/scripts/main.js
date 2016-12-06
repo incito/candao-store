@@ -175,8 +175,16 @@ var MainPage = {
 
         //退出系统
         $(".exit-sys").click(function () {
-            window.location = "../views/login.jsp";
-            utils.clearLocalStorage.clearSelect()
+            widget.modal.alert({
+                content: '<strong>确定要退出系统吗?</strong>',
+                btnOkCb: function(){
+                    Log.send(2, '退出系统,清空缓存');
+                    Log.upload();
+                    window.location = "../views/login.jsp";
+                    utils.clearLocalStorage.clearSelect()
+                }
+            })
+
         });
 
         //标准台和咖啡台切换
