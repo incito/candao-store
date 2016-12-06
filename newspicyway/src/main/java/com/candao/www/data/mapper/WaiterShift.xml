@@ -92,6 +92,7 @@
 		FROM t_settlement_detail AS tsd 
 		LEFT JOIN t_order AS too ON tsd.orderid = too.orderid
 		LEFT JOIN t_dictionary td ON td.itemid = tsd.payway
+		INNER JOIN t_b_employee em ON too.userid = em.job_number 
 		WHERE too.branchid = #{branchId}
 		AND too.begintime >= #{beginTime}
 		AND too.begintime &lt;= #{endTime}
@@ -146,6 +147,7 @@
 			 GROUP BY ttoo.userid
 			) AS S2 
 		ON S1.waiterId = S2.waiterId
+		where S1.waiterName IS NOT NULL
 		order by S1.waiterId
     </select>
 
