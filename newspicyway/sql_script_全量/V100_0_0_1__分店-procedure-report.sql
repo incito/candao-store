@@ -2574,7 +2574,7 @@ BEGIN
 		AND (a.dishtype <>2 OR (a.dishtype = 2 AND a.superkey <> a.primarykey));
 
     # 服务费
-		SELECT IFNULL(SUM(chargeAmount),0) INTO v_serviceAmount FROM t_service_charge sc,t_temp_order o where sc.orderid=o.orderid and sc.chargeOn=1;
+		SELECT IFNULL(SUM(chargeAmount),0) INTO v_serviceAmount FROM t_service_charge sc,t_temp_order o where sc.orderid=o.orderid and sc.chargeOn=1 AND o.begintime BETWEEN v_date_start AND v_date_interval;
 
     #计算实收（含虚增）
     SELECT IFNULL(SUM(payamount), 0)
