@@ -86,6 +86,7 @@ var MainPage = {
             var serverName = dom.openDialog.find('.J-server-name').val();
             var maleNum = dom.openDialog.find('.J-male-num').val() === '' ? '0' : dom.openDialog.find('.J-male-num').val();
             var femailNum = dom.openDialog.find('.J-female-num').val() === '' ? '0' : dom.openDialog.find('.J-female-num').val();
+            var params = null;
 
             if (parseInt(maleNum, 10) + parseInt(femailNum, 10) < 1) {
                 widget.modal.alert({
@@ -126,28 +127,31 @@ var MainPage = {
             //验证用户权限,然后开台
             that.verifyUser(serverName, function () {
                 var $target = that.CurrentSelectedTable;
+                params ={
+                    tableNo: $target.attr('tableno'),
+                    ageperiod: (function () {
+                        var str = '';
+                        dom.openDialog.find('.age-type>div').each(function () {
+                            var me = $(this);
+                            if (me.hasClass('active')) {
+                                str += me.index() + 1;
+                            }
+                        });
+                        return str;
+                    })(),
+                    username: serverName,
+                    manNum: maleNum,
+                    womanNum: femailNum
+                };
+                Log.send(2, '用户开台:' + JSON.stringify(params));
                 $.ajax({
                     url: _config.interfaceUrl.OpenTable,
                     method: 'POST',
                     contentType: "application/json",
-                    data: JSON.stringify({
-                        tableNo: $target.attr('tableno'),
-                        ageperiod: (function () {
-                            var str = '';
-                            dom.openDialog.find('.age-type>div').each(function () {
-                                var me = $(this);
-                                if (me.hasClass('active')) {
-                                    str += me.index() + 1;
-                                }
-                            });
-                            return str;
-                        })(),
-                        username: serverName,
-                        manNum: maleNum,
-                        womanNum: femailNum
-                    }),
+                    data: JSON.stringify(params),
                     dataType: 'json',
                     success: function (res) {
+                        Log.send(2, '用户开台:' + JSON.stringify(res));
                         if (res.code === '0') {
                             var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=' + $('.J-tableware-num').val() + '&tableno=' + encodeURIComponent(encodeURIComponent($target.attr('tableno'))) + '&type=in';
                             dom.openDialog.modal('hide');
@@ -251,8 +255,8 @@ var MainPage = {
             }
             ;
             if (me.hasClass('J-btn-clear')) {
-                Log.send(2, '点击清机/结业按钮');
                 var aUserid = utils.storage.getter('aUserid'), orderLength = 0, str//获取登录用户
+                Log.send(2, '点击清机/结业按钮aUserid:' + aUserid);
                 $.ajax({
                     url: _config.interfaceUrl.QueryOrderInfo + '' + aUserid + '/',
                     type: "get",
@@ -260,6 +264,7 @@ var MainPage = {
                     dataType: "text",
                     success: function (data) {
                         var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
+                        Log.send(2, '点击清机/结业按钮' + JSON.stringify(data));
                         var arry = [];
                         for (var i = 0; i < data.OrderJson.length; i++) {
                             if (data.OrderJson[i].orderstatus == 0) {
@@ -394,6 +399,7 @@ var MainPage = {
                     global: false
                 })
             ).then(function (res) {
+                Log.send(2, '定时任务 后去统计信息' + JSON.stringify(res));
                 if (res.code === '0') {
                     $('.custnum').text(res.data.custnum);
                     $('.dueamount').text(res.data.dueamount);
@@ -421,6 +427,7 @@ var MainPage = {
 
     initTakeOutModal: function () {
         if(tackOUttable.length=='0'){
+            Log.send(3, '该门店还没有配置外卖台');
             utils.printError.alert('该门店还没有配置外卖台');
             return false
         }
@@ -439,6 +446,7 @@ var MainPage = {
         $(".take-out-list-normal").html(retNormal.join(''));
 
         if (ret.length === 0 && retNormal.length === 0) {
+            Log.send(3, '后台没有配置普通外卖台，请联系管理员');
             widget.modal.alert({
                 content: '<strong>后台没有配置普通外卖台，请联系管理员</strong>',
                 btnOkTxt: '',
@@ -470,6 +478,7 @@ var MainPage = {
             if($('.take-out-list-normal li').length>0){
                 tableNo = $('.take-out-list-normal').find('li').eq(0).text();
             }else {
+                Log.send(3, '后台没有配置普通外卖台，请联系管理员');
                 utils.printError.alert('后台没有配置普通外卖台，请联系管理员');
                 return false
             }
@@ -478,6 +487,13 @@ var MainPage = {
             tableNo = $('.take-out-list').find('li.active').text();
         }
 
+        Log.send(2, '外卖开台:' + JSON.stringify({
+                tableNo: tableNo,
+                ageperiod: '',
+                username: utils.storage.getter('aUserid'),
+                manNum: 0,
+                womanNum: 0
+            }));
         $.ajax({
             url: _config.interfaceUrl.OpenTable,
             method: 'POST',
@@ -491,6 +507,7 @@ var MainPage = {
             }),
             dataType: 'json'
         }).then(function (res) {
+            Log.send(2, '外卖开台返回:' + JSON.stringify(res));
             if (res.code === '0') {
                 $.ajax({
                     url: _config.interfaceUrl.SetOrderTakeout + res.data.orderid + '/',
@@ -498,6 +515,7 @@ var MainPage = {
                     dataType: 'text'
                 }).then(function (data) {
                     var data = JSON.parse(data.substring(12, data.length - 3));
+                    Log.send(2, '设置为外卖返回:' + JSON.stringify(data));
                     if (data.Data === '1') {
                         var url = "../views/orderdish.jsp?orderid=" + res.data.orderid + '&personnum=0&tableno=' + encodeURIComponent(encodeURIComponent(tableNo)) + '&type=out';
                         window.location.href = url;
@@ -522,6 +540,10 @@ var MainPage = {
 
     //验证用户
     verifyUser: function (serverName, cb) {
+        Log.send(2, '验证用户:' + JSON.stringify({
+                loginType: '030101',
+                username: serverName
+            }));
         $.ajax({
             url: _config.interfaceUrl.VerifyUser,
             method: 'POST',
@@ -532,6 +554,7 @@ var MainPage = {
             }),
             dataType: 'json',
             success: function (res) {
+                Log.send(2, '验证用户返回:' + JSON.stringify(res));
                 if (res.code === '0') {
                     var alertModal = widget.modal.alert({
                         cls: 'fade in',
@@ -642,6 +665,7 @@ var MainPage = {
              }),*/
             dataType: 'json',
             success: function (res) {
+                Log.send(2, '获取所有餐台:' + JSON.stringify(res));
                 var allTables = []//全部餐台（不包括外卖和咖啡外卖台以及咖啡台）
                 var coffeeTable=[]//咖啡餐台
                 tackOUttable = []//全部外卖和咖啡外卖台
@@ -784,7 +808,7 @@ var MainPage = {
                 }
                 else {//清机成功
                     utils.reprintClear.get()//打印清机单
-                    Log.upload()
+                    Log.upload();
                     window.location = "../views/login.jsp";
                 }
             },
@@ -856,6 +880,7 @@ var MainPage = {
             $("#J-btn-checkout-dialog").modal('show')
         }
         if (Uncleandata.LocalArry.length == 0 && Uncleandata.OtherArry.length > 0) {
+            Log.send(2, '还有其他POS机未清机,请到其他POS机上先清机')
             widget.modal.alert({
                 cls: 'fade in',
                 content: '<strong>还有其他POS机未清机,<br><br>请到其他POS机上先清机</strong>',
@@ -971,14 +996,16 @@ var MainPage = {
         });
     },
     getFindUncleanPosList: function () {//获取未清机数据列表
-        var findUncleanPosList, LocalArry = [], OtherArry = []
+        var findUncleanPosList, LocalArry = [], OtherArry = [];
+
         $.ajax({
             url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
             type: "get",
             async: false,
             dataType: "text",
             success: function (data) {
-                findUncleanPosList = JSON.parse(data)
+                Log.send(2, '获取未清机数据列表:' + data);
+                findUncleanPosList = JSON.parse(data);
                 /*console.log(findUncleanPosList.detail)
                  console.log(findUncleanPosList.result)*/
                 if (findUncleanPosList.result === '0') {
@@ -1019,6 +1046,7 @@ var MainPage = {
 
         }
         if(Date.parse(new Date(endTime))-Date.parse(new Date(time))<0){
+            Log.send(2, '结业时间到了,请及时结业')
             utils.printError.alert('结业时间到了,请及时结业')
         }
     }
