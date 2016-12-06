@@ -624,7 +624,7 @@ INSERT INTO `t_b_function_url` VALUES ('6e8012b2-b2dc-11e5-8ac5-00ff59e0a7b2', '
 INSERT INTO `t_b_function_url` VALUES ('74673403-b2dc-11e5-8ac5-00ff59e0a7b2', '2944211e-b2da-11e5-8ac5-00ff59e0a7b2', '869b858a-b2db-11e5-8ac5-00ff59e0a7b2');
 INSERT INTO `t_b_function_url` VALUES ('7a723946-b2dc-11e5-8ac5-00ff59e0a7b2', '47d8258a-b2c6-11e5-8ac5-00ff59e0a7b2', '669c400c-b2db-11e5-8ac5-00ff59e0a7b2');
 
-INSERT INTO `t_b_padconfig` VALUES ('1', '0', '1', null,null, '1', '1', 'http://member.candaochina.com', null, '1', '1', '1', '1', '1', '1', '1', '60', '1', '5', null, null, null, null, null, 1, null);
+INSERT INTO `t_b_padconfig` VALUES ('1', '0', '1', null,null, '1', '1', 'http://chainstore.candaochina.com/newspicyway/', null, '1', '1', '1', '1', '1', '1', '1', '60', '1', '5', null, null, null, null, null, 1, null);
 commit;
 -- 
 -- Enable foreign keys
