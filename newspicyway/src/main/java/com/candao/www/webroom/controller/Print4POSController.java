@@ -69,7 +69,7 @@ public class Print4POSController {
             "application/json;charset=UTF-8"})
     @ResponseBody
     public String getOrderInfo(@PathVariable("aUserId") String aUserId, @PathVariable("orderId") String orderId,
-                               @PathVariable("printType") String printType, @PathVariable("deviceid") String deviceid) {
+                               @PathVariable("printType") String printType, @PathVariable("deviceid") String deviceid,@RequestBody String json) {
         String res = null;
         boolean flag = true;
         String msg = "";
@@ -80,6 +80,12 @@ public class Print4POSController {
                 //梁冬接口
                 Map<String, Object> params = new HashMap<>();
                 params.put("orderid", orderId);
+                if (!StringUtils.isEmpty(json)) {
+                    JSONObject temp = JSON.parseObject(json);
+                    if (temp.containsKey("itemid")) {
+                        params.put("itemid", temp.get("itemid"));
+                    }
+                }
                 Map<String, Object> map = orderService.calGetOrderInfo(params);
 //                // dataserver接口
 //                res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
