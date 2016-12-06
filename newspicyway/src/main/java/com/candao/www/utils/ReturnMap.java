@@ -27,7 +27,15 @@ public class ReturnMap {
 		returninfo.put("data", datalist);
     	return returninfo;
     }
-    
+    public static Map<String,Object> getReturnMap(int flag,String code,String msg,Map<String,Object> map){
+    	Map<String,Object> returninfo = new HashMap<String,Object>();
+    	returninfo.put("flag",flag);
+		returninfo.put("code", code);
+		returninfo.put("desc", msg);
+		returninfo.put("data", map);
+    	return returninfo;
+    }
+
     public static Map<String, Object> getSuccessMap(String msg, Object object){
     	Map<String,Object> returninfo = new HashMap<String,Object>();
 		returninfo.put("code", "0");

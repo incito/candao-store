@@ -33,7 +33,7 @@
 					<form action="">
 						<div class="form-group form-group-base">
 							<span class="form-label">姓名:</span>
-							<input value=""  name="phone"  type="text" class="form-control base_membername_input" autocomplete="off">
+							<input value=""  name="phone" validType='noPecial2' maxlength="20"  type="text" class="form-control base_membername_input" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base"  style="height: 38px; margin-top: -10px;">
 							<span class="form-label">性别:</span>

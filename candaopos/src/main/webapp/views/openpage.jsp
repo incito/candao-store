@@ -127,7 +127,7 @@
 						<form action="">
 							<div class="form-group" style="margin-top: 8px;">
 								<span class="span-user">开业授权:</span>
-								<input id="manager_num" value="" name="manager_num" type="text" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
+								<input id="manager_num" value="" name="manager_num" type="text" class="form-control x319 in" autocomplete="off" autofocus><!-- readonly="readonly" -->
 							</div>
 							<div class="form-group" style="margin-top: 8px;">
 								<span class="span-user">权限密码:</span>

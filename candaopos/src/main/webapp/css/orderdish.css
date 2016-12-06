@@ -100,7 +100,7 @@ footer{
   	display: inline-block;
 }
 .main-div .nav-type-prev span, .main-div .nav-type-next span{
-	color: #000000;
+	color: #333;
 }
 .main-div .nav-type-next{
 	float: right;
@@ -288,6 +288,7 @@ input[type=search] {
 }
 .btn.disabled{
 	pointer-events: none;
+	opacity: .65!important;
 }
 .main-div .main-oper-btns .btn.place-order{
 	float: right;
@@ -434,14 +435,16 @@ input[type=search] {
 .default-dialog .taste ul {
 	padding: 0;
 	margin: 0;
+	align-items: stretch;
+	flex-direction: row;
+	display: flex;
 }
 .default-dialog .taste ul li{
 	text-align: center;
   	display: inline-block;
   	width: 80px;
-  	height: 40px;
   	background: #FFFFFF;
-  	padding-top: 10px;
+  	padding: 10px 0;
   	margin-right: 4px;
 }
 .input-dialog .modal-dialog{
@@ -589,4 +592,23 @@ input[type=search] {
 	box-shadow: 0px 1px 0px 0px #C64300;
 	border-radius: 3px;
 	color: #FFFFFF;
+}
+
+.hori-lf-div {
+	width: 305px;
+	float: left;
+}
+.hori-lf-div span {
+	position: absolute;
+	font-size: 14px;
+	color: #B0B0B0;
+	margin: 8px 0 0 8px;
+}
+.hori-lf-div input {
+	height: 38px;
+	margin-bottom: 18px;
+	padding-left: 85px;
+}
+.hori-rf-div {
+	float:right;
 }

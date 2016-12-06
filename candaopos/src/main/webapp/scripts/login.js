@@ -2,7 +2,10 @@
  * Created by Alex on 16/9/20.
  */
 'use strict';
+$(function () {
+    $('input:text:first').focus();
 
+});
 var activeinputele;
 
 var dom = {
@@ -11,7 +14,23 @@ var dom = {
     user: $('#user'),
     thechangeSubmit: $('#J-thechange-submit')
 };
+/*$(document).keydown(function(event){
+    if(event.keyCode==13){
+        $('.btn-primary').each(function () {
+            var me=$(this);
+            if(me.hasClass('J-login-form-submit')){
+                me.click();
+                return false
+            }
+            if(me.attr('id')=='J-thechange-submit'){
+                me.click();
+                return false
+            }
 
+        })
+
+    }
+});*/
 var Login = {
     init: function(){
         /*绑定虚拟键盘*/
@@ -23,6 +42,8 @@ var Login = {
         this.setDefaultLoginForm();
 
         //this.getBranchInfo();
+
+
     },
 
     bindEvent: function(){
@@ -59,7 +80,7 @@ var Login = {
                     if(res.code === '0') {
                         utils.storage.setter('fullname', res.data.fullname);
                         utils.storage.setter('loginTime', res.data.loginTime);
-                        utils.storage.setter('aUserid', dom.user.val());
+                        utils.storage.setter('aUserid',  $.trim(dom.user.val()));
                         utils.storage.setter('aUserid', dom.user.val(),1)//设置sessionStorage
                         that.setUserRight($.trim(dom.user.val()));
                         that.getBranchInfo();

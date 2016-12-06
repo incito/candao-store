@@ -26,7 +26,7 @@
                     <form action="" >
                         <div class="form-group form-group-base">
                             <span class="form-label">员工编号:</span>
-                            <input value=""id="user"  name="uesr"  type="text" class="form-control" autocomplete="off">
+                            <input value=""id="user"  name="uesr"  type="text" class="form-control" autocomplete="off" autofocus>
                         </div>
                         <div class="form-group form-group-base">
                             <span class="form-label">权限密码:</span>
@@ -71,18 +71,20 @@
     $(function () {
         $('#user').removeAttr('readonly').val('');
         $("#pagestitle").text(title);
+        impower.int();
         if(usernameDisble==1){
             $('#user').attr('disabled','disabled').val(utils.storage.getter('aUserid'))
+            $('#psd').focus()
         }
         else if(usernameDisble==2){//结业清机
             $('#user').attr('disabled','disabled').val(user_Nmae)
+            $('#psd').focus()
 
         }
 
         else {
-            $('#user').removeAttr('readonly').val('');
+            $('#user').removeAttr('readonly').val('').focus();
         }
-        impower.int();
     });
     var impower={
         int:function () {

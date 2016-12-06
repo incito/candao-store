@@ -54,4 +54,6 @@ public interface TableAreaService {
   public List<Map<String,Object>> getTableAreaTag();
 public int updateListOrder(List<TbTableArea> tbTableArea);
 public List<Map<String,Object>> findTableCountAndAreaname();
+
+ public void delTablesAndArea(String areaid);
 }

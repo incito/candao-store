@@ -4,7 +4,7 @@
     <!-- 小费设置 -->
 
     <select id="tipSet" parameterType="java.util.Map">
-         insert into newspicyway.t_b_tip 
+         insert into t_b_tip
          (waiter_number, receivables, orderid,branchid,insertime)
           values 
           (#{waiterNo,jdbcType=VARCHAR,mode=IN},
@@ -15,7 +15,7 @@
     </select>
     <!-- 修改小费 -->
     <update id="tipUpdate" parameterType="java.util.Map">
-           UPDATE newspicyway.t_b_tip t 
+           UPDATE t_b_tip t
   			set 
   			t.receivables=#{receivables}
   			where 
@@ -28,7 +28,7 @@
          
   			select c.name waiterName,t.waiter_number waiter_number, t.receivables receivables 
   				from 
-  			newspicyway.t_b_tip t, newspicyway.t_b_employee b, newspicyway.t_b_user c
+  			t_b_tip t, t_b_employee b, t_b_user c
   				where
   			t.waiter_number = b.job_number 
   				and t.branchid = b.branch_id
@@ -56,7 +56,7 @@
     </delete>
     <!-- 结算小费 -->
     <select id="tipBilling" parameterType="java.util.Map">
- 	UPDATE newspicyway.t_b_tip t 
+ 	UPDATE t_b_tip t
  		 set 
  	 t.paid=#{paid}
   		where
@@ -68,7 +68,7 @@
     <select id="tipList" parameterType="java.util.Map" resultType="java.util.Map">
 		select c.name waiterName,count(1) serviceCount, round(sum(paid),2) tipMoney 
   			from 
-  		newspicyway.t_b_tip t, newspicyway.t_b_employee b, newspicyway.t_b_user c
+  		t_b_tip t, t_b_employee b, t_b_user c
   			where
   		t.waiter_number = b.job_number  and t.paid >0
   			and t.branchid = b.branch_id
@@ -87,13 +87,13 @@
     <select id="tipListByTime" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
   SUM(paid)    tipMoney
-FROM newspicyway.t_b_tip t
+FROM t_b_tip t
 WHERE t.insertime BETWEEN#{startTime} and #{endTime}
 	</select>
-	<select id="getTipMoney" parameterType="java.util.Map" resultType="String">
-		SELECT
-		paid as  tipMoney
-		FROM t_b_tip t
-		WHERE t.orderid=#{orderId} and branchid=#{branchId} limit 1
-	</select>
+     <select id="getTipMoney" parameterType="java.util.Map" resultType="String">
+            SELECT
+            case #{paid} WHEN  1 then paid ELSE  receivables END  as  tipMoney
+            FROM t_b_tip t
+            WHERE t.orderid=#{orderId} and branchid=#{branchId} limit 1
+        </select>
 </mapper>

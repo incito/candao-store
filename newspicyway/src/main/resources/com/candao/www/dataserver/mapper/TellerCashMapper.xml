@@ -51,14 +51,47 @@
         where b.begintime&gt;=#{beginTime,jdbcType=VARCHAR}
     </select>
     <select id="selectItemMoney" resultType="String" parameterType="String">
-        select IFNULL(sum(a.orderprice*a.dishnum*(case when a.discountrate&lt;=0 THEN 1 ELSE a.discountrate END)),0)
-        FROM t_order_detail a INNER JOIN t_order b ON(a.orderid=b.orderid)
-        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5
+    	SELECT IFNULL( sum(a.orignalprice * a.dishnum), 0 )
+         FROM t_order_detail a INNER JOIN t_order b ON (a.orderid = b.orderid)
+         WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND  b.orderstatus=3 AND a.STATUS&lt;&gt;5 and ((ismaster=1 AND  a.dishtype!=2) OR (ismaster=0 AND  a.dishtype=2))
     </select>
-    <select id="selectPreferenceMoney" resultType="String" parameterType="String">
-        SELECT IFNULL(SUM(ymamount),0)
-        FROM (SELECT ymamount FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid)
-        WHERE b.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a.STATUS &lt;&gt; 5 GROUP BY b.orderid) t
+    <select id="selectPreferenceMoney" resultType="Map" parameterType="Map">
+        SELECT (SUM(c1)-SUM(c2)) as taocanyouhui,(SUM(c3)-SUM(c4))as huiyuanyouhui,SUM(c5)as huiyuanxuzeng,
+          SUM(c6)as huiyuanjifen,(SUM(c7)-SUM(c11) )as youmian,SUM(c8)as moling,SUM(c9)as sishewuru,SUM(c10) as zengcai,SUM(c11) as yazuoyouhui FROM(
+        -- 套餐品项价
+        SELECT IFNULL(SUM(a.orignalprice*a.dishnum), 0) as c1,0 as c2,0 as c3,0 as c4,0 as c5,0 as c6,0 as c7,0 as c8,0 as c9,0 as c10,0 as c11 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=0 AND a.dishtype=2
+        UNION ALL
+        -- 套餐外壳价
+        SELECT 0,IFNULL(SUM(a.orignalprice*a.dishnum), 0),0,0,0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1 AND a.dishtype=2
+        UNION ALL
+        -- 单品、套餐原价
+        SELECT 0,0,IFNULL(SUM(a.orignalprice*a.dishnum), 0),0,0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1  AND pricetype!=1
+        UNION ALL
+        -- 单品、套餐会员价
+        SELECT 0,0,0,IFNULL(SUM(a.orderprice*a.dishnum), 0),0,0,0,0,0,0,0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.ismaster=1  AND pricetype!=1
+        UNION ALL
+        -- 会员虚增
+        SELECT 0,0,0,0,IFNULL(SUM(a.inflated), 0),0,0,0,0,0,0 FROM t_order_member a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a.valid=0
+        UNION ALL
+        -- 会员积分消费
+        SELECT 0,0,0,0,0,IFNULL(SUM(a.payamount), 0),0,0,0,0,0 FROM t_settlement_detail a RIGHT JOIN t_order b  on (a.orderid=b.orderid) where b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) AND b.orderstatus = 3 AND a.payway =11
+        UNION ALL
+        -- 优免
+        SELECT 0,0,0,0,0,0,IFNULL(SUM(ymamount), 0),0,0,0,0 FROM t_order b WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3
+        UNION ALL
+        -- 抹零
+        SELECT 0,0,0,0,0,0,0,IFNULL(SUM(a.payamount), 0),0,0,0 FROM t_settlement_detail a RIGHT JOIN t_order b  on (a.orderid=b.orderid) where b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a.payway =7
+        UNION ALL
+        -- 四舍五入
+        SELECT 0,0,0,0,0,0,0,0,IFNULL(SUM(a.payamount), 0),0,0 FROM t_settlement_detail a RIGHT JOIN t_order b  on (a.orderid=b.orderid) where b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a.payway =20
+        UNION ALL
+
+        -- 赠菜 pricetype=1 orderprice=0
+        SELECT 0,0,0,0,0,0,0,0,0,IFNULL(SUM(a.orignalprice*a.dishnum), 0),0 FROM t_order_detail a RIGHT OUTER JOIN t_order b ON (a.orderid = b.orderid) WHERE b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a. STATUS != 5 AND a.pricetype=1 and a.orderprice=0
+        UNION ALL
+        -- 雅座优惠
+        SELECT 0,0,0,0,0,0,0,0,0,0,IFNULL(SUM(a.payamount), 0) FROM t_settlement_detail a RIGHT JOIN t_order b  on (a.orderid=b.orderid) where b.orderid IN ( SELECT orderid FROM t_settlement WHERE userid=#{userId} and isclear=0 AND inserttime>=#{beginTime,jdbcType=TIMESTAMP} ) AND b.orderstatus = 3 AND a.payway =12
+        ) t
     </select>
     <select id="selectRemoveMoney" resultType="String" parameterType="String">
        SELECT IFNULL(SUM(b.payamount),0)
@@ -66,13 +99,13 @@
        WHERE a.orderid IN (SELECT orderid FROM t_settlement WHERE userid=#{userId} AND inserttime>=#{beginTime,jdbcType=TIMESTAMP}) and  b.payway=7
     </select>
     <select id="selectTotalMoney" resultType="String" parameterType="Map">
-        select IFNULL(sum(case when b.payway='7' then 0-b.payamount else b.payamount end) ,0) as payamount  from t_settlement a
+        select IFNULL(sum(b.payamount) ,0) as payamount  from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
         where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and a.userid=#{userId} and a.isclear=0
     </select>
     <select id="selectIncludedTotalMoney" resultType="String" parameterType="String">
-        select IFNULL(sum(case when b.payway='7' then 0-b.payamount else b.payamount end),0) as payamount from t_settlement a
+        select IFNULL(sum(b.payamount ),0) as payamount from t_settlement a
         inner join t_settlement_detail b on(a.orderid=b.orderid)
         inner join t_order c on(a.orderid=c.orderid)
         where  a.inserttime>=#{beginTime,jdbcType=TIMESTAMP} and b.payamount!=0 and b.payway in(select itemid from v_revenuepayway)  and a.userid=#{userId} and a.isclear=0

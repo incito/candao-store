@@ -1,13 +1,6 @@
 package com.candao.www.printer.listener;
 
-import com.candao.common.utils.Constant;
-import com.candao.common.utils.Constant.ListenerType;
-import com.candao.print.entity.PrintData;
-import com.candao.print.entity.PrintObj;
-import com.candao.print.listener.QueueListener;
-import com.candao.print.listener.template.ListenerTemplate;
-import com.candao.www.printer.v2.Printer;
-import com.candao.www.printer.v2.PrinterManager;
+import java.lang.reflect.Array;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +8,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import com.candao.common.utils.Constant;
+import com.candao.common.utils.Constant.ListenerType;
+import com.candao.print.entity.PrintData;
+import com.candao.print.entity.PrintObj;
+import com.candao.print.listener.QueueListener;
+import com.candao.print.listener.template.ListenerTemplate;
+import com.candao.www.dataserver.util.StringUtil;
+import com.candao.www.printer.v2.Printer;
+import com.candao.www.printer.v2.PrinterManager;
 
 /**
  * Created by Administrator on 2016-6-13.
@@ -79,9 +82,19 @@ public class IPQueueListener implements ApplicationContextAware {
     }
 
     private void print(final Object[] src, final PrintObj obj) throws Exception {
-        // TODO
-        // System.out.println("2333333333333333333333333333333");
-        // System.out.println(JacksonJsonMapper.objectToJson(src));
+        Object[] buffer = null;
+
+        if (!StringUtil.isEmpty(obj.getRePeatID())){
+            Class type = src.getClass();
+            int arrayLength = Array.getLength(src);
+            buffer = (Object[])Array.newInstance(src.getClass().getComponentType(), arrayLength + 1);
+            System.arraycopy(src, 0, buffer, 1, arrayLength);
+            com.candao.www.printer.v2.PrintData<String> uuid = new com.candao.www.printer.v2.PrintData<>();
+            uuid.setData(obj.getRePeatID());
+            buffer[0] = uuid;
+        } else {
+            buffer = src;
+        }
         String ipAddress = obj.getCustomerPrinterIp();
         String backupAddress = "";
         if (ipAddress.contains(",")) {
@@ -95,7 +108,7 @@ public class IPQueueListener implements ApplicationContextAware {
             log.error("打印失败，找不到目的打印机！订单号：" + obj.getOrderNo());
             return;
         }
-        printer.print(src, backupAddress);
+        printer.print(buffer, backupAddress);
     }
 
     @Override

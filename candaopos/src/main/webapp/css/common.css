@@ -633,7 +633,7 @@ footer{
 	color:#fff;
 }
 .spinner {
-	width: 150px;
+	width: 500px;
 	height: 60px;
 	text-align: center;
 	font-size: 10px;
@@ -642,7 +642,7 @@ footer{
 	left:50%;
 	top:50%;
 	margin-top: -30px;
-	margin-left: -75px;
+	margin-left: -250px;
 }
 .spinner p{
 	display: block;
@@ -734,4 +734,42 @@ footer{
 .printError .modal-body {
 	padding: 20px 20px;
 	text-align: center;
+}
+
+.logo {
+	width: 70px;
+	height: 30px;
+	background: url("../images/logo.png");
+	background-size: 100% 100%;
+	overflow: hidden;
+	text-indent:-999rem;
+	position: absolute;
+	left:10px;
+	top:14px;
+}
+.toggle-full {
+	position: absolute;
+	right: 100px;
+	cursor: pointer;
+	border-radius: 5px;
+	border: 1px solid #fff;
+	display: inline-block;
+	height: 40px;
+	margin: 10px;
+	line-height: 40px;
+	font-size: 16px;
+	padding: 0 10px;
+}
+.exit-sys{
+	position: absolute;
+	right: 0;
+	cursor: pointer;
+	border-radius: 5px;
+	border: 1px solid #fff;
+	display: inline-block;
+	height: 40px;
+	margin: 10px;
+	line-height: 40px;
+	font-size: 16px;
+	padding: 0 10px;
 }

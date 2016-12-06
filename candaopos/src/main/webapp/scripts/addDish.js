@@ -14,7 +14,8 @@ var dom = {
 	noteDialog: $('#note-dialog'),//备注对话框
 	combodishialog: $('#combodish-dialog'),//套餐,
 	selCompanyDialog: $('#selCompany-dialog'),
-	guadanDialog: $("#guadan-dialog")
+	guadanDialog: $("#guadan-dialog"),
+	lscDialog: $('#lsc-dialog')
 };
 
 var consts = {
@@ -28,7 +29,6 @@ var consts = {
 var AddDish = {
 
 	init: function () {
-
 		dishCartMap = new utils.HashMap();
 		dishesMap = new utils.HashMap();
 
@@ -97,17 +97,34 @@ var AddDish = {
 		//菜品分类向左向右按钮
 		$(".nav-dishtype-next").click(function(){
 			var count = $dishType.find( "li.nav-dish-type").length;
+
 			if (flag_prev < count - 6) {
-				$dishType .find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
-				$dishType .find("li.nav-dish-type").eq(flag_prev+1).click();
+				$dishType.find("li.nav-dish-type").eq(flag_prev).css("margin-left", "-16.66%");
+				if(parseInt($dishType.find("li.nav-dish-type.active").css('margin-left'))  < 0) {
+					$dishType.find("li.nav-dish-type").eq(flag_prev+1).click();
+				}
 				flag_prev++;
+				$(".nav-dishtype-prev").removeClass('disabled');
+				console.log(flag_prev);
+				if(flag_prev === (count - 6)) {
+					$(this).addClass('disabled');
+				}
 			}
+
 		});
 		$(".nav-dishtype-prev").click(function(){
-			if(flag_prev>=1){
+			if(flag_prev>0){
 				$dishType.find("li.nav-dish-type").eq(flag_prev-1).css("margin-left","0");
-				$dishType.find("li.nav-dish-type").eq(flag_prev-1).click();
+
+				if($dishType.find("li.nav-dish-type.active").index() ===  (flag_prev + 5)) {
+					$dishType.find("li.nav-dish-type").eq($dishType.find("li.active").index() - 1).click();
+				}
 				flag_prev--;
+				console.log(flag_prev);
+				$(".nav-dishtype-next").removeClass('disabled');
+				if(flag_prev === 0) {
+					$(this).addClass('disabled');
+				}
 			}
 		});
 
@@ -156,6 +173,67 @@ var AddDish = {
 							if(dish.imagetitle.length > 0) {
 								that.initNoteDialog(2, dish);
 								return false;
+							}
+
+							//临时菜
+							if($('li[itemid="' + dish.itemid + '"] span').text() === "pos专用菜品"  && dish.title === "临时菜") {
+								dish.temporary = '1';
+								dom.lscDialog.find('input').val('');
+								dom.lscDialog.off('click','.J-btn-submit').on('click','.J-btn-submit', function(){
+									var  price = $.trim(dom.lscDialog.find('.price').val());
+									var  dishnum = $.trim(dom.lscDialog.find('.dishnum').val());
+									if($.trim(dom.lscDialog.find('.note-name').val()).length === 0) {
+										widget.modal.alert({
+											content:'<strong>菜名不能为空,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if(price.length === 0 || parseFloat(price) === 0) {
+										widget.modal.alert({
+											content:'<strong>价格(元)不能为空或者为零,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if(!(/^[0-9]{1,4}$/g.test(price) || /^[0-9]{1,4}\.[0-9]{1,2}$/g.test(price) || /^[0-9]{1,4}\.$/g.test(price))){
+										widget.modal.alert({
+											content:'<strong>请输入正确的价格,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if(dishnum.length === 0 || parseFloat(dishnum) === 0) {
+										widget.modal.alert({
+											content:'<strong>数量(份)不能为空或者为零,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+									if(!(/^[0-9]{1,2}$/g.test(dishnum) || /^[0-9]{1,2}\.[0-9]{1,2}$/g.test(dishnum) || /^[0-9]{1,2}\.$/g.test(dishnum))){
+										widget.modal.alert({
+											content:'<strong>请输入正确的数量,请检查!</strong>',
+											btnOkTxt: '',
+											btnCancelTxt: '确定'
+										});
+										return false;
+									}
+
+									dish.dishnum =  dom.lscDialog.find('.dishnum').val();
+									dish.orderprice = dish.orignalprice =  dom.lscDialog.find('.price').val();
+									dish.price = parseFloat(parseFloat(dish.dishnum) * parseFloat(dish.orderprice)).toFixed(2);
+									dish.taste = dish.orignalprice =  $.trim(dom.lscDialog.find('.note-name').val());
+
+									that.addDish(dish);
+
+									dom.lscDialog.modal('hide');
+								});
+								dom.lscDialog.modal('show');
+								return  false;
 							}
 
 							//普通菜品
@@ -431,10 +509,18 @@ var AddDish = {
 
 				return  status;
 			})();
-			if($('.fishpot-dialog .taste li.active').length > 0 && numInpStatus) {
-				btn.removeClass('disabled');
+			if($('.fishpot-dialog .taste li').length > 0) {
+				if($('.fishpot-dialog .taste li.active').length > 0 && numInpStatus) {
+					btn.removeClass('disabled');
+				} else {
+					btn.addClass('disabled');
+				}
 			} else {
-				btn.addClass('disabled');
+				if(numInpStatus) {
+					btn.removeClass('disabled');
+				} else {
+					btn.addClass('disabled');
+				}
 			}
 		};
 
@@ -529,15 +615,14 @@ var AddDish = {
 
 		var _setSubmitStatus = function(){
 			var btn = dom.combodishialog.find('.btn-save');
-			if(dom.combodishialog.find('.group-title').length === dom.combodishialog.find('.fited').length ) {
+			if(dom.combodishialog.find('.group-title').length === 0 || (dom.combodishialog.find('.group-title').length === dom.combodishialog.find('.fited').length) ) {
 				btn.removeClass('disabled');
 			} else {
 				btn.addClass('disabled');
 			}
 		};
-
 		dom.combodishialog.find('.J-note').val('');
-		dom.combodishialog.find('.dishname').text(dish.title);
+		dom.combodishialog.find('.dishname').text(dish.title.split('#')[0]);
 
 		$.each(data.rows[0].combo, function(k, v){
 			comboStr += '<h4 class="group-title" groupid="' + v.id + '" startnum="' + v.startnum + '" endnum="' + v.endnum + '">凉菜（' + v.startnum + '选' + v.endnum + '）已选<span class="selnum">0</span></h4>';
@@ -696,6 +781,8 @@ var AddDish = {
 		});
 
 		dom.combodishialog.modal('show');
+
+		_setSubmitStatus();
 	},
 
 	//获取菜品分类
@@ -717,9 +804,14 @@ var AddDish = {
 							that.renderDishes(v.itemid);
 						}
 
-						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b>' + v.itemdesc + '</li>';
+						htm += '<li class="nav-dish-type ' + cla + '" itemid="' + v.itemid + '"><b></b><span>' + v.itemdesc.split('#')[0] + '</span></li>';
 					});
 					$(".nav-dish-types").html(htm);
+					if($(".nav-dish-types").find( "li.nav-dish-type").length > 6) {
+						$(".nav-dishtype-prev").addClass('disabled');
+					} else {
+						$(".nav-dishtype-prev, .nav-dishtype-next").addClass('disabled');
+					}
 
 				} else {
 					widget.modal.alert({
@@ -759,10 +851,10 @@ var AddDish = {
 
 					if(idCondition && (v.py.indexOf(searchKey.toUpperCase()) !== -1)) {
 						oBuffer.append('<div class="dish-info" pid="' + key + '">'
-							+ '<div class="dish-name">' + v.title
+							+ '<div class="dish-name">' + v.title.split('#')[0]
 							+ '</div>'
 							+ '<hr>'
-							+ '<div class="dish-price">' + (v.price === undefined ? '' : v.price) + '/' + v.unit + '</div>'
+							+ '<div class="dish-price">' + (v.price === undefined ? '' : v.price) + '/' + v.unit.split('#')[0] + '</div>'
 							+ '</div>');
 					}
 				});
@@ -830,9 +922,15 @@ var AddDish = {
 
 		var dish_avoids = dish.dish_avoids;
 		var taste = dish.taste;
-		var showname = dishname;
+		var showname = utils.string.cutString(dishname.split('#')[0],14);
+
 		if(taste != null && taste != ""){
-			showname = showname+"("+taste+")";
+			if(dish.temporary === '1') {
+				showname = "("+taste+")" + showname;
+			} else {
+				showname = showname+"("+taste+")";
+			}
+
 		}
 		var avoidStr = "";
 		if(dish_avoids != null && dish_avoids !=""){
@@ -854,13 +952,22 @@ var AddDish = {
 		$("#sel-dish-table tbody tr").removeClass("selected");
 		//单品
 		if(dishtype === 0) {
-
-			tr = "<tr class='selected' cid='" + cid + "'>"
-				+ "<td class='dishname' name='"+dishname+"' >"
-				+ showname
-				+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
-				+ price
-				+ "</td></tr>";
+			//临时菜
+			if(dish.temporary === '1') {
+				tr = "<tr class='selected' cid='" + cid + "'>"
+					+ "<td class='dishname' name='"+dishname+"' >"
+					+ showname
+					+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
+					+ price
+					+ "</td></tr>";
+			} else {
+				tr = "<tr class='selected' cid='" + cid + "'>"
+					+ "<td class='dishname' name='"+dishname+"' >"
+					+ showname
+					+ "</td><td class='num'>"+dishnum+"</td><td class='price'>"
+					+ price
+					+ "</td></tr>";
+			}
 		}
 		//鱼锅
 		else if(dishtype === 1) {
@@ -871,7 +978,7 @@ var AddDish = {
 				+ price
 				+ "</td></tr>";
 			$.each(dish.dishes, function(k, v){
-				tr += "<tr cid='" + cid + "' groupid='" +  dish.groupid + "'>"
+				tr += "<tr cid='" + cid + "' ispot='" + v.ispot + "' dishid='" +  v.dishid + "'  groupid='" +  dish.groupid + "'>"
 					+ "<td class='dishname' name='"+ v.dishname+"' >"
 					+ v.dishname
 					+ "</td><td class='num'>"+ v.dishnum+"</td><td class='price'>"
@@ -1012,7 +1119,7 @@ var AddDish = {
 
 		if(dish !== undefined) {
 			//菜品信息
-			ret.push('<div class="dish-info"><p class="p1"><span id="note-dishname">' + (dish.title || dish.dishname) + '</span> <span id="note-price" style="margin-left: 100px;">' + dish.price + '</span>元</p></div>');
+			ret.push('<div class="dish-info"><p class="p1"><span id="note-dishname">' + (dish.title.split('#')[0] || dish.dishname.split('#')[0]) + '</span> <span id="note-price" style="margin-left: 100px;">' + dish.price + '</span>元</p></div>');
 			//口味
 			if(tasts.length > 0) {
 				ret.push('<div class="taste"><h6 style="font-weight: bold; font-size: 16px">选择口味</h6><ul>');
@@ -1137,10 +1244,18 @@ var AddDish = {
 				var cid = dom.noteDialog.attr('cid');
 				var dish = dishCartMap.get(cid);
 				var dishname = dish.title || dish.dishname;
-				var showname = dishname;
+
+				var showname = utils.string.cutString(dishname.split('#')[0],14);
 				var taste = $("#note-dialog .taste ul li.active").text().trim();
+				if(dish.temporary === '1') {
+					taste = dish.taste;
+				}
 				if(taste.length > 0){
-					showname += "("+taste+")";
+					if(dish.temporary === '1') {
+						showname = "("+taste+")" + showname;
+					} else {
+						showname = showname+"("+taste+")";
+					}
 				}
 				if(note1.length > 0) {
 					showname += "("+note1+")";
@@ -1231,7 +1346,7 @@ var AddDish = {
 			var row = {
 				"printtype": '0',
 				"pricetype": pricetype,//0：普通 1：赠菜
-				"orderprice": type === 1 ? '0' : dish.price,//菜品价格
+				"orderprice": type === 1 ? '0' : dish.price,//菜品单价
 				"orignalprice": dish.price,//菜品单价
 				"dishid": dish.dishid,
 				"userName": user,
@@ -1250,6 +1365,15 @@ var AddDish = {
 				"freeauthorize": freeauthorize, //赠菜授权人工号
 				"freereason": freereason, //赠菜原因
 			};
+
+			if(dish.temporary === '1') {
+				console.log(dish);
+				row = $.extend(row,{
+					"dishnum":  parseFloat(parseFloat(dish.dishnum) * parseFloat(dish.orderprice)).toFixed(2),
+					"orderprice": type === 1 ? '0' : '1',//菜品价格
+					"orignalprice": '1'
+				});
+			}
 			//如果是鱼锅
 			if(dish.dishtype === 1) {
 				row = $.extend(row,{
@@ -1334,9 +1458,10 @@ var AddDish = {
 			}),
 			dataType: 'json',
 		}).then(function(res){
+
 			if (res.code === '0') {
 				//首次点菜 && 餐具设置收费 && 堂食
-				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in') {
+				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in' && res.data.userOrderInfo.isFree === '0') {
 					rows.push({
 						"printtype": "0",
 						"pricetype": 0,//0：普通 1：赠菜
@@ -1387,12 +1512,16 @@ var AddDish = {
 								dom.guadanDialog.modal('hide');
 								var  data=JSON.parse(data.substring(12, data.length - 3));
 								if(data.Data === '1'){
-									widget.modal.alert({
+									var modalIns = widget.modal.alert({
 										content:'<strong>设置外卖挂单成功,挂单单号:[' + consts.orderid  + ']</strong>',
+										btnCancelTxt: '',
 										btnOkCb: function(){
 											window.location.href = "../views/main.jsp"
 										}
 									});
+									$('#' + modalIns.id).find('.close').click(function(){
+										window.location = "../views/main.jsp";
+									})
 								} else {
 									widget.modal.alert({
 										content:'<strong>设置外卖挂单失败,挂单单号:[' + consts.orderid  + ']</strong>',
@@ -1461,7 +1590,7 @@ var AddDish = {
 
 		widget.loadPage({
 			obj : "#sel-dish-table tbody tr",
-			listNum : 16,
+			listNum : 12,
 			currPage : 0,
 			totleNums : $("#sel-dish-table tbody tr").length,
 			curPageObj : "#adddish #curr-page",
@@ -1481,7 +1610,8 @@ var AddDish = {
 	 */
 	updateNum: function (){
 		if($("#sel-dish-table tbody tr.selected").length>0){
-			var cid = $("#sel-dish-table tbody tr.selected").attr("cid");
+			var $target = $("#sel-dish-table tbody tr.selected");
+			var cid = $target.attr("cid");
 			var dishname = dishCartMap.get(cid).dishname || dishCartMap.get(cid).title;
 			var dishtype = dishCartMap.get(cid).dishtype;
 			dom.numDialog.attr("cid",cid);
@@ -1500,7 +1630,7 @@ var AddDish = {
 				}
 			});
 			focusIpt = dom.numDialog.find('.J-num');
-			if(dishtype === 2 || dishtype === 1 ) {
+			if(dishtype === 2 || dishtype === 1 )  {
 				widget.modal.alert({
 					content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
 					btnOkTxt: '',
@@ -1529,7 +1659,16 @@ var AddDish = {
 		var $tr = dom.selDishable.find("tbody tr.selected");
 		var dish = dishCartMap.get($tr.attr("cid"));
 		var totalNum =dish.dishnum;
+		var dishtype = dish.dishtype;
 		var price = dish.price;
+		if(dishtype === 1 && $tr.attr('ispot') === '0') {
+			$.each(dish.dishes, function(k, v){
+				if(v.dishid === $tr.attr('dishid')) {
+					totalNum = v.dishnum;
+					price = v.price;
+				}
+			});
+		}
 		var totalPrice = this.calTotalPrice(totalNum, price);
 		$tr.find("td.price").text(totalPrice.toFixed(2));
 	},
@@ -1547,6 +1686,14 @@ var AddDish = {
 		var num = parseFloat(dish.dishnum);
 		var val = dom.numDialog.find('.J-num').val() === '' ? 0 : parseFloat(dom.numDialog.find('.J-num').val());
 
+		if(dishtype === 1 && $tr.attr('ispot') === '0') {
+			$.each(dish.dishes, function(k, v){
+				if(v.dishid === $tr.attr('dishid')) {
+					num = v.dishnum;
+				}
+			});
+		}
+
 		//修改数量
 		if(type === 0) {
 			num = val;
@@ -1556,34 +1703,57 @@ var AddDish = {
 			num--;
 		}
 
-		if(dishtype === 2 || dishtype === 1 ) {
+		if(dishtype === 2 || dishtype === 1) {
 			if(num > 0) {
-				widget.modal.alert({
-					content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
-					btnOkTxt: '',
-					btnCancelTxt: '确定'
-				});
+				if(dishtype === 2 || (dishtype === 1 && $tr.attr('ispot') === '1' ) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+					widget.modal.alert({
+						content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+					return false;
+				} else {
+					//可以修改的为鱼锅的鱼
+					$tr.find("td.num").text(num);
+					$.each(dish.dishes, function(k, v){
+						console.log(k);
+						if(v.dishid === $tr.attr('dishid')) {
+							v.dishnum = num;
+						}
+					});
+					dishCartMap.put(cid, dish);
+				}
 			} else {
-				dom.selDishable.find('[cid=' + cid  +']').remove();
+				if((dishtype === 2 && $tr.hasClass('main-combo')) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+					dom.selDishable.find('[cid=' + cid  +']').remove();
+					dishCartMap.remove(cid);
+					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
+				} else {
+					widget.modal.alert({
+						content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+						btnOkTxt: '',
+						btnCancelTxt: '确定'
+					});
+					return false;
+				}
+			}
+
+		} else {
+			if(parseFloat(num) <= 0) {
+				$tr.remove();
 				dishCartMap.remove(cid);
 				dom.selDishable.find("tbody tr").eq(0).addClass('selected');
-				this.controlBtns();
+
+			} else {
+				$tr.find("td.num").text(num);
+				dish.dishnum = num;
+				dishCartMap.put(cid, dish);
+
 			}
-			this.updateTotalAmount();
-			return false
 		}
 
-		if(parseFloat(num) <= 0) {
-			$tr.remove();
-			dishCartMap.remove(cid);
-			dom.selDishable.find("tbody tr").eq(0).addClass('selected');
-			this.controlBtns();
-		} else {
-			$tr.find("td.num").text(num);
-			dish.dishnum = num;
-			dishCartMap.put(cid, dish);
-			this.updateTotalPrice();
-		}
+		this.controlBtns();
+		this.updateTotalPrice();
 		this.updateTotalAmount();
 		dom.numDialog.modal("hide");
 	},
@@ -1732,11 +1902,11 @@ function getUuid(){
 }
 
 function goToOrder(tips){
-	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno  + '&type=' + g_eatType;
+	var url = "../views/order.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(consts.tableno )) + '&type=' + g_eatType;
 	if(tips !== undefined && tips.length > 0) {
-		url += '&tips=' + tips;
+		url += '&tips=' + encodeURIComponent(encodeURIComponent(tips));
 	}
-	window.location.href = encodeURI(encodeURI(url));
+	window.location.href = url;
 }
 
 $(document).ready(function(){

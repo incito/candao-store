@@ -122,15 +122,17 @@ public class TipService {
 
         return dao.findOne(PREFIX + ".tipListByTime", params);
     }
-    /**
+        /**
      * 查询小费
      *
-     * @param groupon
+     * @param orderId
+     * @param paid
      */
-    public String getTipMoney(String orderId) {
+    public String getTipMoney(String orderId,boolean paid) {
         Map<String,Object> params=new HashMap<>();
         params.put("orderId",orderId);
         params.put("branchId", Constant.BRANCH.BRANCH_ID);
+        params.put("paid", paid?1:0);
         return dao.get(PREFIX + ".getTipMoney", params);
     }
 

@@ -34,8 +34,9 @@ public class RunMeTask {
 		clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
 		clientInfo.setCommand("order");
 		clientInfo.setRequestType("syncCurrDay");
-		clientInfo.setData(orderService.getCurrMonDataByDay().toString());
-		logger.info("当日详情数据查询："+orderService.getCurrMonDataByDay().toString());
+		String temp = orderService.getCurrMonDataByDay().toString();
+		clientInfo.setData(temp);
+		logger.info("当日详情数据查询："+temp);
 		JSONObject requestObject = JSONObject.fromObject(clientInfo);
         String link = PropertiesUtils.getValue("cloudLink");
         HttpUtils.getHttpPost(link, requestObject);

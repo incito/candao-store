@@ -34,12 +34,18 @@ var reporting={
                 dataType: "json",
                 data:{"flag":flag},
                 success: function (data) {
+                    //console.log(data)
+                    if(data.result=='1'){
+                        utils.printError.alert(data.mag);
+                        return false
+                    }
                     var total=data.data.length,count=0,sum=0;
                     for( var i=0;i<total;i++) {
                         count+=Number(data.data[i].dishCount);
                         sum+=Number(data.data[i].totlePrice);
 
                     };
+
                     $('#getItemSellDetail .demo').pagination({
                         dataSource: data.data,
                         pageSize: 11,
@@ -50,7 +56,7 @@ var reporting={
                             var str="";
                             for( var i=0;i<data.length;i++) {
                                 str+='<tr>';
-                                str+='   <td width="476">'+data[i].dishName+'</td>';
+                                str+='   <td width="476">'+data[i].dishName.split('#')[0]+'</td>';
                                 str+='   <td width="200">'+data[i].dishCount+'</td>';
                                 str+='   <td width="200">'+data[i].totlePrice+'</td>';
                                 str+='</tr>';
@@ -59,6 +65,10 @@ var reporting={
                             $("#getItemSellDetail tbody").html(str);
                         }
                     });
+                    /*如果没有数据分页显示统计1/1*/
+                    if(data.data.length<1){
+                        $('#getItemSellDetail .demo .J-paginationjs-nav').text('1/1')
+                    }
 
                     $("#getItemSellDetail .reportingInfo i").eq(0).text(total);
                     $("#getItemSellDetail .reportingInfo i").eq(1).text(count.toFixed(1));
@@ -70,7 +80,7 @@ var reporting={
     PrintItemSell:function () {//消费品项打印
         var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag"),
             that=this,
-            TipListPrintLength=$('#getTipList tbody').find('tr').length;
+            TipListPrintLength=$('#getItemSellDetail tbody').find('tr').length;
 
         if(TipListPrintLength<1){
             utils.printError.alert('没有需要打印的报表数据')
@@ -103,6 +113,10 @@ var reporting={
             dataType: "json",
             data: {"flag": flag},
             success: function (data) {
+                if(data.result=='1'){
+                    utils.printError.alert(data.mag);
+                    return false
+                }
                 var str = "", total = data.data.length, count = 0, sum = 0;
                 for (var i = 0; i < total; i++) {
                     count += Number(data.data[i].serviceCount);
@@ -130,6 +144,10 @@ var reporting={
                         $("#getTipList tbody").html(str);
                     }
                 });
+                /*如果没有数据分页显示统计1/1*/
+                if(data.data.length<1){
+                    $('#getTipList .demo .J-paginationjs-nav').text('1/1')
+                }
                 $("#getTipList .reportingInfo i").eq(0).text(total);
                 $("#getTipList .reportingInfo i").eq(1).text(count.toFixed(1));
                 $("#getTipList .reportingInfo i").eq(2).text(sum.toFixed(2));
@@ -166,6 +184,7 @@ var reporting={
         var flag=$("#getTipList .dataSelect-type .active" ).attr("flag"),
             that=this;
         var beginTime=$.trim($(".datetimeStart").val()),endTime=$.trim($(".datetimeEnd").val()),operationname=utils.storage.getter('aUserid');
+        var abc=Date.parse(new Date(beginTime))/1000
         if(beginTime=="" || beginTime==""){
             var str = '<div><strong >开始和结束日期不能为空</strong></div>'
             var alertModal = widget.modal.alert({
@@ -181,6 +200,10 @@ var reporting={
 
             });
             return
+        }
+        if(Date.parse(new Date(endTime))/1000-Date.parse(new Date(beginTime))/1000<0){
+            utils.printError.alert('开始时间不能大于结束时间');
+            return false
         }
         $.ajax({
             url:_config.interfaceUrl.PrintBusinessDetail,

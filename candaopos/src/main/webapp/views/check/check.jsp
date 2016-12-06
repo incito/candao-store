@@ -34,7 +34,7 @@
     }
 </style>
 <header>
-    <div class="fl">餐道</div>
+    <div class="fl logo">餐道</div>
     <div class="fr close-win" data-dismiss="modal" onclick="window.location.href='../main.jsp';">返回</div>
 </header>
 <article style="overflow: hidden">
@@ -46,7 +46,7 @@
                     <div class="check-key">
                         <div class="form-group form-group-base form-input">
                             <span class="form-label" style="line-height: 40px">账号单:</span>
-                            <input id="orderNo" value="" name="billNo" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 60px" autocomplete="off">
+                            <input id="orderNo" value="" validType='noPecial2' maxlength="20" name="billNo" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 60px" autocomplete="off" autofocus>
                         </div>
 
                         <div class="form-group form-group-base form-input">
@@ -55,7 +55,7 @@
                         </div>
                         <div class="keyboard print">
                             <li>1</li><li>2</li><li>3</li>
-                            <li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>0</li><li>C</li>
+                            <li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>0</li><li type="clear">C</li>
                         </div>
                     </div>
                     <div class="check-search clear">

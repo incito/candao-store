@@ -84,6 +84,14 @@
 		<property name="locations" value="other" />
 		<property name="validateOnMigrate" value="false" />
 		<property name="baselineOnMigrate" value="true" />
+		<property name="callbacks">
+			<array>
+				<bean class="com.candao.www.utils.FlywayCallback">
+					<constructor-arg ref="flyway"></constructor-arg>
+					<property name="toDeleteVersions" value="100.0.0.1,100.0.0.2"/>
+				</bean>
+			</array>
+		</property>
 		<property name="baselineVersion">
 			<bean class="org.flywaydb.core.api.MigrationVersion" factory-method="fromVersion">
 				<constructor-arg value="2.1.1" />
@@ -142,7 +150,7 @@
     <aop:config>  
         <aop:aspect id="WorkLogAdvice" ref="aoplogbean">  
             <aop:pointcut id="businessService"  
-                expression="execution(* com.candao.www.*.service.*.*(..))" />  
+                expression="execution(* com.candao.www.*.service.*.*(..)) and !execution(* com.candao.www.webroom.service.impl.H5LogServiceImpl.*(..))" />
             <aop:before pointcut-ref="businessService" method="doBefore"/>  
             <aop:after pointcut-ref="businessService" method="doAfter"/>  
             <aop:around pointcut-ref="businessService" method="doAround"/>  

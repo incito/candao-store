@@ -77,6 +77,10 @@ var checkOrder={
                     }
                     data = arry
                 }
+                /*如果数据为零结算，反结算，重印账单。会员交易凭条不能点击*/
+                if(data.length<1){
+                    $('.reprintCheck,.receipt,.c-mod-js,.c-mod-fjs').addClass('disabled').attr('disabled',true)
+                }
 
                 var orderNo = $.trim($("#orderNo").val())
                 var deskNo = $.trim($("#deskNo").val())
@@ -88,6 +92,7 @@ var checkOrder={
                         }
                     }
                     data = arry;
+
                     //console.log(data)
                 }
 
@@ -219,7 +224,7 @@ var checkOrder={
         jumpfjs:function(user) {
             var memberAddress = JSON.parse(utils.storage.getter('memberAddress')),//会员地址
                 vipType=utils.storage.getter('vipType');//会员类型1为餐道2为雅座
-            /*雅座会员反结算*/
+            /*餐道会员反结算*/
             if(cheackorderParameter.memberno  && vipType=='1'){
                 $.ajax({
                     url: _config.interfaceUrl.GetOrderMemberInfo,//餐道会员获取订单会员信息
@@ -248,11 +253,12 @@ var checkOrder={
                                     }),
                                     dataType: "json",
                                     success: function (msg) {
+                                        rebackMemberinfo.TraceCode=msg.TraceCode//重新赋值TraceCode会员交易号
                                         if(msg.Retcode!=0){
                                             utils.printError.alert('会员反结算失败')
                                         }
                                         else {
-                                            rebackOrderOk()
+                                            rebackOrderOk(rebackMemberinfo)
                                         }
                                     },
                                 })
@@ -281,7 +287,7 @@ var checkOrder={
                 rebackOrderOk();
             }
             //会员反结结算成功后执行后台账单反结算
-            function rebackOrderOk() {
+            function rebackOrderOk(rebackMemberinfo) {
                 $.ajax({
                     url: _config.interfaceUrl.AntiSettlementOrder,//反结算
                     method: 'POST',
@@ -297,19 +303,36 @@ var checkOrder={
                         $('#c-mod-fjs').modal("hide");
                         if(data.result==='0'){
                             $('#c-mod-fjs').modal("hide");
-                            var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
-                            window.location.href=encodeURI(encodeURI(_url));
+                            var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(cheackorderParameter.tableno))+'&referer=1&type='+cheackorderParameter.type+''
+                            window.location.href=_url;
                         }
                         else {
                             $('#c-mod-fjs').modal("hide");
-                            widget.modal.alert({
-                                cls: 'fade in',
-                                content:'<strong>反结算失败，请稍后再试</strong>',
-                                width:500,
-                                height:500,
-                                btnOkTxt: '',
-                                btnCancelTxt: '确定'
-                            });
+                            if(rebackMemberinfo){
+                                $.ajax({
+                                    url:memberAddress.vipcandaourl + _config.interfaceUrl.UnVoidSale,//取消会员反结算
+                                    method: 'POST',
+                                    contentType: "application/json",
+                                    data: JSON.stringify({
+                                        'cardno':rebackMemberinfo.cardno,//会员卡号,
+                                        'deal_no':rebackMemberinfo.TraceCode,//会员反结算成功的交易号
+                                        'tracecode':rebackMemberinfo.serial//会员反结算前的交易号
+                                    }),
+                                    dataType: "json",
+                                    success:function (msg) {
+                                        if(msg.Retcode=='0'){
+                                            utils.printError('反结算失败，请稍后再试')
+                                        }
+                                        else {
+                                            utils.printError(msg.RetInfo)
+                                        }
+                                    }
+                                })
+                                return false
+                            }
+                            utils.printError('反结算失败，请稍后再试')
+
+
                         }
 
                     }
@@ -450,8 +473,8 @@ var checkOrder={
         function _clearingOk() {
             var userRight= utils.userRight.get(aUserid,"030206")//判断收银权限
             if(userRight){
-                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + cheackorderParameter.tableno+'&referer=1&type='+cheackorderParameter.type+''
-                window.location.href=encodeURI(encodeURI(_url));
+                var _url='../order.jsp?orderid=' + cheackorderParameter.orderId + '&personnum=' + cheackorderParameter.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(cheackorderParameter.tableno))+'&referer=1&type='+cheackorderParameter.type+''
+                window.location.href=_url;
             }
             else {
                 that.errorAlert('您没有收银权限')

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +32,202 @@ public class WaiterShiftImpl implements WaiterShiftService {
 
     @Autowired
     private WaiterShiftDao shiftDao;
-
+    private Map<String,Map<String,Object>> configureOrderInfo(List<Map<String,Object>> list){
+    	Map<String,Map<String,Object>> returnInfos = new HashMap<String,Map<String,Object>>();
+    	if(list!=null && list.size()>0){
+    		for(Map<String,Object> map:list){
+    	    	Map<String,Object> returnInfo = new HashMap<String,Object>();
+    			String waiterId = map.get("waiterId")+"";
+    			String orderId = map.get("orderId")+"";
+    			String userName = map.get("waiterName")+"";
+    			String tableNo = map.get("tableNo")+"";
+    			Integer tableNum = map.containsKey("tableNum")?Integer.valueOf(map.get("tableNum")+""):0;
+    			Integer custNum = Integer.valueOf(map.get("custNum")+"");
+    			Float shouldAmount = Float.valueOf(map.get("shouldAmount")+"");
+    			BigDecimal custNumDecimal = new BigDecimal(custNum).setScale(2, BigDecimal.ROUND_HALF_UP);
+    			BigDecimal shouldAmountDecimal = new BigDecimal(shouldAmount).setScale(2, BigDecimal.ROUND_HALF_UP);
+    			returnInfo.put("orderId", orderId);
+    			returnInfo.put("waiterId", waiterId);
+    			returnInfo.put("tableNo", tableNo);
+    			returnInfo.put("waiterName", userName);
+    			returnInfo.put("tableNum", tableNum+"");
+    			returnInfo.put("custNum", custNum+"");
+    			returnInfo.put("shouldAmount", shouldAmountDecimal+"");
+    			if (custNum <= 0) {
+    				returnInfo.put("shouldPre", "0.00");
+                } else {
+                	returnInfo.put("shouldPre", shouldAmountDecimal.divide(custNumDecimal, 2, BigDecimal.ROUND_HALF_UP)+"");
+                }
+    			if("null".equals(orderId)){
+    				returnInfos.put(waiterId, returnInfo);
+    			}else{
+    				returnInfos.put(orderId, returnInfo);
+    			}
+    		}
+    	}
+    	return returnInfos;
+    }
+    private void configureSettlementInfo(Map<String,Map<String,Object>> result,List<Map<String,Object>> list){
+    	if(list!=null && list.size()>0){
+    		Map<String,Object> temp = null;
+    		for(Map<String,Object> map : list){
+    			String waiterId = map.get("waiterId")+"";
+    			String orderId = map.get("orderId")+"";
+    			if("null".equals(waiterId)){
+    				waiterId = orderId;
+    			}
+    			String inflate = map.get("inflate").toString();
+    			if(result.containsKey(waiterId)){
+    				temp = result.get(waiterId);
+    			}else{
+    				temp = new HashMap<String,Object>();
+    			}
+    			temp.put("inflate", inflate);
+    			temp.put("waiterId", waiterId);
+    			temp.put("orderId", orderId);
+    			result.put(waiterId, temp);
+    		}
+    	}
+    }
+    private void configureSettlementInfo(Map<String,Map<String,Object>> result,List<Map<String,Object>> list,Map<String,Integer> settlementSort,List<Map<String,Object>> returnInfoList){
+    	if(list!=null && list.size()>0){
+			Map<String,Object> returnInfo = new HashMap<String,Object>();
+			BigDecimal actualAmountTotal = new BigDecimal(0).setScale(2,BigDecimal.ROUND_HALF_UP);
+			Integer settlementNum = settlementSort.keySet().size();
+			List<String> actualAmountList = new ArrayList<String>(settlementNum);
+			for(int i=0;i<settlementNum;i++){
+				actualAmountList.add("0.00");
+			}
+			String current = null;
+			if(list.get(0).containsKey("waiterId")){
+				current = list.get(0).get("waiterId")+"";
+			}else{
+				current = list.get(0).get("orderId")+"";
+			}
+			//结算方式表中tbody列,以排列顺序统一
+    		for(Map<String,Object> map:list){
+    			String waiterId = map.get("waiterId")+"";
+    			String orderId = map.get("orderId")+"";
+    			if("null".equals(waiterId)){
+    				waiterId = orderId;
+    			}
+    			String itemId = map.get("itemId")+"";
+    			String actualAmount = map.get("actualAmount")+"";
+    			BigDecimal actualAmountDecimal = new BigDecimal(actualAmount).setScale(2, BigDecimal.ROUND_HALF_UP);
+    			if(!current.equals(waiterId)){
+    				returnInfo.put("settlements",actualAmountList);
+    				returnInfo.put("actualAmountTotal",actualAmountTotal+"");
+    				if (returnInfo.get("custNum")==null||Integer.valueOf(returnInfo.get("custNum")+"")==0) {
+        				returnInfo.put("actualPre", "0.00");
+                    } else {
+                    	returnInfo.put("actualPre", actualAmountTotal.divide(new BigDecimal(Integer.valueOf(returnInfo.get("custNum")+"")), 2, BigDecimal.ROUND_HALF_UP)+"");
+                    }
+    				result.put(current, returnInfo);
+    				returnInfoList.add(returnInfo);
+    				returnInfo = new HashMap<String,Object>();
+    				actualAmountTotal = new BigDecimal(0).setScale(2,BigDecimal.ROUND_HALF_UP);
+    				actualAmountList = new ArrayList<String>(settlementNum);
+    				for(int i=0;i<settlementNum;i++){
+    					actualAmountList.add("0.00");
+    				}
+    				current = waiterId;
+    			}else{
+	    			if(result.containsKey(waiterId)){
+	    				returnInfo = result.get(waiterId);
+	    			}else{
+	    				returnInfo.put("waiterId", waiterId);
+	    				returnInfo.put("orderId",orderId);
+	    			}
+    			}
+    			//挂账与挂账2加到一块，微信支付与微信扫码支付相加
+    			if("13".equals(itemId)||"5".equals(itemId)){
+    				BigDecimal temp = new BigDecimal(actualAmountList.get(settlementSort.get("5")));
+    				actualAmountList.set(settlementSort.get("5"),temp.add(actualAmountDecimal)+"");
+    			}else if("30".equals(itemId)||"17".equals(itemId)){
+    				BigDecimal temp = new BigDecimal(actualAmountList.get(settlementSort.get("17")));
+    				actualAmountList.set(settlementSort.get("17"),temp.add(actualAmountDecimal)+"");
+    			}else if("8".equals(itemId)){
+    				BigDecimal temp = new BigDecimal(returnInfo.get("inflate")==null?"0":returnInfo.get("inflate").toString()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+    				actualAmountDecimal = actualAmountDecimal.subtract(temp);
+    				actualAmountList.set(settlementSort.get("8"), actualAmountDecimal.toString());
+    			}else{
+    				actualAmountList.set(settlementSort.get(itemId),actualAmountDecimal+"");
+    			}
+    			actualAmountTotal = actualAmountTotal.add(actualAmountDecimal);
+    		}
+    		returnInfo.put("settlements",actualAmountList);
+			returnInfo.put("actualAmountTotal",actualAmountTotal+"");
+			if (returnInfo.get("custNum")==null||Integer.valueOf(returnInfo.get("custNum")+"")==0) {
+				returnInfo.put("actualPre", "0.00");
+            } else {
+            	returnInfo.put("actualPre", actualAmountTotal.divide(new BigDecimal(Integer.valueOf(returnInfo.get("custNum")+"")), 2, BigDecimal.ROUND_HALF_UP)+"");
+            }
+    		result.put(current, returnInfo);
+    		returnInfoList.add(returnInfo);
+    	}
+    }
+    @Override
+	public Map<String,Object> getWaiterShiftInfo2(Map<String,Object> paramMap){
+    	Map<String,Object> result = new HashMap<String,Object>();
+    	List<Map<String, Object>> returnInfoList = new ArrayList<Map<String, Object>>();
+    	//结算方式种类查询
+    	List<Map<String,Object>> settlementList = shiftDao.getSettlementInfo(null);
+    	List<String> settlementKey = new ArrayList<String>();
+		List<String> settlementDescList = new ArrayList<String>();
+		Map<String,Integer> settlementSort = new HashMap<String,Integer>();
+		Integer sort = 0;
+		for(Map<String,Object> map:settlementList){
+			settlementSort.put(map.get("itemId")+"", sort++);
+			settlementDescList.add(map.get("itemDesc")+"");
+			settlementKey.add(map.get("itemId")+"");
+		}
+		//订单信息查询
+    	List<Map<String,Object>> orderInfoList = shiftDao.getOrderInfoGroupByOrder(paramMap);
+    	Map<String,Map<String,Object>> returnInfos = configureOrderInfo(orderInfoList);
+    	//会员卡虚增
+    	List<Map<String,Object>> inflateInfo = shiftDao.getOrderInflateInfoByOrder(paramMap);
+    	configureSettlementInfo(returnInfos,inflateInfo);
+    	//结算方式信息查询
+    	List<Map<String,Object>> orderSettlementList = shiftDao.getOrderSettlementInfoDetail(paramMap);
+    	System.out.println(returnInfos.size());
+    	configureSettlementInfo(returnInfos,orderSettlementList,settlementSort,returnInfoList);
+    	System.out.println(returnInfos.size());
+    	System.out.println(returnInfoList.size());
+    	result.put("td", returnInfoList);
+    	result.put("tr", settlementDescList);
+    	result.put("key", settlementKey);
+    	return result;
+    }
+	@Override
+	public Map<String,Object> getWaiterShiftInfo1(Map<String,Object> paramMap){
+		Map<String,Object> result = new HashMap<String,Object>();
+		
+    	List<Map<String, Object>> returnInfoList = new ArrayList<Map<String, Object>>();
+		//结算方式种类查询
+		List<Map<String,Object>> settlementList = shiftDao.getSettlementInfo(null);
+		List<String> settlementKey = new ArrayList<String>();
+		List<String> settlementDescList = new ArrayList<String>();
+		Map<String,Integer> settlementSort = new HashMap<String,Integer>();
+		Integer sort = 0;
+		for(Map<String,Object> map:settlementList){
+			settlementSort.put(map.get("itemId")+"", sort++);
+			settlementDescList.add(map.get("itemDesc")+"");
+			settlementKey.add(map.get("itemId")+"");
+		}
+    	//订单信息查询
+    	List<Map<String,Object>> orderInfoList = shiftDao.getOrderInfoGroupByWaiter(paramMap);
+    	Map<String,Map<String,Object>> returnInfos = configureOrderInfo(orderInfoList);
+    	//会员卡虚增
+    	List<Map<String,Object>> inflateInfo = shiftDao.getOrderInflateInfo(paramMap);
+    	configureSettlementInfo(returnInfos,inflateInfo);
+    	//结算方式信息查询
+    	List<Map<String,Object>> orderSettlementList = shiftDao.getOrderSettlementInfo(paramMap);
+    	configureSettlementInfo(returnInfos,orderSettlementList,settlementSort,returnInfoList);
+    	result.put("td", returnInfoList);
+    	result.put("tr", settlementDescList);
+    	result.put("key", settlementKey);
+    	return result;
+    }
     @Override
     public List<Map<String, String>> getWaiterShiftInfo(Map<String, Object> paramMap) {
 

@@ -27,7 +27,7 @@
 
 
 <header>
-	<div class="fl">餐道</div>
+	<div class="fl logo">餐道</div>
 	<div class="fr" onclick="window.location.href='../main.jsp';" >返回</div>
 </header>
 <article>
@@ -35,7 +35,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="form-group form-group-base search-box mt20" >
-					<input value="" name="name" id="Member_cardno"  type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
+					<input value="" name="name" id="Member_cardno" validType='noPecial2' maxlength="20" type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
 					<button class="btn-base btn-yellow btn-base-sm btn-search">搜索</button>
 				</div>
 			</div>

@@ -6,11 +6,6 @@ html{
   	margin: auto auto;
   	padding: 8px;
 }
-.exit-sys{
-	position: absolute;
-  	right: 10px;
-  	cursor: pointer;
-}
 .menu-top div{
 	display: inline-block;
 	margin-left: 10px;
@@ -35,10 +30,14 @@ html{
   	color: #F9EFE1;
   	cursor: pointer;
 	overflow: hidden;
+	font-size: 0;
 }
 .menu-tab ul li{
   	display: inline-block;
-  	width: 49%;
+  	width: 50%;
+	font-size: 18px;
+	line-height: 42px;
+	height: 42px;
 }
 .menu-tab ul li.active{
 	background: #FFFFFF;

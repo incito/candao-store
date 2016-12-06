@@ -37,7 +37,7 @@
     }
 </style>
 <header>
-    <div class="fl">餐道</div>
+    <div class="fl logo">餐道</div>
     <div class="fr" onclick="goBack();">返回</div>
 </header>
 <article>
@@ -47,7 +47,7 @@
             <div class="col-md-6">
                 <div class="form-group form-group-base">
                     <span class="form-label">会员卡号:</span>
-                    <input value="" name="uesr" type="text" class="form-control ya_cardNumber" autocomplete="off">
+                    <input value="" name="uesr" type="text" validType='noPecial' maxlength="20" class="form-control ya_cardNumber" autocomplete="off">
                 </div>
                 <div class="form-group form-group-base">
                     <span class="form-label">储值余额:</span>

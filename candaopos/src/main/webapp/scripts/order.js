@@ -1,10 +1,15 @@
 var pref_prev = 0;
+var addDIshCurPager=0;//点菜页面列表页数
+var couponListCurPager=0;//优惠卷页面列表页数
+var orderdishtableInfoselect=0//选中的菜谱列表的第几个
+var selpreferentialtableInfoselect=0//选中的优惠列表的第几个
 var invoice_Flag={/*发票信息全局变量*/
     'orderid':'',
     'amount':'',
     'flag':''
 
 };
+
 var g_eatType = utils.getUrl.get('type');
 var consts = {
     orderid: $('input[name=orderid]').val(),
@@ -66,10 +71,9 @@ var Order = {
         });
 
         //定时更新订单信息
-        //setInterval(function(){
-        //    Order.updateOrder();
-        //},3000)
-
+        setInterval(function(){
+           Order.updateOrder();
+        },1000)
     },
 
 
@@ -77,8 +81,70 @@ var Order = {
 
         var that = this;
 
+        $('.dish-oper-btns .prev-btn').click(function () {
+            addDIshCurPager=parseInt($('#curr-page1').text())
+            addDIshCurPager= addDIshCurPager-2
+        })
+        $('.dish-oper-btns .next-btn').click(function () {
+            addDIshCurPager=parseInt($('#curr-page1').text())
+        })
+        $('.preferential-oper-btns .prev-btn').click(function () {
+            couponListCurPager=parseInt($('#curr-page2').text())
+            couponListCurPager= couponListCurPager-2
+        })
+        $('.preferential-oper-btns .next-btn').click(function () {
+            var $body=$("#sel-preferential-table tbody")
+            $body.find('tr').removeClass("selected");
+            $body.find('tr').not(".hide").eq(0).addClass("selected");
+            couponListCurPager=parseInt($('#curr-page2').text())
+        })
+
+        $('.J-btn-settlement').click(function(){
+            Log.send(2, '点击结账按钮');
+            if(parseFloat($('.needPay span').text()) > 0){
+                if(parseFloat($('.needPay span').text()) > parseFloat($('#tip-amount').text())) {
+                    widget.modal.alert({
+                        content:'<strong>还有未收金额</strong>',
+                        btnOkTxt: '确定',
+                        btnCancelTxt: ''
+                    });
+                } else {
+                    if(!$('.tipAmount').hasClass('hide')){
+                        if(parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
+                            var alertIns = widget.modal.alert({
+                                content:'<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                                btnOkCb: function(){
+                                    alertIns.close();
+                                    that.doSettlement();
+                                }
+                            });
+                        }
+                    } else {
+                        widget.modal.alert({
+                            content:'<strong>还有未收金额</strong>',
+                            btnOkTxt: '确定',
+                            btnCancelTxt: ''
+                        });
+                    }
+                }
+            } else {
+                if(parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
+                    var alertIns = widget.modal.alert({
+                        content:'<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                        btnOkCb: function(){
+                            alertIns.close();
+                            that.doSettlement();
+                        }
+                    });
+                } else {
+                    that.doSettlement();
+                }
+            }
+        });
+
         //点击- +修改发票金额
         $('#Invoice-title .plus_sign').click(function () {
+            Log.send(2, '修改发票金额');
             var se=$(this),
                 _thisVal=parseFloat($.trim($('#Invoice-title .invoiceMoney').val()));
             /*减号*/
@@ -162,6 +228,7 @@ var Order = {
         $('#backfoodnum-dialog .btn-save').click(function () {
             var dishNum = parseFloat($('#order-dish-table tr.selected .num').text());
             var backDishNum = parseFloat($('#backDishNumIpt').val());
+            var $target = $("#order-dish-table tr.selected");
             if (backDishNum > dishNum) {
                 widget.modal.alert({
                     cls: 'fade in',
@@ -185,6 +252,19 @@ var Order = {
                 });
                 return false;
             }
+
+            if ($target.attr('groupmain') === 'true' && (backDishNum < 1)) {
+                widget.modal.alert({
+                    cls: 'fade in',
+                    content: '<strong>请输入正确的数量</strong>',
+                    width: 500,
+                    height: 500,
+                    btnOkTxt: '',
+                    btnCancelTxt: '确定'
+                });
+                return false;
+            }
+
 
             $("#backfoodnum-dialog").modal('hide');
             $('#backfood-right').load("./check/impower.jsp", {
@@ -321,7 +401,6 @@ var Order = {
             clearTimeout(_time);
             _time = setTimeout(function(){
                 //单击事件在这里
-
                 var name = me.attr('name');
                 var type = me.attr('type');
                 var sub_type = me.attr('sub_type');
@@ -329,6 +408,20 @@ var Order = {
                 var free_reason = me.attr('free_reason')
                 var $coupnumDialog = $('#coupnum-dialog');
                 var $givedishDialog = $('#givedish-dialog');
+
+                if($('#order-dish-table tbody tr').length === 0) {
+                   var alertIns =  widget.modal.alert({
+                        cls: 'fade in',
+                        content: '<strong>还未下单,不能使用优惠</strong>',
+                        width: 500,
+                        height: 500,
+                        btnCancelTxt: '',
+                        btnOkCb: function () {
+                            alertIns.close();
+                        }
+                    });
+                    return false;
+                }
 
                 that.manageUsePref.set({
                     "preferentialid": me.attr('preferential'),
@@ -384,7 +477,7 @@ var Order = {
                     $coupnumDialog.modal('show');
                 } else if (type === '07' && free_reason === '0') {
                     //手工 选择赠菜
-                    $givedishDialog.addClass('coupum-cus-give');
+                    $givedishDialog.addClass('coupnum-cus-give');
 
                     //更新可选赠菜信息
                     that.updateGiveDishInfo(function () {
@@ -452,15 +545,28 @@ var Order = {
             var count = $(".nav-pref-types").find("li.nav-pref-type").length;
             if (pref_prev < count - 6) {
                 $(".nav-pref-types").find("li.nav-pref-type").eq(pref_prev).css("margin-left", "-16.66%");
-                $(".nav-pref-types").find("li.nav-pref-type").eq(pref_prev + 1).click();
+                if(parseInt($(".nav-pref-types").find("li.nav-pref-type.active").css('margin-left'))  < 0) {
+                    $(".nav-pref-types").find("li.nav-pref-type").eq(pref_prev + 1).click();
+                }
                 pref_prev++;
+                $(".nav-pretype-prev").removeClass('disabled');
+                if(pref_prev === (count - 6)) {
+                    $(this).addClass('disabled');
+                }
             }
         });
         $(".nav-pretype-prev").click(function () {
             if (pref_prev >= 1) {
                 $(".nav-pref-types").find("li.nav-pref-type").eq(pref_prev - 1).css("margin-left", "0");
-                $(".nav-pref-types").find("li.nav-pref-type").eq(pref_prev - 1).click();
+
+                if($(".nav-pref-types").find("li.nav-pref-type.active").index() ===  (pref_prev + 5)) {
+                    $(".nav-pref-types").find("li.nav-pref-type").eq($(".nav-pref-types").find("li.active").index() - 1).click();
+                }
                 pref_prev--;
+                $(".nav-pretype-next").removeClass('disabled');
+                if(pref_prev === 0) {
+                    $(this).addClass('disabled');
+                }
             }
         });
 
@@ -581,8 +687,8 @@ var Order = {
             var total = 0;
             $('.pay-div .J-pay-val').each(function () {
                 var $me = $(this);
-                if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'cash') {
-                    total += parseFloat($me.val());
+                if ($me.attr('iptType') !== 'cash') {
+                    total += parseFloat($me.val().length > 0 ? $me.val() : 0);
                 }
             });
             return total;
@@ -590,29 +696,19 @@ var Order = {
 
 
         var _updateCash = function(val){
-            //if(parseFloat(val) === parseFloat($cash.attr('prepayamount'))) {
-            //    return false
-            //}
-
-            //是小数
-            //if((parseFloat(val) - parseInt(val,10)) > 0 ? true : false) {
-            //    $cash.val(parseFloat(val));
-            //} else {
-            //    $cash.val(parseInt(val, 10));
-            //}
             var val = val;
+
+            if(/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
+                val = parseInt(val);
+            }
+
             $cash.val(val);
             if(/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
                 val = parseInt(val);
             }
 
-            var giveChange = (function(){
-                //var v = parseFloat(val - shouldAmount).toFixed(2);
-                //if(totalOtherPay >= shouldAmount) {
-                //    v = val;
-                //}
-                //return v;
 
+            var giveChange = (function(){
                 var v = 0;
                 if(totalOtherPay >  shouldAmount) {
                     v = val;
@@ -623,18 +719,18 @@ var Order = {
                 if(v < 0) {
                     v = 0;
                 }
-                return v;
+                return parseFloat(parseFloat(v).toFixed(2)) ;
             })();
-            var needPay = parseFloat(shouldAmount - cash - totalOtherPay);
-            var isGiveChange = giveChange > 0 ? true : false;
+            var needPay = parseFloat(shouldAmount - parseFloat(val) - totalOtherPay);
             var tipAmount = parseFloat($('#tip-amount').text());
             var amount = parseFloat($('#amount').text());
+            var prefAmount = parseFloat($('#discount-amount').text());
             var tipAmountCac = (function(){
                 var v = 0;
                 if(totalOtherPay >  amount) {
                     v = val;
                 } else {
-                    v = parseFloat(val) - (amount - totalOtherPay)
+                    v = parseFloat(val) - (amount - totalOtherPay) +  prefAmount;
                 }
 
                 if(v > tipAmount) {
@@ -658,7 +754,8 @@ var Order = {
                 $paytotal.find('.needPay').addClass('hide');
             }
 
-            if (isGiveChange) {
+            //console.log(giveChange);
+            if (giveChange > 0) {
                 $paytotal.find('.giveChange span').text(parseFloat(giveChange).toFixed(2));
                 $paytotal.find('.giveChange').removeClass('hide');
                 $('.the-change-span').text(parseFloat(giveChange).toFixed(2));
@@ -683,7 +780,7 @@ var Order = {
             if (iptName.length > 0) {
                 $parent.find('.J-pay-val,.J-pay-pwd').removeAttr('disabled');
             } else {
-                if($parent.find('.J-pay-val').attr('ipttype') === 'wpay' || $parent.find('.J-pay-val').attr('ipttype') === 'alipay') {
+                if($parent.find('.J-pay-val').attr('ipttype') === 'debitAmount' || $parent.find('.J-pay-val').attr('ipttype') === 'bank' || $parent.find('.J-pay-val').attr('ipttype') === 'wpay' || $parent.find('.J-pay-val').attr('ipttype') === 'alipay') {
                     return false;
                 }
                 $parent.find('.J-pay-val, .J-pay-pwd').attr('disabled', 'disabled');
@@ -707,15 +804,11 @@ var Order = {
                     $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
                     $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
-                    _updateCash(shouldAmount - totalOtherPay);
-                    $paytotal.find('.payamount').find('span').text(shouldAmount - totalOtherPay);
+                    _updateCash(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
+                    $paytotal.find('.payamount').find('span').text(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
                     $paytotal.find('.payamount').removeClass('hide');
                 }
             }
-            //console.log('应收:' + shouldAmount);
-            //console.log('现金:' + cash);
-            //console.log('其他收入:' +totalOtherPay);
-            //console.log('needpay:' + needPay);
         }
     },
 
@@ -808,6 +901,7 @@ var Order = {
                                 right: 5
                             });
                         } else {
+                            dom.membershipCard.attr('isLogin','false');
                             widget.modal.alert({
                                 cls: 'fade in',
                                 content: '<strong>' + res2.msg + '</strong>',
@@ -884,6 +978,7 @@ var Order = {
                                 right: 5
                             });
                         } else {
+                            dom.membershipCard.attr('isLogin','false');
                             widget.modal.alert({
                                 cls: 'fade in',
                                 content: '<strong>' + res2.msg + '</strong>',
@@ -986,6 +1081,7 @@ var Order = {
 
     //type:1 预结单 2: 结账单 3:客用单
     printPay: function (type) {
+        Log.send(2,'打印:' + _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/' + utils.storage.getter('posid'))
         $.ajax({
             url: _config.interfaceUrl.PrintPay + '/' + utils.storage.getter('aUserid') + '/' + $('[name=orderid]').val() + '/' + type + '/' + utils.storage.getter('posid'),
             method: 'POST',
@@ -1002,6 +1098,7 @@ var Order = {
                    }
                     return ret;
                 })();
+                Log.send(2,'打印返回:' + res);
                 rightBottomPop.alert({
                     content: str
                 });
@@ -1011,19 +1108,18 @@ var Order = {
 
     //抹零不处理
     consumInfo: function () {
-        var that = this;
         var $moneyWipeAmount = $('.pay-total .moneyWipeAmount span');
         var $shouldAmount = $('#should-amount');
         var $discountAmount= $('#discount-amount');
         var moneyWipeAmount = $moneyWipeAmount.text();
         var $target = $('.paytype-input input[name=cash]');
         if ($moneyWipeAmount.length === 0 || moneyWipeAmount === '0') return false;
+        $shouldAmount.text((parseFloat($shouldAmount.text()) + parseFloat(consts.moneyWipeAmount)).toFixed(2));
+        $discountAmount.text((parseFloat($discountAmount.text()) - parseFloat(consts.moneyWipeAmount)).toFixed(2));
+        $target.val((parseFloat($target.val()) + parseFloat(consts.moneyWipeAmount)).toFixed(2));
+        $('.payamount span').text($target.val());
         $moneyWipeAmount.parents('li').remove();
         consts.moneyWipeAmount = 0.0;
-        $shouldAmount.text((parseFloat($shouldAmount.text()) + parseFloat(moneyWipeAmount)).toFixed(2));
-        $discountAmount.text((parseFloat($discountAmount.text()) - parseFloat(moneyWipeAmount)).toFixed(2));
-        $target.val((parseFloat($target.val()) + parseFloat(moneyWipeAmount)).toFixed(2));
-        $('.payamount span').text($target.val());
     },
 
     //取消订单
@@ -1040,27 +1136,35 @@ var Order = {
                 btnCancelTxt: '确定'
             });
         } else {
-            $.ajax({
-                url: _config.interfaceUrl.ClearTable,
-                method: 'POST',
-                contentType: "application/json",
-                data: JSON.stringify({
-                    tableNo: $('[name=tableno]').val()
-                }),
-                dataType: 'json',
-                success: function (res) {
-                    if (res.code === '0') {
-                        window.location.href = './main.jsp'
-                    } else {
-                        widget.modal.alert({
-                            cls: 'fade in',
-                            content: '<strong>' + res.msg + '</strong>',
-                            width: 500,
-                            height: 500,
-                            btnOkTxt: '',
-                            btnCancelTxt: '确定'
-                        });
-                    }
+            widget.modal.alert({
+                cls: 'fade in',
+                content: '<strong>确定取消桌号:' + consts.tableno  + '的账单吗?</strong>',
+                width: 500,
+                height: 500,
+                btnOkCb: function(){
+                    $.ajax({
+                        url: _config.interfaceUrl.ClearTable,
+                        method: 'POST',
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            tableNo: $('[name=tableno]').val()
+                        }),
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code === '0') {
+                                window.location.href = './main.jsp'
+                            } else {
+                                widget.modal.alert({
+                                    cls: 'fade in',
+                                    content: '<strong>' + res.msg + '</strong>',
+                                    width: 500,
+                                    height: 500,
+                                    btnOkTxt: '',
+                                    btnCancelTxt: '确定'
+                                });
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -1089,6 +1193,7 @@ var Order = {
         dom.backfoodDialog.find(".btn-save").unbind("click").on("click", function () {
             if(type === 0) {
                 dom.backfoodDialog.modal('hide');
+                dom.backfoodNumDialog.find('.dishname span').text($("#order-dish-table tr.selected .dishname").text())
                 dom.backfoodNumDialog.modal('show');
                 dom.backfoodNumDialog.find('input[type=text]').val('');
             } else {
@@ -1104,13 +1209,17 @@ var Order = {
     },
 
     //退菜 0:单个 1:整单
-    backDish: function (type) {
+    backDish: function (type,cb) {
         var that = this;
         var $target = $("#order-dish-table tr.selected");
         var tableId = $('[name=tableno]').val();
         var userId = $('#user').val();
         var orderNo = $('[name=orderid]').val();
         var params = {};
+        utils.PromptAlert('退菜中，请稍后')
+        if(userId==undefined){
+            userId=utils.storage.getter('aUserid')
+        }
 
         var discardReason = (function () {
             var str = '';
@@ -1150,7 +1259,6 @@ var Order = {
 
         dom.backfoodDialog.modal('hide');
         $("#backfood-right").modal('hide');
-        utils.loading.open('退菜中...');
         $.ajax({
             url: _config.interfaceUrl.BackDish,
             method: 'POST',
@@ -1160,9 +1268,10 @@ var Order = {
             global: false,
             success: function (res) {
                 if (res.code === '0') {
-                    utils.loading.remove();
+                    $(".modal-alert:last,.modal-backdrop:last").remove();//移除提示信息
                     $("#backfood-right .modal-dialog").remove();
                     that.updateOrder();
+                    cb && cb();
                 } else {
                     widget.modal.alert({
                         cls: 'fade in',
@@ -1175,7 +1284,6 @@ var Order = {
                 }
             }
         });
-
     },
 
     //切换小键盘
@@ -1191,8 +1299,8 @@ var Order = {
 
     //点菜
     takeOrder: function () {
-        var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + consts.tableno + '&type=' + g_eatType;
-        window.location.href = encodeURI(encodeURI(url));
+        var url = "../views/orderdish.jsp?orderid=" + consts.orderid + '&personnum=' + consts.personnum + '&tableno=' + encodeURIComponent(encodeURIComponent(consts.tableno)) + '&type=' + g_eatType;
+        window.location.href = url;
     },
 
     /**
@@ -1212,6 +1320,12 @@ var Order = {
         });
 
         $(".nav-pref-types").html(ret.join(''));
+        if($(".nav-pref-types").find( "li.nav-pref-type").length > 6) {
+            $(".nav-pretype-prev").addClass('disabled');
+        } else {
+            $(".nav-pretype-prev, .nav-pretype-next").addClass('disabled');
+        }
+
         that.initPreferential();
     },
 
@@ -1224,7 +1338,6 @@ var Order = {
         $.ajax({
             url: _config.interfaceUrl.GetCouponInfos,
             method: 'POST',
-            async: true,
             contentType: "application/json",
             dataType: 'json',
             data: JSON.stringify({
@@ -1233,6 +1346,9 @@ var Order = {
                 orderid: '0',
                 typeid: id
             }),
+            beforeSend: function(){
+                utils.loading.open('获取优惠券信息…')
+            },
             success: function (res) {
                 var htm = '';
                 $.each(res, function (k, v) {
@@ -1330,9 +1446,6 @@ var Order = {
             data: JSON.stringify(that.manageUsePref.get()),
             success: function (res) {
                 if (res.code === '0') {
-                    //console.log(res);
-
-
                     that.updateTotal(res.data);
                     //更新已选优惠
                     that.updateSelectedPref(res.data.detailPreferentials, 1);
@@ -1379,7 +1492,6 @@ var Order = {
             })
         ).then(function (res1, res2) {
             var data = res1[0].data.rows;
-            //debugger;
             if (res1[0].code === '0' && res2[0].code === '0') {
                 var htm = '';
                 $.each(data, function (k, v) {
@@ -1391,12 +1503,11 @@ var Order = {
                         }
                     });
                 });
-                console.log(data);
                 $.each(data, function (k, v) {
                     var cls = v.dishnum > 0 ? '' : 'display:none';
                     if (parseInt(v.orderprice, 10) > 0) {
-                        htm += "<li style='" + cls + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
-                            "<span class='dishname'>" + v.dishname + "</span>" +
+                        htm += "<li style='" + cls + "' dishname='" + v.dishname + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
+                            "<span class='dishname'>" + v.dishname.split('#')[0] + "</span>" +
                             "<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
                             "</li>";
                     }
@@ -1438,7 +1549,7 @@ var Order = {
         var tr = '';
         var $body = $("#sel-preferential-table tbody");
         var isToalDebitAmount;//是否是团购挂账
-        //设置优惠回传值
+
         $.each(data, function (k, v) {
             isToalDebitAmount = parseFloat(v.toalDebitAmount) > 0 ? true : false;
             if(isToalDebitAmount) {
@@ -1446,7 +1557,6 @@ var Order = {
             } else {
                 tr += "<tr preid='" + v.id + "' istoaldebitamount='" + isToalDebitAmount+ "' orderid='" + v.orderid + "' coupondetailid='" + v.coupondetailid + "' preferential = '" + v.preferential + "'><td class='name'>" + v.activity.name + "</td><td class='num'>" + 1 + "</td><td class='amount'>" + v.deAmount + "</td></tr>";
             }
-
         });
         if(opType === 0) {
             $("#sel-preferential-table tbody").html(tr);
@@ -1457,7 +1567,7 @@ var Order = {
         widget.loadPage({
             obj: "#sel-preferential-table tbody tr",
             listNum: 6,
-            currPage: 0,
+            currPage: couponListCurPager,
             totleNums: $body.find('tr').length,
             curPageObj: ".preferential-oper-btns .page-info span:first",
             pagesLenObj: ".preferential-oper-btns .page-info span:last",
@@ -1465,7 +1575,7 @@ var Order = {
             nextBtnObj: ".preferential-oper-btns .next-btn",
             callback: function () {
                 $body.find('tr').removeClass("selected");
-                $body.find('tr').not(".hide").eq(0).addClass("selected");
+                $body.find('tr').not(".hide").eq(selpreferentialtableInfoselect).addClass("selected");
             }
         });
 
@@ -1499,13 +1609,14 @@ var Order = {
         var totalHtml = '<ul class="pay-total"> ';
 
         consts.moneyWipeAmount = moneyWipeAmount;
+        consts.moneyDisType = data.moneyDisType; //0 不处理; 1 四舍五入; 2 抹零
+        consts.moneyWipeName = data.moneyWipeName;
 
         //设置统计
         $('#discount-amount').text(amount);
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
         $('#cash input').val(payamount);
-        $('#cash input').attr('prepayamount',payamount);
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
@@ -1513,7 +1624,30 @@ var Order = {
 
         totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账<i class="spangap">:</i><span>' + toalDebitAmount + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免<i class="spangap">:</i><span>' + toalFreeAmount + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">抹零<i class="spangap">:</i><span>' + moneyWipeAmount + '</span></li> ';
+
+        totalHtml += (function(){
+            var ret = [];
+            var wipeAmount = parseFloat(consts.moneyWipeAmount);
+            ret.push('<li class="' + (parseFloat(moneyWipeAmount) !== 0 ? '' : 'hide') + ' moneyWipeAmount">');
+            if(consts.moneyDisType === '1') {
+                if(moneyWipeAmount > 0) {
+                    ret.push('<b>舍去</b><i class="spangap">:</i>');
+                    ret.push('<span>' + wipeAmount.toFixed(2) + '</span>');
+                } else {
+                    ret.push('<b>舍入</b><i class="spangap">:</i>');
+                    ret.push('<span>' + Math.abs(wipeAmount).toFixed(2) + '</span>');
+                }
+            } else if(consts.moneyDisType === '2') {
+                ret.push('<b>抹零</b><i class="spangap">:</i>');
+                ret.push('<span>' + wipeAmount.toFixed(2) + '</span>');
+            } else {
+                return '';
+            }
+            ret.push('</li>');
+            return ret.join('');
+        })();
+
+
         totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整<i class="spangap">:</i><span>' + adjAmout + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收<i class="spangap">:</i><span>' + toalDebitAmountMany + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + parseFloat(payamount).toFixed(2) + '</span></li> ';
@@ -1526,7 +1660,11 @@ var Order = {
         totalHtml += '<li class="hide debitAmount" payway="5">挂账支付:<span></span></li> ';
         totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
-        totalHtml += '<li class="hide needPay">还需在收:<span></span></li> ';
+        totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
+        if(invoice_Flag.flag!=''){
+            totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>'+invoice_Flag.flag+'</span></li> ';
+        }
+
 
         totalHtml += '</ul>';
 
@@ -1580,18 +1718,18 @@ var Order = {
     })(),
 
     updateOrderStatus: 0, //1 正在进行 0 空闲
+    isFirstUpdateOrder: true,
 
+    orderDataPre: null,
 
     /**
      * 更新订单信息
      */
     updateOrder: function () {
         var that = this;
-
         if(that.updateOrderStatus === 1) {
             return false;
         } else {
-
             that.updateOrderStatus = 1;
             $.ajax({
                 url: _config.interfaceUrl.GetOrderInfo,
@@ -1600,10 +1738,21 @@ var Order = {
                 data: JSON.stringify({
                     orderid: consts.orderid
                 }),
+                beforeSend: function(){
+                    utils.loading.open('更新订单信息…')
+                },
+                global: false,
                 dataType: 'json',
                 async: false,
                 success: function (res) {
                     if (res.code === '0') {
+                        utils.loading.remove();
+                        if(JSON.stringify(that.orderDataPre) === JSON.stringify(res.data)) {
+                            that.updateOrderStatus = 0;
+                            return false;
+                        } else {
+                            that.orderDataPre = res.data
+                        }
                         if(res.data.userOrderInfo.orderInvoiceTitle!=''){
                            // $('#Invoice-title').modal('show');
                            //focusIpt=$('#Invoice-title .invoiceMoney');
@@ -1627,7 +1776,10 @@ var Order = {
                             }
                         }
 
-                        if (utils.object.isEmptyObject(res.data)) return false;
+                        if (utils.object.isEmptyObject(res.data)) {
+                            that.updateOrderStatus = 0;
+                            return false;
+                        }
 
                         that.updateTotal(res.data.preferentialInfo);
 
@@ -1645,18 +1797,25 @@ var Order = {
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
                                 var groupid = utils.getUuid();
+                                var dishname = '';
                                 if(v.dishes !== undefined) {
-                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" +  v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname,14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" +  v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0],14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     $.each(v.dishes, function(k1, v1){
-                                        tr += "<tr groupid='" + groupid + "' ispot='" +  v1.ispot + "' grouptype='" +  v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname,14) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                        tr += "<tr groupid='" + groupid + "' ispot='" +  v1.ispot + "' grouptype='" +  v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname.split('#')[0],14) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     })
                                 } else {
-                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname,14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    if(/临时菜/.test(v.dishname)) {
+                                        dishname = '(' + v.taste + ')' + v.dishname.split('#')[0]
+                                    } else {
+                                        dishname = v.dishname.split('#')[0]
+                                    }
+
+                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(dishname,14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') +  "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
                             });
-                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter').removeClass('disabled');
+                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
                         } else {
-                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter').addClass('disabled');
+                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter,#backDish').addClass('disabled');
                         }
 
                         $body.html(tr);
@@ -1664,7 +1823,7 @@ var Order = {
                         widget.loadPage({
                             obj: "#order-dish-table tbody tr",
                             listNum: 6,
-                            currPage: 0,
+                            currPage: addDIshCurPager,
                             totleNums: $body.find('tr').length,
                             curPageObj: "#order-modal #curr-page1",
                             pagesLenObj: "#order-modal #pages-len1",
@@ -1672,7 +1831,7 @@ var Order = {
                             nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
                             callback: function () {
                                 $body.find('tr').removeClass("selected");
-                                $body.find('tr').not(".hide").eq(0).addClass('selected');
+                                $body.find('tr').not(".hide").eq(orderdishtableInfoselect).addClass('selected');
                                 if($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
                                     $("#weigh-dish").removeClass('disabled');
                                 } else {
@@ -1682,9 +1841,7 @@ var Order = {
                         });
 
                         //初始化已经使用的优惠
-                        if (res.data.preferentialInfo.detailPreferentials.length > 0) {
-                            that.updateSelectedPref(res.data.preferentialInfo.detailPreferentials, 0);
-                        }
+                        that.updateSelectedPref(res.data.preferentialInfo.detailPreferentials, 0);
                     } else {
                         widget.modal.alert({
                             cls: 'fade in',
@@ -1695,8 +1852,8 @@ var Order = {
                             btnCancelTxt: '确定'
                         });
                     }
-
                     that.updateOrderStatus = 0;
+                    that.isFirstUpdateOrder = false;
                 },
                 error: function(){
                     that.updateOrderStatus = 0;
@@ -1735,17 +1892,10 @@ var Order = {
 
         if(g_eatType === 'in') {
             url = _config.interfaceUrl.PayTheBill;
+            Log.send(2, '堂食结账');
         } else {
             url = _config.interfaceUrl.PayTheBillCf;
-        }
-
-        if(totalPay > parseFloat($('#should-amount').text())){
-            widget.modal.alert({
-                content:'<strong>实际支付金额"'+ (totalPay + parseFloat($('[name=cash]').val())).toFixed(2)  + '"超过应收金额"' + parseFloat($('#should-amount').text()).toFixed(2) + '"</strong>',
-                btnOkTxt: '确定',
-                btnCancelTxt: ''
-            });
-            return  false;
+            Log.send(2, '外卖结账');
         }
 
         if($trs.length === 0){
@@ -1754,27 +1904,18 @@ var Order = {
                 btnOkTxt: '确定',
                 btnCancelTxt: ''
             });
+            Log.send(2, '不能结账空账单');
             return  false;
         }
 
-        if(parseFloat($('.needPay span').text()) > 0){
+        if(totalPay > parseFloat($('#should-amount').text())){
             widget.modal.alert({
-                content:'<strong>还有未收金额</strong>',
+                content:'<strong>实际支付金额"'+ (totalPay + parseFloat($('[name=cash]').val())).toFixed(2)  + '"超过应收金额"' + parseFloat($('#should-amount').text()).toFixed(2) + '"</strong>',
                 btnOkTxt: '确定',
                 btnCancelTxt: ''
             });
+            Log.send(2, '实际支付金额"'+ (totalPay + parseFloat($('[name=cash]').val())).toFixed(2)  + '"超过应收金额"' + parseFloat($('#should-amount').text()).toFixed(2) + '"');
             return  false;
-        }
-
-        if(!$('.tipAmount').hasClass('hide')){
-            if(parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
-                widget.modal.alert({
-                    content:'<strong>小费' + parseFloat($('#tip-amount').text()).toFixed(2) + '元,必须使用现金结算</strong>',
-                    btnOkTxt: '确定',
-                    btnCancelTxt: ''
-                });
-                return  false;
-            }
         }
 
         if(parseFloat($('.giveChange span').text()) >= 100){
@@ -1783,6 +1924,7 @@ var Order = {
                 btnOkTxt: '确定',
                 btnCancelTxt: ''
             });
+            Log.send(2, '找零金额不能大于100');
             return  false;
         }
 
@@ -1793,6 +1935,7 @@ var Order = {
                     btnOkTxt: '确定',
                     btnCancelTxt: ''
                 });
+                Log.send(2, '还有未称重菜品');
                 return false;
             }
         }
@@ -1821,6 +1964,7 @@ var Order = {
                     btnOkTxt: '',
                     btnCancelTxt: '确定'
                 });
+                Log.send(2, memberTips);
                 return false;
             }
         }
@@ -1829,8 +1973,9 @@ var Order = {
         var _fn = function(){
 
             //如果有小费
-            if(parseInt($('#tip-amount').text(), 10) > 0){
+            if(parseFloat($('.tipAmount span').text()) >= 0){
                 utils.loading.open('上传小费信息');
+                Log.send(2, '上传小费信息:' +  JSON.stringify({"paid": $('.tipAmount span').text(), "orderid": consts.orderid}));
                 $.ajax({
                     url: _config.interfaceUrl.TipBill,
                     method: 'POST',
@@ -1838,7 +1983,7 @@ var Order = {
                     dataType: 'json',
                     async: false,
                     data: JSON.stringify({
-                            "paid": $('#tip-amount').text(), "orderid": consts.orderid
+                            "paid": $('.tipAmount span').text(), "orderid": consts.orderid
                         }
                     )
                 }).then(function(res){
@@ -1848,15 +1993,23 @@ var Order = {
                             btnOkTxt: '确定',
                             btnCancelTxt: ''
                         });
+                        Log.send(2, res.msg);
+                    } else {
+                        Log.send(2, '上传小费信息失败:' + JSON.stringify(res));
                     }
+
                 });
             }
 
             //弹钱箱
             utils.openCash(1);
             //结账单
-            that.printPay(2);
+            if(!isMemberLogin) {
+                that.printPay(2);
+            }
+
             //给pad发送清台消息
+            Log.send(2, '给pad发送清台消息:' + JSON.stringify({orderId: consts.orderid,type:1}));
             $.ajax({
                 url: _config.interfaceUrl.SendMsgAsyn,
                 method: 'post',
@@ -1867,10 +2020,11 @@ var Order = {
                     orderId: consts.orderid,
                     type:1
                 })
-            }).then(function(){
-
+            }).then(function(dataMsg){
             });
 
+
+            Log.upload();
             if(utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
                 goBack()
             } else {
@@ -1881,10 +2035,15 @@ var Order = {
         var invoiceMsg=function () {
             if(invoice_Flag.flag!=''){
                 utils.loading.remove();
-                utils.loading.open('打印发票信息');
                 $('#Invoice-title').modal('show');
                 focusIpt=$('#Invoice-title .invoiceMoney');
                 $('#Invoice-title #Invoice-title-btnOk ').click(function () {
+                    utils.loading.open('打印发票信息');
+                    Log.send(2, '打印发票信息:' + JSON.stringify({
+                            deviceid: utils.storage.getter('posid'),
+                            orderid:invoice_Flag.orderid,
+                            amount:$.trim($('#Invoice-title .invoiceMoney').val()),
+                        }));
                     $.ajax({
                         url: _config.interfaceUrl.PrintInvoice,
                         method: 'POST',
@@ -1896,12 +2055,14 @@ var Order = {
                             amount:$.trim($('#Invoice-title .invoiceMoney').val()),
                         }),
                         success: function (res) {
-                            console.log(res)
+                            //console.log(res)
+                            utils.loading.remove();
                             if(res.result=='0'){
                                 _fn()
                             }
                             else {
                                 utils.printError.alert('打印开发票信息失败，请稍后重试！')
+                                Log.send(2, '打印开发票信息失败，请稍后重试')
                             }
 
                         }
@@ -1912,7 +2073,7 @@ var Order = {
             else {
                 _fn()
             }
-        }
+        };
 
         var doSettlementModal = widget.modal.alert({
             cls: 'fade in',
@@ -1927,14 +2088,7 @@ var Order = {
                     var result = [{
                         "payWay": "0",
                         "payAmount": (function(){
-                            var v = parseFloat($("input[name=cash]").val());
-                            if(parseFloat($('#tip-amount').text()) > 0) {
-                                v  = v - parseFloat($('#tip-amount').text())
-                            }
-
-                            if(parseFloat($('.needPay span').text()) > 0){
-                                v = -parseFloat($('.needPay span').text());
-                            }
+                            var v = parseFloat($("input[name=cash]").val()) - parseFloat($('.tipAmount span').text()) - parseFloat($('.giveChange span').text());
                             return v;
                         })(),
                         "memerberCardNo": "",
@@ -2028,16 +2182,31 @@ var Order = {
                         })()
                     }];
 
-                    //抹零
-                    result.push({
-                        "payWay": "7",
-                        "payAmount": parseFloat(consts.moneyWipeAmount),
-                        "memerberCardNo": "",
-                        "bankCardNo": "",
-                        "couponnum": "0",
-                        "couponid": "",
-                        "coupondetailid": ""
-                    });
+                    if(consts.moneyDisType === '2') {
+                        //抹零
+                        result.push({
+                            "payWay": "7",
+                            "payAmount": parseFloat(consts.moneyWipeAmount),
+                            "memerberCardNo": "",
+                            "bankCardNo": "",
+                            "couponnum": "0",
+                            "couponid": "",
+                            "coupondetailid": ""
+                        });
+                    }
+
+                    if(consts.moneyDisType === '1') {
+                        //四舍五入
+                        result.push({
+                            "payWay": "20",
+                            "payAmount": parseFloat(consts.moneyWipeAmount),
+                            "memerberCardNo": "",
+                            "bankCardNo": "",
+                            "couponnum": "0",
+                            "couponid": "",
+                            "coupondetailid": ""
+                        });
+                    }
 
                     //挂账多收
                     if(!$('.toalDebitAmountMany').hasClass('hide')) {
@@ -2108,7 +2277,10 @@ var Order = {
 
                 //结算
                 utils.loading.open('正在结算…');
-
+                Log.send(2, '正在结算:' + JSON.stringify({
+                            "payDetail": rows, "userName": utils.storage.getter('aUserid'), "orderNo": consts.orderid
+                        }
+                    ));
                 $.ajax({
                     url: url,
                     method: 'POST',
@@ -2125,6 +2297,7 @@ var Order = {
                         if(isMemberLogin){
                             var stored = $('[ipttype=memberCash]').val().length > 0 ? parseFloat($('[ipttype=memberCash]').val()).toFixed(2) : '0.0';
                             var jf = $('[ipttype=memberJf]').val().length > 0 ? parseFloat($('[ipttype=memberJf]').val()).toFixed(2) : '0.0';
+                            Log.send(2, '会员方式结算:储值(' +  stored + '), 积分(' + jf + ')');
 
                             //新增积分
                             var scoreAdd =  (function () {
@@ -2151,37 +2324,41 @@ var Order = {
 
                             if (consts.vipType === '1') {//餐道会员
                                 //餐道会员会员消费
+                                Log.send(2, '餐道会员消费');
+                                Log.send(2, '餐道会员消费url:' + consts.memberAddr.vipcandaourl + _config.interfaceUrl.SaleCanDao);
+
+                                var params = JSON.stringify({
+                                    "Serial": consts.orderid,
+                                    "FCash": (function () {
+                                        var total = 0;
+                                        $('.pay-div .J-pay-val').each(function () {
+                                            var $me = $(this);
+                                            if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'memberCash' && $me.attr('iptType') !== 'memberJf') {
+                                                total += parseFloat($me.val());
+                                            }
+                                        });
+                                        return total.toFixed(2);
+                                    })(),
+                                    "FWeChat": '0.0',
+                                    "FIntegral": jf,
+                                    "FStore": stored,
+                                    "FTicketList": null,
+                                    "cardno": consts.memberInfo.MCard,
+                                    "password": $.trim($('.J-pay-pwd').val()),
+                                    "branch_id": utils.storage.getter('branch_id'),
+                                    "securityCode": ""
+                                });
+                                Log.send(2, '餐道会员消费请求参数:' + params);
                                 $.ajax({
                                     url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.SaleCanDao,
                                     method: 'post',
                                     contentType: "application/json",
                                     dataType: 'json',
-                                    data: JSON.stringify({
-                                        "Serial": consts.orderid,
-                                        "FCash": (function () {
-                                            var total = 0;
-                                            $('.pay-div .J-pay-val').each(function () {
-                                                var $me = $(this);
-                                                if ($me.val() !== '' && parseFloat($me.val()) > 0 && $me.attr('iptType') !== 'memberCash' && $me.attr('iptType') !== 'memberJf') {
-                                                    total += parseFloat($me.val());
-                                                }
-                                            });
-                                            return total.toFixed(2);
-                                        })(),
-                                        "FWeChat": '0.0',
-                                        "FIntegral": jf,
-                                        "FStore": stored,
-                                        "FTicketList": null,
-                                        "cardno": consts.memberInfo.MCard,
-                                        "password": $.trim($('.J-pay-pwd').val()),
-                                        "branch_id": utils.storage.getter('branch_id'),
-                                        "securityCode": ""
-                                    })
+                                    data: params
                                 }).then(function(data){
                                     console.log('餐道会员会员消费');
-                                    utils.loading.open('保存会员消费…');
                                     if(data.Retcode == '1') {
-                                        widget.modal.alert({
+                                       var alertMemIns =  widget.modal.alert({
                                             cls: 'fade in',
                                             content: '<strong>' + data.RetInfo + '</strong>',
                                             width: 500,
@@ -2189,53 +2366,111 @@ var Order = {
                                             btnOkTxt: '',
                                             btnCancelTxt: '确定'
                                         });
+                                        Log.send(2, '餐道会员消费请求失败:' + data);
+                                        rebackOrderOk();
+                                        //后台账单反结算
+                                        function rebackOrderOk() {
+                                            Log.send(2, '后台账单反结算:' + JSON.stringify({
+                                                    'reason':'会员结算失败，系统自动反结',
+                                                    'orderNo': consts.orderid,
+                                                    'userName': utils.storage.getter('aUserid')
+                                                }));
+                                            $.ajax({
+                                                url: _config.interfaceUrl.AntiSettlementOrder,//反结算
+                                                method: 'POST',
+                                                contentType: "application/json",
+                                                data: JSON.stringify({
+                                                    'reason':'会员结算失败，系统自动反结',
+                                                    'orderNo': consts.orderid,
+                                                    'userName': utils.storage.getter('aUserid')
+                                                }),
+                                                dataType: "json",
+                                                success:function (data) {
+                                                    if(data.result==='0'){
+                                                    }
+                                                    else {
+                                                        Log.send(3,'系统自动反结失败，请稍后再试');
+                                                        widget.modal.alert({
+                                                            cls: 'fade in',
+                                                            content:'<strong>系统自动反结失败，请稍后再试</strong>',
+                                                            width:500,
+                                                            height:500,
+                                                            btnOkTxt: '',
+                                                            btnCancelTxt: '确定'
+                                                        });
+                                                    }
+
+                                                }
+                                            })
+                                        }
+
+                                        return false;
+
                                     } else {
                                         //保存会员消费
+                                        var params =JSON.stringify({
+                                            "orderid": consts.orderid,
+                                            "cardno": consts.memberInfo.MCard,
+                                            "userid": utils.storage.getter('aUserid'),
+                                            "business": utils.storage.getter('branch_id'),
+                                            "terminal": utils.storage.getter('posid'),
+                                            "serial": data.TraceCode,
+                                            "businessname": utils.storage.getter('branch_branchname'),
+                                            "score": scoreAdd - parseFloat(jf),
+                                            "coupons": 0.0,
+                                            "stored": stored,
+                                            "scorebalance": scoreAdd + parseFloat(consts.memberInfo.IntegralOverall) - parseFloat(jf),
+                                            "couponsbalance": "0",
+                                            "storedbalance": parseFloat(consts.memberInfo.StoreCardBalance) - stored ,
+                                            "psexpansivity": 0.0,
+                                            "netvalue": stored,
+                                            "inflated": 0.0
+                                        })
+                                        Log.send(2,'保存会员消费:' + params);
                                         return $.ajax({
                                             url: _config.interfaceUrl.AddMemberSaleInfo,
                                             method: 'post',
                                             contentType: "application/json",
                                             dataType: 'json',
-                                            data: JSON.stringify({
-                                                "orderid": consts.orderid,
-                                                "cardno": consts.memberInfo.MCard,
-                                                "userid": utils.storage.getter('aUserid'),
-                                                "business": utils.storage.getter('branch_id'),
-                                                "terminal": utils.storage.getter('posid'),
-                                                "serial": that.ya_formatDate(new Date(),'yyyyMMddHHmmssffff'),
-                                                "businessname": utils.storage.getter('branch_branchname'),
-                                                "score": scoreAdd - parseFloat(jf),
-                                                "coupons": 0.0,
-                                                "stored": stored,
-                                                "scorebalance": scoreAdd + parseFloat(consts.memberInfo.IntegralOverall) - parseFloat(jf),
-                                                "couponsbalance": "0",
-                                                "storedbalance": parseFloat(consts.memberInfo.StoreCardBalance) - stored ,
-                                                "psexpansivity": 0.0,
-                                                "netvalue": stored,
-                                                "inflated": 0.0
-                                            })
+                                            data:params
                                         });
                                     }
-                                }).then(function(){
-                                    utils.loading.open('打印会员消费…');
-                                    //打印会员消费
-                                    return $.ajax({
-                                        url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
-                                        method: 'get',
-                                        contentType: "application/json",
-                                        dataType: 'json',
-                                        async: false,
-                                        success: function(res3){
-                                            console.log('打印会员消费');
-                                            console.log(res3);
-                                        }
-                                    });
-                                }).then(function(){
-                                    invoiceMsg()//发票信息
+                                }).then(function(data){
+                                    if(data) {
+                                        Log.send(2,'打印结账单' );
+                                        that.printPay(2);
+                                        //打印会员消费
+                                        Log.send(2,'打印会员消费:' + _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid') );
+                                        return $.ajax({
+                                            url: _config.interfaceUrl.PrintMemberSale + '/' + utils.storage.getter('aUserid') + '/' + consts.orderid + '/' + utils.storage.getter('posid'),
+                                            method: 'get',
+                                            contentType: "application/json",
+                                            dataType: 'json',
+                                            async: false,
+                                            success: function(res3){
+                                                console.log('打印会员消费');
+                                                console.log(res3);
+                                            }
+                                        });
+                                    } else {
+                                        return false;
+                                    }
+
+                                }).then(function(data){
+                                    if(data){
+                                        invoiceMsg()//发票信息
+                                    }
+
                                 });
                             } else {
+                                Log.send(2,'雅座会员消费' );
+                                Log.send(2,'打印结账单' );
+                                that.printPay(2);
                                 //雅座会员消费
-                                utils.loading.open('打印会员消费…');
+                                Log.send(2,'雅座会员消费: ' + consts.memberAddr.vipotherurl + _config.interfaceUrl.SaleYa
+                                    + utils.storage.getter('aUserid') + '/' + consts.orderid + '/'
+                                    + consts.memberInfo.pszMobile + '/' + consts.orderid + '/' + pszCash + '/'
+                                    + jf + '/1/' + stored + '/%20/0/0/127.0.0.1:8080/');
                                 $.ajax({
                                     //002/H20161115023231006967/18655961901/H20161115023231006967/214.00/10/1/20/%20/0/0/10.66.21.8:8080/
                                     ///Sale/{aUserId}/{orderId}/{pszInput}/{pszSerial}/{pszCash}/{pszPoint}/{psTransType}/{pszStore}/{pszTicketList}/{pszPwd}/{memberyhqamount}/{server}/
@@ -2246,6 +2481,7 @@ var Order = {
                                     method: 'get',
                                     contentType: "application/json"
                                 }).then(function(data){
+
                                     if(data.Data === '1') {
                                         //打印会员消费
                                         return $.ajax({
@@ -2260,6 +2496,7 @@ var Order = {
                                             }
                                         });
                                     } else {
+                                        Log.send(3, '雅座会员消费失败: ' + JSON.stringify(data))
                                         widget.modal.alert({
                                             content: '<strong>' + data.Info + '</strong>',
                                             btnOkTxt: '',
@@ -2317,37 +2554,47 @@ var Order = {
      * 关闭结算
      */
     closeOrder: function(){
+        var that=this;
         var _cancelOrder = function(){
-            $.ajax({
-                url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
-                method: 'get'
-            }).then(function(data){
-                var  data = data.result[0];
-                if(data.Data === '1') {
-                    window.location.href = './main.jsp'
-                } else {
-                    widget.modal.alert({
-                        content:'<strong>取消外卖账单接口错误</strong>',
-                        btnOkTxt: '',
-                        btnCancelTxt: '确定'
-                    });
-                }
+            that.backDish(1,function () {
+                $.ajax({
+                    url: _config.interfaceUrl.CancelOrder + utils.storage.getter("aUserid") + '/' + consts.orderid + '/' + consts.tableno + '/',
+                    method: 'get'
+                }).then(function(data){
+                    var  data = data.result[0];
+                    if(data.Data === '1') {
+                        window.location.href = './main.jsp'
+                    } else {
+                        widget.modal.alert({
+                            content:'<strong>取消外卖账单接口错误</strong>',
+                            btnOkTxt: '',
+                            btnCancelTxt: '确定'
+                        });
+                    }
+                })
             })
+
         };
         if(g_eatType === 'in') {
             window.location.href = './main.jsp'
         } else {
-            if($('#order-dish-table tbody tr').length > 0)  {
-                var modal = widget.modal.alert({
-                    content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
-                    btnOkCb: function(){
-                        modal.close();
-                        _cancelOrder();
-                    }
-                });
-            } else {
-                _cancelOrder()
+            if(utils.getUrl.get('referer')==='1'){
+                window.location.href = './check/check.jsp'
             }
+            else {
+                if($('#order-dish-table tbody tr').length > 0)  {
+                    var modal = widget.modal.alert({
+                        content:'<strong>退出将清空当前已选菜品并取消该订单,确定放弃结算?</strong>',
+                        btnOkCb: function(){
+                            modal.close();
+                            _cancelOrder();
+                        }
+                    });
+                } else {
+                    _cancelOrder()
+                }
+            }
+
         }
 
     }
@@ -2355,6 +2602,27 @@ var Order = {
 
 
 $(document).ready(function () {
+    //$.ajaxSetup({
+    //    global: false,
+    //    async: false,
+    //    complete: function(){
+    //        utils.loading.remove();
+    //    },
+    //    error: function(){
+    //        if($('.errorAlert').length<1){
+    //            widget.modal.alert({
+    //                cls: 'fade in errorAlert',
+    //                content:'<strong>数据加载失败，请稍后重试</strong>',
+    //                width:500,
+    //                height:500,
+    //                btnOkTxt: '',
+    //                btnCancelTxt: '确定'
+    //            });
+    //        }
+    //    },
+    //    timeout: 5000
+    //});
+
     Order.init();
 });
 

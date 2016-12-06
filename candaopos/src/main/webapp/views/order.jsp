@@ -23,7 +23,7 @@
 	<link rel="stylesheet" href="../css/orderdish.css">
 	<link rel="stylesheet" href="../css/order.css">
 </head>
-<body id="order" style="overflow-y: scroll">
+<body id="order" style="overflow-y: hidden">
 
 <%
 	String orderid = request.getParameter("orderid");
@@ -36,7 +36,7 @@
 	<div id="order-modal"
 		data-backdrop="static" >
 		<header>
-			<div class="fl">餐道</div>
+			<div class="fl logo">餐道</div>
 			<div class="fr close-win" onclick="Order.closeOrder()">关闭</div>
 		</header>
 		<div class="content">
@@ -152,11 +152,11 @@
 			</div>
 			<div class="main-div">
 				<div class="dish-type">
-					<div class="nav-type-prev nav-pretype-prev">
+					<div class="nav-type-prev nav-pretype-prev btn">
 						<span class="glyphicon glyphicon-chevron-left"></span>
 					</div>
 					<ul class="nav-types nav-pref-types"></ul>
-					<div class="nav-type-next nav-type nav-pretype-next">
+					<div class="nav-type-next nav-type nav-pretype-next btn">
 						<span class="glyphicon glyphicon-chevron-right"></span>
 					</div>
 				</div>
@@ -183,7 +183,7 @@
 					<div class="paytype-input cash" id="cash">
 						<div class="form-group">
 							<span>金额：</span>
-							<input type="text" class="form-control J-pay-val" validtype="intAndFloat2" name="cash" iptType="cash">
+							<input type="text" class="form-control J-pay-val"  onpaste="return false" ondragenter="return false" oncontextmenu="return false;" style="ime-mode:disabled" validtype="intAndFloat2" name="cash" iptType="cash">
 						</div>
 						<div class="form-group the-change-div">
 							找零：<span class="the-change-span">0.00</span>
@@ -201,23 +201,23 @@
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" disabled validType='number' class="form-control J-pay-val" name="bank"  iptType="bank">
+							<input type="text"  validType='intAndFloat2' class="form-control J-pay-val" name="bank"  iptType="bank">
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
 					<div class="paytype-input membership-card hide"
 						 id="membership-card">
 						<div class="form-group" style="display: inline-flex;">
-							<input type="text" class="form-control card-number J-pay-name" name="cardNumber" placeholder="卡号">
+							<input type="text" class="form-control card-number J-pay-name" validtype="noPecial" maxlength="30" name="cardNumber" placeholder="卡号">
 							<button class="btn login-btn disabled">登录</button>
 						</div>
 						<div class="form-group">
 							<span>刷卡金额:</span>
-							<input type="text" disabled validType='number' class="form-control  J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberCash" id="memberCash">
+							<input type="text" disabled validType='intAndFloat2' class="form-control  J-pay-val"  iptType="memberCash" id="memberCash">
 						</div>
 						<div class="form-group">
 							<span>使用积分:</span>
-							<input type="text" disabled validType='number' class="form-control J-pay-val" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   iptType="memberJf"  id="memberJf">
+							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val"    iptType="memberJf"  id="memberJf">
 						</div>
 						<div class="form-group">
 							<span>会员密码:</span>
@@ -235,29 +235,29 @@
 						</div>
 						<div class="form-group">
 							<span>挂账金额:</span>
-							<input type="text" validType='number' disabled class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
+							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
 					<div class="paytype-input pay-treasure hide" id="pay-treasure">
 						<div class="form-group">
 							<span>支付宝:</span>
-							<input type="text" class="form-control J-pay-name" name="alipayName" >
+							<input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="alipayName" >
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" validType='number'   class="form-control J-pay-val" name="alipay" iptType="alipay">
+							<input type="text" validType='intAndFloat2'   class="form-control J-pay-val" name="alipay" iptType="alipay">
 						</div>
 					</div>
 					<!-- 微信支付 -->
 					<div class="paytype-input wechat-pay hide" id="wechat-pay">
 						<div class="form-group">
 							<span>微信号:</span>
-							<input type="text"   class="form-control J-pay-name" name="wpayName">
+							<input type="text"   class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="wpayName">
 						</div>
 						<div class="form-group">
 							<span>金额:</span>
-							<input type="text" validType='number'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
+							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
 						</div>
 					</div>
 					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
@@ -274,7 +274,7 @@
 							<li>.</li><li>0</li><li>00</li>
 						</ul>
 						<ul>
-							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
+							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
 						</ul>
 					</div>
 
@@ -292,7 +292,7 @@
 							<li>S</li><li>T</li><li>U</li><li>V</li><li>W</li><li>X</li>
 						</ul>
 						<ul>
-							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn" onclick="Order.doSettlement()">确定</li>
+							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
 						</ul>
 					</div>
 				</div>
@@ -324,7 +324,7 @@
 	                    <div class="form-group coupname">团购券</div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">使用数量:</span>
-	                    	<input type="text"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"   class="form-control J-pref-ipt padding-left">
+	                    	<input type="text"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" autofocus  class="form-control J-pref-ipt padding-left">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -414,9 +414,10 @@
 				</div>
 				<div class="modal-body">
 					<div class="dialog-sm-info">
+						<div class="form-group dishname" style="font-size: 16px;color: #FF5803;padding-left: 10px;"><span class="dish-name">扇贝</span></div>
 						<div class="form-group">
 							<span class="inpt-span">退菜数量:</span>
-							<input type="text" id="backDishNumIpt"      class="form-control padding-left">
+							<input type="text" id="backDishNumIpt"   autofocus   class="form-control padding-left">
 						</div>
 						<div class="virtual-keyboard">
 							<ul>
@@ -459,7 +460,7 @@
 	                    <div class="form-group coupname"><span id="coup-name">称重菜品</span></div>
 	                    <div class="form-group">
 	                    	<span class="inpt-span">称重数量:</span>
-	                    	<input type="text" class="form-control padding-left" onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')" id="weight-num">
+	                    	<input type="text" class="form-control padding-left" autofocus onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')" id="weight-num">
 	                    </div>
 	                    <div class="virtual-keyboard">
 							<ul>
@@ -579,7 +580,7 @@
 					<div class="dialog-sm-info">
 						<div class="form-group">
 							<span class="inpt-span">钱箱密码:</span>
-							<input type="text" class="form-control padding-left J-num">
+							<input type="text" class="form-control padding-left J-num" autofocus>
 						</div>
 						<div class="virtual-keyboard">
 							<ul>
@@ -628,7 +629,7 @@
 								<li>账单金额：<span class="orderMoney"></span></li>
 								<li>发票金额：
 									<span class="plus_sign minus">-</span>
-									<input type="text" class="invoiceMoney" style='width: 70px;margin:0 5px;padding-left:5px;height: 28px;border: none;'>
+									<input type="text" class="invoiceMoney"  autofocus style='width: 70px;margin:0 5px;padding-left:5px;height: 28px;border: none;'>
 									<span class="plus_sign Add_key">+</span>
 								</li>
 							</ul>

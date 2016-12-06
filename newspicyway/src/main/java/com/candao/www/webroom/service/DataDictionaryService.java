@@ -52,7 +52,14 @@ public interface DataDictionaryService {
    * @return
    */
   public List<Map<String,Object>> getDatasByType(String type);
-  
+
+    /**
+     * 获取某个分类下的所有字典数据，忽略状态
+     * @param type
+     * @return
+     */
+  public List<Map<String,Object>> getDatasByTypeIgnoreStatus(String type);
+
   /**
    * 获取通知消息类型
    * @param type

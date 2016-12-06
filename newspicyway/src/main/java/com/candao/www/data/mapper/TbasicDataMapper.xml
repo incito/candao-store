@@ -51,10 +51,11 @@
 	select t.id, t.itemid, t.itemDesc, t.itemSort,t.isShow, t.status, t.fid, t.depthnum, t.itemType,
 		t.create_time, t.update_time,t.remark,t.itemSort
 , count(tdd.id) countDish
-		from  t_basicdata t LEFT JOIN t_dish_dishtype tdd ON t.id = tdd.columnid
+		from  t_template_dishunit td,t_basicdata t LEFT JOIN t_dish_dishtype tdd ON t.id = tdd.columnid
 <!-- 		left JOIN t_basicdata ft on t.fid=ft.id  -->
 		<where>
-		t.fid = #{id,jdbcType=VARCHAR}
+		td.dishid = tdd.dishid and td.menuid = (select menuid from v_currmenu) 
+		and t.fid = #{id,jdbcType=VARCHAR}
 			and t.status = 1 
 		</where> 
 		GROUP BY t.id

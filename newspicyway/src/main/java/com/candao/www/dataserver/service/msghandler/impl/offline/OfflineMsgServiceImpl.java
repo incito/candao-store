@@ -31,15 +31,6 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
         }
     }
 
-    @Override
-    @Transactional
-    public Integer save(OfflineMsg offlineMsg) {
-        //如果isSingle为1，一个机具同种类型的消息只保存一条
-        if (1 == offlineMsg.getIsSingle()) {
-            offlineMsgMapper.deleteMsg(offlineMsg.getDeviceGroup(), offlineMsg.getDeviceId(), offlineMsg.getMsgType());
-        }
-        return offlineMsgMapper.save(offlineMsg);
-    }
 
     @Override
     @Transactional
@@ -65,10 +56,6 @@ public class OfflineMsgServiceImpl implements OfflineMsgService {
         return offlineMsgMapper.getAllOffLineMsg(group, id);
     }
 
-    @Override
-    public void deleteById(String id) {
-        offlineMsgMapper.deleteById(id);
-    }
 
     @Override
     public void deleteMsgByExpireTime(final Date curDate) {

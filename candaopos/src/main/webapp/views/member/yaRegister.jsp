@@ -23,7 +23,7 @@
 </head>
 <body>
 <header>
-    <div class="fl">餐道</div>
+    <div class="fl logo">餐道</div>
     <div class="fr" onclick="goBack();">返回</div>
 </header>
 <article>
@@ -33,7 +33,7 @@
             <div class="col-md-7">
                 <div class="form-group form-group-base f-oh" style="margin-bottom: 10px">
                     <span class="form-label f-fl">会员卡号:</span>
-                    <input value=""   type="text" class="form-control f-fl ya_Register" autocomplete="off">
+                    <input value=""  validType='noPecial2' maxlength="20"  type="text" class="form-control f-fl ya_Register" autocomplete="off">
                 </div>
                 <div class="form-group form-group-base" style="margin-bottom: 10px;">
                     <span class="form-label">会员密码:</span>

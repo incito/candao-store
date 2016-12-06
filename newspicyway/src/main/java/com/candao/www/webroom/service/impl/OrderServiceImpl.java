@@ -1186,7 +1186,13 @@ public class OrderServiceImpl implements OrderService {
         params.put("id", orderid);
         if (orderid != null && !orderid.isEmpty() && !orderid.equals("null")) {
             if (!params.containsKey("clean")) {
-                mapRet.put("rows", getMapData(orderid));// 获取订单数据
+                List<Map<String, Object>> menuData = getMapData(orderid);
+				mapRet.put("rows",menuData);// 获取订单数据
+				if(menuData==null||menuData.isEmpty()){
+					Map<String, Object> delPreFerInfoMap=new HashMap<>();
+					delPreFerInfoMap.put("orderid", orderid);
+					detailPreferentialDao.deleteDetilPreFerInfo(delPreFerInfoMap);
+				}
             }
             // 或POS使用数据订单信息
             mapRet.put("userOrderInfo", findOrderByInfo(orderid));

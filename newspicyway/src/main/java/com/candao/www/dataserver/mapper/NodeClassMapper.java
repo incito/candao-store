@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by ytq on 2016/3/21.
  */
 public interface NodeClassMapper {
-    String getMaxClassNo();
+    String getMaxClassNo(Map<String,Object> param);
 
     String getMaxClassNoToday(@Param("preStr") String preStr);
 

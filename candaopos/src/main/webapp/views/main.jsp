@@ -140,7 +140,7 @@
 </head>
 <body>
 <header>
-    <div class="fl">餐道</div>
+    <div class="fl logo">餐道</div>
     <!--div class="fl menu-top">
         <div class="J-btn-memberView">会员查询</div><div class="J-btn-storge">会员储值</div><div class="J-btn-register">会员注册</div>
     </div-->
@@ -151,6 +151,8 @@
         </ul>
     </div>
     <div class="exit-sys">退出系统</div>
+<%--<div class="toggle-full" onclick="utils.toggleFullScreen(this);">全屏模式</div>--%>
+    <%--<div class="toggle-full" onclick="minimizeWindow()">最小化</div>--%>
 </header>
 <article>
     <div class="rooms-type">
@@ -236,7 +238,7 @@
                         <div>
                             <span>服务员编号:</span>
                             <input type="text" validType='number'
-                                   class="form-control serverName J-server-name">
+                                   class="form-control serverName J-server-name" autofocus>
                         </div>
                         <%--<div>--%>
                         <%--<span>桌号:</span>--%>

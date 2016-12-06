@@ -46,6 +46,9 @@
 	     
 	     
 	     <set>
+	     <if test="areaid != null">
+	     areaid=#{areaid},
+	     </if>
 	     <if test="areaNo != null ">
 	     areaNo=#{areaNo},
 	     </if>
@@ -56,13 +59,13 @@
 	     status=#{status},
 	     </if> 
 	      <if test="custPrinter != null ">
-	     custPrinter=#{custPrinter},
+	     custPrinter=#{custPrinter}
 	     </if> 
 	      <if test="areaSort != null ">
-	     areaSort=#{areaSort},
+	     areaSort=#{areaSort}
 	     </if> 
 	     <if test="branchid != null ">
-	     branchid=#{branchid},
+	     branchid=#{branchid}
 	     </if>
 	      modifytime = now()
 	   	 </set> 
@@ -232,7 +235,7 @@
 	</foreach>
 	</update>
 	<select id="findTableCountAndAreaname"  resultMap="findResultMap">
-		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' ,tt.areaSort FROM  t_tablearea tt LEFT JOIN
+		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' FROM  t_tablearea tt LEFT JOIN 
 		`t_table` t on t.areaid=tt.areaid where  tt.status =1 and (t.`status` is null or t.`status`!=5)
 		GROUP BY tt.areaid order by IFNULL(tt.areaSort,0) ASC ,tt.modifytime ASC,tt.areaname ASC
  	</select>
