@@ -153,7 +153,10 @@ var AddDish = {
 			var me = $(this);
 			var pid = me.attr("pid");
 			var dish = dishesMap.get(pid);
-
+			Log.send(2, '点菜');
+			Log.send(2, '查询菜品状态:' + JSON.stringify({
+					dishUnit: dish.unit
+				}));
 			$.ajax({
 				url: _config.interfaceUrl.GetDishStatus + '/' + dish.dishid + '/',
 				method: 'POST',
@@ -165,18 +168,20 @@ var AddDish = {
 				})
 			}).then(function(res){
 				var result = JSON.parse(res.substring(12, res.length-3));
-
+				Log.send(2, '查询菜品状态返回:' + JSON.stringify(res));
 				if(result.Data === '1') {//接口返回成功
 					if(result.Info === '0') {//菜品状态正常
 						if (dish.dishtype == "0") {
 							//多口味菜品
 							if(dish.imagetitle.length > 0) {
+								Log.send(2, '多口味菜');
 								that.initNoteDialog(2, dish);
 								return false;
 							}
 
 							//临时菜
 							if($('li[itemid="' + dish.itemid + '"] span').text() === "pos专用菜品"  && dish.title === "临时菜") {
+								Log.send(2, '临时菜');
 								dish.temporary = '1';
 								dom.lscDialog.find('input').val('');
 								dom.lscDialog.off('click','.J-btn-submit').on('click','.J-btn-submit', function(){
@@ -230,6 +235,7 @@ var AddDish = {
 
 									that.addDish(dish);
 
+									Log.send(2, '临时菜:' + JSON.stringify(dish));
 									dom.lscDialog.modal('hide');
 								});
 								dom.lscDialog.modal('show');
@@ -256,6 +262,7 @@ var AddDish = {
 								var totalPrice = that.calTotalPrice(num, dish.price).toFixed(2);
 								$tr.find("td.price").text(totalPrice);
 								seldish.dishnum = num;
+								Log.send(2, '菜品已经存在,修改菜品数量:' + JSON.stringify(seldish))
 								dishCartMap.put(findCid, seldish);
 
 								//更新总消费金额
@@ -275,7 +282,7 @@ var AddDish = {
 								});
 								return false
 							}
-
+							Log.send(2, '鱼锅数据查询:' + _config.interfaceUrl.GetFishPotDish + '/' + dish.dishid + '/')
 							$.ajax({
 								url: _config.interfaceUrl.GetFishPotDish + '/' + dish.dishid + '/',
 								method: 'GET',
@@ -283,6 +290,7 @@ var AddDish = {
 								dataType:'text'
 							}).then(function(res1){
 								var res1 = JSON.parse(res1.substring(12, res1.length-3));
+								Log.send(2, '鱼锅数据返回:' + JSON.stringify(res1));
 								if(res1.Data === '1') {
 									that.initFishPotModal(dish, res1.OrderJson);
 								} else {
@@ -295,6 +303,10 @@ var AddDish = {
 							});
 						} else if (dish.dishtype == "2") {
 							//套餐
+							Log.send(2, '套餐数据查询:' + JSON.stringify({
+									menuid: dish.menuid,
+									dishides: dish.dishid
+								}));
 							$.ajax({
 								url: _config.interfaceUrl.GetMenuComboDish,
 								method: 'POST',
@@ -305,6 +317,7 @@ var AddDish = {
 									dishides: dish.dishid
 								})
 							}).then(function(res1){
+								Log.send(2, '套餐数据返回:' + JSON.stringify(res1));
 								if(res1.code === '0') {
 									res1.data.pid = pid;
 									that.initComboDishModal(res1.data);
@@ -317,21 +330,9 @@ var AddDish = {
 								}
 
 							});
-
-							//$("#combodish-dialog").modal("show");
-							//$("#combodish-dialog .num-btns .num-btn").unbind("click").on("click", function () {
-							//
-							//});
-							//
-							//$("#combodish-dialog .avoid").unbind("click").on("click", function () {
-							//	if ($(this).hasClass("active")) {
-							//		$(this).removeClass("active");
-							//	} else {
-							//		$(this).addClass("active");
-							//	}
-							//});
 						}
 					} else {
+						Log.send(2, '菜品沽清');
 						//菜品沽清
 						widget.modal.alert({
 							cls: 'fade in',
@@ -343,6 +344,7 @@ var AddDish = {
 						});
 					}
 				} else {
+					Log.send(2, '获取菜品状态失败');
 					widget.modal.alert({
 						cls: 'fade in',
 						content:'<strong>获取菜品状态失败!</strong>',
@@ -787,14 +789,14 @@ var AddDish = {
 
 	//获取菜品分类
 	renderDishType: function () {
-		var that = this
+		var that = this;
 		$.ajax({
 			url: _config.interfaceUrl.GetDishGroupInfos,
 			method: 'POST',
 			contentType: "application/json",
 			dataType:'json',
 			success: function(res){
-
+				Log.send(2, '获取菜品分类:' + JSON.stringify(res));
 				if(res.code === '0') {
 					var htm = '';
 					$.each(res.data, function(k,v){
@@ -879,6 +881,7 @@ var AddDish = {
 				contentType: "application/json",
 				dataType:'text',
 				success: function(res){
+					Log.send(2, '获取菜品数据:' + JSON.stringify(res));
 					var result = JSON.parse(res.substring(12, res.length-3));
 					if(result.Data === '1') {
 						$.each(result.OrderJson , function(k,v){
@@ -1002,6 +1005,7 @@ var AddDish = {
 			});
 		}
 
+		Log.send(2, 'addDish:' + JSON.stringify(dish));
 		dishCartMap.put(cid, dish);
 		$("#sel-dish-table tbody").prepend(tr);
 
@@ -1265,6 +1269,7 @@ var AddDish = {
 				dish.dishnote = note;
 				dish.dish_avoids = dish_avoids;
 				dish.sperequire=note1;//添加忌口
+				Log.send(2, '确认备注:' + JSON.stringify(dish));
 				dishCartMap.put(cid, dish);
 
 			}
@@ -1294,6 +1299,7 @@ var AddDish = {
 					var totalPrice = that.calTotalPrice(num, tastedish.price).toFixed(2);
 					$tr.find("td.price").text(totalPrice);
 					seldish.dishnum = num;
+					Log.send(2, '确认备注:' + JSON.stringify(dish));
 					dishCartMap.put(findCid, seldish);
 				} else {
 					tastedish.dishnum = '1';
@@ -1458,10 +1464,12 @@ var AddDish = {
 			}),
 			dataType: 'json',
 		}).then(function(res){
-
+			Log.send(2, '下单')
+			Log.send(2, '获取订单信息:' + JSON.stringify(res));
 			if (res.code === '0') {
-				//首次点菜 && 餐具设置收费 && 堂食
+				//首次点菜 && 餐具设置收费 && 堂食 && pad设置免餐具费
 				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in' && res.data.userOrderInfo.isFree === '0') {
+					Log.send(2, '首次点菜 && 餐具设置收费 && 堂食 && pad设置免餐具费');
 					rows.push({
 						"printtype": "0",
 						"pricetype": 0,//0：普通 1：赠菜
@@ -1485,6 +1493,16 @@ var AddDish = {
 						"dishes": null
 					});
 				}
+
+				Log.send(2, '下单:' + url);
+				Log.send(2, '下单参数:' + JSON.stringify({
+						"currenttableid": consts.tableno,
+						"globalsperequire": $('#order-note').text(),
+						"orderid": consts.orderid,
+						"operationType": 1,
+						"sequence": 1,
+						"rows": rows
+					}));
 				$.ajax({
 					url: url,
 					method: 'POST',
@@ -1499,11 +1517,13 @@ var AddDish = {
 						"rows": rows
 					})
 				}).then(function(res){
+					Log.send(2, '下单返回:' + JSON.stringify(res));
 					if(res.code === '0') {
 						cb && cb();
 
 						if(type === 2) {
 							var putOrderUrl = _config.interfaceUrl.SetTakeoutOrderOnAccount + consts.tableno + '/' + consts.orderid + '/' + dom.guadanDialog.find('.payment-unit').attr('preferential') + '/' + dom.guadanDialog.find('.payment-unit').val() + '/' + dom.guadanDialog.find('.contact').val() + '/' + dom.guadanDialog.find('.tel').val() + '/';
+							Log.send(2, '外卖挂单: ' + putOrderUrl);
 							$.ajax({
 								url: putOrderUrl,
 								method: 'get',
@@ -1511,6 +1531,7 @@ var AddDish = {
 							}).then(function(data){
 								dom.guadanDialog.modal('hide');
 								var  data=JSON.parse(data.substring(12, data.length - 3));
+								Log.send(2, '外卖挂单: ' + JSON.stringify(data));
 								if(data.Data === '1'){
 									var modalIns = widget.modal.alert({
 										content:'<strong>设置外卖挂单成功,挂单单号:[' + consts.orderid  + ']</strong>',
@@ -1721,6 +1742,7 @@ var AddDish = {
 							v.dishnum = num;
 						}
 					});
+					Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
 					dishCartMap.put(cid, dish);
 				}
 			} else {
@@ -1747,6 +1769,7 @@ var AddDish = {
 			} else {
 				$tr.find("td.num").text(num);
 				dish.dishnum = num;
+				Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
 				dishCartMap.put(cid, dish);
 
 			}
@@ -1760,6 +1783,7 @@ var AddDish = {
 
 	//清空已菜品
 	clearSelected: function(){
+		Log.send(2, '清空已菜品');
 		var modalIns = widget.modal.alert({
 			content:'<strong>确定要清空已选菜品吗？</strong>',
 			btnOkCb:function () {
@@ -1796,6 +1820,7 @@ var AddDish = {
 	 * 赠菜操作  调接口
 	 */
 	doGiveRight: function(){
+		Log.send(2, '赠菜');
 		$("#givefood-dialog").modal('hide');
 		$('#givefood-right').load("./check/impower.jsp",{"title" : "赠菜授权","userRightNo":"030207","cbd":"AddDish.doOrder(1)"});
 		$('#givefood-right').modal('show');
@@ -1833,6 +1858,7 @@ var AddDish = {
 	 * 挂单
 	 */
 	guadan: function(){
+		Log.send(2,'挂单')
 		$("#guadan-dialog").modal("show");
 	},
 
@@ -1866,27 +1892,6 @@ var AddDish = {
 	},
 };
 
-//
-///**
-// * 刷新订单
-// */
-//function refreshOrder(){
-//	if(dishCartMap != null && dishCartMap.size()>0){
-//		var keys = dishCartMap.keySet();
-//		$.each(keys, function(i, key){
-//			var dish = dishCartMap.get(key);
-//			var totalPrice = calTotalPrice(dish.dishnum, dish.price);
-//			var tr = "<tr dishid='"+dish.dishid+"' price="+dish.price+">"
-//				+ "<td class='dishname' name='"+dish.dishname+"' note='"+dish.dishnote+"'>"+dish.dishname+"</td>"
-//				+ "<td class='num'>"+dish.dishnum+"</td>"
-//				+ "<td class='price'>"+totalPrice+"</td>"
-//				+ "</tr>";
-//			$("#order-dish-table tbody").append(tr);
-//		});
-//		page1(nowPage1);
-//		trClickEvent();
-//	}
-//}
 
 
 //关闭dialog
