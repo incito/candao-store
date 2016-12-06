@@ -861,7 +861,8 @@ function businessDataTb(result) {
 				+ '</td><td>' + item.settlementnum + '</td><td>'
 				+ item.shouldaverage + '</td><td>' + item.paidinaverage
 				+ '</td><td>' + item.attendance + '</td><td>' + item.overtaiwan
-				+ '</td><td>' + item.avgconsumtime + '</td><td>' + item.shouldamountNormal + '</td></tr>';
+				+ '</td><td>' + item.avgconsumtime + '</td><td>' + item.shouldamountNormal + '</td><td>' + item.serviceAmount
+			+ '</td></tr>';
 
 		takeoutTb = '<tr><td>' + item.shouldamountTakeout
 				+ '</td><td>' + item.paidinamountTakeout

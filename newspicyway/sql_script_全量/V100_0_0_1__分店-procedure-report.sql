@@ -10,7 +10,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                                     OUT po_errmsg   VARCHAR(100))
   SQL SECURITY INVOKER
   COMMENT '营业数据明细表'
-    label_main:
+   label_main:
   BEGIN
 
     -- 返回字段说明如下(23个字段)：
@@ -18,7 +18,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     --
     -- 返回数据举例（只返回一条数据）：
     -- 3895.00 3636.00 259.00 3895 0 0 0 14.50 0 0 0 0.5 0.5 0.5 9 432.78 28 129.86	139.11 0.41	0.70 31 0.00 0.00	0.00 0.00	0.00
-	DECLARE v_taocanyouhui					DOUBLE(13, 2) DEFAULT 0;    
+	DECLARE v_taocanyouhui					DOUBLE(13, 2) DEFAULT 0;
 	DECLARE v_date_start DATETIME;
     DECLARE v_date_end DATETIME;
     DECLARE v_paidinamount DOUBLE(13, 2) DEFAULT 0; #实收
@@ -51,7 +51,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     DECLARE v_sa_tableconsumption DOUBLE(13, 2) DEFAULT 0; #营业数据统计(桌均消费）
     DECLARE v_sa_settlementnum INT DEFAULT 0; #营业数据统计(总人数）
     DECLARE v_sa_shouldamount DOUBLE(13, 2) DEFAULT 0; #营业数据统计(应收）
-    DECLARE v_sa_serviceAmount DOUBLE(13, 2) DEFAULT 0; #服务费
+    DECLARE v_serviceAmount DOUBLE(13, 2) DEFAULT 0; #服务费
     DECLARE v_sa_shouldaverage DOUBLE(13, 2) DEFAULT 0; #营业数据统计(应收人均）
     DECLARE v_sa_paidinaverage DOUBLE(13, 2) DEFAULT 0; #营业数据统计(实收人均）
     DECLARE v_sa_attendance DOUBLE(13, 2) DEFAULT 0; #营业数据统计(上座率）
@@ -357,9 +357,12 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       AND a.orderstatus = 3
       AND (b.dishtype<>2
 		OR (b.dishtype = 2 AND b.superkey <> b.primarykey));
-		# 服务费
-		SELECT IFNULL(SUM(chargeAmount),0) INTO v_sa_serviceAmount FROM t_service_charge sc,t_temp_order o where sc.orderid=o.orderid and sc.chargeOn=1;
-    # 会员登录后菜价变化
+		#服务费
+		SELECT IFNULL(SUM(chargeAmount),0) INTO v_serviceAmount from t_service_charge a,t_temp_order b where a.orderid=b.orderid and a.chargeOn=1;
+		#应收包含服务费
+		SET v_sa_shouldamount=v_sa_shouldamount+v_serviceAmount;
+
+		    # 会员登录后菜价变化
     SELECT SUM((IFNULL(b.orignalprice, 0) - IFNULL(b.orderprice, 0)) * b.dishnum)
     INTO
       v_da_meberDishPriceFree
@@ -372,7 +375,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
 			AND (b.dishtype <> 2 OR(b.dishtype =2 AND b.superkey = b.primarykey));
 
 #套餐优惠
-	SELECT 
+	SELECT
 		IFNULL(SUM(CASE WHEN superkey=primarykey THEN 0 ELSE orignalprice*dishnum END),0)
 		-
 		IFNULL(SUM(CASE WHEN superkey<>primarykey THEN 0 ELSE orignalprice*dishnum END),0)
@@ -516,7 +519,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
    SELECT IFNULL(SUM(payamount),0) INTO v_temp_paidinamount
    FROM t_temp_settlement_detail
    WHERE payway IN (SELECT itemid FROM v_revenuepayway);
- 
+
    SET v_paidinamount = v_temp_paidinamount - v_da_mebervalueadd;
     #     modified by caicai
     #     为保证POS清机单上的优免金额和这里的优免相同，将折扣金额去掉
@@ -557,7 +560,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     WHERE tod.orderid IN (SELECT orderid
                           FROM t_temp_order
                           WHERE orderstatus = 3);
-
+		SELECT v_closed_bill_shouldamount+IFNULL(SUM(chargeAmount),0) INTO v_closed_bill_shouldamount FROM t_service_charge where orderid in (SELECT orderid FROM t_temp_order WHERE orderstatus = 3) and chargeOn=1;
     SELECT
       IFNULL(sum(too.custnum), 0),
       IFNULL(count(too.orderid), 0)
@@ -572,6 +575,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
     WHERE tod.orderid IN (SELECT orderid
                           FROM t_temp_order
                           WHERE orderstatus = 0);
+		SELECT v_no_bill_shouldamount+IFNULL(SUM(chargeAmount),0) INTO v_no_bill_shouldamount FROM t_service_charge where orderid in (SELECT orderid FROM t_temp_order WHERE orderstatus = 0) and chargeOn=1;
 
     IF pi_sb > -1
     THEN
@@ -679,12 +683,13 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       zaitaishu              INT(11),
       kaitaishu              INT(11),
       memberDishPriceFree    DOUBLE(13, 2),
-			taocanyouhui					 DOUBLE(13, 2)
+			taocanyouhui					 DOUBLE(13, 2),
+			serviceAmount					 DOUBLE(13, 2)
     )
       ENGINE = MEMORY
       DEFAULT CHARSET = utf8;
     INSERT INTO t_temp_res VALUES
-      (v_sa_shouldamount + v_oa_shouldamount+v_sa_serviceAmount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount + v_sa_serviceAmount - v_paidinamount,
+      (v_sa_shouldamount + v_oa_shouldamount, v_paidinamount, v_sa_shouldamount + v_oa_shouldamount  - v_paidinamount,
                                               v_pa_cash, v_pa_credit, v_pa_card, v_pa_icbc_card, v_pa_weixin,
                                               v_pa_zhifubao, v_pa_paidinamount - v_da_mebervalueadd, v_da_free,
         v_da_integralconsum, v_da_meberTicket, v_da_discount, v_da_fraction, v_da_give, v_da_roundoff,
@@ -699,7 +704,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
                                                                                         v_oa_ordercount, v_oa_avgprice,
         v_other_vipordercount, v_other_viporderpercent, v_ma_total, v_closed_bill_nums, v_closed_bill_shouldamount,
         v_closed_person_nums, v_no_bill_nums, v_no_bill_shouldamount, v_no_person_nums, v_bill_nums,
-       v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu, v_da_meberDishPriceFree,v_taocanyouhui);
+       v_bill_shouldamount, v_person_nums, v_zaitaishu, v_kaitaishu, v_da_meberDishPriceFree,v_taocanyouhui,v_serviceAmount);
     SELECT *
     FROM
       t_temp_res;
@@ -4482,7 +4487,7 @@ lable_fetch_loop:
 
   INSERT INTO t_temp_shouldamount
   SELECT a.orderid
-       , sum(a.orignalprice * a.dishnum)
+       , sum(a.orignalprice * a.dishnum)+(SELECT IFNULL(SUM(chargeAmount),0) from t_service_charge where orderid=b.orderid and chargeOn=1)
   FROM
     t_temp_order_detail a, t_temp_orderid b
   WHERE
@@ -4973,6 +4978,9 @@ lable_loop:
       t_temp_order_detail a, t_temp_orderid b
     WHERE
       a.orderid = b.orderid;
+
+    #服务费
+		SELECT v_shouldamount+IFNULL(SUM(chargeAmount),0) INTO v_shouldamount from t_service_charge a,t_temp_orderid b where a.orderid = b.orderid AND a.chargeOn=1;
 
     #计算拉动实收(含虚增)
     SELECT ifnull(sum(a.payamount), 0)
@@ -7998,7 +8006,10 @@ BEGIN -- 返回字段说明如下
                              AND too.branchid = pi_branchid
                              AND tod.begintime > c_begintime
                              AND tod.begintime < v_time_interval);
-
+      #服务费
+			SET v_orderamount=IFNULL(v_orderamount,0)+(select IFNULL(SUM(chargeAmount),0) from t_service_charge where orderid in (select orderid from t_temp_order too where too.branchid = pi_branchid
+                             AND too.begintime > c_begintime
+                             AND too.begintime < v_time_interval) and chargeOn=1);
       #已结账台数
       SET v_alreadycheckNum = (SELECT count(1)
                                FROM
@@ -8021,6 +8032,10 @@ BEGIN -- 返回字段说明如下
                              AND too.branchid = pi_branchid
                              AND too.endtime > c_begintime
                              AND too.endtime < v_time_interval);
+      #服务费
+			SET v_checkamount=IFNULL(v_checkamount,0)+(select IFNULL(SUM(chargeAmount),0) from t_service_charge where orderid in (select orderid from t_temp_order too where too.branchid = pi_branchid
+                             AND too.endtime > c_begintime
+                             AND too.endtime < v_time_interval) and chargeOn=1);
 
       #未结账台数
       SET v_notcheckNum = (SELECT count(1)
