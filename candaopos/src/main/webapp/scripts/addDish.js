@@ -1135,6 +1135,8 @@ var AddDish = {
 					return result;
 				})());
 				ret.push('</ul></div>');
+			} else {
+				dom.noteDialog.find('.btn-save').removeAttr('disabled');
 			}
 		}
 
@@ -1651,7 +1653,7 @@ var AddDish = {
 				}
 			});
 			focusIpt = dom.numDialog.find('.J-num');
-			if(dishtype === 2 || dishtype === 1 )  {
+			if(dishtype === 2 || (dishtype === 1 && $target.attr('ispot') === '1' ) || (dishtype === 1 && $target.hasClass('main-pot')))  {
 				widget.modal.alert({
 					content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
 					btnOkTxt: '',
@@ -1752,7 +1754,7 @@ var AddDish = {
 					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
 				} else {
 					widget.modal.alert({
-						content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+						content:'<strong>套餐和鱼锅不能直接修改数量,或者删除</strong>',
 						btnOkTxt: '',
 						btnCancelTxt: '确定'
 					});

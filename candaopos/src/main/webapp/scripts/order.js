@@ -365,7 +365,7 @@ var Order = {
             var name = me.find('.dish-name').text();
             var type = $('.nav-pref-type.active').attr('preid') !== '-1'; // true:设置  false:恢复
             if(type) {
-                tips = '设置[' + name + ']为不常用优惠(设置后可在对应分类查看,使用)'
+                tips = '设置[' + name + ']为不常用优惠(设置后可在不常用优惠分类里查看、使用)'
             } else {
                 tips = '恢复[' + name + ']为常用优惠(恢复后可在对应分类查看,使用)'
             }
