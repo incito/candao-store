@@ -2245,29 +2245,30 @@ COLLATE utf8_general_ci;
 -- Definition for table t_table
 --
 DROP TABLE IF EXISTS t_table;
-CREATE TABLE t_table (
-  tableid VARCHAR(50) NOT NULL,
-  position VARCHAR(50) DEFAULT NULL,
-  status INT(11) DEFAULT NULL,
-  restaurantId VARCHAR(20) DEFAULT NULL,
-  isVip INT(11) DEFAULT NULL,
-  iscompartment INT(11) DEFAULT NULL,
-  isavailable VARCHAR(20) DEFAULT NULL,
-  buildingNo VARCHAR(50) DEFAULT NULL,
-  minprice DECIMAL(10, 2) DEFAULT NULL,
-  fixprice DECIMAL(10, 2) DEFAULT NULL,
-  tableNo VARCHAR(50) DEFAULT NULL,
-  personNum INT(11) DEFAULT NULL,
-  tabletype VARCHAR(5) DEFAULT NULL,
-  areaid VARCHAR(50) NOT NULL,
-  tableName VARCHAR(50) DEFAULT NULL,
-  orderid VARCHAR(50) DEFAULT NULL,
-  custPrinter VARCHAR(50) DEFAULT NULL COMMENT '客用单打印机',
-  modifytime DATETIME DEFAULT NULL,
-  PRIMARY KEY (tableid)
-)
-ENGINE = INNODB
-CHARACTER SET utf8
+CREATE TABLE `t_table` (
+  `tableid` varchar(50) NOT NULL,
+  `position` varchar(50) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
+  `restaurantId` varchar(20) DEFAULT NULL,
+  `isVip` int(11) DEFAULT NULL,
+  `iscompartment` int(11) DEFAULT NULL,
+  `isavailable` varchar(20) DEFAULT NULL,
+  `buildingNo` varchar(50) DEFAULT NULL,
+  `minprice` decimal(10,2) DEFAULT NULL,
+  `fixprice` decimal(10,2) DEFAULT NULL,
+  `tableNo` varchar(50) DEFAULT NULL,
+  `personNum` int(11) DEFAULT NULL,
+  `tabletype` varchar(5) DEFAULT NULL,
+  `areaid` varchar(50) NOT NULL,
+  `tableName` varchar(50) DEFAULT NULL,
+  `orderid` varchar(50) DEFAULT NULL,
+  `custPrinter` varchar(50) DEFAULT NULL COMMENT '客用单打印机',
+  `modifytime` datetime DEFAULT NULL,
+  `chargeOn` char(1) DEFAULT '0' COMMENT '服务费开关 0关闭 1打开',
+  `chargeType` smallint(6) DEFAULT NULL COMMENT '服务费计算方式 1比例 2固定 3时长',
+  `chargeRule` varchar(200) DEFAULT NULL COMMENT '服务费详细规则，业务自己控制存储格式',
+  PRIMARY KEY (`tableid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 COLLATE utf8_general_ci;
 
 --
@@ -2752,3 +2753,17 @@ CREATE TABLE `t_payway_set` (
 -- Enable foreign keys
 -- 
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+DROP TABLE IF EXISTS t_service_charge;
+CREATE TABLE `t_service_charge` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `orderid` varchar(50) DEFAULT NULL COMMENT '订单号',
+  `chargeOn` char(1) DEFAULT NULL COMMENT '当前单是否开启服务费 0关闭 1开启',
+  `chargeRule` varchar(200) DEFAULT NULL COMMENT '服务费规则',
+  `charge` decimal(10,2) DEFAULT NULL COMMENT '服务费',
+  `isCustom` char(1) DEFAULT NULL COMMENT '是否自定义服务费 0否 1是',
+  `autho` varchar(20) DEFAULT NULL COMMENT '授权人',
+  `ctime` datetime DEFAULT NULL COMMENT '创建时间',
+  `mtime` datetime DEFAULT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  KEY `i_o` (`orderid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

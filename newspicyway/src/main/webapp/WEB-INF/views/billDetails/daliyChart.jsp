@@ -123,6 +123,7 @@
 						<th class="name">翻台率(%)</th>
 						<th class="name">平均消费时间</th>
 						<th class="name">堂食应收</th>
+						<th class="name">服务费</th>
 					</tr>
 				</thead>
 				<tbody>

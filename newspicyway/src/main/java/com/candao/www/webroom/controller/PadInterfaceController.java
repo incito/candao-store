@@ -1,49 +1,5 @@
 package com.candao.www.webroom.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.candao.www.security.controller.BaseController;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.alibaba.fastjson.JSON;
 import com.candao.common.dto.ResultDto;
 import com.candao.common.enums.ResultMessage;
@@ -56,75 +12,46 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.SystemConstant;
-import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.data.dao.TbUserInstrumentDao;
-import com.candao.www.data.dao.TorderMapper;
-import com.candao.www.data.dao.TsettlementMapper;
-import com.candao.www.data.dao.TtellerCashDao;
-import com.candao.www.data.model.EmployeeUser;
-import com.candao.www.data.model.TJsonRecord;
-import com.candao.www.data.model.TbDataDictionary;
-import com.candao.www.data.model.TbMessageInstrument;
-import com.candao.www.data.model.TbOpenBizLog;
-import com.candao.www.data.model.TbTable;
-import com.candao.www.data.model.TbUserInstrument;
-import com.candao.www.data.model.Tdish;
-import com.candao.www.data.model.Tinvoice;
-import com.candao.www.data.model.ToperationLog;
-import com.candao.www.data.model.Torder;
-import com.candao.www.data.model.TorderDetail;
-import com.candao.www.data.model.TtellerCash;
-import com.candao.www.data.model.User;
+import com.candao.www.data.dao.*;
+import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
 import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.security.controller.BaseController;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.DataServerUtil;
-import com.candao.www.utils.HttpRequestor;
-import com.candao.www.utils.ImageCompress;
-import com.candao.www.utils.ReturnMap;
-import com.candao.www.utils.TsThread;
-import com.candao.www.webroom.model.BasePadResponse;
-import com.candao.www.webroom.model.LoginInfo;
-import com.candao.www.webroom.model.OperPreferentialResult;
-import com.candao.www.webroom.model.Order;
-import com.candao.www.webroom.model.PadConfig;
-import com.candao.www.webroom.model.SettlementInfo;
-import com.candao.www.webroom.model.SqlData;
-import com.candao.www.webroom.model.Table;
-import com.candao.www.webroom.model.TableStatus;
-import com.candao.www.webroom.model.UrgeDish;
-import com.candao.www.webroom.service.CallWaiterService;
-import com.candao.www.webroom.service.ComboDishService;
-import com.candao.www.webroom.service.DataDictionaryService;
-import com.candao.www.webroom.service.DishService;
-import com.candao.www.webroom.service.DishTypeService;
-import com.candao.www.webroom.service.GiftLogService;
-import com.candao.www.webroom.service.InvoiceService;
-import com.candao.www.webroom.service.JsonRecordService;
-import com.candao.www.webroom.service.MenuService;
-import com.candao.www.webroom.service.MessageInstrumentService;
-import com.candao.www.webroom.service.NotifyService;
-import com.candao.www.webroom.service.OpenBizService;
-import com.candao.www.webroom.service.OrderDetailService;
-import com.candao.www.webroom.service.OrderService;
-import com.candao.www.webroom.service.OrderSettleService;
-import com.candao.www.webroom.service.PadConfigService;
-import com.candao.www.webroom.service.PaywayService;
-import com.candao.www.webroom.service.PicturesService;
-import com.candao.www.webroom.service.PreferentialActivityService;
-import com.candao.www.webroom.service.TableAreaService;
-import com.candao.www.webroom.service.TableService;
-import com.candao.www.webroom.service.ToperationLogService;
-import com.candao.www.webroom.service.TorderDetailPreferentialService;
-import com.candao.www.webroom.service.UserInstrumentService;
+import com.candao.www.utils.*;
+import com.candao.www.webroom.model.*;
+import com.candao.www.webroom.service.*;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
-
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 所有pad 端处理的接口
@@ -274,7 +201,7 @@ public class PadInterfaceController extends BaseController{
                     + (order.getWomanNum() == null ? 0 : order.getWomanNum()));
         }
 
-        
+
         String returnStr = "";
         try {
         	returnStr = orderService.startOrder(order);
@@ -906,7 +833,7 @@ public class PadInterfaceController extends BaseController{
 			logger.error("结算结束异常（运行时异常）：",e);
 			 return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("结账发现未知异常，请联系餐道管理员帮您解决！"));
 		}
-        
+
     }
 
     // 进销存回调
@@ -1156,11 +1083,8 @@ public class PadInterfaceController extends BaseController{
             int[] tabletypefilter = {2, 3, 4};
             map.put("tabletypefilter", tabletypefilter);// 过滤掉餐台类型为外卖,咖啡的餐台
             List<Map<String, Object>> list = tableService.find(map);
-            if(null!=list&&!list.isEmpty()){
-                for(Map<String, Object> table:list){
+            ServiceChargeDescUnit.handleServiceCharge(list);
 
-                }
-            }
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(list));
         } catch (Exception e) {
             jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("查询所有桌台异常"));
@@ -1168,6 +1092,8 @@ public class PadInterfaceController extends BaseController{
         }
         return jsonString;
     }
+
+  
 
     /**
      * 根据餐台类型查询餐台
@@ -1198,7 +1124,7 @@ public class PadInterfaceController extends BaseController{
 
     @RequestMapping("/getTableAndType")
     @ResponseBody
-    public String getTableAndType() {
+    public Map<String,Object> getTableAndType() {
         List<Map<String,Object>> listTableArea = null;
         //0成功1失败
         Map<String,Object> res = new HashMap<>();
@@ -1217,12 +1143,12 @@ public class PadInterfaceController extends BaseController{
             res.put("code",1);
             res.put("msg",e.getMessage());
             res.put("data",null);
-            return JSON.toJSONString(res);
+            return res;
         }
         res.put("code",0);
         res.put("msg","查询成功");
         res.put("data",listTableArea);
-        return JSON.toJSONString(res);
+        return res;
     }
 
     /**
@@ -1501,14 +1427,22 @@ public class PadInterfaceController extends BaseController{
     @RequestMapping(value = "/usePreferentialItem", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView usePreferentialItem(@RequestBody String body) {
+    	Map<String, Object> result=new HashMap<>();
         ModelAndView mav = new ModelAndView();
         @SuppressWarnings("unchecked")
         Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-        OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
-        if (result.isFalg()) {
+        OperPreferentialResult operPreferentialResult = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
+        result.put("preferentialInfo", operPreferentialResult);
+        Map<String, Object> serParams = new HashMap<>();
+		serParams.put("orderId", String.valueOf(params.get("orderid")));
+    	  TServiceCharge charageService = chargeService.getChargeInfo(serParams);
+    	  if(charageService!=null){
+    		  result.put("serviceCharge", charageService);
+    	  }
+        if (operPreferentialResult.isFalg()) {
             mav.addObject(ReturnMap.getSuccessMap(result));
         } else {
-            mav.addObject(ReturnMap.getFailureMap(result.getMes(), result));
+            mav.addObject(ReturnMap.getFailureMap(operPreferentialResult.getMes(), result));
         }
 
         return mav;
@@ -1847,6 +1781,35 @@ public class PadInterfaceController extends BaseController{
             ex.printStackTrace();
         }
     }
+
+    /**
+	 * 服务费修改
+	 *
+	 * @param jsonString
+	 * @param request
+	 * @param response
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/serviceChange", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView updateServiceCharge(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+		TServiceCharge charge = new TServiceCharge();
+		charge.setOrderid((String) params.get("orderId"));
+		charge.setAutho((String) params.get("autho"));
+		charge.setChargeOn(Integer.valueOf(String.valueOf(params.get("chargeOn"))));
+		charge.setChargeAmount(new BigDecimal(String.valueOf(params.get("chargeAmount"))));
+		charge.setIsCustom(Integer.valueOf(String.valueOf(params.get("custom"))));
+		int i = chargeService.changChargeInfo(charge);
+		if (i > 0) {
+			mav.addObject(ReturnMap.getSuccessMap("修改成功！"));
+		} else {
+			mav.addObject(ReturnMap.getFailureMap("修改失败！"));
+		}
+		return mav;
+	}
 
     /**
      * 获取更换pad的信息
@@ -3562,5 +3525,7 @@ public class PadInterfaceController extends BaseController{
 
     @Autowired
     private TableAreaService tableAreaService;
+	@Autowired
+	private TServiceChargeService chargeService;
 
 }

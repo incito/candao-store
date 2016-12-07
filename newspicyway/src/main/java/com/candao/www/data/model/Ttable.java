@@ -1,85 +1,121 @@
 package com.candao.www.data.model;
 
 public class Ttable {
-    private Long tableid;
+	private Long tableid;
 
-    private String position;
+	private String position;
 
-    private String number;
+	private String number;
 	/**
 	 * 0 空闲 1 就餐 3 预定 4 已结账 5删除
 	 */
-    private Integer status;
+	private Integer status;
 
-    private Long restaurantid;
+	private Long restaurantid;
 
-    private Integer isvip;
+	private Integer isvip;
 
-    private Integer iscompartment;
+	private Integer iscompartment;
 
-    private Long isavailable;
+	private Long isavailable;
+	private int chargeOn;
+	private int chargeType;
+	private int chargeRateRule;
+	private int chargeRate;
 
-    public Long getTableid() {
-        return tableid;
-    }
+	public Long getTableid() {
+		return tableid;
+	}
 
-    public void setTableid(Long tableid) {
-        this.tableid = tableid;
-    }
+	public void setTableid(Long tableid) {
+		this.tableid = tableid;
+	}
 
-    public String getPosition() {
-        return position;
-    }
+	public String getPosition() {
+		return position;
+	}
 
-    public void setPosition(String position) {
-        this.position = position;
-    }
+	public void setPosition(String position) {
+		this.position = position;
+	}
 
-    public String getNumber() {
-        return number;
-    }
+	public String getNumber() {
+		return number;
+	}
 
-    public void setNumber(String number) {
-        this.number = number;
-    }
+	public void setNumber(String number) {
+		this.number = number;
+	}
 
-    public Integer getStatus() {
-        return status;
-    }
+	public Integer getStatus() {
+		return status;
+	}
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
-    public Long getRestaurantid() {
-        return restaurantid;
-    }
+	public Long getRestaurantid() {
+		return restaurantid;
+	}
 
-    public void setRestaurantid(Long restaurantid) {
-        this.restaurantid = restaurantid;
-    }
+	public void setRestaurantid(Long restaurantid) {
+		this.restaurantid = restaurantid;
+	}
 
-    public Integer getIsvip() {
-        return isvip;
-    }
+	public Integer getIsvip() {
+		return isvip;
+	}
 
-    public void setIsvip(Integer isvip) {
-        this.isvip = isvip;
-    }
+	public void setIsvip(Integer isvip) {
+		this.isvip = isvip;
+	}
 
-    public Integer getIscompartment() {
-        return iscompartment;
-    }
+	public Integer getIscompartment() {
+		return iscompartment;
+	}
 
-    public void setIscompartment(Integer iscompartment) {
-        this.iscompartment = iscompartment;
-    }
+	public void setIscompartment(Integer iscompartment) {
+		this.iscompartment = iscompartment;
+	}
 
-    public Long getIsavailable() {
-        return isavailable;
-    }
+	public Long getIsavailable() {
+		return isavailable;
+	}
 
-    public void setIsavailable(Long isavailable) {
-        this.isavailable = isavailable;
-    }
+	public void setIsavailable(Long isavailable) {
+		this.isavailable = isavailable;
+	}
+
+	public int getChargeOn() {
+		return chargeOn;
+	}
+
+	public void setChargeOn(int chargeOn) {
+		this.chargeOn = chargeOn;
+	}
+
+	public int getChargeType() {
+		return chargeType;
+	}
+
+	public void setChargeType(int chargeType) {
+		this.chargeType = chargeType;
+	}
+
+	public int getChargeRateRule() {
+		return chargeRateRule;
+	}
+
+	public void setChargeRateRule(int chargeRateRule) {
+		this.chargeRateRule = chargeRateRule;
+	}
+
+	public int getChargeRate() {
+		return chargeRate;
+	}
+
+	public void setChargeRate(int chargeRate) {
+		this.chargeRate = chargeRate;
+	}
 }

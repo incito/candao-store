@@ -31,7 +31,7 @@
         select status from t_table where tableid=#{tableId} LIMIT 0 , 1
     </select>
     <update id="updateTableByTableId">
-        UPDATE t_table SET orderid = #{orderId} WHERE	tableid = #{tableId}
+        UPDATE t_table SET orderid = #{orderId} WHERE (status IS NULL OR status != 5) AND tableid = #{tableId}
     </update>
     <select id="getTableNoByOrderId" resultType="java.lang.String">
         SELECT tableno FROM t_table WHERE tableid=(SELECT currenttableid FROM t_order WHERE orderid=#{orderId})

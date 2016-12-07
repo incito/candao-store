@@ -32,6 +32,7 @@ import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.dao.TorderMapper;
 import com.candao.www.data.model.TCouponRule;
 import com.candao.www.data.model.TCoupons;
+import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.data.model.TbDataDictionary;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
@@ -48,6 +49,7 @@ import com.candao.www.permit.service.UserService;
 import com.candao.www.preferential.calcpre.StrategyFactory;
 import com.candao.www.utils.OrderDetailParse;
 import com.candao.www.utils.ReturnMap;
+import com.candao.www.utils.ServiceChargeDescUnit;
 import com.candao.www.webroom.model.Coupons;
 import com.candao.www.webroom.model.CouponsInterface;
 import com.candao.www.webroom.model.OperPreferentialResult;
@@ -56,8 +58,10 @@ import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.DishUnitService;
 import com.candao.www.webroom.service.NotifyService;
 import com.candao.www.webroom.service.OpenBizService;
+import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TServiceChargeService;
 import com.candao.www.webroom.service.TableService;
 import com.candao.www.webroom.service.ToperationLogService;
 
@@ -120,8 +124,13 @@ public class OrderServiceImpl implements OrderService {
 	DataDictionaryService dataDictionaryService;
 	@Autowired
 	private OrderMapper orderMapper;
-    @Autowired
-    private TbTableDao tableDao;
+	@Autowired
+	private TbTableDao tableDao;
+
+	@Autowired
+	private OrderDetailService orderDetailService;
+	@Autowired
+	private TServiceChargeService chargeService;
 
 	public Torder findOrderByTableId(Torder order) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -141,7 +150,6 @@ public class OrderServiceImpl implements OrderService {
 		return torderMapper.update(order);
 	}
 
-
 	@Override
 	public Map<String, Object> findOrderById(String orderId) {
 
@@ -159,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
 		List<Map<String, Object>> resultMap = tableService.find(map);
 		String tableType = (String) resultMap.get(0).get("tabletype");
 		tableType = tableType == null ? "" : tableType;
-		
+
 		if (!resultMap.isEmpty() && !"2".equals(tableType) && !"3".equals(tableType)) {
 			Map<String, Object> validateResult = userService.validateLoginTypeByAccount(tOrder.getUsername(),
 					PropertiesUtils.getValue("logintype.030101"));
@@ -180,7 +188,7 @@ public class OrderServiceImpl implements OrderService {
 			mapRet = ReturnMap.getFailureMap("开台失败，桌台状态不对！");
 			return JacksonJsonMapper.objectToJson(mapRet);
 		}
-		
+
 		TbOpenBizLog tbOpenBizLog = openBizService.getOpenBizLog();
 		if (tbOpenBizLog == null) {
 			mapRet = ReturnMap.getFailureMap("开台失败，开业记录为空");
@@ -188,7 +196,6 @@ public class OrderServiceImpl implements OrderService {
 			return JacksonJsonMapper.objectToJson(mapRet);
 		}
 
-		
 		String tableId = String.valueOf(resultMap.get(0).get("tableid"));
 		int shiftid = 0;
 		String currentTime = DateUtils.getCurrentTime();
@@ -282,7 +289,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setOrderNum(maxOrderNum);
 		order.setIsFree(tOrder.getIsFree());
 		order.setNumOfMeals(tOrder.getNumOfMeals());
-	
+
 		torderMapper.insert(order);
 
 		TbTable tTable = new TbTable();
@@ -314,7 +321,6 @@ public class OrderServiceImpl implements OrderService {
 		result.put("vipaddress", vipaddress == null ? "" : vipaddress.getItemid()); // 雅座的VIP地址
 		result.put("locktime", locktime == null ? "" : locktime.getItemid()); // 屏保锁屏时间
 		result.put("delaytime", delaytime == null ? "" : delaytime.getItemid()); // 屏保停留时间
-	
 
 		// 开台前清空当前台的操作日记
 		toperationLogService.deleteToperationLogByTableNo(tOrder.getTableNo());
@@ -1139,21 +1145,20 @@ public class OrderServiceImpl implements OrderService {
 		params.put("branchid", branchid);
 		params.put("id", orderid);
 		if (orderid != null && !orderid.isEmpty() && !orderid.equals("null")) {
-			//如果是外卖订单，强制绑定对应餐台
+			// 如果是外卖订单，强制绑定对应餐台
 			doBindTableForTakeOutFood(orderid);
 
-			
 			if (!params.containsKey("clean")) {
-				 List<Map<String, Object>> menuData = getMapData(orderid);
-				mapRet.put("rows",menuData);// 获取订单数据
-				if(menuData==null||menuData.isEmpty()){
-					Map<String, Object> delPreFerInfoMap=new HashMap<>();
+				List<Map<String, Object>> menuData = getMapData(orderid);
+				mapRet.put("rows", menuData);// 获取订单数据
+				if (menuData == null || menuData.isEmpty()) {
+					Map<String, Object> delPreFerInfoMap = new HashMap<>();
 					delPreFerInfoMap.put("orderid", orderid);
 					detailPreferentialDao.deleteDetilPreFerInfo(delPreFerInfoMap);
 				}
 			}
 			// 或POS使用数据订单信息
-			Map<String, Object> userOrderInfo = findOrderByInfo(orderid);
+			Map<String, Object> userOrderInfo = orderDetailService.findOrderByInfo(orderid);
 			mapRet.put("userOrderInfo", userOrderInfo);
 			// 优惠信息
 			params.put("branchid", branchid);
@@ -1164,8 +1169,35 @@ public class OrderServiceImpl implements OrderService {
 					: String.valueOf(userOrderInfo.get("memberno")).equals("null") ? ""
 							: String.valueOf(userOrderInfo.get("memberno"));
 			params.put("memberno", menberNo);
-			
+
 			OperPreferentialResult result = preResult(params);
+
+			// 服务费信息
+			TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
+					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
+
+			// 加上服务费
+			if (serviceCharge != null) {
+				if (serviceCharge.getChargeOn() != 0) {
+					result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+					result.setReserveAmout(result.getReserveAmout().add(serviceCharge.getChargeAmount()));
+					result.setResMenuAndServeChargeAmount(
+							result.getResMenuAndServeChargeAmount().add(serviceCharge.getChargeAmount()));
+				}
+				// 封装描述
+				List<Map<String, Object>> serviceChargelist = new ArrayList<>();
+				Map<String, Object> serviceChargeMap = new HashMap<>();
+				serviceChargeMap.put("chargeType", serviceCharge.getChargeType());
+				serviceChargeMap.put("chargeRate", serviceCharge.getChargeRate());
+				serviceChargeMap.put("chargeAmount", serviceCharge.getChargeAmount());
+				serviceChargeMap.put("chargeTime", serviceCharge.getChargeTime());
+				serviceChargeMap.put("chargeOn", serviceCharge.getChargeOn());
+				serviceChargelist.add(serviceChargeMap);
+				ServiceChargeDescUnit.handleServiceCharge(serviceChargelist);
+				serviceCharge.setDesc((String) serviceChargeMap.get("chargetDesc"));
+				mapRet.put("serviceCharge", serviceCharge);
+
+			}
 			mapRet.put("preferentialInfo", result);
 		}
 
@@ -1176,59 +1208,20 @@ public class OrderServiceImpl implements OrderService {
 	 * 强制外卖订单绑定餐台
 	 */
 	private void doBindTableForTakeOutFood(String orderid) {
-        if (!StringUtils.isEmpty(orderid)) {
-            Map<String, Object> res = torderMapper.findOne(orderid);
-            if (!MapUtils.isEmpty(res)) {
-                if (!StringUtil.isEmpty(res.get("currenttableid"))) {
-                    TbTable table = tableService.findById(res.get("currenttableid").toString());
-                    if (table != null && ("2".equals(table.getTabletype()) || "3".equals(table.getTabletype()))) {
-                        Map<String, Object> param = new HashMap<>();
-                        param.put("orderid", orderid);
-                        param.put("tableid", res.get("currenttableid"));
-                        tableDao.updateTableById(param);
-                    }
-                }
-            }
-        }
-    }
-
-	private Map<String, Object> findOrderByInfo(String orderid) {
-		// orderInvoiceTitle 发票抬头
-		// orderStatus; 订单状态
-		// tableStatus 餐桌状态
-		// customerNumber 多少人
-		Map<String, Object> outresultMap = new HashMap<>();
-		List<Map<String, Object>> resultMapList = torderDetailMapper.findOrderByInfo(orderid);
-		if (resultMapList != null && !resultMapList.isEmpty()) {
-			List<Object> tipMapList = torderDetailMapper.findOrderByTip(orderid);
-			Map<String, Object> resultMap = resultMapList.get(0);
-			Map<String, Object> tipMap = !tipMapList.isEmpty() ? (Map<String, Object>) tipMapList.get(0) : null;
-			outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
-			outresultMap.put("orderStatus", resultMap.get("orderstatus"));
-			outresultMap.put("tableStatus", resultMap.get("status"));
-			outresultMap.put("isFree", (Boolean) resultMap.get("isfree") ? "1" : "0");
-			outresultMap.put("numOfMeals", resultMap.get("num_of_meals"));
-			outresultMap.put("customerNumber", resultMap.get("custnum"));
-			outresultMap.put("womanNum", resultMap.get("womanNum"));
-			outresultMap.put("childNum", resultMap.get("childNum"));
-			outresultMap.put("mannum", resultMap.get("mannum"));
-			outresultMap.put("memberno", resultMap.get("memberno"));
-			outresultMap.put("begintime", DateUtils.formatDateToString((Date) resultMap.get("begintime")));
-			Date date = (Date) resultMap.get("endtime");
-			outresultMap.put("endtime", date == null ? "" : DateUtils.formatDateToString(date));
-			outresultMap.put("areaname", resultMap.get("areaname"));
-			outresultMap.put("tableName", resultMap.get("tableName"));
-			outresultMap.put("fullName", resultMap.get("userid"));
-			outresultMap.put("waiterName", resultMap.get("name"));
-			// 小费相关
-			outresultMap.put("tipWaiterNum", tipMap != null ? tipMap.get("waiter_number") : "");
-			outresultMap.put("tipWaiterName", tipMap != null ? tipMap.get("name") : "");
-			/** 预打印 **/
-			int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
-			outresultMap.put("befprintcount", printcount + 1);
+		if (!StringUtils.isEmpty(orderid)) {
+			Map<String, Object> res = torderMapper.findOne(orderid);
+			if (!MapUtils.isEmpty(res)) {
+				if (!StringUtil.isEmpty(res.get("currenttableid"))) {
+					TbTable table = tableService.findById(res.get("currenttableid").toString());
+					if (table != null && ("2".equals(table.getTabletype()) || "3".equals(table.getTabletype()))) {
+						Map<String, Object> param = new HashMap<>();
+						param.put("orderid", orderid);
+						param.put("tableid", res.get("currenttableid"));
+						tableDao.updateTableById(param);
+					}
+				}
+			}
 		}
-		outresultMap.put("orderid", orderid);
-		return outresultMap;
 	}
 
 	/**
@@ -1250,7 +1243,7 @@ public class OrderServiceImpl implements OrderService {
 		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
 		// 新辣道特殊新编码处理
 		if (PropertiesUtils.getValue("tenant_id").equals("100011")) {
-			autoPre(orderid,params.get("memberno"),  operPreferentialResult);
+			autoPre(orderid, params.get("memberno"), operPreferentialResult);
 		}
 
 		// 需要得到已经是有优惠的值
@@ -1273,7 +1266,7 @@ public class OrderServiceImpl implements OrderService {
 			setMap.put("insertime", branchDataSyn.getInsertime());
 			setMap.put("resultAmount", "0");
 			setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
-			setMap.put("memberno",params.get("memberno"));
+			setMap.put("memberno", params.get("memberno"));
 			if (branchDataSyn.getIsCustom() == 5) {
 				// 雅座
 				setMap.put("preferentialAmout", branchDataSyn.getDeAmount().toString());
@@ -1283,7 +1276,7 @@ public class OrderServiceImpl implements OrderService {
 			calALLAmout(setMap, operPreferentialResult);
 		}
 
-		StrategyFactory.INSTANCE.calcAmount(detailPreferentialDao, caleTableAmountMapper, orderid,
+		StrategyFactory.INSTANCE.calcAmount(chargeService, detailPreferentialDao, caleTableAmountMapper, orderid,
 				dataDictionaryService, operPreferentialResult, orderMapper, orderOpMapper,
 				(String) params.get("itemid"));
 		return operPreferentialResult;
@@ -1319,14 +1312,14 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-	private void autoPre(String orderid,  Object  memberno, OperPreferentialResult operPreferentialResult) {
-		
-		//查询新拿到配置优惠
-		Map<String, Object> newspicywayPre=new HashMap<>();
+	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult) {
+
+		// 查询新拿到配置优惠
+		Map<String, Object> newspicywayPre = new HashMap<>();
 		newspicywayPre.put("type", "NEWSPICYWAYPRE");
 		newspicywayPre.put("itemid", "0");
-		 List<Map<String, Object>> reslut = dictionaryDao.find(newspicywayPre);
-		 
+		List<Map<String, Object>> reslut = dictionaryDao.find(newspicywayPre);
+
 		Map<String, Object> setMap = new HashMap<>();
 		setMap.put("orderid", orderid);
 		setMap.put("type", "03");

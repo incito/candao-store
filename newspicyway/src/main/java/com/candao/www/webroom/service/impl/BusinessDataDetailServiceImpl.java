@@ -220,6 +220,9 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     if(businessR.get(i).get("kaitaishu") != null){  //开台数
                     	businssRport.setKaitaishu(ToolsUtil.formatTwoDecimal(businessR.get(i).get("kaitaishu").toString()));
                     }
+					if(businessR.get(i).get("serviceAmount") != null){  //服务费
+                    	businssRport.setServiceAmount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("serviceAmount").toString()));
+                    }
                     //应收总额
                     String shouldAmount = businessR.get(i).get("shouldamount")+"";
                     BigDecimal shouldAmountDecimal = new BigDecimal(shouldAmount).setScale(2, BigDecimal.ROUND_HALF_DOWN);
