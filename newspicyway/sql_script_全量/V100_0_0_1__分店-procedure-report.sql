@@ -358,7 +358,7 @@ CREATE PROCEDURE `p_report_yysjmxb`(IN  pi_branchid INT(11),
       AND (b.dishtype<>2
 		OR (b.dishtype = 2 AND b.superkey <> b.primarykey));
 		#服务费
-		SELECT IFNULL(SUM(chargeAmount),0) INTO v_serviceAmount from t_service_charge a,t_temp_order b where a.orderid=b.orderid and a.chargeOn=1;
+		SELECT IFNULL(SUM(chargeAmount),0) INTO v_serviceAmount from t_service_charge a,t_temp_order b where a.orderid=b.orderid AND b.orderstatus = 3 and a.chargeOn=1;
 		#应收包含服务费
 		SET v_sa_shouldamount=v_sa_shouldamount+v_serviceAmount;
 
@@ -5377,9 +5377,9 @@ BEGIN
       INSERT INTO t_temp_res (tableid, stime, svalue)
       SELECT tableid
            , date_format(v_date_start, '%Y/%m/%d')
-           , sum(dishnum * orignalprice)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid in(select orderid from t_temp_order where begintime BETWEEN v_date_start AND v_date_interval) and chargeOn=1)
+           , sum(dishnum * orignalprice)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid in(select orderid from t_temp_order tto where begintime BETWEEN v_date_start AND v_date_interval AND tto.tableid=od.tableid) and chargeOn=1)
       FROM
-        t_temp_order_detail
+        t_temp_order_detail od
       WHERE
         begintime BETWEEN v_date_start AND v_date_interval
       GROUP BY
