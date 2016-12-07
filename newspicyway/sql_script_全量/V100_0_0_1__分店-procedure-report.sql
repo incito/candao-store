@@ -5754,7 +5754,7 @@ BEGIN
                                      GROUP BY
                                        a.dishid
                                      , a.dishunit
-                                     , a.dishtype
+                                     #, a.dishtype
                                      , b.columnid
                                      ORDER BY
                                        NULL;
