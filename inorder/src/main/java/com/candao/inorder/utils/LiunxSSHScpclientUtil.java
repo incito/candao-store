@@ -6,24 +6,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.SCPOutputStream;
 
 /**
  * 
  * @author liangdong Linux scp 文件上传
  */
 public class LiunxSSHScpclientUtil {
+	
+	private Logger logger = LoggerFactory.getLogger(LiunxSSHScpclientUtil.class);
 	private static String empPrintbuffer;
 
 	/**
@@ -77,11 +76,14 @@ public class LiunxSSHScpclientUtil {
 		FileOutputStream fileout = null;
 		for (String key : strMes.keySet()) {
 			try {
+				logger.info("------------",strMes.get(key));
 				byte[] bytesWrite = strMes.get(key).getBytes("GB2312");
-				fileout = new FileOutputStream(key);
+				File file =new File(key);
+				fileout = new FileOutputStream(file);
 				fileout.write(bytesWrite);
 				fileout.flush();
 			} catch (Exception e) {
+				logger.error("------吉旺打印---》",e);
 				e.printStackTrace();
 			} finally {
 				if (fileout != null) {

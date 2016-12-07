@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.candao.common.page.Page;
 import com.candao.common.utils.DateUtils;
@@ -31,9 +34,11 @@ import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.TsThread;
 import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.NotifyService;
+import com.candao.www.webroom.service.TableService;
+import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.webroom.service.WorkLogService;
 
 @Service
 public class TableServiceImpl implements TableService {
@@ -216,6 +221,7 @@ public class TableServiceImpl implements TableService {
             for (Map<String, Object> map : list) {
                 pj.setCustomerPrinterIp(String.valueOf(map.get("ipaddress")));
                 pj.setCustomerPrinterPort(String.valueOf(map.get("port")));
+                pj.setRePeatID(UUID.randomUUID().toString());
                 new Thread(new PrintBillThread(pj)).run();
             }
         }
@@ -800,10 +806,6 @@ public class TableServiceImpl implements TableService {
         return Constant.SUCCESSMSG;
     }
 
-    @Override
-    public TbTable findTableNoAndAreaNameById(String tableId) {
-        return tableDao.findTableNoAndAreaNameById(tableId);
-    }
 
     @Override
     public int updateCleanStatus(TbTable tbTable) {
@@ -813,17 +815,6 @@ public class TableServiceImpl implements TableService {
     @Override
     public int updateSettleStatus(TbTable tbTable) {
         return tableDao.updateSettleStatus(tbTable);
-    }
-
-    @Override
-    public int updateSettleOrderNull(TbTable tbTable) {
-        return tableDao.updateSettleOrderNull(tbTable);
-    }
-
-    @Override
-    public List<Map<String, Object>> findDetail(Map<String, Object> params) {
-        // TODO Auto-generated method stub
-        return tableDao.findDetail(params);
     }
 
     @Override
@@ -842,12 +833,6 @@ public class TableServiceImpl implements TableService {
     @Override
     public boolean deleteTablesByAreaid(String areaid) {
         return tableDao.deleteTablesByAreaid(areaid) > 0;
-    }
-
-    @Override
-    public TbTable findByOrder(Map<String, Object> map) {
-        // TODO Auto-generated method stub
-        return tableDao.findByOrder(map);
     }
 
     @Override

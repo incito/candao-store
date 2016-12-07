@@ -31,8 +31,5 @@ public class SalesSummaryServiceImpl implements SalesSummaryService {
 		PoiExcleTest poi = new PoiExcleTest();
 		poi.exportExcleD(list,params, vasd, req,resp);
 	}
-	public List<Map<String,Object>> dates(Map<String, Object> params){
-		return tbSalesSummary.find(params);
-	}
 }
  

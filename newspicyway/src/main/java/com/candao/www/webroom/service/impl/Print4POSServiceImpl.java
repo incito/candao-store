@@ -431,8 +431,8 @@ public class Print4POSServiceImpl implements Print4POSService {
         Assert.notEmpty(map, "固定优惠不能为空");
         List<Map<String, Object>> res = new LinkedList<>();
         String[] name = {"优免", "会员积分消费", "会员券消费", "会员优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增"};
-        String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "malingincom", "give",
-                "handervalue", "mebervalueadd"};
+        String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "fraction", "give",
+                "roundoff", "mebervalueadd"};
         for (int i = 0; i < name.length; i++) {
             Map<String, Object> temp = new HashMap<>();
             temp.put("name", name[i]);
@@ -445,12 +445,13 @@ public class Print4POSServiceImpl implements Print4POSService {
     private List<Map<String, Object>> generateSettlementList(Map<String, Object> map) {
         Assert.notEmpty(map, "固定结算信息不能为空");
         List<Map<String, Object>> res = new LinkedList<>();
-        String[] name = {"现金", "挂账", "微信", "支付宝", "刷卡-工行", "刷卡-他行", "会员储值消费净值"};
-        String[] valueName = {"money", "card", "weixin", "zhifubao", "icbc", "otherbank", "merbervaluenet"};
-        for (int i = 0; i < name.length; i++) {
+        //自定义支付方式
+        List settlements = (List)map.get("settlements");
+        List settlementDesc = (List)map.get("settlementDescList");
+        for (int i = 0; i < settlementDesc.size(); i++) {
             Map<String, Object> temp = new HashMap<>();
-            temp.put("name", name[i]);
-            temp.put("value", map.get(valueName[i]));
+            temp.put("name",settlementDesc.get(i));
+            temp.put("value", settlements.get(i));
             res.add(temp);
         }
         return res;
@@ -488,7 +489,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         //组合结算备注
                         settlementInfo = new ArrayList<>();
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
-                        String[] value = {resolveNullType(prefer.get("menuAmount")),
+                        String[] value = {resolveNullType(prefer.get("resMenuAndServeChargeAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
                                 stringAdd(resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
@@ -535,7 +536,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     Map<String, Object> param = new HashMap<>();
                     param.put("jobNumber", params[1]);
                     List<User> users = userService.queryUserList(param);
-                    posdata.put("printname", users.get(0).getName());
+                    posdata.put("printname", CollectionUtils.isEmpty(users) ? "" : resolveNullType(users.get(0).getName()));
 
                     // 电话地址
                     posdata.put("branchName", resolveNullType(branchInfo.get("branchname")));

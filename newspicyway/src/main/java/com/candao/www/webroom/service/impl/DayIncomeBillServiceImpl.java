@@ -213,7 +213,7 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 	@Override
 	public void exportDaliyRport(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		//List<TjObj> list = getDaliyReport(params);
-		List<Map<String, Object>> list  = businessDataDetailService.isgetBusinessDetailexcel(params);
+		List<Map<String, Object>> list  = businessDataDetailService.isgetBusinessDetailexcel1(params);
 		String vasd =params.get("names").toString() ;
 		PoiExcleTest poi = new PoiExcleTest();
 		poi.exportExcle(list,params, vasd, req,resp);
@@ -398,18 +398,6 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 		return list;
 	}
 	
-	/**
-	 * 优惠分析表
-	 */
-	@SuppressWarnings("static-access")
-	@Override
-	public void exportDaliyRport1(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		/*List<TjObj> list = tbDayIncomeBillDao.findCoupons(params);
-		String vasd =  params.get("names").toString();
-		PoiExcleTest poi = new PoiExcleTest();
-		poi.exportExcle(list,params, vasd, req,resp);*/
-		
-	}
 	
 	@SuppressWarnings("static-access")
 	@Override
@@ -581,23 +569,6 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 		return list;
 	}
 	
-	@SuppressWarnings("static-access")
-	@Override
-	public void exportxlsA(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		List<Map<String,Object>> list = tbDayIncomeBillDao.getItemDetailList(params);
-		String vasd ="品项销售明细表";
-		PoiExcleTest poi = new PoiExcleTest();
-		poi.exportExcleA(list,params, vasd, req,resp);
-	}
-	
-	@SuppressWarnings("static-access")
-	@Override
-	/*public void exportxlsB(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		List<CouponsRept> list = findCoupons(params);
-		String vasd ="优惠方式明细表";
-		PoiExcleTest poi = new PoiExcleTest();
-		poi.exportExcleB(list,params, vasd, req,resp);
-	}*/
 	public void exportxlsB(Map<String, Object> params,HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		List<CouponsRept> list = findCoupons(params);
 		List<Base_CouponsRept> baseList =new ArrayList<Base_CouponsRept>();
@@ -711,172 +682,6 @@ public class DayIncomeBillServiceImpl implements DayIncomeBillService{
 		String vasd ="结算方式明细表";
 		PoiExcleTest poi = new PoiExcleTest();
 		poi.exportExcleC(list,params, vasd, req,resp);
-	}
-	/**
-	 * 营业图表明细数据查询
-	 */
-	@Override
-	public  List<BusinessReport> getBusinessDetail(Map<String, Object> params) {
-		List<TjObj> businessR  = getDaliyReport(params);
-		List<BusinessReport> businessList = new ArrayList<BusinessReport>();
-		if(businessR.size()>0){
-			BusinessReport businssRport = new BusinessReport();
-	        	for(int i=0;i<businessR.size();i++){
-	         		if(businessR.get(i)!=null){
-	         			//营业数据收入统计栏
-	         			//应收总额
-	         			if(i==0){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setShouldamount(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//实收总额
-	         			if(i==1){
-	         				if(businessR.get(i).getObjvalue()!=null){
-	         					
-		             			businssRport.setPaidinamount(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//折扣总额
-	         			if(i==2){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setDiscountamount(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	         			
-	         			//实收明细统计栏
-	             		//人民币
-	         			if(i==4){
-		             		if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setMoney(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//挂账
-	         			if(i==5){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setCard(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//刷卡（元）-工商银行
-	         			if(i==6){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setICBC(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		
-	             		//刷卡（元）-其他银行
-	         			if(i==7){
-	         				if(businessR.get(i).getObjvalue()!=null ){
-		             			businssRport.setOtherbank(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		
-	             		//会员积分消费（元）Merbervaluenet
-	         			if(i==11){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setIntegralconsum(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	         			//合计
-	         			if(i==14){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setTotal(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		
-	         			if(i==10){
-	         				//会员券消费（元）
-		             		if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setMeberTicket(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//会员储值消费净值（元）
-	         			if(i==12){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setMerbervaluenet(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//会员储值消费虚增（元）
-	         			if(i==13){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setMebervalueadd(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	         			
-	             		//桌数（桌）
-	         			if(i==18){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setTablenum(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//结算人数（个）
-	         			if(i==19){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setSettlementnum(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//平均消费时间（分）
-	         			if(i==20){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setAvgconsumtime(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//上座率（%）
-	         			if(i==21){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setAttendance(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//应收人均（元）
-	         			if(i==22){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setShouldaverage(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//实收人均（元）
-	         			if(i==23){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setPaidinaverage(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//桌均消费
-	         			if(i==24){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setTableconsumption(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//翻台率(%)
-	         			if(i==25){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setOvertaiwan(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		
-	             		//优免（元）
-	         			if(i==26){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setBastfree(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		
-	             		//折扣优惠
-	         			if(i==30){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setDiscountmoney(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		//抹零收入
-	         			if(i==31){
-	         				if(businessR.get(i).getObjvalue()!=null){
-		             			businssRport.setMalingincom(businessR.get(i).getObjvalue());
-		        			}
-	         			}
-	             		businessList.add(businssRport);
-	         		}
-	         	}
-	        }
-	         
-	        return businessList;
 	}
 
 

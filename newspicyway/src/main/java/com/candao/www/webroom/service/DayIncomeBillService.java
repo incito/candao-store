@@ -1,6 +1,5 @@
 package com.candao.www.webroom.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.candao.common.page.Page;
-import com.candao.www.webroom.model.BusinessReport;
 import com.candao.www.webroom.model.Code;
 import com.candao.www.webroom.model.CouponsRept;
 import com.candao.www.webroom.model.CouponsReptDtail;
@@ -22,15 +20,6 @@ import com.candao.www.webroom.model.TableArea;
 import com.candao.www.webroom.model.TjObj;
 
 public interface DayIncomeBillService {
-	/**
-	 * 根据日期查询数据
-	 *
-	 * @param params
-	 * @param current
-	 * @param pagesize
-	 * @return
-	 */
-	public List<BusinessReport> getBusinessDetail(Map<String, Object> params);
 
 	public List<TjObj> getDaliyReport(Map<String, Object> params);
 
@@ -40,7 +29,6 @@ public interface DayIncomeBillService {
 
 	public List<CouponsRept> findCoupons(Map<String, Object> params);
 
-	public List<BusinessReport> findBusinessReport(Map<String, Object> params);
 
 
 	public List<ItemReport> findItemReport(Map<String, Object> params);
@@ -55,7 +43,6 @@ public interface DayIncomeBillService {
 
 	public List<TjObj> getDaliyReport2(Map<String, Object> params);
 
-	public List<Dishsalerept> grid(Map<String, Object> params);
 
 	public List<Dishsalerept> findItemDetail(Map<String, Object> params);
 
@@ -136,11 +123,9 @@ public interface DayIncomeBillService {
 	 */
 	public void exportDaliyRport(Map<String, Object> params, HttpServletRequest req, HttpServletResponse resp) throws Exception;
 
-	public void exportDaliyRport1(Map<String, Object> params, HttpServletRequest req, HttpServletResponse resp) throws Exception;
 
 	public void exportDaliyRport2(Map<String, Object> params, HttpServletRequest req, HttpServletResponse resp) throws Exception;
 
-	public void exportxlsA(Map<String, Object> params, HttpServletRequest req, HttpServletResponse resp) throws Exception;
 
 	public void exportxlsB(Map<String, Object> params, HttpServletRequest req, HttpServletResponse resp) throws Exception;
 

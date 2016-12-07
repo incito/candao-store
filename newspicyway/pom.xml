@@ -65,8 +65,6 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-
-
     <build>
         <finalName>newspicyway</finalName>
         <plugins>

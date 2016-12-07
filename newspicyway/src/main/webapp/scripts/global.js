@@ -2,6 +2,7 @@
  * 樊丹
  * 添加自定义滚动条
  */
+sessionStorage.clear();//清除本地缓存选择的是那个餐台分区
 function customScrollbar(exp){
     if($(exp).hasClass('mCustomScrollbar')){
         if($(exp).children().hasClass('mCustomScrollBox')){

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.candao.www.data.dao.*;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,13 @@ import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.Constant.TABLETYPE;
+import com.candao.www.data.dao.EmployeeUserDao;
+import com.candao.www.data.dao.TRethinkSettlementDao;
+import com.candao.www.data.dao.TbOpenBizLogDao;
+import com.candao.www.data.dao.TdishDao;
+import com.candao.www.data.dao.TorderDetailMapper;
+import com.candao.www.data.dao.TsettlementDetailMapper;
+import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TbOpenBizLog;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Torder;
@@ -36,7 +42,6 @@ import com.candao.www.webroom.model.SettlementDetail;
 import com.candao.www.webroom.model.SettlementInfo;
 import com.candao.www.webroom.service.DishService;
 import com.candao.www.webroom.service.OrderDetailService;
-import com.candao.www.webroom.service.OrderDetailSettleService;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.webroom.service.TableService;
@@ -54,9 +59,6 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 	
 	@Autowired
 	TsettlementMapper settlementMapper;
-	
-	@Autowired
-	OrderDetailSettleService orderDetailSettleService;
 	
 	@Autowired
 	 TsettlementDetailMapper  tsettlementDetailMapper;
@@ -210,109 +212,77 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 		 recordDetail.setCoupondetailid(detail.getCoupondetailid());
 		 
 //		 recordDetail.setPayway(detail.getPayWay());
-		if( detail.getPayWay() != null || !"".equals(detail.getPayWay())){
-			int payway = Integer.parseInt(detail.getPayWay());
-			 recordDetail.setPayway(payway);
-		}
-		 
-		 if(String.valueOf(Constant.PAYWAY.PAYWAY_CASH).equals(detail.getPayWay())){
-//			 recordDetail.setPayamount(detail.getPayAmount());
-			
-			 cashAmount.add(detail.getPayAmount());
-		 }
-		 if(String.valueOf(Constant.PAYWAY.PAYWAY_BANK_CARD).equals(detail.getPayWay())){
-//			 recordDetail.setPayamount(detail.getPayAmount());
-//			 recordDetail.setPayway(Constant.PAYWAY.PAYWAY_BANK_CARD);
-			 bankAmount.add(detail.getPayAmount());
-		 }
-		 if(String.valueOf(Constant.PAYWAY.PAYWAY_MEMBER_CARD).equals(detail.getPayWay())){
-//			 recordDetail.setPayamount(detail.getPayAmount());
-//			 recordDetail.setPayway(Constant.PAYWAY.PAYWAY_MEMBER_CARD);
-			 memberAmount.add(detail.getPayAmount());
-		 }
-		 if(String.valueOf(Constant.PAYWAY.PAYWAY_COUPON_CARD).equals(detail.getPayWay())){
-//			 recordDetail.setPayamount(detail.getPayAmount());
-//			 recordDetail.setPayway(Constant.PAYWAY.PAYWAY_COUPON_CARD);
-			 memberAmount.add(detail.getPayAmount());
-		 }
-		 if(String.valueOf(Constant.PAYWAY.PAYWAY_DISCOUNT).equals(detail.getPayWay())){
-//			 recordDetail.setPayamount(detail.getPayAmount());
-//			 recordDetail.setPayway(Constant.PAYWAY.PAYWAY_DISCOUNT);
-			 discountAmount.add(detail.getPayAmount());
-		 }
-		 if(String.valueOf(Constant.PAYWAY.DEBITE_ACCOUNT).equals(detail.getPayWay())){
-//			 recordDetail.setPayamount(detail.getPayAmount());
-//			 recordDetail.setPayway(Constant.PAYWAY.DEBITE_ACCOUNT);
-			 recordDetail.setDebitParterner(detail.getDebitParterner());
-			 debitAmount.add(detail.getPayAmount());
-		 }
-		 
-		 if(String.valueOf(Constant.PAYWAY.PAYWAY_FREE).equals(detail.getPayWay())){
-			 recordDetail.setPayamount(detail.getPayAmount());
-			 recordDetail.setPayway(Constant.PAYWAY.PAYWAY_FREE);
-			 freeAmount.add(detail.getPayAmount());
-		 }
-	  //   tsettlementMapper.insert(record);
-		 listInsert.add(recordDetail);
-	  }
-	 
-	 
-	 record.setBankamount(bankAmount);
-	 record.setCashamount(cashAmount);
-	 record.setMemeberamount(memberAmount);
-	 record.setCreditamount(bankAmount.add(cashAmount).add(memberAmount));
-	 record.setIncomeType(Constant.INCOMETYPE.NORMALINCOME);
-	 record.setOpendate(bizLog.getOpendate());
-	 //挂账
-	 record.setDebitamount(debitAmount);
-	 
-	 
-	 settlementMapper.insert(record);
-	 tsettlementDetailMapper.insertOnce(listInsert);
-	 
-	 //已經結清
-//	 Map<String, Object> mapOrder = orderService.findOrderById(orderId);
-//	 String tableid = String.valueOf(mapOrder.get("currenttableid"));
-	 Torder updateOrder = new Torder();
-	 updateOrder.setOrderid(orderId);
-	 updateOrder.setOrderstatus(3);
-	 updateOrder.setEndtime(new Date());
-	 orderService.update(updateOrder);
-	 
-	 
-	 //更新菜品的数量
-	 dishService.updateDishNum(orderId);
-	 //结账之后把操作的数据删掉
-	  Map<String,Object> delmap=new HashMap<String,Object>();
-	  delmap.put("orderid", orderId);
-	  toperationLogService.deleteToperationLog(delmap);
-	 //桌子空閒
-	 TbTable tbTable = new TbTable();
-	 tbTable.setStatus(0);
-	 tbTable.setOrderid(orderId);
-	 tableService.updateSettleStatus(tbTable);
-	 
-//	 TbTable tbTableOrderid = new TbTable();
-//	 tbTableOrderid.setTableid(String.valueOf(resultMap.get(0).get("tableid")));
-//	 tbTableOrderid.setOrderid(orderId);
-//	 //不知道干嘛的，遇到问题再说
-//	 tableService.updateSettleOrderNull(tbTableOrderid);
-	 
- //修改到了controller 单独调用
-//	  Map<String, Object> orderDetailMap = new HashMap<String, Object>();
-//	  orderDetailMap.put("orderid", orderId);
-//	  tsettlementDetailMapper.calDebitAmount(orderDetailMap);
-	  
-//	  List<TorderDetail> details = torderDetailMapper.find(orderDetailMap);
-//	  for(TorderDetail detail : details){
-//		 Tdish  dish = new Tdish();
-//		 dish.setDishid(detail.getDishid());
-//		 dish.setOrderNum(String.valueOf(new BigDecimal(dish.getOrderNum() == null?"0":dish.getOrderNum() ).subtract(new BigDecimal(detail.getDishnum() == null?"0":detail.getDishnum()))));
-//		 tdishDao.updateOrderNum(dish);
-//	  }
-	 logger.info("结算成功！");
-	  return "0";
-	}
+            if (detail.getPayWay() != null || !"".equals(detail.getPayWay())) {
+                int payway = Integer.parseInt(detail.getPayWay());
+                recordDetail.setPayway(payway);
+            }
+            switch (Integer.parseInt(detail.getPayWay())) {
+                case Constant.PAYWAY.PAYWAY_CASH:
+                    cashAmount.add(detail.getPayAmount());
+                    break;
+                case Constant.PAYWAY.PAYWAY_BANK_CARD:
+                    bankAmount.add(detail.getPayAmount());
+                    break;
+                case Constant.PAYWAY.PAYWAY_MEMBER_CARD:
+                    memberAmount.add(detail.getPayAmount());
+                    break;
+                case Constant.PAYWAY.PAYWAY_COUPON_CARD:
+                    memberAmount.add(detail.getPayAmount());
+                    break;
+                case Constant.PAYWAY.PAYWAY_DISCOUNT:
+                    discountAmount.add(detail.getPayAmount());
+                    break;
+                case Constant.PAYWAY.DEBITE_ACCOUNT:
+                    recordDetail.setDebitParterner(detail.getDebitParterner());
+                    debitAmount.add(detail.getPayAmount());
+                    break;
+                case Constant.PAYWAY.PAYWAY_FREE:
+                    recordDetail.setPayamount(detail.getPayAmount());
+                    recordDetail.setPayway(Constant.PAYWAY.PAYWAY_FREE);
+                    freeAmount.add(detail.getPayAmount());
+                    break;
+            }
+
+            listInsert.add(recordDetail);
+        }
+
+
+        record.setBankamount(bankAmount);
+        record.setCashamount(cashAmount);
+        record.setMemeberamount(memberAmount);
+        record.setCreditamount(bankAmount.add(cashAmount).add(memberAmount));
+        record.setIncomeType(Constant.INCOMETYPE.NORMALINCOME);
+        record.setOpendate(bizLog.getOpendate());
+        //挂账
+        record.setDebitamount(debitAmount);
+
+
+        settlementMapper.insert(record);
+        tsettlementDetailMapper.insertOnce(listInsert);
+
+        //已經結清
+        Torder updateOrder = new Torder();
+        updateOrder.setOrderid(orderId);
+        updateOrder.setOrderstatus(3);
+        updateOrder.setEndtime(new Date());
+        orderService.update(updateOrder);
+
+
+        //更新菜品的数量
+        dishService.updateDishNum(orderId);
+        //结账之后把操作的数据删掉
+        Map<String, Object> delmap = new HashMap<String, Object>();
+        delmap.put("orderid", orderId);
+        toperationLogService.deleteToperationLog(delmap);
+        //桌子空閒
+        TbTable tbTable = new TbTable();
+        tbTable.setStatus(0);
+        tbTable.setOrderid(orderId);
+        tableService.updateSettleStatus(tbTable);
+
+        logger.info("结算成功！");
+        return "0";
+    }
 
 	private boolean checkTableStatus(List<Map<String, Object>> resultMap) {
 		for (Map<String, Object> map2 : resultMap) {

@@ -81,7 +81,7 @@ public class PrinterStatusManager {
                 return "未连接";
 
         }
-        return "正常";
+        return "未知状态["+state+"]";
     }
 
     private static PrinterService getPrinterService() {

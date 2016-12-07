@@ -89,27 +89,27 @@
 				</div>
 			</div>
 		</div>
-		<div class="report-tb-div bottom-div">
+		<div class="report-tb-div bottom-div" style="overflow-x: auto;">
 			<table class="ky-table table table-striped table-bordered table-hover datatable table-list click-table" id="waiter-assess-tb">
 				<thead>
 					<tr>
-						<th>服务员编号</th>
-						<th>服务员姓名</th>
-						<th>开台数</th>
-						<th>结算人数</th>
-						<th>应收总额</th>
-						<th>实收总额</th>
-						<th>应收人均</th>
-						<th>实收人均</th>
+						<th nowrap="nowrap">服务员编号</th>
+						<th nowrap="nowrap">服务员姓名</th>
+						<th nowrap="nowrap">开台数</th>
+						<th nowrap="nowrap">结算人数</th>
+						<th nowrap="nowrap">应收总额</th>
+						<th nowrap="nowrap">实收总额</th>
+						<th nowrap="nowrap">应收人均</th>
+						<th nowrap="nowrap">实收人均</th>
 
-						<th>实收/现金</th>
+						<!-- <th>实收/现金</th>
 						<th>实收/银行卡</th>
-						<%--<th>实收/抹零</th>--%>
+						<th>实收/抹零</th>
 						<th>实收/会员卡消费</th>
-						<%--<th>实收/会员积分消费</th>--%>
+						<th>实收/会员积分消费</th>
 						<th>实收/挂帐</th>
 						<th>实收/微信支付</th>
-						<th>实收/支付宝支付</th>
+						<th>实收/支付宝支付</th> -->
 					</tr>
 				</thead>
 				<tbody>
@@ -128,7 +128,7 @@
 					</div>
 				</div>
 				<div class="modal-body">
-					<div style="width: 950px;max-height: 500px;overflow-x: scroll;">
+					<div style="width: 950px;max-height: 300px;overflow-x: scroll;">
 						<input type="hidden" id="p_userid" value="" />
 						<table class="ky-table table table-list report_sub_tb" id="waiterassess-details-tb">
 							<thead>
@@ -139,14 +139,14 @@
 									<th nowrap="nowrap">应收</th>
 									<th nowrap="nowrap">实收</th>
 
-									<th nowrap="nowrap">实收/现金</th>
+									<%-- <th nowrap="nowrap">实收/现金</th>
 									<th nowrap="nowrap">实收/银行卡</th>
-									<%--<th nowrap="nowrap">实收/抹零</th>--%>
+									<th nowrap="nowrap">实收/抹零</th>
 									<th nowrap="nowrap">实收/会员卡消费</th>
-									<%--<th nowrap="nowrap">实收/会员积分消费</th>--%>
+									<th nowrap="nowrap">实收/会员积分消费</th>
 									<th nowrap="nowrap">实收/挂帐</th>
 									<th nowrap="nowrap">实收/微信支付</th>
-									<th nowrap="nowrap">实收/支付宝支付</th>
+									<th nowrap="nowrap">实收/支付宝支付</th> --%>
 								</tr>
 							</thead>
 							<tbody>

@@ -1,14 +1,13 @@
 package com.candao.www.webroom.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.candao.common.page.Page;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.TbTableArea;
 import com.candao.www.data.model.ToperationLog;
-import com.candao.www.webroom.model.AccountCash;
 import com.candao.www.webroom.model.Table;
-
-import java.util.List;
-import java.util.Map;
 
 public interface TableService {
     /**
@@ -89,31 +88,16 @@ public interface TableService {
 
     public String mergetable(Table table, ToperationLog toperationLog);
 
-    public String accountcash(AccountCash accountCash);
-
-    public TbTable findTableNoAndAreaNameById(String tableId);
 
     public int updateCleanStatus(TbTable tbTable);
 
     public int updateSettleStatus(TbTable tbTable);
-
-    public int updateSettleOrderNull(TbTable tbTable);
-
-    /**
-     * 根据桌号查询桌子的基本信息，和打印机信息
-     *
-     * @param params
-     * @return
-     */
-    public List<Map<String, Object>> findDetail(Map<String, Object> params);
 
     public List<Map<String, Object>> getbuildingNoANDTableTypeTag();
 
     public List<TbTable> getTablesByTableType(String tableid);
 
     public boolean deleteTablesByAreaid(String areaid);
-
-    public TbTable findByOrder(Map<String, Object> map);
 
     public TbTable findTableByOrder(String orderid);
 

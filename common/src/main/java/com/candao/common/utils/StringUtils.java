@@ -1,5 +1,7 @@
 package com.candao.common.utils;
 
+import org.springframework.util.CollectionUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

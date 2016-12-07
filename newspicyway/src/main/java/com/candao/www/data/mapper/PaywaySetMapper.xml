@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.PaywaySetDao">
+ <select id="findAll" parameterType="map" resultType="map">
+    SELECT
+    itemId,title,status,chargeStatus
+    FROM(
+    SELECT
+            itemid AS itemId,
+            itemdesc AS title,
+            IFNULL(isshow, 1) AS status,
+            chargeStatus,
+            IFNULL(self_sort,CAST(itemid AS SIGNED)) as self_sort
+    FROM
+            v_payway
+    WHERE
+            STATUS = 1 AND (itemid &gt;30 OR itemid in(0,1,8,13,17,18 ))
+    ) t
+    ORDER BY
+            self_sort
+ </select>
+	<insert id="insertBatch" parameterType="java.util.List">
+      insert into t_payway_set(item_id,status,sort)VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+             #{item.itemId},
+             #{item.status},
+            #{index}
+            )
+        </foreach>
+	</insert>
+	<delete id="truncate">
+		truncate table t_payway_set
+	</delete>
+</mapper>

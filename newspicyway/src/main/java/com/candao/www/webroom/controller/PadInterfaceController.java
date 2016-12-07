@@ -13,11 +13,7 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.SystemConstant;
-import com.candao.www.data.dao.TbBranchDao;
-import com.candao.www.data.dao.TbUserInstrumentDao;
-import com.candao.www.data.dao.TorderMapper;
-import com.candao.www.data.dao.TsettlementMapper;
-import com.candao.www.data.dao.TtellerCashDao;
+import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.order.OrderOpService;
@@ -25,13 +21,10 @@ import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
 import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
+import com.candao.www.security.controller.BaseController;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.DataServerUtil;
-import com.candao.www.utils.HttpRequestor;
-import com.candao.www.utils.ImageCompress;
-import com.candao.www.utils.ReturnMap;
-import com.candao.www.utils.TsThread;
+import com.candao.www.utils.*;
 import com.candao.www.webroom.model.*;
 import com.candao.www.webroom.service.*;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
@@ -55,8 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -82,7 +73,7 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/padinterface")
-public class PadInterfaceController {
+public class PadInterfaceController extends BaseController{
 
     private static ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 20, 200, TimeUnit.MILLISECONDS,
             new ArrayBlockingQueue<Runnable>(5000));
@@ -212,25 +203,25 @@ public class PadInterfaceController {
                     + (order.getWomanNum() == null ? 0 : order.getWomanNum()));
         }
 
-        String returnStr = orderService.startOrder(order);
 
-        JSONObject returnobject = JSONObject.fromObject(returnStr);
+        String returnStr = "";
+        try {
+        	returnStr = orderService.startOrder(order);
+        	 JSONObject returnobject = JSONObject.fromObject(returnStr);
+             if (!StringUtils.isBlank(order.getIsShield()) && order.getIsShield().equals("0")
+                     && returnobject.containsKey("code") && !StringUtils.isBlank(returnobject.getString("code"))
+                     && returnobject.getString("code").equals("0")) {
+                     Map<String, Object> map = returnobject.getJSONObject("data");
+                     String orderid = map.get("orderid") == null ? "" : map.get("orderid").toString();
+                     if (!StringUtils.isBlank(orderid)) {
+                         giftService.updateOrderStatus(orderid);
+                     }
+             }
+		} catch (Exception e) {
+			logger.error("开台失败（内部系统错误）：",e.fillInStackTrace());
+			returnStr=JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("开台系统内部错误，请您联系餐道管理员为你检查！"));
+		}
 
-        if (!StringUtils.isBlank(order.getIsShield()) && order.getIsShield().equals("0")
-                && returnobject.containsKey("code") && !StringUtils.isBlank(returnobject.getString("code"))
-                && returnobject.getString("code").equals("0")) {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = returnobject.getJSONObject("data");
-                String orderid = map.get("orderid") == null ? "" : map.get("orderid").toString();
-                if (!StringUtils.isBlank(orderid)) {
-                    giftService.updateOrderStatus(orderid);
-                }
-
-            } catch (Exception ex) {
-                logger.error("--->开台失败！", ex);
-            }
-        }
         logger.info("开台返回结果：" + returnStr);
         return returnStr;
     }
@@ -675,25 +666,29 @@ public class PadInterfaceController {
      */
     @RequestMapping("/cleantable")
     @ResponseBody
-    public String cleantable(@RequestBody Table table, HttpServletRequest reqeust) {
+    public Map<String, Object> cleantable(@RequestBody Table table, HttpServletRequest reqeust) {
 
         TJsonRecord record = new TJsonRecord();
         record.setJson(JacksonJsonMapper.objectToJson(table));
         record.setPadpath("cleantable");
         jsonRecordService.insertJsonRecord(record);
-        TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-        if (tbTable != null) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("orderid", tbTable.getOrderid());
-            params.put("clear", "1");
-            torderDetailPreferentialService.deleteDetilPreFerInfo(params);
-        }
-        String cleantable = orderDetailService.cleantable(table);
 
-		return cleantable;
-	}
-	
-	@RequestMapping("/inoderCleanTable")
+        boolean flag = true;
+        String msg = "清台成功";
+        try {
+            orderDetailService.cleantable(table);
+        } catch (Exception e) {
+            flag = false;
+            msg = e.getMessage();
+            e.printStackTrace();
+            loggers.error("-------------------->");
+            loggers.error("清台失败", e);
+        }
+
+        return getResponseStr(null, msg, flag);
+    }
+
+    @RequestMapping("/inoderCleanTable")
 	@ResponseBody
 	public String inoderCleanTable(@RequestBody Table table, HttpServletRequest reqeust){
 		TJsonRecord record = new TJsonRecord();
@@ -713,9 +708,20 @@ public class PadInterfaceController {
 			params.put("clear", "1");
 			torderDetailPreferentialService.deleteDetilPreFerInfo(params);
 		}
-		String cleantable = orderDetailService.cleantable(table);
 
-		return cleantable;
+        String msg = "清台成功";
+        boolean flag = true;
+        try {
+            orderDetailService.cleantable(table);
+        } catch (Exception e) {
+            flag = false;
+            msg = e.getMessage();
+            e.printStackTrace();
+            loggers.error("------------------------->");
+            loggers.error("清台失败", e);
+        }
+
+        return JSON.toJSONString(getResponseStr(null, msg, flag));
 	}
 
     /**
@@ -794,36 +800,42 @@ public class PadInterfaceController {
         record.setJson(settlementStrInfo);
         record.setPadpath("settleorder");
         jsonRecordService.insertJsonRecord(record);
-
         SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
-        String result = orderSettleService.settleOrder(settlementInfo);
+        logger.info("结账开始=====》"+settlementInfo.getOrderNo());
+        try {
+        	String result = orderSettleService.settleOrder(settlementInfo);
 
-        final String orderid = settlementInfo.getOrderNo();
-        // 计算订单的实收、优免等
-        orderOpService.calcOrderAmount(orderid);
-        // 内部直接调用计算实收，POS不再调用
-        debitamout(orderid);
-        // 修改投诉表信息
-        new Thread(new Runnable() {
-            public void run() {
-                callWaiterService.updateCallStatus(orderid);
+            final String orderid = settlementInfo.getOrderNo();
+            // 计算订单的实收、优免等
+            orderOpService.calcOrderAmount(orderid);
+            // 内部直接调用计算实收，POS不再调用
+            orderSettleService.calDebitAmount(orderid);
+            // 修改投诉表信息
+            new Thread(new Runnable() {
+                public void run() {
+                    callWaiterService.updateCallStatus(orderid);
+                }
+            }).start();
+
+            if ("0".equals(result)) {
+                logger.info("结算成功，调用进销存接口");
+                String psicallback = psicallback(settlementInfo, 0);
+                  //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
+                 //在此处转换
+            	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
+            	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
+            	  logger.info("结账结束成功=====》"+settlementInfo.getOrderNo());
+                return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
+            } else {
+            	Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
+                logger.error("结算结束异常:" + map.get("mes"));
+                return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
             }
-        }).start();
+		} catch (Exception e) {
+			logger.error("结算结束异常（运行时异常）：",e);
+			 return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("结账发现未知异常，请联系餐道管理员帮您解决！"));
+		}
 
-        if ("0".equals(result)) {
-            logger.info("结算成功，调用进销存接口");
-            String psicallback = psicallback(settlementInfo, 0);
-
-              //此段代码为了解决老的返回格式转换新的返回格式 不影响其他业务规格所以
-             //在此处转换
-        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(psicallback, Map.class);
-        	String msg=map.containsKey("msg")?String.valueOf(map.get("msg")):"";
-            return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(msg));
-        } else {
-        	Map<String, Object> map=JacksonJsonMapper.jsonToObject(result, Map.class);
-            logger.error("结算失败，result :" + map.get("mes"));
-            return  JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap( String.valueOf(map.get("mes"))));
-        }
     }
 
     // 进销存回调
@@ -888,7 +900,7 @@ public class PadInterfaceController {
         // 计算订单的实收、优免等
         orderOpService.calcOrderAmount(orderid);
         // 内部直接调用计算实收，POS不再调用
-        debitamout(orderid);
+        orderSettleService.calDebitAmount(orderid);
         // 修改投诉表信息
         new Thread(new Runnable() {
             public void run() {
@@ -911,25 +923,6 @@ public class PadInterfaceController {
     }
 
     /**
-     * 处理实收
-     *
-     * @param orderId
-     * @return
-     */
-    private String debitamout(final String orderId) {
-        executor.execute(new Runnable() {
-            public void run() {
-                try {
-                    orderSettleService.calDebitAmount(orderId);
-                } catch (Exception e) {
-                    logger.error("计算实收失败，订单号：" + orderId, e, "");
-                }
-            }
-        });
-        return Constant.SUCCESSMSG;
-    }
-
-    /**
      * 反结账
      */
 
@@ -944,7 +937,13 @@ public class PadInterfaceController {
         jsonRecordService.insertJsonRecord(record);
 
         SettlementInfo settlementInfo = JacksonJsonMapper.jsonToObject(settlementStrInfo, SettlementInfo.class);
-        String result = orderSettleService.rebackSettleOrder(settlementInfo);
+        String result = "";
+        try {
+        	result=orderSettleService.rebackSettleOrder(settlementInfo);
+		} catch (Exception e) {
+			logger.error("反结算失败(系统内部错误):",e.fillInStackTrace());
+			return Constant.FAILUREMSG;
+		}
 
         if ("0".equals(result)) {
             logger.info("反结算成功，调用进销存反结算接口，是否使用微信支付： " + result);
@@ -1086,6 +1085,8 @@ public class PadInterfaceController {
             int[] tabletypefilter = {2, 3, 4};
             map.put("tabletypefilter", tabletypefilter);// 过滤掉餐台类型为外卖,咖啡的餐台
             List<Map<String, Object>> list = tableService.find(map);
+            ServiceChargeDescUnit.handleServiceCharge(list);
+
             return JacksonJsonMapper.objectToJson(ReturnMap.getSuccessMap(list));
         } catch (Exception e) {
             jsonString = JacksonJsonMapper.objectToJson(ReturnMap.getFailureMap("查询所有桌台异常"));
@@ -1093,6 +1094,8 @@ public class PadInterfaceController {
         }
         return jsonString;
     }
+
+
 
     /**
      * 根据餐台类型查询餐台
@@ -1123,7 +1126,7 @@ public class PadInterfaceController {
 
     @RequestMapping("/getTableAndType")
     @ResponseBody
-    public String getTableAndType() {
+    public Map<String,Object> getTableAndType() {
         List<Map<String,Object>> listTableArea = null;
         //0成功1失败
         Map<String,Object> res = new HashMap<>();
@@ -1142,12 +1145,12 @@ public class PadInterfaceController {
             res.put("code",1);
             res.put("msg",e.getMessage());
             res.put("data",null);
-            return JSON.toJSONString(res);
+            return res;
         }
         res.put("code",0);
         res.put("msg","查询成功");
         res.put("data",listTableArea);
-        return JSON.toJSONString(res);
+        return res;
     }
 
     /**
@@ -1426,14 +1429,22 @@ public class PadInterfaceController {
     @RequestMapping(value = "/usePreferentialItem", method = RequestMethod.POST)
     @ResponseBody
     public ModelAndView usePreferentialItem(@RequestBody String body) {
+    	Map<String, Object> result=new HashMap<>();
         ModelAndView mav = new ModelAndView();
         @SuppressWarnings("unchecked")
         Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
-        OperPreferentialResult result = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
-        if (result.isFalg()) {
+        OperPreferentialResult operPreferentialResult = this.preferentialActivityService.updateOrderDetailWithPreferential(params);
+        result.put("preferentialInfo", operPreferentialResult);
+        Map<String, Object> serParams = new HashMap<>();
+		serParams.put("orderId", String.valueOf(params.get("orderid")));
+    	  TServiceCharge charageService = chargeService.getChargeInfo(serParams);
+    	  if(charageService!=null){
+    		  result.put("serviceCharge", charageService);
+    	  }
+        if (operPreferentialResult.isFalg()) {
             mav.addObject(ReturnMap.getSuccessMap(result));
         } else {
-            mav.addObject(ReturnMap.getFailureMap(result.getMes(), result));
+            mav.addObject(ReturnMap.getFailureMap(operPreferentialResult.getMes(), result));
         }
 
         return mav;
@@ -1772,6 +1783,35 @@ public class PadInterfaceController {
             ex.printStackTrace();
         }
     }
+
+    /**
+	 * 服务费修改
+	 *
+	 * @param jsonString
+	 * @param request
+	 * @param response
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/serviceChange", method = RequestMethod.POST)
+	@ResponseBody
+	public ModelAndView updateServiceCharge(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> params = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+		TServiceCharge charge = new TServiceCharge();
+		charge.setOrderid((String) params.get("orderId"));
+		charge.setAutho((String) params.get("autho"));
+		charge.setChargeOn(Integer.valueOf(String.valueOf(params.get("chargeOn"))));
+		charge.setChargeAmount(new BigDecimal(String.valueOf(params.get("chargeAmount"))));
+		charge.setIsCustom(Integer.valueOf(String.valueOf(params.get("custom"))));
+		int i = chargeService.changChargeInfo(charge);
+		if (i > 0) {
+			mav.addObject(ReturnMap.getSuccessMap("修改成功！"));
+		} else {
+			mav.addObject(ReturnMap.getFailureMap("修改失败！"));
+		}
+		return mav;
+	}
 
     /**
      * 获取更换pad的信息
@@ -2786,7 +2826,7 @@ public class PadInterfaceController {
         Map<String, Object> timeMap = getTime(flag);
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            List<Map<String, Object>> result = orderDetailService.getItemSellDetail(timeMap);
+            List<Map<String, Object>> result = orderDetailService.itemSellDetail(timeMap);
             resultMap.put("result", 0);
             resultMap.put("mag", "");
             resultMap.put("data", result);
@@ -3209,24 +3249,54 @@ public class PadInterfaceController {
 //		  String delPathName=map.get("type").equals("bg")?padcon.getBackgroudurl():padcon.getLogourl();
 //		  this.delFile(inputDir+delPathName);
 //		PadConfig padcon = padConfigService.saveorupdateToDic(map.get("type").equals("bg")?"2":"1", afterCatImgUrl);
-		 padConfigService.saveorupdateToDic(dictionary);
-		return "system/systemSet";
-	}
-	
-	
-	private void delFile(String fileName){
-		File file = new File(fileName);
-		if(file.exists()){
-			file.delete();
-		}
-	}
-	
-	private int fileupload(InputStream inuStream, String imagelocation) {
-		try {
-			// 拿到输出流，同时重命名上传的文件
-			FileOutputStream os = new FileOutputStream(imagelocation);
-			// 拿到上传文件的输入流
-			InputStream in =  inuStream;
+        padConfigService.saveorupdateToDic(dictionary);
+        return "system/systemSet";
+    }
+
+    /**
+     * 获取支付方式
+     *
+     * @return
+     */
+    @RequestMapping("/getPayways")
+    @ResponseBody
+    public String getPayways() {
+        return JSON.toJSONString(ReturnMap.getSuccessMap(paywayService.getPayways()));
+    }
+
+    /**
+     * 保存自定义支付方式
+     *
+     * @return
+     */
+    @RequestMapping("/savePayway")
+    @ResponseBody
+    public String savePayway(@RequestBody String body) {
+        List<Map<String, Object>> payways = JSON.parseObject(body, List.class);
+        Map result;
+        try {
+            paywayService.savePayways(payways);
+            result = ReturnMap.getSuccessMap();
+        } catch (Exception e) {
+            logger.error("->", e);
+            result = ReturnMap.getFailureMap("服务器异常");
+        }
+        return JSON.toJSONString(result);
+    }
+
+    private void delFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    private int fileupload(InputStream inuStream, String imagelocation) {
+        try {
+            // 拿到输出流，同时重命名上传的文件
+            FileOutputStream os = new FileOutputStream(imagelocation);
+            // 拿到上传文件的输入流
+            InputStream in = inuStream;
 
 			// 以写字节的方式写文件
 			int b = 0;
@@ -3396,9 +3466,6 @@ public class PadInterfaceController {
     OrderDetailService orderDetailService;
 
     @Autowired
-    private MemeberService memeberService;
-
-    @Autowired
     private LoginService loginService;
 
     @Autowired
@@ -3435,39 +3502,39 @@ public class PadInterfaceController {
     @Autowired
     private PreferentialActivityService preferentialActivityService;
     @Autowired
-    private InstrumentService instrumentService;
-    @Autowired
     private UserInstrumentService userInstrumentService;
     @Autowired
     private MessageInstrumentService messageInstrumentService;
 
-	@Autowired
-	private CallWaiterService callWaiterService;
-	@Autowired
-	private InvoiceService invoiceService;
-	@Autowired
-	private GiftLogService giftService;
-	@Autowired
-	private TbUserInstrumentDao tbUserInstrumentDao;
-	@Autowired
-	TorderMapper torderMapper;
-	@Autowired
-	TsettlementMapper tsettlementMapper;
-	@Autowired
-	private CallWaiterService callService;
-	@Autowired
-	private TtellerCashDao tellerCashService;
-	@Autowired
-	private TbBranchDao tbBranchDao;
-	@Autowired
-	private SystemServiceImpl systemServiceImpl;
-	@Autowired
-	private PadConfigService padConfigService;
-	@Autowired
-	private TorderDetailPreferentialService torderDetailPreferentialService;
-	@Autowired
-	private OrderOpService orderOpService;
-	private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
+    @Autowired
+    private CallWaiterService callWaiterService;
+    @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
+    private GiftLogService giftService;
+    @Autowired
+    private TbUserInstrumentDao tbUserInstrumentDao;
+    @Autowired
+    TorderMapper torderMapper;
+    @Autowired
+    TsettlementMapper tsettlementMapper;
+    @Autowired
+    private CallWaiterService callService;
+    @Autowired
+    private TtellerCashDao tellerCashService;
+    @Autowired
+    private TbBranchDao tbBranchDao;
+    @Autowired
+    private SystemServiceImpl systemServiceImpl;
+    @Autowired
+    private PadConfigService padConfigService;
+    @Autowired
+    private TorderDetailPreferentialService torderDetailPreferentialService;
+    @Autowired
+    private PaywayService paywayService;
+    @Autowired
+    private OrderOpService orderOpService;
+    private Logger logger = LoggerFactory.getLogger(PadInterfaceController.class);
 
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
 
@@ -3475,5 +3542,7 @@ public class PadInterfaceController {
     private TableAreaService tableAreaService;
     @Autowired
     private H5LogService h5LogService;
+	@Autowired
+	private TServiceChargeService chargeService;
 
 }

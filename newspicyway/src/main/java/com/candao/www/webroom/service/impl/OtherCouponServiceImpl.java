@@ -501,15 +501,6 @@ public class OtherCouponServiceImpl implements OtherCouponService {
 		  return otherCouponDao.deleteDetail(id);
 	  }
 	  /**
-	   * 删除优惠活动门店信息
-	   * @param groupon
-	   */
-	  @Override
-	  public int deleteBranch(Map<String,Object> params){
-		  return otherCouponDao.deleteBranch(params);
-	  }
-	  
-	  /**
 	   * 获取新的优惠活动编码，编码格式为8xxxx。暂时没处理并发的问题
 	   * @return
 	   */

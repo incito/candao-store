@@ -28,4 +28,24 @@ public class TBusinessDataDetailDaoImpl implements TBusinessDataDetailDao {
 	public List<Map<String, Object>> getOrderInfo(Map<String, Object> params) {
 		return daoSupport.find(PREFIX + ".getOrderInfo", params); 
 	}
+
+	@Override
+	public List<Map<String, Object>> getSettlementOptions(Map<String, Object> params) {
+		return daoSupport.find(PREFIX + ".getSettlementOptions", params);
+	}
+
+	@Override
+	public List<Map<String, Object>> getOrderActualSettlements(Map<String, Object> params) {
+		return daoSupport.find(PREFIX + ".getOrderActualSettlements", params);
+	}
+
+	@Override
+	public Map<String, Object> getOrderInflate(Map<String, Object> params) {
+		return daoSupport.get(PREFIX + ".getOrderInflate", params);
+	}
+
+	@Override
+	public Map<String, Object> getthActualAmount(Map<String, Object> params) {
+		return daoSupport.get(PREFIX + ".getthActualAmount", params);
+	}
 }

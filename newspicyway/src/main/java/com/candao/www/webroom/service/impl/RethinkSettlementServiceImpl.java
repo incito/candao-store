@@ -1,8 +1,6 @@
 package com.candao.www.webroom.service.impl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,10 +73,10 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("orderid", orderId);
 					map.put("before_cleartime", DateUtils.formatDateToString(before_clearTime));
-					map.put("before_shouldamount", before_shouldamount);
+					map.put("before_shouldamount", new BigDecimal(before_shouldamount).setScale(2,BigDecimal.ROUND_HALF_DOWN));
 					map.put("before_paidamount", before_paidamount);
 					map.put("after_cleartime", DateUtils.formatDateToString(after_clearTime));
-					map.put("after_shouldamount", after_shouldamount);
+					map.put("after_shouldamount", new BigDecimal(after_shouldamount).setScale(2,BigDecimal.ROUND_HALF_DOWN));
 					map.put("after_paidamount", after_paidamount);
 					map.put("timedifference", timedifference);
 					map.put("paidindifference", paidindifference);
@@ -151,16 +149,6 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 		return tRethinkSettlementDao.queryTableNo(params);
 	}
 	
-	/**
-	 * 查询会员消费虚增值
-	 * @author weizhifang
-	 * @since 2016-01-25
-	 * @param orderid
-	 * @return
-	 */
-	public BigDecimal queryMemberInflate(String orderid){
-		return tRethinkSettlementDao.queryMemberInflate(orderid);
-	}
     
 	/**
 	 * 根据用户ID查询用户名
@@ -171,16 +159,6 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 	 */
 	public String queryUserNameByJobNumber(String userId,String branchId){
 		return tRethinkSettlementDao.queryUserNameByJobNumber(userId,branchId);
-	}
-	/**
-	 * 查询反结算后数据
-	 * @author weizhifang
-	 * @since 2015-11-19
-	 * @param params
-	 * @return
-	 */
-	public Map<String,Object> queryRethinkSettlementAfter(String orderId){
-		return tRethinkSettlementDao.queryRethinkSettlementAfter(orderId);
 	}
 	
 	/**

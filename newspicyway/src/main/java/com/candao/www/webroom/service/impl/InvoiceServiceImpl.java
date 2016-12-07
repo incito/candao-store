@@ -22,10 +22,6 @@ public class InvoiceServiceImpl implements  InvoiceService{
 	public int insertInvoice(Tinvoice iinvoice) {
 		return invoiceDao.insertInvoice(iinvoice);
 	}
-	@Override
-	public int update(Torder torder){
-		return invoiceDao.update(torder);
-	}
 	public Torder selectByorderId(String orderid){
 		return invoiceDao.selectByorderId(orderid);
 	}
@@ -46,19 +42,6 @@ public class InvoiceServiceImpl implements  InvoiceService{
 			}
 		}
 		return listTinvoice;
-	}
-	@Override
-	public  int findTinvoiceLimit1(Map<String, Object> params){
-		List<Map<String,Object>> TinvoiceList = invoiceDao.findTinvoiceLimit1(params);
-		int id = 0;
-		if(TinvoiceList.size()>0){
-			for (int i = 0; i < TinvoiceList.size(); i++) {
-				if(TinvoiceList.get(i).get("id")!=null && !TinvoiceList.get(i).get("id").equals("")){
-					id = Integer.parseInt(TinvoiceList.get(i).get("id").toString());
-				}
-			}
-		}
-		return id;
 	}
 	@Override
 	public List<Tinvoice> findInvoiceByOrderid(Map<String, Object> params) {

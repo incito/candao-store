@@ -8,6 +8,7 @@
 		  	tsdh.orderid,
 			too.endtime as before_cleartime,
 			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail_history tod where tod.orderid = too.orderid)
+			+(SELECT IFNULL(sum(chargeAmount),0) FROM t_service_charge where orderid=tsh.orderid and chargeOn=1)
 			-(SELECT IFNULL(sum(dishnum*orignalprice),0) FROM t_order_detail_history WHERE orderid = too.orderid and dishtype = 2 and superkey = primarykey) as before_shouldamount,
 			IFNULL(sum(tsdh.payamount),0)-IFNULL(tsh.Inflated,0) as before_paidamount,
 			too.userid as waiter,
@@ -24,14 +25,15 @@
         <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!='' ">
             AND too.endtime BETWEEN str_to_date(#{beginTime},'%Y-%m-%d %H:%i:%s') AND str_to_date(#{endTime},'%Y-%m-%d %H:%i:%s')
         </if>
-        AND tsh.reason not in('??????,??????' ,'会员结算失败,系统自动反结','会员结算失败，系统自动反结')
-        AND tsdh.payway in (0,1,5,8,13,17,18)
+        AND tsh.reason not like '%??????%'
+        AND tsh.reason not like '%会员结算失败%'
+        AND tsdh.payway in (SELECT itemid FROM v_revenuepayway)
 		AND too.orderstatus = 3
         group by tsdh.orderid
 	</select>
     
     <!-- 查询反结算后数据 -->
-    <select id="queryRethinkSettlementAfter" parameterType="map" resultType="map">
+    <!-- <select id="queryRethinkSettlementAfter" parameterType="map" resultType="map">
         SELECT
 		  	tsd.orderid,
 			too.endtime as after_cleartime,
@@ -46,10 +48,28 @@
 		WHERE
 			tsd.orderid = too.orderid
 		AND tsd.orderid = ts.orderid
-		AND tsd.payway in (0,1,5,8,13,17,18)
+		AND tsd.payway in (SELECT itemid FROM v_revenuepayway)
+		AND tsd.orderid = #{orderid}
+    </select> -->
+    <select id="queryRethinkSettlementAfter" parameterType="map" resultType="map">
+        SELECT
+		  	tsd.orderid,
+			too.endtime as after_cleartime,
+			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail tod where tod.orderid = too.orderid)
+			+(SELECT IFNULL(sum(chargeAmount),0) FROM t_service_charge where orderid=#{orderid} and chargeOn=1)
+			-(SELECT IFNULL(sum(dishnum*orignalprice),0) FROM t_order_detail WHERE orderid = too.orderid and dishtype = 2 and superkey = primarykey and orderid = #{orderid}) as after_shouldamount,
+			IFNULL(sum(tsd.payamount),0) as after_paidamount,
+			ts.userid as cashier
+		FROM
+			t_settlement_detail tsd,
+			t_order too,
+		    t_settlement ts
+		WHERE
+			tsd.orderid = too.orderid
+		AND tsd.orderid = ts.orderid
+		AND tsd.payway in (SELECT itemid FROM v_revenuepayway)
 		AND tsd.orderid = #{orderid}
     </select>
-    
     <!-- 查询用户名 -->
     <select id="queryUserNameByJobNumber" parameterType="map" resultType="String">
         select name from t_b_employee tbe,t_b_user tbu where tbe.user_id = tbu.id
@@ -98,6 +118,8 @@
             AND tod.orderid = #{orderid}
         </if>
         group by tod.dishid,tod.dishunit,tod.orderprice
+		UNION ALL
+		SELECT '服务费',1,'',0,chargeAmount FROM t_service_charge where orderid = #{orderid} AND chargeOn=1
     </select>
     
     <!-- 查询优惠信息 -->

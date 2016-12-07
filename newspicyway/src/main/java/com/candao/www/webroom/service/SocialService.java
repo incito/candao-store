@@ -33,11 +33,4 @@ public interface SocialService {
 	 */
 	public List<TbGift> getGiftList();
 	
-	/**
-	 * 查询已送礼物列表
-	 * @author weizhifang
-	 * @since 2015-11-17
-	 * @return
-	 */
-	public List<Map<String,Object>> sendGiftList(String orderId);
 }

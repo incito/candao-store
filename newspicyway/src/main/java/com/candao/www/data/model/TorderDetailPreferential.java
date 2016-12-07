@@ -48,29 +48,6 @@ public class TorderDetailPreferential implements Serializable {
 	public TorderDetailPreferential() {
 
 	}
-
-	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, String dishid) {
-		this.orderid = orderid;
-		this.preferential = preferential;
-		this.deAmount = deAmount;
-		this.dishid = dishid;
-	}
-
-	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, int isGroup) {
-		this.orderid = orderid;
-		this.preferential = preferential;
-		this.deAmount = deAmount;
-		this.isGroup = isGroup;
-	}
-
-	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, int isGroup, int isUse) {
-		this.orderid = orderid;
-		this.preferential = preferential;
-		this.deAmount = deAmount;
-		this.isGroup = isGroup;
-		this.isUse = isUse;
-	}
-
 	/**
 	 * 
 	 * @param id

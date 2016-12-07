@@ -38,29 +38,14 @@ AS
 --
 -- Definition for view v_revenuepayway
 --
-DROP VIEW IF EXISTS v_revenuepayway CASCADE $$
+CREATE OR REPLACE SQL SECURITY DEFINER
+VIEW `v_payway` AS
+select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `itemDesc`,`d`.`itemSort` AS `itemSort`,`d`.`status` AS `status`,`d`.`type` AS `type`,`d`.`typename` AS `typename`,`d`.`charges_status` AS `chargeStatus`,`ps`.`status` AS `isshow`,`ps`.`sort` AS `self_sort` from (`t_dictionary` `d` left join `t_payway_set` `ps` on((`d`.`itemid` = `ps`.`item_id`))) where (`d`.`type` = 'PAYWAY')$$
+
 CREATE OR REPLACE SQL SECURITY INVOKER
-VIEW v_revenuepayway
+VIEW `v_revenuepayway`
 AS
-SELECT t_dictionary.dictid AS dictid
-     , t_dictionary.itemid AS itemid
-     , t_dictionary.itemDesc AS itemDesc
-     , t_dictionary.itemSort AS itemSort
-     , t_dictionary.status AS status
-     , t_dictionary.type AS type
-     , t_dictionary.typename AS typename
-     , t_dictionary.begin_time AS begin_time
-     , t_dictionary.end_time AS end_time
-     , t_dictionary.charges_status AS charges_status
-     , t_dictionary.member_price AS member_price
-     , t_dictionary.price AS price
-     , t_dictionary.date_type AS date_type
-     , t_dictionary.item_value AS item_value
-FROM
-  t_dictionary
-WHERE
-  ((t_dictionary.itemid IN ('0', '1', '5', '8', '13', '17', '18', '30'))
-  AND (t_dictionary.type = 'PAYWAY')) $$
+select `d`.`dictid` AS `dictid`,`d`.`itemid` AS `itemid`,`d`.`itemDesc` AS `itemDesc`,`d`.`itemSort` AS `itemSort`,`d`.`status` AS `status`,`d`.`type` AS `type`,`d`.`typename` AS `typename`,`d`.`charges_status` AS `chargeStatus`,`ps`.`status` AS `isshow`,`ps`.`sort` AS `self_sort` from (`t_dictionary` `d` left join `t_payway_set` `ps` on((`d`.`itemid` = `ps`.`item_id`))) where ((`d`.`type` = 'PAYWAY') and (`d`.`charges_status` = 1))$$
 
 --
 -- Definition for view v_t_p_preferential_activity
@@ -326,6 +311,7 @@ BEGIN DECLARE v_fetch_done     NUMERIC DEFAULT 0;
 
   DECLARE v_sdetailid      VARCHAR(50);
   DECLARE v_payamount      DECIMAL(10, 2);
+  DECLARE v_serviceAmount      DECIMAL(10, 2) default 0; #服务费
   DECLARE v_payway         INT(2);
   DECLARE v_couponNum      INT(3);
   DECLARE v_ys_amount      DECIMAL(10, 2);
@@ -506,8 +492,9 @@ loop_label:
   WHERE
     debitamount IS NULL;
 
+  SELECT chargeAmount INTO v_serviceAmount FROM t_service_charge where orderid=i_orderid and chargeOn=1 ;
   #把四舍五入的零头调完美
-  SELECT ifnull(sum(t.payamount) - v_xz_amount, 0)
+  SELECT ifnull(sum(t.payamount) - v_xz_amount-v_serviceAmount, 0)
   INTO
     @amount1
   FROM
@@ -515,7 +502,7 @@ loop_label:
   WHERE
     t.orderid = i_orderid
     AND t.payamount > 0
-    AND t.payway IN (0, 1, 5, 8, 13, 17, 18);
+    AND t.payway IN (SELECT itemid FROM v_payway WHERE `chargeStatus` = 1);
 
   SELECT ifnull(sum(t.debitamount), 0)
   INTO
@@ -810,7 +797,7 @@ BEGIN
   DECLARE v_message varchar(255);
   DECLARE v_flag int;
 
-  CALL newspicyway.p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
+  CALL p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
 
 END
 $$
@@ -825,7 +812,7 @@ BEGIN
       DECLARE v_message varchar(255);
   DECLARE v_flag int;
 
-  CALL newspicyway.p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
+  CALL p_cal_dish_debit_amount(i_orderId, v_message, v_flag);
 END
 $$
 
@@ -850,10 +837,11 @@ BEGIN
   update t_order_detail set payamount=0, discountamount=0,predisamount=0  where ((status<>5 and  (not (orderprice>0))) or (status=5))  and orderid=v_orderid;
   update t_order_detail set payamount=orderprice*dishnum*(case when discountrate<=0 then 1 else discountrate end), discountamount=orderprice*dishnum*(1-case when discountrate<=0 then 1 else discountrate end),predisamount=orderprice*dishnum  where    status<>5 and  orderprice>0  and orderid=v_orderid;
   select IFNULL(sum(payamount),0) into v_dueamount from t_order_detail where   status<>5 and  orderid=v_orderid ;
-  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(0,1,5,8,13,17,18,30);
+  SELECT IFNULL(sum(chargeAmount),0)+v_dueamount INTO v_dueamount FROM t_service_charge where orderid=v_orderid AND  chargeOn=1;
+  select IFNULL(sum(payamount),0) into v_ssamount from t_settlement_detail where orderid=v_orderid and payway in(SELECT itemid FROM `v_payway` where `chargeStatus` = 1);
   select IFNULL(sum(payamount),0) into v_gzamount from t_settlement_detail where orderid=v_orderid and payway in(5,13);
   select IFNULL(sum(payamount),0) into v_ymamount from t_settlement_detail where orderid=v_orderid and payway in(6,12);
-  select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid;
+  select IFNULL(sum( tod.dishnum * tod.orignalprice ),0) INTO v_originalOrderAmount FROM t_order_detail AS tod WHERE ( tod.dishtype = 0 OR tod.dishtype=1 OR ( tod.dishtype = 2 AND EXISTS ( SELECT tdg.dishid FROM t_dish_group tdg WHERE tod.dishid = tdg.dishid ) ) ) AND tod.orderid = v_orderid;
   update t_order set dueamount=v_dueamount,wipeamount=v_dueamount-floor(v_dueamount),ssamount=v_ssamount,gzamount=v_gzamount,ymamount=v_ymamount,freeamount=v_originalOrderAmount where orderid=v_orderid;
 END
 $$
@@ -1198,7 +1186,7 @@ IF v_t_orderstatus != 3  and v_t_orderstatus != 2  THEN
            update t_order set memberno = v_t_memberno 
            where orderid = v_orderid;
 
-          call newspicyway.p_update2vipprice(v_orderid);
+          call p_update2vipprice(v_orderid);
  
        else 
            if v_memberno is not null  and v_t_memberno is null then
@@ -1206,7 +1194,7 @@ IF v_t_orderstatus != 3  and v_t_orderstatus != 2  THEN
              update t_order set memberno = v_memberno 
              where orderid = v_t_orderid;
 
-            call newspicyway.p_update2vipprice(v_t_orderid);
+            call p_update2vipprice(v_t_orderid);
 
            end if;
        end if; 
@@ -1964,7 +1952,7 @@ BEGIN
 
   END IF;
 
-  CALL newspicyway.p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
+  CALL p_orderdish(i_orderid, v_printobjid, o_code, o_msg);
 
 
 END
@@ -2003,7 +1991,7 @@ BEGIN
   UNTIL done = 1
   END REPEAT;
   CLOSE cur_orderlist;
-  CALL newspicyway.p_caletableamount(v_orderid);
+  CALL p_caletableamount(v_orderid);
 END
 $$
 
@@ -2042,7 +2030,7 @@ BEGIN
   SELECT
     COUNT(1) INTO v_count
   FROM t_table
-  WHERE tableno = i_orignaltableno;
+  WHERE tableno = i_orignaltableno AND status = '1';
   IF v_count = 1 THEN
     SELECT
       COUNT(1) INTO v_count
@@ -2055,13 +2043,13 @@ BEGIN
         orderid,
         tableid INTO v_status, v_orderid, v_table_orginal_id
       FROM t_table
-      WHERE tableno = i_orignaltableno;
+      WHERE tableno = i_orignaltableno AND status = '1';
 
       SELECT
         tableid,
         orderid INTO v_tableid, v_t_orderid
       FROM t_table
-      WHERE tableno = i_targettableno;
+      WHERE tableno = i_targettableno AND status = '0';
 
       IF v_status = 0 THEN
         SET v_status = 1;
@@ -2082,7 +2070,7 @@ BEGIN
       UPDATE t_table
       SET orderid = v_orderid,
           status = v_status
-      WHERE tableNo = i_targettableno;
+      WHERE tableid = v_tableid;
 
       UPDATE t_order
       SET currenttableid = v_tableid,

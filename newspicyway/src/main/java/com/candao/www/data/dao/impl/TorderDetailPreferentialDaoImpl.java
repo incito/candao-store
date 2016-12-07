@@ -80,6 +80,7 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		return daoSupport.find(PREFIX + ".queryGiveprefer", params);
 	}
 
+	
 
 
 }
