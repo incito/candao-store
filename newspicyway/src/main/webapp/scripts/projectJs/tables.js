@@ -135,12 +135,12 @@ $(document).ready(function () {
                         vcheck = false;
                     }
                     if ($(".serviceCharge_count_timer").val().trim() != "" && chargeType == '0') {
-                        var reg = /^(100|[1-9]\d|\d)$/ //只能输入0-100的整数
+                        var reg = /^(99|[1-9]\d|\d)$/ //只能输入0-100的整数
                         reg.lastIndex = 0;//正则开始为0
                         var val = $.trim($(".serviceCharge_count_timer").val());
-                        if (reg.test(val) === false) {
+                        if (reg.test(val) === false || parseFloat(val) === 0) {
                             $(".serviceCharge_count_timer").val().trim()
-                            $(".serviceCharge_count_timer_tip").text("服务费比例只能输入0~100的整数");
+                            $(".serviceCharge_count_timer_tip").text("服务费比例只能输入1~99的整数");
                             $(".serviceCharge_count_timer").focus();
                             $(".serviceCharge_count_timer").addClass("error");
                             vcheck = false;
@@ -1629,6 +1629,7 @@ var customTable = {
                         var tmpJson1 = JSON.parse(key);
                         var chargeOff = [];//有餐台服务费
                         var take_out = [];
+                        $('#' + JSON.parse(key).areaid).attr('areasort',JSON.parse(key).areaSort)
                         $.each(obj, function (k, v) {
                             if (v.chargeOn == '1') {
                                 chargeOff.push(obj[k])
