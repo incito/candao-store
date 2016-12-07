@@ -1467,7 +1467,8 @@ var customTable={
                 $.each(res, function (index, item) {
                     $.each(item, function (key, obj) {
                         var tmpJson1 = JSON.parse(key);
-						var  take_out=[]
+						var  take_out=[];
+						$('#' + JSON.parse(key).areaid).attr('areasort',JSON.parse(key).areaSort)
 						//遍历餐台为咖啡台或者外卖台的餐台
 						$.each(obj, function (ke, val) {
 							if (val.tabletype == '2' || val.tabletype == '3') {
