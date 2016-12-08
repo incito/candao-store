@@ -3097,7 +3097,10 @@ BEGIN
           t_temp_order_detail a, t_temp_orderid b
         WHERE
           a.orderid = b.orderid;
-
+        #加上服务费
+				SELECT IFNULL(SUM(chargeAmount),0)+v_shouldamount INTO v_shouldamount
+				FROM t_service_charge a,t_temp_orderid b
+				WHERE a.orderid=b.orderid AND a.chargeOn=1;
 
         #计算实收（含虚增）
         SELECT ifnull(sum(payamount), 0)
