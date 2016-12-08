@@ -28,6 +28,7 @@ import com.candao.www.webroom.model.*;
 import com.candao.www.webroom.service.*;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1124,31 +1125,35 @@ public class PadInterfaceController extends BaseController{
 
     @RequestMapping("/getTableAndType")
     @ResponseBody
-    public Map<String,Object> getTableAndType() {
-        List<Map<String,Object>> listTableArea = null;
-        //0成功1失败
-        Map<String,Object> res = new HashMap<>();
+    public Map<String,Object> getTableAndType( @RequestBody String json) {
+        Map<String, Object> param = null;
+
+        if (!org.springframework.util.StringUtils.isEmpty(json)) {
+            param = JSON.parseObject(json, Map.class);
+        }
+        List<Map<String, Object>> listTableArea;
         try {
             listTableArea = tableAreaService.getTableAreaTag();
             Map<String, Object> mapAreaid = new HashMap<String, Object>();
             for (Map<String, Object> map : listTableArea) {
+                mapAreaid.clear();
                 mapAreaid.put("areaid", map.get("areaid"));
                 mapAreaid.put("defaultsort", 1);
+                if (!MapUtils.isEmpty(param)) {
+                    mapAreaid.put("exceptorder", param.get("orderid"));// 排除再外的餐台
+                    mapAreaid.put("tabletypefilter", param.get("tableTypeFilter"));// 排除再外的餐台类型
+                }
                 List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
-                if (!CollectionUtils.isEmpty(tablelist))
+                if (!CollectionUtils.isEmpty(tablelist)) {
+                    ServiceChargeDescUnit.handleServiceCharge(tablelist);
                     map.put("tables", tablelist);
+                }
             }
-        } catch (Throwable e){
-            loggers.error(e.getMessage(),e);
-            res.put("code",1);
-            res.put("msg",e.getMessage());
-            res.put("data",null);
-            return res;
+        } catch (Throwable e) {
+            loggers.error(e.getMessage(), e);
+            return getResponseStr(null, e.getMessage(), false);
         }
-        res.put("code",0);
-        res.put("msg","查询成功");
-        res.put("data",listTableArea);
-        return res;
+        return getResponseStr(listTableArea, "查询成功", true);
     }
 
     /**
