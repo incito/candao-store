@@ -365,6 +365,7 @@ $(document).ready(function () {
     /*菜品分类下具体菜品添加*/
     $("#tables-detailMain-Add").click(function () {
         init_object();
+        $('#serviceCharge_onoff input').eq(0).click()
         $("#tables-detailAdd-dialog").modal("show");
         $("#editTitle2").text("添加餐台");
 
