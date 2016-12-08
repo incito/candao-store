@@ -562,7 +562,8 @@ label_main:
     FROM t_temp_order_detail tod
     WHERE tod.orderid IN (SELECT orderid
                           FROM t_temp_order
-                          WHERE orderstatus = 3);
+                          WHERE orderstatus = 3 )
+			AND (tod.dishtype<>2 OR (tod.dishtype=2 AND tod.superkey <> tod.primarykey));
 		SELECT v_closed_bill_shouldamount+IFNULL(SUM(chargeAmount),0) INTO v_closed_bill_shouldamount FROM t_service_charge WHERE orderid IN (SELECT orderid FROM t_temp_order WHERE orderstatus = 3) AND chargeOn=1;
     SELECT
       IFNULL(SUM(too.custnum), 0),
@@ -577,7 +578,8 @@ label_main:
     FROM t_temp_order_detail tod
     WHERE tod.orderid IN (SELECT orderid
                           FROM t_temp_order
-                          WHERE orderstatus = 0);
+                          WHERE orderstatus = 0)
+			AND (tod.dishtype<>2 OR (tod.dishtype=2 AND tod.superkey <> tod.primarykey));
 		SELECT v_no_bill_shouldamount+IFNULL(SUM(chargeAmount),0) INTO v_no_bill_shouldamount FROM t_service_charge WHERE orderid IN (SELECT orderid FROM t_temp_order WHERE orderstatus = 0) AND chargeOn=1;
 
     IF pi_sb > -1

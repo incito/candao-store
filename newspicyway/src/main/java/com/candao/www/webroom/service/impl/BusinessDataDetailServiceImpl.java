@@ -223,6 +223,9 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					if(businessR.get(i).get("serviceAmount") != null){  //服务费
                     	businssRport.setServiceAmount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("serviceAmount").toString()));
                     }
+					if(businessR.get(i).get("paidinaverage") != null){  //服务费
+                    	businssRport.setPaidinaverage(ToolsUtil.formatTwoDecimal(businessR.get(i).get("paidinaverage").toString()));
+                    }
                     //应收总额
                     String shouldAmount = businessR.get(i).get("shouldamount")+"";
                     BigDecimal shouldAmountDecimal = new BigDecimal(shouldAmount).setScale(2, BigDecimal.ROUND_HALF_DOWN);
@@ -254,9 +257,9 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					List<String> settlements = (List<String>) actualAmountMap.get("settlements");
 					settlements.set(settlementSort.get("8"), hykAmountDecimal.subtract(inflateDecimal)+"");
                     //平均实收
-                    BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
+                    /*BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
                     BigDecimal actualPre = actualTotalAmountPure.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
-					businssRport.setPaidinaverage(actualPre+"");
+					businssRport.setPaidinaverage(actualPre+"");*/
 					//封装
 					businssRport.setSettlementDescList(settlementDescList);
 					businssRport.setSettlements((List<String>)actualAmountMap.get("settlements"));
