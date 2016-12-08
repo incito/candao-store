@@ -48,7 +48,7 @@
 		)
 	</select>
 	<select id="getFlowData" parameterType="java.util.Map"  resultType="java.util.Map">
-		SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0) showldamount,
+		SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid=o.orderid and chargeOn=1) as showldamount,
 		 DATE_FORMAT(o.begintime,'%Y-%m-%d %H:%i') beginTime,
 		 t.tableName tableName
 		 FROM t_order o 
