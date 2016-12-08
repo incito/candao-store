@@ -552,10 +552,9 @@
         sum(dueamount) as dueamount,sum(ssamount) as ssamount,sum(custnum) as custnum,sum(orderCount) as orderCount
         from(
             SELECT
-                    dueamount+IFNULL(b.chargeAmount,0) as dueamount,0 as ssamount,custnum,0 as orderCount
+                    dueamount,0 as ssamount,custnum,0 as orderCount
             FROM
                     t_order a
-            LEFT JOIN t_service_charge b on a.orderid=b.orderid AND b.chargeOn=1
             WHERE
                     orderstatus = 0 AND begintime>=(select inserttime from t_open_log limit 1)
             UNION ALL
