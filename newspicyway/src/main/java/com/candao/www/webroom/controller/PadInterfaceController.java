@@ -16,6 +16,7 @@ import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
 import com.candao.www.permit.service.FunctionService;
@@ -1140,7 +1141,7 @@ public class PadInterfaceController extends BaseController{
                 mapAreaid.put("areaid", map.get("areaid"));
                 mapAreaid.put("defaultsort", 1);
                 if (!MapUtils.isEmpty(param)) {
-                    mapAreaid.put("exceptorder", param.get("orderid"));// 排除再外的餐台
+                    mapAreaid.put("exceptorder", StringUtil.isEmpty(param.get("orderid")) ? null : param.get("orderid"));// 排除再外的餐台
                     mapAreaid.put("tabletypefilter", CollectionUtils.isEmpty((Collection) param.get("tableTypeFilter")) ?
                             null : param.get("tableTypeFilter"));// 排除再外的餐台类型
                 }
