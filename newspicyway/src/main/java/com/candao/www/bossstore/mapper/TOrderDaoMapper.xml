@@ -87,7 +87,7 @@
 		 	order by o.begintime desc
 	</select>
 	<select id="getShouldAmountByOrderId" parameterType="java.util.Map"  resultType="java.util.Map">
-		select sum(tod.dishnum*tod.orignalprice) as finalPrice
+		select sum(tod.dishnum*tod.orignalprice)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid=tod.orderid and chargeOn=1) as finalPrice
 			from t_order_detail tod
 			where tod.orderid=#{orderId}
 	</select>
