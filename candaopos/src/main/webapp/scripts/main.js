@@ -100,17 +100,17 @@ var MainPage = {
                 return false;
             }
 
-            if (parseInt(maleNum, 10) + parseInt(femailNum, 10) > 9999) {
-                widget.modal.alert({
-                    cls: 'fade in',
-                    content: '<strong>总人数不能大于9999</strong>',
-                    width: 500,
-                    height: 500,
-                    btnOkTxt: '确定',
-                    btnCancelTxt: ''
-                });
-                return false;
-            }
+            //if (parseInt(maleNum, 10) + parseInt(femailNum, 10) > 9999) {
+            //    widget.modal.alert({
+            //        cls: 'fade in',
+            //        content: '<strong>总人数不能大于9999</strong>',
+            //        width: 500,
+            //        height: 500,
+            //        btnOkTxt: '确定',
+            //        btnCancelTxt: ''
+            //    });
+            //    return false;
+            //}
 
             if (serverName === undefined || serverName === '') {
                 widget.modal.alert({
@@ -1041,22 +1041,25 @@ var MainPage = {
         var getOpenEndTime=JSON.parse(utils.storage.getter('getOpenEndTime'))
         var time=utils.date.current();
         var endTime=''
-        if(getOpenEndTime.datetype=='T'){
-            endTime=time.split(' ')[0]+' '+getOpenEndTime.endtime
-        }
-        if(getOpenEndTime.datetype=='N'){
-            var a=time.split(' ')[0]
-            var b=parseInt(a.substring(8,a.length))+1;
-            if(b<10){
-                b='0'+b
+        if(getOpenEndTime) {
+            if(getOpenEndTime.datetype=='T'){
+                endTime=time.split(' ')[0]+' '+getOpenEndTime.endtime
             }
-            endTime=a.substring(8,2)+b+' '+getOpenEndTime.endtime
+            if(getOpenEndTime.datetype=='N'){
+                var a=time.split(' ')[0]
+                var b=parseInt(a.substring(8,a.length))+1;
+                if(b<10){
+                    b='0'+b
+                }
+                endTime=a.substring(8,2)+b+' '+getOpenEndTime.endtime
 
+            }
+            if(Date.parse(new Date(endTime))-Date.parse(new Date(time))<0){
+                Log.send(2, '结业时间到了,请及时结业')
+                utils.printError.alert('结业时间到了,请及时结业')
+            }
         }
-        if(Date.parse(new Date(endTime))-Date.parse(new Date(time))<0){
-            Log.send(2, '结业时间到了,请及时结业')
-            utils.printError.alert('结业时间到了,请及时结业')
-        }
+
     }
 };
 

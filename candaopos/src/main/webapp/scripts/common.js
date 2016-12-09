@@ -1,6 +1,7 @@
 $(document).ready(function () {
     // Copyright 2014-2015 Twitter, Inc.
     // Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+
     if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
         var msViewportStyle = document.createElement('style');
         msViewportStyle.appendChild(
@@ -10,12 +11,19 @@ $(document).ready(function () {
         );
         document.querySelector('head').appendChild(msViewportStyle);
     }
+
+	$.ajaxSetup({
+		timeout: 8000
+	});
     $(document).bind("ajaxSend", function () {
         utils.loading.open('正在加载…')
 
     }).bind("ajaxComplete", function () {
         utils.loading.remove();
-    }).bind('ajaxError', function () {
+    }).bind('ajaxError', function (XMLHttpRequest, textStatus, errorThrown) {
+		Log.send(4,'接口加载失败XMLHttpRequest:' + JSON.stringify(XMLHttpRequest));
+		Log.send(4,'接口加载失败textStatus:' + JSON.stringify(textStatus));
+		Log.send(4,'接口加载失败errorThrown:' + JSON.stringify(errorThrown));
         if ($('.errorAlert').length < 1) {
             widget.modal.alert({
                 cls: 'fade in errorAlert',
@@ -350,7 +358,9 @@ _config.interfaceUrl = {
 
 	/*pos配置*/
 	Config:'/newspicyway/pos/scripts/config.json',<!--雅座会员激活-->
-	Log: '/newspicyway/padinterface/log'
+	Log: '/newspicyway/padinterface/log',
+	PayWay: '/newspicyway/padinterface/getPayways.json',
+	SavePayWay: '/newspicyway/padinterface/savePayway.json'
 };
 //优惠分类
 _config.preferential = {

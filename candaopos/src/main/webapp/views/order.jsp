@@ -175,12 +175,18 @@
 					</div>
 				</div>
 				<hr style="border: 1px solid #D3D3D3;">
-				<div class="tab-payment">
-					<ul><li class="active" target="#cash">现金支付</li><li target="#bank-card">银行卡</li><li target="#membership-card">会员卡</li><li target="#this-card">挂账支付</li><li target="#pay-treasure">支付宝</li><li target="#wechat-pay">微信支付</li></ul>
+				<div class="pay-type">
+					<div class="nav-type-prev nav-pay-prev btn">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</div>
+					<ul class="nav-types nav-pay-types tab-payment"></ul>
+					<div class="nav-type-next nav-type nav-pay-next btn">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</div>
 				</div>
 				<div class="pay-div">
 					<!-- 现金支付 -->
-					<div class="paytype-input cash" id="cash">
+					<div class="paytype-input cash" itemid="0" id="cash">
 						<div class="form-group">
 							<span>金额：</span>
 							<input type="text" class="form-control J-pay-val"  onpaste="return false" ondragenter="return false" oncontextmenu="return false;" style="ime-mode:disabled" validtype="intAndFloat2" name="cash" iptType="cash">
@@ -190,7 +196,7 @@
 						</div>
 					</div>
 					<!-- 银行卡支付 -->
-					<div class="paytype-input bank-card hide" id="bank-card">
+					<div class="paytype-input bank-card hide" itemid="1" id="bank-card">
 						<div class="form-group" style="display: inline-flex;">
 							<input type="text" class="form-control bank-type" name="banktype" placeholder="银行类型" disabled="disabled">
 							<button class="btn selbank-btn J-bank-sel">选择银行</button>
@@ -205,7 +211,7 @@
 						</div>
 					</div>
 					<!-- 会员卡支付 -->
-					<div class="paytype-input membership-card hide"
+					<div class="paytype-input membership-card hide" itemid="8"
 						 id="membership-card">
 						<div class="form-group" style="display: inline-flex;">
 							<input type="text" class="form-control card-number J-pay-name" validtype="noPecial" maxlength="30" name="cardNumber" placeholder="卡号">
@@ -228,7 +234,7 @@
 						<div class="form-group" style="color: #FF5803;">积分余额：<b id="IntegralOverall"></b></div>
 					</div>
 					<!-- 挂账支付 -->
-					<div class="paytype-input this-card hide" id="this-card">
+					<div class="paytype-input this-card hide" itemid="13" id="this-card">
 						<div class="form-group" style="display: inline-flex;">
 							<input type="text" class="form-control payment-unit J-pay-name" name="debitAmountName" placeholder="挂账单位" disabled="disabled">
 							<button class="btn sel-btn J-selCompany" >选择</button>
@@ -239,7 +245,7 @@
 						</div>
 					</div>
 					<!-- 支付宝支付 -->
-					<div class="paytype-input pay-treasure hide" id="pay-treasure">
+					<div class="paytype-input pay-treasure hide" itemid="18" id="pay-treasure">
 						<div class="form-group">
 							<span>支付宝:</span>
 							<input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="alipayName" >
@@ -250,7 +256,7 @@
 						</div>
 					</div>
 					<!-- 微信支付 -->
-					<div class="paytype-input wechat-pay hide" id="wechat-pay">
+					<div class="paytype-input wechat-pay hide" itemid="17" id="wechat-pay">
 						<div class="form-group">
 							<span>微信号:</span>
 							<input type="text"   class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="wpayName">
@@ -259,6 +265,9 @@
 							<span>金额:</span>
 							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
 						</div>
+					</div>
+					<div class="pay-other">
+
 					</div>
 					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
 						<ul>
@@ -277,7 +286,6 @@
 							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
 						</ul>
 					</div>
-
 					<div class="virtual-keyboard letter-virtual-keyboard hide" id="letter-keyboard">
 						<ul>
 							<li>A</li><li>B</li><li>C</li><li>D</li><li>E</li><li>F</li>
