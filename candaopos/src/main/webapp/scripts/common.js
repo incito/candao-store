@@ -316,6 +316,7 @@ _config.interfaceUrl = {
 	PrintTip: "/newspicyway/print4POS/tipList.json", <!--打印小费统计报表-->
 	PrintBusinessDetail: "/newspicyway/print4POS/printBusinessDetail.json", <!--打印营业报表明细-->
 	PrintInvoice: "/newspicyway/print4POS/printInvoice.json", <!--打印发票单-->
+	ServiceChange:'/newspicyway/padinterface/serviceChange.json',<!--服务费-->
 	<!--云接口-->
 	QueryCanDao: "/newspicyway/memberManager/findByParams.json", <!--餐道会员查询-->
 	StorageCanDao: "/newspicyway/deal/StoreCardToNewPos.json", <!--餐道会员储值-->
