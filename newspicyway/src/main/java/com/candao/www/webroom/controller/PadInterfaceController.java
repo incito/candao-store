@@ -694,11 +694,11 @@ public class PadInterfaceController extends BaseController{
 		record.setJson(JacksonJsonMapper.objectToJson(table));
 		record.setPadpath("cleantable");
 		jsonRecordService.insertJsonRecord(record);
-		
+
 
 		//清台
 		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-		
+
 		//整单退菜
 		orderDetailService.deleteordreDetailByOrderid(tbTable.getOrderid());
 		if (tbTable != null) {
@@ -1094,7 +1094,7 @@ public class PadInterfaceController extends BaseController{
         return jsonString;
     }
 
-  
+
 
     /**
      * 根据餐台类型查询餐台
@@ -1141,7 +1141,8 @@ public class PadInterfaceController extends BaseController{
                 mapAreaid.put("defaultsort", 1);
                 if (!MapUtils.isEmpty(param)) {
                     mapAreaid.put("exceptorder", param.get("orderid"));// 排除再外的餐台
-                    mapAreaid.put("tabletypefilter", param.get("tableTypeFilter"));// 排除再外的餐台类型
+                    mapAreaid.put("tabletypefilter", CollectionUtils.isEmpty((Collection) param.get("tableTypeFilter")) ?
+                            null : param.get("tableTypeFilter"));// 排除再外的餐台类型
                 }
                 List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
                 if (!CollectionUtils.isEmpty(tablelist)) {
@@ -3166,7 +3167,7 @@ public class PadInterfaceController extends BaseController{
         return JacksonJsonMapper.objectToJson(map);
 
 	}
-	
+
 	/**
 	 * 上传log背景
 	 * pad背景
@@ -3176,14 +3177,14 @@ public class PadInterfaceController extends BaseController{
 	 * @param h
 	 * @param w
 	 * @return
-	 * @throws FileNotFoundException 
-	 * 
+	 * @throws FileNotFoundException
+	 *
 	 */
 	@RequestMapping("/catImg")
 	@ResponseBody
 	public String catImg(HttpServletRequest request,@RequestParam("x") String x,@RequestParam("y") String y,
 			@RequestParam("h") String h,@RequestParam("w") String w) throws FileNotFoundException{
-		
+
 		//上传文件跟路径
 		String realpath = request.getSession().getServletContext().getRealPath("");
 		//实际文件路径
@@ -3219,8 +3220,8 @@ public class PadInterfaceController extends BaseController{
 		int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
 		int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
 		int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
-		
-		
+
+
 		String fileupload=File.separator+ "upload" + File.separator;
 
 		String inputDir = request.getRealPath("") +fileupload;
@@ -3241,7 +3242,7 @@ public class PadInterfaceController extends BaseController{
 		map.put("image", afterCatImgUrl);
 		return JacksonJsonMapper.objectToJson(map);
 	}
-	
+
 	/**
 	 * 设置logo图或背景图
 	 * @return
@@ -3318,11 +3319,11 @@ public class PadInterfaceController extends BaseController{
 		return 0;
 	}
 	private void createDir(String path){
-		File file =new File(path);    
-		//如果文件夹不存在则创建    
-		if  (!file .exists()  && !file .isDirectory())      
-		{       
-		    file .mkdirs();    
+		File file =new File(path);
+		//如果文件夹不存在则创建
+		if  (!file .exists()  && !file .isDirectory())
+		{
+		    file .mkdirs();
 		}
 	}
 
