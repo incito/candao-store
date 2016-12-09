@@ -34,6 +34,3 @@ CREATE TABLE `t_service_charge` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 UPDATE `t_b_function` SET NAME = '反结算/服务费' WHERE CODE = '030203';
 
-delete from tb_schema_version where version='2.1.0.2';
-delete from tb_schema_version where version='2.1.0.3';
-
