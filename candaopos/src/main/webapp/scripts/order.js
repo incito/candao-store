@@ -1685,6 +1685,8 @@ var Order = {
                     that.updateTotal(res.data);
                     //更新已选优惠
                     that.updateSelectedPref(res.data.detailPreferentials, 1);
+                    //更新订单信息
+                    that.updateOrder()
 
                     $("#coupnum-dialog,#givedish-dialog").modal("hide");
 
@@ -1996,6 +1998,24 @@ var Order = {
                             that.updateOrderStatus = 0;
                             return false;
                         } else {
+                            if(res.data.serviceCharge){
+                                if(res.data.serviceCharge.chargeOn=='1'){
+                                    $('#serviceCharge-tip').parent().show();
+                                    $('#serviceCharge-tip').parent().next('.tip').css('float','right')
+                                    $('#serviceCharge-tip').text(res.data.serviceCharge.chargeAmount)
+                                    $('#serviceCharge').show()
+                                }
+                                else {
+                                    $('#serviceCharge').show();
+                                    $('#serviceCharge-tip').parent().hide();
+                                    $('#serviceCharge-tip').parent().next('.tip').css('float','left')
+                                }
+                            }
+                            else {
+                                $('#serviceCharge').hide();
+                                $('#serviceCharge-tip').parent().hide();
+                                $('#serviceCharge-tip').parent().next('.tip').css('float','left')
+                            }
                             that.orderDataPre = res.data
                         }
                         if(res.data.userOrderInfo.orderInvoiceTitle!=''){
@@ -2861,6 +2881,96 @@ var Order = {
             }
 
         }
+
+    },
+    /**
+     * 手动服务开关
+     */
+    serviceCharge:function (msg) {
+        var that=this;
+        var data=that.orderDataPre;
+        if(msg){
+            _serviceCharge()
+        }
+        else {
+            $('#serviceCharge-dialog').load("check/impower.jsp",
+                {"title" : "服务费授权",
+                    "userRightNo":"030102",
+                    "cbd":"Order.serviceCharge(user)"
+                });
+            $('#serviceCharge-dialog').modal("show");
+            setTimeout(function () {
+                $('#user').focus()
+            },500)
+        }
+        function _serviceCharge() {
+            $('#serviceCharge-dialog').modal("hide");
+            $('.Auto-serviceCharge').text(data.serviceCharge.chargeAmount);
+            $('.MT-serviceCharge').val(data.serviceCharge.chargeAmount)
+            if(data.serviceCharge.chargeOn=='0'){
+                $('.serviceCharge-Switch').removeClass('select');
+                $('.serviceCharge-Switch').eq(1).addClass('select');
+                $('.MT-serviceCharge').attr('disabled',true)
+            }
+            $('#MT-serviceCharge').modal('show');
+            var _serviceCharge_val=$.trim($('.MT-serviceCharge').val());
+            /*服务费开关*/
+            $('.serviceCharge-Switch').click(function () {
+                var me=$(this)
+                $('.serviceCharge-Switch').removeClass('select');
+                me.addClass('select');
+                if(me.attr('chargeOn')=='0'){
+                    $('.MT-serviceCharge').attr('disabled',true)
+                }
+                else {
+                    $('.MT-serviceCharge').attr('disabled',false).focus()
+                }
+            })
+            /*修改服务费提交*/
+            $('#serviceCharge-btnOk').click(function () {
+                var orderId=data.serviceCharge.orderid,//订单号
+                    autho=msg,//授权人（退菜权限）
+                    chargeOn=$('#MT-serviceCharge .select').attr('chargeOn'),//服务费开关0为关闭；1为开启
+                    chargeAmount=null,//金额
+                    custom=null//是否服务员手动输入0为自动，1为手动
+                if(_serviceCharge_val==data.serviceCharge.chargeAmount){
+                    custom=0;
+                    chargeAmount=data.serviceCharge.chargeAmount
+                }
+                else {
+                    custom=1;
+                    chargeAmount=_serviceCharge_val
+                }
+                $.ajax({
+                    url:_config.interfaceUrl.ServiceChange,
+                    method: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        orderId: orderId,
+                        autho: autho,
+                        chargeOn: chargeOn,
+                        chargeAmount: chargeAmount,
+                        custom: custom,
+                    }),
+                    success: function (res) {
+                        if(res.code=='0'){
+                            that.updateOrder()
+                            $('#MT-serviceCharge').modal('hide');
+                        }
+                        else{
+                            utils.printError.alert(res.msg);
+                        }
+
+                    }
+                })
+            })
+        }
+
+
+
+
+
 
     }
 };

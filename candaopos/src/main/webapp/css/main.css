@@ -440,3 +440,37 @@ footer .info{
 	cursor: pointer;
 	font-weight: bold;
 }
+#MT-serviceCharge .virtual-keyboard-base ul li{
+	width: 84px;
+}
+#MT-serviceCharge .member-info-list {
+	padding: 10px 0px;
+}
+#MT-serviceCharge .member-info-list li {
+	width:100%;
+	margin:8px 5px;
+	height: 35px;
+	line-height: 35px;
+	display: inline-block;
+	font-size: 14px;
+	color: #1F1F1F;
+	overflow: hidden;
+}
+#MT-serviceCharge .member-info-list li label {
+	width: 100px;;
+	height: 35px;
+	display: inline-block;
+	font-size: 14px;
+	color: #1F1F1F;
+	text-align: right;
+}
+#MT-serviceCharge .serviceCharge-Switch{
+	background: #fff;
+	margin-right: 10px;
+	padding: 5px 15px;
+	cursor: pointer;
+}
+#MT-serviceCharge .select{
+	background: #FF5803;
+	color: #FFFFFF;
+}
