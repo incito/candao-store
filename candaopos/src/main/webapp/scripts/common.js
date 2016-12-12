@@ -194,7 +194,6 @@ var keydownEnter=null
 					}
 				})
 			}
-
 			if($('.modal-alert:last').length>0){
 				var me=$('.modal-alert:last').find('button')
 				$(me).each(function () {
@@ -1361,7 +1360,7 @@ utils.reprintClear={//打印清机单
                     })
                 }
                 else {
-                    utils.printError.alert('清机单打印失败，请稍后重试')
+					utils.printError.alert(data.msg)
                 }
 			}
 		});

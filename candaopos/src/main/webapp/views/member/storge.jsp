@@ -111,9 +111,9 @@
 		target: '.virtual-keyboard-base'
 	});
 	member.getCouponList();
-	/*$('.pay-type-select li').click(function () {
+	$('.pay-type-select li').click(function () {
 		$(this).addClass('active').siblings('li').removeClass('active');
-	});*/
+	});
 	$('.btn-Save,.virtual-keyboard-ok').click(function () {
 		member.stored_value()
 	})

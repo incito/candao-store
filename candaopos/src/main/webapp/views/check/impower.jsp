@@ -74,16 +74,24 @@
         impower.int();
         if(usernameDisble==1){
             $('#user').attr('disabled','disabled').val(utils.storage.getter('aUserid'))
-            $('#psd').focus()
+            setTimeout(function () {
+                $('#psd').focus()
+            },300)
         }
         else if(usernameDisble==2){//结业清机
             $('#user').attr('disabled','disabled').val(user_Nmae)
-            $('#psd').focus()
+            setTimeout(function () {
+                $('#psd').focus()
+            },300)
+
 
         }
 
         else {
             $('#user').removeAttr('readonly').val('').focus();
+            setTimeout(function () {
+                $('#user').focus();
+            },300)
         }
     });
     var impower={

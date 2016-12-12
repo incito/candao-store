@@ -551,7 +551,7 @@
                     <div class="form-group">
                         <span class="inpt-span">称重数量:</span>
                         <input type="text" class="form-control padding-left" autofocus
-                               onkeyup="this.value=this.value.replace(/[^\d\.]/g,'')" id="weight-num">
+                               id="weight-num" validtype="intAndFloat">
                     </div>
                     <div class="virtual-keyboard">
                         <ul>
@@ -768,7 +768,7 @@
                             </ul>
                         </div>
                         <div class="form-group form-group-base ya_btn" style="margin-top: 10px">
-                            <button class="btn-default btn-lg btn-base btn-base-flex2" data-dismiss="modal">取消</button>
+                            <button class="btn-default btn-lg btn-base btn-base-flex2" data-dismiss="modal" id="Invoice-title-btncancel">取消</button>
                             <button class="btn-default btn-lg btn-base btn-base-flex2  " id="Invoice-title-btnOk">确定
                             </button>
                         </div>

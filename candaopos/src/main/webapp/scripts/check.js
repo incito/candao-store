@@ -198,7 +198,7 @@ var checkOrder={
                     })
                 }
                 else {
-                    utils.printError.alert('结账单打印失败，请稍后重试')
+                    utils.printError.alert(data.msg)
                 }
 
             }
@@ -215,7 +215,7 @@ var checkOrder={
                     })
                 }
                 else {
-                    utils.printError.alert('交易凭条打印失败，请稍后重试')
+                    utils.printError.alert(data.msg)
                 }
             }
         });
