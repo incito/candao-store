@@ -2838,12 +2838,12 @@ function initWaiterSaleTb(datalist,isFirst){
 			var present = parseFloat(obj.present);
 			var discount = parseFloat(obj.discount);
 			var currdate = obj.currdate;
-			tHtml += '<tr dishid="'+dishid+'" userid="'+userid+'"num="'+num.toFixed(0)+'"name="'+name+'"title="'+title+'"dishunit="'+dishunit+'"dishtype="'+dishtype+'" ondblclick="showWaiterSaleSubTb(\''
+			tHtml += '<tr dishid="'+dishid+'" userid="'+userid+'"num="'+num+'"name="'+name+'"title="'+title+'"dishunit="'+dishunit+'"dishtype="'+dishtype+'" ondblclick="showWaiterSaleSubTb(\''
 					+ userid
 					+ '\',\''
 					+ dishid
 					+ '\',\''
-					+ num.toFixed(0)
+					+ num
 					+ '\',\''
 					+ name
 					+ '\',\''
@@ -2866,13 +2866,13 @@ function initWaiterSaleTb(datalist,isFirst){
 					+ dishunit
 					+ '</td>'
 					+ '<td width="12.5%">'
-					+ present.toFixed(0)
+					+ present
 					+ '</td>'
 					+ '<td width="12.5%">'
-					+ discount.toFixed(0)
+					+ discount
 					+ '</td>'
 					+ '<td width="12.5%">'
-					+ num.toFixed(0)
+					+ num
 					+ '</td>'
 					+ '</tr>';
 		});
@@ -2931,7 +2931,7 @@ function getWaiterSaleDetails(){
 					htm += '<tr ondblclick="showReckon(\''+item.orderid+'\')">'
 					    + '<td>'+item.begintime+'</td>'
 						+ '<td>'+item.orderid+'</td>'
-						+ '<td>'+dishnum.toFixed(0)+'</td></tr>';
+						+ '<td>'+dishnum+'</td></tr>';
 				});
 			}else{
 				htm = '<tr><td colspan="5">无数据</td></tr>';
