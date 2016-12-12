@@ -578,7 +578,7 @@ footer{
 	background:#fff;
 	position:absolute;
 	border:1px solid #e0e0e0;
-	z-index:99;
+	z-index:99999;
 }
 .rightBottomPop .rightBottomPop-title{
 	line-height:32px;

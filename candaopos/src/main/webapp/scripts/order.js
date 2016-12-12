@@ -1,13 +1,13 @@
 var pref_prev = 0;
-var addDIshCurPager = 0;//点菜页面列表页数
-var couponListCurPager = 0;//优惠卷页面列表页数
-var orderdishtableInfoselect = 0//选中的菜谱列表的第几个
-var selpreferentialtableInfoselect = 0//选中的优惠列表的第几个
-var invoice_Flag = {
-    /*发票信息全局变量*/
-    'orderid': '',
-    'amount': '',
-    'flag': ''
+var pay_prev = 0;
+var addDIshCurPager=0;//点菜页面列表页数
+var couponListCurPager=0;//优惠卷页面列表页数
+var orderdishtableInfoselect=0//选中的菜谱列表的第几个
+var selpreferentialtableInfoselect=0//选中的优惠列表的第几个
+var invoice_Flag={/*发票信息全局变量*/
+    'orderid':'',
+    'amount':'',
+    'flag':''
 
 };
 
@@ -28,7 +28,8 @@ var consts = {
         return obj;
     })(),
     backDishReasons: JSON.parse(utils.storage.getter('config')).BackDishReasons.split(';'),//退菜原因
-    memberInfo: null
+    memberInfo: null,
+    otherPay: []
 };
 
 var dom = {
@@ -51,6 +52,8 @@ var Order = {
         this.initPreferentialType();
 
         this.updateOrder();
+
+        this.initPayType();
 
         this.bindEvent();
 
@@ -161,7 +164,7 @@ var Order = {
         })
 
         //支付方式切换
-        $(".tab-payment ul li").click(function () {
+        dom.doc.delegate('.tab-payment li', 'click', function () {
             $(this).addClass("active").siblings().removeClass("active");
             $(".paytype-input").addClass("hide");
             var targetId = $(this).attr("target");
@@ -585,6 +588,36 @@ var Order = {
         });
 
 
+        /*优惠分类向左向右按钮*/
+        $(".nav-pay-next").click(function () {
+            var count = $(".nav-pay-types").find("li.nav-pay-type").length;
+            if (pay_prev < count - 6) {
+                $(".nav-pay-types").find("li.nav-pay-type").eq(pay_prev).css("margin-left", "-16.66%");
+                if(parseInt($(".nav-pay-types").find("li.nav-pay-type.active").css('margin-left'))  < 0) {
+                    $(".nav-pay-types").find("li.nav-pay-type").eq(pay_prev + 1).click();
+                }
+                pay_prev++;
+                $(".nav-pay-prev").removeClass('disabled');
+                if(pay_prev === (count - 6)) {
+                    $(this).addClass('disabled');
+                }
+            }
+        });
+        $(".nav-pay-prev").click(function () {
+            if (pay_prev >= 1) {
+                $(".nav-pay-types").find("li.nav-pay-type").eq(pay_prev - 1).css("margin-left", "0");
+
+                if($(".nav-pay-types").find("li.nav-pay-type.active").index() ===  (pay_prev + 5)) {
+                    $(".nav-pay-types").find("li.nav-pay-type").eq($(".nav-pay-types").find("li.active").index() - 1).click();
+                }
+                pay_prev--;
+                $(".nav-pay-next").removeClass('disabled');
+                if(pay_prev === 0) {
+                    $(this).addClass('disabled');
+                }
+            }
+        });
+
         /**
          * 银行选择
          */
@@ -666,7 +699,7 @@ var Order = {
          * 支付方式input修改
          */
 
-        $('.pay-div .J-pay-val,.J-pay-name').bind('input propertychange focus', function () {
+        dom.doc.delegate('.pay-div .J-pay-val,.J-pay-name', 'input propertychange focus', function () {
             that.payIptEvent($(this));
         });
 
@@ -708,8 +741,7 @@ var Order = {
             return total;
         })();
 
-
-        var _updateCash = function (val) {
+        var _updateCash = function(val){
             var val = val;
 
             if (/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
@@ -911,6 +943,7 @@ var Order = {
                         });
 
 
+
                         rightBottomPop.alert({
                             title: "提示信息",
                             content: res1.RetInfo,
@@ -929,91 +962,6 @@ var Order = {
                         });
                     }
                 })
-
-                //$.when(
-                //    $.ajax({
-                //        url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.QueryCanDao,
-                //        method: 'POST',
-                //        contentType: "application/json; charset=utf-8",
-                //        dataType: 'json',
-                //        data: JSON.stringify({
-                //            "branch_id": utils.storage.getter('branch_id'),
-                //            "cardno": cardNumber,
-                //            "password": '',
-                //            "securityCode": ''
-                //        })
-                //    }),
-                //    $.ajax({
-                //        url: _config.interfaceUrl.MemberLogin,
-                //        method: 'POST',
-                //        contentType: "application/json; charset=utf-8",
-                //        dataType: 'json',
-                //        data: JSON.stringify({
-                //            "mobile": cardNumber,
-                //            "orderid": consts.orderid,
-                //        })
-                //    })
-                //    )
-                //    .then(function (res1, res2) {
-                //        //查询
-                //        console.log('查询');
-                //        var res1 = res1[0];
-                //        Log.send(2, '餐道会员信息查询返回:' + JSON.stringify(res1));
-                //        if (res1.Retcode === '0') {
-                //            $('#StoreCardBalance').html('<b>' + res1.StoreCardBalance + '</b>(' + res1.CardLevel + ')');
-                //            $('#IntegralOverall').text(res1.IntegralOverall);
-                //            btn.text('退出');
-                //            btn.addClass('btn-login-out');
-                //            btn.removeClass('disabled');
-                //            ipt.attr('disabled', 'disabled');
-                //            consts.memberInfo = res1;
-                //            //重新刷新订单信息
-                //            that.updateOrder();
-                //
-                //            rightBottomPop.alert({
-                //                title: "提示信息",
-                //                content: res1.RetInfo,
-                //                width: 320,
-                //                height: 200,
-                //                right: 5
-                //            });
-                //        } else {
-                //            widget.modal.alert({
-                //                cls: 'fade in',
-                //                content: '<strong>' + res1.RetInfo + '</strong>',
-                //                width: 500,
-                //                height: 500,
-                //                btnOkTxt: '',
-                //                btnCancelTxt: '确定'
-                //            });
-                //        }
-                //
-                //        //登录
-                //        var res2 = res2[0];
-                //        Log.send(2, '餐道会员登录返回:' + JSON.stringify(res2));
-                //        if (res2.code === '0') {
-                //
-                //            dom.membershipCard.attr('isLogin','true');
-                //
-                //            rightBottomPop.alert({
-                //                title: "提示信息",
-                //                content: res2.msg,
-                //                width: 320,
-                //                height: 200,
-                //                right: 5
-                //            });
-                //        } else {
-                //            dom.membershipCard.attr('isLogin','false');
-                //            widget.modal.alert({
-                //                cls: 'fade in',
-                //                content: '<strong>' + res2.msg + '</strong>',
-                //                width: 500,
-                //                height: 500,
-                //                btnOkTxt: '',
-                //                btnCancelTxt: '确定'
-                //            });
-                //        }
-                //    });
             } else {//雅座
                 Log.send(2, '雅座会员登录:' + JSON.stringify({
                         "mobile": cardNumber,
@@ -1507,6 +1455,79 @@ var Order = {
         window.location.href = url;
     },
 
+
+    //加载支付方式分类
+    initPayType: function () {
+        var ret = [];
+        var that = this;
+        var $payOther = $('.pay-other');
+        var $totalPayOther = $('#totalOtherPay');
+        var vipstatus = JSON.parse(utils.storage.getter('memberAddress')).vipstatus;
+        pay_prev = 0;
+        $.ajax({
+            url:_config.interfaceUrl.PayWay,
+            type: "get",
+            dataType: "json",
+        }).then(function(res){
+            Log.send(2, '保存支付方式返回:' + JSON.stringify(res));
+            if(res.code === '0') {
+                $.each(res.data, function (k, v) {
+                    var cla = "";
+                    var itemid = v.itemId;
+                    var target = '';
+                    if (k === 0) {
+                        cla = "active";
+                    }
+                    if(v.status === 1) {
+                        if(itemid === '0'){
+                            target = 'cash'
+                        } else if(itemid === '1') {
+                            target = 'bank-card'
+                        } else if(itemid === '8') {
+                            target = 'membership-card';
+                            if(vipstatus === false) {
+                                return;
+                            }
+                        } else if(itemid === '13') {
+                            target = 'this-card'
+                        } else if(itemid === '18') {
+                            target = 'pay-treasure'
+                        } else if(itemid === '17') {
+                            target = 'wechat-pay'
+                        } else {
+                            target = 'pay' + itemid;
+                            $payOther.append('<div class="paytype-input hide ' + target + '" itemid="' + itemid + '" id="' + target + '"> ' +
+                                '<div class="form-group"> <span>' + v.title + ':</span> <input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="' + target + 'Name"> </div>' +
+                                '<div class="form-group"> <span>金额:</span> <input type="text" validtype="intAndFloat2" class="form-control J-pay-val" name="' + target + '" ipttype="' + target + '"> ' +
+                                '</div> </div>');
+                            $totalPayOther.append('<li class="hide '+ target +'" itemid="' + itemid + '">' + v.title + ':<span></span></li> ')
+                            consts.otherPay.push(v);
+
+                        }
+
+                        ret.push('<li target="#' + target + '" class="nav-pay-type ' + cla + '" status=' + v.status + ' itemId=' + itemid + '>' + v.title + '</li>');
+
+                    };
+
+                });
+
+                $(".nav-pay-types").html(ret.join(''));
+                if($(".nav-pay-types").find( "li.nav-pay-type").length > 6) {
+                    $(".nav-pay-prev").addClass('disabled');
+                } else {
+                    $(".nav-pay-prev, .nav-pay-next").addClass('disabled');
+                }
+            } else {
+                widget.modal.alert({
+                    content:'<strong>' + res.msg + '</strong>',
+                    btnOkTxt: '确定',
+                    btnCancelTxt: ''
+                });
+            }
+        })
+
+    },
+
     /**
      * 优惠
      */
@@ -1866,26 +1887,27 @@ var Order = {
 
         totalHtml += '<li class="' + (parseFloat(adjAmout) !== 0 ? '' : 'hide') + ' adjAmout">优免调整<i class="spangap">:</i><span>' + adjAmout + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalDebitAmountMany) !== 0 ? '' : 'hide') + ' toalDebitAmountMany">挂账多收<i class="spangap">:</i><span>' + toalDebitAmountMany + '</span></li> ';
-        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" payway="0">现金<i class="spangap">:</i><span>' + parseFloat(payamount).toFixed(2) + '</span></li> ';
+        totalHtml += '<li class="' + (parseFloat(payamount) !== 0 ? '' : 'hide') + ' payamount" itemid="0">现金<i class="spangap">:</i><span>' + parseFloat(payamount).toFixed(2) + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(tipAmount) !== 0 ? '' : 'hide') + ' tipAmount" >小费<i class="spangap">:</i><span>' + tipAmount + '</span></li> ';
 
         totalHtml += '<li class="hide giveChange">找零:<span></span></li> ';
-        totalHtml += '<li class="hide bank" payway="1">银行卡:<span></span></li> ';
-        totalHtml += '<li class="hide memberCash"  payway="8">会员消费:<span></span></li> ';
-        totalHtml += '<li class="hide memberJf"  payway="8">会员积分:<span></span></li> ';
-        totalHtml += '<li class="hide debitAmount" payway="5">挂账支付:<span></span></li> ';
-        totalHtml += '<li class="hide alipay" payway="18">支付宝:<span></span></li> ';
-        totalHtml += '<li class="hide wpay" payway="17">微信:<span></span></li> ';
+
+        //固定支付方式
+        totalHtml += '<li class="hide bank" itemid="1">银行卡:<span></span></li> ';
+        totalHtml += '<li class="hide memberCash"  itemid="8">会员消费:<span></span></li> ';
+        totalHtml += '<li class="hide memberJf"  itemid="8">会员积分:<span></span></li> ';
+        totalHtml += '<li class="hide debitAmount" itemid="5">挂账支付:<span></span></li> ';
+        totalHtml += '<li class="hide alipay" itemid="18">支付宝:<span></span></li> ';
+        totalHtml += '<li class="hide wpay" itemid="17">微信:<span></span></li> ';
         totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
+        //other
+        totalHtml += '<div id="totalOtherPay"></div>'
         if (invoice_Flag.flag != '') {
             totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>' + invoice_Flag.flag + '</span></li> ';
         }
-
-
         totalHtml += '</ul>';
 
         $('.pay-div').after(totalHtml);
-
 
         //设置支付信息
         $('.pay-div .J-pay-val,.pay-div .J-pay-name').each(function () {
@@ -2454,7 +2476,28 @@ var Order = {
                         })()
                     }];
 
-                    if (consts.moneyDisType === '2') {
+                    //其他支付方式
+                    $.each(consts.otherPay, function(k, v){
+                        if(v.status === 1) {
+                            result.push({
+                                "payWay": v.itemId,
+                                "payAmount": (function(){
+                                    var result = 0.0;
+                                    var val = $('[name=pay' + v.itemId + ']').val();
+                                    if(val.length > 0) {
+                                        result = parseFloat(val)
+                                    }
+                                    return result;
+                                })(),
+                                "memerberCardNo": "",
+                                "bankCardNo": $.trim($('[name=pay' + v.itemId + 'Name]').val()),
+                                "couponnum": "0",
+                                "couponid": "",
+                                "coupondetailid": ""
+                            });
+                        }
+                    });
+                    if(consts.moneyDisType === '2') {
                         //抹零
                         result.push({
                             "payWay": "7",
@@ -2889,7 +2932,7 @@ var Order = {
             $('#serviceCharge-dialog').modal("show");
             setTimeout(function () {
                 $('#user').focus()
-            }, 500)
+            },500)
         }
         function _serviceCharge() {
             $('#serviceCharge-dialog').modal("hide");
@@ -2954,6 +2997,10 @@ var Order = {
                 })
             })
         }
+
+
+
+
 
 
     }

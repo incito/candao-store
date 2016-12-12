@@ -40,6 +40,7 @@
 								<%--<li >启动打印复写卡</li>--%>
 								<li class="active">打印机列表<i style="display: none">i</i></li>
 								<li>钱箱密码验证</li>
+								<li>结算方式设置</li>
 							</ul>
 						</div>
 						<div class="g-r">
@@ -89,6 +90,20 @@
 										</div>
 									</div>
 								</div>
+
+								<div class="tab-item" style="display: none;" id="payWayContainer">
+									<table class="table table-bordered table-hover table-list" style="background: #fff">
+										<thead>
+										<tr>
+											<th>支付方式</th>
+											<th>操作</th>
+											<th>调整显示顺序</th>
+										</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -118,13 +133,14 @@
 
 			this.getPrintDetail();
 
-			this.abc()
+			this.abc();
 
+			this.initPayWay();
 
 			return {
 				get:this.getCashbox,
 				set:this.setCashbox,
-				getPrint:this.getPrintDetail,
+				getPrint:this.getPrintDetail
 			}
 		},
 		getCashbox: function() {//获取开钱箱状态
@@ -210,6 +226,116 @@
 				},1000);
 				$('#show').text(startSec);
 			}
+		},
+		initPayWay: function(){
+			var $payWayContainer = $('#payWayContainer tbody');
+			var _savePayWay = function(){
+				var ret = [];
+
+				$payWayContainer.find('tr').each(function(){
+					var me = $(this);
+					ret.push({
+						itemId: me.attr('itemid'),
+						status: me.attr('status')
+					})
+				});
+				Log.send(2, '保存支付方式:' + JSON.stringify(ret));
+				$.ajax({
+					url: _config.interfaceUrl.SavePayWay,
+					type: "POST",
+					contentType: "application/json",
+					dataType: "json",
+					data: JSON.stringify(ret)
+				}).then(function(res){
+					Log.send(2, '保存支付方式返回:' + JSON.stringify(res));
+					if(res.code === '0') {
+						rightBottomPop.alert({
+							content:"修改结算方式成功"
+						})
+					} else {
+						widget.modal.alert({
+							content:'<strong>' + res.msg + '</strong>',
+							btnOkTxt: '确定',
+							btnCancelTxt: ''
+						});
+					}
+				})
+			};
+			$.ajax({
+				url:_config.interfaceUrl.PayWay,
+				type: "get",
+				dataType: "json",
+			}).then(function(res){
+				var ret = [];
+				var vipstatus = JSON.parse(utils.storage.getter('memberAddress')).vipstatus;
+
+				if(res.code === '0') {
+					$.each(res.data, function(k, v){
+						var isopen = (v.status === 1 ? true : false);
+						var memmberCls = (function(){
+							if(vipstatus === false && v.itemId === '8') {
+								return 'f-dn'
+							} else {
+								return ''
+							}
+						})();
+						ret.push('<tr status=' + v.status + ' itemId=' + v.itemId + ' class="' + memmberCls + '"><td>' + v.title + '</td><td><span class="btn-toggle J-btn-toggle">' + (isopen ? '禁用' : '启用') + '</span></td><td><span class="arrow arrow-up J-btn-up"></span><span class="arrow arrow-down J-btn-down"></span></td></tr>');
+					});
+					$payWayContainer.html(ret.join(''));
+					$payWayContainer.find('.J-btn-toggle').off('click').on('click',function(){
+						var me = $(this);
+						var $parent = me.parents('tr');
+						var modalIns = widget.modal.alert({
+							content: (function(){
+								var tips = ''
+								if($parent.attr('status') === '1'){
+									tips = '确认禁用后, 在结算方式区域里不在显示该结算方式!'
+								} else {
+									tips = '确认启用后, 在结算方式区域里显示出该结算方式!'
+								}
+								return '<strong>' + tips + '</strong>'
+							})(),
+							btnOkCb: function(){
+								if($parent.attr('status') === '0'){
+									$parent.attr('status','1');
+									me.text('禁用');
+								} else {
+									$parent.attr('status','0');
+									me.text('启用')
+								}
+								_savePayWay();
+								modalIns.close();
+							}
+						})
+
+					});
+					$payWayContainer.find('.J-btn-up').off('click').on('click',function(){
+						var me = $(this);
+						var $parent = me.parents('tr');
+						if($parent.index() == 0) {
+							return false;
+						}
+						$parent.insertBefore($parent.prev());
+						_savePayWay();
+
+					});
+					$payWayContainer.find('.J-btn-down').off('click').on('click',function(){
+						var me = $(this);
+						var $parent = me.parents('tr');
+						if($parent.attr('itemid') == $('#payWayContainer tbody tr:last').attr('itemid')) {
+							return false;
+						}
+						$parent.insertAfter($parent.next());
+						_savePayWay();
+					});
+				} else {
+					widget.modal.alert({
+						content:'<strong>' + res.msg + '</strong>',
+						btnOkTxt: '确定',
+						btnCancelTxt: ''
+					});
+				}
+			});
 		},
 		/*手动点击刷新*/
 		clickNo:function () {

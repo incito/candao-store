@@ -1318,145 +1318,6 @@ var AddDish = {
 	 * @param type 0:普通下单, 1:赠菜下单 2:挂单(挂账下单) 3:外卖下单
 	 */
 	doOrder: function(type,cb){
-		var rows = [];
-		var user = utils.storage.getter('aUserid');
-		var freeuser = null;
-		var freeauthorize = null;
-		var freereason = null;
-		var pricetype = '0'  //0：普通 1：赠菜;
-		var url = _config.interfaceUrl.OrderDish;
-
-		//如果是赠菜
-		if(type === 1){
-			freeuser = user;
-			freeauthorize =  $('#user').val();
-			freereason = (function(){
-				var reason = [];
-				var val = $("#givefood-reason").val();
-				$('#givefood-dialog .freason.active').each(function(){
-					reason.push($(this).text());
-				});
-				if(val.length > 0) {
-					reason.push(val);
-				}
-				return reason.join(';')
-			})();
-			pricetype = '1';
-		}
-
-		if(type === 2 || type === 3) {
-			url = _config.interfaceUrl.OrderDishCf;
-		}
-
-
-		$.each(dishCartMap.values(), function(k, v){
-			var dish = v;
-			var row = {
-				"printtype": '0',
-				"pricetype": pricetype,//0：普通 1：赠菜
-				"orderprice": type === 1 ? '0' : dish.price,//菜品单价
-				"orignalprice": dish.price,//菜品单价
-				"dishid": dish.dishid,
-				"userName": user,
-				"dishunit": dish.unit,
-				"orderid": consts.orderid,
-				"dishtype": dish.dishtype,//0：单品 1：鱼锅 2：套餐
-				"orderseq": "1",
-				"dishnum": dish.dishnum,
-				"sperequire": dish.sperequire,  //忌口信息
-				"primarykey": getUuid(),
-				"dishstatus": dish.weigh === undefined ? '0' : dish.weigh,//0：已称重或者不称重 1:未称重
-				"ispot": 0, //0:非锅底 1:锅底
-				"taste": dish.taste === undefined ? '' : dish.taste,// 点菜口味/临时菜的菜名
-				"dishes": null,
-				"freeuser": freeuser, // 赠菜人/收银员工号
-				"freeauthorize": freeauthorize, //赠菜授权人工号
-				"freereason": freereason, //赠菜原因
-			};
-
-			if(dish.temporary === '1') {
-				console.log(dish);
-				row = $.extend(row,{
-					"dishnum":  parseFloat(parseFloat(dish.dishnum) * parseFloat(dish.orderprice)).toFixed(2),
-					"orderprice": type === 1 ? '0' : '1',//菜品价格
-					"orignalprice": '1'
-				});
-			}
-			//如果是鱼锅
-			if(dish.dishtype === 1) {
-				row = $.extend(row,{
-					"orderprice": 0.0,//菜品价格
-					"orignalprice": 0.0,//菜品单价
-					"dishes": []
-				});
-
-				$.each(dish.dishes, function(key, value){
-					row.dishes.push(
-						{
-							"printtype": '0',
-							"pricetype": pricetype,//0：普通 1：赠菜
-							"orderprice": type === 1 ? '0' : value.price,//菜品价格
-							"orignalprice": value.price,//菜品单价
-							"dishid": value.dishid,
-							"userName": user,
-							"dishunit": value.unit,
-							"orderid": consts.orderid,
-							"dishtype": value.dishtype,//0：单品 1：鱼锅 2：套餐
-							"orderseq": "1",
-							"dishnum": value.dishnum,
-							"sperequire": value.sperequire === undefined ? '' : value.sperequire,  //忌口信息
-							"primarykey": getUuid(),
-							"dishstatus": value.weigh === undefined ? '0' : value.weigh,//0：已称重或者不称重 1:未称重
-							"ispot": value.ispot, //0:非锅底 1:锅底
-							"taste": value.taste === undefined ? '' : value.taste,// 点菜口味/临时菜的菜名
-							"dishes": null,
-							"freeuser": freeuser, // 赠菜人/收银员工号
-							"freeauthorize": freeauthorize, //赠菜授权人工号
-							"freereason": freereason, //赠菜原因
-						}
-					)
-				})
-			}
-
-			//如果是套餐
-			if(dish.dishtype === 2) {
-				row = $.extend(row,{
-					"orderprice": dish.price,//菜品价格
-					"orignalprice": dish.price,//菜品单价
-					"dishes": []
-				});
-
-				$.each(dish.dishes, function(key, value){
-					row.dishes.push(
-						{
-							"printtype": '0',
-							"pricetype": pricetype,//0：普通 1：赠菜
-							"orderprice": value.price,//菜品价格
-							"orignalprice": value.orignalprice,//菜品单价
-							"dishid": value.dishid,
-							"userName": user,
-							"dishunit": value.dishunit,
-							"orderid": consts.orderid,
-							"dishtype": value.dishtype,//0：单品 1：鱼锅 2：套餐
-							"orderseq": "1",
-							"dishnum": value.dishnum,
-							"sperequire": value.sperequire === undefined ? '' : value.sperequire,  //忌口信息
-							"primarykey": getUuid(),
-							"dishstatus": value.weigh === undefined ? '0' : value.weigh,//0：已称重或者不称重 1:未称重
-							"ispot": value.ispot === undefined ? '0' : value.ispot, //0:非锅底 1:锅底
-							"taste": value.taste === undefined ? '' : value.taste,// 点菜口味/临时菜的菜名
-							"dishes": null,
-							"freeuser": freeuser, // 赠菜人/收银员工号
-							"freeauthorize": freeauthorize, //赠菜授权人工号
-							"freereason": freereason, //赠菜原因
-							"dishstatus": value.weigh === undefined ? '0' : value.weigh,
-						}
-					)
-				})
-			}
-			rows.push(row);
-		});
-
 		$.ajax({
 			url: _config.interfaceUrl.GetOrderInfo,
 			method: 'POST',
@@ -1466,9 +1327,160 @@ var AddDish = {
 			}),
 			dataType: 'json',
 		}).then(function(res){
-			Log.send(2, '下单')
-			Log.send(2, '获取订单信息:' + JSON.stringify(res));
+
 			if (res.code === '0') {
+				var rows = [];
+				var user = utils.storage.getter('aUserid');
+				var freeuser = null;
+				var freeauthorize = null;
+				var freereason = null;
+				var pricetype = '0'  //0：普通 1：赠菜;
+				var url = _config.interfaceUrl.OrderDish;
+				var isLogin = res.data.userOrderInfo.memberno.length > 0;
+
+
+				//如果是赠菜
+				if(type === 1){
+					freeuser = user;
+					freeauthorize =  $('#user').val();
+					freereason = (function(){
+						var reason = [];
+						var val = $("#givefood-reason").val();
+						$('#givefood-dialog .freason.active').each(function(){
+							reason.push($(this).text());
+						});
+						if(val.length > 0) {
+							reason.push(val);
+						}
+						return reason.join(';')
+					})();
+					pricetype = '1';
+				}
+
+				if(type === 2 || type === 3) {
+					url = _config.interfaceUrl.OrderDishCf;
+				}
+
+				$.each(dishCartMap.values(), function(k, v){
+					var dish = v;
+					var row = {
+						"printtype": '0',
+						"pricetype": pricetype,//0：普通 1：赠菜
+						"orderprice": (function(){
+							if(type === 1) {
+								return '0';
+							} else {
+								if(isLogin) {
+									return dish.vipprice
+								} else {
+									return dish.price;
+								}
+							}
+
+						})(),
+						"orignalprice": dish.price,//菜品单价
+						"dishid": dish.dishid,
+						"userName": user,
+						"dishunit": dish.unit,
+						"orderid": consts.orderid,
+						"dishtype": dish.dishtype,//0：单品 1：鱼锅 2：套餐
+						"orderseq": "1",
+						"dishnum": dish.dishnum,
+						"sperequire": dish.sperequire,  //忌口信息
+						"primarykey": getUuid(),
+						"dishstatus": dish.weigh === undefined ? '0' : dish.weigh,//0：已称重或者不称重 1:未称重
+						"ispot": 0, //0:非锅底 1:锅底
+						"taste": dish.taste === undefined ? '' : dish.taste,// 点菜口味/临时菜的菜名
+						"dishes": null,
+						"freeuser": freeuser, // 赠菜人/收银员工号
+						"freeauthorize": freeauthorize, //赠菜授权人工号
+						"freereason": freereason, //赠菜原因
+					};
+
+					if(dish.temporary === '1') {
+						console.log(dish);
+						row = $.extend(row,{
+							"dishnum":  parseFloat(parseFloat(dish.dishnum) * parseFloat(dish.orderprice)).toFixed(2),
+							"orderprice": type === 1 ? '0' : '1',//菜品价格
+							"orignalprice": '1'
+						});
+					}
+					//如果是鱼锅
+					if(dish.dishtype === 1) {
+						row = $.extend(row,{
+							"orderprice": 0.0,//菜品价格
+							"orignalprice": 0.0,//菜品单价
+							"dishes": []
+						});
+
+						$.each(dish.dishes, function(key, value){
+							row.dishes.push(
+								{
+									"printtype": '0',
+									"pricetype": pricetype,//0：普通 1：赠菜
+									"orderprice": type === 1 ? '0' : value.price,//菜品价格
+									"orignalprice": value.price,//菜品单价
+									"dishid": value.dishid,
+									"userName": user,
+									"dishunit": value.unit,
+									"orderid": consts.orderid,
+									"dishtype": value.dishtype,//0：单品 1：鱼锅 2：套餐
+									"orderseq": "1",
+									"dishnum": value.dishnum,
+									"sperequire": value.sperequire === undefined ? '' : value.sperequire,  //忌口信息
+									"primarykey": getUuid(),
+									"dishstatus": value.weigh === undefined ? '0' : value.weigh,//0：已称重或者不称重 1:未称重
+									"ispot": value.ispot, //0:非锅底 1:锅底
+									"taste": value.taste === undefined ? '' : value.taste,// 点菜口味/临时菜的菜名
+									"dishes": null,
+									"freeuser": freeuser, // 赠菜人/收银员工号
+									"freeauthorize": freeauthorize, //赠菜授权人工号
+									"freereason": freereason, //赠菜原因
+								}
+							)
+						})
+					}
+
+					//如果是套餐
+					if(dish.dishtype === 2) {
+						row = $.extend(row,{
+							"orderprice": dish.price,//菜品价格
+							"orignalprice": dish.price,//菜品单价
+							"dishes": []
+						});
+
+						$.each(dish.dishes, function(key, value){
+							row.dishes.push(
+								{
+									"printtype": '0',
+									"pricetype": pricetype,//0：普通 1：赠菜
+									"orderprice": value.price,//菜品价格
+									"orignalprice": value.orignalprice,//菜品单价
+									"dishid": value.dishid,
+									"userName": user,
+									"dishunit": value.dishunit,
+									"orderid": consts.orderid,
+									"dishtype": value.dishtype,//0：单品 1：鱼锅 2：套餐
+									"orderseq": "1",
+									"dishnum": value.dishnum,
+									"sperequire": value.sperequire === undefined ? '' : value.sperequire,  //忌口信息
+									"primarykey": getUuid(),
+									"dishstatus": value.weigh === undefined ? '0' : value.weigh,//0：已称重或者不称重 1:未称重
+									"ispot": value.ispot === undefined ? '0' : value.ispot, //0:非锅底 1:锅底
+									"taste": value.taste === undefined ? '' : value.taste,// 点菜口味/临时菜的菜名
+									"dishes": null,
+									"freeuser": freeuser, // 赠菜人/收银员工号
+									"freeauthorize": freeauthorize, //赠菜授权人工号
+									"freereason": freereason, //赠菜原因
+									"dishstatus": value.weigh === undefined ? '0' : value.weigh,
+								}
+							)
+						})
+					}
+					rows.push(row);
+				});
+				Log.send(2, '下单');
+				Log.send(2, '获取订单信息:' + JSON.stringify(res));
 				//首次点菜 && 餐具设置收费 && 堂食 && pad设置免餐具费
 				if(res.data.rows.length === 0 && consts.DISHES2.status === '1'  && g_eatType === 'in' && res.data.userOrderInfo.isFree === '0') {
 					Log.send(2, '首次点菜 && 餐具设置收费 && 堂食 && pad设置免餐具费');

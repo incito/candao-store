@@ -246,12 +246,12 @@
                         <%--</div>--%>
                         <div>
                             <span>就餐人数(男):</span>
-                            <input type="text" validType='number'
+                            <input type="text" validType='number' maxlength="4"
                                    class="form-control personnum J-male-num">
                         </div>
                         <div>
                             <span>就餐人数(女):</span>
-                            <input type="text" validType='number'
+                            <input type="text" validType='number' maxlength="4"
                                    class="form-control personnum J-female-num">
                         </div>
                         <div>

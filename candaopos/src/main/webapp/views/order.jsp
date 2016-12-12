@@ -122,266 +122,218 @@
                 </ul>
             </div>
 
-            <div class="oper-div">
-                <div class="dish-oper-btns btns">
-                    <div class="oper-btn btn prev-btn">
-                        <span class="glyphicon glyphicon-chevron-up"></span>
-                    </div>
-                    <div class="page-info">
-                        <span id="curr-page1">0</span>/<span id="pages-len1">0</span>
-                    </div>
-                    <div class="oper-btn btn next-btn">
-                        <span class="glyphicon glyphicon-chevron-down"></span>
-                    </div>
-                    <div class="oper-btn btn" id="backDish">
-                        退菜
-                    </div>
-                    <div class="oper-btn btn disabled" id="weigh-dish">
-                        称重
-                    </div>
-                </div>
-                <div class="preferential-oper-btns btns">
-                    <div class="oper-btn prev-btn">
-                        <span class="glyphicon glyphicon-chevron-up"></span>
-                    </div>
-                    <div class="page-info">
-                        <span id="curr-page2">0</span>/<span id="pages-len2">0</span>
-                    </div>
-                    <div class="oper-btn next-btn">
-                        <span class="glyphicon glyphicon-chevron-down"></span>
-                    </div>
-                    <button class="btn oper-btn disabled" id="del-pref">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </button>
-                    <button class="btn oper-btn disabled" id="clear-pref">
-                        <span>C</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="main-div">
-            <div class="dish-type">
-                <div class="nav-type-prev nav-pretype-prev btn">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                </div>
-                <ul class="nav-types nav-pref-types"></ul>
-                <div class="nav-type-next nav-type nav-pretype-next btn">
-                    <span class="glyphicon glyphicon-chevron-right"></span>
-                </div>
-            </div>
-            <div class="preferentials">
-                <div class="preferentials-content"></div>
-                <div class="page-btns">
-                    <div class="page-btn prev-btn">
-                        <span class="glyphicon glyphicon-chevron-up"></span>
-                    </div>
-                    <div class="page-info">
-                        <span id="curr-page3">0</span>/<span id="pages-len3">0</span>
-                    </div>
-                    <div class="page-btn next-btn">
-                        <span class="glyphicon glyphicon-chevron-down"></span>
-                    </div>
-                </div>
-            </div>
-            <hr style="border: 1px solid #D3D3D3;">
-            <div class="tab-payment">
-                <ul>
-                    <li class="active" target="#cash">现金支付</li>
-                    <li target="#bank-card">银行卡</li>
-                    <li target="#membership-card">会员卡</li>
-                    <li target="#this-card">挂账支付</li>
-                    <li target="#pay-treasure">支付宝</li>
-                    <li target="#wechat-pay">微信支付</li>
-                </ul>
-            </div>
-            <div class="pay-div">
-                <!-- 现金支付 -->
-                <div class="paytype-input cash" id="cash">
-                    <div class="form-group">
-                        <span>金额：</span>
-                        <input type="text" class="form-control J-pay-val" onpaste="return false"
-                               ondragenter="return false" oncontextmenu="return false;" style="ime-mode:disabled"
-                               validtype="intAndFloat2" name="cash" iptType="cash">
-                    </div>
-                    <div class="form-group the-change-div">
-                        找零：<span class="the-change-span">0.00</span>
-                    </div>
-                </div>
-                <!-- 银行卡支付 -->
-                <div class="paytype-input bank-card hide" id="bank-card">
-                    <div class="form-group" style="display: inline-flex;">
-                        <input type="text" class="form-control bank-type" name="banktype" placeholder="银行类型"
-                               disabled="disabled">
-                        <button class="btn selbank-btn J-bank-sel">选择银行</button>
-                    </div>
-                    <div class="form-group">
-                        <span>银行卡号:</span>
-                        <input type="text" validType='number' class="form-control J-pay-name" id="bankno">
-                    </div>
-                    <div class="form-group">
-                        <span>金额:</span>
-                        <input type="text" validType='intAndFloat2' class="form-control J-pay-val" name="bank"
-                               iptType="bank">
-                    </div>
-                </div>
-                <!-- 会员卡支付 -->
-                <div class="paytype-input membership-card hide"
-                     id="membership-card">
-                    <div class="form-group" style="display: inline-flex;">
-                        <input type="text" class="form-control card-number J-pay-name" validtype="noPecial"
-                               maxlength="30" name="cardNumber" placeholder="卡号">
-                        <button class="btn login-btn disabled">登录</button>
-                    </div>
-                    <div class="form-group">
-                        <span>刷卡金额:</span>
-                        <input type="text" disabled validType='intAndFloat2' class="form-control  J-pay-val"
-                               iptType="memberCash" id="memberCash">
-                    </div>
-                    <div class="form-group">
-                        <span>使用积分:</span>
-                        <input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val"
-                               iptType="memberJf" id="memberJf">
-                    </div>
-                    <div class="form-group">
-                        <span>会员密码:</span>
-                        <input type="password" disabled class="form-control J-pay-pwd">
-                    </div>
-                    <!--div class="form-group"><button class="btn register-btn">注册</button></div-->
-                    <div class="form-group" style="color: #FF5803;">储值金额：<b id="StoreCardBalance"></b></div>
-                    <div class="form-group" style="color: #FF5803;">积分余额：<b id="IntegralOverall"></b></div>
-                </div>
-                <!-- 挂账支付 -->
-                <div class="paytype-input this-card hide" id="this-card">
-                    <div class="form-group" style="display: inline-flex;">
-                        <input type="text" class="form-control payment-unit J-pay-name" name="debitAmountName"
-                               placeholder="挂账单位" disabled="disabled">
-                        <button class="btn sel-btn J-selCompany">选择</button>
-                    </div>
-                    <div class="form-group">
-                        <span>挂账金额:</span>
-                        <input type="text" validType='intAndFloat2' class="form-control J-pay-val" iptType="debitAmount"
-                               name="debitAmount" id="debitAmount">
-                    </div>
-                </div>
-                <!-- 支付宝支付 -->
-                <div class="paytype-input pay-treasure hide" id="pay-treasure">
-                    <div class="form-group">
-                        <span>支付宝:</span>
-                        <input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20"
-                               name="alipayName">
-                    </div>
-                    <div class="form-group">
-                        <span>金额:</span>
-                        <input type="text" validType='intAndFloat2' class="form-control J-pay-val" name="alipay"
-                               iptType="alipay">
-                    </div>
-                </div>
-                <!-- 微信支付 -->
-                <div class="paytype-input wechat-pay hide" id="wechat-pay">
-                    <div class="form-group">
-                        <span>微信号:</span>
-                        <input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20"
-                               name="wpayName">
-                    </div>
-                    <div class="form-group">
-                        <span>金额:</span>
-                        <input type="text" validType='intAndFloat2' class="form-control J-pay-val" ipttype="wpay"
-                               name="wpay">
-                    </div>
-                </div>
-                <div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
-                    <ul>
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                    </ul>
-                    <ul>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                    </ul>
-                    <ul>
-                        <li>7</li>
-                        <li>8</li>
-                        <li>9</li>
-                    </ul>
-                    <ul>
-                        <li>.</li>
-                        <li>0</li>
-                        <li>00</li>
-                    </ul>
-                    <ul>
-                        <li>←</li>
-                        <li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li>
-                        <li class="btn-action ok-btn J-btn-settlement">确定</li>
-                    </ul>
-                </div>
+				<div class="oper-div">
+					<div class="dish-oper-btns btns">
+						<div class="oper-btn btn prev-btn">
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</div>
+						<div class="page-info">
+							<span id="curr-page1">0</span>/<span id="pages-len1">0</span>
+						</div>
+						<div class="oper-btn btn next-btn">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</div>
+						<div class="oper-btn btn" id="backDish">
+							退菜
+						</div>
+						<div class="oper-btn btn disabled" id="weigh-dish">
+							称重
+						</div>
+					</div>
+					<div class="preferential-oper-btns btns">
+						<div class="oper-btn prev-btn">
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</div>
+						<div class="page-info">
+							<span id="curr-page2">0</span>/<span id="pages-len2">0</span>
+						</div>
+						<div class="oper-btn next-btn">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</div>
+						<button class="btn oper-btn disabled" id="del-pref">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+						<button class="btn oper-btn disabled" id="clear-pref">
+							<span>C</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="main-div">
+				<div class="dish-type">
+					<div class="nav-type-prev nav-pretype-prev btn">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</div>
+					<ul class="nav-types nav-pref-types"></ul>
+					<div class="nav-type-next nav-type nav-pretype-next btn">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</div>
+				</div>
+				<div class="preferentials">
+					<div class="preferentials-content"></div>
+					<div class="page-btns">
+						<div class="page-btn prev-btn">
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</div>
+						<div class="page-info">
+							<span id="curr-page3">0</span>/<span id="pages-len3">0</span>
+						</div>
+						<div class="page-btn next-btn">
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</div>
+					</div>
+				</div>
+				<hr style="border: 1px solid #D3D3D3;">
+				<div class="pay-type">
+					<div class="nav-type-prev nav-pay-prev btn">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</div>
+					<ul class="nav-types nav-pay-types tab-payment"></ul>
+					<div class="nav-type-next nav-type nav-pay-next btn">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</div>
+				</div>
+				<div class="pay-div">
+					<!-- 现金支付 -->
+					<div class="paytype-input cash" itemid="0" id="cash">
+						<div class="form-group">
+							<span>金额：</span>
+							<input type="text" class="form-control J-pay-val"  onpaste="return false" ondragenter="return false" oncontextmenu="return false;" style="ime-mode:disabled" validtype="intAndFloat2" name="cash" iptType="cash">
+						</div>
+						<div class="form-group the-change-div">
+							找零：<span class="the-change-span">0.00</span>
+						</div>
+					</div>
+					<!-- 银行卡支付 -->
+					<div class="paytype-input bank-card hide" itemid="1" id="bank-card">
+						<div class="form-group" style="display: inline-flex;">
+							<input type="text" class="form-control bank-type" name="banktype" placeholder="银行类型" disabled="disabled">
+							<button class="btn selbank-btn J-bank-sel">选择银行</button>
+						</div>
+						<div class="form-group">
+							<span>银行卡号:</span>
+							<input type="text" validType='number' class="form-control J-pay-name" id="bankno">
+						</div>
+						<div class="form-group">
+							<span>金额:</span>
+							<input type="text"  validType='intAndFloat2' class="form-control J-pay-val" name="bank"  iptType="bank">
+						</div>
+					</div>
+					<!-- 会员卡支付 -->
+					<div class="paytype-input membership-card hide" itemid="8"
+						 id="membership-card">
+						<div class="form-group" style="display: inline-flex;">
+							<input type="text" class="form-control card-number J-pay-name" validtype="noPecial" maxlength="30" name="cardNumber" placeholder="卡号">
+							<button class="btn login-btn disabled">登录</button>
+						</div>
+						<div class="form-group">
+							<span>刷卡金额:</span>
+							<input type="text" disabled validType='intAndFloat2' class="form-control  J-pay-val"  iptType="memberCash" id="memberCash">
+						</div>
+						<div class="form-group">
+							<span>使用积分:</span>
+							<input type="text" disabled validType='intAndFloat2' class="form-control J-pay-val"    iptType="memberJf"  id="memberJf">
+						</div>
+						<div class="form-group">
+							<span>会员密码:</span>
+							<input type="password" disabled class="form-control J-pay-pwd" >
+						</div>
+						<!--div class="form-group"><button class="btn register-btn">注册</button></div-->
+						<div class="form-group" style="color: #FF5803;">储值金额：<b id="StoreCardBalance"></b></div>
+						<div class="form-group" style="color: #FF5803;">积分余额：<b id="IntegralOverall"></b></div>
+					</div>
+					<!-- 挂账支付 -->
+					<div class="paytype-input this-card hide" itemid="13" id="this-card">
+						<div class="form-group" style="display: inline-flex;">
+							<input type="text" class="form-control payment-unit J-pay-name" name="debitAmountName" placeholder="挂账单位" disabled="disabled">
+							<button class="btn sel-btn J-selCompany" >选择</button>
+						</div>
+						<div class="form-group">
+							<span>挂账金额:</span>
+							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" iptType="debitAmount" name="debitAmount"  id="debitAmount">
+						</div>
+					</div>
+					<!-- 支付宝支付 -->
+					<div class="paytype-input pay-treasure hide" itemid="18" id="pay-treasure">
+						<div class="form-group">
+							<span>支付宝:</span>
+							<input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="alipayName" >
+						</div>
+						<div class="form-group">
+							<span>金额:</span>
+							<input type="text" validType='intAndFloat2'   class="form-control J-pay-val" name="alipay" iptType="alipay">
+						</div>
+					</div>
+					<!-- 微信支付 -->
+					<div class="paytype-input wechat-pay hide" itemid="17" id="wechat-pay">
+						<div class="form-group">
+							<span>微信号:</span>
+							<input type="text"   class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="wpayName">
+						</div>
+						<div class="form-group">
+							<span>金额:</span>
+							<input type="text" validType='intAndFloat2'  class="form-control J-pay-val" ipttype="wpay" name="wpay" >
+						</div>
+					</div>
+					<div class="pay-other">
 
-                <div class="virtual-keyboard letter-virtual-keyboard hide" id="letter-keyboard">
-                    <ul>
-                        <li>A</li>
-                        <li>B</li>
-                        <li>C</li>
-                        <li>D</li>
-                        <li>E</li>
-                        <li>F</li>
-                    </ul>
-                    <ul>
-                        <li>G</li>
-                        <li>H</li>
-                        <li>I</li>
-                        <li>J</li>
-                        <li>K</li>
-                        <li>L</li>
-                    </ul>
-                    <ul>
-                        <li>M</li>
-                        <li>N</li>
-                        <li>O</li>
-                        <li>P</li>
-                        <li>Q</li>
-                        <li>R</li>
-                    </ul>
-                    <ul>
-                        <li>S</li>
-                        <li>T</li>
-                        <li>U</li>
-                        <li>V</li>
-                        <li>W</li>
-                        <li>X</li>
-                    </ul>
-                    <ul>
-                        <li>Y</li>
-                        <li>Z</li>
-                        <li>←</li>
-                        <li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li>
-                        <li class="btn-action ok-btn J-btn-settlement">确定</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <footer>
-        <div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span
-                class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span
-                class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
-    </footer>
-</div>
-<!-- 填写优惠信息设置 -->
-<div class="modal fade default-dialog in input-num-dialog" id="coupnum-dialog"
-     data-backdrop="static">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="dialog-sm-header">
-                <div class="modal-title">优惠券</div>
-                <img src="../images/close-sm.png" class="img-close" onclick="closeConfirm('coupnum-dialog')">
-            </div>
-            <div class="modal-body">
-                <div class="dialog-sm-info">
-                    <input type="hidden" id="preferential">
-                    <input type="hidden" id="pref-disrate">
-                    <input type="hidden" id="pref-type">
-                    <input type="hidden" id="pref-num">
+					</div>
+					<div class="virtual-keyboard num-virtual-keyboard" id="num-keyboard">
+						<ul>
+							<li>1</li><li>2</li><li>3</li>
+						</ul>
+						<ul>
+							<li>4</li><li>5</li><li>6</li>
+						</ul>
+						<ul>
+							<li>7</li><li>8</li><li>9</li>
+						</ul>
+						<ul>
+							<li>.</li><li>0</li><li>00</li>
+						</ul>
+						<ul>
+							<li>←</li><li class="btn-action" onclick="Order.changeKeyboard('letter')">字母</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
+						</ul>
+					</div>
+					<div class="virtual-keyboard letter-virtual-keyboard hide" id="letter-keyboard">
+						<ul>
+							<li>A</li><li>B</li><li>C</li><li>D</li><li>E</li><li>F</li>
+						</ul>
+						<ul>
+							<li>G</li><li>H</li><li>I</li><li>J</li><li>K</li><li>L</li>
+						</ul>
+						<ul>
+							<li>M</li><li>N</li><li>O</li><li>P</li><li>Q</li><li>R</li>
+						</ul>
+						<ul>
+							<li>S</li><li>T</li><li>U</li><li>V</li><li>W</li><li>X</li>
+						</ul>
+						<ul>
+							<li>Y</li><li>Z</li><li>←</li><li class="btn-action " onclick="Order.changeKeyboard('num')">数字</li><li class="btn-action ok-btn J-btn-settlement">确定</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer>
+			<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+		</footer>
+	</div>
+	<!-- 填写优惠信息设置 -->
+	<div class="modal fade default-dialog in input-num-dialog" id="coupnum-dialog"
+	     data-backdrop="static">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	        	<div class="dialog-sm-header">
+	        		<div class="modal-title">优惠券</div>
+	                <img src="../images/close-sm.png" class="img-close"  onclick="closeConfirm('coupnum-dialog')">
+	            </div>
+	            <div class="modal-body">
+	                <div class="dialog-sm-info">
+	                	<input type="hidden" id="preferential">
+	                	<input type="hidden" id="pref-disrate">
+	                	<input type="hidden" id="pref-type">
+						<input type="hidden" id="pref-num">
 
                     <input type="hidden" id="pref-name">
                     <input type="hidden" id="pref-price">
