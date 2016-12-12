@@ -690,6 +690,12 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					map.put("title", "营业数据统计");
 					map.put("value",businessR.get(i).getShouldamountNormal());
 					mapList.add(map);
+					//服务费
+					map = new HashMap<>();
+					map.put("key", "服务费");
+					map.put("title", "营业数据统计");
+					map.put("value",businessR.get(i).getServiceAmount());
+					mapList.add(map);
 
 //					外卖统计(应收）
 					map = new HashMap<>();
