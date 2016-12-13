@@ -1295,12 +1295,13 @@ var Order = {
                         method: 'POST',
                         contentType: "application/json",
                         data: JSON.stringify({
-                            tableNo: $('[name=tableno]').val()
+                            //tableNo: $('[name=tableno]').val(),
+                            orderNo:consts.orderid
                         }),
                         dataType: 'json',
                         success: function (res) {
                             Log.send(2, '取消订单:' + JSON.stringify(res));
-                            if (res.code === '0') {
+                            if (res.code == '0') {
                                 window.location.href = './main.jsp'
                             } else {
                                 widget.modal.alert({
@@ -1403,7 +1404,8 @@ var Order = {
                 "currenttableid": tableId,
                 "discardReason": discardReason,
                 "discardUserId": userId,
-                "orderNo": orderNo
+                "orderNo": orderNo,
+                "userName": utils.storage.getter('aUserid'),
             }
         }
 
