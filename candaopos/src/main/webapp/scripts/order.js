@@ -169,7 +169,7 @@ var Order = {
             $(".paytype-input").addClass("hide");
             var targetId = $(this).attr("target");
             $(targetId).removeClass("hide");
-        });
+        })
 
         dom.doc.click(function (e) {
             $(".more-oper").addClass("hide");
@@ -588,7 +588,7 @@ var Order = {
         });
 
 
-        /*优惠分类向左向右按钮*/
+        /*支付方式向左向右按钮*/
         $(".nav-pay-next").click(function () {
             var count = $(".nav-pay-types").find("li.nav-pay-type").length;
             if (pay_prev < count - 6) {
@@ -1516,6 +1516,7 @@ var Order = {
                 });
 
                 $(".nav-pay-types").html(ret.join(''));
+                $('.tab-payment li').eq(0).click();
                 if($(".nav-pay-types").find( "li.nav-pay-type").length > 6) {
                     $(".nav-pay-prev").addClass('disabled');
                 } else {
