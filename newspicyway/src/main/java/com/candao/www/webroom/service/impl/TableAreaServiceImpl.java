@@ -97,6 +97,7 @@ public class TableAreaServiceImpl implements TableAreaService {
 					throw new RuntimeException("删除餐台分区失败(删除餐台失败)");
 				}
 			}
+			tableAreaDao.delete(areaid);
 		}
 	}
 }
