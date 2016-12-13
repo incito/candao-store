@@ -247,6 +247,7 @@ var AddDish = {
 
 							if (findCid.length > 0) {
 								//已存在该菜品
+								findCid = findCid[0];
 								var $tr = null;
 								dom.selDishable.find('tbody tr').each(function () {
 									//dishid相同,且不是鱼锅
@@ -1248,7 +1249,7 @@ var AddDish = {
 			if(type == 0){
 				//单品备注
 				var cid = dom.noteDialog.attr('cid');
-				var dish = dishCartMap.get(cid);
+				var dish = $.extend({},dishCartMap.get(cid));
 				var dishname = dish.title || dish.dishname;
 
 				var showname = utils.string.cutString(dishname.split('#')[0],14);
@@ -1286,6 +1287,7 @@ var AddDish = {
 
 				var findCid = that.isExit(tastedish);
 				if(findCid.length > 0) {
+					findCid = findCid[0];
 					var $tr = null;
 					dom.selDishable.find('tbody tr').each(function () {
 						//dishid相同,且不是鱼锅
@@ -1846,25 +1848,30 @@ var AddDish = {
 	 * @returns {string}
      */
 	isExit: function(dish){
-		var  f = '';
+		var  f = [];
 		var cartDish = null;
 		for(var i = 0, len = dishCartMap.values().length; i < len; i++){
 			cartDish = dishCartMap.values()[i];
+			var cid = dishCartMap.values()[i].cid;
 			if(cartDish.pid === dish.pid){
 				//多口味菜
 				if(dish.isMultiTast === '1') {
 					if(cartDish.taste === dish.taste && cartDish.dishnote === dish.dishnote &&  cartDish.dish_avoids.join('') === dish.dish_avoids.join('')) {
-						f = dishCartMap.values()[i].cid;
-						return f;
+						return f.push(cid);
 					}
 				} else {
-					f = dishCartMap.values()[i].cid;
-					return f;
+					if(cartDish.dish_avoids === 'unde' && cartDish.dish_avoids.length === 0) {
+						f.push(cid)
+					}
+
+					if(cartDish.dish_avoids === undefined) {
+						f.push(cid)
+					} else if (cartDish.dish_avoids && cartDish.dish_avoids.length === 0) {
+						f.push(cid)
+					}
 				}
-
-			};
+			}
 		}
-
 		return f;
 	},
 

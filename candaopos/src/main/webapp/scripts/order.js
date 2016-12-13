@@ -922,6 +922,7 @@ var Order = {
                                 //重新刷新订单信息
                                 that.updateOrder();
                                 dom.membershipCard.attr('isLogin', 'true');
+                                dom.membershipCard.find('.J-pay-pwd,.J-pay-val').removeAttr('disabled');
                                 rightBottomPop.alert({
                                     title: "提示信息",
                                     content: res2.msg,
@@ -983,6 +984,7 @@ var Order = {
                         btn.addClass('btn-login-out');
                         btn.removeClass('disabled');
                         ipt.attr('disabled', 'disabled');
+                        dom.membershipCard.find('.J-pay-pwd,.J-pay-val').removeAttr('disabled');
                         consts.memberInfo = res1;
                         $.ajax({
                             url: _config.interfaceUrl.MemberLogin,
