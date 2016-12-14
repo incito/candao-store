@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -638,3 +639,504 @@
 		</foreach>
 	</update>
 </mapper> 
+=======
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.candao.www.data.dao.TbTableDao">
+
+	<resultMap id="tbTableResultMap" type="com.candao.www.data.model.TbTable">
+		<id property="tableid" column="tableid" />
+		<result property="position" column="position" />
+		<result property="status" column="status" />
+		<result property="restaurantId" column="restaurantId" />
+		<result property="isVip" column="isVip" />
+		<result property="iscompartment" column="iscompartment" />
+		<result property="isavailable" column="isavailable" />
+		<result property="buildingNo" column="buildingNo" />
+		<result property="minprice" column="minprice" />
+		<result property="fixprice" column="fixprice" />
+		<result property="tableNo" column="tableNo" />
+		<result property="personNum" column="personNum" />
+		<result property="tabletype" column="tabletype" />
+		<result property="areaid" column="areaid" />
+		<result property="tableName" column="tableName" />
+		<result property="orderid" column="orderid" />
+		<result property="custPrinter" column="custPrinter" />
+		
+	</resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbTableResultMap"></resultMap>
+	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbTableResultMap"></resultMap>
+
+	 <sql id="Base_Column_List" >
+           tableid
+		 ,`position`
+		 ,status
+		 ,restaurantId
+		 ,isVip
+		 ,iscompartment
+		 ,isavailable
+		 ,buildingNo
+		 ,minprice
+		 ,fixprice
+		 ,tableNo
+		 ,personNum
+		 ,tabletype
+		 ,areaid
+		 ,tableName
+		 ,orderid
+		 ,custPrinter
+  </sql>
+
+	<insert id="insert" parameterType="com.candao.www.data.model.TbTable">
+	    
+	     <!--   <selectKey resultType="String" keyProperty="tableid" order="BEFORE" >
+               SELECT cast(tableseqno('tableid')   as char)
+         </selectKey> -->
+         
+		insert into t_table (
+	  	tableid,
+	    minprice,
+	   	fixprice,
+	   	tableNo,
+	    personNum,
+	    tabletype,
+	    areaid,
+	    tableName,
+	    status,
+	    custPrinter,
+	    modifytime
+	     
+	   )values (
+	     #{tableid},
+	     #{minprice},
+	     #{fixprice},
+	     #{tableNo},
+	     #{personNum},
+	     #{tabletype},
+	     #{areaid},
+	     #{tableName},
+	     #{status},
+	     #{custPrinter},
+	     now()
+	   )
+	
+	   
+	</insert>
+
+	<update id="update" parameterType="com.candao.www.data.model.TbTable">
+	   update t_table
+	   <set>
+	     <if test="tableid != null">
+	     tableid=#{tableid},
+	     </if>
+	     <if test="position != null ">
+	     position=#{position},
+	     </if>
+	     <if test="status != null ">
+	     status=#{status},
+	     </if>
+	     <if test="restaurantId != null">
+	     restaurantId=#{restaurantId},
+	     </if>
+	     <if test="isVip != null">
+	     isVip=#{isVip},
+	      </if>
+	     <if test="iscompartment != null">
+	     iscompartment=#{iscompartment},
+	      </if>
+	     <if test="isavailable != null ">
+	     isavailable=#{isavailable},
+	      </if>	
+	      <if test="buildingNo != null ">
+	     buildingNo=#{buildingNo},
+	      </if>	     
+	      <if test="minprice != null ">
+	     minprice=#{minprice},
+	     </if>
+	     <if test="fixprice != null">
+	     fixprice=#{fixprice},
+	    
+	      </if>
+	     <if test="tableNo != null ">
+	     tableNo=#{tableNo},
+	      </if>
+	     <if test="personNum != null ">
+	     personNum=#{personNum},
+	      </if>
+	     <if test="tabletype != null">
+	     tabletype=#{tabletype},
+	      </if>
+	      <if test="areaid != null ">
+	     areaid=#{areaid}, 
+	      </if>	
+	    <if test="tableName != null ">
+	       tableName=#{tableName},
+	     </if>
+	      <if test="custPrinter != null ">
+	       custPrinter=#{custPrinter},
+	     </if>	
+	     modifytime = now()	     
+	    </set> 
+	   where 
+	    tableid=#{tableid} 
+	</update>
+	<delete id="delete" parameterType="map">
+	   update t_table
+	   set status = 5, modifytime = now()
+	   where 
+	    tableid=#{id} 
+	</delete>
+	<delete id="deleteTablesByAreaid" parameterType="map">
+	   update t_table
+	   set status = 5, modifytime = now()
+	   where 
+	    areaid=#{areaid} 
+	</delete>
+	
+	<select id="get" parameterType="map" resultMap="tbTableResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_table
+	   where 
+	    tableid=#{id} 
+	</select>
+	
+	<select id="getTableNo" parameterType="map" resultMap="tbTableResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_table
+	   where 
+	    tableNo=#{tableNo} and status !='5'
+		limit 1
+	</select>
+
+	<select id="findOne" parameterType="map" resultMap="findResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_table
+	   where 
+	    tableid=#{id} 
+	</select>
+	
+	<select id="findTableDetail" parameterType="map" resultMap="findResultMap">
+	   select 
+	    <include refid="Base_Column_List"/>
+	   from t_table
+	   where 
+	    areaid=#{areaid} and status !=5
+	    order by CAST( tableNo as SIGNED) asc
+	</select>
+
+
+	   <select id="menuInfoByorderidToCount" parameterType="map" resultType="java.lang.Long">
+	    select COUNT(orderid) FROM t_order_detail WHERE orderid =#{orderid}
+	   </select>
+
+	<select id="find" parameterType="map" resultMap="findResultMap">
+	   select 
+	      a.tableid ,a.`position` ,a.status ,a.restaurantId ,a.isVip ,a.iscompartment
+		 ,a.isavailable ,a.buildingNo ,a.minprice ,a.fixprice ,a.tableNo ,a.personNum
+		 ,a.tabletype ,a.areaid ,a.tableName ,a.orderid ,a.custPrinter,b.areaname,b.areaid,b.areaNo,(select custnum from t_order where orderid=a.orderid) as custnum,
+		   CASE WHEN min(a.status) = 0
+		   THEN  NULL
+	       ELSE
+	         DATE_FORMAT(c.begintime,'%Y-%m-%d %T')
+	       END as begintime,
+	      CASE WHEN min(a.status) = 0 THEN
+	         NULL
+	       ELSE
+	         sum(d.dishnum * d.orderprice)
+	       END as amount
+		    from t_table a
+	   		LEFT JOIN t_tablearea b
+			ON a.areaid = b.areaid
+			AND b.status = 1
+			LEFT JOIN t_order c
+			ON a.orderid = c.orderid
+			LEFT JOIN t_order_detail d
+			ON c.orderid = d.orderid
+	   <where>
+			  a.status != 5
+	     <if test="tableid != null and tableid != ''">
+	       and a.tableid=#{tableid}
+	     </if>
+	     <if test="position != null and position != ''">
+	        and a.position=#{position}
+	     </if>
+	     <if test="restaurantId != null and restaurantId != ''">
+	        and a.restaurantId=#{restaurantId}
+	     </if>
+	     <if test="isVip != null and isVip != ''">
+	        and a.isVip=#{isVip}
+	     </if>
+	     <if test="iscompartment != null and iscompartment != ''">
+	        and a.iscompartment=#{iscompartment}
+	     </if>
+	     <if test="isavailable != null and isavailable != ''">
+	        and a.isavailable=#{isavailable}
+	     </if>
+	     <if test="buildingNo != null and buildingNo != ''">
+	        and a.buildingNo=#{buildingNo}
+	     </if>
+	     
+	     <if test="minprice != null and minprice != ''">
+	        and a.minprice=#{minprice}
+	     </if>
+	     <if test="fixprice != null and fixprice != ''">
+	        and a.fixprice=#{fixprice}
+	     </if>
+	     <if test="tableNo != null and tableNo != ''">
+	        and a.tableNo=#{tableNo}
+	     </if>
+	     <if test="personNum != null and personNum != ''">
+	        and a.personNum=#{personNum}
+	     </if>
+	     <if test="tabletype != null and tabletype != ''">
+	        and a.tabletype in
+	        <foreach item="item" index="index" collection="tabletype" open="("  
+            separator="," close=")">  
+            #{item}  
+       		</foreach>
+	     </if>
+	     <if test="areaid != null and areaid != ''">
+	        and a.areaid=#{areaid}
+	     </if>
+	     <if test="tableName != null and tableName != ''">
+	        and a.tableName=#{tableName}
+	     </if>
+	      <if test="orderid != null and orderid != ''">
+	        and a.orderid=#{orderid}
+	     </if>
+	     <if test="custPrinter != null and custPrinter != ''">
+	        and a.custPrinter=#{custPrinter}
+	     </if>
+	      <if test="status != null and status != ''">
+	        and a.status=#{status}
+	     </if>
+	     <if test="exceptorder!=null and status!=''">
+	     	and a.orderid &lt;&gt; #{exceptorder}
+	     </if>
+	     <if test="tabletypefilter!=null and tabletypefilter !=''">
+	     	and a.tabletype not in 
+	     	<foreach item="item" index="index" collection="tabletypefilter" open="("  
+            separator="," close=")">  
+            #{item}  
+       		</foreach> 
+	     </if>
+	     
+	     
+	   </where>
+	    GROUP BY
+			  a.tableid
+		<choose>
+		   	<when test="defaultsort!=null and defaultsort==1">
+		   		order by b.areaname asc, a.tableNo asc
+		   	</when>
+		   	<otherwise>
+		   		order by  CAST( a.tableNo as SIGNED),a.tableid asc
+		   	</otherwise>
+	   	</choose>
+	</select>
+	
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	select    tt.areaname,    t.tableid,       t.position,       t.status,       t.restaurantId,       
+	t.isVip,       t.iscompartment,       t.isavailable,       t.buildingNo,      t.minprice,       
+	t.fixprice,       t.tableNo,       t.personNum,       t.tabletype,      t. areaid,       t.tableName
+	,t.custPrinter       
+     from t_table t,   t_tablearea tt      
+	    <where>
+	   <!-- ??? -->
+	    t.areaid=tt.areaid and t.status != 5 and tt.status=1
+	     <if test="personNum != null and personNum != ''">
+	        and t.personNum=#{personNum}
+	     </if>
+	     <if test="tabletype != null and tabletype != ''">
+	        and t.tabletype=#{tabletype}
+	     </if>
+	     <if test="areaid != null and areaid != ''">
+	        and t.areaid=#{areaid}
+	     </if>
+	      <if test="minprice != null and minprice != ''">
+	        and t.minprice=#{minprice}
+	     </if>
+	     <if test="custPrinter != null and custPrinter != ''">
+	        and t.custPrinter=#{custPrinter}
+	     </if>
+	     </where>
+	      order by  CAST( t.tableNo as SIGNED) asc
+<!-- 	     将varchar 转为int 用 cast(a as signed) -->
+	</select>
+	
+	<select id="getTableTag"  resultMap="findResultMap">
+	  select distinct areaid,   areaname
+	   	 from t_tablearea where `status`=1 
+	</select>
+	<select id="getPrinterTag"  resultMap="findResultMap">
+	  select distinct printerid,   printername
+	   	 from t_printer where `status`=1
+	</select>
+	
+	<select id="getbuildingNoANDTableTypeTag"  resultMap="findResultMap">
+	  select distinct buildingNo,   tabletype
+	   	 from t_table where `status`!=5
+	</select>
+ <select id="findIds"  resultMap="findResultMap"  parameterType="java.util.ArrayList">
+	  select tableid,tableno,status,orderid
+	   	 from t_table where  status != 5 and tableno in 
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+ </select>
+ 
+  <select id="findTableNoAndAreaNameById"  resultMap="tbTableResultMap"  parameterType="java.util.Map">
+	  select CONCAT(ta.areaname,t.tableno) tableno,tableid, ta.areaname  areaid  from t_table t,t_tablearea ta
+        where t.areaid = ta.areaid
+	   	  and  t.status != 5 and t.tableid = #{tableId} 
+      
+ </select>
+	
+ <update id="updateStatus" parameterType="com.candao.www.data.model.TbTable">
+	   update t_table set status = #{status},orderid =#{orderid} where    tableid=#{tableid}
+ </update>
+ 
+ <update id="updateTableById" parameterType="java.util.Map">
+ 	update t_table 
+ 	<set >
+ 		orderid = #{orderid} 
+      	<if test="status != null" >
+	 	,status = #{status}
+	 	</if>
+    </set>
+ 	where tableid=#{tableid}
+ </update>
+ 
+ <update id="updateTableByOrderId" parameterType="java.util.Map">
+ 	update t_table 
+ 	<set >
+ 		orderid = #{orderid} 
+      	<if test="status != null" >
+	 	,status = #{status}
+	 	</if>
+    </set>
+ 	where orderid=#{oldorderid}
+ </update>
+ 
+ 
+  <update id="updateSettleStatus" parameterType="com.candao.www.data.model.TbTable">
+	   update t_table set status = #{status}  where    orderid =#{orderid}
+ </update>
+ 
+  <update id="updateCleanStatus" parameterType="com.candao.www.data.model.TbTable">
+	   update t_table set status = #{status},orderid= null  where    tableid=#{tableid} or
+	   orderid = #{orderid}
+ </update>
+ 
+  <update id="updateStatusByNo" parameterType="com.candao.www.data.model.TbTable">
+	   update t_table set status = #{status} where    orderid =#{orderid}
+ </update>
+ 
+  <update id="updateAllStatus" parameterType="java.util.Map">
+	    <if test="ids != null and ids.size !=0">
+	      update t_table set status = #{status} ,orderid = #{orderid}
+	       where    tableid in 	          
+	       <foreach item="item" index="index" collection="ids" 
+                         open="(" separator="," close=")">
+                        #{item}
+          </foreach>
+       </if>
+ </update>
+ 
+   <update id="updateSettleOrderNull" parameterType="com.candao.www.data.model.TbTable">
+	   update t_table set orderid = null ,status ='0'  where    tableid !=#{tableid} and orderid = #{orderid}
+ </update>
+ <update id="updateByOrderNo" parameterType="map">
+ 		UPDATE t_table
+											SET orderid = #{sourceOrderid}
+											WHERE orderid = #{sourceOrderid};
+ </update>
+ <!-- 根据桌号获取客户打印机信息 -->
+	<select id="findDetail" parameterType="map" resultMap="findResultMap">
+		select t.tableid,t.custPrinter,t.tableNo,p.port,p.ipaddress from
+		t_table t LEFT JOIN
+		t_printer p on p.printerid=t.custPrinter
+		<where>
+			t.`status`!=5
+			<if test="tableid != null and tableid != ''">
+				and t.tableid=#{tableid}
+			</if>
+		</where>
+</select>
+
+<select id="findByOrder" parameterType="map" resultMap="tbTableResultMap">
+	select 
+		   tt. tableid
+		 ,tt.`position`
+		 ,tt.status
+		 ,tt.restaurantId
+		 ,tt.isVip
+		 ,tt.iscompartment
+		 ,tt.isavailable
+		 ,tt.buildingNo
+		 ,tt.minprice
+		 ,tt.fixprice
+		 ,tt.tableNo
+		 ,tt.personNum
+		 ,tt.tabletype
+		 ,tt.areaid
+		 ,tt.tableName
+		 ,tt.orderid
+		 ,tt.custPrinter
+	   from t_table tt ,t_order tod
+	   where tt.orderid = tod.orderid
+	   and tod.userid = #{userid}
+	   and tt.status !=5
+	   
+</select>
+
+<select id="findTableByOrder" parameterType="map" resultMap="tbTableResultMap">
+	select 
+		  tt. tableid
+		 ,tt.`position`
+		 ,tt.status
+		 ,tt.restaurantId
+		 ,tt.isVip
+		 ,tt.iscompartment
+		 ,tt.isavailable
+		 ,tt.buildingNo
+		 ,tt.minprice
+		 ,tt.fixprice
+		 ,tt.tableNo
+		 ,tt.personNum
+		 ,tt.tabletype
+		 ,tt.areaid
+		 ,tt.tableName
+		 ,tt.orderid
+		 ,tt.custPrinter
+	   from t_table tt left join t_order tod on tod.currenttableid = tt.tableid
+	   where tod.orderid = #{orderid}
+</select>
+	<select id="generatePrintObjId" resultType="String">
+ 		SELECT tableseqno('printobjid')
+	</select>
+	<select id="getTableNoById" resultType="map" parameterType="map">
+ 		SELECT
+          tb.tableno,ta.areaname
+        FROM t_tablearea ta,
+             t_table tb
+        WHERE tb.areaid = ta.areaid
+        AND tb.tableid = #{tableId};
+	</select>
+	<select id="getByOrderId" parameterType="map" resultType="map">
+		select
+		(select userid from t_order where orderid=#{orderId}) as userid,
+		(select areaname from t_tablearea where areaid=t.areaid) as areaname,
+		<include refid="Base_Column_List"/>
+		from t_table t
+		where
+		orderid=#{orderId} and status !='5'
+		limit 1
+	</select>
+</mapper> 
+>>>>>>> remotes/origin/jiwang2.1

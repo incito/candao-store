@@ -41,6 +41,11 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+       		 <groupId>com.candao</groupId>
+            <artifactId>inorder</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.candao</groupId>
             <artifactId>candao-communication-client4java</artifactId>
             <version>1.0</version>
