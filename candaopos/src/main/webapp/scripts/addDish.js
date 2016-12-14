@@ -1529,7 +1529,7 @@ var AddDish = {
 						"globalsperequire": $('#order-note').text(),
 						"orderid": consts.orderid,
 						"operationType": 1,
-						"sequence": 1,
+						"sequence": 94,
 						"rows": rows
 					})
 				}).then(function(res){

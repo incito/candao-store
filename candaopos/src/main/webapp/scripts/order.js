@@ -743,12 +743,12 @@ var Order = {
 
         var _updateCash = function(val){
             var val = val;
-
             if (/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
                 val = parseInt(val);
             }
 
             $cash.val(val);
+
             if (/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
                 val = parseInt(val);
             }
@@ -810,7 +810,7 @@ var Order = {
                 $('.the-change-span').text('0.00');
                 $paytotal.find('.giveChange').addClass('hide');
             }
-
+            debugger;
             if (val > 0) {
                 $paytotal.find('.payamount').find('span').text(parseFloat(val).toFixed(2));
                 $paytotal.find('.payamount').removeClass('hide');
@@ -826,7 +826,7 @@ var Order = {
             if (iptName.length > 0) {
                 $parent.find('.J-pay-val,.J-pay-pwd').removeAttr('disabled');
             } else {
-                if ($parent.find('.J-pay-val').attr('ipttype') === 'debitAmount' || $parent.find('.J-pay-val').attr('ipttype') === 'bank' || $parent.find('.J-pay-val').attr('ipttype') === 'wpay' || $parent.find('.J-pay-val').attr('ipttype') === 'alipay') {
+                if ($parent.attr('itemid') !== 8) {
                     return false;
                 }
                 $parent.find('.J-pay-val, .J-pay-pwd').attr('disabled', 'disabled');
@@ -843,16 +843,24 @@ var Order = {
             }
 
             if (type === 'cash') {
-                _updateCash(me.val().length > 0 ? me.val() : '0');
+                _updateCash(($('.tab-payment li[itemid=0]').length !== 0 && me.val().length > 0) ? me.val() : '0');
             } else {
                 if (totalOtherPay >= shouldAmount) {//其他支付大于应收
                     _updateCash('0');
                     $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
                     $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
-                    _updateCash(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
-                    $paytotal.find('.payamount').find('span').text(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
-                    $paytotal.find('.payamount').removeClass('hide');
+                    var cVal = parseFloat(shouldAmount - totalOtherPay).toFixed(2);
+                    if($('.tab-payment li[itemid=0]').length === 0 ) {
+                        cVal = 0;
+                        _updateCash(cVal);
+                        $paytotal.find('.payamount').find('span').text(cVal);
+                        $paytotal.find('.payamount').addClass('hide');
+                    } else {
+                        _updateCash(cVal);
+                        $paytotal.find('.payamount').find('span').text(cVal);
+                        $paytotal.find('.payamount').removeClass('hide');
+                    }
                 }
             }
         }
@@ -1461,9 +1469,8 @@ var Order = {
 
 
     //加载支付方式分类
-    initPayType: function () {
+    initPayType: function (cb) {
         var ret = [];
-        var that = this;
         var $payOther = $('.pay-other');
         var $totalPayOther = $('#totalOtherPay');
         var vipstatus = JSON.parse(utils.storage.getter('memberAddress')).vipstatus;
@@ -1522,6 +1529,7 @@ var Order = {
                 } else {
                     $(".nav-pay-prev, .nav-pay-next").addClass('disabled');
                 }
+                that.initPayType();
             } else {
                 widget.modal.alert({
                     content:'<strong>' + res.msg + '</strong>',
@@ -1858,11 +1866,15 @@ var Order = {
         $('#discount-amount').text(amount);
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
-        $('#cash input').val(payamount);
+        debugger;
+        if($('.tab-payment li[itemid=0]').length === 0 ) {
+            $('#cash input').val(0);
+        } else {
+            $('#cash input').val(payamount);
+        }
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
-
 
         totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账<i class="spangap">:</i><span>' + toalDebitAmount + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免<i class="spangap">:</i><span>' + toalFreeAmount + '</span></li> ';
@@ -1904,9 +1916,10 @@ var Order = {
         totalHtml += '<li class="hide debitAmount" itemid="5">挂账支付:<span></span></li> ';
         totalHtml += '<li class="hide alipay" itemid="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" itemid="17">微信:<span></span></li> ';
-        totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
         //other
-        totalHtml += '<div id="totalOtherPay"></div>'
+        totalHtml += '<div id="totalOtherPay"></div>';
+        totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
+
         if (invoice_Flag.flag != '') {
             totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>' + invoice_Flag.flag + '</span></li> ';
         }
