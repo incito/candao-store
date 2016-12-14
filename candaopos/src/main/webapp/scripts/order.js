@@ -2075,7 +2075,7 @@ var Order = {
                         var tr = '';
                         var $body = $("#order-dish-table tbody");
                         var _cutName = function(s){
-                            return utils.string.cutString(s.split('#')[0] + '中国馆中国馆中国馆中国馆', parseInt($('#order-dish-table thead th').eq(0).width()/14, 10)*2)
+                            return utils.string.cutString(s.split('#')[0], parseInt($('#order-dish-table thead th').eq(0).width()/14, 10)*2)
                         }
 
                         if (res.data.rows.length > 0) {
