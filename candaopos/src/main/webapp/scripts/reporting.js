@@ -25,8 +25,15 @@ var reporting={
         });
     },
     getItemSellDetail:function (flag) {//获取品项消费明细
-            var me = $(flag),flag=me.attr("flag");
-            me.addClass("active").siblings().removeClass('active')
+            var me = $(flag),flag=me.attr("flag"),that=this;
+            me.addClass("active").siblings().removeClass('active');
+            if(flag=='5'){
+                $('#getItemSellDetail-when').show();
+                $('.getItemSellDetailStart').focus()
+                return false
+            }else {
+                $('#getItemSellDetail-when').hide();
+            }
             $("#getItemSellDetail tbody").html("");
             $.ajax({
                 url:_config.interfaceUrl.GetReportDishInfo,
@@ -77,6 +84,68 @@ var reporting={
                 },
             });
     },
+    getItemSellDetail_when:function () {
+        var that=this,beginTime=$.trim($('.getItemSellDetailStart').val()),endTime=$.trim($('.getItemSellDetailEnd').val());
+        if(beginTime==''||endTime==''){
+            utils.printError.alert('开始时间和结束时间不能为空');
+            return false
+        }
+        if(Date.parse(new Date(endTime))/1000-Date.parse(new Date(beginTime))/1000<0){
+            utils.printError.alert('开始时间不能大于结束时间');
+            return false
+        }
+        $("#getItemSellDetail tbody").html("");
+        Log.send(2, '品项销售明细时间段选择：开始时间：'+beginTime+'，结束时间：'+endTime)
+        $.ajax({
+            url:_config.interfaceUrl.GetReportDishInfo,
+            type: "get",
+            dataType: "json",
+            //data:{"flag":flag},
+            success: function (data) {
+                Log.send(2, '品项销售明细时间段选择参数：'+JSON.stringify(data))
+                //console.log(data)
+                if(data.result=='1'){
+                    utils.printError.alert(data.mag);
+                    return false
+                }
+                var total=data.data.length,count=0,sum=0;
+                for( var i=0;i<total;i++) {
+                    count+=Number(data.data[i].dishCount);
+                    sum+=Number(data.data[i].totlePrice);
+
+                };
+
+                $('#getItemSellDetail .demo').pagination({
+                    dataSource: data.data,
+                    pageSize: 11,
+                    showPageNumbers: false,
+                    showNavigator: true,
+
+                    callback: function(data, pagination) {
+                        var str="";
+                        for( var i=0;i<data.length;i++) {
+                            str+='<tr>';
+                            str+='   <td width="476">'+data[i].dishName.split('#')[0]+'</td>';
+                            str+='   <td width="200">'+data[i].dishCount+'</td>';
+                            str+='   <td width="200">'+data[i].totlePrice+'</td>';
+                            str+='</tr>';
+
+                        };
+                        $("#getItemSellDetail tbody").html(str);
+                    }
+                });
+                /*如果没有数据分页显示统计1/1*/
+                if(data.data.length<1){
+                    $('#getItemSellDetail .demo .J-paginationjs-nav').text('1/1')
+                }
+
+                $("#getItemSellDetail .reportingInfo i").eq(0).text(total);
+                $("#getItemSellDetail .reportingInfo i").eq(1).text(count.toFixed(1));
+                $("#getItemSellDetail .reportingInfo i").eq(2).text(sum.toFixed(2));
+
+            },
+        });
+    },
     PrintItemSell:function () {//消费品项打印
         var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag"),
             that=this,
@@ -86,12 +155,14 @@ var reporting={
             utils.printError.alert('没有需要打印的报表数据')
             return false
         }
+        Log.send(2, '消费品项打印参数：'+{"flag":flag,'deviceid':utils.storage.getter('posid')})
         $.ajax({
             url:_config.interfaceUrl.PrintItemSell,
             type: "get",
             dataType: "json",
             data:{"flag":flag,'deviceid':utils.storage.getter('posid')},
             success: function (data) {
+                Log.send(2, '消费品项打印参数返回参数：'+JSON.stringify(data))
                 if(data.result=='0'){
                     rightBottomPop.alert({
                         content:"品项销售明细打印完成",
@@ -169,6 +240,7 @@ var reporting={
             dataType: "json",
             data:{"flag":flag,'deviceid':utils.storage.getter('posid')},
             success: function (data) {
+                Log.send(2, '服务员小费统计明细打印参数返回：'+JSON.stringify(data))
                 if(data.result=='0'){
                     rightBottomPop.alert({
                         content:"服务员小费统计明细打印完成",
@@ -205,6 +277,7 @@ var reporting={
             utils.printError.alert('开始时间不能大于结束时间');
             return false
         }
+        Log.send(2, '营业数据打印：开始时间：'+beginTime+'，结束时间：'+endTime+"，operationname："+operationname+'，deviceid：'+utils.storage.getter('posid'));
         $.ajax({
             url:_config.interfaceUrl.PrintBusinessDetail,
             type: "get",
@@ -212,11 +285,13 @@ var reporting={
             data:{"beginTime":beginTime,"endTime":endTime,"operationname":operationname,'deviceid':utils.storage.getter('posid')},
             success: function (data) {
                 if(data.result=='0'){
+                    Log.send(2, '营业数据打印返回成功参数：'+JSON.stringify(data));
                     rightBottomPop.alert({
                         content:"营业数据明细打印完成",
                     })
                 }
                 else {
+                    Log.send(2, '营业数据打印失败参数：'+JSON.stringify(data));
                     utils.printError.alert('营业数据明细打印失败，请稍后重试')
                 }
             },
