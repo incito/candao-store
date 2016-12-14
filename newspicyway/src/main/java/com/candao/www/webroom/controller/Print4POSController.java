@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -176,22 +177,31 @@ public class Print4POSController {
      */
     @RequestMapping("/getItemSellDetail")
     @ResponseBody
-    public String getItemSellDetail(String flag, String deviceid) {
-        // TODO
+    public String getItemSellDetail(@RequestBody String json) {
         String res = null;
-        boolean sucess = true;
+        boolean isSucess = true;
         String msg = "";
         try {
-            res = parse("getItemSellDetail", padInterface, new Class[]{String.class}, flag);
-            ResultInfo4Pos resultInfo4Pos = JSON.parseObject(res, ResultInfo4Pos.class);
-            print4posService.printItemSellDetail(resultInfo4Pos, deviceid);
+            Assert.hasLength(json, "参数错误");
+            Map<String, Object> param = JSON.parseObject(json, Map.class);
+            //POS设备码
+            if (StringUtils.isEmpty(param.get("deviceid")))
+                throw new RuntimeException("参数错误");
+            String deviceid = String.valueOf(param.remove("deviceid"));
+            res = parse("getItemSellDetail", padInterface, new Class[]{String.class}, JSON.toJSONString(param));
+            param = JSON.parseObject(res, Map.class);
+            if (!"0".equals(String.valueOf(param.get("code"))))
+                throw new RuntimeException(String.valueOf(param.get("msg")));
+            Map<String, Object> data = (Map<String, Object>) param.get("data");
+            print4posService.printItemSellDetail(data, deviceid);
         } catch (Exception e) {
             msg = e.getMessage();
-            sucess = false;
+            isSucess = false;
             e.printStackTrace();
+            log.error("-------------->");
             log.error("", e);
         }
-        return getResponseMsg("", msg, sucess);
+        return getResponseMsg("", msg, isSucess);
     }
 
     /**
@@ -360,7 +370,7 @@ public class Print4POSController {
         method = obj.getClass().getMethod(name, insts);
         res = method.invoke(obj, args);
         res = typeResolve(res);
-        res = StringUtil.unicodeTOUtf8(String.valueOf(res));
+//        res = StringUtil.unicodeTOUtf8(String.valueOf(res));
         return res.toString();
     }
 
