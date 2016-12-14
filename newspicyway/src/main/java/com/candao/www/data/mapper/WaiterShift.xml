@@ -113,7 +113,7 @@
 		FROM (SELECT tooo.userid AS waiterId,
 				us.name AS waiterName,
 				COUNT(DISTINCT(tooo.orderid)) AS tableNum,
-				SUM(tod.dishnum*tod.orignalprice)+(select IFNULL(SUM(chargeAmount),0) from t_service_charge where orderid=tooo.orderid and chargeOn=1) AS shouldAmount
+				SUM(tod.dishnum*tod.orignalprice)+(select IFNULL(SUM(chargeAmount),0) from t_service_charge where FIND_IN_SET(orderid,GROUP_CONCAT(tooo.orderid)) and chargeOn=1) AS shouldAmount
 			  FROM (SELECT * FROM t_order as too 
 			  		WHERE too.branchid = #{branchId}
 			  		AND too.begintime >= #{beginTime}

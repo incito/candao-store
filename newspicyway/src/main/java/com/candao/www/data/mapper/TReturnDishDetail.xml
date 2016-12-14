@@ -44,6 +44,8 @@
         a.job_number,
         b.name
         FROM t_b_employee a
+        LEFT JOIN t_branch_info c
+        ON a.branch_id = c.branchid
         LEFT JOIN t_b_user b
         ON a.user_id = b.id
     </select>
