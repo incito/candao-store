@@ -640,6 +640,11 @@ var AddDish = {
 
 		$.each(data.rows[0].only, function(k, v){
 			onlyStr += '<div class="form-group"><div class="col-xs-7">' + v.contactdishname + '(<span class="unit">' + v.dishunitid + ')</span></div></div>';
+			if(v.dishtype !== '0') {
+				$.each(v.dishes, function(key,value){
+					onlyStr += '<div class="form-group"><div class="col-xs-7">' + value.contactdishname + '(<span class="unit">' + value.dishunitid + ')</span></div></div>';
+				})
+			}
 		});
 		dom.combodishialog.find('.only-group').html(onlyStr);
 
@@ -762,21 +767,48 @@ var AddDish = {
 			});
 
 			//添only
-			$.each(data.rows[0].only, function(k, v){
+			$.each(data.rows[0].only, function(key, value){
 				row.dishes.push({
 					printtype: "0",
 					pricetype: "0",
-					dishid: v.contactdishid,
-					dishname: v.contactdishname,
-					dishunit: v.dishunitid,
-					orignalprice: v.price,
+					dishid: value.contactdishid,
+					dishname: value.contactdishname,
+					dishunit: value.dishunitid,
+					orignalprice: value.price,
 					price: 0,
-					dishtype: v.dishtype,
-					dishnum: v.dishnum,
+					dishtype: value.dishtype,
+					dishnum: value.dishnum,
 					dishnote: "",
-					ispot: 0,
-					weight: v.weight,
-					groupid: groupid
+					ispot: value.ispot === undefined ? '0' : value.ispot,
+					weight: value.weight,
+					groupid: groupid,
+					dishes: (function(){
+						var ret = [];
+						if(parseInt(value.dishtype, 10) === 0) {
+							return null;
+						} else {
+							$.each(value.dishes, function(k,v){
+								ret.push(
+									{
+										printtype: "0",
+										pricetype: "0",
+										dishid: v.contactdishid,
+										dishname: v.contactdishname,
+										dishunit: v.dishunitid,
+										orignalprice: v.price,
+										price: 0,
+										dishtype: v.dishtype,
+										dishnum: v.dishnum,
+										dishnote: "",
+										ispot: value.ispot === undefined ? '0' : value.ispot,
+										weight: v.weight,
+										groupid: groupid,
+									}
+								)
+							})
+							return ret;
+						}
+					})(),
 				});
 			});
 			that.addDish(row);
@@ -1003,6 +1035,17 @@ var AddDish = {
 					+ "</td><td class='num'>"+ v.dishnum+"</td><td class='price'>"
 					+ (parseFloat(v.price)*parseFloat(v.dishnum)).toFixed(2)
 					+ "</td></tr>";
+				if(parseInt(v.dishtype, 10) !== 0) {
+					$.each(v.dishes, function(key,value){
+						tr += "<tr cid='" + cid + "' groupid='" +  dish.groupid + "'>"
+							+ "<td class='dishname' name='"+ value.dishname+"' >"
+							+ value.dishname
+							+ "</td><td class='num'>"+ value.dishnum+"</td><td class='price'>"
+							+ (parseFloat(value.price)*parseFloat(value.dishnum)).toFixed(2)
+							+ "</td></tr>";
+					})
+				}
+
 			});
 		}
 
@@ -1470,11 +1513,43 @@ var AddDish = {
 									"dishstatus": value.weigh === undefined ? '0' : value.weigh,//0：已称重或者不称重 1:未称重
 									"ispot": value.ispot === undefined ? '0' : value.ispot, //0:非锅底 1:锅底
 									"taste": value.taste === undefined ? '' : value.taste,// 点菜口味/临时菜的菜名
-									"dishes": null,
+									"dishes": (function(){
+										var ret = [];
+										if(parseInt(value.dishtype, 10) === 0) {
+											return null;
+										} else {
+											$.each(value.dishes, function(k,v){
+												ret.push(
+													{
+														"printtype": '0',
+														"pricetype": pricetype,//0：普通 1：赠菜
+														"orderprice": v.price,//菜品价格
+														"orignalprice": v.orignalprice,//菜品单价
+														"dishid": v.dishid,
+														"userName": user,
+														"dishunit": v.dishunit,
+														"orderid": consts.orderid,
+														"dishtype": v.dishtype,//0：单品 1：鱼锅 2：套餐
+														"orderseq": "1",
+														"dishnum": v.dishnum,
+														"sperequire": v.sperequire === undefined ? '' : v.sperequire,  //忌口信息
+														"primarykey": getUuid(),
+														"dishstatus": v.weigh === undefined ? '0' : v.weigh,//0：已称重或者不称重 1:未称重
+														"ispot": v.ispot === undefined ? '0' : v.ispot, //0:非锅底 1:锅底
+														"taste": v.taste === undefined ? '' : v.taste,// 点菜口味/临时菜的菜名
+														"dishes": null,
+														"freeuser": freeuser, // 赠菜人/收银员工号
+														"freeauthorize": freeauthorize, //赠菜授权人工号
+														"freereason": freereason, //赠菜原因
+													}
+												)
+											})
+										}
+										return ret;
+									})(),
 									"freeuser": freeuser, // 赠菜人/收银员工号
 									"freeauthorize": freeauthorize, //赠菜授权人工号
 									"freereason": freereason, //赠菜原因
-									"dishstatus": value.weigh === undefined ? '0' : value.weigh,
 								}
 							)
 						})

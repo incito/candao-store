@@ -810,7 +810,6 @@ var Order = {
                 $('.the-change-span').text('0.00');
                 $paytotal.find('.giveChange').addClass('hide');
             }
-            debugger;
             if (val > 0) {
                 $paytotal.find('.payamount').find('span').text(parseFloat(val).toFixed(2));
                 $paytotal.find('.payamount').removeClass('hide');
@@ -1529,7 +1528,6 @@ var Order = {
                 } else {
                     $(".nav-pay-prev, .nav-pay-next").addClass('disabled');
                 }
-                that.initPayType();
             } else {
                 widget.modal.alert({
                     content:'<strong>' + res.msg + '</strong>',
@@ -1866,7 +1864,6 @@ var Order = {
         $('#discount-amount').text(amount);
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
-        debugger;
         if($('.tab-payment li[itemid=0]').length === 0 ) {
             $('#cash input').val(0);
         } else {
@@ -2077,15 +2074,23 @@ var Order = {
                         //已经选择菜品
                         var tr = '';
                         var $body = $("#order-dish-table tbody");
+                        var _cutName = function(s){
+                            return utils.string.cutString(s.split('#')[0] + '中国馆中国馆中国馆中国馆', parseInt($('#order-dish-table thead th').eq(0).width()/14, 10)*2)
+                        }
 
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
                                 var groupid = utils.getUuid();
                                 var dishname = '';
                                 if (v.dishes !== undefined) {
-                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" + v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0], 14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" + v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(v.dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     $.each(v.dishes, function (k1, v1) {
-                                        tr += "<tr groupid='" + groupid + "' ispot='" + v1.ispot + "' grouptype='" + v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname.split('#')[0], 14) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                        tr += "<tr groupid='" + groupid + "' ispot='" + v1.ispot + "' grouptype='" + v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + _cutName(v1.dishname) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                        if (v1.dishtype !== 0) {
+                                            $.each(v1.dishes, function (k2, v2) {
+                                                tr += "<tr groupid='" + groupid + "' ispot='" + v2.ispot + "' grouptype='" + v2.dishtype + "'  dishid='" + v2.dishid + "' unit='" + v2.dishunit + "' primarykey='" + v2.primarykey + "' dishtype='" + v2.dishtype + "' dishstatus='" + v2.dishstatus + "'><td class='dishname'>" + _cutName(v2.dishname) + "</td><td class='num'>" + v2.dishnum + "</td><td class='unit'>" + v2.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v2.dishstatus === '0' ? parseFloat(v2.orderprice * v2.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                            })
+                                        }
                                     })
                                 } else {
                                     if (/临时菜/.test(v.dishname)) {
@@ -2094,7 +2099,7 @@ var Order = {
                                         dishname = v.dishname.split('#')[0]
                                     }
 
-                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(dishname, 14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
                             });
                             $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
