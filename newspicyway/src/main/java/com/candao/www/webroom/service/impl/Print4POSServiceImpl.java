@@ -248,34 +248,32 @@ public class Print4POSServiceImpl implements Print4POSService {
     }
 
     @Override
-    public void printItemSellDetail(ResultInfo4Pos resultInfo4Pos, String deviceid) throws Exception {
-        if (resultInfo4Pos == null) {
-            return;
-        }
+    public void printItemSellDetail(Map<String, Object> data, String deviceid) throws Exception {
+        Assert.notEmpty(data, "参数错误");
+        //分店名称
         Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
         if (!MapUtils.isEmpty(branchInfo)) {
-            resultInfo4Pos.setBranname(String.valueOf(branchInfo.get("branchname")));
+            data.put("branchname", String.valueOf(branchInfo.get("branchname")));
         }
-
+        //打印时间
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        resultInfo4Pos.setDatetime(sdf.format(date));
+        data.put("datetime", sdf.format(date));
+        //总额
         String total = "0";
-
-        if (!CollectionUtils.isEmpty(resultInfo4Pos.getData())) {
+        List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("data");
+        if (!CollectionUtils.isEmpty(items)) {
             int index = 0;
-            for (DishItem it : resultInfo4Pos.getData()) {
-                it.setIndex(++index + "");
-                total = stringAdd(total, StringUtils.isEmpty(it.getTotlePrice()) ? "0" : it.getTotlePrice());
+            for (Map<String, Object> it : items) {
+                it.put("index", ++index + "");
+                total = stringAdd(total, StringUtils.isEmpty(it.get("totlePrice")) ? "0" : String.valueOf(it.get("totlePrice")));
             }
         }
-        resultInfo4Pos.setTotal(total);
+        data.put("total", total);
 
         PrintObj obj = new PrintObj();
-        obj.setItem(resultInfo4Pos);
+        obj.setPosData(data);
         obj.setListenerType(Constant.ListenerType.ItemSellDetailTemplate);
-
-        // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
         params.put("deviceid", deviceid);

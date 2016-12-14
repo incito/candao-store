@@ -5,7 +5,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 </head>
 <body>
-<p>Version:V1.X.X</p>
+<p>Version:V<%= PropertiesUtils.getValue("version")%></p>
 <p>Author:xxx</p>
 <p>Datetime: yyyy/MM/DD </p>
 <p>Commit: xxx</p>

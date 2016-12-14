@@ -169,7 +169,7 @@ var Order = {
             $(".paytype-input").addClass("hide");
             var targetId = $(this).attr("target");
             $(targetId).removeClass("hide");
-        });
+        })
 
         dom.doc.click(function (e) {
             $(".more-oper").addClass("hide");
@@ -588,7 +588,7 @@ var Order = {
         });
 
 
-        /*优惠分类向左向右按钮*/
+        /*支付方式向左向右按钮*/
         $(".nav-pay-next").click(function () {
             var count = $(".nav-pay-types").find("li.nav-pay-type").length;
             if (pay_prev < count - 6) {
@@ -743,12 +743,12 @@ var Order = {
 
         var _updateCash = function(val){
             var val = val;
-
             if (/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
                 val = parseInt(val);
             }
 
             $cash.val(val);
+
             if (/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
                 val = parseInt(val);
             }
@@ -810,7 +810,6 @@ var Order = {
                 $('.the-change-span').text('0.00');
                 $paytotal.find('.giveChange').addClass('hide');
             }
-
             if (val > 0) {
                 $paytotal.find('.payamount').find('span').text(parseFloat(val).toFixed(2));
                 $paytotal.find('.payamount').removeClass('hide');
@@ -826,7 +825,7 @@ var Order = {
             if (iptName.length > 0) {
                 $parent.find('.J-pay-val,.J-pay-pwd').removeAttr('disabled');
             } else {
-                if ($parent.find('.J-pay-val').attr('ipttype') === 'debitAmount' || $parent.find('.J-pay-val').attr('ipttype') === 'bank' || $parent.find('.J-pay-val').attr('ipttype') === 'wpay' || $parent.find('.J-pay-val').attr('ipttype') === 'alipay') {
+                if ($parent.attr('itemid') !== 8) {
                     return false;
                 }
                 $parent.find('.J-pay-val, .J-pay-pwd').attr('disabled', 'disabled');
@@ -843,16 +842,24 @@ var Order = {
             }
 
             if (type === 'cash') {
-                _updateCash(me.val().length > 0 ? me.val() : '0');
+                _updateCash(($('.tab-payment li[itemid=0]').length !== 0 && me.val().length > 0) ? me.val() : '0');
             } else {
                 if (totalOtherPay >= shouldAmount) {//其他支付大于应收
                     _updateCash('0');
                     $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
                     $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
-                    _updateCash(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
-                    $paytotal.find('.payamount').find('span').text(parseFloat(shouldAmount - totalOtherPay).toFixed(2));
-                    $paytotal.find('.payamount').removeClass('hide');
+                    var cVal = parseFloat(shouldAmount - totalOtherPay).toFixed(2);
+                    if($('.tab-payment li[itemid=0]').length === 0 ) {
+                        cVal = 0;
+                        _updateCash(cVal);
+                        $paytotal.find('.payamount').find('span').text(cVal);
+                        $paytotal.find('.payamount').addClass('hide');
+                    } else {
+                        _updateCash(cVal);
+                        $paytotal.find('.payamount').find('span').text(cVal);
+                        $paytotal.find('.payamount').removeClass('hide');
+                    }
                 }
             }
         }
@@ -922,6 +929,7 @@ var Order = {
                                 //重新刷新订单信息
                                 that.updateOrder();
                                 dom.membershipCard.attr('isLogin', 'true');
+                                dom.membershipCard.find('.J-pay-pwd,.J-pay-val').removeAttr('disabled');
                                 rightBottomPop.alert({
                                     title: "提示信息",
                                     content: res2.msg,
@@ -983,6 +991,7 @@ var Order = {
                         btn.addClass('btn-login-out');
                         btn.removeClass('disabled');
                         ipt.attr('disabled', 'disabled');
+                        dom.membershipCard.find('.J-pay-pwd,.J-pay-val').removeAttr('disabled');
                         consts.memberInfo = res1;
                         $.ajax({
                             url: _config.interfaceUrl.MemberLogin,
@@ -1459,9 +1468,8 @@ var Order = {
 
 
     //加载支付方式分类
-    initPayType: function () {
+    initPayType: function (cb) {
         var ret = [];
-        var that = this;
         var $payOther = $('.pay-other');
         var $totalPayOther = $('#totalOtherPay');
         var vipstatus = JSON.parse(utils.storage.getter('memberAddress')).vipstatus;
@@ -1514,6 +1522,7 @@ var Order = {
                 });
 
                 $(".nav-pay-types").html(ret.join(''));
+                $('.tab-payment li').eq(0).click();
                 if($(".nav-pay-types").find( "li.nav-pay-type").length > 6) {
                     $(".nav-pay-prev").addClass('disabled');
                 } else {
@@ -1855,11 +1864,14 @@ var Order = {
         $('#discount-amount').text(amount);
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
-        $('#cash input').val(payamount);
+        if($('.tab-payment li[itemid=0]').length === 0 ) {
+            $('#cash input').val(0);
+        } else {
+            $('#cash input').val(payamount);
+        }
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
-
 
         totalHtml += '<li class="' + (parseFloat(toalDebitAmount) !== 0 ? '' : 'hide') + ' toalDebitAmount">挂账<i class="spangap">:</i><span>' + toalDebitAmount + '</span></li> ';
         totalHtml += '<li class="' + (parseFloat(toalFreeAmount) !== 0 ? '' : 'hide') + ' toalFreeAmount">优免<i class="spangap">:</i><span>' + toalFreeAmount + '</span></li> ';
@@ -1901,9 +1913,10 @@ var Order = {
         totalHtml += '<li class="hide debitAmount" itemid="5">挂账支付:<span></span></li> ';
         totalHtml += '<li class="hide alipay" itemid="18">支付宝:<span></span></li> ';
         totalHtml += '<li class="hide wpay" itemid="17">微信:<span></span></li> ';
-        totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
         //other
-        totalHtml += '<div id="totalOtherPay"></div>'
+        totalHtml += '<div id="totalOtherPay"></div>';
+        totalHtml += '<li class="hide needPay">还需再收:<span></span></li> ';
+
         if (invoice_Flag.flag != '') {
             totalHtml += '<li class=" orderInvoiceTitle">发票抬头:&nbsp<span>' + invoice_Flag.flag + '</span></li> ';
         }
@@ -2061,15 +2074,23 @@ var Order = {
                         //已经选择菜品
                         var tr = '';
                         var $body = $("#order-dish-table tbody");
+                        var _cutName = function(s){
+                            return utils.string.cutString(s.split('#')[0], parseInt($('#order-dish-table thead th').eq(0).width()/14, 10)*2)
+                        }
 
                         if (res.data.rows.length > 0) {
                             $.each(res.data.rows, function (k, v) {
                                 var groupid = utils.getUuid();
                                 var dishname = '';
                                 if (v.dishes !== undefined) {
-                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" + v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v.dishname.split('#')[0], 14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" + v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(v.dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                     $.each(v.dishes, function (k1, v1) {
-                                        tr += "<tr groupid='" + groupid + "' ispot='" + v1.ispot + "' grouptype='" + v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + utils.string.cutString(v1.dishname.split('#')[0], 14) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                        tr += "<tr groupid='" + groupid + "' ispot='" + v1.ispot + "' grouptype='" + v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + _cutName(v1.dishname) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                        if (v1.dishtype !== 0) {
+                                            $.each(v1.dishes, function (k2, v2) {
+                                                tr += "<tr groupid='" + groupid + "' ispot='" + v2.ispot + "' grouptype='" + v2.dishtype + "'  dishid='" + v2.dishid + "' unit='" + v2.dishunit + "' primarykey='" + v2.primarykey + "' dishtype='" + v2.dishtype + "' dishstatus='" + v2.dishstatus + "'><td class='dishname'>" + _cutName(v2.dishname) + "</td><td class='num'>" + v2.dishnum + "</td><td class='unit'>" + v2.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v2.dishstatus === '0' ? parseFloat(v2.orderprice * v2.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                            })
+                                        }
                                     })
                                 } else {
                                     if (/临时菜/.test(v.dishname)) {
@@ -2078,7 +2099,7 @@ var Order = {
                                         dishname = v.dishname.split('#')[0]
                                     }
 
-                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + utils.string.cutString(dishname, 14) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
                                 }
                             });
                             $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
