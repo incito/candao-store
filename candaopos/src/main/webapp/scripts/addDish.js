@@ -1415,7 +1415,8 @@ var AddDish = {
 							if(type === 1) {
 								return '0';
 							} else {
-								if(isLogin) {
+								debugger;
+								if(isLogin && dish.vipprice !== undefined) {
 									return dish.vipprice
 								} else {
 									return dish.price;
