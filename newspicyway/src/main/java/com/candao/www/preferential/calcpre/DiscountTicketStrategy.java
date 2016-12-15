@@ -34,6 +34,9 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
 			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
 			TdishDao tdishDao) {
+		// 错误提示
+		String flagcode = "";
+		boolean flag = true;
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String branchid = PropertiesUtils.getValue("current_branch_id");
@@ -89,16 +92,15 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		for (TorderDetail d : orderDetailList) {
 			String key = d.getDishid() + d.getDishunit();
 			// 如果在不优惠的列表中没有找到这个菜品，则认为这个菜品是可以优惠打折的。
-			if ((!noDiscountDishSet.contains(key)&&!fishnoDiscountDishSet.contains(d.getDishid()))
-				  ||(fishnoDiscountDishSet.contains(d.getDishid())&&!d.getDishtype().equals("1"))	
-					) {
+			if ((!noDiscountDishSet.contains(key) && !fishnoDiscountDishSet.contains(d.getDishid()))
+					|| (fishnoDiscountDishSet.contains(d.getDishid()) && !d.getDishtype().equals("1"))) {
 				// 判断价格，如果菜品价格存在null的问题，
 				if (null != d.getOrderprice()) {
 					// 如果此菜品是多份，则计算多份总的优惠价格
 					amountCount = amountCount.add(d.getOrderprice().multiply(new BigDecimal(d.getDishnum())));
 					tempDishNum += Double.valueOf(d.getDishnum());
 				}
-			} 
+			}
 		}
 		// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
 		if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1) {
@@ -134,12 +136,15 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
-		boolean flag=true;
-		if(!paraMap.containsKey("updateId")&&detailPreferentials.isEmpty()&& amount.doubleValue()<=0){
-			flag=false;
+		if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) == -1) {
+			flag = false;
+			flagcode = "2002";
+		} else if (!paraMap.containsKey("updateId") && detailPreferentials.isEmpty() && amount.doubleValue() <= 0) {
+			flag = false;
+			flagcode = "2001";
 		}
 		result.put("falg", flag);
-		result.put("mes", flag?ReturnMes.SUCCESS.getMsg():ReturnMes.DISCOUNT_FAIL.getMsg());
+		result.put("mes", flag ? ReturnMes.SUCCESS.getMsg() : ReturnMes.mes(flagcode));
 		return result;
 	}
 
