@@ -217,10 +217,39 @@ var keydownEnter=null
 
 
             if(keydownEnter){
+            	var input=$("input.card-number[name='cardNumber']"),/*结账页面会员登录*/
+					czInput=$('#rechargeMoblie'), /*会员卡充值页面会员卡号*/
+					ya_memberNumber=$('.ya_memberNumber')/*雅座会员卡充值页面会员卡号*/
+				    yaRegister=$('.ya_Register')/*雅座会员注册*/
+				/*结账页面会员登录*/
+				if (input.length>0){
+					if(input.focus()){
+						input.next('button').click()
+						return false
+					}
+				}
+				/*会员卡充值页面会员卡号*/
+				if (czInput.length>0){
+					if(czInput.focus()){
+						return false
+					}
+				}
+				/*雅座会员卡充值页面会员卡号*/
+				if (ya_memberNumber.length>0){
+					if(ya_memberNumber.focus()){
+						ya_memberNumber.next('button').click()
+						return false
+					}
+				}
+				/*雅座会员卡充值页面会员卡号*/
+				if (yaRegister.length>0){
+					if(yaRegister.focus()){
+						return false
+					}
+				}
                 keydownEnter.click();
                 return false
             }
-
 
         }
     });
