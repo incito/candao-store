@@ -27,34 +27,37 @@ var reporting={
     getItemSellDetail:function (flag) {//获取品项消费明细
             var me = $(flag),flag=me.attr("flag"),that=this;
             me.addClass("active").siblings().removeClass('active');
+            $("#getItemSellDetail tbody").html("");
             if(flag=='5'){
                 $('#getItemSellDetail-when').show();
-                $('.getItemSellDetailStart').focus()
+                $('.getItemSellDetailStart').focus().val('');
+                $('.getItemSellDetailEnd').val('');
                 return false
             }else {
                 $('#getItemSellDetail-when').hide();
             }
-            $("#getItemSellDetail tbody").html("");
+            Log.send(2, me.text()+'品项销售明细接口请求参数有:'+JSON.stringify({"flag":flag}))
             $.ajax({
                 url:_config.interfaceUrl.GetReportDishInfo,
-                type: "get",
-                dataType: "json",
-                data:{"flag":flag},
+                method: 'POST',
+                contentType: "application/json",
+                dataType: 'json',
+                data:JSON.stringify({"flag":flag}),
                 success: function (data) {
-                    //console.log(data)
-                    if(data.result=='1'){
-                        utils.printError.alert(data.mag);
+                    Log.send(2, me.text()+'品项销售明细返回:'+JSON.stringify(data))
+                    if(data.code=='1'){
+                        utils.printError.alert(data.msg);
                         return false
                     }
-                    var total=data.data.length,count=0,sum=0;
+                    var total=data.data.data.length,count=0,sum=0;
                     for( var i=0;i<total;i++) {
-                        count+=Number(data.data[i].dishCount);
-                        sum+=Number(data.data[i].totlePrice);
+                        count+=Number(data.data.data[i].dishCount);
+                        sum+=Number(data.data.data[i].totlePrice);
 
                     };
 
                     $('#getItemSellDetail .demo').pagination({
-                        dataSource: data.data,
+                        dataSource: data.data.data,
                         pageSize: 11,
                         showPageNumbers: false,
                         showNavigator: true,
@@ -98,25 +101,25 @@ var reporting={
         Log.send(2, '品项销售明细时间段选择：开始时间：'+beginTime+'，结束时间：'+endTime)
         $.ajax({
             url:_config.interfaceUrl.GetReportDishInfo,
-            type: "get",
-            dataType: "json",
-            //data:{"flag":flag},
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data:JSON.stringify({"startTime":beginTime,'endTime':endTime}),
             success: function (data) {
-                Log.send(2, '品项销售明细时间段选择参数：'+JSON.stringify(data))
-                //console.log(data)
-                if(data.result=='1'){
-                    utils.printError.alert(data.mag);
+                Log.send(2, '品项销售明细时间段选择数据返回'+JSON.stringify(data))
+                if(data.code=='1'){
+                    utils.printError.alert(data.msg);
                     return false
                 }
-                var total=data.data.length,count=0,sum=0;
+                var total=data.data.data.length,count=0,sum=0;
                 for( var i=0;i<total;i++) {
-                    count+=Number(data.data[i].dishCount);
-                    sum+=Number(data.data[i].totlePrice);
+                    count+=Number(data.data.data[i].dishCount);
+                    sum+=Number(data.data.data[i].totlePrice);
 
                 };
 
                 $('#getItemSellDetail .demo').pagination({
-                    dataSource: data.data,
+                    dataSource: data.data.data,
                     pageSize: 11,
                     showPageNumbers: false,
                     showNavigator: true,
@@ -149,18 +152,42 @@ var reporting={
     PrintItemSell:function () {//消费品项打印
         var flag=$("#getItemSellDetail .dataSelect-type .active" ).attr("flag"),
             that=this,
-            TipListPrintLength=$('#getItemSellDetail tbody').find('tr').length;
-
+            TipListPrintLength=$('#getItemSellDetail tbody').find('tr').length,
+            res=null,
+            beginTime=$.trim($('.getItemSellDetailStart').val()),
+            endTime=$.trim($('.getItemSellDetailEnd').val());
+        if(flag=='5'){
+            if(beginTime==''||endTime==''){
+                utils.printError.alert('开始时间和结束时间不能为空');
+                return false
+            }
+            if(Date.parse(new Date(endTime))/1000-Date.parse(new Date(beginTime))/1000<0){
+                utils.printError.alert('开始时间不能大于结束时间');
+                return false
+            }
+            res={
+                'deviceid':utils.storage.getter('posid'),
+                "startTime":beginTime,
+                'endTime':endTime
+            }
+        }
+        else {
+            res={
+                "flag":flag,
+                'deviceid':utils.storage.getter('posid'),
+            }
+        }
         if(TipListPrintLength<1){
             utils.printError.alert('没有需要打印的报表数据')
             return false
         }
-        Log.send(2, '消费品项打印参数：'+{"flag":flag,'deviceid':utils.storage.getter('posid')})
+        Log.send(2, '消费品项打印参数：'+JSON.stringify(res))
         $.ajax({
             url:_config.interfaceUrl.PrintItemSell,
-            type: "get",
-            dataType: "json",
-            data:{"flag":flag,'deviceid':utils.storage.getter('posid')},
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data:JSON.stringify(res),
             success: function (data) {
                 Log.send(2, '消费品项打印参数返回参数：'+JSON.stringify(data))
                 if(data.result=='0'){

@@ -158,6 +158,7 @@
 
 <script>
     /*营业数据明细时间选择*/
+    var a=utils.date.current().substring(0,10)+' 00:00:01'
     var start = {
         dateCell: '.datetimeStart',//input选择框
         skinCell: "jedateorange",//橙色风格
