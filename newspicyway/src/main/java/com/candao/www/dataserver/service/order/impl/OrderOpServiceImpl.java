@@ -52,6 +52,8 @@ public class OrderOpServiceImpl implements OrderOpService {
         LOGGER.info("###getOrderInfo aUserId={},orderId={},printType={}###", aUserId, orderId, printType);
         ResponseJsonData responseJsonData = new ResponseJsonData();//获取小费
         String tipMoney ="0";
+//        赠菜劵赠送的菜品
+        List<Map> preferentialDish=null;
         try {
             switch (printType) {
                 case PrintType.BEF_PRINT:
@@ -61,6 +63,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                 case PrintType.PRINT:
                     orderMapper.updatePrintCount(orderId);
                     tipMoney = tipService.getTipMoney(orderId,true);
+//                    preferentialDish = orderMapper.getPreferentialDish(orderId);
                     break;
             }
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
@@ -83,6 +86,9 @@ public class OrderOpServiceImpl implements OrderOpService {
             }
             List<Map> listJson = orderMapper.getListJson(orderId);
             reorderListJson(listJson);
+//            if(null!=preferentialDish){
+//                listJson.addAll(preferentialDish);
+//            }
             List<Map> jsJson = orderMapper.getJsJson(orderId);
             responseJsonData.setOrderJson(orderJson);
             responseJsonData.setListJson(listJson);
