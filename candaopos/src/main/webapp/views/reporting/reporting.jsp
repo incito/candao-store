@@ -48,8 +48,16 @@
                         <div flag="2" onclick="reporting.getItemSellDetail(this)">本周</div>
                         <div flag="3" onclick="reporting.getItemSellDetail(this)">本月</div>
                         <div flag="4" onclick="reporting.getItemSellDetail(this)">上月</div>
+                        <div flag="5" onclick="reporting.getItemSellDetail(this)">时间段</div>
+                        <span id="getItemSellDetail-when" style="display: none">
+                             <input style="margin-left: 10px;" value=""  type=”text” class="form-control getItemSellDetailStart"/>
+                             <span style="padding: 0 5px">至</span>
+                             <input  value="" type="text" class="form-control getItemSellDetailEnd"/>
+                             <div style="float: right;margin-left: 10px" class="active" onclick="reporting.getItemSellDetail_when()">查询</div>
+                        </span>
+
                     </div>
-                    <div class="dataSelect-type print">
+                    <div class="dataSelect-type print" >
                         <div class="active" onclick="reporting.PrintItemSell()">打印</div>
                     </div>
                     <div style="height: 500px;" class="clearfix">
@@ -126,7 +134,7 @@
                     <span>自定义时间</span></br></br>
                     <div class="form-group form-group-base form-input">
                         <span class="form-label">开始时间:</span>
-                        <input value="" id="datetimeStart" type=”text” class="form-control datetimeStart"/>
+                        <input value=""  type=”text” class="form-control datetimeStart"/>
                     </div>
                     <span style="padding: 0 5px">至</span>
                     <div class="form-group form-group-base form-input">
@@ -149,6 +157,8 @@
 <script src="../../scripts/reporting.js"></script>
 
 <script>
+    /*营业数据明细时间选择*/
+    var a=utils.date.current().substring(0,10)+' 00:00:01'
     var start = {
         dateCell: '.datetimeStart',//input选择框
         skinCell: "jedateorange",//橙色风格
@@ -171,6 +181,29 @@
         }
     };
     jeDate(end)
+    /*品项销售明细时间段*/
+    var whenstart = {
+        dateCell: '.getItemSellDetailStart',//input选择框
+        skinCell: "jedateorange",//橙色风格
+        format: 'YYYY-MM-DD hh:mm:ss',
+        festival: true,//是否显示节日
+        maxDate: jeDate.now(0), //设定最大日期为当前日期
+        choosefun: function (elem, datas) {
+            whenend.minDate = datas; //开始日选好后，重置结束日的最小日期
+        }
+    };
+    jeDate(whenstart)
+    var whenend = {
+        dateCell: '.getItemSellDetailEnd',
+        skinCell: "jedateorange",
+        format: 'YYYY-MM-DD hh:mm:ss',
+        festival: true,//是否显示节日
+        maxDate: jeDate.now(0), //设定最大日期为当前日期
+        choosefun: function (elem, datas) {
+            whenstart.maxDate = datas; //将结束日的初始值设定为开始日的最大日期
+        }
+    };
+    jeDate(whenend)
 </script>
 
 </body>

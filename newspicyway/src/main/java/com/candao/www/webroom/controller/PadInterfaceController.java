@@ -17,6 +17,7 @@ import com.candao.www.data.dao.*;
 import com.candao.www.data.model.*;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.order.OrderOpService;
+import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
 import com.candao.www.permit.service.FunctionService;
@@ -29,6 +30,7 @@ import com.candao.www.webroom.model.*;
 import com.candao.www.webroom.service.*;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -695,11 +698,11 @@ public class PadInterfaceController extends BaseController{
 		record.setJson(JacksonJsonMapper.objectToJson(table));
 		record.setPadpath("cleantable");
 		jsonRecordService.insertJsonRecord(record);
-		
+
 
 		//清台
 		TbTable tbTable = tableService.findByTableNo(table.getTableNo());
-		
+
 		//整单退菜
 		orderDetailService.deleteordreDetailByOrderid(tbTable.getOrderid());
 		if (tbTable != null) {
@@ -1126,31 +1129,36 @@ public class PadInterfaceController extends BaseController{
 
     @RequestMapping("/getTableAndType")
     @ResponseBody
-    public Map<String,Object> getTableAndType() {
-        List<Map<String,Object>> listTableArea = null;
-        //0成功1失败
-        Map<String,Object> res = new HashMap<>();
+    public Map<String,Object> getTableAndType( @RequestBody String json) {
+        Map<String, Object> param = null;
+
+        if (!org.springframework.util.StringUtils.isEmpty(json)) {
+            param = JSON.parseObject(json, Map.class);
+        }
+        List<Map<String, Object>> listTableArea;
         try {
             listTableArea = tableAreaService.getTableAreaTag();
             Map<String, Object> mapAreaid = new HashMap<String, Object>();
             for (Map<String, Object> map : listTableArea) {
+                mapAreaid.clear();
                 mapAreaid.put("areaid", map.get("areaid"));
                 mapAreaid.put("defaultsort", 1);
+                if (!MapUtils.isEmpty(param)) {
+                    mapAreaid.put("exceptorder", StringUtil.isEmpty(param.get("orderid")) ? null : param.get("orderid"));// 排除再外的餐台
+                    mapAreaid.put("tabletypefilter", CollectionUtils.isEmpty((Collection) param.get("tableTypeFilter")) ?
+                            null : param.get("tableTypeFilter"));// 排除再外的餐台类型
+                }
                 List<Map<String, Object>> tablelist = tableService.find(mapAreaid);
-                if (!CollectionUtils.isEmpty(tablelist))
+                if (!CollectionUtils.isEmpty(tablelist)) {
+                    ServiceChargeDescUnit.handleServiceCharge(tablelist);
                     map.put("tables", tablelist);
+                }
             }
-        } catch (Throwable e){
-            loggers.error(e.getMessage(),e);
-            res.put("code",1);
-            res.put("msg",e.getMessage());
-            res.put("data",null);
-            return res;
+        } catch (Throwable e) {
+            loggers.error(e.getMessage(), e);
+            return getResponseStr(null, e.getMessage(), false);
         }
-        res.put("code",0);
-        res.put("msg","查询成功");
-        res.put("data",listTableArea);
-        return res;
+        return getResponseStr(listTableArea, "查询成功", true);
     }
 
     /**
@@ -2822,24 +2830,30 @@ public class PadInterfaceController extends BaseController{
      */
     @RequestMapping("/getItemSellDetail.json")
     @ResponseBody
-    public String getItemSellDetail(String flag) {
-        Map<String, Object> timeMap = getTime(flag);
-        Map<String, Object> resultMap = new HashMap<>();
+    public Map<String, Object> getItemSellDetail(@RequestBody String json) {
+        String msg = "";
+        boolean isSucess = true;
+        Map<String, Object> data = null;
         try {
-            List<Map<String, Object>> result = orderDetailService.itemSellDetail(timeMap);
-            resultMap.put("result", 0);
-            resultMap.put("mag", "");
-            resultMap.put("data", result);
-            resultMap.put("time", timeMap);
+            Assert.hasLength(json, "参数错误");
+            Map<String, Object> param = JSON.parseObject(json, Map.class);
+            if (!org.springframework.util.StringUtils.isEmpty(param.get("flag"))) {
+                String flag = String.valueOf(param.get("flag"));
+                param = getTime(flag);
+            } else if (!param.containsKey("startTime") && !param.containsKey("endTime"))
+                throw new RuntimeException("参数错误(" + json + ")");
+            List<Map<String, Object>> result = orderDetailService.itemSellDetail(param);
+            data = new HashMap<>();
+            data.put("time", param);
+            data.put("data", result);
         } catch (Exception e) {
-            logger.error(e.getMessage(), "");
-            resultMap.put("result", 1);
-            resultMap.put("mag", "获取数据失败");
-            resultMap.put("data", "");
-            resultMap.put("time", timeMap);
             e.printStackTrace();
+            logger.error("------------------>");
+            logger.error(e.getMessage());
+            msg = e.getMessage();
+            isSucess = false;
         }
-        return JacksonJsonMapper.objectToJson(resultMap);
+        return getResponseStr(data, msg, isSucess);
     }
 
     /**
@@ -3163,7 +3177,7 @@ public class PadInterfaceController extends BaseController{
         return JacksonJsonMapper.objectToJson(map);
 
 	}
-	
+
 	/**
 	 * 上传log背景
 	 * pad背景
@@ -3173,14 +3187,14 @@ public class PadInterfaceController extends BaseController{
 	 * @param h
 	 * @param w
 	 * @return
-	 * @throws FileNotFoundException 
-	 * 
+	 * @throws FileNotFoundException
+	 *
 	 */
 	@RequestMapping("/catImg")
 	@ResponseBody
 	public String catImg(HttpServletRequest request,@RequestParam("x") String x,@RequestParam("y") String y,
 			@RequestParam("h") String h,@RequestParam("w") String w) throws FileNotFoundException{
-		
+
 		//上传文件跟路径
 		String realpath = request.getSession().getServletContext().getRealPath("");
 		//实际文件路径
@@ -3216,8 +3230,8 @@ public class PadInterfaceController extends BaseController{
 		int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
 		int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
 		int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
-		
-		
+
+
 		String fileupload=File.separator+ "upload" + File.separator;
 
 		String inputDir = request.getRealPath("") +fileupload;
@@ -3238,7 +3252,7 @@ public class PadInterfaceController extends BaseController{
 		map.put("image", afterCatImgUrl);
 		return JacksonJsonMapper.objectToJson(map);
 	}
-	
+
 	/**
 	 * 设置logo图或背景图
 	 * @return
@@ -3315,11 +3329,11 @@ public class PadInterfaceController extends BaseController{
 		return 0;
 	}
 	private void createDir(String path){
-		File file =new File(path);    
-		//如果文件夹不存在则创建    
-		if  (!file .exists()  && !file .isDirectory())      
-		{       
-		    file .mkdirs();    
+		File file =new File(path);
+		//如果文件夹不存在则创建
+		if  (!file .exists()  && !file .isDirectory())
+		{
+		    file .mkdirs();
 		}
 	}
 

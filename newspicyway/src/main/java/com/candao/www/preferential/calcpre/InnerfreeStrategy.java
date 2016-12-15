@@ -125,7 +125,7 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 					addPreferential.setToalDebitAmount(caseAmount);
 					orderTempPrice=	orderTempPrice.subtract(caseAmount);
 				}else{
-					addPreferential.setToalFreeAmount(amount);
+					addPreferential.setToalFreeAmount(caseAmount);
 				}
 				detailPreferentials.add(addPreferential);
 			}

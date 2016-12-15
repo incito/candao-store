@@ -15,7 +15,7 @@ public interface Print4POSService {
 
 	void printMemberSaleInfo(List<SettlementInfo4Pos> settlementInfos, String deviceid) throws Exception;
 
-	void printItemSellDetail(ResultInfo4Pos resultInfo4Pos, String deviceid) throws Exception;
+	void printItemSellDetail(Map<String,Object> data, String deviceid) throws Exception;
 
 	void printTip(ResultTip4Pos resultInfo4Pos, String deviceid) throws Exception;
 

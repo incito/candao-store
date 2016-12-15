@@ -29,9 +29,9 @@
 		</locations>
 		<datas description="账单类型">
 			<list>
-				<value>#{obj.item.time.startTime}</value>
+				<value>#{obj.posData.time.startTime}</value>
 				<value>至</value>
-				<value>#{obj.item.time.endTime}</value>
+				<value>#{obj.posData.time.endTime}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -62,7 +62,7 @@
 		<datas description="账单号">
 			<list>
 				<value>门店编号：</value>
-				<value>#{obj.item.branchname}</value>
+				<value>#{obj.posData.branchname}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -78,7 +78,7 @@
 		<datas description="账单号">
 			<list>
 				<value>打印时间：</value>
-				<value>#{obj.item.datetime}</value>
+				<value>#{obj.posData.datetime}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -136,7 +136,7 @@
 			</list>
 		</datas>
 	</row:row>
-	<foreach:foreach item="it" value="#{obj.item.data}">
+	<foreach:foreach item="it" value="#{obj.posData.data}">
 		<row:row description="服务员">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -190,7 +190,7 @@
 		<datas description="开始时间">
 			<list>
 				<value>合计：</value>
-				<value>#{obj.item.total}</value>
+				<value>#{obj.posData.total}</value>
 			</list>
 		</datas>
 	</row:row>
