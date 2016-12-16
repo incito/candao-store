@@ -1405,8 +1405,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         convertPrintDish(listPrint);
         Collections.sort(listPrint);
         printObj.setList(listPrint);
-        logger.error("------------------------", "");
-        logger.error("封装数据开始，订单号：" + printObj.getOrderNo() + "*菜品数量：" + listPrint.size(), "");
+        logger.info("------------------------", "");
+        logger.info("封装数据开始，订单号：" + printObj.getOrderNo() + "*菜品数量：" + listPrint.size(), "");
         // 得到区域
         // 1. 厨打单
         // 2. 客用单
@@ -1472,8 +1472,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         String groupSequence = getDishGroupSequence(pd, tbPrinter);
                         if (groupSequence != null) {
                             List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
-                            logger.error("------------------------", "");
-                            logger.error("进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
+                            logger.info("------------------------", "");
+                            logger.info("进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
                             // 有两个及以上的菜才需要合并
                             //modified by caicai
                             if (findPrintDetail.size() > 1) {
@@ -1514,9 +1514,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
                     printObj.setRePeatID(UUID.randomUUID().toString());
-                    logger.error("------------------------,菜品数量" + pdList.size(), "");
+                    logger.info("------------------------,菜品数量" + pdList.size(), "");
                     for (PrintDish printDish : pdList) {
-                    	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
+                    	logger.info("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
 					}
                     //加入打印队列
                     new Thread(new PrintThread(printObj)).run();
@@ -2574,8 +2574,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                        String groupSequence = getDishGroupSequence(pd, tbPrinter);
 		                        if (groupSequence != null) {
 		                            List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
-		                            logger.error("------------------------", "");
-		                            logger.error("起菜（催菜）进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
+		                            logger.info("------------------------", "");
+		                            logger.info("起菜（催菜）进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
 		                            // 有两个及以上的菜才需要合并
 		                            //modified by caicai
 		                            if (findPrintDetail.size() > 1) {
@@ -2610,9 +2610,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                    printObj.setPrintName(tbPrinter.getPrintername());
 		                    printObj.setPrinterid(tbPrinter.getPrinterid());
 		                    printObj.setRePeatID(UUID.randomUUID().toString());
-		                    logger.error("------------------------,菜品数量" + pdList.size(), "");
+		                    logger.info("------------------------,菜品数量" + pdList.size(), "");
 		                    for (PrintDish printDish : pdList) {
-		                    	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
+		                    	logger.info("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
 							}
 		                    //加入打印队列
 		                    new Thread(new PrintThread(printObj)).run();

@@ -296,14 +296,14 @@ public class PadInterfaceController extends BaseController{
     @RequestMapping("/bookorderList")
     @ResponseBody
     public String saveOrderInfoList(@RequestBody String jsonString) {
-        logger.error("saveOrderInfoList-start:" + jsonString, "");
+        logger.info("saveOrderInfoList-start:" + jsonString, "");
         long start = System.currentTimeMillis();
         TJsonRecord record = new TJsonRecord();
         record.setJson(jsonString);
         record.setPadpath("bookorderList");
         jsonRecordService.insertJsonRecord(record);
         final Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
-        logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+        logger.info(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
 
         Map<String, String> mapDetail = new HashMap<>();
@@ -322,12 +322,12 @@ public class PadInterfaceController extends BaseController{
             }
             executor.execute(new PadThread(tableNo, type));
         }
-        logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+        logger.info(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
-        logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
+        logger.info(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
         String result = JacksonJsonMapper.objectToJson(res);
 
-        logger.error("saveOrderInfoList-end:" + result, "");
+        logger.info("saveOrderInfoList-end:" + result, "");
         return result;
     }
 
@@ -340,14 +340,14 @@ public class PadInterfaceController extends BaseController{
     @ResponseBody
     @RequestMapping("/placeOrder")
     public String placeOrder(@RequestBody String jsonString) {
-        logger.error("saveOrderInfoList-start:" + jsonString, "");
+        logger.info("saveOrderInfoList-start:" + jsonString, "");
         long start = System.currentTimeMillis();
         TJsonRecord record = new TJsonRecord();
         record.setJson(jsonString);
         record.setPadpath("placeOrder");
         jsonRecordService.insertJsonRecord(record);
         Order order = JacksonJsonMapper.jsonToObject(jsonString, Order.class);
-        logger.error(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+        logger.info(order.getOrderid() + "-下单开始：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
 
         // 下单业务中会修改该字段，先获取
@@ -379,11 +379,11 @@ public class PadInterfaceController extends BaseController{
             logger.error("--->", ex);
             ex.printStackTrace();
         }
-        logger.error(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+        logger.info(order.getOrderid() + "-下单结束：" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 "");
-        logger.error(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
+        logger.info(order.getOrderid() + "-下单业务耗时：" + (System.currentTimeMillis() - start), "");
         result = JacksonJsonMapper.objectToJson(res);
-        logger.error("saveOrderInfoList-end:" + result, "");
+        logger.info("saveOrderInfoList-end:" + result, "");
         return result;
     }
 
