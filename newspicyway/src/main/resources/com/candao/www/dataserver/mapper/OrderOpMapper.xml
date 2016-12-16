@@ -55,11 +55,19 @@
     <select id="getMemberSaleInfo" resultType="java.util.HashMap">
         SELECT * FROM t_order_member WHERE orderid=#{orderId}
     </select>
-    <!--查询优惠卷赠菜-->
+    <!--赠菜-->
     <select id="getPreferentialDish" resultType="java.util.HashMap">
-        SELECT TRUNCATE(dp.deAmount,2) as orderprice,dp.dishid AS dishidleft,dp.unit as dishunit,1 as dishnum,TRUNCATE(dp.deAmount,2) as payamount,1 as pricetype
-        FROM t_order_detail_preferential dp left JOIn t_p_preferential_activity pa on dp.preferential=pa.id
-        where dp.orderid=#{orderId} and dp.dishid is not null and dp.dishid !='' AND pa.type='07'
+        SELECT dishid, title, dishunit, sum(dishnum) AS dishnum
+        FROM (
+          SELECT dp.dishid, d.title, dp.unit AS dishunit, 1 AS dishnum
+          FROM t_order_detail_preferential dp
+          LEFT JOIN t_p_preferential_activity pa ON dp.preferential = pa.id LEFT JOIN t_dish d ON dp.dishid = d.dishid
+          WHERE dp.orderid = #{orderId} AND dp.dishid IS NOT NULL AND dp.dishid != '' AND pa.type = '07'
+          UNION ALL
+          SELECT a.dishid, b.title, a.dishunit, a.dishnum
+          FROM t_order_detail a LEFT JOIN t_dish b ON a.dishid = b.dishid
+          WHERE a.orderid = #{orderId} AND a.pricetype = 1
+        ) t GROUP BY dishid
     </select>
     <select id="getOrderRuleByOrderId" resultType="java.util.HashMap">
         select * from t_order_rule  where   orderid=#{orderId}
