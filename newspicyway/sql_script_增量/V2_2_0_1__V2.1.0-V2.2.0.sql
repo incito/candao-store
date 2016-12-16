@@ -22,7 +22,36 @@ CREATE TABLE `t_payway_set` (
   `sort` int(11) DEFAULT NULL COMMENT '排序字段',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
--- 清空t_device表
-TRUNCATE TABLE T_DEVICE;
+-- 清空t_device表 部分门店缺少t_device表，在这里补充
+DROP TABLE IF EXISTS `t_device`;
+CREATE TABLE `t_device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `device_group` varchar(32) DEFAULT NULL COMMENT '组号',
+  `device_id` varchar(32) DEFAULT NULL COMMENT '组id',
+  `device_type` varchar(255) DEFAULT NULL COMMENT '设备类型',
+  `meid` varchar(32) DEFAULT NULL COMMENT 'meid',
+  `ss_id` varchar(32) DEFAULT NULL COMMENT 'ssid',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `valid_flag` int(11) DEFAULT NULL COMMENT '是否有效',
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`device_group`,`device_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `t_offline_msg`;
+CREATE TABLE `t_offline_msg` (
+  `id` varchar(64) NOT NULL,
+  `msg_type` varchar(32) DEFAULT NULL COMMENT '消息类型',
+  `content` text COMMENT '消息内容',
+  `device_group` varchar(255) DEFAULT NULL COMMENT '设备组',
+  `device_id` varchar(32) DEFAULT NULL COMMENT '设备id',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `expire_time` datetime DEFAULT NULL COMMENT '过期时间',
+  `is_single` int(11) DEFAULT NULL COMMENT '是否互斥',
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`device_group`,`device_id`),
+  KEY `expire_time` (`expire_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 -- 修改会员地址
 UPDATE `t_b_padconfig` SET vipcandaourl='http://chainstore.candaochina.com' WHERE id=1;
