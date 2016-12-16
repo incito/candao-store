@@ -32,8 +32,6 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
 			TdishDao tdishDao) {
 		// 错误提示
-		String flagcode = "";
-		boolean flag = true;
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String branchid = PropertiesUtils.getValue("current_branch_id");
@@ -98,7 +96,6 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 					tempDishNum += Double.valueOf(d.getDishnum());
 				}
 			}
-
 		}
 		// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
 		PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
