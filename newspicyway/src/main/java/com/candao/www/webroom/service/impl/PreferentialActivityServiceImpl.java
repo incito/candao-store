@@ -1045,7 +1045,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
 					// 是否有返回状态
-					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")) {
+					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")&&!params.containsKey("updateId")) {
 						result.setFalg((boolean) resultMap.get("falg"));
 						result.setMes((String) resultMap.get("mes"));
 					}

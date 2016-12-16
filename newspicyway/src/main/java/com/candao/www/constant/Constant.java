@@ -203,6 +203,12 @@ public class Constant {
 		
 		public static final int REBACKSETTLE = 1;
 	}
+	public class  PREDIS{
+		/**需要折上折**/
+		public static final String DISCOUNT="1";
+		/**不需要折上折**/
+		public static final String NOTDISCOUNT="0";
+	}
 	
 	public class DISHBILLNAME {
 	    

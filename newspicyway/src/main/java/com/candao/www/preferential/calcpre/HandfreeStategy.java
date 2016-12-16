@@ -19,6 +19,7 @@ import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
+import com.candao.www.preferential.model.PreDealInfoBean;
 
 /**
  * 
@@ -76,29 +77,14 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		String preferentialAmout = (String) paraMap.get("preferentialAmout");
 		if (!StringUtils.isEmpty(disrate.trim()) && new BigDecimal(preferentialAmout).doubleValue() <= 0
 				&& StringUtils.isEmpty(giveDish)) {
-			BigDecimal decimalDisrate = new BigDecimal(disrate);
-			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-			Date insertime = (paraMap.containsKey("insertime") ?  (Date) paraMap.get("insertime")
-					: new Date());
-			// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
-			// 手工输入折扣优免
-			if (amountCount.compareTo(BigDecimal.ZERO) > 0
-					&& (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1) {
-				amount = amountCount.subtract(bd)
-						.multiply(new BigDecimal("1").subtract(decimalDisrate.divide(new BigDecimal(10))));
-				TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
-						preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1,insertime);
-				// 设置优惠名称
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) tempMap.get("name"));
-				addPreferential.setActivity(activity);
-				addPreferential.setCoupondetailid(
-						(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
-
-				// 设置优免
-				addPreferential.setToalFreeAmount(amount);
-				detailPreferentials.add(addPreferential);
+			PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
+			if (deInfo.getPreAmount().doubleValue() > 0) {
+				amount = deInfo.getPreAmount();
+				TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, orderDetailList.size(), discount, 1,
+						tempMapList);
+				detailPreferentials.add(preSub);
 			}
+			this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
 
 		} else if (!StringUtils.isEmpty(preferentialAmout.trim()) && StringUtils.isEmpty(giveDish)
 				&& StringUtils.isEmpty(disrate.trim())) {
