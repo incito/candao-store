@@ -578,13 +578,7 @@ public class MenuServiceImpl implements MenuService {
         // TODO Auto-generated method stub
         Map<String, Object> map = new HashMap<String, Object>();
         List<Map<String, Object>> list = tmenuDao.getHeatDishList(params);
-        if (list != null && list.size() > 0) {
-            logger.info("获取数据成功");
-            map = ReturnMap.getSuccessMap("获取数据成功", list);
-        } else {
-            logger.info("没有数据");
-            map = ReturnMap.getFailureMap("获取数据失败");
-        }
+        map = ReturnMap.getSuccessMap("获取数据成功", list);
         return map;
     }
 
