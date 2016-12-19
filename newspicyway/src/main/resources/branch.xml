@@ -94,7 +94,7 @@
 		</property>
 		<property name="baselineVersion">
 			<bean class="org.flywaydb.core.api.MigrationVersion" factory-method="fromVersion">
-				<constructor-arg value="2.1.1" />
+				<constructor-arg value="2.1" />
 			</bean>
 		</property>
 	</bean>

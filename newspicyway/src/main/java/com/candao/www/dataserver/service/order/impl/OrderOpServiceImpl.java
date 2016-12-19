@@ -63,7 +63,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                 case PrintType.PRINT:
                     orderMapper.updatePrintCount(orderId);
                     tipMoney = tipService.getTipMoney(orderId,true);
-//                    preferentialDish = orderMapper.getPreferentialDish(orderId);
+                    preferentialDish = orderMapper.getPreferentialDish(orderId);
                     break;
             }
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
@@ -86,13 +86,12 @@ public class OrderOpServiceImpl implements OrderOpService {
             }
             List<Map> listJson = orderMapper.getListJson(orderId);
             reorderListJson(listJson);
-//            if(null!=preferentialDish){
-//                listJson.addAll(preferentialDish);
-//            }
             List<Map> jsJson = orderMapper.getJsJson(orderId);
             responseJsonData.setOrderJson(orderJson);
             responseJsonData.setListJson(listJson);
             responseJsonData.setJsJson(jsJson);
+//            赠菜列表
+            responseJsonData.setDoubleJson(preferentialDish);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询异常");

@@ -672,7 +672,7 @@ public class BranchDataSyn {
 				else
 					throw e;
 			}
-			tableMap.put(table, datas);
+			tableMap.put(tableColumn[0], datas);
 		}
 		return tableMap;
 	}

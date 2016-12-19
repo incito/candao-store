@@ -187,45 +187,42 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
      * @param y    截取时的y坐标
      * @param desWidth   截取的宽度
      * @param desHeight   截取的高度
+ 	 * @throws IOException 
      */
     @SuppressWarnings("restriction")
-	public  String imgCut(String srcImageFile,String filename, int x, int y, int desWidth,int desHeight) {
+	public  String imgCut(String srcImageFile,String filename, int x, int y, int desWidth,int desHeight) throws IOException {
     	Date time = new Date();
     	String imagesrc="";
     	String dirTime = String.valueOf(time.getTime());
 		String extName = filename.substring(filename.lastIndexOf("."));
-        try {
         	
-			imagesrc=srcImageFile+File.separator+dirTime+extName;
-            Image img;
-            ImageFilter cropFilter;
-            BufferedImage bi = ImageIO.read(new File(srcImageFile+File.separator+filename));
-            int srcWidth = bi.getWidth();
-            int srcHeight = bi.getHeight();
-            if (srcWidth >= desWidth && srcHeight >= desHeight) {
-                Image image = bi.getScaledInstance(srcWidth, srcHeight,Image.SCALE_DEFAULT);
-                cropFilter = new CropImageFilter(x, y, desWidth, desHeight);
-                img = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(), cropFilter));
-                BufferedImage tag = new BufferedImage(desWidth, desHeight,BufferedImage.TYPE_INT_RGB);
-                tag.getGraphics().drawImage(img, 0, 0, null);
-                FileOutputStream out = new FileOutputStream(imagesrc);
-			 	// JPEGImageEncoder可适用于其他图片类型的转换 
-			 	JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out); 
-			 	JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(tag);  
-                /* 压缩质量 */  
-                jep.setQuality(0.6f, true);  
-                encoder.encode(tag, jep);  
-			 	out.close(); 
-                
-                
+		imagesrc=srcImageFile+File.separator+dirTime+extName;
+        Image img;
+        ImageFilter cropFilter;
+        BufferedImage bi = ImageIO.read(new File(srcImageFile+File.separator+filename));
+        int srcWidth = bi.getWidth();
+        int srcHeight = bi.getHeight();
+        if (srcWidth >= desWidth && srcHeight >= desHeight) {
+            Image image = bi.getScaledInstance(srcWidth, srcHeight,Image.SCALE_DEFAULT);
+            cropFilter = new CropImageFilter(x, y, desWidth, desHeight);
+            img = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(), cropFilter));
+            BufferedImage tag = new BufferedImage(desWidth, desHeight,BufferedImage.TYPE_INT_RGB);
+            tag.getGraphics().drawImage(img, 0, 0, null);
+            FileOutputStream out = new FileOutputStream(imagesrc);
+		 	// JPEGImageEncoder可适用于其他图片类型的转换 
+		 	JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out); 
+		 	JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(tag);  
+            /* 压缩质量 */  
+            jep.setQuality(0.6f, true);  
+            encoder.encode(tag, jep);  
+		 	out.close(); 
+            
+            
 //                Graphics g = tag.getGraphics();
 //                g.drawImage(img, 0, 0, null);
 //                g.dispose();
 //                //输出文件
 //                ImageIO.write(tag,extName.substring(1), new File(imagesrc));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return dirTime+extName;
     }
