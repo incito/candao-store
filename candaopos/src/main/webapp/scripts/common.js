@@ -221,6 +221,7 @@ var keydownEnter=null
 					czInput=$('#rechargeMoblie'), /*会员卡充值页面会员卡号*/
 					ya_memberNumber=$('.ya_memberNumber')/*雅座会员卡充值页面会员卡号*/
 				    yaRegister=$('.ya_Register')/*雅座会员注册*/
+				    memberbingCard=$('#inputCard')/*雅座会员注册*/
 				/*结账页面会员登录*/
 				if (input.length>0){
 					if(input.focus()){
@@ -247,6 +248,13 @@ var keydownEnter=null
 						return false
 					}
 				}
+				/*绑定会员实体卡*/
+				if (memberbingCard.length>0){
+					if(memberbingCard.focus()){
+						return false
+					}
+				}
+
                 keydownEnter.click();
                 return false
             }
