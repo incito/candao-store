@@ -3195,62 +3195,62 @@ public class PadInterfaceController extends BaseController{
 	public String catImg(HttpServletRequest request,@RequestParam("x") String x,@RequestParam("y") String y,
 			@RequestParam("h") String h,@RequestParam("w") String w) throws FileNotFoundException{
 
-		//上传文件跟路径
-		String realpath = request.getSession().getServletContext().getRealPath("");
-		//实际文件路径
-		String imagelocation = realpath+File.separator+ "upload" + File.separator;
-		createDir(imagelocation);
-		//
 		Map<String, Object> map = new HashMap<String, Object>();
-		MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
-		Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
-		MultipartFile file ;
-		if(fileMap.get("logoimg") == null){
-			file = fileMap.get("backgroundimg");
-			map.put("type", "bg");
-		}else{
-			file = fileMap.get("logoimg");
-			map.put("type", "logo");
-		}
-		String fileName = null;
-		if (!file.isEmpty()) {
-			 fileName = file.getOriginalFilename();
-			imagelocation= imagelocation+fileName;
-			try {
-				//存储数据到字典
-				  this.fileupload(file.getInputStream(),imagelocation);
-			} catch (Exception e) {
-				logger.error("图片上传失败"+e.getMessage(), "");
-				e.printStackTrace();
-				return JacksonJsonMapper.objectToJson(map);
+		try {
+			//上传文件跟路径
+			String realpath = request.getSession().getServletContext().getRealPath("");
+			//实际文件路径
+			String imagelocation = realpath+File.separator+ "upload" + File.separator;
+			createDir(imagelocation);
+			//
+			MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
+			Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
+			MultipartFile file ;
+			if(fileMap.get("logoimg") == null){
+				file = fileMap.get("backgroundimg");
+				map.put("type", "bg");
+			}else{
+				file = fileMap.get("logoimg");
+				map.put("type", "logo");
 			}
+			String fileName = null;
+			if (!file.isEmpty()) {
+				 fileName = file.getOriginalFilename();
+				imagelocation= imagelocation+fileName;
+					//存储数据到字典
+				this.fileupload(file.getInputStream(),imagelocation);
+			}
+	
+			int imageX = Math.round(Float.valueOf(x == null || x == "" ? "0" : x));
+			int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
+			int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
+			int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
+	
+	
+			String fileupload=File.separator+ "upload" + File.separator;
+	
+			String inputDir = request.getRealPath("") +fileupload;
+			ImageCompress imageCompress = new ImageCompress();
+			String afterCatImgUrl = "";
+			String imageurl="" ;
+			if(imageH<=0||imageW<0){
+				imageurl=fileName;
+			}else{
+				imageurl=imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
+			}
+			if (!"".equals(imageurl)) {
+				  afterCatImgUrl="upload" + File.separator+imageurl;
+				  if(!imageurl.equals(fileName)){
+					  this.delFile(imagelocation);
+				  }
+			}
+			map.put("image", afterCatImgUrl);
+			return JacksonJsonMapper.objectToJson(map);
+		} catch (Exception e) {
+			logger.error("图片上传失败:"+e.getMessage(), "");
+			map.put("msg", "图片上传失败:"+e.getMessage());
+			return JacksonJsonMapper.objectToJson(map);
 		}
-
-		int imageX = Math.round(Float.valueOf(x == null || x == "" ? "0" : x));
-		int imageY = Math.round(Float.valueOf(y == null || y == "" ? "0" : y));
-		int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
-		int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
-
-
-		String fileupload=File.separator+ "upload" + File.separator;
-
-		String inputDir = request.getRealPath("") +fileupload;
-		ImageCompress imageCompress = new ImageCompress();
-		String afterCatImgUrl = "";
-		String imageurl="" ;
-		if(imageH<=0||imageW<0){
-			imageurl=fileName;
-		}else{
-			imageurl=imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
-		}
-		if (!"".equals(imageurl)) {
-			  afterCatImgUrl="upload" + File.separator+imageurl;
-			  if(!imageurl.equals(fileName)){
-				  this.delFile(imagelocation);
-			  }
-		}
-		map.put("image", afterCatImgUrl);
-		return JacksonJsonMapper.objectToJson(map);
 	}
 
 	/**
