@@ -74,13 +74,17 @@
 							<span class="form-label">确认密码:</span>
 							<input value="" id="rpsd" name="repwd"  type="password" class="form-control" autocomplete="off">
 						</div>
-						<div class="form-group form-group-base" >
+						<div class="form-group form-group-base" id="shitcard_info">
 							<span class="form-label">实体会员卡:</span>
 							<div class="form-info" style="padding-left:100px;">
-								<button class="btn-default btn-lg btn-base">绑定实体卡</button>
+								<button class="btn-default btn-lg btn-base"id="bingd">绑定实体卡</button>
 								可绑定IC卡, ID卡, 磁条卡
 							</div>
 						</div>
+					<div class="form-group form-group-base" id="shitcard_input"  style="display: none">
+						<span class="form-label">会员卡号:</span>
+						<input value="" id="sitiCard" name="repwd" readonly="readonly" type="text" class="form-control" >
+					</div>
 						<div class="form-group form-group-base">
 							<button class="btn-default btn-lg btn-base btn-base-flex2" onclick="goBack();">取消</button>
 							<button class="btn-default btn-lg btn-base btn-base-flex2 btn-save">注册</button>
@@ -108,6 +112,7 @@
 <footer>
 	<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 </footer>
+<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-binding-dialog" style="overflow: auto;"></div>
 <script src="../../scripts/member.js"></script>
 <script>
 	$(function(){
@@ -152,6 +157,21 @@
 		}
 		return false//禁止表单提交
 	});
+	$('#bingd').click(function () {
+		$("#modify-binding-dialog").load("../member/bingCard.jsp", {
+			'title': '新增实体卡-请刷卡',
+			'type': '1',
+			'cbd': 'member_resBingdcard()',
+		});
+		$("#modify-binding-dialog").modal("show");
+	})
+	function member_resBingdcard() {
+		$('#shitcard_info').hide();
+		$('#shitcard_input').show();
+		$('#sitiCard').val(inputVal);
+		$("#modify-binding-dialog").modal("hide").html("");
+	}
+
 </script>
 </body>
 </html>

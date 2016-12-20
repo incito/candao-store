@@ -761,7 +761,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="virtual-keyboard-base virtual-keyboard-baseOne" style="overflow: auto;width: 100%">
+                        <div class="virtual-keyboard-base virtual-keyboard-baseTwo" style="overflow: auto;width: 100%">
                             <ul>
                                 <li>1</li>
                                 <li>2</li>

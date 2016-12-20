@@ -315,7 +315,7 @@ public class Print4POSController {
         temp.putAll(params);
         try {
             // 获取营业明细（品类、金额）
-            itemList = parse("getItemForList", itemDetailController,
+            itemList = parse("getItemForListPos", itemDetailController,
                     new Class<?>[]{Map.class, HttpServletRequest.class}, temp, request);
             // 获取营业明细(团购券)
             Map<String, Object> temp0 = new HashMap<>();

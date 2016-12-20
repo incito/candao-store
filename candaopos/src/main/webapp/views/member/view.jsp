@@ -35,7 +35,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="form-group form-group-base search-box mt20" >
-					<input value="" name="name" id="Member_cardno" validType='noPecial2' maxlength="20" type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
+					<input value="" name="name" id="Member_cardno" validType='noPecial2' maxlength="30" type="text" placeholder="输入会员卡号/手机号" class="form-control form-control-sm form-control-search" autocomplete="off">
 					<button class="btn-base btn-yellow btn-base-sm btn-search">搜索</button>
 				</div>
 			</div>
@@ -57,10 +57,10 @@
 
 		<ul class="member-op-list">
 			<li class="J-modify-storge">会员储值</li>
-			<li>新增实体卡</li>
+			<li class="J-modify-binding">新增实体卡</li>
 			<li  class="J-modify-base">修改基本信息</li>
 			<li class="J-modify-pwd">修改消费密码</li>
-			<li>修改卡号</li>
+			<li class="J-modify-edit">修改卡号</li>
 			<li class="J-modify-phone">修改手机号</li>
 			<li class="J-modify-lost" >会员挂失</li>
 			<li class="J-modify-cancellost" style="display: none">解除挂失</li>
@@ -93,6 +93,7 @@
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-pwd-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-phone-dialog" style="overflow: auto;"></div>
 <div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-cancellation-dialog" style="overflow: auto;"></div>
+<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-binding-dialog" style="overflow: auto;"></div>
 <script src="../../scripts/member.js"></script>
 <script>
 	$(function(){

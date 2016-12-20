@@ -112,6 +112,40 @@ var member = {
                     }
                 }
             }
+            /*绑定会员卡*/
+            if (me.hasClass('J-modify-binding')) {
+                if (that.isClick()) {
+                    if (that.isClick()) {
+                        $("#modify-binding-dialog").load("../member/bingCard.jsp", {
+                            'title': '新增实体卡-请刷卡',
+                            'type': '1',
+                            'cbd': 'member.bindingCard()',
+                        });
+                        $("#modify-binding-dialog").modal("show");
+                    }
+                }
+            }
+            /*修改会员卡*/
+            if (me.hasClass('J-modify-edit')) {
+                if (that.isClick()) {
+                    if (that.isClick()) {
+                        that.errorAlert('该功能暂未开放，请敬请期待！');
+                        return false;
+                        if(loadMember.result[0].card_type=='0'){
+                            that.errorAlert('该会员还没有绑定实体卡，不能修改会员卡号！');
+                            return false
+                        }
+                        $("#modify-binding-dialog").load("../member/bingCard.jsp", {
+                            'title': '修改会员卡号-请刷卡',
+                            'type': '2',
+                            'cbd': 'member.modificationCard()',
+                        });
+
+                        $("#modify-binding-dialog").modal("show");
+                    }
+                }
+            }
+
         });
         //充值优惠向左向右按钮
         $(".coupon-box .next").click(function () {
@@ -215,7 +249,13 @@ var member = {
                         return false
                     }
                     loadMember = res;
-                    $('.member_card').text(res.result[0].MCard).attr('card_type', res.result[0].card_type)//卡号
+                    if(res.result[0].card_type=='0'){
+                        $('.member_card').text('').attr('card_type', res.result[0].card_type)//卡号
+                    }
+                    else {
+                        $('.member_card').text(res.result[0].MCard).attr('card_type', res.result[0].card_type)//卡号
+                    }
+
                     $('.member_mobile').text(res.mobile)//手机号
                     $('.member_nanme').text(res.name)//姓名
                     $('.member_level_name').text(res.result[0].level_name)//会员卡等级名称
@@ -294,6 +334,10 @@ var member = {
     /*发送验证嘛*/
     sendVerifyCode: function (msg) {
         var that = this
+        Log.send(2, '发送验证开始：'+JSON.stringify({
+                url: memberAddress.vipcandaourl + _config.interfaceUrl.SendVerifyCode,
+                mobile: msg,
+            }));
         $.ajax({
             url: memberAddress.vipcandaourl + _config.interfaceUrl.SendVerifyCode,
             method: 'POST',
@@ -303,7 +347,8 @@ var member = {
                 mobile: msg
             }),
             success: function (res) {
-                console.log(res)
+                Log.send(2, '发送验证结束返回参数：'+JSON.stringify(msg));
+               // console.log(res)
                 if (res.Retcode == 0) {
                     valicode = res.valicode
                 }
@@ -553,7 +598,9 @@ var member = {
             birthday = $.trim($('#birthday').val()),
             psd = $.trim($('#psd').val()),
             rpsd = $.trim($('#rpsd').val()),
-            name = $.trim($('#nmae').val());
+            name = $.trim($('#nmae').val()),
+            cardno=$.trim($('#sitiCard').val());
+
 
         if (that.isPhoneNo(moblie) === false) {
             that.errorAlert('请输入正确的手机号码');
@@ -584,12 +631,18 @@ var member = {
             that.errorAlert('两次输入的密码不一致，请重新输入');
             return false
         }
+        if(cardno){
+            cardno=cardno
+        }
+        else {
+            cardno=''
+        }
         Log.send(2, '会员注册开始：'+JSON.stringify({
                 url: memberAddress.vipcandaourl + _config.interfaceUrl.RegistCanDao,
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
                 mobile: moblie,
-                cardno: '',
+                cardno: cardno,
                 password: rpsd,
                 name: name,
                 gender: gender,
@@ -606,7 +659,7 @@ var member = {
                 securityCode: '',
                 branch_id: utils.storage.getter('branch_id'),
                 mobile: moblie,
-                cardno: '',
+                cardno: cardno,
                 password: rpsd,
                 name: name,
                 gender: gender,
@@ -624,6 +677,10 @@ var member = {
                     $('#psd').val('');
                     $('#rpsd').val('')
                     $('#nmae').val('');
+                    $('#sitiCard').val('');
+                    $('#shitcard_info').show();//会员实体绑定按钮
+                    $('#shitcard_input').hide();//会员实体卡卡哈显示信息
+                    clearTimeout(timer)//清除60S倒计时
                 }
                 if (res.Retcode == 1) {
                     that.errorAlert(res.retInfo)
@@ -786,6 +843,92 @@ var member = {
                 },
             });
         }
+    },
+    /*会员卡修改*/
+    modificationCard:function () {
+        var that=this,
+            oldcardno=loadMember.result[0].MCard,
+            entity_cardNo=$.trim($('#bingMemberCard').text());
+        Log.send(2, '会员卡修改开始参数：'+JSON.stringify({
+                url:memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeCardNum,
+                cardno: oldcardno,
+                branch_id: utils.storage.getter('branch_id'),
+                new_cardno: entity_cardNo
+            }));
+    $.ajax({
+        url: memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeCardNum,
+        method: 'POST',
+        contentType: "application/json",
+        dataType: 'json',
+        data: JSON.stringify({
+            cardno: oldcardno,
+            branch_id: utils.storage.getter('branch_id'),
+            new_cardno: entity_cardNo
+        }),
+        success: function (data) {
+            Log.send(2, '会员卡修改返回参数：'+JSON.stringify(data));
+            console.log(data)
+            if (data.code == '1') {
+                var msg={
+                    'info':data.msg,
+                    'callBack':'$("#inputCard").focus();$(".modal-alert:last,.modal-backdrop:last").remove();'
+                }
+                that.succeedAlert(msg);
+            }
+            if (data.code == '0') {
+                var msg={
+                    'info':'修改会员卡成功！',
+                    'callBack':'$("#modify-binding-dialog").modal("hide").html("");member.memberSearch()'
+                }
+                that.succeedAlert(msg);
+            }
+
+        }
+    });
+},
+    /*绑定会员实体卡*/
+    bindingCard:function () {
+        var that=this,
+            mobile=loadMember.mobile,
+            level=loadMember.result[0].level,
+            entity_cardNo=$.trim($('#bingMemberCard').text());
+        Log.send(2, '绑定会员实体卡开始：'+JSON.stringify({
+                url:  memberAddress.vipcandaourl + _config.interfaceUrl.VipCheckCard,
+                entity_cardNo: entity_cardNo,
+                mobile:mobile,
+                level:level,
+                branch_id: utils.storage.getter('branch_id'),
+            }));
+        $.ajax({
+            url: memberAddress.vipcandaourl + _config.interfaceUrl.VipInsertCard,
+            method: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            data: JSON.stringify({
+                entity_cardNo: entity_cardNo,
+                mobile:mobile,
+                level:level,
+                branch_id: utils.storage.getter('branch_id'),
+            }),
+            success: function (data) {
+                Log.send(2, '绑定会员实体卡返回参数：'+JSON.stringify(data));
+                //console.log(data)
+                if (data.code == '1') {
+                    var msg={
+                       'info':data.msg,
+                        'callBack':'$("#inputCard").focus();$(".modal-alert:last,.modal-backdrop:last").remove();'
+                    }
+                    that.succeedAlert(msg);
+                }
+                if (data.code == '0') {
+                    var msg={
+                        'info':'绑定会员卡成功！',
+                        'callBack':'$("#modify-binding-dialog").modal("hide").html("");member.memberSearch()'
+                    }
+                    that.succeedAlert(msg);
+                }
+            }
+        });
     },
     /*是否点击*/
     isClick: function () {
