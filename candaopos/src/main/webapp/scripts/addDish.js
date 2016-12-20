@@ -77,6 +77,64 @@ var AddDish = {
 		dom.doc.delegate('.avoid,.freason', 'click', function(){
 			$(this).toggleClass('active');
 		});
+		/*已点菜品按名称排序 dishType: 0为升序，1为降序*/
+		$('#sel-dish-table-title').click(function () {
+			if(dishCartMap.values().length<1){
+				return false
+			}
+			var dishType=$(this).attr('dishType'),
+				abc=null;
+			if(dishType=='0'){
+
+				abc=_.sortByOrder(dishCartMap.values(), ['py'], ['asc']);
+				$(this).attr('dishType','1')
+			}
+			else {
+				abc=_.sortByOrder(dishCartMap.values(), ['py'], ['desc'])
+				$(this).attr('dishType','0')
+			}
+
+
+			that.dishesSort(JSON.stringify(abc))
+		})
+		/*已点菜品按数量排序*/
+		$('#sel-dish-table-dishnum').click(function () {
+			if(dishCartMap.values().length<1){
+				return false
+			}
+			var dishType=$(this).attr('dishType'),
+				abc=null;
+			if(dishType=='0'){
+				abc=_.sortByOrder(dishCartMap.values(), ['dishnum'], ['asc']);
+				$(this).attr('dishType','1')
+			}
+			else {
+				abc=_.sortByOrder(dishCartMap.values(), ['dishnum'], ['desc']);
+				$(this).attr('dishType','0')
+			}
+			$(this).attr('dishType',dishType)
+
+			that.dishesSort(JSON.stringify(abc))
+		})
+		/*已点菜品按价格排序*/
+		$('#sel-dish-table-price').click(function () {
+			if(dishCartMap.values().length<1){
+				return false
+			}
+			var dishType=$(this).attr('dishType'),
+				abc=null;
+			if(dishType=='0'){
+				abc=_.sortByOrder(dishCartMap.values(), ['price'], ['asc']);
+				$(this).attr('dishType','1')
+			}
+			else {
+				abc=_.sortByOrder(dishCartMap.values(), ['price'], ['desc']);
+				$(this).attr('dishType','0')
+			}
+			$(this).attr('dishType',dishType)
+
+			that.dishesSort(JSON.stringify(abc))
+		})
 
 
 		/**
@@ -1986,6 +2044,26 @@ var AddDish = {
 			}
 		}
 	},
+
+	/*点菜排序后更新*/
+	dishesSort:function (abc) {
+		var abc=JSON.parse(abc),
+			that=this,
+		    str=''
+		$("#sel-dish-table tbody").html('');
+		for( var i=0;i<abc.length;i++){
+			str+='<tr class="" cid="'+abc[i].cid+'">' +
+				'<td class="dishname" name="'+abc[i].title+'">'+abc[i].title.split('#')[0]+'</td>' +
+				'<td class="num">'+abc[i].dishnum+'</td>' +
+				'<td class="price">'+abc[i].price+'</td>' +
+				'</tr>'
+		}
+		$("#sel-dish-table tbody").html(str);
+		$("#sel-dish-table tr").eq(1).trigger("click")//默认选中第一行
+		that.controlBtns()
+
+	}
+
 };
 
 

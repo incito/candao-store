@@ -122,8 +122,7 @@
                         if(user==""||psd==""){
                             $('#permission .btnOk').attr("disabled","disabled").addClass("disabled")
                         }
-                    },100)
-
+                    },300)
                 });
 
             $(".btnOk").click(function () {

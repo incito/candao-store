@@ -2345,7 +2345,7 @@ var Order = {
                 $('#Invoice-title').modal('show');
                 focusIpt = $('#Invoice-title .invoiceMoney');
                 $('#Invoice-title #Invoice-title-btncancel,#Invoice-title .dialog-sm-header img').click(function () {
-                    Log.send(2, '打印发票信息,直接结账');
+                    Log.send(2, '不打印发票信息,直接结账');
                     if (utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
                         goBack()
                     }

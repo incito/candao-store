@@ -16,6 +16,7 @@
 	<script src="../scripts/jquery-3.1.0.min.js"></script>
 	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 	<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+	<script src="../lib/lodash.js"></script>
 	<script src="../scripts/common.js"></script>
 	<link rel="stylesheet" href="../css/orderdish.css">
 
@@ -49,9 +50,9 @@
 						   id="sel-dish-table">
 						<thead>
 						<tr>
-							<th width="60%">菜品名称</th>
-							<th width="20%">数量</th>
-							<th>金额</th>
+							<th width="60%" dishType='0' id="sel-dish-table-title">菜品名称</th>
+							<th width="20%" dishType='0' id="sel-dish-table-dishnum">数量</th>
+							<th id="sel-dish-table-price" dishType='0'>金额</th>
 						</tr>
 						</thead>
 						<tbody>
