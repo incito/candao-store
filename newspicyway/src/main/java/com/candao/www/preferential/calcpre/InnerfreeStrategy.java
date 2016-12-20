@@ -18,6 +18,8 @@ import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
+import com.candao.www.preferential.precache.CacheManager;
+import com.candao.www.utils.ReturnMes;
 
 /***
  * 合作单位优免
@@ -29,9 +31,8 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
-			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
-			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
-			TdishDao tdishDao) {
+			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
@@ -48,10 +49,9 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 		Map<String, Object> result = new HashMap<>();
 
 		// 获取当前账单的 菜品列表
-		Map<String, String> orderDetail_params = new HashMap<>();
-		orderDetail_params.put("orderid", orderid);
-		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
-
+		
+		List<TorderDetail> orderDetailList =this.loadCache(orderid, paraMap.containsKey("updateId") ? "info" : "");
+		
 		// 当前订单总价amountCount
 		BigDecimal amountCount = new BigDecimal(0.0);
 		for (TorderDetail d : orderDetailList) {
@@ -77,8 +77,8 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
 			if (deInfo.getPreAmount().doubleValue() > 0) {
 				amount = deInfo.getPreAmount();
-				addPreferential = this.createPreferentialBean(paraMap, amount, orderDetailList.size(),
-						discount, 1, tempMapList);
+				addPreferential = this.createPreferentialBean(paraMap, amount, orderDetailList.size(), discount, 1,
+						tempMapList);
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {
 					if (amountCount.compareTo(amount) == -1) {

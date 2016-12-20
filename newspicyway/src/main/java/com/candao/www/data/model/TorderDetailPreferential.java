@@ -15,6 +15,7 @@ public class TorderDetailPreferential implements Serializable {
 	private String orderid;
 	private String dishid;
 	private String preferential;
+	/**单个优惠总额：优免+挂装**/
 	private BigDecimal deAmount=new BigDecimal("0");
 	private BigDecimal discount;
 	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 4：赠送菜优惠 5 雅座优惠 **/

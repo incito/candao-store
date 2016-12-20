@@ -608,9 +608,9 @@
 		</foreach>
 	</select>
 
-	<select id="findorderByDish" parameterType="map" resultType="java.util.HashMap">
+	<select id="findorderByDish" parameterType="map" resultType="com.candao.www.data.model.ComplexTorderDetail">
 		SELECT
-		tod.*, tdi.`level`
+		tod.*, tdi.`level`,tdi.title
 		FROM
 		t_order_detail tod
 		LEFT JOIN t_dish tdi ON

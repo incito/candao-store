@@ -13,5 +13,5 @@ public interface TServiceChargeService {
 	
 	 int delChargeInfo(Map<String, Object> params);
 	 TServiceCharge serviceCharge(String orderid, Map<String, Object> userOrderInfo, BigDecimal payDecimal,
-				BigDecimal MenuDecimal);
+				BigDecimal MenuDecimal,String itemid);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.common.page.Page;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailSimple;
 
@@ -17,7 +18,7 @@ public interface TorderDetailMapper {
 	public <T, K, V>T findOne(Map<K, V> params);
 	
 	public <T, K, V> List<T> find(Map<K, V> params);
-	public  <T, K, V> List<T> findorderByDish(String orderId);
+	public   List<ComplexTorderDetail> findorderByDish(String orderId);
 	
 	public <T, K, V> List<T> findTemp(Map<K, V> params);
 	/**

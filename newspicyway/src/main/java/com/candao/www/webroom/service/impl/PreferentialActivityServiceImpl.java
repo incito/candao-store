@@ -1038,14 +1038,15 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						params.put("preferentialAmt", staticPrice.toString());
 					}
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
-							torderDetailDao, orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
+							orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
 					List<TorderDetailPreferential> detailPreferentials = (List<TorderDetailPreferential>) resultMap
 							.get("detailPreferentials");
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
 					// 是否有返回状态
-					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")&&!params.containsKey("updateId")) {
+					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")
+							&& !params.containsKey("updateId")) {
 						result.setFalg((boolean) resultMap.get("falg"));
 						result.setMes((String) resultMap.get("mes"));
 					}
@@ -1073,15 +1074,16 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!params.containsKey("resultAmount")) {
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
-						StrategyFactory.INSTANCE.calcAmount(chargeService,orderDetailPreferentialDao, caleTableAmountMapper, orderid,
-								dataDictionaryService, result, orderMapper, orderOpMapper,
-								(String) params.get("itemid"));
-						
+						StrategyFactory.INSTANCE.calcAmount(chargeService, orderDetailPreferentialDao,
+								caleTableAmountMapper, orderid, dataDictionaryService, result, orderMapper,
+								orderOpMapper, (String) params.get("itemid"));
+
 						Map<String, Object> userOrderInfo = orderDetailService.findOrderByInfo(orderid);
-						TServiceCharge serviceCharge =chargeService.serviceCharge(orderid, userOrderInfo,
-								result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
-						if(serviceCharge!=null&&serviceCharge.getChargeOn()!=0){
-							result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));	
+						TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
+								result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount(),
+								(String) params.get("itemid"));
+						if (serviceCharge != null && serviceCharge.getChargeOn() != 0) {
+							result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
 						}
 
 					}

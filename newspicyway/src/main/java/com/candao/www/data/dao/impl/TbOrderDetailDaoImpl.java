@@ -12,6 +12,7 @@ import com.candao.common.dao.DaoSupport;
 import com.candao.common.page.Page;
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.data.dao.TorderDetailMapper;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailSimple;
 
@@ -49,10 +50,10 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	}
 	
 	@Override
-	public  <T, K, V> List<T> findorderByDish(String orderId) {
+	public  List<ComplexTorderDetail> findorderByDish(String orderId) {
 		Map<String, Object> params=new HashMap<>();
 		params.put("orderid", orderId);
-		return dao.find(PREFIX + ".findorderByDish", params);
+		return  dao.find(PREFIX + ".findorderByDish", params);
 	}
 	@Override
 	public <T, K, V> List<T> findTemp(Map<K, V> params) {

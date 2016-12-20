@@ -19,6 +19,8 @@ import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.preferential.model.PreDealInfoBean;
+import com.candao.www.preferential.precache.CacheManager;
+import com.candao.www.utils.ReturnMes;
 
 /**
  * 
@@ -28,9 +30,8 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
-			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
-			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
-			TdishDao tdishDao) {
+			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
 		// 错误提示
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
@@ -42,10 +43,7 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 
 		// 获取当前账单的 菜品列表
 		Map<String, Object> result = new HashMap<>();
-		Map<String, String> orderDetail_params = new HashMap<>();
-		orderDetail_params.put("orderid", orderid);
-		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
-
+		List<TorderDetail> orderDetailList =this.loadCache(orderid, paraMap.containsKey("updateId") ? "info" : "");
 		// 将菜单表转换为菜品编号(key):菜品交易详情（Value）
 		Set<String> orderDetailSet = new HashSet<>();
 		for (TorderDetail detail : orderDetailList) {

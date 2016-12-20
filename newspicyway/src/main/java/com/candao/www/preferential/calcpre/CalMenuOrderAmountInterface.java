@@ -2,9 +2,8 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 
-import com.candao.www.webroom.model.OperPreferentialResult;
+import com.candao.www.preferential.model.PreDealInfoBean;
 import com.candao.www.webroom.service.DataDictionaryService;
-import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
  * 
@@ -12,6 +11,17 @@ import com.candao.www.webroom.service.TorderDetailPreferentialService;
  *
  */
 public interface CalMenuOrderAmountInterface {
-	void  calPayAmount(DataDictionaryService dataDictionaryService, OperPreferentialResult preferentialResult,String itemid, BigDecimal statisticPrice);
+	/**
+	 * 
+	 * @param dataDictionaryService
+	 * 获取计算方式
+	 * @param itemid
+	 * 是否是手动计算方式
+	 * @param statisticPrice
+	 * @param menuAmount
+	 * @param amount
+	 * @return
+	 */
+	PreDealInfoBean  calPayAmount(DataDictionaryService dataDictionaryService, String itemid, BigDecimal menuAmount,BigDecimal amount);
 
 }
