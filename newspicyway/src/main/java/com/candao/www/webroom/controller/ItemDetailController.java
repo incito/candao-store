@@ -85,7 +85,21 @@ public class ItemDetailController {
 		List<Map<String,Object>> result = itemDetailService.itemDetailProcedure(params);
 		return new ModelAndView("/billDetails/itemDetailReports", "result", result);
 	}
-
+	/**
+	 * 品项pos打印
+	 * 
+	 * @author weizhifang
+	 * @since 2015-05-25
+	 * @param params
+	 * @return
+	 */
+	@RequestMapping("/getItemForListPos")
+	public ModelAndView getItemForListPos(
+			@RequestParam Map<String, Object> params, HttpServletRequest request) {
+		setParameter(params);
+		List<Map<String,Object>> result = itemDetailService.itemDetailProcedureForPos(params);
+		return new ModelAndView("/billDetails/itemDetailReports", "result", result);
+	}
 	/**
 	 * 品项销售报表明细表子表
 	 * 
