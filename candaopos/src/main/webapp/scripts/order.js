@@ -69,10 +69,15 @@ var Order = {
             chirdSelector: 'div'
         });
         //发票信息键盘初始化
-        widget.keyboard({
+        /*widget.keyboard({
             target: '.virtual-keyboard-baseOne',
             chirdSelector: 'li'
-        });
+        });*/
+        //发票信息键盘初始化
+       /* widget.keyboard({
+            target: '.virtual-keyboard-baseTwo',
+            chirdSelector: 'li'
+        });*/
 
         //定时更新订单信息
         setInterval(function () {
@@ -2967,7 +2972,6 @@ var Order = {
                 $('.MT-serviceCharge').attr('disabled', true)
             }
             $('#MT-serviceCharge').modal('show');
-            var _serviceCharge_val = $.trim($('.MT-serviceCharge').val());
             /*服务费开关*/
             $('.serviceCharge-Switch').click(function () {
                 var me = $(this)
@@ -2982,7 +2986,9 @@ var Order = {
             })
             /*修改服务费提交*/
             $('#serviceCharge-btnOk').click(function () {
+
                 var orderId = data.serviceCharge.orderid,//订单号
+                    _serviceCharge_val = $.trim($('.MT-serviceCharge').val()),
                     autho = msg,//授权人（退菜权限）
                     chargeOn = $('#MT-serviceCharge .select').attr('chargeOn'),//服务费开关0为关闭；1为开启
                     chargeAmount = null,//金额

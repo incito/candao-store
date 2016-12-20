@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +37,7 @@ import com.candao.www.webroom.service.MenuService;
 @Controller
 @RequestMapping("/menu")
 public class MenuController {
+    private Logger logger = LoggerFactory.getLogger(MenuController.class);
 	@Autowired
 	private MenuService menuService;
 	@Autowired
@@ -325,10 +328,14 @@ public class MenuController {
 			}
 			//裁剪图片
 			if("2".equals(flag)){
-				imageurl=imageCompress.imgCut(inputDir,newfilename,imageX,imageY,imageW,imageH);
-				if(!"".equals(imageurl)){
-					imageurl=uploadfileToFastDfs(outputDir+File.separator+imageurl,extName.substring(1));
-				deleteFile(outputDir+File.separator+imageurl);
+				try {
+					imageurl=imageCompress.imgCut(inputDir,newfilename,imageX,imageY,imageW,imageH);
+					if(!"".equals(imageurl)){
+						imageurl=uploadfileToFastDfs(outputDir+File.separator+imageurl,extName.substring(1));
+						deleteFile(outputDir+File.separator+imageurl);
+					}
+				} catch (IOException e) {
+					logger.error("裁剪图片出错：" + e.getMessage(), e);
 				}
 			}
 //		}

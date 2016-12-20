@@ -3,6 +3,7 @@ var tackOUttable = [];//外卖咖啡外卖台
 var tablesCurPager = 1;
 var tableAreaSelect = -1;//选中的是那个分区
 var roomtype_prev = 0;//左右切换的Index
+var getOpenEndTimeTimer =null//营业时间定时任务变量
 
 var MainPage = {
 
@@ -21,7 +22,7 @@ var MainPage = {
 
         this.bindEvent();
 
-        this.getOpenEndTime();
+        //this.getOpenEndTime();
 
         //加载虚拟键盘组件
         widget.keyboard();
@@ -1038,6 +1039,7 @@ var MainPage = {
     },
     /*营业时间,提示结业时间到了*/
     getOpenEndTime:function () {
+
         var getOpenEndTime=JSON.parse(utils.storage.getter('getOpenEndTime'))
         var time=utils.date.current();
         var endTime=''
@@ -1056,13 +1058,29 @@ var MainPage = {
             }
             if(Date.parse(new Date(endTime))-Date.parse(new Date(time))<0){
                 Log.send(2, '结业时间到了,请及时结业')
-                utils.printError.alert('结业时间到了,请及时结业')
+                if($('.getOpenEndTimeTimer').length<1){
+                    widget.modal.alert({
+                        cls: 'fade in getOpenEndTimeTimer',
+                        content:'<strong>结业时间到了,请及时结业</strong>',
+                        width:500,
+                        height:500,
+                        btnOkTxt: '',
+                        btnCancelTxt: '确定',
+                        btnCancelCb:function () {
+                            clearInterval(getOpenEndTimeTimer)
+                        }
+                    });
+                }
+
             }
         }
-
+        console.log(Date.parse(new Date(endTime))-Date.parse(new Date(time)))
     }
 };
 
 $(function () {
     MainPage.init();
+     getOpenEndTimeTimer = setInterval(function(){
+        MainPage.getOpenEndTime()
+    },2000);
 });

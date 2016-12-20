@@ -91,8 +91,8 @@
                                 <th>人数</th>
                                 <th>应收金额</th>
                                 <th>订单单位</th>
-                                <th>电话</th>
                                 <th>联系人</th>
+                                <th>电话</th>
                             </tr>
                         </thead>
                         <tbody>

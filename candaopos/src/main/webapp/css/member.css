@@ -230,3 +230,10 @@
 	padding: 30px 20px;
 	text-align: center;
 }
+/*绑定会员实体卡*/
+.bingTitle{
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 15px;
+}
