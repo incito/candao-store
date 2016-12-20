@@ -50,9 +50,9 @@
                         <div flag="4" onclick="reporting.getItemSellDetail(this)">上月</div>
                         <div flag="5" onclick="reporting.getItemSellDetail(this)">时间段</div>
                         <span id="getItemSellDetail-when" style="display: none">
-                             <input style="margin-left: 10px;" value=""  type=”text” class="form-control getItemSellDetailStart"/>
+                             <input style="margin-left: 10px;" value="" readonly="readonly" type=”text” class="form-control getItemSellDetailStart"/>
                              <span style="padding: 0 5px">至</span>
-                             <input  value="" type="text" class="form-control getItemSellDetailEnd"/>
+                             <input  value="" type="text" readonly="readonly" class="form-control getItemSellDetailEnd"/>
                              <div style="float: right;margin-left: 10px" class="active" onclick="reporting.getItemSellDetail_when()">查询</div>
                         </span>
 
@@ -134,12 +134,12 @@
                     <span>自定义时间</span></br></br>
                     <div class="form-group form-group-base form-input">
                         <span class="form-label">开始时间:</span>
-                        <input value=""  type=”text” class="form-control datetimeStart"/>
+                        <input value=""  readonly="readonly" type=”text” class="form-control datetimeStart"/>
                     </div>
                     <span style="padding: 0 5px">至</span>
                     <div class="form-group form-group-base form-input">
                         <span class="form-label">结束时间:</span>
-                        <input value="" type="text" class="form-control datetimeEnd"/>
+                        <input value="" type="text" readonly="readonly" class="form-control datetimeEnd"/>
                     </div>
                     <div class="dataSelect-type print">
                         <div class="active" onclick="reporting.printBusinessDetail()">打印</div>
