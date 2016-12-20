@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.candao.www.data.dao.TItemDetailDao">
     <!-- 查询品项销售明细总表存储过程 -->
-    <!-- <select id="itemDetailProcedure" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+    <select id="itemDetailProcedure" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
         {
           call p_report_pxxsmxb(
             #{branchId,jdbcType=INTEGER,mode=IN},
@@ -14,8 +14,8 @@
             #{result,jdbcType=VARCHAR,mode=OUT}
           )
         }
-    </select> -->
-    <select id="itemDetailProcedure" parameterType="java.util.Map" resultType="java.util.Map">
+    </select>
+    <select id="itemDetailProcedureForPos" parameterType="java.util.Map" resultType="java.util.Map">
     	SELECT SUM(tod.orignalprice*tod.dishnum) AS orignalprice,
 			tb.itemDesc AS itemDesc
 		FROM t_order_detail tod ,t_order too,t_dish td,t_basicdata tb

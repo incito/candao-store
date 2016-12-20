@@ -30,7 +30,16 @@ public class TItemDetailDaoImpl implements TItemDetailDao {
 	public List<Map<String,Object>> itemDetailProcedure(Map<String, Object> params){
 		return daoSupport.find(PREFIX + ".itemDetailProcedure", params);
 	}
-	
+	/**
+	 * 查询品项销售明细存储过程
+	 * @author weizhifang
+	 * @since 2015-7-3
+	 * @param params
+	 * @return
+	 */
+	public List<Map<String,Object>> itemDetailProcedureForPos(Map<String, Object> params){
+		return daoSupport.find(PREFIX + ".itemDetailProcedureForPos", params);
+	}
 	/**
 	 * 查询品项销售明细子表存储过程
 	 * @author weizhifang
