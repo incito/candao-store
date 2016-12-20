@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import com.candao.www.data.dao.TServiceChargeDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
 import com.candao.www.data.model.TServiceCharge;
+import com.candao.www.preferential.calcpre.CalMenuOrderAmount;
 import com.candao.www.preferential.calcpre.StrategyFactory;
+import com.candao.www.preferential.model.PreDealInfoBean;
+import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.TServiceChargeService;
 
 @Service
@@ -25,6 +28,9 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 
 	@Autowired
 	TbDataDictionaryDao dictionaryDao;
+	
+	@Autowired
+	DataDictionaryService dataDictionaryService;
 	@Override
 	public int updateChargeInfo(TServiceCharge chargeInfo) {
 		return serviceChargeDao.updateChargeInfo(chargeInfo);
@@ -49,7 +55,7 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 	}
 	@Override
 	public TServiceCharge serviceCharge(String orderid, Map<String, Object> userOrderInfo, BigDecimal payDecimal,
-			BigDecimal MenuDecimal) {
+			BigDecimal MenuDecimal,String itemid) {
 		Map<String, Object> serParams = new HashMap<>();
 		serParams.put("orderId", orderid);
 
@@ -79,6 +85,12 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 			}else if(servceCharageBean.getIsCustom()==0&&servceCharageBean.getChargeOn()==0){
 				calcServiceCharge= servceCharageBean.getChargeAmount();
 			}
+			if(calcServiceCharge!=null&&calcServiceCharge.doubleValue()>0){
+				PreDealInfoBean bean=new CalMenuOrderAmount().calPayAmount(dataDictionaryService, itemid,
+						calcServiceCharge, new BigDecimal("0"));
+				calcServiceCharge=bean.getPayAmount();
+			}
+			
 			
 			if (servceCharageBean == null) {
 				servceCharageBean = new TServiceCharge(orderid, chargeOn, chargeType, chargeRateRule, chargeRate,

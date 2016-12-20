@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
@@ -16,6 +17,7 @@ import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
+import com.candao.www.preferential.precache.CacheManager;
 import com.candao.www.utils.ReturnMes;
 
 /**
@@ -32,9 +34,9 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	protected List<Map<String, Object>> discountInfo(String activityID, String branchid,
 			TbPreferentialActivityDao tbPreferentialActivityDao) {
 		Map<String, String> detail_params = new HashMap<>();
-		detail_params.put("preferential", activityID);
+		detail_params.put("preferentialId", activityID);
 		detail_params.put("branchid", branchid);
-		List<Map<String, Object>> detailList = tbPreferentialActivityDao.findPreferentialDetail(detail_params);
+		List<Map<String, Object>> detailList = tbPreferentialActivityDao.findPreferentialDetailList(detail_params);
 		return detailList;
 	}
 
@@ -72,8 +74,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 		String disType = PropertiesUtils.getValue("distodis");
 		BigDecimal amount = new BigDecimal("0");
 		PreDealInfoBean infoBean = new PreDealInfoBean();
-		
-		
+
 		if (amountCount.compareTo(BigDecimal.ZERO) > 0 && disType.equals(Constant.PREDIS.DISCOUNT)
 				&& (amountCount.subtract(preferentialAmt)).doubleValue() >= 0) {
 			amount = amountCount.subtract(preferentialAmt)
@@ -82,31 +83,31 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 
 			amount = amountCount.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
 		}
-		
-		
+
 		infoBean.setPreAmount(amount);
 		infoBean.setDistodis(disType);
 		return infoBean;
 	}
+
 	/**
 	 * 
-	 * @param result 
-	 * 返回结果集
+	 * @param result
+	 *            返回结果集
 	 * @param amountCount
-	 * 待优惠金额
+	 *            待优惠金额
 	 * @param amount
-	 * 支付金额
+	 *            支付金额
 	 * @param bd
 	 * @param disType
 	 */
-	protected void disMes(Map<String,Object> result,BigDecimal amountCount,BigDecimal amount,BigDecimal bd,String disType){
-		boolean flag=true;
-		String flagcode="";
-		if (amountCount.doubleValue()<=0 && amount.doubleValue() <= 0) {
+	protected void disMes(Map<String, Object> result, BigDecimal amountCount, BigDecimal amount, BigDecimal bd,
+			String disType) {
+		boolean flag = true;
+		String flagcode = "";
+		if (amountCount.doubleValue() <= 0 && amount.doubleValue() <= 0) {
 			flag = false;
 			flagcode = "2001";
-		} else if (amountCount.doubleValue() > 0
-				&& (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) == -1
+		} else if (amountCount.doubleValue() > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) == -1
 				&& disType.equals(Constant.PREDIS.DISCOUNT)) {
 			flag = false;
 			flagcode = "2002";
@@ -157,7 +158,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 * 
 	 * @return
 	 */
-	protected Map<String, Object> cashGratis(Map<String, Object> params, TorderDetailMapper torderDetailDao,
+	protected Map<String, Object> cashGratis(Map<String, Object> params,
 			TbPreferentialActivityDao tbPreferentialActivityDao) {
 		Map<String, Object> resultMap = new HashMap<>();
 		String preferentialid = (String) params.get("preferentialid"); // 优惠活动id
@@ -171,7 +172,13 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			// 获取当前账单的 菜品列表
 			Map<String, String> orderDetail_params = new HashMap<>();
 			orderDetail_params.put("orderid", orderid);
-			List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
+			List<TorderDetail> orderDetailList = null;
+			if (CacheManager.hasCache(orderid)) {
+				orderDetailList = this.loadCache(orderid, params.containsKey("updateId") ? "info" : "") ;
+			} else {
+				return null;
+			}
+
 			// 菜单价格
 			BigDecimal orderPrice = new BigDecimal("0");
 			for (TorderDetail torderDetail : orderDetailList) {
@@ -210,6 +217,18 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			return resultMap;
 		}
 		return null;
+	}
+	
+	protected <T>T loadCache(String orderId,String cacheFalg){
+		List<Object> orderDetailList =null;
+		String cacheKey=orderId;
+		if(cacheFalg.equals("info")){
+			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId+cacheFalg).getValue();
+		}else{
+			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId).getValue();
+		}
+		return (T) orderDetailList;
+		
 	}
 
 }

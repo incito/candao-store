@@ -74,6 +74,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         return Constant.SUCCESSMSG;
     }
+    
      /***
       * 获取有关订单的餐台信息
       */
@@ -940,6 +941,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         printCustDish(printObj, isRepeat);
     }
+    
+    @Override
+	public List<ComplexTorderDetail> findorderByDish(String orderId) {
+		return torderDetailMapper.findorderByDish(orderId);
+	}
+
 
     /**
      * flag 0 初次下菜单 1 加菜单
@@ -2919,6 +2926,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Autowired
     private UserDao userDao;
 
+	
 
 
 }

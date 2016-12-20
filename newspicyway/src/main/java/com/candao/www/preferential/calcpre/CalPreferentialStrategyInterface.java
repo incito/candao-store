@@ -15,6 +15,6 @@ import com.candao.www.data.dao.TorderDetailPreferentialDao;
  */
 public interface CalPreferentialStrategyInterface {
 	Map<String, Object> calPreferential(Map<String, Object> paraMap,
-			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
+			TbPreferentialActivityDao tbPreferentialActivityDao,
 			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao);
 	}

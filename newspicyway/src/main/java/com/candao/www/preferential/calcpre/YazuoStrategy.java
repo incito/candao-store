@@ -17,6 +17,8 @@ import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
+import com.candao.www.preferential.precache.CacheManager;
+import com.candao.www.utils.ReturnMes;
 
 /**
  * 
@@ -26,9 +28,8 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
-			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
-			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
-			TdishDao tdishDao) {
+			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
 
 		// 已经优免金额
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
@@ -44,13 +45,13 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 		String memberno = String.valueOf(paraMap.get("memberno"));
 
 		BigDecimal amount = null;
-		if (memberno.isEmpty()&&paraMap.containsKey("updateId")) {
+		if (memberno.isEmpty() && paraMap.containsKey("updateId")) {
 			Map<String, Object> delMap = new HashMap<>();
 			delMap.put("DetalPreferentiald", paraMap.get("updateId"));
 			delMap.put("orderid", orderid);
 			orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 			amount = new BigDecimal(0);
-		} else if(!memberno.isEmpty()) {
+		} else if (!memberno.isEmpty()) {
 			// 优惠金额
 			amount = new BigDecimal(String.valueOf(paraMap.get("preferentialAmout")));
 			// 使用优惠张数
@@ -78,7 +79,9 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 				} else if (paraMap.get("type").equals(Constant.CouponType.YAZUO_DISCOUNT_TICKET)) {
 					Map<String, String> orderDetail_params = new HashMap<>();
 					orderDetail_params.put("orderid", orderid);
-					List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
+					List<TorderDetail> orderDetailList = this.loadCache(orderid,
+							paraMap.containsKey("updateId") ? "info" : "");
+
 					BigDecimal amountCount = this.getAmountCount(orderDetailList);
 					if (amountCount.compareTo(BigDecimal.ZERO) > 0
 							&& (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1) {
@@ -91,12 +94,12 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 				}
 
 				detailPreferentials.add(torder);
-				amount= amount.multiply(new BigDecimal(String.valueOf(preferentialNum)));
+				amount = amount.multiply(new BigDecimal(String.valueOf(preferentialNum)));
 			}
 		}
 
 		result.put("detailPreferentials", detailPreferentials);
-		result.put("amount",amount );
+		result.put("amount", amount);
 		return result;
 	}
 

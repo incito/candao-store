@@ -30,6 +30,7 @@ import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TCouponRule;
 import com.candao.www.data.model.TCoupons;
 import com.candao.www.data.model.TServiceCharge;
@@ -47,6 +48,7 @@ import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.preferential.calcpre.StrategyFactory;
+import com.candao.www.preferential.precache.CacheManager;
 import com.candao.www.utils.OrderDetailParse;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.ServiceChargeDescUnit;
@@ -1140,6 +1142,15 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Map<String, Object> calGetOrderInfo(Map<String, Object> params) {
 		String orderid = (String) params.get("orderid");
+		
+		// 加载缓存
+		// 获取当前账单的 菜品列表
+		Map<String, String> orderDetail_params = new HashMap<>();
+		orderDetail_params.put("orderid", String.valueOf(params.get("orderid")));
+		List<ComplexTorderDetail> orderDetailList = orderDetailService
+				.findorderByDish(orderid);
+		CacheManager.putCacheInfo(orderid+"info", orderDetailList, 1, false);
+		
 		Map<String, Object> mapRet = new HashMap<String, Object>();
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		params.put("branchid", branchid);
@@ -1174,7 +1185,7 @@ public class OrderServiceImpl implements OrderService {
 
 			// 服务费信息
 			TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
-					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount());
+					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount(),(String) params.get("itemid"));
 
 			// 加上服务费
 			if (serviceCharge != null) {
@@ -1200,7 +1211,6 @@ public class OrderServiceImpl implements OrderService {
 			}
 			mapRet.put("preferentialInfo", result);
 		}
-
 		return ReturnMap.getSuccessMap(mapRet);
 	}
 
@@ -1327,6 +1337,7 @@ public class OrderServiceImpl implements OrderService {
 		setMap.put("resultAmount", "0");
 		setMap.put("memberno", memberno);
 		setMap.put("doubSpellPreId", reslut.get(0).get("itemValue"));
+		setMap.put("updateId", "");
 		calALLAmout(setMap, operPreferentialResult);
 	}
 

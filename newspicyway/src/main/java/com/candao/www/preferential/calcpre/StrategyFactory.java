@@ -17,6 +17,7 @@ import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.dataserver.mapper.CaleTableAmountMapper;
 import com.candao.www.dataserver.mapper.OrderMapper;
 import com.candao.www.dataserver.mapper.OrderOpMapper;
+import com.candao.www.preferential.model.PreDealInfoBean;
 import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
 import com.candao.www.webroom.service.TServiceChargeService;
@@ -57,6 +58,7 @@ public enum StrategyFactory {
 
 	/**
 	 * 计算实收金额 优免金额 挂账金额 小费
+	 * 
 	 * @param chargeService
 	 *
 	 * @param orderDetailPreferentialDao
@@ -86,12 +88,12 @@ public enum StrategyFactory {
 			float zaAmount = orderOpMapper.getZdAmountByOrderId(orderid);
 			preferentialResult.setZdAmount(new BigDecimal(zaAmount));
 			// 全单总价（不包含小费）
-			//不包含服务费
+			// 不包含服务费
 			Map<String, Object> serParams = new HashMap<>();
 			serParams.put("orderId", orderid);
-			TServiceCharge servceCharageBean=chargeService.getChargeInfo(serParams);
-			if(servceCharageBean!=null&&servceCharageBean.getChargeOn()!=0){
-				dueamount=dueamount.subtract(servceCharageBean.getChargeAmount());
+			TServiceCharge servceCharageBean = chargeService.getChargeInfo(serParams);
+			if (servceCharageBean != null && servceCharageBean.getChargeOn() != 0) {
+				dueamount = dueamount.subtract(servceCharageBean.getChargeAmount());
 			}
 
 			preferentialResult.setResMenuAndServeChargeAmount(dueamount);
@@ -114,7 +116,12 @@ public enum StrategyFactory {
 			}
 			// 查询数据库价格
 			BigDecimal statisticPrice = orderDetailPreferentialDao.statisticALLDiscount(orderid);
-			new CalMenuOrderAmount().calPayAmount(dataDictionaryService, preferentialResult, itemid, statisticPrice);
+			PreDealInfoBean bean=new CalMenuOrderAmount().calPayAmount(dataDictionaryService, itemid,
+					preferentialResult.getMenuAmount(), statisticPrice);
+			preferentialResult.setMoneyWipeName(bean.getMoneyWipeName());
+			preferentialResult.setMoneyDisType(bean.getMoneyDisType());
+			preferentialResult.setMoneyWipeAmount(bean.getMoneyWipeAmount());
+			preferentialResult.setPayamount(bean.getPayAmount());
 			// 优惠总消费重新计算（菜单总价-应收金额）
 			preferentialResult
 					.setAmount(preferentialResult.getMenuAmount().subtract(preferentialResult.getPayamount()));
@@ -210,7 +217,7 @@ public enum StrategyFactory {
 			long intervalTime = 0;
 			// 算出分钟数
 			try {
-				if ((endtime != null && !endtime.isEmpty())|| "3".equals(userOrderInfo.get("orderStatus"))) {
+				if ((endtime != null && !endtime.isEmpty()) || "3".equals(userOrderInfo.get("orderStatus"))) {
 					intervalTime = DateUtils.stringToDate(endtime).getTime()
 							- DateUtils.stringToDate(begintime).getTime();
 				} else {
