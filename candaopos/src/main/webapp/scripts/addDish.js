@@ -51,7 +51,6 @@ var AddDish = {
 			.end().find('.J-table-no').text(consts.tableno)
 			.end().find('.J-person-no').text(consts.personnum);
 
-
 		widget.keyboard();
 
 		widget.keyboard({
@@ -120,7 +119,6 @@ var AddDish = {
 					$dishType.find("li.nav-dish-type").eq($dishType.find("li.active").index() - 1).click();
 				}
 				flag_prev--;
-				console.log(flag_prev);
 				$(".nav-dishtype-next").removeClass('disabled');
 				if(flag_prev === 0) {
 					$(this).addClass('disabled');
@@ -361,7 +359,13 @@ var AddDish = {
 		// 选中已点菜品
 		dom.addDishModal.delegate("#sel-dish-table tbody tr",'click', function() {
 			$(this).siblings().removeClass("selected").end().addClass("selected");
-			that.controlBtns();
+			if($("#sel-dish-table tbody tr.selected").length > 0){
+				$(".main-oper-btns .btn").removeClass("disabled");
+				$(".oper-div .btns .btn").not(".prev-btn").not(".next-btn").removeClass("disabled");
+			}else{
+				$(".main-oper-btns .btn").addClass("disabled");
+				$(".oper-div .btns .btn").not(".prev-btn").not(".next-btn").addClass("disabled");
+			}
 		});
 
 		/**
@@ -689,6 +693,7 @@ var AddDish = {
 				});
 				$selnum.text('1');
 				$title.addClass('fited');
+				_setSubmitStatus();
 				return false;
 			}
 
@@ -1689,7 +1694,8 @@ var AddDish = {
 
 	/**
 	 * 控制操作按钮是否可点击
-	 */
+	 * @param loadPager (true:重新加载分页)
+     */
 	controlBtns: function(){
 
 		if($("#sel-dish-table tbody tr.selected").length > 0){
@@ -1710,11 +1716,8 @@ var AddDish = {
 			prevBtnObj : "#adddish .oper-div .prev-btn",
 			nextBtnObj : "#adddish .oper-div .next-btn",
 			callback : function() {
-				//$("#sel-dish-table tbody tr").removeClass("selected");
-				//$("#sel-dish-table tbody tr").not(".hide").eq(0).addClass("selected");
 			}
 		});
-
 	},
 
 	/**

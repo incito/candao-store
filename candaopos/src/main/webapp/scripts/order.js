@@ -29,7 +29,8 @@ var consts = {
     })(),
     backDishReasons: JSON.parse(utils.storage.getter('config')).BackDishReasons.split(';'),//退菜原因
     memberInfo: null,
-    otherPay: []
+    otherPay: [],
+    otherPayStr: '',
 };
 
 var dom = {
@@ -842,7 +843,15 @@ var Order = {
             }
 
             if (type === 'cash') {
-                _updateCash(($('.tab-payment li[itemid=0]').length !== 0 && me.val().length > 0) ? me.val() : '0');
+                if(utils.storage.getter('autoFill') === '1') {
+                    if($('.tab-payment li[itemid=0]').length === 0) {
+                        _updateCash('0');
+                    } else {
+                        _updateCash(me.val().length ? me.val() : '0');
+                    }
+                } else {
+                    _updateCash('0');
+                }
             } else {
                 if (totalOtherPay >= shouldAmount) {//其他支付大于应收
                     _updateCash('0');
@@ -850,15 +859,22 @@ var Order = {
                     $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
                 } else {
                     var cVal = parseFloat(shouldAmount - totalOtherPay).toFixed(2);
-                    if($('.tab-payment li[itemid=0]').length === 0 ) {
+                    if(utils.storage.getter('autoFill') === '1') {
+                        if($('.tab-payment li[itemid=0]').length === 0) {
+                            cVal = 0;
+                            _updateCash(cVal);
+                            $paytotal.find('.payamount').find('span').text(cVal);
+                            $paytotal.find('.payamount').addClass('hide');
+                        } else {
+                            _updateCash(cVal);
+                            $paytotal.find('.payamount').find('span').text(cVal);
+                            $paytotal.find('.payamount').removeClass('hide');
+                        }
+                    } else {
                         cVal = 0;
                         _updateCash(cVal);
                         $paytotal.find('.payamount').find('span').text(cVal);
                         $paytotal.find('.payamount').addClass('hide');
-                    } else {
-                        _updateCash(cVal);
-                        $paytotal.find('.payamount').find('span').text(cVal);
-                        $paytotal.find('.payamount').removeClass('hide');
                     }
                 }
             }
@@ -898,6 +914,7 @@ var Order = {
                     method: 'POST',
                     contentType: "application/json; charset=utf-8",
                     dataType: 'json',
+                    timeout: 5000,
                     data: JSON.stringify({
                         "branch_id": utils.storage.getter('branch_id'),
                         "cardno": cardNumber,
@@ -1470,8 +1487,8 @@ var Order = {
     //加载支付方式分类
     initPayType: function (cb) {
         var ret = [];
+        var that = this;
         var $payOther = $('.pay-other');
-        var $totalPayOther = $('#totalOtherPay');
         var vipstatus = JSON.parse(utils.storage.getter('memberAddress')).vipstatus;
         pay_prev = 0;
         $.ajax({
@@ -1510,11 +1527,10 @@ var Order = {
                                 '<div class="form-group"> <span>' + v.title + ':</span> <input type="text" class="form-control J-pay-name" validtype="noPecial2" maxlength="20" name="' + target + 'Name"> </div>' +
                                 '<div class="form-group"> <span>金额:</span> <input type="text" validtype="intAndFloat2" class="form-control J-pay-val" name="' + target + '" ipttype="' + target + '"> ' +
                                 '</div> </div>');
-                            $totalPayOther.append('<li class="hide '+ target +'" itemid="' + itemid + '">' + v.title + ':<span></span></li> ')
+                            consts.otherPayStr += '<li class="hide '+ target +'" itemid="' + itemid + '">' + v.title + ':<span></span></li> ';
                             consts.otherPay.push(v);
 
                         }
-
                         ret.push('<li target="#' + target + '" class="nav-pay-type ' + cla + '" status=' + v.status + ' itemId=' + itemid + '>' + v.title + '</li>');
 
                     };
@@ -1843,6 +1859,8 @@ var Order = {
      * 更新统计信息
      * @param data
      */
+    updateTotalTimer: null,
+    payTypeLoaded: false,//支付方式是否加载
     updateTotal: function (data) {
         var that = this;
         var toalFreeAmount = data.toalFreeAmount;
@@ -1864,11 +1882,6 @@ var Order = {
         $('#discount-amount').text(amount);
         $('#amount').text(originalOrderAmount)//消费金额;
         $('#should-amount').text(payamount);
-        if($('.tab-payment li[itemid=0]').length === 0 ) {
-            $('#cash input').val(0);
-        } else {
-            $('#cash input').val(payamount);
-        }
         $('#tip-amount').text(data.tipAmount);//小费设置
 
         $('.pay-total').remove();
@@ -1924,10 +1937,40 @@ var Order = {
 
         $('.pay-div').after(totalHtml);
 
-        //设置支付信息
-        $('.pay-div .J-pay-val,.pay-div .J-pay-name').each(function () {
-            that.payIptEvent($(this));
-        });
+        if(!that.payTypeLoaded) {
+            that.updateTotalTimer = setTimeout(function(){
+                if (consts.otherPayStr.length === 0){
+                    setTimeout(arguments.callee, 50);
+                } else {
+
+
+                    if(utils.storage.getter('autoFill') === '1') {
+                        if($('.tab-payment li[itemid=0]').length === 0) {
+                            $('#cash input').val(0);
+                        } else {
+                            $('#cash input').val(payamount);
+                        }
+                    } else {
+                        $('#cash input').val(0);
+                    }
+
+                    $('#totalOtherPay').html(consts.otherPayStr);
+                    that.payTypeLoaded = true;
+                    clearTimeout(that.updateTotalTimer);
+
+                    //设置支付信息
+                    $('.pay-div .J-pay-val,.pay-div .J-pay-name').each(function () {
+                        that.payIptEvent($(this));
+                    });
+                }
+            }, 50);
+        } else {
+            //设置支付信息
+            $('#totalOtherPay').html(consts.otherPayStr);
+            $('.pay-div .J-pay-val,.pay-div .J-pay-name').each(function () {
+                that.payIptEvent($(this));
+            });
+        }
 
         //设置优惠回传值
         that.manageUsePref.set({
