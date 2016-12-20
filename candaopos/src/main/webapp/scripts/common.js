@@ -223,7 +223,7 @@ var keydownEnter=null
 				    yaRegister=$('.ya_Register')/*雅座会员注册*/
 				    memberbingCard=$('#inputCard')/*雅座会员注册*/
 				/*结账页面会员登录*/
-				if (input.length>0){
+				if (input.length>0 &&$('.membership-card').css('display')!='none'){
 					if(input.focus()){
 						input.next('button').click()
 						return false

@@ -127,6 +127,12 @@
                 });
 
             $(".btnOk").click(function () {
+                Log.send(2, title+'权限验证开始：'+JSON.stringify({
+                            username:user ,
+                            password: psd,
+                            macAddress: utils.storage.getter('ipaddress'),//Ip地址
+                            loginType: userRightNo
+                        }));
                 $.ajax({
                     url: _config.interfaceUrl.AuthorizeLogin,//登录判断
                     method: 'POST',
@@ -135,29 +141,15 @@
                         username:user ,
                         password: hex_md5(psd),
                         macAddress: utils.storage.getter('ipaddress'),//Ip地址
-                        loginType: '030201'
+                        loginType: userRightNo
                     }),
                     dataType: "json",
                     success: function (data) {
-                        var checkout_fullname=data.data.fullname;
-                        utils.storage.setter("checkout_fullname",checkout_fullname);//结业清机用户名
+                        Log.send(2, title+'权限验证结束：'+JSON.stringify(data));
                         if(data.code === '0') {//成功登录
-                           var user_right= utils.userRight.get(user,userRightNo);
-                            if(user_right){//验证权限
-                                eval(callBackFun)
-                            }
-                            else {
-                                var str = '<div class="js_Ok" ><br>您没有'+title.substring(0,title.length-2)+'权限</div>';
-                                widget.modal.alert({
-                                    cls: 'fade in',
-                                    content:str,
-                                    width:500,
-                                    height:500,
-                                    title:'',
-                                    btnOkTxt: '确定',
-                                    btnCancelTxt: ''
-                                });
-                            }
+                            var checkout_fullname=data.data.fullname;
+                            utils.storage.setter("checkout_fullname",checkout_fullname);//结业清机用户名
+                            eval(callBackFun)
                         }//登录不成功
                         else {
                             widget.modal.alert({
