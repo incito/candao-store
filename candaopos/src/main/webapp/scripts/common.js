@@ -170,7 +170,7 @@ var keydownEnter=null
                 me=af
             }
         }
-            $(me.find('button')).each(function () {
+            $(me.find('button').not('.disabled')).each(function () {
                 var abc=$(this);
                 var abd=abc.text().replace(/\s+/g,"")
                 if(abd=='登录'||abd.indexOf('确')>-1||abd.indexOf('搜索')>-1){
@@ -185,7 +185,7 @@ var keydownEnter=null
 				$('.modal').each(function () {
 					var bcd=$(this)
 					if(bcd.css("display")=='block'){
-						var me=bcd.find('button');
+						var me=bcd.find('button').not('.disabled');
 						$(me).each(function () {
 							var abcd=$(this);
 							if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){
@@ -203,7 +203,7 @@ var keydownEnter=null
 				})
 			}
 			if($('.modal-alert:last').length>0){
-				var me=$('.modal-alert:last').find('button')
+				var me=$('.modal-alert:last').find('button').not('.disabled')
 				$(me).each(function () {
 					var abcd=$(this);
 					if(abcd.text().replace(/\s+/g,"").indexOf('确')>-1||abcd.text().replace(/\s+/g,"").indexOf('重试')>-1){

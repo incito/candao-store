@@ -51,7 +51,6 @@ var AddDish = {
 			.end().find('.J-table-no').text(consts.tableno)
 			.end().find('.J-person-no').text(consts.personnum);
 
-
 		widget.keyboard();
 
 		widget.keyboard({
@@ -183,7 +182,6 @@ var AddDish = {
 					$dishType.find("li.nav-dish-type").eq($dishType.find("li.active").index() - 1).click();
 				}
 				flag_prev--;
-				console.log(flag_prev);
 				$(".nav-dishtype-next").removeClass('disabled');
 				if(flag_prev === 0) {
 					$(this).addClass('disabled');
@@ -424,7 +422,13 @@ var AddDish = {
 		// 选中已点菜品
 		dom.addDishModal.delegate("#sel-dish-table tbody tr",'click', function() {
 			$(this).siblings().removeClass("selected").end().addClass("selected");
-			that.controlBtns();
+			if($("#sel-dish-table tbody tr.selected").length > 0){
+				$(".main-oper-btns .btn").removeClass("disabled");
+				$(".oper-div .btns .btn").not(".prev-btn").not(".next-btn").removeClass("disabled");
+			}else{
+				$(".main-oper-btns .btn").addClass("disabled");
+				$(".oper-div .btns .btn").not(".prev-btn").not(".next-btn").addClass("disabled");
+			}
 		});
 
 		/**
@@ -545,7 +549,6 @@ var AddDish = {
 					target.val(0);
 				}
 			}
-			_setSubmitStatus();
 		});
 
 		dom.doc.undelegate('.fishpot-dialog .taste li', 'click');
@@ -564,25 +567,19 @@ var AddDish = {
 
 		var _setSubmitStatus = function(){
 			var btn = $('.fishpot-dialog .btn-base.ok');
-			var numInpStatus = (function(){
-				var status = false;
-				$('.fishpot-dialog .num-inp').each(function(){
-					if(parseInt($(this).val(), 10) > 0) {
-						status = true;
-						return false;
-					}
-				});
-
-				return  status;
-			})();
+			//var numInpStatus = (function(){
+			//	var status = false;
+			//	$('.fishpot-dialog .num-inp').each(function(){
+			//		if(parseInt($(this).val(), 10) > 0) {
+			//			status = true;
+			//			return false;
+			//		}
+			//	});
+            //
+			//	return  status;
+			//})();
 			if($('.fishpot-dialog .taste li').length > 0) {
-				if($('.fishpot-dialog .taste li.active').length > 0 && numInpStatus) {
-					btn.removeClass('disabled');
-				} else {
-					btn.addClass('disabled');
-				}
-			} else {
-				if(numInpStatus) {
+				if($('.fishpot-dialog .taste li.active').length > 0) {
 					btn.removeClass('disabled');
 				} else {
 					btn.addClass('disabled');
@@ -752,6 +749,7 @@ var AddDish = {
 				});
 				$selnum.text('1');
 				$title.addClass('fited');
+				_setSubmitStatus();
 				return false;
 			}
 
@@ -1752,7 +1750,8 @@ var AddDish = {
 
 	/**
 	 * 控制操作按钮是否可点击
-	 */
+	 * @param loadPager (true:重新加载分页)
+     */
 	controlBtns: function(){
 
 		if($("#sel-dish-table tbody tr.selected").length > 0){
@@ -1773,11 +1772,8 @@ var AddDish = {
 			prevBtnObj : "#adddish .oper-div .prev-btn",
 			nextBtnObj : "#adddish .oper-div .next-btn",
 			callback : function() {
-				//$("#sel-dish-table tbody tr").removeClass("selected");
-				//$("#sel-dish-table tbody tr").not(".hide").eq(0).addClass("selected");
 			}
 		});
-
 	},
 
 	/**
@@ -1864,7 +1860,7 @@ var AddDish = {
 		if(dishtype === 1 && $tr.attr('ispot') === '0') {
 			$.each(dish.dishes, function(k, v){
 				if(v.dishid === $tr.attr('dishid')) {
-					num = v.dishnum;
+					num = parseFloat(v.dishnum);
 				}
 			});
 		}
@@ -1873,47 +1869,113 @@ var AddDish = {
 		if(type === 0) {
 			num = val;
 		} else if(type === 1) {
-			num++;
+			num = parseFloat(num + 1).toFixed(2);
  		} else if(type ===2 ){
-			num--;
+			num = parseFloat(num - 1).toFixed(2);
 		}
 
-		if(dishtype === 2 || dishtype === 1) {
-			if(num > 0) {
-				if(dishtype === 2 || (dishtype === 1 && $tr.attr('ispot') === '1' ) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+		//if(dishtype === 2 || dishtype === 1) {
+		//	if(num > 0) {
+		//		if(dishtype === 2 || (dishtype === 1 && $tr.attr('ispot') === '1' ) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+		//			widget.modal.alert({
+		//				content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+		//				btnOkTxt: '',
+		//				btnCancelTxt: '确定'
+		//			});
+		//			return false;
+		//		} else {
+		//			//可以修改的为鱼锅的鱼
+		//			$tr.find("td.num").text(num);
+		//			$.each(dish.dishes, function(k, v){
+		//				console.log(k);
+		//				if(v.dishid === $tr.attr('dishid')) {
+		//					v.dishnum = num;
+		//				}
+		//			});
+		//			Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
+		//			dishCartMap.put(cid, dish);
+		//		}
+		//	} else {
+		//		if((dishtype === 2 && $tr.hasClass('main-combo')) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+		//			dom.selDishable.find('[cid=' + cid  +']').remove();
+		//			dishCartMap.remove(cid);
+		//			dom.selDishable.find("tbody tr").eq(0).addClass('selected');
+		//		} else {
+		//			widget.modal.alert({
+		//				content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+		//				btnOkTxt: '',
+		//				btnCancelTxt: '确定'
+		//			});
+		//			return false;
+		//		}
+		//	}
+		//} else
+		if(dishtype === 1) {
+			if($tr.attr('ispot') === '1' || $tr.hasClass('main-pot')) {
+				if(num > 0) {
 					widget.modal.alert({
-						content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+						content:'<strong>鱼锅不能直接修改数量</strong>',
 						btnOkTxt: '',
 						btnCancelTxt: '确定'
 					});
 					return false;
 				} else {
-					//可以修改的为鱼锅的鱼
+					if($tr.hasClass('main-pot')) {
+						dom.selDishable.find('[cid=' + cid  +']').remove();
+						dishCartMap.remove(cid);
+						dom.selDishable.find("tbody tr").eq(0).addClass('selected');
+					} else {
+						widget.modal.alert({
+							content:'<strong>鱼锅不能直接修改数量</strong>',
+							btnOkTxt: '',
+							btnCancelTxt: '确定'
+						});
+						return false;
+					}
+				}
+			} else {
+				if(num > 0) {
 					$tr.find("td.num").text(num);
 					$.each(dish.dishes, function(k, v){
-						console.log(k);
 						if(v.dishid === $tr.attr('dishid')) {
 							v.dishnum = num;
 						}
 					});
 					Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
 					dishCartMap.put(cid, dish);
-				}
-			} else {
-				if((dishtype === 2 && $tr.hasClass('main-combo')) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
-					dom.selDishable.find('[cid=' + cid  +']').remove();
-					dishCartMap.remove(cid);
-					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
 				} else {
+					$tr.remove();
+					$.each(dish.dishes, function(k, v){
+						if(v.dishid === $tr.attr('dishid')) {
+							dish.dishes.splice(k,1)
+						}
+					});
+					debugger;
+					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
+				}
+			}
+		} else if(dishtype === 2) {
+			if($tr.hasClass('main-combo')) {
+				if(num > 0) {
 					widget.modal.alert({
-						content:'<strong>套餐和鱼锅不能直接修改数量,或者删除</strong>',
+						content:'<strong>套餐不能直接修改数量</strong>',
 						btnOkTxt: '',
 						btnCancelTxt: '确定'
 					});
 					return false;
+				} else {
+					dom.selDishable.find('[cid=' + cid  +']').remove();
+					dishCartMap.remove(cid);
+					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
 				}
+			} else {
+				widget.modal.alert({
+					content:'<strong>套餐不能直接修改数量</strong>',
+					btnOkTxt: '',
+					btnCancelTxt: '确定'
+				});
+				return false;
 			}
-
 		} else {
 			if(parseFloat(num) <= 0) {
 				$tr.remove();
