@@ -109,6 +109,85 @@ var Order = {
             couponListCurPager = parseInt($('#curr-page2').text())
         })
 
+        /*账单菜品排序*/
+        $('#order-dish-table th').click(function () {
+             addDIshCurPager=0;//点菜页面列表页数
+             orderdishtableInfoselect=0//选中的菜谱列表的第几个
+            var me=$(this),
+                dishType=me.attr('dishType'),
+                sortdata=$.extend(true,{},that.orderDataPre),
+                rankdata=sortdata.rows;
+            /*菜品名称*/
+            if(me.hasClass('order-dish-table-dishname')){
+                for(var i=0;i<rankdata.length;i++){
+                    var FirstLetter=pinyinUtil.getFirstLetter(rankdata[i].dishname)
+                    rankdata[i]['FirstLetter']=FirstLetter
+                }
+                if(dishType=='0'){
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    me.attr('dishType','1')
+                }
+                else {
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    me.attr('dishType','0')
+                }
+                sortdata['rows']=rankdata;
+            }
+            /*菜品数量*/
+            if(me.hasClass('order-dish-table-dishnum')){
+                //转化为数字类型
+                for(var i=0;i<rankdata.length;i++){
+                    var FirstLetter=parseFloat(rankdata[i].dishnum)
+                    rankdata[i]['FirstLetter']=FirstLetter
+                }
+                if(dishType=='0'){
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    me.attr('dishType','1')
+                }
+                else {
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    me.attr('dishType','0')
+                }
+                sortdata['rows']=rankdata;
+            }
+            /*菜品单位*/
+            if(me.hasClass('order-dish-table-dishunit')){
+                for(var i=0;i<rankdata.length;i++){
+                    var FirstLetter=pinyinUtil.getFirstLetter(rankdata[i].dishunit)
+                    rankdata[i]['FirstLetter']=FirstLetter
+                }
+                if(dishType=='0'){
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    me.attr('dishType','1')
+                }
+                else {
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    me.attr('dishType','0')
+                }
+                sortdata['rows']=rankdata;
+
+            }
+            /*菜品价格*/
+            if(me.hasClass('order-dish-table-orderprice')){
+                //转化为数字类型
+                for(var i=0;i<rankdata.length;i++){
+                    var FirstLetter=parseFloat(rankdata[i].orderprice)
+                    rankdata[i]['FirstLetter']=FirstLetter
+                }
+                if(dishType=='0'){
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    me.attr('dishType','1')
+                }
+                else {
+                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    me.attr('dishType','0')
+                }
+                sortdata['rows']=rankdata;
+
+            }
+            that.dishesSort(JSON.stringify(sortdata))
+        })
+
         $('.J-btn-settlement').click(function () {
             Log.send(2, '点击结账按钮');
             if (parseFloat($('.needPay span').text()) > 0) {
@@ -2125,69 +2204,8 @@ var Order = {
                         }
 
 
-                        //已经选择菜品
-                        var tr = '';
-                        var $body = $("#order-dish-table tbody");
-                        var _cutName = function(s){
-                            return utils.string.cutString(s.split('#')[0], parseInt($('#order-dish-table thead th').eq(0).width()/14, 10)*2)
-                        }
-
-                        if (res.data.rows.length > 0) {
-                            $.each(res.data.rows, function (k, v) {
-                                var groupid = utils.getUuid();
-                                var dishname = '';
-                                if (v.dishes !== undefined) {
-                                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" + v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(v.dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
-                                    $.each(v.dishes, function (k1, v1) {
-                                        tr += "<tr groupid='" + groupid + "' ispot='" + v1.ispot + "' grouptype='" + v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + _cutName(v1.dishname) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
-                                        if (v1.dishtype !== 0) {
-                                            $.each(v1.dishes, function (k2, v2) {
-                                                tr += "<tr groupid='" + groupid + "' ispot='" + v2.ispot + "' grouptype='" + v2.dishtype + "'  dishid='" + v2.dishid + "' unit='" + v2.dishunit + "' primarykey='" + v2.primarykey + "' dishtype='" + v2.dishtype + "' dishstatus='" + v2.dishstatus + "'><td class='dishname'>" + _cutName(v2.dishname) + "</td><td class='num'>" + v2.dishnum + "</td><td class='unit'>" + v2.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v2.dishstatus === '0' ? parseFloat(v2.orderprice * v2.dishnum).toFixed(2) : '待称重') + "</td></tr>";
-                                            })
-                                        }
-                                    })
-                                } else {
-                                    if (/临时菜/.test(v.dishname)) {
-                                        dishname = '(' + v.taste + ')' + v.dishname.split('#')[0]
-                                    } else {
-                                        dishname = v.dishname.split('#')[0]
-                                    }
-
-                                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
-                                }
-                            });
-                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
-                        } else {
-                            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter,#backDish').addClass('disabled');
-                        }
-
-                        $body.html(tr);
-
-                        widget.loadPage({
-                            obj: "#order-dish-table tbody tr",
-                            listNum: 6,
-                            currPage: addDIshCurPager,
-                            totleNums: $body.find('tr').length,
-                            curPageObj: "#order-modal #curr-page1",
-                            pagesLenObj: "#order-modal #pages-len1",
-                            prevBtnObj: "#order-modal .dish-oper-btns .prev-btn",
-                            nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
-                            callback: function () {
-                                $body.find('tr').removeClass("selected");
-                                if(orderdishtableInfoselect === 0) {
-                                    $body.find('tr').not(".hide").eq(0).addClass('selected');
-                                } else {
-                                    $body.find('tr[primarykey=' + orderdishtableInfoselect + ']').addClass("selected");
-                                }
-
-                                if ($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
-                                    $("#weigh-dish").removeClass('disabled');
-                                } else {
-                                    $("#weigh-dish").addClass('disabled');
-                                }
-                            }
-                        });
-
+                        //已经选择菜品数据拼装
+                        that.dishesSort(JSON.stringify(res.data))
                         //初始化已经使用的优惠
                         that.updateSelectedPref(res.data.preferentialInfo.detailPreferentials, 0);
                     } else {
@@ -3080,13 +3098,75 @@ var Order = {
                 })
             })
         }
+    },
+    /*点菜排序后更新*/
+    dishesSort:function (res) {
+        var res=JSON.parse(res),
+            that=this;
 
+        var tr = '';
+        var $body = $("#order-dish-table tbody");
+        var _cutName = function(s){
+            return utils.string.cutString(s.split('#')[0], parseInt($('#order-dish-table thead th').eq(0).width()/14, 10)*2)
+        };
 
+        if (res.rows.length > 0) {
+            $.each(res.rows, function (k, v) {
+                var groupid = utils.getUuid();
+                var dishname = '';
+                if (v.dishes !== undefined) {
+                    tr += "<tr groupid='" + groupid + "' groupmain='true' grouptype='" + v.dishtype + "'   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(v.dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                    $.each(v.dishes, function (k1, v1) {
+                        tr += "<tr groupid='" + groupid + "' ispot='" + v1.ispot + "' grouptype='" + v.dishtype + "'  dishid='" + v1.dishid + "' unit='" + v1.dishunit + "' primarykey='" + v1.primarykey + "' dishtype='" + v1.dishtype + "' dishstatus='" + v1.dishstatus + "'><td class='dishname'>" + _cutName(v1.dishname) + "</td><td class='num'>" + v1.dishnum + "</td><td class='unit'>" + v1.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v1.dishstatus === '0' ? parseFloat(v1.orderprice * v1.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                        if (v1.dishtype !== 0) {
+                            $.each(v1.dishes, function (k2, v2) {
+                                tr += "<tr groupid='" + groupid + "' ispot='" + v2.ispot + "' grouptype='" + v2.dishtype + "'  dishid='" + v2.dishid + "' unit='" + v2.dishunit + "' primarykey='" + v2.primarykey + "' dishtype='" + v2.dishtype + "' dishstatus='" + v2.dishstatus + "'><td class='dishname'>" + _cutName(v2.dishname) + "</td><td class='num'>" + v2.dishnum + "</td><td class='unit'>" + v2.dishunit.split('#')[0] + "</td><td class='orderprice'>" + (v2.dishstatus === '0' ? parseFloat(v2.orderprice * v2.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                            })
+                        }
+                    })
+                } else {
+                    if (/临时菜/.test(v.dishname)) {
+                        dishname = '(' + v.taste + ')' + v.dishname.split('#')[0]
+                    } else {
+                        dishname = v.dishname.split('#')[0]
+                    }
 
+                    tr += "<tr   dishid='" + v.dishid + "' unit='" + v.dishunit + "' primarykey='" + v.primarykey + "' dishtype='" + v.dishtype + "' dishstatus='" + v.dishstatus + "'><td class='dishname'>" + _cutName(dishname) + "</td><td class='num'>" + v.dishnum + "</td><td class='unit'>" + v.dishunit.split('#')[0] + "</td><td class='orderprice " + (v.dishstatus === '1' ? 'weigh' : '') + "'>" + (v.dishstatus === '0' ? (v.orderprice * v.dishnum).toFixed(2) : '待称重') + "</td></tr>";
+                }
+            });
+            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter, #backDish').removeClass('disabled');
+        } else {
+            $('#back-dish, #backDishAll, #reprintOrder,#prePrinter,#backDish').addClass('disabled');
+        }
 
+        $body.html(tr);
+        widget.loadPage({
+            obj: "#order-dish-table tbody tr",
+            listNum: 6,
+            currPage: addDIshCurPager,
+            totleNums: $body.find('tr').length,
+            curPageObj: "#order-modal #curr-page1",
+            pagesLenObj: "#order-modal #pages-len1",
+            prevBtnObj: "#order-modal .dish-oper-btns .prev-btn",
+            nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
+            callback: function () {
+                $body.find('tr').removeClass("selected");
+                if(orderdishtableInfoselect === 0) {
+                    $body.find('tr').not(".hide").eq(0).addClass('selected');
+                } else {
+                    $body.find('tr[primarykey=' + orderdishtableInfoselect + ']').addClass("selected");
+                }
 
+                if ($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
+                    $("#weigh-dish").removeClass('disabled');
+                } else {
+                    $("#weigh-dish").addClass('disabled');
+                }
+            }
+        });
 
     }
+
 };
 
 

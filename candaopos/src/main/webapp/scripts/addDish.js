@@ -84,14 +84,11 @@ var AddDish = {
 			var dishType=$(this).attr('dishType'),
 				abc=null;
 			if(dishType=='0'){
-				var str='中英文菜1#'
-
 				var a=dishCartMap.values()
 				for(var i=0;i<a.length;i++){
 					var FirstLetter=pinyinUtil.getFirstLetter(a[i].title)
 					a[i]['FirstLetter']=FirstLetter
 				}
-				console.log(a)
 				abc=_.sortByOrder(a, ['FirstLetter'], ['asc']);
 				$(this).attr('dishType','1')
 			}
