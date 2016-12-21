@@ -433,12 +433,11 @@ var Order = {
         dom.order.delegate("#sel-preferential-table tbody tr, #order-dish-table tbody tr", "click", function () {
             var me = $(this);
             var $btnWeigh = $('#weigh-dish');
-            var primarykey = me.attr('primarykey');
             me.siblings().removeClass("selected").end().addClass("selected");
             if(me.parents('table').attr('id') === 'order-dish-table'){
-                orderdishtableInfoselect = primarykey;
+                orderdishtableInfoselect = me.attr('primarykey');
             } else {
-                selpreferentialtableInfoselect = primarykey;
+                selpreferentialtableInfoselect = me.attr('preid');
             }
 
             if (me.parents('table').attr('id') === 'order-dish-table') {
@@ -629,6 +628,7 @@ var Order = {
                 }),
                 success: function (res) {
                     if (res.code === '0') {
+                        selpreferentialtableInfoselect = 0;
                         //更新结算信息
                         that.updateTotal(res.data.preferentialInfo);
                         //更新已选优惠
@@ -1155,83 +1155,6 @@ var Order = {
                         });
                     }
                 });
-                //$.when(
-                //    $.ajax({
-                //        url: consts.memberAddr.vipotherurl + _config.interfaceUrl.Yafindmember + cardNumber,
-                //        method: 'GET',
-                //        contentType: "application/json; charset=utf-8",
-                //        dataType: 'json'
-                //    }),
-                //    $.ajax({
-                //        url: _config.interfaceUrl.MemberLogin,
-                //        method: 'POST',
-                //        contentType: "application/json; charset=utf-8",
-                //        dataType: 'json',
-                //        data: JSON.stringify({
-                //            "mobile": cardNumber,
-                //            "orderid": consts.orderid,
-                //        })
-                //    })
-                //    )
-                //    .then(function (res1, res2) {
-                //        //查询
-                //        var res1 = res1[0];
-                //        Log.send(2, '雅座会员查询返回:' + JSON.stringify(res1));
-                //        if (res1.Data === '1') {
-                //            $('#StoreCardBalance').html('<b>' + res1.psStoredCardsBalance/100 + '</b>');
-                //            $('#IntegralOverall').text(res1.psIntegralAvail/100);
-                //            btn.text('退出');
-                //            btn.addClass('btn-login-out');
-                //            btn.removeClass('disabled');
-                //            ipt.attr('disabled', 'disabled');
-                //            consts.memberInfo = res1;
-                //            //重新刷新订单信息
-                //            that.updateOrder();
-                //
-                //            rightBottomPop.alert({
-                //                title: "提示信息",
-                //                content: '雅座会员查询成功',
-                //                width: 320,
-                //                height: 200,
-                //                right: 5
-                //            });
-                //        } else {
-                //            widget.modal.alert({
-                //                cls: 'fade in',
-                //                content: '<strong>雅座会员查询失败</strong>',
-                //                width: 500,
-                //                height: 500,
-                //                btnOkTxt: '',
-                //                btnCancelTxt: '确定'
-                //            });
-                //        }
-                //
-                //        //登录
-                //        var res2 = res2[0];
-                //        Log.send(2, '雅座会员登录返回:' + JSON.stringify(res2));
-                //        if (res2.code === '0') {
-                //
-                //            dom.membershipCard.attr('isLogin','true');
-                //
-                //            rightBottomPop.alert({
-                //                title: "提示信息",
-                //                content: res2.msg,
-                //                width: 320,
-                //                height: 200,
-                //                right: 5
-                //            });
-                //        } else {
-                //            dom.membershipCard.attr('isLogin','false');
-                //            widget.modal.alert({
-                //                cls: 'fade in',
-                //                content: '<strong>' + res2.msg + '</strong>',
-                //                width: 500,
-                //                height: 500,
-                //                btnOkTxt: '',
-                //                btnCancelTxt: '确定'
-                //            });
-                //        }
-                //    });
             }
         } else {//登出
             Log.send(2, '会员登出:' + JSON.stringify({
@@ -1929,7 +1852,11 @@ var Order = {
             nextBtnObj: ".preferential-oper-btns .next-btn",
             callback: function () {
                 $body.find('tr').removeClass("selected");
-                $body.find('tr[primarykey=' + selpreferentialtableInfoselect + ']').addClass("selected");
+                if(selpreferentialtableInfoselect === 0 ){
+                    $body.find('tr').eq(0).addClass("selected");
+                } else {
+                    $body.find('tr[preid=' + selpreferentialtableInfoselect + ']').addClass("selected");
+                }
             }
         });
 
@@ -2116,6 +2043,24 @@ var Order = {
         var params = {
             orderid: consts.orderid
         };
+        var isOrderDataDiff = function(s, t){
+            if(!s) return false;
+            var source = $.extend(true,{}, s);
+            var target = $.extend(true,{}, t);
+            $.each(source.preferentialInfo.detailPreferentials,function(k,v){
+                if(v.isCustom === '2') {
+                    source.preferentialInfo.detailPreferentials[k] = '';
+                }
+            });
+
+            $.each(target.preferentialInfo.detailPreferentials,function(k,v){
+                if(v.isCustom === '2') {
+                    target.preferentialInfo.detailPreferentials[k] = '';
+                }
+            });
+            return (JSON.stringify(source) === JSON.stringify(target));
+
+        };
         if (that.consumInfoFlag) {
             params = $.extend(params, {
                 itemid: '0'
@@ -2143,7 +2088,7 @@ var Order = {
                 success: function (res) {
                     if (res.code === '0') {
                         utils.loading.remove();
-                        if (JSON.stringify(that.orderDataPre) === JSON.stringify(res.data)) {
+                        if (isOrderDataDiff(that.orderDataPre, res.data)) {
                             that.updateOrderStatus = 0;
                             return false;
                         } else {
