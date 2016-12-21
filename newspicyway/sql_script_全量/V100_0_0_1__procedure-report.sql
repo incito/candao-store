@@ -5589,8 +5589,7 @@ BEGIN
     WHERE
       branchid = pi_branchid
       AND begintime BETWEEN v_date_start AND v_date_end 
-      AND shiftid = pi_sb
-      AND orderstatus = 3;
+      AND shiftid = pi_sb;
   ELSE
     INSERT INTO t_temp_order
     SELECT orderid
@@ -5598,8 +5597,7 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end 
-      AND orderstatus = 3;
+      AND begintime BETWEEN v_date_start AND v_date_end;
   END IF;
   CREATE UNIQUE INDEX uix_t_temp_order_orderid ON t_temp_order (orderid);
 

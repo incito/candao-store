@@ -2849,7 +2849,7 @@ public class PadInterfaceController extends BaseController{
                 param = getTime(flag);
             } else if (!param.containsKey("startTime") && !param.containsKey("endTime"))
                 throw new RuntimeException("参数错误(" + json + ")");
-            List<Map<String, Object>> result = orderDetailService.itemSellDetail(param);
+            List<Map<String, Object>> result = orderDetailService.itemSellDetailForPos(param);
             data = new HashMap<>();
             data.put("time", param);
             data.put("data", result);

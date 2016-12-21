@@ -162,9 +162,12 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	}
 
 	@Override
-	public void insertDiscardDishOnce(String orderId) {
+	public void insertDiscardDishOnce(String orderId,String userId,String userName,String reason) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("orderid", orderId);
+		params.put("userId", userId);
+		params.put("userName", userName);
+		params.put("reason", reason);
 		 dao.update(PREFIX + ".insertDiscardDishOnce", params);
 	}
 
@@ -257,7 +260,10 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) {
 		return dao.find(PREFIX + ".getItemSellDetail", timeMap);
 	}
-	
+	@Override
+	public List<Map<String, Object>> getItemSellDetailForPos(Map<String, Object> timeMap) {
+		return dao.find(PREFIX + ".getItemSellDetailForPos", timeMap);
+	}
 	@Override
 	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid) {
 		Map<String,String> params = new HashMap<String,String>();

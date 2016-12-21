@@ -223,7 +223,7 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					if(businessR.get(i).get("serviceAmount") != null){  //服务费
                     	businssRport.setServiceAmount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("serviceAmount").toString()));
                     }
-					if(businessR.get(i).get("paidinaverage") != null){  //服务费
+					if(businessR.get(i).get("paidinaverage") != null){
                     	businssRport.setPaidinaverage(ToolsUtil.formatTwoDecimal(businessR.get(i).get("paidinaverage").toString()));
                     }
                     //应收总额

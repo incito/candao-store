@@ -778,7 +778,8 @@
 
 	<update id="insertDiscardDishOnce" parameterType="map">
 
-		insert into t_order_detail_discard select * from t_order_detail where
+		insert into t_order_detail_discard select `orderid`,`dishid`, `dishstatus`, `begintime`, `endtime`, `sperequire`, `dishnum`, #{userName}, `orderprice`, `discountrate`, `discountamount`, `fishcode`, `dishtype`, `status`, `dishunit`, `payamount`, `predisamount`, `couponid`, `disuserid`, `orignalprice`, `pricetype`, `orderseq`, `orderdetailid`, `relatedishid`, `ordertype`, `parentkey`, `superkey`, `ismaster`, `primarykey`, `islatecooke`, `isadddish`, `childdishtype`, `ispot`, `relateorderid`, #{userId}, #{reason}, `debitamount`
+		from t_order_detail where
 		orderid=#{orderid}
 		<if test="superkey != null">
 			and superkey = #{superkey}
@@ -975,6 +976,21 @@
             #{result,jdbcType=VARCHAR,mode=OUT}
           )
         }
+	</select>
+	<select id="getItemSellDetailForPos" parameterType="map" resultType="java.util.HashMap" >
+		SELECT SUM(tod.dishnum) as num,
+			IFNULL(SUM(tod.debitamount),0.00) as debitamount,
+			td.title as title,
+			td.unit as unit
+		FROM t_order_detail tod
+		LEFT JOIN t_order too ON too.orderid = tod.orderid
+		LEFT JOIN t_dish td ON td.dishid = tod.dishid
+		WHERE too.orderstatus = 3
+		AND too.branchid = #{branchId}
+		AND too.begintime >= #{startTime}
+		AND too.begintime &lt;= #{endTime}
+		AND (tod.dishtype != 2 OR (tod.dishtype=2 AND tod.superkey != tod.primarykey))
+		GROUP BY td.dishid
 	</select>
 	<update id="updateOrderDetailWithPreferentialNew" parameterType="map">
 		UPDATE t_order_detail set couponid=#{preferentialid} where
