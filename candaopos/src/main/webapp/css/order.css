@@ -451,3 +451,10 @@ input[type=search] {
 	font-style:normal ;
 	padding: 0 3px;
 }
+.order-dish-table-dishname,
+.order-dish-table-dishnum,
+.order-dish-table-dishunit,
+.order-dish-table-orderprice{
+	cursor: pointer;
+
+}

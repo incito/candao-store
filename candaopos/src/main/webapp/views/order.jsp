@@ -20,6 +20,9 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
     <script src="../scripts/common.js"></script>
+    <script src="../lib/lodash.js"></script>
+    <script src="../lib/pinyin_dict_firstletter.js"></script>
+    <script src="../lib/pinyinUtil.js"></script>
     <link rel="stylesheet" href="../css/orderdish.css">
     <link rel="stylesheet" href="../css/order.css">
 </head>
@@ -56,10 +59,10 @@
                        id="order-dish-table">
                     <thead>
                     <tr>
-                        <th width="40%">菜品名称</th>
-                        <th width="20%">数量</th>
-                        <th>单位</th>
-                        <th>小计</th>
+                        <th width="40%" dishType='0' class="order-dish-table-dishname">菜品名称</th>
+                        <th width="20%" dishType='0' class="order-dish-table-dishnum">数量</th>
+                        <th dishType='0' class="order-dish-table-dishunit">单位</th>
+                        <th dishType='0' class="order-dish-table-orderprice">小计</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -85,7 +88,7 @@
                        id="sel-preferential-table">
                     <thead>
                     <tr>
-                        <th width="60%">优惠方式</th>
+                        <th width="55%">优惠方式</th>
                         <th width="20%">数量</th>
                         <th>金额(元)</th>
                     </tr>

@@ -5,11 +5,14 @@ var OpenPage = {
         this.bindEvent();
         var ipaddress = utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
         var posid = utils.getUrl.get("posid")//设置posid参数到缓存
-        //var cashIp=utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
+        var autoFill=utils.getUrl.get("autoFill")//自动填充现金金额。0：不填充，1：填充, 默认为填充
+        var cashIp=utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
+        utils.storage.setter("cashIp", cashIp);
+        utils.storage.setter("autoFill", autoFill ? autoFill : '1');
         if (ipaddress != null || posid != null) {
             utils.storage.setter("ipaddress", ipaddress);
             utils.storage.setter("posid", posid)
-            //utils.storage.setter("cashIp", cashIp)
+
         }
         if (utils.storage.getter('cashbox')) {
             utils.storage.setter('cashbox', utils.storage.getter('cashbox'))//钱箱状态设置已设置状态
