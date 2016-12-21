@@ -353,8 +353,14 @@ var Order = {
         //选中已选优惠或菜品
         dom.order.delegate("#sel-preferential-table tbody tr, #order-dish-table tbody tr", "click", function () {
             var me = $(this);
-            var $btnWeigh = $('#weigh-dish')
+            var $btnWeigh = $('#weigh-dish');
+            var primarykey = me.attr('primarykey');
             me.siblings().removeClass("selected").end().addClass("selected");
+            if(me.parents('table').attr('id') === 'order-dish-table'){
+                orderdishtableInfoselect = primarykey;
+            } else {
+                selpreferentialtableInfoselect = primarykey;
+            }
 
             if (me.parents('table').attr('id') === 'order-dish-table') {
                 if (me.attr('dishstatus') === '1') {
@@ -1844,7 +1850,7 @@ var Order = {
             nextBtnObj: ".preferential-oper-btns .next-btn",
             callback: function () {
                 $body.find('tr').removeClass("selected");
-                $body.find('tr').not(".hide").eq(selpreferentialtableInfoselect).addClass("selected");
+                $body.find('tr[primarykey=' + selpreferentialtableInfoselect + ']').addClass("selected");
             }
         });
 
@@ -2168,7 +2174,12 @@ var Order = {
                             nextBtnObj: "#order-modal .dish-oper-btns .next-btn",
                             callback: function () {
                                 $body.find('tr').removeClass("selected");
-                                $body.find('tr').not(".hide").eq(orderdishtableInfoselect).addClass('selected');
+                                if(orderdishtableInfoselect === 0) {
+                                    $body.find('tr').not(".hide").eq(0).addClass('selected');
+                                } else {
+                                    $body.find('tr[primarykey=' + orderdishtableInfoselect + ']').addClass("selected");
+                                }
+
                                 if ($body.find('tr').not(".hide").eq(0).attr('dishstatus') === '1') {
                                     $("#weigh-dish").removeClass('disabled');
                                 } else {

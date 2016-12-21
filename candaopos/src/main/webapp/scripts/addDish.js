@@ -1797,7 +1797,7 @@ var AddDish = {
 		if(dishtype === 1 && $tr.attr('ispot') === '0') {
 			$.each(dish.dishes, function(k, v){
 				if(v.dishid === $tr.attr('dishid')) {
-					num = v.dishnum;
+					num = parseFloat(v.dishnum);
 				}
 			});
 		}
@@ -1806,9 +1806,9 @@ var AddDish = {
 		if(type === 0) {
 			num = val;
 		} else if(type === 1) {
-			num++;
+			num = parseFloat(num + 1).toFixed(2);
  		} else if(type ===2 ){
-			num--;
+			num = parseFloat(num - 1).toFixed(2);
 		}
 
 		//if(dishtype === 2 || dishtype === 1) {
@@ -1857,7 +1857,7 @@ var AddDish = {
 					});
 					return false;
 				} else {
-					if($tr.attr('ispot') === '1') {
+					if($tr.hasClass('main-pot')) {
 						dom.selDishable.find('[cid=' + cid  +']').remove();
 						dishCartMap.remove(cid);
 						dom.selDishable.find("tbody tr").eq(0).addClass('selected');
@@ -1867,6 +1867,7 @@ var AddDish = {
 							btnOkTxt: '',
 							btnCancelTxt: '确定'
 						});
+						return false;
 					}
 				}
 			} else {
@@ -1880,14 +1881,13 @@ var AddDish = {
 					Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
 					dishCartMap.put(cid, dish);
 				} else {
-					var findIdx = -1;
 					$tr.remove();
-					debugger;
 					$.each(dish.dishes, function(k, v){
 						if(v.dishid === $tr.attr('dishid')) {
-							v.dishnum = num;
+							dish.dishes.splice(k,1)
 						}
 					});
+					debugger;
 					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
 				}
 			}
