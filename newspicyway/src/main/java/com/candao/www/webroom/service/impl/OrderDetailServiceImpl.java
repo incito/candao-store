@@ -2300,14 +2300,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 printMutilDish(map0, printObj, 1, null);
             }
 
-            torderDetailMapper.insertDiscardDishOnce(orderId);
-            TorderDetail orderDetail = new TorderDetail();
-            orderDetail.setOrderid(orderId);
-            orderDetail.setDiscardUserId(discardUserId);
-            orderDetail.setDiscardReason(discardReason);
-            orderDetail.setUserName(userName);
-            torderDetailMapper.updateDiscardDishUserIdOnce(orderDetail);
-
+            torderDetailMapper.insertDiscardDishOnce(orderId,discardUserId,userName,discardReason);
             Map<String, Object> deleteMap = new HashMap<String, Object>();
             deleteMap.put("orderid", orderId);
             torderDetailMapper.deleteDish(deleteMap);

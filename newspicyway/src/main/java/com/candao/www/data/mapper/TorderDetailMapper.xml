@@ -778,7 +778,8 @@
 
 	<update id="insertDiscardDishOnce" parameterType="map">
 
-		insert into t_order_detail_discard select * from t_order_detail where
+		insert into t_order_detail_discard select `orderid`,`dishid`, `dishstatus`, `begintime`, `endtime`, `sperequire`, `dishnum`, #{userName}, `orderprice`, `discountrate`, `discountamount`, `fishcode`, `dishtype`, `status`, `dishunit`, `payamount`, `predisamount`, `couponid`, `disuserid`, `orignalprice`, `pricetype`, `orderseq`, `orderdetailid`, `relatedishid`, `ordertype`, `parentkey`, `superkey`, `ismaster`, `primarykey`, `islatecooke`, `isadddish`, `childdishtype`, `ispot`, `relateorderid`, #{userId}, #{reason}, `debitamount`
+		from t_order_detail where
 		orderid=#{orderid}
 		<if test="superkey != null">
 			and superkey = #{superkey}

@@ -162,9 +162,12 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	}
 
 	@Override
-	public void insertDiscardDishOnce(String orderId) {
+	public void insertDiscardDishOnce(String orderId,String userId,String userName,String reason) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("orderid", orderId);
+		params.put("userId", userId);
+		params.put("userName", userName);
+		params.put("reason", reason);
 		 dao.update(PREFIX + ".insertDiscardDishOnce", params);
 	}
 

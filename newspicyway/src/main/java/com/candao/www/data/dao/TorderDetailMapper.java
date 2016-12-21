@@ -94,7 +94,7 @@ public interface TorderDetailMapper {
 	 * @author tom_zhao
 	 * @param orderId
 	 */
-	public void insertDiscardDishOnce(String orderId);
+	public void insertDiscardDishOnce(String orderId,String userId,String userName,String reason);
 
 	/**
 	 * 更新退菜授权人
