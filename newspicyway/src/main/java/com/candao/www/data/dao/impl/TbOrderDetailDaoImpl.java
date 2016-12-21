@@ -260,7 +260,10 @@ public class TbOrderDetailDaoImpl implements TorderDetailMapper {
 	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap) {
 		return dao.find(PREFIX + ".getItemSellDetail", timeMap);
 	}
-	
+	@Override
+	public List<Map<String, Object>> getItemSellDetailForPos(Map<String, Object> timeMap) {
+		return dao.find(PREFIX + ".getItemSellDetailForPos", timeMap);
+	}
 	@Override
 	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid) {
 		Map<String,String> params = new HashMap<String,String>();

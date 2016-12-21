@@ -2717,6 +2717,27 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
 
+    @Override
+    public List<Map<String, Object>> itemSellDetailForPos(Map<String, Object> timeMap){
+    	timeMap.put("branchId",Constant.BRANCH.BRANCH_ID);
+        List<Map<String, Object>> itemSellDetail = torderDetailMapper.getItemSellDetailForPos(timeMap);
+      //数据适配
+        if(null==itemSellDetail){
+            return itemSellDetail;
+        }
+        List<Map<String, Object>> result=new ArrayList<>();
+        for(Map<String,Object> detail:itemSellDetail){
+            if(null==detail){
+                continue;
+            }
+            Map<String,Object> map=new HashMap<>();
+            map.put("dishName",detail.get("title")+"("+detail.get("unit")+")");
+            map.put("dishCount",detail.get("num"));
+            map.put("totlePrice", detail.get("debitamount"));
+            result.add(map);
+        }
+        return result;
+    }
     /**
      * 获取品项销售明细
      */
