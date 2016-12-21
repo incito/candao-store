@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.candao.www.data.dao.TServiceChargeDao;
 import com.candao.www.data.dao.TbDataDictionaryDao;
+import com.candao.www.data.dao.TsettlementMapper;
 import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.preferential.calcpre.CalMenuOrderAmount;
 import com.candao.www.preferential.calcpre.StrategyFactory;
@@ -31,6 +32,8 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 	
 	@Autowired
 	DataDictionaryService dataDictionaryService;
+	@Autowired
+	TsettlementMapper settlementMapper;
 	@Override
 	public int updateChargeInfo(TServiceCharge chargeInfo) {
 		return serviceChargeDao.updateChargeInfo(chargeInfo);
@@ -76,9 +79,10 @@ public class TServiceChargeServiceImpl implements TServiceChargeService {
 				params.put("type", "TABLECHARGE");
 				List<Object> dataDictionary = dictionaryDao.find(params);
 				if (!dataDictionary.isEmpty()) {
+					boolean falg=settlementMapper.rePay(orderid);
 					// 0比例 1 固定 2 时长
 					calcServiceCharge = StrategyFactory.INSTANCE.calcServiceCharge(userOrderInfo, payDecimal,
-							MenuDecimal);
+							MenuDecimal,falg,servceCharageBean);
 				}
 			} else if (servceCharageBean.getIsCustom() == 1 ) {
 				calcServiceCharge = servceCharageBean.getChargeAmount();

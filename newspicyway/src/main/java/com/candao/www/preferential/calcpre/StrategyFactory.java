@@ -186,9 +186,22 @@ public enum StrategyFactory {
 		return resultMapPrice;
 	}
 
-	// 计算服务费
+	/**
+	 * 
+	 * @param userOrderInfo
+	 * 订单餐台数据
+	 * @param payDecimal
+	 * 实收金额
+	 * @param menuDecimal
+	 * 应收金额
+	 * @param falg
+	 * 是否反结算
+	 * @param hargeAmount
+	 * 上次服务计算价格
+	 * @return
+	 */
 	public BigDecimal calcServiceCharge(Map<String, Object> userOrderInfo, BigDecimal payDecimal,
-			BigDecimal menuDecimal) {
+			BigDecimal menuDecimal,boolean falg, TServiceCharge servceCharageBean) {
 		BigDecimal serverCharageCash = new BigDecimal("0");
 		// '服务费计算方式 0比例 1 固定 2 时长'
 		int chargeType = userOrderInfo.get("chargeType") == null ? 0 : (int) userOrderInfo.get("chargeType");
@@ -211,24 +224,30 @@ public enum StrategyFactory {
 				serverCharageCash = menuDecimal.multiply(new BigDecimal(chargeRate).divide(new BigDecimal(100)));
 			}
 		} else {
-			// 时长
-			String begintime = (String) userOrderInfo.get("begintime");
-			String endtime = (String) userOrderInfo.get("endtime");
-			long intervalTime = 0;
-			// 算出分钟数
-			try {
-				if ((endtime != null && !endtime.isEmpty()) || "3".equals(userOrderInfo.get("orderStatus"))) {
-					intervalTime = DateUtils.stringToDate(endtime).getTime()
-							- DateUtils.stringToDate(begintime).getTime();
-				} else {
-					intervalTime = new Date().getTime() - DateUtils.stringToDate(begintime).getTime();
+			//时长反结算不进行计算
+			if(falg&&servceCharageBean!=null){
+				serverCharageCash=servceCharageBean.getChargeAmount();
+			}else{
+				// 时长
+				String begintime = (String) userOrderInfo.get("begintime");
+				String endtime = (String) userOrderInfo.get("endtime");
+				long intervalTime = 0;
+				// 算出分钟数
+				try {
+					if ((endtime != null && !endtime.isEmpty()) || "3".equals(userOrderInfo.get("orderStatus"))) {
+						intervalTime = DateUtils.stringToDate(endtime).getTime()
+								- DateUtils.stringToDate(begintime).getTime();
+					} else {
+						intervalTime = new Date().getTime() - DateUtils.stringToDate(begintime).getTime();
+					}
+					// 换算成分钟数
+					long d = ((intervalTime / 1000 / 60) / Long.valueOf(chargeTime));
+					serverCharageCash = chargeAmount.multiply(new BigDecimal(d));
+				} catch (SysException e) {
+					logger.error("服务计算错误", e.fillInStackTrace());
 				}
-				// 换算成分钟数
-				long d = ((intervalTime / 1000 / 60) / Long.valueOf(chargeTime));
-				serverCharageCash = chargeAmount.multiply(new BigDecimal(d));
-			} catch (SysException e) {
-				logger.error("服务计算错误", e.fillInStackTrace());
 			}
+		
 		}
 		return serverCharageCash.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
