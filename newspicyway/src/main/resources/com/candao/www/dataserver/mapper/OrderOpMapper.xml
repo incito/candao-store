@@ -68,7 +68,7 @@
         INNER JOIN t_b_user b ON(a.user_id=b.id)) f
         ON(a.userid=f.job_number)  LEFT JOIN t_order_detail g ON(g.orderid=a.orderid AND payway=7)
         LEFT JOIN t_coupons h ON(a.couponname=h.couponid)
-        WHERE a.begintime>=#{workDate} AND (orderstatus=3 OR orderstatus=0 OR payway=3)  ORDER BY a.orderid desc
+        WHERE a.begintime>=#{workDate} AND (orderstatus=3 OR orderstatus=2 OR orderstatus=0 OR payway=3)  ORDER BY a.orderid desc
     </select>
     <update id="updateParternerPY">
         update t_parterner set py=convert(getPY(name) using utf8)
