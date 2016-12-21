@@ -150,7 +150,7 @@ var OpenPage = {
                                         btnOkTxt: '确定',
                                         btnCancelTxt: '',
                                         btnOkCb: function () {
-                                            window.location = "../views/login.jsp"
+                                           window.location = "../views/login.jsp"
                                         }
                                     });
                                     $('#' + modalIns.id).find('.close').click(function () {
@@ -494,8 +494,14 @@ var OpenPage = {
                 }
             )
         }).then(function (res) {
-            Log.send(2, '零头信息:' + JSON.stringify(res));
-            utils.storage.setter('ROUNDING', JSON.stringify(res.rows));
+            if(res.code=='0'){
+                Log.send(2, '零头信息:' + JSON.stringify(res));
+                utils.storage.setter('ROUNDING', JSON.stringify(res.data.rows));
+            }
+            else {
+                utils.printError.alert(res.msg)
+            }
+
         });
 
         //忌口
@@ -509,8 +515,14 @@ var OpenPage = {
                 }
             )
         }).then(function (res) {
-            Log.send(2, '忌口:' + JSON.stringify(res));
-            utils.storage.setter('JI_KOU_SPECIAL', JSON.stringify(res.rows));
+            if(res.code=='0'){
+                Log.send(2, '忌口:' + JSON.stringify(res));
+                utils.storage.setter('JI_KOU_SPECIAL', JSON.stringify(res.data.rows));
+            }
+            else {
+                utils.printError.alert(res.msg)
+            }
+
         });
 
         //餐具
@@ -524,8 +536,13 @@ var OpenPage = {
                 }
             )
         }).then(function (res) {
-            Log.send(2, '餐具:' + JSON.stringify(res));
-            utils.storage.setter('DISHES2', JSON.stringify(res.rows));
+            if(res.code=='0'){
+              Log.send(2, '餐具:' + JSON.stringify(res));
+              utils.storage.setter('DISHES2', JSON.stringify(res.data.rows));
+            }
+            else {
+                utils.printError.alert(res.msg)
+            }
         });
 
         $.ajax({

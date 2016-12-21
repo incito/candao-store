@@ -17,6 +17,8 @@
 	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 	<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 	<script src="../lib/lodash.js"></script>
+	<script src="../lib/pinyin_dict_firstletter.js"></script>
+	<script src="../lib/pinyinUtil.js"></script>
 	<script src="../scripts/common.js"></script>
 	<link rel="stylesheet" href="../css/orderdish.css">
 
