@@ -2071,17 +2071,24 @@ public class PadInterfaceController extends BaseController{
     @ResponseBody
     public void getSystemSetData(HttpServletRequest request, HttpServletResponse response,
                                  @RequestBody String jsonString) {
-        Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-        List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
-        if ("ROUNDING".equals(map.get("type"))) {
+        Map<String, Object> resultMap=null;
+        try {
+            Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
+            if ("ROUNDING".equals(map.get("type"))) {
+                map.clear();
+                map.put("type", "ACCURACY");
+                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
+                listFind.addAll(listFind2);
+            }
             map.clear();
-            map.put("type", "ACCURACY");
-            List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
-            listFind.addAll(listFind2);
+            map.put("rows", listFind);
+            resultMap = ReturnMap.getSuccessMap(map);
+        }catch (Exception e){
+            logger.error("-->",e);
+            resultMap=ReturnMap.getFailureMap("服务器发生异常");
         }
-        map.clear();
-        map.put("rows", listFind);
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+        String wholeJsonStr = JacksonJsonMapper.objectToJson(resultMap);
         try {
             response.reset();
             response.setHeader("Content-Type", "application/json");

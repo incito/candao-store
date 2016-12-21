@@ -612,3 +612,6 @@ input[type=search] {
 .hori-rf-div {
 	float:right;
 }
+#sel-dish-table-title,#sel-dish-table-dishnum,#sel-dish-table-price{
+	cursor: pointer;
+}
