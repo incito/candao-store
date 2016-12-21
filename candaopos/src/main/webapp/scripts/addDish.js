@@ -85,16 +85,21 @@ var AddDish = {
 			var dishType=$(this).attr('dishType'),
 				abc=null;
 			if(dishType=='0'){
+				var str='中英文菜1#'
 
-				abc=_.sortByOrder(dishCartMap.values(), ['py'], ['asc']);
+				var a=dishCartMap.values()
+				for(var i=0;i<a.length;i++){
+					var FirstLetter=pinyinUtil.getFirstLetter(a[i].title)
+					a[i]['FirstLetter']=FirstLetter
+				}
+				console.log(a)
+				abc=_.sortByOrder(a, ['FirstLetter'], ['asc']);
 				$(this).attr('dishType','1')
 			}
 			else {
 				abc=_.sortByOrder(dishCartMap.values(), ['py'], ['desc'])
 				$(this).attr('dishType','0')
 			}
-
-
 			that.dishesSort(JSON.stringify(abc))
 		})
 		/*已点菜品按数量排序*/
