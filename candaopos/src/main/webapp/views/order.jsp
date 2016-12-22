@@ -88,9 +88,9 @@
                        id="sel-preferential-table">
                     <thead>
                     <tr>
-                        <th width="55%">优惠方式</th>
-                        <th width="20%">数量</th>
-                        <th>金额(元)</th>
+                        <th width="55%" dishType='0' class="sel-preferential-table-name">优惠方式</th>
+                        <th width="20%" dishType='0'>数量</th>
+                        <th dishType='0' class="sel-preferential-table-deAmount">金额(元)</th>
                     </tr>
                     </thead>
                     <tbody>

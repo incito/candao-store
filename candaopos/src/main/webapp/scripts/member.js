@@ -369,7 +369,7 @@ var member = {
             return false
         }
         if (phoneCode != valicode || phoneCode == '') {
-            that.errorAlert('请输入正确的验证嘛');
+            that.errorAlert('请输入正确的验证码');
             return false
         }
         Log.send(2, '会员修改手机号回传参数：'+JSON.stringify({
@@ -619,10 +619,6 @@ var member = {
             that.errorAlert('请输入姓名');
             return false
         }
-        if (birthday == '') {
-            that.errorAlert('请选择生日');
-            return false
-        }
         if (that.isNumber(psd) === false || that.isNumber(rpsd) === false) {
             that.errorAlert('只能输入六位数字的密码');
             return false
@@ -670,7 +666,10 @@ var member = {
             success: function (res) {
                 Log.send(2, '会员注册接口返回数据：'+JSON.stringify(res));
                 if (res.Retcode == 0) {
-                    that.errorAlert('注册会员成功');
+                    that.succeedAlert({
+                        'info':'注册会员成功',
+                        'callBack':'window.location = "../views/main.jsp"'
+                    })
                     $('#phone').val('');
                     $('#phoneCode').val('');
                     $('#birthday').val('');
@@ -1330,7 +1329,7 @@ var ya_Member = {
                     })
                 }
                 else {
-                    utils.printError.alert('会员充值详情打印失败，请稍后重试')
+                    utils.printError.alert(res.msg)
                 }
             }
         });

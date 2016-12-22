@@ -70,10 +70,10 @@ var Order = {
             chirdSelector: 'div'
         });
         //发票信息键盘初始化
-        /*widget.keyboard({
+        widget.keyboard({
             target: '.virtual-keyboard-baseOne',
             chirdSelector: 'li'
-        });*/
+        });
         //发票信息键盘初始化
        /* widget.keyboard({
             target: '.virtual-keyboard-baseTwo',
@@ -111,12 +111,28 @@ var Order = {
 
         /*账单菜品排序*/
         $('#order-dish-table th').click(function () {
+            return false//不再前端自定义排序
              addDIshCurPager=0;//点菜页面列表页数
              orderdishtableInfoselect=0//选中的菜谱列表的第几个
             var me=$(this),
                 dishType=me.attr('dishType'),
                 sortdata=$.extend(true,{},that.orderDataPre),
                 rankdata=sortdata.rows;
+            for(var i=0;i<rankdata.length;i++){
+                /*菜品名称*/
+                var Fdishname=pinyinUtil.getFirstLetter(rankdata[i].dishname);
+                rankdata[i]['Fdishname']=Fdishname
+                /*菜品数量*/
+                var Fdishnum=parseFloat(rankdata[i].dishnum)
+                rankdata[i]['Fdishnum']=Fdishnum
+                /*菜品单位*/
+                var Fdishunit=pinyinUtil.getFirstLetter(rankdata[i].dishunit)
+                rankdata[i]['Fdishunit']=Fdishunit
+                /*菜品金额*/
+                var Fdishnum=parseFloat(rankdata[i].orderprice)*parseFloat(rankdata[i].dishnum)//单价*数量
+                rankdata[i]['Fdishnum']=Fdishnum
+
+            }
             /*菜品名称*/
             if(me.hasClass('order-dish-table-dishname')){
                 for(var i=0;i<rankdata.length;i++){
@@ -124,44 +140,35 @@ var Order = {
                     rankdata[i]['FirstLetter']=FirstLetter
                 }
                 if(dishType=='0'){
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishname'], ['asc']);
                     me.attr('dishType','1')
                 }
                 else {
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishname'], ['desc']);
                     me.attr('dishType','0')
                 }
                 sortdata['rows']=rankdata;
             }
             /*菜品数量*/
             if(me.hasClass('order-dish-table-dishnum')){
-                //转化为数字类型
-                for(var i=0;i<rankdata.length;i++){
-                    var FirstLetter=parseFloat(rankdata[i].dishnum)
-                    rankdata[i]['FirstLetter']=FirstLetter
-                }
                 if(dishType=='0'){
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishnum'], ['asc']);
                     me.attr('dishType','1')
                 }
                 else {
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishnum'], ['desc']);
                     me.attr('dishType','0')
                 }
                 sortdata['rows']=rankdata;
             }
             /*菜品单位*/
             if(me.hasClass('order-dish-table-dishunit')){
-                for(var i=0;i<rankdata.length;i++){
-                    var FirstLetter=pinyinUtil.getFirstLetter(rankdata[i].dishunit)
-                    rankdata[i]['FirstLetter']=FirstLetter
-                }
                 if(dishType=='0'){
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishunit'], ['asc']);
                     me.attr('dishType','1')
                 }
                 else {
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishunit'], ['desc']);
                     me.attr('dishType','0')
                 }
                 sortdata['rows']=rankdata;
@@ -169,23 +176,68 @@ var Order = {
             }
             /*菜品价格*/
             if(me.hasClass('order-dish-table-orderprice')){
-                //转化为数字类型
-                for(var i=0;i<rankdata.length;i++){
-                    var FirstLetter=parseFloat(rankdata[i].orderprice)
-                    rankdata[i]['FirstLetter']=FirstLetter
-                }
                 if(dishType=='0'){
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['asc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishnum'], ['asc']);
                     me.attr('dishType','1')
                 }
                 else {
-                    rankdata=_.sortByOrder(rankdata, ['FirstLetter'], ['desc']);
+                    rankdata=_.sortByOrder(rankdata, ['Fdishnum'], ['desc']);
                     me.attr('dishType','0')
                 }
                 sortdata['rows']=rankdata;
 
+
             }
             that.dishesSort(JSON.stringify(sortdata))
+        })
+
+        /*优惠列表排序*/
+        $('#sel-preferential-table th').click(function () {
+            return false//不再前端自定义排序
+            if($(this).hasClass('sel-dish-table-dishnum') || that.orderDataPre.preferentialInfo.detailPreferentials===undefined){
+                return false
+            }
+            couponListCurPager=0;//优惠卷页面列表页数
+            selpreferentialtableInfoselect=0//选中的优惠列表的第几个
+            var me=$(this),
+                dishType=me.attr('dishType'),
+                sortdata=$.extend(true,{},that.orderDataPre),
+                rankdata=sortdata.preferentialInfo.detailPreferentials;
+            /*优惠卷名称*/
+            for(var i=0;i<rankdata.length;i++){
+                /*优惠名称名称*/
+                var Fdishname=pinyinUtil.getFirstLetter(rankdata[i].activity.name);
+                rankdata[i]['Fdishname']=Fdishname
+                /*优惠金额*/
+                var Fdishnum=parseFloat(rankdata[i].deAmount)//金额
+                rankdata[i]['Fdishnum']=Fdishnum
+            }
+            /*优惠名称*/
+            if(me.hasClass('sel-preferential-table-name')){
+                if(dishType=='0'){
+                    rankdata=_.sortByOrder(rankdata, ['Fdishname'], ['asc']);
+                    me.attr('dishType','1')
+                }
+                else {
+                    rankdata=_.sortByOrder(rankdata, ['Fdishname'], ['desc']);
+                    me.attr('dishType','0')
+                }
+            }
+
+            /*优惠卷金额*/
+            if(me.hasClass('sel-preferential-table-deAmount')){
+                if(dishType=='0'){
+                    rankdata=_.sortByOrder(rankdata, ['Fdishnum'], ['asc']);
+                    me.attr('dishType','1')
+                }
+                else {
+                    rankdata=_.sortByOrder(rankdata, ['Fdishnum'], ['desc']);
+                    me.attr('dishType','0')
+                }
+
+            }
+            console.log(rankdata)
+            that.updateSelectedPref(rankdata,0);
         })
 
         $('.J-btn-settlement').click(function () {
@@ -1445,6 +1497,7 @@ var Order = {
                 "orderNo": orderNo
             };
         } else {
+            debugger
             params = {
                 "actionType": "1",
                 "currenttableid": tableId,
@@ -2387,40 +2440,60 @@ var Order = {
 
                 })
                 $('#Invoice-title #Invoice-title-btnOk ').click(function () {
+                    var invoiceAmount=$.trim($('#Invoice-title .invoiceMoney').val());
+                    if(invoiceAmount>invoice_Flag.amount){
+                        widget.modal.alert({
+                            cls: 'fade in memberSucceed',
+                            content: '<strong>您的开票金额大于账单金额!</strong>',
+                            width: 500,
+                            height: 500,
+                            btnOkTxt: '',
+                            btnCancelTxt: '确定',
+                            btnCancelCb:function () {
+                                $(".modal-alert:last,.modal-backdrop:last").remove();
+                                _printinvoiceMsg()
+                            }
+                        });
+                        return false
+                    }
                     utils.loading.open('打印发票信息');
                     Log.send(2, '打印发票信息:' + JSON.stringify({
                             deviceid: utils.storage.getter('posid'),
                             orderid: invoice_Flag.orderid,
                             amount: $.trim($('#Invoice-title .invoiceMoney').val()),
                         }));
-                    $.ajax({
-                        url: _config.interfaceUrl.PrintInvoice,
-                        method: 'POST',
-                        contentType: "application/json",
-                        dataType: 'json',
-                        data: JSON.stringify({
-                            deviceid: utils.storage.getter('posid'),
-                            orderid: invoice_Flag.orderid,
-                            amount: $.trim($('#Invoice-title .invoiceMoney').val()),
-                        }),
-                        success: function (res) {
-                            //console.log(res)
-                            utils.loading.remove();
-                            if (res.result == '0') {
-                                if (utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                                    goBack()
+                    _printinvoiceMsg();
+                    function _printinvoiceMsg() {
+                        $.ajax({
+                            url: _config.interfaceUrl.PrintInvoice,
+                            method: 'POST',
+                            contentType: "application/json",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                deviceid: utils.storage.getter('posid'),
+                                orderid: invoice_Flag.orderid,
+                                amount: $.trim($('#Invoice-title .invoiceMoney').val()),
+                            }),
+                            success: function (res) {
+                                //console.log(res)
+                                utils.loading.remove();
+                                if (res.result == '0') {
+                                    if (utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
+                                        goBack()
+                                    }
+                                    else {
+                                        window.location.href = encodeURI(encodeURI('./main.jsp'));
+                                    }
                                 }
                                 else {
-                                    window.location.href = encodeURI(encodeURI('./main.jsp'));
+                                    utils.printError.alert('打印开发票信息失败，请稍后重试！')
+                                    Log.send(2, '打印开发票信息失败，请稍后重试')
                                 }
-                            }
-                            else {
-                                utils.printError.alert('打印开发票信息失败，请稍后重试！')
-                                Log.send(2, '打印开发票信息失败，请稍后重试')
-                            }
 
-                        }
-                    })
+                            }
+                        })
+                    }
+
                 });
 
             }

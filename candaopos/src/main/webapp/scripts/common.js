@@ -1515,7 +1515,7 @@ utils.printAbnormal={
 				};
 				if(arry.length>0){
 					var str='<div id="printAbnormal">检测到'+arry.length+'个打印机异常，请到"系统">"打印机列表"查看并修复<br><br><br>'
-						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不在提醒</label></div>'
+						str +='<label><input  type="checkbox" value="true" class="printAbnormalinput" /><span style="padding-right: 5px"></span>10分钟以内不再提醒</label></div>'
 					if($("#printAbnormal").length<1){
 						widget.modal.alert({
 							cls: 'fade in printAbnormal',

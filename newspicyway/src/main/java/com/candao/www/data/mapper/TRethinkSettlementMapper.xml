@@ -8,7 +8,7 @@
 		  	tsdh.orderid,
 			too.endtime as before_cleartime,
 			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail_history tod where tod.orderid = too.orderid)
-			+(SELECT IFNULL(sum(chargeAmount),0) FROM t_service_charge where orderid=tsh.orderid and chargeOn=1)
+			+too.dueamount-(select IFNULL(sum(payamount),0)  from t_order_detail_history where   status!=5 and  orderid=tsh.orderid  )
 			-(SELECT IFNULL(sum(dishnum*orignalprice),0) FROM t_order_detail_history WHERE orderid = too.orderid and dishtype = 2 and superkey = primarykey) as before_shouldamount,
 			IFNULL(sum(tsdh.payamount),0)-IFNULL(tsh.Inflated,0) as before_paidamount,
 			too.userid as waiter,
