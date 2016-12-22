@@ -65,7 +65,8 @@ header,footer {
 	height: 240px;
 }
 .main-div .preferentials{
-	height: 180px;
+	height: auto;
+	padding:10px;
 }
 .main-div .preferentials .preferentials-content{
 	width: 92%;
