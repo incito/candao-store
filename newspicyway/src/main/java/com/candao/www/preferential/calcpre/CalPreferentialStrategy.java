@@ -228,7 +228,6 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId).getValue();
 		}
 		return (T) orderDetailList;
-		
 	}
 
 }

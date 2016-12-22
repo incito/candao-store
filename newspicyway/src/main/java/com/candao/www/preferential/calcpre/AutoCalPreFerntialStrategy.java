@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +43,9 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		List<ComplexTorderDetail> orderDetailList = this.loadCache(orderid,
 				paraMap.containsKey("updateId") ? "info" : "");
 		// 1:双拼锅 0：单品
-		List<TorderDetail> doublePots = new ArrayList<>();
 		List<TorderDetail> singleDishs = new ArrayList<>();
+		// 获取当前订单的鱼锅个数
+		Map<String, Boolean> fishComMap = new HashMap<>();
 		// 记录菜品个数
 		for (ComplexTorderDetail torderDetailInfo : orderDetailList) {
 			String dishLevel = torderDetailInfo.getLevel();
@@ -51,11 +53,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			String dishId = torderDetailInfo.getDishid();
 			TorderDetail torderDetail = null;
 			if (dishLevel != null && dishLevel.equals("1")) {
-				torderDetail = new TorderDetail();
-				torderDetail.setDishid(dishId);
-				torderDetail.setOrderprice(torderDetailInfo.getOrderprice());
-				torderDetail.setDishnum(torderDetailInfo.getDishnum());
-				doublePots.add(torderDetail);
+				fishComMap.put(torderDetailInfo.getPrimarykey(), false);
 			} else if (unitName != null && unitName.equals("扎")) {
 				torderDetail = new TorderDetail();
 				torderDetail.setDishid(dishId);
@@ -64,13 +62,24 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				singleDishs.add(torderDetail);
 			}
 		}
+		// 拆分鱼锅中的鱼
+		for (ComplexTorderDetail torderDetailInfo : orderDetailList) {
+			if (fishComMap.containsKey(torderDetailInfo.getParentkey())) {
+				int ismaster = torderDetailInfo.getIsmaster();
+				int ispot = torderDetailInfo.getIspot();
+				if (ismaster == 0 && ispot == 0) {
+					fishComMap.put(torderDetailInfo.getParentkey(), true);
+				}
+			}
+
+		}
 		// 优先干掉新新辣道优惠
 		Map<String, Object> delMap = new HashMap<>();
 		delMap.put("orderid", orderid);
 		delMap.put("custom", "2");
 		orderDetailPreferentialDao.deleteForXinladao(delMap);
 		// 双拼锅立减
-		Map<String, Object> doublePotAmountMap = calDoublePot(doublePots, tbPreferentialActivityDao, params, orderid,
+		Map<String, Object> doublePotAmountMap = calDoublePot(fishComMap, tbPreferentialActivityDao, params, orderid,
 				paraMap, orderDetailPreferentialDao);
 		// 第二杯半价
 		Map<String, Object> singleDishMap = singleDishs(singleDishs, tbPreferentialActivityDao, params, orderid,
@@ -141,8 +150,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				// 把信息汇总
 				Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 				// 是否大于0
-				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "", preferentialid,
-						amount, "1", 0, 1, new BigDecimal(1), 2, insertime);
+				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
+						preferentialid, amount, "1", 0, 1, new BigDecimal(1), 2, insertime);
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) res.get("name"));
 				torder.setActivity(activity);
@@ -158,13 +167,22 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		return result;
 	}
 
-	private Map<String, Object> calDoublePot(List<TorderDetail> doublePots,
+	private Map<String, Object> calDoublePot(Map<String, Boolean> fishComMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, Map<String, Object> params, String orderid,
 			Map<String, Object> paraMap, TorderDetailPreferentialDao orderDetailPreferentialDao) {
 		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 
-		// 获取配置ID
+		// 获取多少鱼锅可以jinx
+		int fishNo = 0;
+		Iterator<Boolean> iter = fishComMap.values().iterator();
+		while (iter.hasNext()) {
+			boolean value = iter.next();
+			if (value) {
+				fishNo = fishNo + 1;
+			}
+		}
 
+		// 获取配置ID
 		HashMap<String, Object> doublePotPrams = new HashMap<>();
 		doublePotPrams.putAll(params);
 		doublePotPrams.put("preferential", paraMap.get("doubSpellPreId"));
@@ -173,15 +191,15 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal("0");
 		String memberno = String.valueOf(paraMap.get("memberno"));
-		if (!doublePots.isEmpty() && !memberno.isEmpty()) {
+		if (fishNo != 0 && !memberno.isEmpty()) {
 			List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(doublePotPrams);
 			if (!pres.isEmpty()) {
 				Map<String, Object> res = pres.get(0);
 				BigDecimal tempAmount = new BigDecimal(String.valueOf(res.get("amount")))
-						.multiply(new BigDecimal(doublePots.size()));
+						.multiply(new BigDecimal(fishNo));
 				amount = amount.add(tempAmount);
 				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
-						(String) res.get("preferential"), amount, String.valueOf("1"), 0, 1, new BigDecimal(1), 2,
+						(String) res.get("preferential"), amount, String.valueOf(fishNo), 0, 1, new BigDecimal(1), 2,
 						insertime);
 				TbPreferentialActivity activity = new TbPreferentialActivity();
 				activity.setName((String) res.get("name"));
