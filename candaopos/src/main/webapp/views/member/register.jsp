@@ -34,7 +34,7 @@
 				<div class="col-md-7">
 						<div class="form-group form-group-base">
 							<span class="form-label">手机号码:</span>
-							<input value="" id="phone" name="phone"  type="text" class="form-control" autocomplete="off">
+							<input value="" id="phone" name="phone" maxlength="11" type="text" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base f-oh">
 							<span class="form-label f-fl">验证码:</span>
@@ -43,20 +43,20 @@
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">姓名:</span>
-							<input value="" id="nmae" validType='noPecial2' maxlength="20" name="name"  type="text" class="form-control" autocomplete="off">
+							<input value="" id="nmae" validType='noPecial2' maxlength="5" name="name"  type="text" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">姓别:</span>
 							<div class="form-info" id="gender">
 								<div class="radio-box">
 									<label>
-										<input type="radio" value="0" checked="checked">&nbsp;男
+										<input type="radio" value="0" name="gender" checked="checked">&nbsp;男
 									</label>
 									&nbsp;
 									&nbsp;
 									&nbsp;
 									<label>
-										<input type="radio"  value="1">&nbsp;女
+										<input type="radio" name="gender"  value="1">&nbsp;女
 									</label>
 								</div>
 							</div>

@@ -77,7 +77,7 @@ var AddDish = {
 			$(this).toggleClass('active');
 		});
 		/*已点菜品按名称排序 dishType: 0为升序，1为降序*/
-		$('#sel-dish-table-title').click(function () {
+		/*$('#sel-dish-table-title').click(function () {
 			if(dishCartMap.values().length<1){
 				return false
 			}
@@ -96,9 +96,9 @@ var AddDish = {
 				abc=_.sortByOrder(dishCartMap.values(), ['py'], ['desc'])
 				$(this).attr('dishType','0')
 			}
-			that.dishesSort(JSON.stringify(abc))
+			that.initComboDishModal(abc)
 		})
-		/*已点菜品按数量排序*/
+		/!*已点菜品按数量排序*!/
 		$('#sel-dish-table-dishnum').click(function () {
 			if(dishCartMap.values().length<1){
 				return false
@@ -115,9 +115,9 @@ var AddDish = {
 			}
 			$(this).attr('dishType',dishType)
 
-			that.dishesSort(JSON.stringify(abc))
+			that.initComboDishModal(abc)
 		})
-		/*已点菜品按价格排序*/
+		/!*已点菜品按价格排序*!/
 		$('#sel-dish-table-price').click(function () {
 			if(dishCartMap.values().length<1){
 				return false
@@ -134,8 +134,8 @@ var AddDish = {
 			}
 			$(this).attr('dishType',dishType)
 
-			that.dishesSort(JSON.stringify(abc))
-		})
+			that.initComboDishModal(abc)
+		})*/
 
 
 		/**
@@ -2111,6 +2111,7 @@ var AddDish = {
 
 	/*点菜排序后更新*/
 	dishesSort:function (abc) {
+		console.log(abc)
 		var abc=JSON.parse(abc),
 			that=this,
 		    str=''
