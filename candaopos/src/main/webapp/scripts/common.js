@@ -1054,7 +1054,7 @@ var rightBottomPop ={
 		}
 		setTimeout(function() {
 			$('.rightBottomPop').remove()
-		}, 1000);
+		}, 5000);
 	},
 	close:function (a) {
 		$(a).parent().parent().remove();
