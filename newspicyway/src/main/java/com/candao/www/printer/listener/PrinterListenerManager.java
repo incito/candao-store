@@ -81,7 +81,10 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 
 	private static final String XMLTEMPLATELISTENER = "xmlTemplateListener";
 
-	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 5, 200, TimeUnit.MILLISECONDS,
+	/*总店监听*/
+	private DefaultMessageListenerContainerAdapter centerListener;
+
+	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 5, 200, TimeUnit.MILLISECONDS,
 			new ArrayBlockingQueue<Runnable>(5000));
 
 	public PrinterListenerManager() {
@@ -136,6 +139,12 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	@Override
 	public void start() {
 		synchronized (activeMonitor) {
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+                    getCenterListener().trulyStart();
+				}
+			});
 			createListeners();
 			createListenerTemplate();
 			// 加载模板
@@ -187,6 +196,15 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	@Override
 	public void stop() {
 		synchronized (activeMonitor) {
+//			executor.execute(new Runnable() {
+//				@Override
+//				public void run() {
+//					stopListeners();
+//					stopConnections();
+//					running = false;
+//				}
+//			});
+			getCenterListener().destroy();
 			stopListeners();
 			stopConnections();
 			running = false;
@@ -448,4 +466,15 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	public QueueListener getXmlQueueListener(ListenerType type) {
 		return (QueueListener) applicationContext.getBean(XMLTEMPLATELISTENER);
 	}
+
+	private DefaultMessageListenerContainerAdapter getCenterListener(){
+        if (centerListener == null) {
+            synchronized (this) {
+                if (centerListener == null)
+                    this.centerListener = (DefaultMessageListenerContainerAdapter) applicationContext
+                            .getBean("branchTopicListenerAdapterContainer");
+            }
+        }
+        return centerListener;
+    }
 }

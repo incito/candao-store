@@ -120,8 +120,8 @@
     </bean>
 
          <!--  总店发送给分店数据的 监听 -->
-     <bean id="branchTopicListenerAdapterContainer"
-        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    <bean id="branchTopicListenerAdapterContainer"
+        class="com.candao.www.printer.listener.DefaultMessageListenerContainerAdapter" scope="prototype">
         <property name="connectionFactory" ref="centerConnectionFactory" />
         <property name="destination" ref="branchDataTopic" />
         <property name="messageListener" ref="branchTopicListenerAdapter" />

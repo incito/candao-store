@@ -3,12 +3,15 @@ package com.candao.print.listener;
 import com.candao.print.entity.PrintData;
 import com.candao.print.entity.PrintObj;
 import com.candao.print.listener.template.ListenerTemplate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Created by Administrator on 2016-6-13.
  */
 public abstract class AbstractQueueListener implements QueueListener{
 
+	protected Log log = LogFactory.getLog(getClass());
 
     protected PrintData prepareData(PrintObj obj,PrintData data,ListenerTemplate template) throws Exception {
     	if (data == null) {
