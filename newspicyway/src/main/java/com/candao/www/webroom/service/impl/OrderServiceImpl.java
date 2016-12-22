@@ -1147,6 +1147,10 @@ public class OrderServiceImpl implements OrderService {
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", String.valueOf(params.get("orderid")));
 		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
+		//判断订单状态
+		if(orderDetailList==null){
+			return ReturnMap.getFailureMap("当前订单 不存在,您是否进行平台等操作？请重新进入餐台！");
+		}
 
 		Map<String, Object> mapRet = new HashMap<String, Object>();
 		String branchid = PropertiesUtils.getValue("current_branch_id");
