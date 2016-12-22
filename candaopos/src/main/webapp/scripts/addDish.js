@@ -1225,7 +1225,7 @@ var AddDish = {
 
 		if(dish !== undefined) {
 			//菜品信息
-			ret.push('<div class="dish-info"><p class="p1"><span id="note-dishname">' + (dish.title.split('#')[0] || dish.dishname.split('#')[0]) + '</span> <span id="note-price" style="margin-left: 100px;">' + dish.price + '</span>元</p></div>');
+			ret.push('<div class="dish-info"><p class="p1"><span id="note-dishname">' + ((dish.title && dish.title.split('#')[0]) || (dish.dishname && dish.dishname.split('#')[0])) + '</span> <span id="note-price" style="margin-left: 100px;">' + dish.price + '</span>元</p></div>');
 			//口味
 			if(tasts.length > 0) {
 				ret.push('<div class="taste"><h6 style="font-weight: bold; font-size: 16px">选择口味</h6><ul>');
@@ -1357,6 +1357,9 @@ var AddDish = {
 				var taste = $("#note-dialog .taste ul li.active").text().trim();
 				if(dish.temporary === '1') {
 					taste = dish.taste;
+				}
+				if(dish.taste && dish.taste.length > 0) {
+					tast = dish.taste;
 				}
 				if(taste.length > 0){
 					if(dish.temporary === '1') {

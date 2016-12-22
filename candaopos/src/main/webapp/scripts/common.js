@@ -13,7 +13,7 @@ $(document).ready(function () {
     }
 
 	$.ajaxSetup({
-		timeout: 15000
+		timeout: 20000
 	});
     $(document).bind("ajaxSend", function () {
         utils.loading.open('正在加载…')

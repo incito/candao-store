@@ -28,6 +28,10 @@ var MainPage = {
         widget.keyboard();
 
         /*雅座会员餐道会员切换 1为餐道会员；2为雅座会员*/
+
+        if(!JSON.parse(utils.storage.getter('memberAddress')).vipstatus) {
+            $('.member-btns').hide();
+        }
         if (utils.storage.getter('vipType') == '1') {
             var str = '<li class="J-btn-storge">会员储值</li>' +
                 '<li class="J-btn-register">会员注册</li>' +

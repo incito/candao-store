@@ -158,7 +158,7 @@
 				</div>
 				<div class="main-oper-btns">
 					<button class="btn disabled gua-dan hide" onclick="AddDish.guadan()">挂单</button>
-					<%--<button class="btn disabled give-dish" onclick="AddDish.giveFood()">赠菜</button>--%>
+					<button class="btn disabled give-dish" onclick="AddDish.giveFood()">赠菜</button>
 					<button class="btn disabled" onclick="AddDish.initNoteDialog(1)">全单备注</button>
 					<button class="btn disabled" onclick="AddDish.clearSelected()">清空</button>
 					<button class="btn disabled place-order" onclick="AddDish.placeOrder()">下单</button>

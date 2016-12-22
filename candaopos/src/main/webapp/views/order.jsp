@@ -80,7 +80,7 @@
                         服务费：￥<span id="serviceCharge-tip">0.00</span></div>
                     <div class="tip" style="font-size: 14px;">
                         <hr class="lf-hr" style="height: 14px;margin: 2px -10px">
-                        小费：￥<span id="tip-amount1">0.00</span></div>
+                        小费：￥<span id="tip-amount">0.00</span></div>
                 </div>
             </div>
             <div class="preferential-sel">

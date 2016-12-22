@@ -933,6 +933,7 @@ var Order = {
             }
 
             if (type === 'cash') {
+                console.log(focusIpt);
                 if(utils.storage.getter('autoFill') === '1') {
                     if($('.tab-payment li[itemid=0]').length === 0) {
                         _updateCash('0');
@@ -940,7 +941,11 @@ var Order = {
                         _updateCash(me.val().length ? me.val() : '0');
                     }
                 } else {
-                    _updateCash('0');
+                    if(focusIpt && (focusIpt.attr('name') === 'cash')) {
+                        _updateCash(me.val().length ? me.val() : '0');
+                    } else {
+                        _updateCash('0');
+                    }
                 }
             } else {
                 if (totalOtherPay >= shouldAmount) {//其他支付大于应收
@@ -961,6 +966,8 @@ var Order = {
                             $paytotal.find('.payamount').removeClass('hide');
                         }
                     } else {
+                        //if(focusIpt === )
+                        console.log(focusIpt);
                         cVal = 0;
                         _updateCash(cVal);
                         $paytotal.find('.payamount').find('span').text(cVal);
@@ -2053,6 +2060,14 @@ var Order = {
                 }
             });
 
+            if(source.serviceCharge) {
+                source.serviceCharge.mtime = '';
+            }
+
+            if(target.serviceCharge) {
+                target.serviceCharge.mtime = '';
+            }
+
             $.each(target.preferentialInfo.detailPreferentials,function(k,v){
                 if(v.isCustom === '2') {
                     target.preferentialInfo.detailPreferentials[k] = '';
@@ -2429,6 +2444,7 @@ var Order = {
                         "payAmount": (function () {
                             var v = parseFloat($("input[name=cash]").val()) - parseFloat($('.tipAmount span').text()) - parseFloat($('.giveChange span').text());
                             return v;
+
                         })(),
                         "memerberCardNo": "",
                         "bankCardNo": "",
