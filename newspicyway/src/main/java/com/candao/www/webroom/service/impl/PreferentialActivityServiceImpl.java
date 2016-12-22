@@ -1051,6 +1051,9 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						result.setFalg((boolean) resultMap.get("falg"));
 						result.setMes((String) resultMap.get("mes"));
 					}
+					if(resultMap.containsKey("menberAmount")){
+						result.setMemberPriceDiff((BigDecimal) resultMap.get("amount"));
+					}
 					// 获取总的挂账，以及优免
 					String inputDebitAmount = (String) params.get("toalDebitAmount");// 上次挂账金额
 					String inputFreeAmount = (String) params.get("toalFreeAmount");// 上次优免金额

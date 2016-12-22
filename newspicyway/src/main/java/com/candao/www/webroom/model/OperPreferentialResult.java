@@ -42,6 +42,11 @@ public class OperPreferentialResult {
 	 */
 	private BigDecimal tipAmount = new BigDecimal(0);
 	
+	/***
+	 * 
+	 * 会员优惠价
+	 * */
+	private  BigDecimal memberPriceDiff=new BigDecimal("0");
 
 	/***
 	 * 优免总金额
@@ -226,6 +231,14 @@ public class OperPreferentialResult {
 
 	public void setResMenuAndServeChargeAmount(BigDecimal resMenuAndServeChargeAmount) {
 		this.resMenuAndServeChargeAmount = resMenuAndServeChargeAmount;
+	}
+
+	public BigDecimal getMemberPriceDiff() {
+		return memberPriceDiff.setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+
+	public void setMemberPriceDiff(BigDecimal memberPriceDiff) {
+		this.memberPriceDiff = memberPriceDiff;
 	}
 
 }

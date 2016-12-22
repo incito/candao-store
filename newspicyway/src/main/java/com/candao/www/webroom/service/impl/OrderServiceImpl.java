@@ -1141,14 +1141,13 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Map<String, Object> calGetOrderInfo(Map<String, Object> params) {
 		String orderid = (String) params.get("orderid");
-		
+
 		// 加载缓存
 		// 获取当前账单的 菜品列表
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", String.valueOf(params.get("orderid")));
-		List<ComplexTorderDetail> orderDetailList = orderDetailService
-				.findorderByDish(orderid);
-		
+		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
+
 		Map<String, Object> mapRet = new HashMap<String, Object>();
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		params.put("branchid", branchid);
@@ -1179,11 +1178,12 @@ public class OrderServiceImpl implements OrderService {
 							: String.valueOf(userOrderInfo.get("memberno"));
 			params.put("memberno", menberNo);
 
-			OperPreferentialResult result = preResult(params,orderDetailList);
+			OperPreferentialResult result = preResult(params, orderDetailList);
 
 			// 服务费信息
 			TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
-					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount(),(String) params.get("itemid"));
+					result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount(),
+					(String) params.get("itemid"));
 
 			// 加上服务费
 			if (serviceCharge != null) {
@@ -1236,7 +1236,7 @@ public class OrderServiceImpl implements OrderService {
 	 * 计算优惠信息
 	 *
 	 * @param params
-	 * @param orderDetailList 
+	 * @param orderDetailList
 	 * @param memberno
 	 * @return
 	 */
@@ -1282,7 +1282,7 @@ public class OrderServiceImpl implements OrderService {
 				setMap.put("type", branchDataSyn.getPreType());
 				setMap.put("preferentialName", branchDataSyn.getPreName());
 			}
-			calALLAmout(setMap, operPreferentialResult,orderDetailList);
+			calALLAmout(setMap, operPreferentialResult, orderDetailList);
 		}
 
 		StrategyFactory.INSTANCE.calcAmount(chargeService, detailPreferentialDao, caleTableAmountMapper, orderid,
@@ -1292,11 +1292,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
-	 * @param orderDetailList 
+	 * @param orderDetailList
 	 *
 	 */
-	private void calALLAmout(Map<String, Object> setMap, OperPreferentialResult operPreferentialResult, List<ComplexTorderDetail> orderDetailList) {
-		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap,orderDetailList);
+	private void calALLAmout(Map<String, Object> setMap, OperPreferentialResult operPreferentialResult,
+			List<ComplexTorderDetail> orderDetailList) {
+		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap,
+				orderDetailList);
 		BigDecimal preferentialAmt = operPreferentialResult.getAmount();
 		BigDecimal toalFreeAmount = operPreferentialResult.getToalFreeAmount();
 		BigDecimal toalDebitAmount = operPreferentialResult.getToalDebitAmount();
@@ -1308,6 +1310,8 @@ public class OrderServiceImpl implements OrderService {
 			toalDebitAmount = toalDebitAmount.add(dep.getToalDebitAmount());
 			toalDebitAmountMany = toalDebitAmountMany.add(dep.getToalDebitAmountMany());
 		}
+		operPreferentialResult
+				.setMemberPriceDiff(operPreferentialResult.getMemberPriceDiff().add(operResult.getMemberPriceDiff()));
 		operPreferentialResult.setAmount(preferentialAmt);
 		operPreferentialResult.setToalFreeAmount(toalFreeAmount);
 		operPreferentialResult.setToalDebitAmount(toalDebitAmount);
@@ -1322,7 +1326,8 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult, List<ComplexTorderDetail> orderDetailList) {
+	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult,
+			List<ComplexTorderDetail> orderDetailList) {
 
 		// 查询新拿到配置优惠
 		Map<String, Object> newspicywayPre = new HashMap<>();
@@ -1338,7 +1343,7 @@ public class OrderServiceImpl implements OrderService {
 		setMap.put("memberno", memberno);
 		setMap.put("doubSpellPreId", reslut.get(0).get("itemValue"));
 		setMap.put("updateId", "");
-		calALLAmout(setMap, operPreferentialResult,orderDetailList);
+		calALLAmout(setMap, operPreferentialResult, orderDetailList);
 	}
 
 	@Override

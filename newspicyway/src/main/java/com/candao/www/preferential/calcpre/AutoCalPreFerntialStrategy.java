@@ -29,7 +29,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		Map<String, Object> params = new HashMap<>();
 		params.put("type", 3);
@@ -187,14 +187,14 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal("0");
+		BigDecimal menberAmount=new BigDecimal("0");
 		String memberno = String.valueOf(paraMap.get("memberno"));
-		if (fishNo != 0 && !memberno.isEmpty()) {
-			List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(doublePotPrams);
-			if (!pres.isEmpty()) {
-				Map<String, Object> res = pres.get(0);
-				BigDecimal tempAmount = new BigDecimal(String.valueOf(res.get("amount")))
-						.multiply(new BigDecimal(fishNo));
-				amount = amount.add(tempAmount);
+		List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(doublePotPrams);
+		if (fishNo != 0 && !pres.isEmpty()) {
+			Map<String, Object> res = pres.get(0);
+			 menberAmount = new BigDecimal(String.valueOf(res.get("amount"))).multiply(new BigDecimal(fishNo));
+			if (!memberno.isEmpty()) {
+				amount = amount.add(menberAmount);
 				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
 						(String) res.get("preferential"), amount, String.valueOf(fishNo), 0, 1, new BigDecimal(1), 2,
 						insertime);
@@ -206,10 +206,12 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				torder.setToalFreeAmount(amount);
 				detailPreferentials.add(torder);
 			}
+
 		}
 		paraMap.remove("doubSpellPreId");
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
+		result.put("menberAmount", menberAmount);
 		return result;
 	}
 
