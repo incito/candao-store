@@ -20,8 +20,6 @@ import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
-import com.candao.www.preferential.precache.CacheManager;
-import com.candao.www.utils.ReturnMes;
 
 /**
  * 
@@ -32,14 +30,14 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
 		String disrate = String.valueOf(paraMap.get("disrate"));
 		String giveDish = (String) paraMap.get("dishid");
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
-		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao);
+		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao,orderDetailList);
 		if (cashGratis != null) {
 			return cashGratis;
 		}
@@ -53,9 +51,6 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		/** 当前订单信息 **/
 		// 定义 返回值
 		Map<String, Object> result = new HashMap<>();
-
-		List<ComplexTorderDetail> orderDetailList = this.loadCache(orderid, paraMap.containsKey("updateId") ? "info" : "");
-
 		BigDecimal amount = new BigDecimal(0);
 		// 菜品原价
 		BigDecimal amountCount = new BigDecimal(0.0);

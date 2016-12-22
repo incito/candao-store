@@ -8,9 +8,7 @@ import java.util.Map;
 
 import com.candao.www.preferential.model.PreDealInfoBean;
 import com.candao.www.utils.RoundingEnum;
-import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.service.DataDictionaryService;
-import com.candao.www.webroom.service.TorderDetailPreferentialService;
 
 /**
  * 

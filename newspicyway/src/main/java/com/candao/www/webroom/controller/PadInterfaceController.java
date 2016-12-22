@@ -1,5 +1,52 @@
 package com.candao.www.webroom.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.alibaba.fastjson.JSON;
 import com.candao.common.dto.ResultDto;
 import com.candao.common.enums.ResultMessage;
@@ -12,8 +59,27 @@ import com.candao.common.utils.PropertiesUtils;
 import com.candao.file.fastdfs.service.FileService;
 import com.candao.www.constant.Constant;
 import com.candao.www.constant.SystemConstant;
-import com.candao.www.data.dao.*;
-import com.candao.www.data.model.*;
+import com.candao.www.data.dao.TbBranchDao;
+import com.candao.www.data.dao.TbUserInstrumentDao;
+import com.candao.www.data.dao.TorderMapper;
+import com.candao.www.data.dao.TsettlementMapper;
+import com.candao.www.data.dao.TtellerCashDao;
+import com.candao.www.data.model.ComplexTorderDetail;
+import com.candao.www.data.model.EmployeeUser;
+import com.candao.www.data.model.TJsonRecord;
+import com.candao.www.data.model.TServiceCharge;
+import com.candao.www.data.model.TbDataDictionary;
+import com.candao.www.data.model.TbMessageInstrument;
+import com.candao.www.data.model.TbOpenBizLog;
+import com.candao.www.data.model.TbTable;
+import com.candao.www.data.model.TbUserInstrument;
+import com.candao.www.data.model.Tdish;
+import com.candao.www.data.model.Tinvoice;
+import com.candao.www.data.model.ToperationLog;
+import com.candao.www.data.model.Torder;
+import com.candao.www.data.model.TorderDetail;
+import com.candao.www.data.model.TtellerCash;
+import com.candao.www.data.model.User;
 import com.candao.www.dataserver.service.msghandler.MsgForwardService;
 import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.StringUtil;
@@ -21,41 +87,54 @@ import com.candao.www.permit.common.Constants;
 import com.candao.www.permit.service.EmployeeUserService;
 import com.candao.www.permit.service.FunctionService;
 import com.candao.www.permit.service.UserService;
-import com.candao.www.preferential.precache.CacheManager;
 import com.candao.www.security.controller.BaseController;
 import com.candao.www.security.service.LoginService;
 import com.candao.www.timedtask.BranchDataSyn;
-import com.candao.www.utils.*;
-import com.candao.www.webroom.model.*;
-import com.candao.www.webroom.service.*;
+import com.candao.www.utils.DataServerUtil;
+import com.candao.www.utils.HttpRequestor;
+import com.candao.www.utils.ImageCompress;
+import com.candao.www.utils.ReturnMap;
+import com.candao.www.utils.ReturnMes;
+import com.candao.www.utils.ServiceChargeDescUnit;
+import com.candao.www.utils.TsThread;
+import com.candao.www.webroom.model.BasePadResponse;
+import com.candao.www.webroom.model.LoginInfo;
+import com.candao.www.webroom.model.OperPreferentialResult;
+import com.candao.www.webroom.model.Order;
+import com.candao.www.webroom.model.PadConfig;
+import com.candao.www.webroom.model.SettlementInfo;
+import com.candao.www.webroom.model.SqlData;
+import com.candao.www.webroom.model.Table;
+import com.candao.www.webroom.model.TableStatus;
+import com.candao.www.webroom.model.UrgeDish;
+import com.candao.www.webroom.service.CallWaiterService;
+import com.candao.www.webroom.service.ComboDishService;
+import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.DishService;
+import com.candao.www.webroom.service.DishTypeService;
+import com.candao.www.webroom.service.GiftLogService;
+import com.candao.www.webroom.service.InvoiceService;
+import com.candao.www.webroom.service.JsonRecordService;
+import com.candao.www.webroom.service.MenuService;
+import com.candao.www.webroom.service.MessageInstrumentService;
+import com.candao.www.webroom.service.NotifyService;
+import com.candao.www.webroom.service.OpenBizService;
+import com.candao.www.webroom.service.OrderDetailService;
+import com.candao.www.webroom.service.OrderService;
+import com.candao.www.webroom.service.OrderSettleService;
+import com.candao.www.webroom.service.PadConfigService;
+import com.candao.www.webroom.service.PaywayService;
+import com.candao.www.webroom.service.PicturesService;
+import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TServiceChargeService;
+import com.candao.www.webroom.service.TableAreaService;
+import com.candao.www.webroom.service.TableService;
+import com.candao.www.webroom.service.ToperationLogService;
+import com.candao.www.webroom.service.TorderDetailPreferentialService;
+import com.candao.www.webroom.service.UserInstrumentService;
 import com.candao.www.webroom.service.impl.SystemServiceImpl;
-import net.sf.json.JSONObject;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import net.sf.json.JSONObject;
 
 /**
  * 所有pad 端处理的接口
@@ -1439,11 +1518,10 @@ public class PadInterfaceController extends BaseController {
 		String orderid=String.valueOf(params.get("orderid"));
 		List<ComplexTorderDetail> orderDetailList = orderDetailService
 				.findorderByDish(orderid);
-		CacheManager.putCacheInfo(orderid, orderDetailList, 1, false);
 		// 使用优惠
 		try {
 			OperPreferentialResult operPreferentialResult = this.preferentialActivityService
-					.updateOrderDetailWithPreferential(params);
+					.updateOrderDetailWithPreferential(params,orderDetailList);
 			result.put("preferentialInfo", operPreferentialResult);
 			Map<String, Object> serParams = new HashMap<>();
 			serParams.put("orderId", String.valueOf(params.get("orderid")));
@@ -1458,9 +1536,7 @@ public class PadInterfaceController extends BaseController {
 			}
 		} catch (Exception e) {
 			mav.addObject(ReturnMap.getFailureMap(ReturnMes.SERVICE_ERROR.getMsg(), result));
-		} finally {
-			CacheManager.clearOnly(String.valueOf(params.get("orderid")));
-		}
+		} 
 
 		return mav;
 	}
@@ -1863,8 +1939,6 @@ public class PadInterfaceController extends BaseController {
 
 		} catch (Exception ex) {
 			logger.error("--->", ex);
-		}finally {
-			CacheManager.clearOnly(String.valueOf(params.get("orderid"))+"info");
 		}
 	}
 

@@ -14,12 +14,12 @@ import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TbPreferenceDetail;
 import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
-import com.candao.www.preferential.precache.CacheManager;
 import com.candao.www.utils.ReturnMes;
 
 /**
@@ -31,7 +31,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
 		
 		// 定义 返回值
 		Map<String, Object> result = new HashMap<>();
@@ -80,18 +80,18 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 			dishCouponAmountMap.put(key, preferenceDetail);
 		}
 
-		TbPreferentialActivity activity = tbPreferentialActivityDao.get(preferentialid);
-		// 当前订单菜品列表
-		
-		List<TorderDetail> orderDetailList =this.loadCache(orderid, paraMap.containsKey("updateId") ? "info" : "");
+//		TbPreferentialActivity activity = tbpreferentialactivitydao.get(preferentialid);
 		// 当前订单个数每一个菜品菜品的个数(对应的菜品个数，以及)里层为个数加菜品,
 		// 分别为菜品dishID,dishNnum,具体信息
 		Map<String, TorderDetail> orderMenuONumMap = new HashMap<>();
-		for (TorderDetail torderDetail : orderDetailList) {
+		//菜品名称已经计量单位
+		Map<String, String> foodNameMap = new HashMap<>();
+		for (ComplexTorderDetail torderDetail : orderDetailList) {
+			foodNameMap.put(torderDetail.getDishid()+torderDetail.getDishunit(), torderDetail.getTitle());
 			String key = torderDetail.getDishid() + torderDetail.getDishunit();
 			double dishNum = Double.valueOf(torderDetail.getDishnum());
 			// 排除POS怎送赠菜操作
-			if (torderDetail.getOrderprice().doubleValue() <= 0 && torderDetail.getPricetype().equals("1")) {
+			if (torderDetail.getPricetype().equals("1")&&torderDetail.getOrderprice().doubleValue() <= 0) {
 				continue;
 			}
 			if (orderMenuONumMap.containsKey(key)) {
@@ -129,7 +129,9 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 				delMap.put("orderid", orderid);
 				orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 			} else {
-				// 说明当前菜单也有此菜品重新从新计算
+				Map tempMap = tempMapList.get(0);
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name")+"(" + foodNameMap.get(key)+"/" +orderDetialPerInfo.getUnit() + ")");
 				TorderDetailPreferential resultTorderD = crateOrderDeailPre(key, dishCouponAmountMap, orderMenuONumMap,
 						updateId, orderid, activity, type, insertime);
 				amount = amount.add(resultTorderD.getDeAmount());
@@ -157,7 +159,9 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 				}
 				flag = true;
 				// 根据2015-06-02跟唐家荣的沟通。特价券是 一张一个菜 如果客人点了10份，就用10张券 。
-
+				Map tempMap = tempMapList.get(0);
+				TbPreferentialActivity activity = new TbPreferentialActivity();
+				activity.setName((String) tempMap.get("name")+"(" + foodNameMap.get(key)+"/" +teDetail.getDishunit() + ")");
 				TorderDetailPreferential resultTorderD = crateOrderDeailPre(key, dishCouponAmountMap, orderMenuONumMap,
 						updateId, orderid, activity, type, insertime);
 

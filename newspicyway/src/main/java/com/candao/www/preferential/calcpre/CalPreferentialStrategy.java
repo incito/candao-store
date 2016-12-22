@@ -7,17 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import com.candao.common.utils.PropertiesUtils;
 import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
-import com.candao.www.data.dao.TorderDetailMapper;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
-import com.candao.www.preferential.precache.CacheManager;
 import com.candao.www.utils.ReturnMes;
 
 /**
@@ -43,7 +41,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	/***
 	 * 计算菜品总价
 	 */
-	protected BigDecimal getAmountCount(List<TorderDetail> orderDetailList) {
+	protected BigDecimal getAmountCount(List<ComplexTorderDetail> orderDetailList) {
 		BigDecimal amountCount = new BigDecimal("0");
 		for (TorderDetail d : orderDetailList) {
 			// 判断价格，如果菜品价格存在null的问题，则返回错误信息
@@ -159,7 +157,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 * @return
 	 */
 	protected Map<String, Object> cashGratis(Map<String, Object> params,
-			TbPreferentialActivityDao tbPreferentialActivityDao) {
+			TbPreferentialActivityDao tbPreferentialActivityDao,List<ComplexTorderDetail> orderDetailList) {
 		Map<String, Object> resultMap = new HashMap<>();
 		String preferentialid = (String) params.get("preferentialid"); // 优惠活动id
 		String branchid = PropertiesUtils.getValue("current_branch_id");
@@ -172,12 +170,6 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 			// 获取当前账单的 菜品列表
 			Map<String, String> orderDetail_params = new HashMap<>();
 			orderDetail_params.put("orderid", orderid);
-			List<TorderDetail> orderDetailList = null;
-			if (CacheManager.hasCache(orderid)) {
-				orderDetailList = this.loadCache(orderid, params.containsKey("updateId") ? "info" : "") ;
-			} else {
-				return null;
-			}
 
 			// 菜单价格
 			BigDecimal orderPrice = new BigDecimal("0");
@@ -219,15 +211,15 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 		return null;
 	}
 	
-	protected <T>T loadCache(String orderId,String cacheFalg){
-		List<Object> orderDetailList =null;
-		String cacheKey=orderId;
-		if(cacheFalg.equals("info")){
-			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId+cacheFalg).getValue();
-		}else{
-			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId).getValue();
-		}
-		return (T) orderDetailList;
-	}
+//	protected <T>T loadCache(String orderId,String cacheFalg){
+//		List<Object> orderDetailList =null;
+//		String cacheKey=orderId;
+//		if(cacheFalg.equals("info")){
+//			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId+cacheFalg).getValue();
+//		}else{
+//			 orderDetailList = (List<Object>) CacheManager.getCacheInfo(orderId).getValue();
+//		}
+//		return (T) orderDetailList;
+//	}
 
 }

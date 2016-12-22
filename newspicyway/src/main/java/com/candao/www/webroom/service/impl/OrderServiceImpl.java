@@ -48,7 +48,6 @@ import com.candao.www.dataserver.service.order.OrderOpService;
 import com.candao.www.dataserver.util.StringUtil;
 import com.candao.www.permit.service.UserService;
 import com.candao.www.preferential.calcpre.StrategyFactory;
-import com.candao.www.preferential.precache.CacheManager;
 import com.candao.www.utils.OrderDetailParse;
 import com.candao.www.utils.ReturnMap;
 import com.candao.www.utils.ServiceChargeDescUnit;
@@ -1149,7 +1148,6 @@ public class OrderServiceImpl implements OrderService {
 		orderDetail_params.put("orderid", String.valueOf(params.get("orderid")));
 		List<ComplexTorderDetail> orderDetailList = orderDetailService
 				.findorderByDish(orderid);
-		CacheManager.putCacheInfo(orderid+"info", orderDetailList, 1, false);
 		
 		Map<String, Object> mapRet = new HashMap<String, Object>();
 		String branchid = PropertiesUtils.getValue("current_branch_id");
@@ -1181,7 +1179,7 @@ public class OrderServiceImpl implements OrderService {
 							: String.valueOf(userOrderInfo.get("memberno"));
 			params.put("memberno", menberNo);
 
-			OperPreferentialResult result = preResult(params);
+			OperPreferentialResult result = preResult(params,orderDetailList);
 
 			// 服务费信息
 			TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
@@ -1238,10 +1236,11 @@ public class OrderServiceImpl implements OrderService {
 	 * 计算优惠信息
 	 *
 	 * @param params
+	 * @param orderDetailList 
 	 * @param memberno
 	 * @return
 	 */
-	private OperPreferentialResult preResult(Map<String, Object> params) {
+	private OperPreferentialResult preResult(Map<String, Object> params, List<ComplexTorderDetail> orderDetailList) {
 		// 获取所有订单优惠
 		List<TorderDetailPreferential> allDetailPre = detailPreferentialDao.getTorderDetailSbyOrderid(params);
 		// 清空订单对应得优惠券
@@ -1253,7 +1252,7 @@ public class OrderServiceImpl implements OrderService {
 		OperPreferentialResult operPreferentialResult = new OperPreferentialResult();
 		// 新辣道特殊新编码处理
 		if (PropertiesUtils.getValue("tenant_id").equals("100011")) {
-			autoPre(orderid, params.get("memberno"), operPreferentialResult);
+			autoPre(orderid, params.get("memberno"), operPreferentialResult, orderDetailList);
 		}
 
 		// 需要得到已经是有优惠的值
@@ -1283,7 +1282,7 @@ public class OrderServiceImpl implements OrderService {
 				setMap.put("type", branchDataSyn.getPreType());
 				setMap.put("preferentialName", branchDataSyn.getPreName());
 			}
-			calALLAmout(setMap, operPreferentialResult);
+			calALLAmout(setMap, operPreferentialResult,orderDetailList);
 		}
 
 		StrategyFactory.INSTANCE.calcAmount(chargeService, detailPreferentialDao, caleTableAmountMapper, orderid,
@@ -1293,10 +1292,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	/**
+	 * @param orderDetailList 
 	 *
 	 */
-	private void calALLAmout(Map<String, Object> setMap, OperPreferentialResult operPreferentialResult) {
-		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap);
+	private void calALLAmout(Map<String, Object> setMap, OperPreferentialResult operPreferentialResult, List<ComplexTorderDetail> orderDetailList) {
+		OperPreferentialResult operResult = this.preferentialActivityService.updateOrderDetailWithPreferential(setMap,orderDetailList);
 		BigDecimal preferentialAmt = operPreferentialResult.getAmount();
 		BigDecimal toalFreeAmount = operPreferentialResult.getToalFreeAmount();
 		BigDecimal toalDebitAmount = operPreferentialResult.getToalDebitAmount();
@@ -1322,7 +1322,7 @@ public class OrderServiceImpl implements OrderService {
 
 	}
 
-	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult) {
+	private void autoPre(String orderid, Object memberno, OperPreferentialResult operPreferentialResult, List<ComplexTorderDetail> orderDetailList) {
 
 		// 查询新拿到配置优惠
 		Map<String, Object> newspicywayPre = new HashMap<>();
@@ -1338,7 +1338,7 @@ public class OrderServiceImpl implements OrderService {
 		setMap.put("memberno", memberno);
 		setMap.put("doubSpellPreId", reslut.get(0).get("itemValue"));
 		setMap.put("updateId", "");
-		calALLAmout(setMap, operPreferentialResult);
+		calALLAmout(setMap, operPreferentialResult,orderDetailList);
 	}
 
 	@Override

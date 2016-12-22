@@ -18,7 +18,6 @@ import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
-import com.candao.www.preferential.precache.CacheManager;
 
 /**
  * 
@@ -30,7 +29,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
 		String branchid = PropertiesUtils.getValue("current_branch_id");
 		Map<String, Object> params = new HashMap<>();
 		params.put("type", 3);
@@ -40,8 +39,6 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", orderid);
-		List<ComplexTorderDetail> orderDetailList = this.loadCache(orderid,
-				paraMap.containsKey("updateId") ? "info" : "");
 		// 1:双拼锅 0：单品
 		List<TorderDetail> singleDishs = new ArrayList<>();
 		// 获取当前订单的鱼锅个数

@@ -35,6 +35,7 @@ import com.candao.www.data.dao.TbVoucherDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.data.model.TbDiscountTickets;
 import com.candao.www.data.model.TbGroupon;
@@ -1012,7 +1013,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	}
 
 	@Override
-	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params) {
+	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params,List<ComplexTorderDetail> orderDetailList) {
 		/** 参数解析 **/
 		String orderid = String.valueOf(params.get("orderid")); // 账单号
 		String preferentialid = String.valueOf(params.get("preferentialid")); // 优惠活动id
@@ -1038,7 +1039,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						params.put("preferentialAmt", staticPrice.toString());
 					}
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
-							orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
+							orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao,orderDetailList);
 					List<TorderDetailPreferential> detailPreferentials = (List<TorderDetailPreferential>) resultMap
 							.get("detailPreferentials");
 					if (!detailPreferentials.isEmpty()) {

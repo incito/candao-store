@@ -8,18 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.common.utils.PropertiesUtils;
-import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
-import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
 import com.candao.www.dataserver.util.IDUtil;
-import com.candao.www.preferential.precache.CacheManager;
-import com.candao.www.utils.ReturnMes;
 
 /**
  * 
@@ -30,7 +27,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
 
 		// 定义 返回值
 		Map<String, Object> result = new HashMap<>();
@@ -41,7 +38,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 		String activityID = (String) paraMap.get("preferentialid");
 		String disrate = String.valueOf(paraMap.get("disrate"));
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
-		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao);
+		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao,orderDetailList);
 		if (cashGratis != null) {
 			return cashGratis;
 		}
@@ -49,10 +46,6 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 				PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
 
 		Map preMap = tempMapList.get(0);
-		// 获取当前账单的 菜品列表
-		List<TorderDetail> orderDetailList = this.loadCache(orderid, paraMap.containsKey("updateId") ? "info" : "");
-
-		// 菜单总价
 		BigDecimal orderPrice = new BigDecimal(0);
 		for (TorderDetail torderDetail : orderDetailList) {
 			BigDecimal dataOrderPrice = torderDetail.getOrderprice() == null ? new BigDecimal("0")
