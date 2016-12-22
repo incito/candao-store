@@ -2074,11 +2074,12 @@ public class PadInterfaceController extends BaseController{
         Map<String, Object> resultMap=null;
         try {
             Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
-            if ("ROUNDING".equals(map.get("type"))) {
+            String type=map.get("type").toString();
+            List<Map<String, Object>> listFind = dataDictionaryService.getDatasByType(type);
+            if ("ROUNDING".equals(type)) {
                 map.clear();
                 map.put("type", "ACCURACY");
-                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
+                List<Map<String, Object>> listFind2 = dataDictionaryService.getDatasByType("ACCURACY");
                 listFind.addAll(listFind2);
             }
             map.clear();
