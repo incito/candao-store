@@ -43,10 +43,6 @@ $(document).ready(function () {
             });
         })
     };
-
-
-
-
     /*判断直接访问页面是否登录*/
     if (!document.referrer) {
         //if(!utils.storage.getter('aUserid',1) || utils.storage.getter('aUserid',1)!=utils.storage.getter('aUserid') ||!document.referrer){
