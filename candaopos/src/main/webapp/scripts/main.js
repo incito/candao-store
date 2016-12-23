@@ -930,6 +930,7 @@ var MainPage = {
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
                 Log.send(2, '结业成功返回参数有'+JSON.stringify(data));
                 if (data.Data == '1') {
+
                     /*结业数据上传*/
                     widget.modal.alert({
                         cls: 'fade in',
@@ -963,8 +964,9 @@ var MainPage = {
                                         btnOkCb: function () {
                                             Log.upload()
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
-                                            utils.clearLocalStorage.clearSelect();//清空缓存
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + utils.storage.getter('cashIp');
+                                            //结业成功清除缓存
+                                            utils.clearLocalStorage.clear()
                                         }
                                     });
                                     $('.modal-alert:last .modal-header .close').hide();//隐藏X关闭按钮
@@ -984,8 +986,9 @@ var MainPage = {
                                         },
                                         btnCancelCb: function () {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
-                                            utils.clearLocalStorage.clearSelect();//清空缓存
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' +utils.storage.getter('cashIp');
+                                            //结业成功清除缓存
+                                            utils.clearLocalStorage.clear()
                                         }
                                     });
                                     $('.modal-alert:last .modal-header .close').hide();//隐藏X关闭按钮
