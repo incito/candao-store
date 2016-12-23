@@ -19,6 +19,3 @@ INSERT into t_dictionary(dictid,itemid,itemDesc,itemSort,status,type,typename,it
 INSERT into t_dictionary(dictid,itemid,itemDesc,itemSort,status,type,typename,item_value)VALUES (REPLACE(UUID(),'-',''),14,'t_order_detail_history',14,1,'SYNTABLES','门店上传配置','t_order_detail_history:begintime');
 INSERT into t_dictionary(dictid,itemid,itemDesc,itemSort,status,type,typename,item_value)VALUES (REPLACE(UUID(),'-',''),15,'t_nodeclass',15,1,'SYNTABLES','门店上传配置','t_nodeclass:pritertime');
 INSERT into t_dictionary(dictid,itemid,itemDesc,itemSort,status,type,typename,item_value)VALUES (REPLACE(UUID(),'-',''),16,'t_service_charge',16,1,'SYNTABLES','门店上传配置','t_service_charge:ctime');
--- PAD注册会员开关
-ALTER TABLE `t_b_padconfig`
-ADD COLUMN `registerswitch`  tinyint(1) NULL DEFAULT 0 COMMENT 'PAD会员注册开关 0 关闭 1打开' AFTER `personweixinurl`;

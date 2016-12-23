@@ -26,7 +26,6 @@ public class PadConfig implements Serializable{
 	private String viptype;//会员类型1餐道会员；2其他会员
 	private String vipcandaourl;//会员地址(直接在数据库修改)
 	private String vipotherurl;//其他会员地址(直接在数据库修改)
-	private String registerswitch;// PAD会员注册快关 1打开 0关闭
 	private Boolean clickimagedish;//点图点菜
 	private Boolean onepage;//一页菜谱
 	private Boolean newplayer;//新手引导
@@ -250,12 +249,6 @@ public class PadConfig implements Serializable{
 	}
 	public void setImagename(List<String> imagename) {
 		this.imagename = imagename;
-	}
-	public String getRegisterswitch() {
-		return registerswitch;
-	}
-	public void setRegisterswitch(String registerswitch) {
-		this.registerswitch = registerswitch;
 	}
 
 	
