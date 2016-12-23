@@ -621,6 +621,15 @@
 						</select>
 					</div>
 				</div>
+				<div class="form-group">
+					<label class="col-xs-2 control-label">PAD注册会员开关：</label>
+					<div class="col-xs-3">
+						<select class="form-control" disabled  name="registerswitch">
+							<option value="1" class="form-control" selected="selected">启用</option>
+							<option value="0" class="form-control">关闭</option>
+						</select>
+					</div>
+				</div>
 			</form>
 		</div>
 
