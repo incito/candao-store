@@ -6,7 +6,7 @@
 	</select>
 	<insert id="insert" parameterType="com.candao.www.webroom.model.PadConfig">
 		insert into t_b_padconfig(padloginpass,social,seatimageurls,vipstatus,viptype,vipcandaourl,vipotherurl,clickimagedish,onepage,newplayer,chinaEnglish,indexad,invoice,hidecarttotal,adtimes,waiterreward,rewardmoney,youmengappkey,youmengchinnal,bigdatainterface,seatimagenames,braceletgappkey,braceletchinnal)
-		values(#{padloginpass},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface},#{seatimagenames},#{braceletgappkey},#{braceletchinnal})
+		values(#{padloginpass},#{social},#{seatimageurls},#{vipstatus},#{viptype},#{vipcandaourl},#{vipotherurl},#{clickimagedish},#{onepage},#{newplayer},#{chinaEnglish},#{indexad},#{invoice},#{hidecarttotal},#{adtimes},#{waiterreward},#{rewardmoney},#{youmengappkey},#{youmengchinnal},#{bigdatainterface},#{seatimagenames},#{braceletgappkey},#{braceletchinnal},#{registerswitch})
 	</insert>
 	<update id="update"  parameterType="com.candao.www.webroom.model.PadConfig">
 		update t_b_padconfig set id=1
@@ -79,6 +79,10 @@
 		<if test="braceletchinnal!=null">
 			,braceletchinnal=#{braceletchinnal}
 		</if>
+		<if test="registerswitch!=null">
+			,registerswitch=#{registerswitch}
+		</if>
+		
 		
 	</update>
 	
