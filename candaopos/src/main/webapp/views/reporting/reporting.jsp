@@ -187,7 +187,9 @@
         skinCell: "jedateorange",//橙色风格
         format: 'YYYY-MM-DD hh:mm:ss',
         festival: true,//是否显示节日
-        maxDate: jeDate.now(0), //设定最大日期为当前日期
+        //maxDate: jeDate.now(0), //设定最大日期为当前日期
+        isinitVal:true,                      //是否初始化时间，默认不初始化时间
+        initAddVal:[0],                       //初始化时间，加减 天 时 分
         choosefun: function (elem, datas) {
             whenend.minDate = datas; //开始日选好后，重置结束日的最小日期
         }

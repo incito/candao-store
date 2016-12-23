@@ -1358,10 +1358,8 @@ var AddDish = {
 				if(dish.temporary === '1') {
 					taste = dish.taste;
 				}
-				if(dish.taste && dish.taste.length > 0) {
-					tast = dish.taste;
-				}
 				if(taste.length > 0){
+					dish.taste = taste;
 					if(dish.temporary === '1') {
 						showname = "("+taste+")" + showname;
 					} else {

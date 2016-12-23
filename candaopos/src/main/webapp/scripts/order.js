@@ -83,7 +83,7 @@ var Order = {
         //定时更新订单信息
         setInterval(function () {
             Order.updateOrder();
-        }, 4000)
+        }, 10000)
     },
 
 
@@ -479,6 +479,11 @@ var Order = {
             }
             me.attr('sel', sel);
             me.find('.sel').text(sel);
+            if(dom.giveDishDialog.find('li.selected').length > 0) {
+                dom.giveDishDialog.find('.btn-save').removeClass('disabled');
+            } else {
+                dom.giveDishDialog.find('.btn-save').addClass('disabled');
+            }
         });
 
         //选中已选优惠或菜品
@@ -1841,18 +1846,20 @@ var Order = {
                     });
                 });
                 $.each(data, function (k, v) {
-                    var cls = v.dishnum > 0 ? '' : 'display:none';
+                    var cls = v.dishnum > 0 ? '' : 'hide';
                     if (parseInt(v.orderprice, 10) > 0) {
-                        htm += "<li style='" + cls + "' dishname='" + v.dishname + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
+                        htm += "<li class='" + cls + "' dishname='" + v.dishname + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
                             "<span class='dishname'>" + v.dishname.split('#')[0] + "</span>" +
                             "<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
                             "</li>";
                     }
-
                 });
-
                 $('#givedish-dialog .give-dish-list').html(htm);
-
+                if(dom.giveDishDialog.find('li.selected').length > 0) {
+                    dom.giveDishDialog.find('.btn-save').removeClass('disabled');
+                } else {
+                    dom.giveDishDialog.find('.btn-save').addClass('disabled');
+                }
                 cb && cb();
             }
             else {
@@ -1917,6 +1924,8 @@ var Order = {
                 } else {
                     $body.find('tr[preid=' + selpreferentialtableInfoselect + ']').addClass("selected");
                 }
+
+
             }
         });
 

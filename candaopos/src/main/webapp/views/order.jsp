@@ -144,13 +144,13 @@
 						</div>
 					</div>
 					<div class="preferential-oper-btns btns">
-						<div class="oper-btn prev-btn">
+						<div class="btn oper-btn prev-btn ">
 							<span class="glyphicon glyphicon-chevron-up"></span>
 						</div>
 						<div class="page-info">
 							<span id="curr-page2">0</span>/<span id="pages-len2">0</span>
 						</div>
-						<div class="oper-btn next-btn">
+						<div class="btn oper-btn next-btn ">
 							<span class="glyphicon glyphicon-chevron-down"></span>
 						</div>
 						<button class="btn oper-btn disabled" id="del-pref">
@@ -175,13 +175,13 @@
 				<div class="preferentials">
 					<div class="preferentials-content"></div>
 					<div class="page-btns">
-						<div class="page-btn prev-btn">
+						<div class="btn page-btn prev-btn">
 							<span class="glyphicon glyphicon-chevron-up"></span>
 						</div>
 						<div class="page-info">
 							<span id="curr-page3">0</span>/<span id="pages-len3">0</span>
 						</div>
-						<div class="page-btn next-btn">
+						<div class="btn page-btn next-btn">
 							<span class="glyphicon glyphicon-chevron-down"></span>
 						</div>
 					</div>
@@ -400,7 +400,7 @@
                 <div class="btn-operate  ">
                     <button class="btn btn-cancel in-btn135" onclick="closeConfirm('givedish-dialog')" type="button">取消
                     </button>
-                    <button class="btn btn-save in-btn135" onclick="Order.addPref(this)" type="button">确认
+                    <button class="btn btn-save in-btn135 disabled"  onclick="Order.addPref(this)" type="button">确认
                     </button>
                 </div>
             </div>
