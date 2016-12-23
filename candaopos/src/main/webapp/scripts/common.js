@@ -213,18 +213,27 @@ var keydownEnter=null
 
 
             if(keydownEnter){
+            	debugger
             	var input=$("input.card-number[name='cardNumber']"),/*结账页面会员登录*/
 					czInput=$('#rechargeMoblie'), /*会员卡充值页面会员卡号*/
 					ya_memberNumber=$('.ya_memberNumber')/*雅座会员卡充值页面会员卡号*/
 				    yaRegister=$('.ya_Register')/*雅座会员注册*/
 				    memberbingCard=$('#inputCard')/*雅座会员注册*/
 				/*结账页面会员登录*/
-				if (input.length>0 &&$('.membership-card').css('display')!='none'){
-					if(input.focus()){
-						input.next('button').click()
-						return false
+
+					if (input.length>0 &&$('.membership-card').css('display')!='none'){
+						if($('body').hasClass('modal-open')){
+
+						}
+						else {
+							if(input.focus()){
+								input.next('button').click()
+								return false
+							}
+						}
+
 					}
-				}
+
 				/*会员卡充值页面会员卡号*/
 				if (czInput.length>0){
 					if(czInput.focus()){
@@ -249,6 +258,10 @@ var keydownEnter=null
 					if(memberbingCard.focus()){
 						return false
 					}
+				}
+				/*确定零找金*/
+				if ($('#confirm-dialog').length>0 &&$('#confirm-dialog').css('display')!='none'){
+					keydownEnter=$('#J-thechange-comfirm')
 				}
 
                 keydownEnter.click();
