@@ -1,7 +1,19 @@
 var OpenPage = {
     init: function () {
-        this.isYesterdayEndWork();
+        if(utils.storage.getter('isYesterdayEndWork')=='0'){
+            if(utils.storage.getter('isOpen')){
+                $('#openTo').hide();
+                window.location = "../views/login.jsp";
 
+            }else {
+                $('#openTo').show()
+            }
+        }else {
+            $('#openTo').hide();
+            this.isYesterdayEndWork();
+        }
+
+        this.saveConfigInfo();
         this.bindEvent();
         var ipaddress = utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
         var posid = utils.getUrl.get("posid")//设置posid参数到缓存
@@ -56,10 +68,12 @@ var OpenPage = {
                     Log.send(2, '验证开业权限返回:' + res);
                     var res = JSON.parse(res.substring(12, res.length - 3));
                     if (res.Data === '1') {//开业
+                        utils.storage.setter("isOpen",true);
                         $("#mg-login-dialog").modal("hide");
                         window.location = "../views/login.jsp";
                     }
                     else {
+                        utils.storage.setter("isOpen",false);
                         widget.modal.alert({
                             cls: 'fade in',
                             content: '<strong>' + res.Info + '</strong>',
@@ -91,7 +105,11 @@ var OpenPage = {
                 var res = JSON.parse(res.substring(12, res.length - 3));
                 Log.send(2, '是否为开业返回:' + JSON.stringify(res));
                 if (res.Data === '1') {//开业
+                    $('#openTo').hide();
                     window.location = "../views/login.jsp";
+                }
+                if(res.Data === '0'){//未开业
+                    $('#openTo').show();
                 }
             },
             error: function () {
@@ -318,8 +336,9 @@ var OpenPage = {
                                         btnCancelTxt: '',
                                         btnOkCb: function () {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
-                                            utils.clearLocalStorage.clearSelect();//清空缓存
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' +utils.storage.getter('cashIp');
+                                            //结业成功清除缓存
+                                            utils.clearLocalStorage.clear()
                                             Log.send(2, '清空缓存');
                                         }
                                     });
@@ -341,8 +360,9 @@ var OpenPage = {
                                         },
                                         btnCancelCb: function () {
                                             $(".modal-alert:last,.modal-backdrop:last").remove();
-                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp=' + JSON.parse(utils.storage.getter('config')).OpenCashIp;
-                                            utils.clearLocalStorage.clearSelect();//清空缓存
+                                            window.location = '../views/openpage.jsp?ipaddress=' + utils.storage.getter('ipaddress') + '&posid=' + utils.storage.getter('posid') + '&cashIp='+utils.storage.getter('cashIp');
+                                            //结业成功清除缓存
+                                            utils.clearLocalStorage.clear()
                                         }
                                     });
                                     $('.modal-alert:last .modal-header .close').hide();//隐藏X关闭按钮

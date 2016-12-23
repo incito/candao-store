@@ -1444,7 +1444,7 @@ utils.clearLocalStorage={
 			    'setTentimes':'setTentimes',
 			    'tenTimes':'tenTimes',
 			     'getOpenEndTime':'getOpenEndTime',
-			     'vipstatus':'vipstatus'
+			     'vipstatus':'vipstatus',
 			}
 		for(var i in clearLocal){
 			utils.storage.remove(clearLocal[i])
@@ -1617,9 +1617,9 @@ utils.chooseMember={
  */
 utils.openCash = function (type) {
 	var _openCash = function(){
-		Log.send(2, '弹钱箱:' + _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/');
+		Log.send(2, '弹钱箱:' + _config.interfaceUrl.OpenCash +utils.storage.getter('cashIp')+ '/');
 		$.ajax({
-			url: _config.interfaceUrl.OpenCash + JSON.parse(utils.storage.getter('config')).OpenCashIp  + '/',
+			url: _config.interfaceUrl.OpenCash +utils.storage.getter('cashIp')+ '/',
 			method: 'GET',
 			contentType: "application/json",
 			dataType: 'json',
