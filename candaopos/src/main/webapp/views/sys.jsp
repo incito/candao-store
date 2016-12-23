@@ -24,6 +24,9 @@
                         idx = me.index();
                 me.addClass('active').siblings().removeClass('active');
                 $tabBox.find('.tab-item').hide().eq(idx).show();
+                if(idx=='2'){
+                    cashbox.initPayWay()
+                }
             })
         })
     </script>
@@ -99,7 +102,7 @@
                             </div>
 
                             <div class="tab-item" style="display: none;" id="payWayContainer">
-                                <table class="table table-bordered table-hover table-list" style="background: #fff">
+                                <table class="table table-bordered table-hover table-list" style="background: #fff;">
                                     <thead>
                                     <tr>
                                         <th>支付方式</th>
@@ -110,6 +113,23 @@
                                     <tbody>
                                     </tbody>
                                 </table>
+                                <div class="oper-div" id="adddish-sys" style="position: fixed;right:20px;bottom: 10px;">
+                                    <div class="btns">
+                                        <button class="btn oper-btn prev-btn disabled">
+                                            <span class="glyphicon glyphicon-chevron-left"></span>
+                                        </button>
+                                        <div class="page-info" style="display: inline">
+                                            <span id="curr-page">0</span>/<span id="pages-len">0</span>
+                                        </div>
+                                        <button class="btn oper-btn next-btn disabled">
+                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="getPayTypeList" style=" float: right;">
+                                    <div class=" demo">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -142,7 +162,7 @@
 
             this.abc();
 
-            this.initPayWay();
+            //this.initPayWay();
 
             $("body").on("click", "#payWayContainer tbody tr", function () {
                 $(this).addClass("tablistActive").siblings("tr").removeClass("tablistActive");
@@ -290,9 +310,22 @@
                                 return ''
                             }
                         })();
-                        ret.push('<tr status=' + v.status + ' itemId=' + v.itemId + ' class="' + memmberCls + '"><td>' + v.title + '</td><td><span class="btn-toggle J-btn-toggle">' + (isopen ? '禁用' : '启用') + '</span></td><td><span class="arrow arrow-up J-btn-up"></span><span class="arrow arrow-down J-btn-down"></span></td></tr>');
+                        ret.push('<tr status=' + v.status + ' itemId=' + v.itemId + ' class="' + memmberCls + '"><td width="50%">' + v.title + '</td><td width="20%"><span class="btn-toggle J-btn-toggle">' + (isopen ? '禁用' : '启用') + '</span></td><td><span class="arrow arrow-up J-btn-up"></span><span class="arrow arrow-down J-btn-down"></span></td></tr>');
                     });
                     $payWayContainer.html(ret.join(''));
+                    widget.loadPage({
+                        obj : "#payWayContainer tbody tr",
+                        listNum : 10,
+                        currPage : 0,
+                        totleNums : $("#payWayContainer tbody tr").length,
+                        curPageObj : "#adddish-sys #curr-page",
+                        pagesLenObj : "#adddish-sys #pages-len",
+                        prevBtnObj : "#adddish-sys  .prev-btn",
+                        nextBtnObj : "#adddish-sys  .next-btn",
+                        callback : function() {
+                        }
+                    });
+
                     $payWayContainer.find('.J-btn-toggle').off('click').on('click', function () {
                         var me = $(this);
                         var $parent = me.parents('tr');
@@ -326,8 +359,26 @@
                         if ($parent.index() == 0) {
                             return false;
                         }
-                        $parent.insertBefore($parent.prev());
-                        _savePayWay();
+                        if($parent.prev().hasClass('hide')){
+                            $parent.insertBefore($parent.prev().removeClass('hide'));
+                            _savePayWay();
+                            widget.loadPage({
+                                obj : "#payWayContainer tbody tr",
+                                listNum : 10,
+                                currPage : parseFloat($('#curr-page').text())-2,
+                                totleNums : $("#payWayContainer tbody tr").length,
+                                curPageObj : "#adddish-sys #curr-page",
+                                pagesLenObj : "#adddish-sys #pages-len",
+                                prevBtnObj : "#adddish-sys  .prev-btn",
+                                nextBtnObj : "#adddish-sys  .next-btn",
+                                callback : function() {
+                                }
+                            });
+                        }
+                        else{
+                            $parent.insertBefore($parent.prev());
+                            _savePayWay();
+                        }
 
                     });
                     $payWayContainer.find('.J-btn-down').off('click').on('click', function () {
@@ -336,9 +387,30 @@
                         if ($parent.attr('itemid') == $('#payWayContainer tbody tr:last').attr('itemid')) {
                             return false;
                         }
-                        $parent.insertAfter($parent.next());
-                        _savePayWay();
+                        if($parent.next().hasClass('hide')){
+                            $parent.insertAfter($parent.next().removeClass('hide'));
+                            _savePayWay();
+                            widget.loadPage({
+                                obj : "#payWayContainer tbody tr",
+                                listNum : 10,
+                                currPage : parseFloat($('#curr-page').text()),
+                                totleNums : $("#payWayContainer tbody tr").length,
+                                curPageObj : "#adddish-sys #curr-page",
+                                pagesLenObj : "#adddish-sys #pages-len",
+                                prevBtnObj : "#adddish-sys  .prev-btn",
+                                nextBtnObj : "#adddish-sys  .next-btn",
+                                callback : function() {
+                                }
+                            });
+                        }
+                        else{
+                            $parent.insertAfter($parent.next());
+                            _savePayWay();
+                        }
+
                     });
+
+
                 } else {
                     widget.modal.alert({
                         content: '<strong>' + res.msg + '</strong>',
