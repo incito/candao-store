@@ -1846,7 +1846,11 @@ var customTable = {
                         $('.counter-detail-box').each(function () {
                             if (tableJson[i].tables[j].tableid == $(this).attr('id') && !$(this).is(":hidden")) {//!$(this).is(":hidden")不是外卖和咖啡台才改变position
                                 //alert(tableJson[i].tables[j].tabletype)
-                                tableJson[i].tables[j].position = $(this).attr('position')
+                                /*$(this).attr('position') 为 undefined不改变原有排序*/
+                                if($(this).attr('position')){
+                                    tableJson[i].tables[j].position = $(this).attr('position')
+                                }
+
                             }
                         })
                     }

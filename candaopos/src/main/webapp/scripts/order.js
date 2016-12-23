@@ -423,6 +423,10 @@ var Order = {
         });
 
         $("#weight-dialog .btn-save").click(function () {
+            if($.trim($('#weight-num').val())==''){
+                $('#weight-num').attr('placeholder','称重菜品，重量不能为空')
+                return false
+            }
             var $target = $("#order-dish-table tr.selected");
             var params = {
                 "orderId": $('[name=orderid]').val(),
@@ -1340,7 +1344,10 @@ var Order = {
                     var ret = ''
                     if (type === 1) {
                         ret = (res.msg === '' ? '预结单打印完毕' : res.msg)
-                    } else {
+                    }
+                    else if(type === 2) {
+                        ret = (res.msg === '' ? '结账单打印完毕' : res.msg)
+                    }else {
                         ret = (res.msg === '' ? '客用单打印完毕' : res.msg)
                     }
                     return ret;
@@ -1502,7 +1509,6 @@ var Order = {
                 "orderNo": orderNo
             };
         } else {
-            debugger
             params = {
                 "actionType": "1",
                 "currenttableid": tableId,
@@ -2419,14 +2425,17 @@ var Order = {
                 if (invoice_Flag.flag != '') {
 
                 } else {
-                    goBack()
+                    var url= "./check/check.jsp?tips=" + encodeURIComponent(encodeURIComponent('结账成功|结账单打印成功'));
+                    window.location.href = url;
+                    //goBack()
                 }
 
             } else {
                 if (invoice_Flag.flag != '') {
 
                 } else {
-                    window.location.href = encodeURI(encodeURI('./main.jsp'));
+                    var url= "./main.jsp?tips=" + encodeURIComponent(encodeURIComponent('结账成功|结账单打印成功'));
+                    window.location.href = url;
                 }
 
             }
@@ -2441,10 +2450,13 @@ var Order = {
                 $('#Invoice-title #Invoice-title-btncancel,#Invoice-title .dialog-sm-header img').click(function () {
                     Log.send(2, '不打印发票信息,直接结账');
                     if (utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                        goBack()
+                        var url= "./check/check.jsp?tips=" + encodeURIComponent(encodeURIComponent('结账成功|结账单打印成功'));
+                        window.location.href = url;
+                        //goBack()
                     }
                     else {
-                        window.location.href = encodeURI(encodeURI('./main.jsp'));
+                        var url= "./main.jsp?tips=" + encodeURIComponent(encodeURIComponent('结账成功|结账单打印成功'));
+                        window.location.href = url;
                     }
 
                 })
@@ -2459,6 +2471,7 @@ var Order = {
                             btnOkTxt: '',
                             btnCancelTxt: '确定',
                             btnCancelCb:function () {
+                                $('#Invoice-title').modal('hide');
                                 $(".modal-alert:last,.modal-backdrop:last").remove();
                                 _printinvoiceMsg()
                             }
@@ -2488,10 +2501,13 @@ var Order = {
                                 utils.loading.remove();
                                 if (res.result == '0') {
                                     if (utils.getUrl.get('referer') === '1') {//从账单页面跳转而来
-                                        goBack()
+                                        var url= "./check/check.jsp?tips=" + encodeURIComponent(encodeURIComponent('结账成功|结账单打印成功'));
+                                        window.location.href = url;
+                                        //goBack()
                                     }
                                     else {
-                                        window.location.href = encodeURI(encodeURI('./main.jsp'));
+                                        var url= "./main.jsp?tips=" + encodeURIComponent(encodeURIComponent('结账成功|结账单打印成功'));
+                                        window.location.href = url;
                                     }
                                 }
                                 else {

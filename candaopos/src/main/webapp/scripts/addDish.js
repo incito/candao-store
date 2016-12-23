@@ -237,8 +237,8 @@ var AddDish = {
 								return false;
 							}
 
-							//临时菜
-							if($('li[itemid="' + dish.itemid + '"] span').text() === "pos专用菜品"  && dish.title === "临时菜") {
+							//临时菜 在POS专用菜品分类下，已临时菜开头的菜品名字才算临时菜
+							if($('li[itemid="' + dish.itemid + '"] span').text() === "pos专用菜品"  && dish.title.substring(0,3).indexOf('临时菜') >-1) {
 								Log.send(2, '临时菜');
 								dish.temporary = '1';
 								dom.lscDialog.find('input').val('');
@@ -1826,6 +1826,11 @@ var AddDish = {
 	 */
 	updateTotalPrice: function (){
 		var $tr = dom.selDishable.find("tbody tr.selected");
+		var that=this;
+		if($tr.length===0){
+			that.updateTotalAmount();
+			return false
+		}
 		var dish = dishCartMap.get($tr.attr("cid"));
 		var totalNum =dish.dishnum;
 		var dishtype = dish.dishtype;
@@ -1948,7 +1953,6 @@ var AddDish = {
 							dish.dishes.splice(k,1)
 						}
 					});
-					debugger;
 					dom.selDishable.find("tbody tr").eq(0).addClass('selected');
 				}
 			}

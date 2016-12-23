@@ -108,6 +108,20 @@ $("#test").click(function(){
 		$("#saveComplaint").removeClass("hide");
 		$("#complaint-list .avoid-li").attr("disabled", false);
 	});
+	//点击反结算原因 编辑
+	$(".textEdit .editBackSettle").click(function() {
+		var parent=$(this).parent().parent();
+		$(this).addClass("hide");
+		$(".saveBackSettle",parent).removeClass("hide");
+		$(".backSettle-list .avoid-li",parent).attr("disabled", false);
+		$(".backSettle-add",parent).removeClass("hide");
+	});
+	$(".backSettle-add").click(function() {
+		var div=$(this).parents(".textEdit");
+		$(".backSettle_name",div).val("");
+		$(".addBackSettle-input-div",div).removeClass("hide");
+		$(".backSettle-add",div).addClass("hide");
+	});
 	
 	$("#reason-add").click(function() {
 		$("#reason_name").val("");
@@ -295,6 +309,33 @@ $("#test").click(function(){
 			}
 		});
 	});
+	/**
+	 * 修改反结算原因
+	 */
+	$(".textEdit .saveBackSettle").click(function() {
+		var parent=$(this).parent().parent();
+		var type = $(".backSettlestype",parent).val();
+		var reasonArr = [];
+		$(".backSettle-list .avoid-li",parent).not(".backSettle-add").each(function(){
+			var dictid = $(this).attr("dictid");
+			var text = $(this).text();
+			var reason = {
+					dictid: dictid,
+					item_desc: text,
+					itemSort:$(this).index()
+			};
+			reasonArr.push(reason);
+		});
+		doPost(type, reasonArr, function(data){
+			$("backSettle-list",parent).find(".dishTasteUl").last().attr("dictid",data[type][data[type].length-1] && data[type][data[type].length-1].dictid);
+			$(".saveBackSettle",parent).addClass("hide");
+			$(".editBackSettle",parent).removeClass("hide");
+			$(".backSettle-list .avoid-li",parent).attr("disabled", true);
+			$(".backSettle-add",parent).addClass("hide");
+			$(".addBackSettle-input-div",parent).addClass("hide");
+		});
+	});
+	
 	/**
 	 * 修改服务员响应时间
 	 */
@@ -1202,6 +1243,22 @@ function complaintSave() {
 	}
 }
 /**
+ * 添加一个反结算原因
+ */
+function backSettleSave(obj) {
+	var parent=$(obj).parents(".textEdit");
+	var backSettle_name = dellrTrim($(".backSettle_name",parent).val());
+	if (backSettle_name != null && backSettle_name != "") {
+		$(".addBackSettle-input-div",parent).addClass("hide");
+		var htm = itemHtm('', backSettle_name, $(".backSettlestype",parent).val(), false);
+		$(".backSettle-add",parent).before(htm);
+		/*
+		 if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
+		 $("#reason-add").removeClass("hide");
+		 }*/
+	}
+}
+/**
  * 添加一个呼叫服务员类型原因
  */
 function CalltypeSave() {
@@ -1399,7 +1456,23 @@ function initData(data, type){
 			}
 		});
 	}
-	
+if(type==null) {
+	//文本编辑
+	var textEdit = $(".textEdit");
+	textEdit.each(function () {
+		var thisDiv = this;
+		var typeData = $(".backSettlestype", this).val();
+		var list = data[typeData];
+		if (null != list) {
+			$.each(list, function (i, item) {
+				var itemDesc = item.itemDesc;
+				var htm = itemHtm(item.dictid, itemDesc, $(".backSettlestype", thisDiv).val(), true);
+				$(".backSettle-add", thisDiv).before(htm);
+			});
+		}
+	})
+}
+
 	if(type == null){
 		var imgs = data.PADIMG;
 

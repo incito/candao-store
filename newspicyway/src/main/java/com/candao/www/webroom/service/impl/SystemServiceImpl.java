@@ -252,6 +252,8 @@ public class SystemServiceImpl {
 		jsonObject.put("ACCURACY", getJsonArrary(mapList, "ACCURACY"));
 		jsonObject.put("PADIMG", getJsonArrary(mapList, "PADIMG"));
 		jsonObject.put("ONEPAGETYPE", getJsonArrary(mapList, "ONEPAGETYPE"));
+		jsonObject.put("BACKSETTLE_REASON", getJsonArrary(mapList, "BACKSETTLE_REASON"));
+		jsonObject.put("GIFT_REASON", getJsonArrary(mapList, "GIFT_REASON"));
 		return jsonObject;
 	}
 
