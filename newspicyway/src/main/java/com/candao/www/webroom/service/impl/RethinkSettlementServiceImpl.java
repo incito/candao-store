@@ -115,7 +115,7 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 			BigDecimal price = (BigDecimal)orderDetail.get("price");
 			Double amount = (Double)orderDetail.get("amount");
 		    dishMap.put("itemdesc", itemdesc);
-		    dishMap.put("count", Math.round(count));
+		    dishMap.put("count", count);
 		    dishMap.put("price", StringUtils.ratioTransform2(price));
 		    BigDecimal b = new BigDecimal(amount);
 		    dishMap.put("amount", StringUtils.ratioTransform2(b));

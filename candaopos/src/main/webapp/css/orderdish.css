@@ -7,6 +7,9 @@
   	margin: auto auto;
   	padding: 0;
 }
+header,footer {
+	position: static;
+}
 footer{
 	height: auto;
 }
@@ -26,6 +29,7 @@ footer{
 	background: #FFFFFF;
 	float:  left;
 	position: relative;
+	padding-right: 53px;
 }
 /******涓棿鎿嶄綔鏍�****/
 .oper-div{
@@ -34,7 +38,9 @@ footer{
 	display: inline-block;
 	height: 100%;
 	background: #FFFFFF;
-	float: left;
+	position: absolute;
+	right: 0;
+	top:0;
 }
 .oper-div .btns{
   	margin-top: 53px;
@@ -75,7 +81,7 @@ footer{
 /******涓棿鎿嶄綔鏍�end****/
 
 .main-div{
-	width: 60%;
+	width: 64%;
 	height: 100%;
 	display: inline-block;
 	float: left;
@@ -83,7 +89,7 @@ footer{
 	background: #E8E8E8;
 }
 .main-div .nav-type-prev, .main-div .nav-type-next{
-	width: 43px;
+	width: 5%;
   	height: 43px;
   	background: #F6F6F6;
   	box-shadow: 0px 1px 0px 0px #B1B1B1;
@@ -94,7 +100,7 @@ footer{
   	display: inline-block;
 }
 .main-div .nav-type-prev span, .main-div .nav-type-next span{
-	color: #000000;
+	color: #333;
 }
 .main-div .nav-type-next{
 	float: right;
@@ -117,9 +123,9 @@ footer{
   	overflow: hidden;
   	display: inline-block;
   	padding: 0;
-  	margin: 0;
+  	margin: 0 2%;
   	height: 43px;
-  	width: 522px;/***85%****/
+  	width: 86%;
   	float: left;
 }
 .main-div .nav-types li{
@@ -128,19 +134,37 @@ footer{
 	position: relative;
   	list-style: none;
 	float: left;
-  	width: 16.66%;
+  	/*width: 16.66%;*/
+	width: 16%;
   	height: 100%;
   	text-align: center;
   	padding: 12px 2px;
   	font-size: 14px;
 	color: #111111;
 	cursor: pointer;
+	overflow: hidden;
 }
 .main-div .nav-types li.active{
 	font-size: 16px;
 	color: #FF5803;
 	padding-top: 6px;
 	border-bottom: 3px solid #FF5803;
+}
+
+.main-div .nav-types li b {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: #FF580A;
+	color: #fff;
+	font-size: 12px;
+	border-radius: 100%;
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+	font-weight: normal;
+	text-align: center;
+	display: none;
 }
 
 .search-btns div.search-btn{
@@ -157,19 +181,22 @@ footer{
 	text-align: center;
 	padding: 10px;
 }
-.search-btns div.search-btn:hover, .search .delsearch-btn:hover, 
-.main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, 
-.default-dialog .taste ul li:hover, #combodish-dialog .btns-div .num-btn:hover{
+.search-btns div.search-btn:hover, .search .btn-clear:hover, 
+.main-div .main-oper-btns .btn:hover, .default-dialog .avoid:hover, .default-dialog .freason:hover,
+.default-dialog .taste ul li:hover, .combodish-dialog .btns-div .num-btn:hover{
 	background: #F68D70;
 	opacity: 0.5;
 	color: #ffffff;
 }
-.search-btns div.search-btn:active, .search .delsearch-btn:active, 
-.main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, 
-.default-dialog .taste ul li:active, #combodish-dialog .btns-div .num-btn:active{
+.search-btns div.search-btn:active, .search .btn-clear:active, 
+.main-div .main-oper-btns .btn:active, .default-dialog .avoid:active, .default-dialog .freason:active,
+.default-dialog .taste ul li.active, .combodish-dialog .btns-div .num-btn:active{
 	background: #FF5803;
 	opacity: 1;
 	color: #ffffff;
+}
+.fishpot-dialog .modal-body {
+	text-align: left;
 }
 .main-div>div{
 	position: relative;
@@ -196,7 +223,7 @@ input[type=search] {
 	padding: 13px;
   	color: #515356;
 }
-.search .delsearch-btn{
+.search .btn-clear{
 	height: 42px;
 	width: 90px;
 	float: right;
@@ -215,7 +242,7 @@ input[type=search] {
 	float: left;
 }
 .main-div .dishes .dish-info{
-	width: 132px;
+	width: 130px;
 	height: 70px;
 	background: #FFFFFF;
 	box-shadow: 0px 1px 0px 0px #B1B1B1;
@@ -226,7 +253,15 @@ input[type=search] {
 	padding: 10px 5px 7px;
 	color: #515356;
 	text-align: center;
-	font-size: 14px;
+	font-size: 12px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+.main-div .dishes .dish-name {
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
 }
 .main-div .dishes .dish-info hr{
 	padding: 0;
@@ -253,6 +288,7 @@ input[type=search] {
 }
 .btn.disabled{
 	pointer-events: none;
+	opacity: .65!important;
 }
 .main-div .main-oper-btns .btn.place-order{
 	float: right;
@@ -312,9 +348,12 @@ input[type=search] {
 	text-align: center;
 	padding: 5px;
 }
+.table>tbody>tr>td.weigh {
+	color:blue!important;
+}
 .table>tbody>tr>td:first-child{
 	text-align: left;
-	padding-left: 40px;
+	padding-left: 10px;
 }
 .table>tbody>tr.selected>td{
 	background: #FF5200;
@@ -322,7 +361,7 @@ input[type=search] {
 }
 .left-div .total-amount{
   	height: 25px;
-  	padding: 0 30px;
+  	padding: 0 0 0 30px;
   	font-size: 18px;
   	color: #FF5803;
   	font-weight: bold;
@@ -361,12 +400,7 @@ input[type=search] {
 #updatenum-dialog .modal-dialog{
 	width: 340px;
 }
-#updatenum-dialog .modal-title{
-	text-align: center;
-  	font-size: 16px;
-  	color: #FFFFFF;
-  	padding-top: 15px;
-}
+
 #updatenum-dialog .dialog-sm-info .dishname{
 	font-size: 16px;
 	color: #FF5803;
@@ -379,7 +413,11 @@ input[type=search] {
 	float: left;
 	width: 100%;
 }
-.default-dialog .avoid{
+.default-dialog  .form-group .inpt-span{
+	position: absolute;
+	margin:10px;
+}
+.default-dialog .avoid,.default-dialog .freason,.default-dialog .breason{
 	float: left;
   	width: 100px;
   	height: 40px;
@@ -389,7 +427,7 @@ input[type=search] {
   	margin-right: 4px;
   	border-radius: 2px;
 }
-.default-dialog .avoid.active, #note-dialog .taste ul li.active{
+.default-dialog .avoid.active,.default-dialog .freason.active,.default-dialog .breason.active, #note-dialog .taste ul li.active{
 	background: #FF5803;
 	opacity: 1;
 	color: #ffffff;
@@ -397,14 +435,16 @@ input[type=search] {
 .default-dialog .taste ul {
 	padding: 0;
 	margin: 0;
+	align-items: stretch;
+	flex-direction: row;
+	display: flex;
 }
 .default-dialog .taste ul li{
 	text-align: center;
   	display: inline-block;
   	width: 80px;
-  	height: 40px;
   	background: #FFFFFF;
-  	padding-top: 10px;
+  	padding: 10px 0;
   	margin-right: 4px;
 }
 .input-dialog .modal-dialog{
@@ -414,21 +454,21 @@ input[type=search] {
 #givefood-dialog .form-group input.padding-left{
 	padding-left: 120px;
 }
-#combodish-dialog .modal-dialog{
+.combodish-dialog .modal-dialog{
 	width: 800px;
 	margin-top: 50px;
 }
-#combodish-dialog .modal-content, #combodish-dialog .modal-body{
+.combodish-dialog .modal-content, .combodish-dialog .modal-body{
 	float: left;
 }
-#combodish-dialog .dish-div{
+.combodish-dialog .dish-div{
 	width: 80%;
 	padding: 0 10px 0 0;
 }
-#combodish-dialog .btns-div{
+.combodish-dialog .btns-div{
 	width: 20%;
 }
-#combodish-dialog .btns-div .num-btn{
+.combodish-dialog .btns-div .num-btn{
 	width: 40px;
   	height: 40px;
   	background: #ffffff;
@@ -438,13 +478,13 @@ input[type=search] {
   	margin-top: 4px;
   	border-radius: 3px;
 }
-#combodish-dialog .dishname{
+.combodish-dialog .dishname{
 	text-align: center;
 	width: 100%;
 	font-size: 18px;
   	font-weight: bold;
 }
-.combo-group{
+.combo-box{
 	overflow-y: auto;
 	height: 400px;
 	width: 100%;
@@ -459,6 +499,9 @@ input[type=search] {
   	float: left;
   	width: 100%;
 }
+.combo-group .group-title.fited {
+	background: green;
+}
 .combo-group .col-xs-7{
 	font-size: 16px;
   	padding-top: 10px;
@@ -468,18 +511,11 @@ input[type=search] {
 	height: 36px;
 	float: right;
 }
-.default-dialog .dialog-sm-info span.inpt-span {
-  	position: absolute;
-  	font-size: 16px;
-  	color: #B0B0B0;
-  	padding-top: 10px;
-  	padding-left: 10px;
-}
 .default-dialog .form-group input.padding-left{
 	height: 40px;
 	padding-left: 90px;
 }
-#fishpotdish-dialog .fishpot .form-group .col-xs-7{
+.fishpot .form-group .col-xs-7{
 	width: 320px;
   	height: 45px;
   	text-align: center;
@@ -489,26 +525,26 @@ input[type=search] {
   	color: #ffffff;
   	font-size: 16px;
 }
-#fishpotdish-dialog .fishpot .form-group .num-oper{
+.fishpot .form-group .num-oper{
 	float: right;
 	text-align: right;
 }
 .fishpot .form-group .num-oper .num-inp{
-	width: 40px;
+	width: 50px;
 	height: 40px;
 	display: inline-block;
+	text-align: center;
 }
 .fishpot .form-group .num-oper .num-oper-btn{
 	width: 40px;
 	display: inline-block;
 }
-#fishpotdish-dialog .btn-operate  {
-	text-align: right;
-}
+
 .guadan-dialog .inpt-span{
 	position: absolute;
-	padding: 12px 6px;
+	padding:2px;
 	color: #A6A6A6;
+
 }
 .guadan-dialog input{
 	padding-left: 72px;
@@ -527,4 +563,55 @@ input[type=search] {
 .guadan-dialog .virtual-keyboard ul li{
 	margin-bottom: 10px;
 	width: 82px;
+}
+
+.campany-icon {
+	min-height: 150px;
+	padding:0;
+}
+.campany-icon li {
+	list-style: none;
+	display: inline-block;
+	margin:0;
+	padding:0px 10px;
+	background: #FFFFFF;
+	border-radius: 2px;
+	cursor: pointer;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	width: 120px;
+	overflow: hidden;
+	height: 30px;
+	line-height: 30px;
+	text-overflow:ellipsis;white-space:nowrap;overflow:hidden;
+	text-align: center;
+	margin-right:5px;
+}
+
+.campany-icon li.selected {
+	background: #FF5803;
+	box-shadow: 0px 1px 0px 0px #C64300;
+	border-radius: 3px;
+	color: #FFFFFF;
+}
+
+.hori-lf-div {
+	width: 305px;
+	float: left;
+}
+.hori-lf-div span {
+	position: absolute;
+	font-size: 14px;
+	color: #B0B0B0;
+	margin: 8px 0 0 8px;
+}
+.hori-lf-div input {
+	height: 38px;
+	margin-bottom: 18px;
+	padding-left: 85px;
+}
+.hori-rf-div {
+	float:right;
+}
+#sel-dish-table-title,#sel-dish-table-dishnum,#sel-dish-table-price{
+	cursor: pointer;
 }

@@ -338,6 +338,60 @@
 				</div>
 			</div>
 		</div>
+		<div class="setup_div textEdit">
+			<div style="height: 30px;">
+				<div class="system-setup-title" style="">反结算原因</div>
+				<button type="button"  class="btn btn-default editBackSettle">编辑</button>
+				<button type="button"
+						class="btn btn-default hide saveBackSettle">保存</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+			<div class="form-horizontal " >
+				<div class="form-group">
+					<input type="hidden" class="backSettlestype" value="BACKSETTLE_REASON" />
+					<div class="avoid-tag-table col-xs-10 backSettle-list"
+						 style="overflow: auto;">
+						<div class="add-reason avoid-li btn btn-default hide backSettle-add">
+							<i class="icon-plus"></i>添加原因
+						</div>
+						<div class="addBackSettle-input-div hide backSettle-input">
+							<div class="col-xs-3 no-left-padding">
+								<input type="text" class="form-control backSettle_name"
+									   name="" maxlength="45" required="required"
+									   onblur="backSettleSave(this);" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="setup_div textEdit">
+			<div style="height: 30px;">
+				<div class="system-setup-title" style="">赠菜原因</div>
+				<button type="button"  class="btn btn-default editBackSettle">编辑</button>
+				<button type="button"
+						class="btn btn-default hide saveBackSettle">保存</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+			<div class="form-horizontal " >
+				<div class="form-group">
+					<input type="hidden" class="backSettlestype" value="GIFT_REASON" />
+					<div class="avoid-tag-table col-xs-10 backSettle-list"
+						 style="overflow: auto;">
+						<div class="add-reason avoid-li btn btn-default hide backSettle-add">
+							<i class="icon-plus"></i>添加原因
+						</div>
+						<div class="addBackSettle-input-div hide backSettle-input">
+							<div class="col-xs-3 no-left-padding">
+								<input type="text" class="form-control backSettle_name"
+									   name="" maxlength="45" required="required"
+									   onblur="backSettleSave(this);" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
 		<!--div class="setup_div">
 			<div style="height: 30px;">
 				<div class="system-setup-title" style="">呼叫服务类型设置</div>

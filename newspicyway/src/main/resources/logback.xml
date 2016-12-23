@@ -34,6 +34,17 @@
             <charset class="java.nio.charset.Charset">UTF-8</charset>
         </encoder>
     </appender>
+    <appender name="h5POSAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/h5pos/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
     <appender name="ErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -74,5 +85,9 @@
         <appender-ref ref="printAppender"/>
         <!--<appender-ref ref="STDOUT"/>-->
     </logger>
-
+    <!--H5POS日志输出-->
+    <logger name="com.candao.www.webroom.service.impl.H5LogServiceImpl" additivity="false" level="DEBUG">
+        <appender-ref ref="h5POSAppender"/>
+        <!--<appender-ref ref="STDOUT"/>-->
+    </logger>
 </configuration>

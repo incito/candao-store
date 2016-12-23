@@ -42,7 +42,7 @@
         mb.menuid = tm.menuid AND tm.status ='1' ORDER BY tm.effecttime DESC LIMIT 1) GROUP BY dishid) f
         ON(a.dishid=f.dishid)
         WHERE (NOT a.dishtype IN(3,4)) AND a.status&lt;&gt;5 AND a.orderid=#{orderId}
-        GROUP BY a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.orderprice
+        GROUP BY a.dishid,b.dishtype,a.dishunit,f.dishname,b.image,b.dishid,c.itemid,c.itemdesc,a.orderprice,a.pricetype
     </select>
     <select id="getJsJson" resultType="java.util.HashMap">
         SELECT orderid,SUM(couponNum) AS couponNum,incometype,membercardno,bankcardno,payway,SUM(payamount) AS
@@ -54,6 +54,20 @@
     </select>
     <select id="getMemberSaleInfo" resultType="java.util.HashMap">
         SELECT * FROM t_order_member WHERE orderid=#{orderId}
+    </select>
+    <!--赠菜-->
+    <select id="getPreferentialDish" resultType="java.util.HashMap">
+        SELECT dishid, title, dishunit, sum(dishnum) AS dishnum
+        FROM (
+          SELECT dp.dishid, d.title, dp.unit AS dishunit, 1 AS dishnum
+          FROM t_order_detail_preferential dp
+          LEFT JOIN t_p_preferential_activity pa ON dp.preferential = pa.id LEFT JOIN t_dish d ON dp.dishid = d.dishid
+          WHERE dp.orderid = #{orderId} AND dp.dishid IS NOT NULL AND dp.dishid != '' AND pa.type = '07'
+          UNION ALL
+          SELECT a.dishid, b.title, a.dishunit, a.dishnum
+          FROM t_order_detail a LEFT JOIN t_dish b ON a.dishid = b.dishid
+          WHERE a.orderid = #{orderId} AND a.pricetype = 1
+        ) t GROUP BY dishid
     </select>
     <select id="getOrderRuleByOrderId" resultType="java.util.HashMap">
         select * from t_order_rule  where   orderid=#{orderId}

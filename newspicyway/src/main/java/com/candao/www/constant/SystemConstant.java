@@ -23,7 +23,9 @@ public enum SystemConstant{
 	CALLTYPE("CALLTYPE","呼叫服务员类型"),
 	ROUNDING("ROUNDING","零头处理方式"),
 	ONEPAGETYPE("ONEPAGETYPE","一页菜谱"),
-	ACCURACY("ACCURACY","零头精确度");
+	ACCURACY("ACCURACY","零头精确度"),
+	BACKSETTLE_REASON("BACKSETTLE_REASON","反结算原因"),
+	GIFT_REASON("GIFT_REASON","赠菜原因");
 	private String type;
 
 	private String typename;

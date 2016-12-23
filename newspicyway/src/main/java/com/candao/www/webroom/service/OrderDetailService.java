@@ -41,7 +41,12 @@ public interface OrderDetailService {
 	 * @return
 	 */
 	public List<Map<String, Object>> itemSellDetail(Map<String, Object> timeMap) throws Exception;
-
+	/**
+	 * 获取品项销售明细
+	 * @param timeMap
+	 * @return
+	 */
+	public List<Map<String, Object>> itemSellDetailForPos(Map<String, Object> timeMap);
 	public Map<String, Object> placeOrder(Order order);
 
 	public void   afterprint(String orderid);
