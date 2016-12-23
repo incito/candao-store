@@ -127,7 +127,7 @@
 
             $(".btnOk").click(function () {
                 Log.send(2, title+'权限验证开始：'+JSON.stringify({
-                            username:user ,
+                            username: $.trim($("#user").val()),
                             password: psd,
                             macAddress: utils.storage.getter('ipaddress'),//Ip地址
                             loginType: userRightNo
@@ -137,7 +137,7 @@
                     method: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify({
-                        username:user ,
+                        username:$.trim($("#user").val()) ,
                         password: hex_md5(psd),
                         macAddress: utils.storage.getter('ipaddress'),//Ip地址
                         loginType: userRightNo

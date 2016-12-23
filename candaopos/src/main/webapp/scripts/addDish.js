@@ -2023,13 +2023,11 @@ var AddDish = {
 	 */
 	giveFood: function () {
 		$("#givefood-reason").val('');
-		if( utils.storage.getter('config') !== null) {
-			var str = '';
-			$.each(JSON.parse(utils.storage.getter('config')).DishGiftReasons.split(';'), function(k,v){
-				str += '<div class="freason">' + v + '</div>';
-			})
-			$("#givefood-dialog").find('.freasons').html(str);
-		}
+		var str = '';
+		$.each(JSON.parse(utils.storage.getter('GIFT_REASON')), function(k,v){
+			str += '<div class="freason">' + v.itemDesc + '</div>';
+		})
+		$("#givefood-dialog").find('.freasons').html(str);
 		$("#givefood-dialog").modal("show");
 	},
 

@@ -278,6 +278,7 @@ _config.interfaceUrl = {
 	GetUserRight: "/newspicyway/padinterface/userrights.json", <!--获取用户权限-->
 	GetAllTableInfos: "/newspicyway/padinterface/querytables.json", <!--获取所有餐桌信息-->
 	GetSystemSetData: "/newspicyway/padinterface/getSystemSetData.json", <!--获取系统设置-->
+	GetAllSystemSetData: "/newspicyway/padinterface/getAllSystemSetData.json", <!--获取系统设置-->
 	VerifyUser: "/newspicyway/padinterface/verifyuser.json", <!--验证用户是否存在-->
 	OpenTable: "/newspicyway/padinterface/setorder.json", <!--餐桌开台-->
 	GetOrderInvoice: "/newspicyway/padinterface/findInvoiceByOrderid.json", <!--获取订单发票-->
@@ -1661,7 +1662,7 @@ utils.openCash = function (type) {
 					return false;
 				}
 
-				if(val === JSON.parse(utils.storage.getter('config')).OpenCashPWD) {
+				if(val === utils.storage.getter('OpenCashPWD')) {
 					_openCash();
 					cashModal.close();
 				} else {

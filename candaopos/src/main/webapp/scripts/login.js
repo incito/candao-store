@@ -255,20 +255,20 @@ var Login = {
     /*保存配置信息*/
     saveConfigInfo: function () {
         //设置配置信息
-        $.ajax({
-            url: _config.interfaceUrl.Config,
-            type: "get",
-            dataType: 'text',
-            cache: false,
-        }).then(function (res) {
-            utils.storage.setter('config', res.split("*/")[1]);
-            var config = JSON.parse(utils.storage.getter('config'));
-            /*设置钱箱地址*/
-            var cashIp = utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
-            config['OpenCashIp'] = cashIp
-            utils.storage.setter('config', JSON.stringify(config));
-            Log.send(2, '设置配置信息' + JSON.stringify(config))
-        });
+        //$.ajax({
+        //    url: _config.interfaceUrl.Config,
+        //    type: "get",
+        //    dataType: 'text',
+        //    cache: false,
+        //}).then(function (res) {
+        //    utils.storage.setter('config', res.split("*/")[1]);
+        //    var config = JSON.parse(utils.storage.getter('config'));
+        //    /*设置钱箱地址*/
+        //    var cashIp = utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
+        //    config['OpenCashIp'] = cashIp
+        //    utils.storage.setter('config', JSON.stringify(config));
+        //    Log.send(2, '设置配置信息' + JSON.stringify(config))
+        //});
         /*获取营业时间*/
         $.ajax({
             url: _config.interfaceUrl.GetTradeTime,
@@ -307,7 +307,6 @@ var Login = {
                     'vipcandaourl': res.data.vipcandaourl,//餐道
                     'vipotherurl': res.data.vipotherurl//雅座
                 }
-
                 utils.storage.setter('vipType', res.data.viptype)//会员地址状态 viptype 1为餐道会员 2为雅坐会员
                 utils.storage.setter('memberAddress', JSON.stringify(member))//设置会员地址
                 utils.storage.setter('vipstatus', res.data.vipstatus)//会员是否开启
@@ -315,10 +314,10 @@ var Login = {
         });
 
         //银行信息
-        $.get(_config.interfaceUrl.GetAllBankInfo).then(function (res) {
-            Log.send(2, '银行信息' + JSON.stringify(res));
-            utils.storage.setter('banklist', JSON.stringify(res));
-        });
+        //$.get(_config.interfaceUrl.GetAllBankInfo).then(function (res) {
+        //    Log.send(2, '银行信息' + JSON.stringify(res));
+        //    utils.storage.setter('banklist', JSON.stringify(res));
+        //});
 
         //门店信息
         $.get(_config.interfaceUrl.GetBranchInfo).then(function (res) {
@@ -339,68 +338,39 @@ var Login = {
             }
         });
 
-        //零头信息
+        //获取门店后台配置信息
         $.ajax({
-            url: _config.interfaceUrl.GetSystemSetData,
+            url: _config.interfaceUrl.GetAllSystemSetData,
             method: 'POST',
             contentType: "application/json",
             dataType: 'json',
             data: JSON.stringify({
-                    type: 'ROUNDING'
+                    type: ['ROUNDING','JI_KOU_SPECIAL','bank', 'DISHES','RETURNDISH', "BACKSETTLE_REASON","GIFT_REASON"]
                 }
             )
         }).then(function (res) {
+            Log.send(2, '获取门店后台配置信息:' + JSON.stringify(res));
             if(res.code=='0'){
-                Log.send(2, '零头信息:' + JSON.stringify(res));
-                utils.storage.setter('ROUNDING', JSON.stringify(res.data.rows));
+                //零头信息
+                utils.storage.setter('ROUNDING', JSON.stringify(res.data.ROUNDING));
+                //忌口
+                utils.storage.setter('JI_KOU_SPECIAL', JSON.stringify(res.data.JI_KOU_SPECIAL));
+                //餐具
+                utils.storage.setter('DISHES2', JSON.stringify(res.data.DISHES));
+                //赠菜
+                utils.storage.setter('GIFT_REASON', JSON.stringify(res.data.GIFT_REASON));
+                //退菜
+                utils.storage.setter('RETURNDISH', JSON.stringify(res.data.RETURNDISH));
+                //反结算
+                utils.storage.setter('BACKSETTLE_REASON', JSON.stringify(res.data.BACKSETTLE_REASON));
+                //银行
+                utils.storage.setter('banklist', JSON.stringify(res.data.bank));
             }
             else {
                 utils.printError.alert(res.msg)
             }
 
         });
-
-        //忌口
-        $.ajax({
-            url: _config.interfaceUrl.GetSystemSetData,
-            method: 'POST',
-            contentType: "application/json",
-            dataType: 'json',
-            data: JSON.stringify({
-                    type: 'JI_KOU_SPECIAL'
-                }
-            )
-        }).then(function (res) {
-            if(res.code=='0'){
-                Log.send(2, '忌口:' + JSON.stringify(res));
-                utils.storage.setter('JI_KOU_SPECIAL', JSON.stringify(res.data.rows));
-            }
-            else {
-                utils.printError.alert(res.msg)
-            }
-
-        });
-
-        //餐具
-        $.ajax({
-            url: _config.interfaceUrl.GetSystemSetData,
-            method: 'POST',
-            contentType: "application/json",
-            dataType: 'json',
-            data: JSON.stringify({
-                    type: 'DISHES'
-                }
-            )
-        }).then(function (res) {
-            if(res.code=='0'){
-                Log.send(2, '餐具:' + JSON.stringify(res));
-                utils.storage.setter('DISHES2', JSON.stringify(res.data.rows));
-            }
-            else {
-                utils.printError.alert(res.msg)
-            }
-        });
-
         $.ajax({
             url: _config.interfaceUrl.GetDinnerWareInfo + utils.storage.getter('aUserid') + '/',
             method: 'get',

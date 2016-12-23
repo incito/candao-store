@@ -1,5 +1,15 @@
 var OpenPage = {
     init: function () {
+
+        //设置钱箱地址参数到缓存
+        if(utils.getUrl.get("cashIp")) {
+            utils.storage.setter('cashIp', utils.getUrl.get("cashIp"));
+            utils.storage.setter('OpenCashPWD', '123456');
+        } else {
+            utils.printError.alert('钱箱地址配置错误')
+            return false;
+        }
+
         if(utils.storage.getter('isYesterdayEndWork')=='0'){
             if(utils.storage.getter('isOpen')){
                 $('#openTo').hide();
@@ -13,13 +23,10 @@ var OpenPage = {
             this.isYesterdayEndWork();
         }
 
-        this.saveConfigInfo();
         this.bindEvent();
         var ipaddress = utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
         var posid = utils.getUrl.get("posid")//设置posid参数到缓存
         var autoFill=utils.getUrl.get("autoFill")//自动填充现金金额。0：不填充，1：填充, 默认为填充
-        var cashIp=utils.getUrl.get("cashIp")//设置钱箱地址参数到缓存
-        utils.storage.setter("cashIp", cashIp);
         utils.storage.setter("autoFill", autoFill ? autoFill : '1');
         if (ipaddress != null || posid != null) {
             utils.storage.setter("ipaddress", ipaddress);
