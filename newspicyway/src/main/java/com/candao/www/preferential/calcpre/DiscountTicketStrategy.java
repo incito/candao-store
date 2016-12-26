@@ -29,7 +29,7 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
 		// 错误提示
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
@@ -97,8 +97,9 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		if (deInfo.getPreAmount().doubleValue() > 0) {
 			amount = deInfo.getPreAmount();
 			int group = tempDishNum == orderDetailList.size() ? 1 : 0;
-			TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, tempDishNum, discount, group,
-					tempMapList);
+			String conupId=(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+			TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"),
+					tempDishNum, discount, group,  (String) tempMap.get("name"), conupId);
 			detailPreferentials.add(preSub);
 		} else {
 			// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷

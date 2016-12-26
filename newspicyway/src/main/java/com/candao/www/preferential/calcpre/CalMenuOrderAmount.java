@@ -30,14 +30,14 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 		switch (roundingEnum) {
 		case ROUNDTOINTEGER:
 			/** 4舍5入 **/
-			dealInfoBean = calPayAmount(RoundingMode.HALF_UP, listFind, amount, menuAmount);
+			dealInfoBean = calPayAmount(BigDecimal.ROUND_HALF_UP, listFind, amount, menuAmount);
 			dealInfoBean.setMoneyWipeName("四舍五入");
 			dealInfoBean.setMoneyDisType("1");
 			break;
 		case REMOVETAIL:
 			/** 抹零处理 **/
 
-			dealInfoBean = calPayAmount(RoundingMode.HALF_DOWN, listFind, amount, menuAmount);
+			dealInfoBean = calPayAmount(BigDecimal.ROUND_DOWN, listFind, amount, menuAmount);
 			dealInfoBean.setMoneyWipeName("抹零");
 			dealInfoBean.setMoneyDisType("2");
 			break;
@@ -50,7 +50,7 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 		return dealInfoBean;
 	}
 
-	private PreDealInfoBean calPayAmount(RoundingMode branchid, List<Map<String, Object>> listFind,
+	private PreDealInfoBean calPayAmount(int round, List<Map<String, Object>> listFind,
 			BigDecimal statisticPrice, BigDecimal menuAmout) {
 		BigDecimal payAmount = new BigDecimal("0");
 		BigDecimal noCalAmount = new BigDecimal("0");
@@ -66,10 +66,10 @@ public class CalMenuOrderAmount implements CalMenuOrderAmountInterface {
 			noCalAmount = menuAmout.subtract(statisticPrice);
 			// 当前优惠有多少钱(对元进行处理)
 			if (scale == 0) {
-				payAmount = noCalAmount.divide(new BigDecimal(10)).setScale(0, branchid).multiply(new BigDecimal(10));
+				payAmount = noCalAmount.divide(new BigDecimal(10)).setScale(0, round).multiply(new BigDecimal(10));
 			} else {
 
-				payAmount = noCalAmount.divide(new BigDecimal("1"), scale - 1, branchid);
+				payAmount = noCalAmount.divide(new BigDecimal("1"), scale - 1, round);
 			}
 		}
 		/** 如果小于0表示使用的优惠总金额，大于总价，所以支付价应该为0 **/

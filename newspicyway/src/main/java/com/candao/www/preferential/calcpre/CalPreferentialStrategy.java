@@ -117,37 +117,48 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	/**
 	 * 
 	 * @param paraMap
-	 *            pos传入参数
+	 * 传入参数
 	 * @param amount
-	 *            此次有优惠金额
+	 * 优惠总额
+	 * @param freeAmount
+	 * 优免金额
+	 * @param debitAmout
+	 * 挂账金额
 	 * @param tempDishNum
-	 *            菜品个数
+	 * 优惠菜品个数
 	 * @param discount
-	 *            折扣率
+	 * 折扣率
 	 * @param isGroup
-	 *            是不是全局
-	 * @param tempMapList
-	 *            优惠类别
+	 * 是否是全局优惠
+	 * @param preName
+	 * 优惠名称
+	 * @param coupondetailid
+	 * 记账优惠卷ID
 	 * @return
 	 */
-	protected TorderDetailPreferential createPreferentialBean(Map<String, Object> paraMap, BigDecimal amount,
-			double tempDishNum, BigDecimal discount, int isGroup, List<Map<String, Object>> tempMapList) {
+	protected TorderDetailPreferential createPreferentialBean(Map<String, Object> paraMap, BigDecimal amount,BigDecimal freeAmount,BigDecimal debitAmout,
+			double tempDishNum, BigDecimal discount, int isGroup,String  preName,String coupondetailid) {
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 		String orderid = (String) paraMap.get("orderid");
-		String preferentialid = (String) paraMap.get("preferentialid");
-		Map tempMap = tempMapList.get(0);
+		String preferentialid =paraMap.containsKey("preferentialid")? (String) paraMap.get("preferentialid"):""; 
+		
 		TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid,
 				amount, String.valueOf(tempDishNum), isGroup, 1, discount, 0, insertime);
 		// 设置优惠名称
 		TbPreferentialActivity activity = new TbPreferentialActivity();
-		activity.setName((String) tempMap.get("name"));
+		activity.setName(preName);
 
 		addPreferential.setActivity(activity);
 		addPreferential
-				.setCoupondetailid((String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
+				.setCoupondetailid(coupondetailid);
 		// 设置优免金额
-		addPreferential.setToalFreeAmount(amount);
+		addPreferential.setToalFreeAmount(freeAmount);
+		//设置挂账金额
+		addPreferential.setToalDebitAmount(debitAmout);
+		//设置优惠总额
+		addPreferential.setDeAmount(amount);
+		
 		return addPreferential;
 	}
 

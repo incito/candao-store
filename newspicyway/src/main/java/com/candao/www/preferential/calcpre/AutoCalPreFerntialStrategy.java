@@ -2,7 +2,6 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,10 +13,8 @@ import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.model.ComplexTorderDetail;
-import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
-import com.candao.www.dataserver.util.IDUtil;
 
 /**
  * 
@@ -144,17 +141,11 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			Map<String, Object> res = pres.get(0);
 			String preferentialid = (String) res.get("preferential");
 			if (amount.doubleValue() > 0) {
-				// 把信息汇总
-				Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-				// 是否大于0
-				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
-						preferentialid, amount, "1", 0, 1, new BigDecimal(1), 2, insertime);
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) res.get("name"));
-				torder.setActivity(activity);
-				torder.setCoupondetailid((String) (pres.size() > 1 ? res.get("preferential") : res.get("id")));
-				// 设置优免金额
-				torder.setToalFreeAmount(amount);
+				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
+				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), 1, new BigDecimal("0"), 0, (String) res.get("name"),
+						conId);
+				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
 			}
 
@@ -167,8 +158,6 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 	private Map<String, Object> calDoublePot(Map<String, Boolean> fishComMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, Map<String, Object> params, String orderid,
 			Map<String, Object> paraMap, TorderDetailPreferentialDao orderDetailPreferentialDao) {
-		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-
 		// 获取多少鱼锅可以jinx
 		int fishNo = 0;
 		Iterator<Boolean> iter = fishComMap.values().iterator();
@@ -187,23 +176,20 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal("0");
-		BigDecimal menberAmount=new BigDecimal("0");
+		BigDecimal menberAmount = new BigDecimal("0");
 		String memberno = String.valueOf(paraMap.get("memberno"));
 		List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(doublePotPrams);
 		if (fishNo != 0 && !pres.isEmpty()) {
 			Map<String, Object> res = pres.get(0);
-			 menberAmount = new BigDecimal(String.valueOf(res.get("amount"))).multiply(new BigDecimal(fishNo));
+			String preferentialid = (String) res.get("preferential");
+			menberAmount = new BigDecimal(String.valueOf(res.get("amount"))).multiply(new BigDecimal(fishNo));
 			if (!memberno.isEmpty()) {
 				amount = amount.add(menberAmount);
-				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
-						(String) res.get("preferential"), amount, String.valueOf(fishNo), 0, 1, new BigDecimal(1), 2,
-						insertime);
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) res.get("name"));
-				torder.setActivity(activity);
-				torder.setCoupondetailid((String) (pres.size() > 1 ? res.get("preferential") : res.get("id")));
-				// 设置优免金额
-				torder.setToalFreeAmount(amount);
+				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
+				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), fishNo, new BigDecimal("0"), 0, (String) res.get("name"),
+						conId);
+				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
 			}
 
