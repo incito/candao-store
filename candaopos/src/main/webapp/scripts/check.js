@@ -299,7 +299,6 @@ var checkOrder={
                     }),
                     dataType: "json",
                     success:function (data) {
-                        debugger;
                         //console.log(data)
                         $('#c-mod-fjs').modal("hide");
                         if(data.result==='0'){
