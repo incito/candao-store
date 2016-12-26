@@ -1,5 +1,6 @@
 var OpenPage = {
     init: function () {
+        var that=this;
 
         //设置钱箱地址参数到缓存
         if(utils.getUrl.get("cashIp")) {
@@ -11,13 +12,17 @@ var OpenPage = {
         }
 
         if(utils.storage.getter('isYesterdayEndWork')=='0'){
-            if(utils.storage.getter('isOpen')){
+            $('#openTo').hide();
+            that.isOpen();
+            /*if(utils.storage.getter('isOpen')){
                 $('#openTo').hide();
                 window.location = "../views/login.jsp";
+            }
+            else if(utils.storage.getter('isOpen')==undefined){
 
             }else {
                 $('#openTo').show()
-            }
+            }*/
         }else {
             $('#openTo').hide();
             this.isYesterdayEndWork();
@@ -112,10 +117,12 @@ var OpenPage = {
                 var res = JSON.parse(res.substring(12, res.length - 3));
                 Log.send(2, '是否为开业返回:' + JSON.stringify(res));
                 if (res.Data === '1') {//开业
+                    utils.storage.setter("isOpen",true);
                     $('#openTo').hide();
                     window.location = "../views/login.jsp";
                 }
                 if(res.Data === '0'){//未开业
+                    utils.storage.setter("isOpen",false);
                     $('#openTo').show();
                 }
             },

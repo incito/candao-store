@@ -129,8 +129,6 @@ var member = {
             if (me.hasClass('J-modify-edit')) {
                 if (that.isClick()) {
                     if (that.isClick()) {
-                        that.errorAlert('该功能暂未开放，请敬请期待！');
-                        return false;
                         if(loadMember.result[0].card_type=='0'){
                             that.errorAlert('该会员还没有绑定实体卡，不能修改会员卡号！');
                             return false
@@ -467,7 +465,7 @@ var member = {
             Rpassword = $.trim($('#rnewPsd').val()),
             phoneCode = $.trim($('#phoneCode').val());
         if (phoneCode != valicode || phoneCode == '') {
-            that.errorAlert('请输入正确的验证嘛');
+            that.errorAlert('请输入正确的验证码');
             return false
         }
         if (that.isNumber(password) === false || that.isNumber(Rpassword) === false) {
@@ -612,7 +610,7 @@ var member = {
             return false
         }
         if (phoneCode == '' || phoneCode != valicode) {
-            that.errorAlert('请输入正确的验证嘛');
+            that.errorAlert('请输入正确的验证码');
             return false
         }
         if (name == '') {
@@ -668,7 +666,7 @@ var member = {
                 if (res.Retcode == 0) {
                     that.succeedAlert({
                         'info':'注册会员成功',
-                        'callBack':'window.location = "../views/main.jsp"'
+                        'callBack':'window.location = "../main.jsp"'
                     })
                     $('#phone').val('');
                     $('#phoneCode').val('');
@@ -847,7 +845,7 @@ var member = {
     modificationCard:function () {
         var that=this,
             oldcardno=loadMember.result[0].MCard,
-            entity_cardNo=$.trim($('#bingMemberCard').text());
+            entity_cardNo=$.trim($('#bingMemberCard').next('span').text());;
         Log.send(2, '会员卡修改开始参数：'+JSON.stringify({
                 url:memberAddress.vipcandaourl + _config.interfaceUrl.VipChangeCardNum,
                 cardno: oldcardno,
@@ -877,7 +875,7 @@ var member = {
             if (data.code == '0') {
                 var msg={
                     'info':'修改会员卡成功！',
-                    'callBack':'$("#modify-binding-dialog").modal("hide").html("");member.memberSearch()'
+                    'callBack':'$("#modify-binding-dialog").modal("hide").html("");member.memberSearch('+entity_cardNo+');$("#Member_cardno").val('+entity_cardNo+')'
                 }
                 that.succeedAlert(msg);
             }
