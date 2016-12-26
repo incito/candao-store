@@ -295,10 +295,11 @@ var checkOrder={
                     data: JSON.stringify({
                         'reason':rebackOrderReason,
                         'orderNo':orderId,
-                        'userName':user
+                        'userName':$.trim($("#user").val())
                     }),
                     dataType: "json",
                     success:function (data) {
+                        debugger;
                         //console.log(data)
                         $('#c-mod-fjs').modal("hide");
                         if(data.result==='0'){
@@ -411,16 +412,14 @@ var checkOrder={
                     type:"get",
                     dataType:'text',
                     success: function(res){
-                        var res= res.split("*/");//以注释结尾分割
-                        res=JSON.parse(res[1])['ResettlementReason'];//获取反结算原因
-                        res=res.split(";")//以；分割成数值
+                        res=JSON.parse(utils.storage.getter('BACKSETTLE_REASON'));//获取反结算原因
                         var     str = '<div class="selectReason" style="text-align: left">'
                         str+=   '<div class="form-group form-group-base form-input">'
                         str+='   <span class="form-label" style="line-height: 40px">反结原因:</span>'
                         str+='   <input id="selectReason" value="" name="selectReason" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px;width: 250px;" autocomplete="off">'
                         str+= '</div><br/>'
                         for(var i=0;i<res.length;i++){//反结算原因列表
-                            str+=  '<label><input name="Fruit" type="radio" value='+res[i]+' />'+res[i]+'</label><br/>'
+                            str+=  '<label><input name="Fruit" type="radio" value='+res[i].itemDesc+' />'+res[i].itemDesc+'</label><br/>'
                         }
                         str+='</div>';
                         var alertModal = widget.modal.alert({

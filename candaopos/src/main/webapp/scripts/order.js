@@ -27,7 +27,7 @@ var consts = {
         }
         return obj;
     })(),
-    backDishReasons: JSON.parse(utils.storage.getter('config')).BackDishReasons.split(';'),//退菜原因
+    backDishReasons: JSON.parse(utils.storage.getter('RETURNDISH')),//退菜原因
     memberInfo: null,
     otherPay: [],
     otherPayStr: '',
@@ -1438,7 +1438,7 @@ var Order = {
         dom.backfoodDialog.find('.breasons').html((function () {
             var str = '';
             $.each(consts.backDishReasons, function (k, v) {
-                str += '<div class="breason">' + v + '</div>';
+                str += '<div class="breason">' + v.itemDesc + '</div>';
             });
             return str;
         })());
