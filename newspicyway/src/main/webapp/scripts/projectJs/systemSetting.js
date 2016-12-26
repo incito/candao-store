@@ -769,7 +769,8 @@ $("#test").click(function(){
 				url : global_Path + "/padinterface/saveorupdate",
 			    data: {
 			    	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
-			    	"viptype" : $('select[name=viptype]').val()
+			    	"viptype" : $('select[name=viptype]').val(),
+			    	"registerswitch":$('select[name=registerswitch]').val()
 			    },
 				success : function(result) {
 					if (result.code == "0") {
@@ -967,6 +968,7 @@ function doGetPadData(){
 			//会员设置
 			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
 			$('select[name=viptype]').val(data.viptype);
+			$('select[name=registerswitch]').val(data.registerswitch);
 			if(data.vipstatus) {
 				$('.setup_div_member').addClass('active');
 			};
