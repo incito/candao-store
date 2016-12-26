@@ -2158,11 +2158,11 @@ public class PadInterfaceController extends BaseController {
         try {
             Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
             String type=map.get("type").toString();
-            List<Map<String, Object>> listFind = dataDictionaryService.getDatasByType(type);
+            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
             if ("ROUNDING".equals(type)) {
                 map.clear();
                 map.put("type", "ACCURACY");
-                List<Map<String, Object>> listFind2 = dataDictionaryService.getDatasByType("ACCURACY");
+                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
                 listFind.addAll(listFind2);
             }
             map.clear();
@@ -2201,13 +2201,16 @@ public class PadInterfaceController extends BaseController {
             List<String> types=(List<String>) map.get("type");
             map.clear();
             for(String type:types){
-	            List<Map<String, Object>> listFind = dataDictionaryService.getDatasByType(type);
+	            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
 	            if ("ROUNDING".equals(type)) {
-	                List<Map<String, Object>> listFind2 = dataDictionaryService.getDatasByType("ACCURACY");
+	            	map.clear();
+	                map.put("type", "ACCURACY");
+	                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
 	                listFind.addAll(listFind2);
 	            }
 	            map.put(type, listFind);
             }
+            map.remove("type");
             resultMap = ReturnMap.getSuccessMap(map);
         }catch (Exception e){
             logger.error("-->",e);
