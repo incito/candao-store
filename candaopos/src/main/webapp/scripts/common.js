@@ -213,7 +213,6 @@ var keydownEnter=null
 
 
             if(keydownEnter){
-            	debugger
             	var input=$("input.card-number[name='cardNumber']"),/*结账页面会员登录*/
 					czInput=$('#rechargeMoblie'), /*会员卡充值页面会员卡号*/
 					ya_memberNumber=$('.ya_memberNumber')/*雅座会员卡充值页面会员卡号*/
