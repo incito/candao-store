@@ -23,10 +23,14 @@ public class InitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        //初始化打印机
-        PrinterManager.initialize(true);
-        //上传版本号
-        uploadVersion();
+    	try {
+			// 初始化打印机
+			PrinterManager.initialize(true);
+			// 上传版本号
+			uploadVersion();
+		} catch (Exception e) {
+			logger.error("InitListener error", e);
+		}
     }
     private void uploadVersion(){
         logger.info("上传版本号");

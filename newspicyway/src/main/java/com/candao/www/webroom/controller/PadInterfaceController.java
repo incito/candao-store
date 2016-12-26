@@ -2187,6 +2187,47 @@ public class PadInterfaceController extends BaseController {
 			ex.printStackTrace();
 		}
 	}
+    /**
+     * 系统设置接口 多参数
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping("/getAllSystemSetData")
+    @ResponseBody
+    public void getAllSystemSetData(HttpServletRequest request, HttpServletResponse response,
+                                 @RequestBody String jsonString) {
+        Map<String, Object> resultMap=null;
+        try {
+            Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+            List<String> types=(List<String>) map.get("type");
+            map.clear();
+            for(String type:types){
+	            List<Map<String, Object>> listFind = dataDictionaryService.getDatasByType(type);
+	            if ("ROUNDING".equals(type)) {
+	                List<Map<String, Object>> listFind2 = dataDictionaryService.getDatasByType("ACCURACY");
+	                listFind.addAll(listFind2);
+	            }
+	            map.put(type, listFind);
+            }
+            resultMap = ReturnMap.getSuccessMap(map);
+        }catch (Exception e){
+            logger.error("-->",e);
+            resultMap=ReturnMap.getFailureMap("服务器发生异常");
+        }
+        String wholeJsonStr = JacksonJsonMapper.objectToJson(resultMap);
+        try {
+            response.reset();
+            response.setHeader("Content-Type", "application/json");
+            response.setContentType("text/json;charset=UTF-8");
+            OutputStream stream = response.getOutputStream();
+            stream.write(wholeJsonStr.getBytes("UTF-8"));
+            stream.flush();
+            stream.close();
+
+        } catch (Exception ex) {
+            logger.error("--->", ex);
+            ex.printStackTrace();
+        }
+    }
 
 	/**
 	 * 手环登陆接口
