@@ -31,6 +31,20 @@
 		</if>
 		AND( tod.dishtype!= 2 OR (tod.dishtype=2 AND tod.superkey= tod.primarykey))
 		GROUP BY tb.id
+		
+UNION
+	SELECT IFNULL(SUM(chargeAmount),0) AS orignalprice,
+					'服务费' as itemDesc
+		FROM t_service_charge a,t_order b 
+	WHERE a.orderid=b.orderid 
+	AND b.orderstatus = 3 
+	AND a.chargeOn=1
+	AND b.begintime >= #{beginTime}
+	AND b.begintime &lt;= #{endTime}
+	<if test="shiftid != null and shiftid != -1">
+		AND b.shiftid = #{shiftid}
+	</if>
+	AND b.branchid = #{branchId}
     </select>
     <!-- 查询品项销售明细子表存储过程 -->
     <select id="itemSubDetailProcedure" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">

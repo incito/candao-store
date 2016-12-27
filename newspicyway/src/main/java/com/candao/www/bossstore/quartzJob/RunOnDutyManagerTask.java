@@ -1,8 +1,6 @@
 package com.candao.www.bossstore.quartzJob;
 
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,7 @@ public class RunOnDutyManagerTask {
 	@Qualifier("bUserService")
 	private UserService userService;
 
-	public void cuttingpayment() throws IOException {
+	public void cuttingpayment() {
 		//String temp = userService.getOnDutyManagerInfo().toString();
 		//System.out.println("******获取值班经理数据查询："+temp);
 		ClientInfo clientInfo = new ClientInfo();

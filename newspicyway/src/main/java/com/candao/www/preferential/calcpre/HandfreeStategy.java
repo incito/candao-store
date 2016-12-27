@@ -78,8 +78,10 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
 			if (deInfo.getPreAmount().doubleValue() > 0) {
 				amount = deInfo.getPreAmount();
-				TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, orderDetailList.size(),
-						discount, 1, tempMapList);
+				String conupId=(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+				TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId);
+				
 				detailPreferentials.add(preSub);
 			}
 			this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());

@@ -1,8 +1,6 @@
 package com.candao.www.bossstore.quartzJob;
 
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,7 @@ public class RunMeTask {
 	@Qualifier("bOrderService")
 	private OrderService orderService;
 
-	public void cuttingpayment() throws IOException {
+	public void cuttingpayment() {
 		ClientInfo clientInfo = new ClientInfo();
 		clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
 		clientInfo.setCommand("order");

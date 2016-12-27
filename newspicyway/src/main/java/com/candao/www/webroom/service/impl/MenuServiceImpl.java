@@ -452,6 +452,10 @@ public class MenuServiceImpl implements MenuService {
             map.put("menuid", menuid);
             map.put("id", 0);
             List<Map<String, Object>> columnList = tbasicDataDao.getMenuColumn(map);
+            if(columnList == null || columnList.isEmpty()){
+                logger.info("菜品分类为空");
+                return ReturnMap.getFailureMap("菜谱中没有菜品分类");
+            }
             columnMap = ReturnMap.getSuccessMap(columnList);
             return columnMap;
         } else {

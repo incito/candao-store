@@ -191,7 +191,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		if (null != preInfo && null != menuCash && menuCash.compareTo(preInfo) > 0) {
 			// // 将此菜品添加到 orderDishMapList，用于后续金额的更新
 			detailPreferential = new TorderDetailPreferential(updateId, orderid, preferenceDetail.getDish(),
-					preferenceDetail.getPreferential(), menuCash.subtract(preInfo), "1", 0, 1, new BigDecimal(0), 0,
+					preferenceDetail.getPreferential(), menuCash.subtract(preInfo), "1", 0, 0, new BigDecimal(0), 0,
 					insertime);
 			detailPreferential.setCoupondetailid(dishCouponAmountMap.get(key).getCoupondetailid());
 			// 设置优惠名称

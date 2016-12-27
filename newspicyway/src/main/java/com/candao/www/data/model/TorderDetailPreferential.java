@@ -64,7 +64,7 @@ public class TorderDetailPreferential implements Serializable {
 	 * @param dishNum
 	 * 菜品优惠个数
 	 * @param isGroup
-	 * 是否是全局优化
+	 * 是否是全局折扣
 	 * @param isUse
 	 * 是否使用
 	 * @param discount
