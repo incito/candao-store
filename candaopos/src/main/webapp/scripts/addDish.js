@@ -985,7 +985,7 @@ var AddDish = {
 					} else {
 						widget.modal.alert({
 							cls: 'fade in',
-							content:'<strong>' + res.Info + '</strong>',
+							content:'<strong>' + result.Info + '</strong>',
 							width:500,
 							height:500,
 							btnOkTxt: '',
