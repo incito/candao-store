@@ -80,8 +80,6 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 			dishCouponAmountMap.put(key, preferenceDetail);
 		}
 
-//		TbPreferentialActivity activity = tbpreferentialactivitydao.get(preferentialid);
-		// 当前订单个数每一个菜品菜品的个数(对应的菜品个数，以及)里层为个数加菜品,
 		// 分别为菜品dishID,dishNnum,具体信息
 		Map<String, TorderDetail> orderMenuONumMap = new HashMap<>();
 		//菜品名称已经计量单位

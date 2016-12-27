@@ -134,17 +134,19 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 * 优惠名称
 	 * @param coupondetailid
 	 * 记账优惠卷ID
+	 * @param isCustom
+	 * 优惠采用类型
 	 * @return
 	 */
 	protected TorderDetailPreferential createPreferentialBean(Map<String, Object> paraMap, BigDecimal amount,BigDecimal freeAmount,BigDecimal debitAmout,
-			double tempDishNum, BigDecimal discount, int isGroup,String  preName,String coupondetailid) {
+			double tempDishNum, BigDecimal discount, int isGroup,String  preName,String coupondetailid,int isCustom) {
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 		String orderid = (String) paraMap.get("orderid");
 		String preferentialid =paraMap.containsKey("preferentialid")? (String) paraMap.get("preferentialid"):""; 
 		
 		TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid,
-				amount, String.valueOf(tempDishNum), isGroup, 1, discount, 0, insertime);
+				amount, String.valueOf(tempDishNum), isGroup, 1, discount, isCustom, insertime);
 		// 设置优惠名称
 		TbPreferentialActivity activity = new TbPreferentialActivity();
 		activity.setName(preName);

@@ -99,7 +99,7 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			int group = tempDishNum == orderDetailList.size() ? 1 : 0;
 			String conupId=(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 			TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"),
-					tempDishNum, discount, group,  (String) tempMap.get("name"), conupId);
+					tempDishNum, discount, group,  (String) tempMap.get("name"), conupId,0);
 			detailPreferentials.add(preSub);
 		} else {
 			// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
