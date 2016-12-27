@@ -1848,16 +1848,18 @@ var Order = {
                     var dishnum = parseInt(v.dishnum, 10);
                     $.each(res2[0].data, function (key, value) {
                         var left = dishnum - parseInt(value.count, 10);
-                        if (value.dishid === v.dishid) {
+                        if (value.dishid === v.dishid && value.unit === v.dishunit) {
                             v.dishnum = left;
+
                         }
                     });
                 });
+
                 $.each(data, function (k, v) {
                     var cls = v.dishnum > 0 ? '' : 'hide';
                     if (parseInt(v.orderprice, 10) > 0) {
                         htm += "<li class='" + cls + "' dishname='" + v.dishname + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
-                            "<span class='dishname'>" + v.dishname.split('#')[0] + "</span>" +
+                            "<span class='dishname'>" + v.dishname.split('#')[0] + "(" + v.dishunit + ")" + "</span>" +
                             "<span class='info'><span class='sel'>0</span>/<span class='num'>" + v.dishnum + "</span></span>" +
                             "</li>";
                     }
