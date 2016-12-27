@@ -69,7 +69,7 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 				amount = deInfo.getPreAmount();
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				addPreferential = this.createPreferentialBean(paraMap, amount, new BigDecimal("0"), new BigDecimal("0"),
-						orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId);
+						orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,0);
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {
 					if (amountCount.compareTo(amount) == -1) {
@@ -91,7 +91,7 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			for (int i = 0; i < preferentialNum; i++) {
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				addPreferential = this.createPreferentialBean(paraMap, caseAmount, new BigDecimal("0"), new BigDecimal("0"),
-						orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId);
+						orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,0);
 				
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {

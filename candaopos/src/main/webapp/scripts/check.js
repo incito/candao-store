@@ -406,21 +406,18 @@ var checkOrder={
                 });
             }
             function _whyClear() {
-                $.ajax({
-                    url: '../../scripts/config.json',
-                    type:"get",
-                    dataType:'text',
-                    success: function(res){
-                        res=JSON.parse(utils.storage.getter('BACKSETTLE_REASON'));//获取反结算原因
+                debugger
+                        var res=JSON.parse(utils.storage.getter('BACKSETTLE_REASON'));//获取反结算原因
                         var     str = '<div class="selectReason" style="text-align: left">'
                         str+=   '<div class="form-group form-group-base form-input">'
                         str+='   <span class="form-label" style="line-height: 40px">反结原因:</span>'
                         str+='   <input id="selectReason" value="" name="selectReason" type="text" class="form-control" style="height: 40px;line-height: 40px;padding-left: 75px;width: 250px;" autocomplete="off">'
                         str+= '</div><br/>'
+                        str+='<div class="backListReason">'
                         for(var i=0;i<res.length;i++){//反结算原因列表
                             str+=  '<label><input name="Fruit" type="radio" value='+res[i].itemDesc+' />'+res[i].itemDesc+'</label><br/>'
                         }
-                        str+='</div>';
+                        str+='</div></div>';
                         var alertModal = widget.modal.alert({
                             cls: 'fade in',
                             content: str,
@@ -446,8 +443,6 @@ var checkOrder={
                             $("#selectReason").val($(this).val());
                             rebackOrderReason=$("#selectReason").val();
                         })
-                    }
-                })
             };
         },
     },

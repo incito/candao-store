@@ -798,6 +798,7 @@ $("#test").click(function(){
 			$target.addClass('active');
 		} else {
 			$target.removeClass('active');
+			
 		}
 	})
 
@@ -1112,17 +1113,21 @@ function delHidden(e) {
  * 编辑忌口、退菜原因
  * @param e
  */
-function editItem(e){
+function editItem(e,maxLength){
 	var dictid = $(e).attr("dictid");
 	var type = $(e).attr("type");
 	var text = $(e).text();
 	$next = $(e).next();
 	$(e).remove();
 	var inp = '<div class="col-xs-2 no-left-padding">';
+	var len=45;
+	if(maxLength!=undefined){
+	    len=maxLength;
+	}
 	if(type == "COMPLAINT"){
-		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="complaint_name" value="'+text+'" maxlength="4" required="required" onblur="updateItem(this);" /></div>';
+		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="complaint_name" value="'+text+'" maxlength="'+len+'" required="required" onblur="updateItem(this);" /></div>';
 	}else{
-		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="reason_name" value="'+text+'" maxlength="5" required="required" onblur="updateItem(this);" /></div>';
+		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="reason_name" value="'+text+'" maxlength="'+len+'" required="required" onblur="updateItem(this);" /></div>';
 	}
 	$next.before(inp);
 }
@@ -1149,13 +1154,13 @@ function delItem(e){
 		$(e).parent().remove();
 		showAddBtn($o);
 	}else{
-		$.post(global_Path+"/system/deleteDate", {dictid: dictid}, function(result){
-			if(result.code == "SUCCESS"){
+//		$.post(global_Path+"/system/deleteDate", {dictid: dictid}, function(result){
+//			if(result.code == "SUCCESS"){
 				var $o = $(e).parent().parent();
 				$(e).parent().remove();
 				showAddBtn($o);
-			}
-		},'json');
+//			}
+//		},'json');
 	}
 }
 /**
@@ -1173,8 +1178,12 @@ function showAddBtn($o){
 		}
 	}
 }
-function itemHtm(dictid, itemdesc, type, dis) {
+function itemHtm(dictid, itemdesc, type, dis,maxLength) {
 	var disable = "";
+	var len=45;
+	if(maxLength!=undefined){
+	    len=maxLength;
+	}
 	if(dis){
 		disable = "disabled";
 	}
@@ -1184,7 +1193,7 @@ function itemHtm(dictid, itemdesc, type, dis) {
 			+ dictid
 			+ '" type="'
 			+ type
-			+ '" ondblclick="editItem(this)" class="avoid-li btn btn-default canClick dishTasteUl">'
+			+ '" ondblclick="editItem(this,'+len+')" class="avoid-li btn btn-default canClick dishTasteUl">'
 			+ itemdesc
 			+ '</div>';
 	}else{
@@ -1192,7 +1201,7 @@ function itemHtm(dictid, itemdesc, type, dis) {
 			+ dictid
 			+ '" type="'
 			+ type
-			+ '" ondblclick="editItem(this)" onmouseout="delHidden(this)" onmouseover="delDisplay(this)" class="avoid-li btn btn-default canClick dishTasteUl">'
+			+ '" ondblclick="editItem(this,'+len+')" onmouseout="delHidden(this)" onmouseover="delDisplay(this)" class="avoid-li btn btn-default canClick dishTasteUl">'
 			+ itemdesc
 			+ '<i class="icon-remove hidden" onclick="delItem(this)"></i>'
 			+ '</div>';
@@ -1468,7 +1477,7 @@ if(type==null) {
 		if (null != list) {
 			$.each(list, function (i, item) {
 				var itemDesc = item.itemDesc;
-				var htm = itemHtm(item.dictid, itemDesc, $(".backSettlestype", thisDiv).val(), true);
+				var htm = itemHtm(item.dictid, itemDesc, $(".backSettlestype", thisDiv).val(), true,45);
 				$(".backSettle-add", thisDiv).before(htm);
 			});
 		}

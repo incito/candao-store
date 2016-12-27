@@ -164,13 +164,15 @@ public class SystemServiceImpl {
     		} else { //批量插入
 
     			JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("data"));
+    			//保存前先清空
+    			tbDataDictionaryDao.deleteByType(type);
     			for (int i = 0; i < jsonArray.size(); i++) {
     				JSONObject tempJsonObject = (JSONObject) jsonArray.get(i);
-    				if (StringUtils.isNotBlank(tempJsonObject.getString("dictid"))) {
-    					updateTdictionarySingle(tempJsonObject, type, SystemConstant.valueOf(type).typename());
-    				} else {
+//    				if (StringUtils.isNotBlank(tempJsonObject.getString("dictid"))) {
+//    					updateTdictionarySingle(tempJsonObject, type, SystemConstant.valueOf(type).typename());
+//    				} else {
     					insertSingle(tempJsonObject, type, SystemConstant.valueOf(type).typename());
-    				}
+//    				}
     			}
     		}
 

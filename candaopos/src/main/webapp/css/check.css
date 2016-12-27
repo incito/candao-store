@@ -114,3 +114,7 @@
 #pagDome .paginationjs{
     margin-right: 10px;
 }
+.backListReason{
+    max-height: 120px;
+    overflow-y: auto;
+}

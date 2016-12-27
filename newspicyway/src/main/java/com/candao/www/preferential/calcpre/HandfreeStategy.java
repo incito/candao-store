@@ -2,7 +2,6 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +14,8 @@ import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.model.ComplexTorderDetail;
-import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
-import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
 
 /**
@@ -30,14 +27,14 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
 		String disrate = String.valueOf(paraMap.get("disrate"));
 		String giveDish = (String) paraMap.get("dishid");
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
-		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao,orderDetailList);
+		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao, orderDetailList);
 		if (cashGratis != null) {
 			return cashGratis;
 		}
@@ -57,7 +54,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		// 获取菜品名称
 		Map<String, String> foodNameMap = new HashMap<>();
 		for (ComplexTorderDetail d : orderDetailList) {
-			foodNameMap.put(d.getDishid()+d.getDishunit(), d.getTitle());
+			foodNameMap.put(d.getDishid() + d.getDishunit(), d.getTitle());
 			// 判断价格，如果菜品价格存在null的问题，则返回错误信息
 			if (null != d.getOrderprice()) {
 				// 如果此菜品是多份，则计算多份总的优惠价格
@@ -78,10 +75,11 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
 			if (deInfo.getPreAmount().doubleValue() > 0) {
 				amount = deInfo.getPreAmount();
-				String conupId=(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId);
-				
+						new BigDecimal("0"), orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,
+						1);
+
 				detailPreferentials.add(preSub);
 			}
 			this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
@@ -90,19 +88,11 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				&& StringUtils.isEmpty(disrate.trim())) {
 			// 手工输入现金优免
 			BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
-			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-			Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 			amount = cashprelAmout;
-			TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
-					preferentialid, amount, String.valueOf(orderDetailList.size()), 1, 1, discount, 1, insertime);
-			// 设置优惠名称
-			TbPreferentialActivity activity = new TbPreferentialActivity();
-			activity.setName((String) tempMap.get("name"));
-			addPreferential.setActivity(activity);
-			addPreferential.setCoupondetailid(
-					(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
-			// 设置优免
-			addPreferential.setToalFreeAmount(amount);
+			String conupId =(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+			TorderDetailPreferential addPreferential = this.createPreferentialBean(paraMap, amount, amount,
+					new BigDecimal("0"), orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,
+					1);
 			detailPreferentials.add(addPreferential);
 		} else if (!StringUtils.isEmpty(giveDish) && StringUtils.isEmpty(paraMap.get("discount"))
 				&& StringUtils.isEmpty(paraMap.get("amount"))) {
@@ -157,7 +147,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 					orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 				} else {
 					tempMap.put("name",
-							(String) tempMap.get("name") + "(" + foodNameMap.get(key)+"/" + units[0] + ")");
+							(String) tempMap.get("name") + "(" + foodNameMap.get(key) + "/" + units[0] + ")");
 					TorderDetailPreferential detailPreferential = createTorderDetail(orderDetailmap, key, 1, paraMap,
 							amount, orderid, preferentialid, tempMap, tempMapList);
 					amount = amount.add(detailPreferential.getDeAmount());
@@ -189,7 +179,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 						}
 					}
 					for (int i = 0; i < inputNum; i++) {
-						tempMap.put("name", (String) tempMap.get("name") + "(" + foodNameMap.get(dishId)+"/"
+						tempMap.put("name", (String) tempMap.get("name") + "(" + foodNameMap.get(dishId) + "/"
 								+ orderDetailmap.get(dishId).getDishunit() + ")");
 						TorderDetailPreferential detailPreferential = createTorderDetail(orderDetailmap, dishId, 1,
 								paraMap, amount, orderid, preferentialid, tempMap, tempMapList);
@@ -215,23 +205,16 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		TorderDetail ordetail = orderDetailmap.get(dishId);
 		if (ordetail != null) {
 			for (int i = 0; i < inputNum; i++) {
-				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-				Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 				BigDecimal orderprice = ordetail.getOrderprice() == null ? new BigDecimal("0")
 						: ordetail.getOrderprice();
 				amount = amount.add(orderprice);
-				addPreferential = new TorderDetailPreferential(updateId, orderid, ordetail.getDishid(), preferentialid,
-						orderprice, "1", 0, 1, new BigDecimal(0), 4, insertime);
-				addPreferential.setUnit(ordetail.getDishunit());
-				// 设置优惠名称
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) tempMap.get("name"));
-				addPreferential.setActivity(activity);
-				addPreferential.setCoupondetailid(
-						(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
-				// 设置优免
-				addPreferential.setToalFreeAmount(orderprice);
-				addPreferential.setDeAmount(orderprice);
+				
+				String conupId =(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+			   addPreferential = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), 1, new BigDecimal(0), 0, (String) tempMap.get("name"), conupId,
+						4);
+			   addPreferential.setDishid(ordetail.getDishid());
+			   addPreferential.setUnit(ordetail.getDishunit());
 			}
 		}
 		return addPreferential;

@@ -211,7 +211,7 @@
                         <%--固定--%>
                         <div class="col-xs-5 serviceCharge_count_fixed"
                              style="padding-left: 2px;padding-right: 2px;display: none;width: 158px">
-                            <input type="text" class="form-control  serviceCharge_count_timer1">
+                            <input type="text" class="form-control  serviceCharge_count_timer1"maxlength="6">
                         </div>
                         <%--时长--%>
                         <div class="col-xs-6 serviceCharge_count_time "
@@ -226,7 +226,7 @@
                                 </select>
                             </div>
                             <div class="col-xs-6 " style="padding-left: 2px;padding-right: 2px;width: 72px;">
-                                <input type="text" name="personNum" class="form-control  serviceCharge_count_timer2">
+                                <input type="text" name="personNum" class="form-control  serviceCharge_count_timer2" maxlength="6">
                             </div>
                         </div>
                         <font color="red" class="error serviceCharge_count_timer_tip" style="margin-left: 151px"></font>
