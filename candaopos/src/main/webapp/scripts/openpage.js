@@ -1,6 +1,7 @@
 var OpenPage = {
     init: function () {
         var that=this;
+        $('#openTo').hide()
 
         //设置钱箱地址参数到缓存
         if(utils.getUrl.get("cashIp")) {
@@ -11,23 +12,7 @@ var OpenPage = {
             return false;
         }
 
-        if(utils.storage.getter('isYesterdayEndWork')=='0'){
-            $('#openTo').hide();
-            that.isOpen();
-            /*if(utils.storage.getter('isOpen')){
-                $('#openTo').hide();
-                window.location = "../views/login.jsp";
-            }
-            else if(utils.storage.getter('isOpen')==undefined){
-
-            }else {
-                $('#openTo').show()
-            }*/
-        }else {
-            $('#openTo').hide();
-            this.isYesterdayEndWork();
-        }
-
+        this.isYesterdayEndWork();
         this.bindEvent();
         var ipaddress = utils.getUrl.get("ipaddress")//设置ipaddress参数到缓存
         var posid = utils.getUrl.get("posid")//设置posid参数到缓存
@@ -150,7 +135,7 @@ var OpenPage = {
                 if (res['result'] === '0') {//昨天已经结业返回成功
                     if (res['detail']) {//昨天已经结业
                         Log.send(2, '昨天已经结业返回成功,昨天已经结业');
-                        $("#openTo").show();
+                        $("#openTo").hide();
                         utils.storage.setter('isYesterdayEndWork', '0');//设置昨天是否结业状态0为已结业，1为未结业；
                         that.isOpen();
                     }
