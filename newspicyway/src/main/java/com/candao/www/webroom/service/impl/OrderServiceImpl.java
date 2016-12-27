@@ -1147,8 +1147,9 @@ public class OrderServiceImpl implements OrderService {
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", String.valueOf(params.get("orderid")));
 		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
+		Map<String, Object> res =torderMapper.findOne(String.valueOf(params.get("orderid")));
 		//判断订单状态
-		if(orderDetailList==null||orderDetailList.isEmpty()){
+		if(res ==null){
 			return ReturnMap.getFailureMap("当前订单 不存在,您是否进行并台等操作？请重新进入餐台！");
 		}
 
