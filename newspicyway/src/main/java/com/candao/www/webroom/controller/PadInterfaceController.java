@@ -2200,12 +2200,15 @@ public class PadInterfaceController extends BaseController {
             Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
             List<String> types=(List<String>) map.get("type");
             map.clear();
+            Map<String, Object> paramMap =new HashMap<>();
             for(String type:types){
-	            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
+            	paramMap.clear();
+            	paramMap.put("type", type);
+	            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(paramMap);
 	            if ("ROUNDING".equals(type)) {
-	            	map.clear();
-	                map.put("type", "ACCURACY");
-	                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
+	            	paramMap.clear();
+	            	paramMap.put("type", "ACCURACY");
+	                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(paramMap);
 	                listFind.addAll(listFind2);
 	            }
 	            map.put(type, listFind);
