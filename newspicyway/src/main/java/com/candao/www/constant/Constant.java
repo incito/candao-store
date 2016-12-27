@@ -331,6 +331,29 @@ public class Constant {
 	}
 	
 	/**
+	 * 
+	 * @author Candao
+	 *优惠交易类型
+	 */
+	public class CALCPRETYPE{
+		/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 4：赠送菜优惠 5 雅座优惠 **/
+		/**全局享用1**/
+		public static final int GROUP=1;
+		/**不使用全局享用0**/
+		public static final int NOGROUP=0;
+		/**正常使用优惠0**/
+		public static final int NORMALUSEPRE=0;
+		/**服务员使用优惠1**/
+		public static final int WAITERUSEPRE=1;
+		/**系统使用优惠（一般指新辣道）2**/
+		public static final int SYSTENUSEPRE=2;
+		/**增菜优惠卷4**/
+		public static final int GIVEUSEPRE=4;
+		/**雅座优惠卷5**/
+		public static final int YAZUOUSEPRE=5;
+	} 
+	
+	/**
 	 * 优惠码初始编码
 	 */
 	public static final String PREFERENTIAL_INIT_CODE = "80001";

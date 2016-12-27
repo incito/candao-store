@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
@@ -143,8 +144,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			if (amount.doubleValue() > 0) {
 				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
 				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), 1, new BigDecimal("0"), 0, (String) res.get("name"),
-						conId,2);
+						new BigDecimal("0"), 1, new BigDecimal("0"),Constant.CALCPRETYPE.NOGROUP, (String) res.get("name"),
+						conId,Constant.CALCPRETYPE.SYSTENUSEPRE);
 				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
 			}
@@ -187,8 +188,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				amount = amount.add(menberAmount);
 				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
 				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), fishNo, new BigDecimal("0"), 0, (String) res.get("name"),
-						conId,2);
+						new BigDecimal("0"), fishNo, new BigDecimal("0"), Constant.CALCPRETYPE.NOGROUP, (String) res.get("name"),
+						conId,Constant.CALCPRETYPE.SYSTENUSEPRE);
 				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
 			}
