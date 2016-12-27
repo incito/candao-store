@@ -30,6 +30,7 @@ var consts = {
     backDishReasons: JSON.parse(utils.storage.getter('RETURNDISH')),//退菜原因
     memberInfo: null,
     otherPay: [],
+    payLoaded: false,
     otherPayStr: '',
 };
 
@@ -1635,6 +1636,7 @@ var Order = {
                     btnCancelTxt: ''
                 });
             }
+            consts.payLoaded = true;
         })
 
     },
@@ -2031,11 +2033,9 @@ var Order = {
 
         if(!that.payTypeLoaded) {
             that.updateTotalTimer = setTimeout(function(){
-                if (consts.otherPayStr.length === 0){
+                if (!consts.payLoaded){
                     setTimeout(arguments.callee, 50);
                 } else {
-
-
                     if(utils.storage.getter('autoFill') === '1') {
                         if($('.tab-payment li[itemid=0]').length === 0) {
                             $('#cash input').val(0);
