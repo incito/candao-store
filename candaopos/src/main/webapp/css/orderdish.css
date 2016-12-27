@@ -419,13 +419,17 @@ input[type=search] {
 }
 .default-dialog .avoid,.default-dialog .freason,.default-dialog .breason{
 	float: left;
-  	width: 100px;
+  	width: 105px;
   	height: 40px;
   	text-align: center;
   	padding-top: 10px;
   	background: white;
   	margin-right: 4px;
   	border-radius: 2px;
+	margin-top: 5px;
+	overflow:hidden;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 .default-dialog .avoid.active,.default-dialog .freason.active,.default-dialog .breason.active, #note-dialog .taste ul li.active{
 	background: #FF5803;
@@ -614,4 +618,12 @@ input[type=search] {
 }
 #sel-dish-table-title,#sel-dish-table-dishnum,#sel-dish-table-price{
 	cursor: pointer;
+}
+#givefood-dialog .freasons,
+#note-dialog .avoidsList,
+#backfood-dialog .breasons,
+.avoids-certainList,
+.avoid-box{
+	max-height: 90px;
+	overflow-y: auto;
 }

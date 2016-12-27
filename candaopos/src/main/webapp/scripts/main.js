@@ -1046,7 +1046,6 @@ var MainPage = {
     },
     /*营业时间,提示结业时间到了*/
     getOpenEndTime:function () {
-
         var getOpenEndTime=JSON.parse(utils.storage.getter('getOpenEndTime'))
         var time=utils.date.current();
         var endTime=''
@@ -1074,6 +1073,7 @@ var MainPage = {
                         btnOkTxt: '',
                         btnCancelTxt: '确定',
                         btnCancelCb:function () {
+                            utils.storage.setter("getOpenEndTimeTimer",true)
                             clearInterval(getOpenEndTimeTimer)
                         }
                     });
@@ -1087,7 +1087,10 @@ var MainPage = {
 
 $(function () {
     MainPage.init();
-     getOpenEndTimeTimer = setInterval(function(){
-        MainPage.getOpenEndTime()
-    },2000);
+    if(utils.storage.getter('getOpenEndTimeTimer')!='true'){
+        getOpenEndTimeTimer = setInterval(function(){
+            MainPage.getOpenEndTime()
+        },2000);
+    }
+
 });

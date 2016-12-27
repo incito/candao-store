@@ -37,6 +37,7 @@ var Login = {
         widget.keyboard({
             target: '.virtual-keyboard'
         });
+        utils.clearLocalStorage.clearSelect()
 
         this.saveConfigInfo();
 
