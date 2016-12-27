@@ -39,6 +39,7 @@ public interface TbDataDictionaryDao {
 	public int update(TbDataDictionary tbDataDictionary);
 
 	public int delete(java.lang.String id);
+	public int deleteByType(String type);
 
 	public <E, K, V> Page<E> page(Map<K, V> params, int current, int pagesize);
 

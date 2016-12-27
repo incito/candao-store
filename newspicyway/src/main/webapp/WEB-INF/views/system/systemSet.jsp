@@ -277,7 +277,7 @@
 						<div class="addavoid-input-div hide" id="addavoid-input">
 							<div class="col-xs-3 no-left-padding">
 								<input type="text" class="form-control" id="avoid_name" name=""
-									maxlength="5" required="required" onblur="avoidSave();" />
+									maxlength="45" required="required" onblur="avoidSave();" />
 							</div>
 						</div>
 					</div>
@@ -303,7 +303,7 @@
 						<div class="addreason-input-div hide" id="addreason-input">
 							<div class="col-xs-3 no-left-padding">
 								<input type="text" class="form-control" id="reason_name" name=""
-									maxlength="5" required="required" onblur="returnDishSave();" />
+									maxlength="45" required="required" onblur="returnDishSave();" />
 							</div>
 						</div>
 					</div>
@@ -330,7 +330,7 @@
 						<div class="addcomplaint-input-div hide" id="complaint-input">
 							<div class="col-xs-3 no-left-padding">
 								<input type="text" class="form-control" id="complaint_name"
-									name="" maxlength="4" required="required"
+									name="" maxlength="45" required="required"
 									onblur="complaintSave();" />
 							</div>
 						</div>
@@ -621,7 +621,7 @@
 						</select>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group viptype-box">
 					<label class="col-xs-2 control-label">PAD注册会员开关：</label>
 					<div class="col-xs-3">
 						<select class="form-control" disabled  name="registerswitch">

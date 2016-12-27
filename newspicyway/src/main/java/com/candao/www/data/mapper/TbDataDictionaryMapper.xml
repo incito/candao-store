@@ -163,7 +163,11 @@
 	   where 
 	    dictid=#{dishTasteId} 
 	</delete>
-
+	<delete id="deleteByType" parameterType="map">
+	   delete from t_dictionary
+	   where 
+	    type=#{type} 
+	</delete>
     <select id="get" parameterType="map" resultMap="tbDataDictionaryResultMap">
 	   select 
 	    dictid,

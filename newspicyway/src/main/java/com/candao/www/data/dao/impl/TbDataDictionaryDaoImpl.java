@@ -96,6 +96,12 @@ public class TbDataDictionaryDaoImpl implements TbDataDictionaryDao {
 	}
 	
 	@Override
+	public int deleteByType(String type) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("type", type);
+		return dao.delete(PREFIX + ".deleteByType", params);
+	}
+	@Override
 	public <E, K, V> Page<E> page(Map<K, V> params, int current, int pagesize) {
 		return dao.page(PREFIX + ".page", params, current, pagesize);
 	}
