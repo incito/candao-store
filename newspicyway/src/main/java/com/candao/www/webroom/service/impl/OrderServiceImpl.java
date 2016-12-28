@@ -1347,7 +1347,6 @@ public class OrderServiceImpl implements OrderService {
 		setMap.put("resultAmount", "0");
 		setMap.put("memberno", memberno);
 		setMap.put("doubSpellPreId", reslut.get(0).get("itemValue"));
-		setMap.put("updateId", "");
 		calALLAmout(setMap, operPreferentialResult, orderDetailList);
 	}
 

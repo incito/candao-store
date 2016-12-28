@@ -131,7 +131,7 @@
 	<select id="queryDetailPreByGift" parameterType="map"
 		resultType="com.candao.www.data.model.TorderDetailPreferential">
 		SELECT * FROM t_order_detail_preferential todp WHERE
-		todp.orderid=#{orderid} AND todp.isUse=1 AND
+		todp.orderid=#{orderid} AND todp.isGroup=0 AND todp.isUse=1 AND
 		todp.isCustom=4;
 	</select>
 
