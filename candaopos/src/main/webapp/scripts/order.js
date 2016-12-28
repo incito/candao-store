@@ -1475,7 +1475,11 @@ var Order = {
         dom.backfoodDialog.find('.breasons').html((function () {
             var str = '';
             $.each(consts.backDishReasons, function (k, v) {
-                str += '<div class="breason">' + v.itemDesc + '</div>';
+                if(v.itemDesc.length>7){
+                    str += '<div class="breason" style="padding-top: 0px">' + v.itemDesc + '</div>';
+                }else {
+                    str += '<div class="breason">' + v.itemDesc + '</div>';
+                }
             });
             return str;
         })());
@@ -2853,6 +2857,41 @@ var Order = {
                                     });
                                     return total;
                                 })();
+                                /*后台账单反结算*/
+                                function rebackOrderOk() {
+                                    Log.send(2, '后台账单反结算:' + JSON.stringify({
+                                            'reason': '会员结算失败，系统自动反结',
+                                            'orderNo': consts.orderid,
+                                            'userName': utils.storage.getter('aUserid')
+                                        }));
+                                    $.ajax({
+                                        url: _config.interfaceUrl.AntiSettlementOrder,//反结算
+                                        method: 'POST',
+                                        contentType: "application/json",
+                                        data: JSON.stringify({
+                                            'reason': '会员结算失败，系统自动反结',
+                                            'orderNo': consts.orderid,
+                                            'userName': utils.storage.getter('aUserid')
+                                        }),
+                                        dataType: "json",
+                                        success: function (data) {
+                                            if (data.result === '0') {
+                                            }
+                                            else {
+                                                Log.send(3, '系统自动反结失败，请稍后再试');
+                                                widget.modal.alert({
+                                                    cls: 'fade in',
+                                                    content: '<strong>系统自动反结失败，请稍后再试</strong>',
+                                                    width: 500,
+                                                    height: 500,
+                                                    btnOkTxt: '',
+                                                    btnCancelTxt: '确定'
+                                                });
+                                            }
+
+                                        }
+                                    })
+                                }
 
                                 if (consts.vipType === '1') {//餐道会员
                                     //餐道会员会员消费
@@ -2881,6 +2920,7 @@ var Order = {
                                         "securityCode": ""
                                     });
                                     Log.send(2, '餐道会员消费请求参数:' + params);
+
                                     $.ajax({
                                         url: consts.memberAddr.vipcandaourl + _config.interfaceUrl.SaleCanDao,
                                         method: 'post',
@@ -2901,40 +2941,7 @@ var Order = {
                                             Log.send(2, '餐道会员消费请求失败:' + data);
                                             rebackOrderOk();
                                             //后台账单反结算
-                                            function rebackOrderOk() {
-                                                Log.send(2, '后台账单反结算:' + JSON.stringify({
-                                                        'reason': '会员结算失败，系统自动反结',
-                                                        'orderNo': consts.orderid,
-                                                        'userName': utils.storage.getter('aUserid')
-                                                    }));
-                                                $.ajax({
-                                                    url: _config.interfaceUrl.AntiSettlementOrder,//反结算
-                                                    method: 'POST',
-                                                    contentType: "application/json",
-                                                    data: JSON.stringify({
-                                                        'reason': '会员结算失败，系统自动反结',
-                                                        'orderNo': consts.orderid,
-                                                        'userName': utils.storage.getter('aUserid')
-                                                    }),
-                                                    dataType: "json",
-                                                    success: function (data) {
-                                                        if (data.result === '0') {
-                                                        }
-                                                        else {
-                                                            Log.send(3, '系统自动反结失败，请稍后再试');
-                                                            widget.modal.alert({
-                                                                cls: 'fade in',
-                                                                content: '<strong>系统自动反结失败，请稍后再试</strong>',
-                                                                width: 500,
-                                                                height: 500,
-                                                                btnOkTxt: '',
-                                                                btnCancelTxt: '确定'
-                                                            });
-                                                        }
 
-                                                    }
-                                                })
-                                            }
 
                                             return false;
 
@@ -2967,6 +2974,9 @@ var Order = {
                                                 data: params
                                             });
                                         }
+                                    },function () {
+                                        Log.send(3, '会员结算失败开始账单反结:');
+                                        rebackOrderOk()
                                     }).then(function (data) {
                                         if (data) {
                                             Log.send(2, '打印结账单');

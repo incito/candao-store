@@ -1458,6 +1458,7 @@ utils.clearLocalStorage={
 			    'tenTimes':'tenTimes',
 			     'getOpenEndTime':'getOpenEndTime',
 			     'vipstatus':'vipstatus',
+			     'getOpenEndTimeTimer':'getOpenEndTimeTimer'
 			}
 		for(var i in clearLocal){
 			utils.storage.remove(clearLocal[i])

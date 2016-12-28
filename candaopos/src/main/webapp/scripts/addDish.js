@@ -520,10 +520,15 @@ var AddDish = {
 		ret.push('<h6 style="font-weight: bold; font-size: 16px">忌口</h6>');
 		ret.push((function(){
 			var str = '';
-			str = '<div class="form-group">';
+			str = '<div class="form-group avoids-certainList" >';
 
 			$.each(JSON.parse(utils.storage.getter('JI_KOU_SPECIAL')),function(k,v){
-				str += '<div class="avoid">' + v.itemDesc + '</div>'
+				if(v.itemDesc.length>7){
+					str += '<div class="avoid" style="padding-top: 0px">' + v.itemDesc + '</div>'
+				}else {
+					str += '<div class="avoid">' + v.itemDesc + '</div>'
+				}
+
 			});
 
 			str += '</div>'
@@ -709,7 +714,12 @@ var AddDish = {
 		dom.combodishialog.find('.avoid-box').html((function(){
 			var str = '';
 			$.each(JSON.parse(utils.storage.getter('JI_KOU_SPECIAL')),function(k,v){
-				str += '<div class="avoid">' + v.itemDesc + '</div>'
+				if(v.itemDesc.length>7){
+					str += '<div class="avoid" style="padding-top: 0px">' + v.itemDesc + '</div>'
+				}else {
+					str += '<div class="avoid">' + v.itemDesc + '</div>'
+				}
+
 			});
 			return str;
 		})());
@@ -1246,10 +1256,15 @@ var AddDish = {
 		ret.push('<h6 style="font-weight: bold; font-size: 16px">忌口</h6>');
 		ret.push((function(){
 			var str = '';
-			str = '<div class="form-group">';
+			str = '<div class="form-group avoidsList">';
 
 			$.each(JSON.parse(utils.storage.getter('JI_KOU_SPECIAL')),function(k,v){
-				str += '<div class="avoid">' + v.itemDesc + '</div>'
+				if(v.itemDesc.length>7){
+					str += '<div class="avoid" style="padding-top: 0px">' + v.itemDesc + '</div>'
+				}else {
+					str += '<div class="avoid">' + v.itemDesc + '</div>'
+				}
+
 			});
 
 			str += '</div>'
@@ -2025,7 +2040,13 @@ var AddDish = {
 		$("#givefood-reason").val('');
 		var str = '';
 		$.each(JSON.parse(utils.storage.getter('GIFT_REASON')), function(k,v){
-			str += '<div class="freason">' + v.itemDesc + '</div>';
+			if(v.itemDesc.length>7){
+				str += '<div class="freason" style="padding-top: 0px">' + v.itemDesc + '</div>';
+			}
+			else{
+				str += '<div class="freason">' + v.itemDesc + '</div>';
+			}
+
 		})
 		$("#givefood-dialog").find('.freasons').html(str);
 		$("#givefood-dialog").modal("show");

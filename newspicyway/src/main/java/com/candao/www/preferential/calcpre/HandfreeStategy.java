@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
@@ -20,7 +21,8 @@ import com.candao.www.preferential.model.PreDealInfoBean;
 
 /**
  * 
- * @author Candao 手工优惠---手工优免 三种优惠方式：赠菜，折扣，优免 此类优惠需要收银员手动输入的
+ * @author Canada
+ *  手工优惠---手工优免 三种优惠方式：赠菜，折扣，优免 此类优惠需要收银员手动输入的
  */
 public class HandfreeStategy extends CalPreferentialStrategy {
 
@@ -34,11 +36,6 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 		String disrate = String.valueOf(paraMap.get("disrate"));
 		String giveDish = (String) paraMap.get("dishid");
 		BigDecimal discount = new BigDecimal(disrate.trim().isEmpty() ? "0" : disrate);
-		Map<String, Object> cashGratis = cashGratis(paraMap, tbPreferentialActivityDao, orderDetailList);
-		if (cashGratis != null) {
-			return cashGratis;
-		}
-
 		// 返回优惠集合
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		/** 优惠卷信息 **/
@@ -77,22 +74,22 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				amount = deInfo.getPreAmount();
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,
-						1);
+						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"), conupId,
+						Constant.CALCPRETYPE.WAITERUSEPRE);
 
 				detailPreferentials.add(preSub);
 			}
 			this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
 
 		} else if (!StringUtils.isEmpty(preferentialAmout.trim()) && StringUtils.isEmpty(giveDish)
-				&& StringUtils.isEmpty(disrate.trim())) {
+				&& new BigDecimal(preferentialAmout).doubleValue() >0 ){
 			// 手工输入现金优免
 			BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
 			amount = cashprelAmout;
 			String conupId =(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 			TorderDetailPreferential addPreferential = this.createPreferentialBean(paraMap, amount, amount,
-					new BigDecimal("0"), orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,
-					1);
+					new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"), conupId,
+					Constant.CALCPRETYPE.WAITERUSEPRE);
 			detailPreferentials.add(addPreferential);
 		} else if (!StringUtils.isEmpty(giveDish) && StringUtils.isEmpty(paraMap.get("discount"))
 				&& StringUtils.isEmpty(paraMap.get("amount"))) {
@@ -211,8 +208,8 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				
 				String conupId =(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 			   addPreferential = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), 1, new BigDecimal(0), 0, (String) tempMap.get("name"), conupId,
-						4);
+						new BigDecimal("0"), 1, new BigDecimal(0), Constant.CALCPRETYPE.NOGROUP, (String) tempMap.get("name"), conupId,
+						Constant.CALCPRETYPE.GIVEUSEPRE);
 			   addPreferential.setDishid(ordetail.getDishid());
 			   addPreferential.setUnit(ordetail.getDishunit());
 			}
