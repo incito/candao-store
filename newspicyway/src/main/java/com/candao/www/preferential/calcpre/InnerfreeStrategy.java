@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
@@ -69,7 +70,8 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 				amount = deInfo.getPreAmount();
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				addPreferential = this.createPreferentialBean(paraMap, amount, new BigDecimal("0"), new BigDecimal("0"),
-						orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,0);
+						orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"),
+						conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {
 					if (amountCount.compareTo(amount) == -1) {
@@ -90,9 +92,10 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			amount = caseAmount.multiply(new BigDecimal(preferentialNum));
 			for (int i = 0; i < preferentialNum; i++) {
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
-				addPreferential = this.createPreferentialBean(paraMap, caseAmount, new BigDecimal("0"), new BigDecimal("0"),
-						orderDetailList.size(), discount, 1, (String) tempMap.get("name"), conupId,0);
-				
+				addPreferential = this.createPreferentialBean(paraMap, caseAmount, new BigDecimal("0"),
+						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP,
+						(String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
+
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {
 					if (orderTempPrice.compareTo(new BigDecimal("0")) == -1) {

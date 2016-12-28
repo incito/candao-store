@@ -85,11 +85,12 @@ $("#test").click(function(){
 	$("#editAvoid").click(function() {
 		$(this).addClass("hide");
 		$("#saveAvoid").removeClass("hide");
+		$("#avoid-add").removeClass("hide");
 		$("#avoid-list .avoid-li").attr("disabled", false);
-		if($("#avoid-list .avoid-li").not("#avoid-add").length < 5){
+		/*if($("#avoid-list .avoid-li").not("#avoid-add").length < 5){
 			//最多只能添加5个忌口
 			$("#avoid-add").removeClass("hide");
-		}
+		}*/
 	});
 	
 	// 点击退菜原因设置 编辑
@@ -97,10 +98,11 @@ $("#test").click(function(){
 		$(this).addClass("hide");
 		$("#saveReturn").removeClass("hide");
 		$("#reason-list .avoid-li").attr("disabled", false);
-		if($("#reason-list .avoid-li").not("#reason-add").length < 5){
+		$("#reason-add").removeClass("hide");
+		/*if($("#reason-list .avoid-li").not("#reason-add").length < 5){
 			//最多只能添加5个退菜原因
 			$("#reason-add").removeClass("hide");
-		}
+		}*/
 	});
 	//点击投诉原因 编辑
 	$("#editComplaint").click(function() {

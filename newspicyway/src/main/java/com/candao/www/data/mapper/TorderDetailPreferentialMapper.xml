@@ -14,9 +14,9 @@
 		<result property="isGroup" column="isGroup" jdbcType="TINYINT" />
 		<result property="isUse" column="isUse" jdbcType="TINYINT" />
 		<result property="insertime" column="insertime" jdbcType="TIMESTAMP" />
-		<result property="unit" column="unit" jdbcType="VARCHAR"/>
-		<result property="preType" column="preType" jdbcType="VARCHAR"/>
-		<result property="preName" column="preName" jdbcType="VARCHAR"/>
+		<result property="unit" column="unit" jdbcType="VARCHAR" />
+		<result property="preType" column="preType" jdbcType="VARCHAR" />
+		<result property="preName" column="preName" jdbcType="VARCHAR" />
 	</resultMap>
 	<resultMap id="base_result_map"
 		type="com.candao.www.data.model.TbPreferentialActivity">
@@ -54,23 +54,23 @@
 
 	<insert id="addBatchInfo" parameterType="java.util.List">
 		INSERT INTO
-		`t_order_detail_preferential` (	
-			`id`,
-			`orderid`,
-			`dishid`,
-			`dishNum`,
-			`preferential`,
-			`deAmount`,
-			`discount`,
-			`isCustom`,
-			`isGroup`,
-			`isUse`,
-			`toalFreeAmount`,
-			`toalDebitAmount`,
-			`insertime`,
-			`unit`,
-			`preType`,
-			`preName`)
+		`t_order_detail_preferential` (
+		`id`,
+		`orderid`,
+		`dishid`,
+		`dishNum`,
+		`preferential`,
+		`deAmount`,
+		`discount`,
+		`isCustom`,
+		`isGroup`,
+		`isUse`,
+		`toalFreeAmount`,
+		`toalDebitAmount`,
+		`insertime`,
+		`unit`,
+		`preType`,
+		`preName`)
 		VALUES
 		<foreach collection="list" item="ordDetPre" index="index"
 			separator=",">
@@ -91,7 +91,8 @@
 			#{ordDetPre.preType,jdbcType=VARCHAR},
 			#{ordDetPre.preName,jdbcType=VARCHAR})
 		</foreach>
-		ON DUPLICATE KEY UPDATE deAmount =VALUES(deAmount)
+		ON DUPLICATE KEY UPDATE deAmount
+		=VALUES(deAmount),isGroup=VALUES(isGroup),dishid=VALUES(dishid),discount=VALUES(discount),toalFreeAmount=VALUES(toalFreeAmount),toalDebitAmount=VALUES(toalDebitAmount),unit=VALUES(unit)
 	</insert>
 
 	<insert id="addDetailPreFerInfo" parameterType="com.candao.www.data.model.TorderDetailPreferential"
@@ -116,8 +117,10 @@
 		</if>
 	</delete>
 	<delete id="deleteForXinladaoInfo" parameterType="map">
-		DELETE FROM t_order_detail_preferential WHERE
-		orderid=#{orderid} and isCustom=#{custom};
+		DELETE FROM
+		t_order_detail_preferential WHERE
+		orderid=#{orderid} and
+		isCustom=#{custom};
 	</delete>
 
 	<select id="getTorderDetailPreS" parameterType="map"
@@ -131,19 +134,20 @@
 		todp.orderid=#{orderid} AND todp.isGroup=0 AND todp.isUse=1 AND
 		todp.isCustom=4;
 	</select>
-	
+
 	<select id="queryGiveprefer" parameterType="map" resultType="java.util.HashMap">
-			SELECT
-			COUNT(id) AS count,
-			top.dishid,
-			top.unit
+		SELECT
+		COUNT(id) AS count,
+		top.dishid,
+		top.unit
 		FROM
-			t_order_detail_preferential AS top
+		t_order_detail_preferential AS top
 		WHERE
-			orderid = #{orderid}
-		AND isCustom = 4
+		orderid = #{orderid}
+		AND
+		isCustom = 4
 		GROUP BY
-			top.dishid,top.unit;
+		top.dishid,top.unit;
 	</select>
 	<select id="getTorderDetailSbyOrderid" parameterType="map"
 		resultMap="associationDetailpreferInfo">
@@ -156,7 +160,9 @@
 		todp.isUse=1 ORDER BY todp.insertime
 		ASC;
 	</select>
-	<select id="statisticALLDiscount" parameterType="map" resultType="java.math.BigDecimal">
-		SELECT IFNULL(SUM(deAmount) ,0) FROM t_order_detail_preferential WHERE orderid=#{orderid};
+	<select id="statisticALLDiscount" parameterType="map"
+		resultType="java.math.BigDecimal">
+		SELECT IFNULL(SUM(deAmount) ,0) FROM
+		t_order_detail_preferential WHERE orderid=#{orderid};
 	</select>
 </mapper>
