@@ -42,6 +42,9 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		/** 对应关系优惠卷对应，优惠信息 **/
 		Map<String, TorderDetailPreferential> orderDetialPerenMap = new HashMap<>();
 		for (TorderDetailPreferential detailPreferential : ordDetailPreList) {
+			if(detailPreferential.getIsCustom()==4){
+				continue;
+			}
 			String unit = detailPreferential.getUnit() == null ? "" : detailPreferential.getUnit();
 			String key = detailPreferential.getDishid() + unit;
 			if (!preferInfoMap.containsKey(key)) {

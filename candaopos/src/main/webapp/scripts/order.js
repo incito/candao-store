@@ -243,43 +243,76 @@ var Order = {
 
         $('.J-btn-settlement').click(function () {
             Log.send(2, '点击结账按钮');
-            if (parseFloat($('.needPay span').text()) > 0) {
-                if (parseFloat($('.needPay span').text()) > parseFloat($('#tip-amount').text())) {
-                    widget.modal.alert({
-                        content: '<strong>还有未收金额</strong>',
-                        btnOkTxt: '确定',
-                        btnCancelTxt: ''
-                    });
-                } else {
-                    if (!$('.tipAmount').hasClass('hide')) {
-                        if (parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
-                            var alertIns = widget.modal.alert({
-                                content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
-                                btnOkCb: function () {
-                                    alertIns.close();
-                                    that.doSettlement();
-                                }
-                            });
-                        }
-                    } else {
-                        widget.modal.alert({
-                            content: '<strong>还有未收金额</strong>',
-                            btnOkTxt: '确定',
-                            btnCancelTxt: ''
-                        });
+            var needPay = parseFloat($('.needPay span').text());
+            var tipAmount = parseFloat($('#tip-amount').text());
+            var tipAmountSpan = parseFloat($('.tipAmount span').text());
+            var amount = parseFloat($('#amount').text());
+            var cash = parseFloat($('input[name=cash]').val());
+            var hasTip = !$('.tipAmount').hasClass('hide');
+            var alertIns = null;
+
+            var totalOtherPay = (function () {
+                var total = 0;
+                $('.pay-div .J-pay-val').each(function () {
+                    var $me = $(this);
+                    if ($me.attr('iptType') !== 'cash') {
+                        total += parseFloat($me.val().length > 0 ? $me.val() : 0);
                     }
-                }
-            } else {
-                if (parseFloat($('.tipAmount span').text()) < parseFloat($('#tip-amount').text())) {
-                    var alertIns = widget.modal.alert({
+                });
+                return total;
+            })();
+            var settlementAmount = cash + totalOtherPay;
+
+
+            if(settlementAmount < amount) {
+                widget.modal.alert({
+                    content: '<strong>还有未收金额</strong>',
+                    btnOkTxt: '确定',
+                    btnCancelTxt: ''
+                });
+                return ;
+            } else if(settlementAmount === amount) {
+                if(hasTip) {
+                     alertIns = widget.modal.alert({
                         content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
                         btnOkCb: function () {
                             alertIns.close();
                             that.doSettlement();
                         }
                     });
-                } else {
-                    that.doSettlement();
+                }
+            } else {
+                if(hasTip) {
+                    if(cash < tipAmount) {
+                        if(totalOtherPay < amount) {
+                            alertIns = widget.modal.alert({
+                                content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                                btnOkCb: function () {
+                                    alertIns.close();
+                                    that.doSettlement();
+                                }
+                            });
+                        } else {
+                            alertIns = widget.modal.alert({
+                                content: '<strong>' + parseFloat($('#tip-amount').text()) + '元小费,必须使用现金结算</strong>',
+                                btnOkCb: function () {
+                                    alertIns.close();
+                                }
+                            });
+                        }
+                    } else {
+                        if(needPay <= 0) {
+                            that.doSettlement();
+                            return ;
+                        }
+                         alertIns = widget.modal.alert({
+                            content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                            btnOkCb: function () {
+                                alertIns.close();
+                                that.doSettlement();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -1028,12 +1061,15 @@ var Order = {
                             $paytotal.find('.payamount').removeClass('hide');
                         }
                     } else {
+                        _updateCash(me.val().length ? me.val() : '0');
+
+
                         //if(focusIpt === )
-                        console.log(focusIpt);
-                        cVal = 0;
-                        _updateCash(cVal);
-                        $paytotal.find('.payamount').find('span').text(cVal);
-                        $paytotal.find('.payamount').addClass('hide');
+                        //console.log(focusIpt);
+                        //cVal = 0;
+                        //_updateCash(cVal);
+                        //$paytotal.find('.payamount').find('span').text(cVal);
+                        //$paytotal.find('.payamount').addClass('hide');
                     }
                 }
             }
@@ -1848,18 +1884,38 @@ var Order = {
             var data = res1[0].data.rows;
             if (res1[0].code === '0' && res2[0].code === '0') {
                 var htm = '';
-                $.each(data, function (k, v) {
+                var ret = [];
+
+                var getAllDishes = (function getArr(data){
+                    for(var i = 0, len = data.length; i < len; i++){
+                        var item = data[i];
+                        if(item.dishtype === '0') {
+                            ret.push(item);
+                        } else {
+                            arguments.callee(item.dishes);
+                        }
+                    }
+                })(data);
+
+                $.each(ret, function (k, v) {
                     var dishnum = parseInt(v.dishnum, 10);
                     $.each(res2[0].data, function (key, value) {
-                        var left = dishnum - parseInt(value.count, 10);
-                        if (value.dishid === v.dishid && value.unit === v.dishunit) {
-                            v.dishnum = left;
-
+                        if(value) {
+                            var left = dishnum - parseInt(value.count, 10);
+                            if (value.dishid === v.dishid && value.unit === v.dishunit) {
+                                if(left < 0) {
+                                    v.dishnum = 0;
+                                    value.count = Math.abs(left);
+                                } else {
+                                    v.dishnum = left;
+                                    res2[0].data.splice(key,1)
+                                }
+                            }
                         }
                     });
                 });
 
-                $.each(data, function (k, v) {
+                $.each(ret, function (k, v) {
                     var cls = v.dishnum > 0 ? '' : 'hide';
                     if (parseInt(v.orderprice, 10) > 0) {
                         htm += "<li class='" + cls + "' dishname='" + v.dishname + "' dishid='" + v.dishid + "' unit='" + v.dishunit + "' num='" + v.dishnum + "'>" +
