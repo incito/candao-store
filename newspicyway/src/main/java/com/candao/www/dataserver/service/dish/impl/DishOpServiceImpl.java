@@ -70,7 +70,12 @@ public class DishOpServiceImpl implements DishService {
             LOGGER.error("###getAllWmFood userId={},error={}###", userId, "计算菜品拼音首字母出错！" + e.getCause().getStackTrace());
         }
         List<Map> mapList = dishMapper.getAllWmFood();
-        responseJsonData.setOrderJson(mapList);
+        if(null!=mapList&&!mapList.isEmpty()){
+        	responseJsonData.setOrderJson(mapList);
+        }else{
+        	responseJsonData.setData("0");
+        	responseJsonData.setInfo("没有菜品信息");
+        }
         String s = JSON.toJSONString(responseJsonData);
         LOGGER.info("###getAllWmFood ###RESPONSE### result={}", s);
         return s;

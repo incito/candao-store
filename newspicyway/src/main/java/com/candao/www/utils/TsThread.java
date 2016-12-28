@@ -25,37 +25,38 @@ public class TsThread extends Thread {
 
     @Override
     public void run() {
-        //根据动作打印不同的小票
-        URL urlobj;
-        try {
-            urlobj = new URL(str);
-            URLConnection urlconn = urlobj.openConnection();
-            urlconn.connect();
-            InputStream myin = urlconn.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
-            String content = reader.readLine();
-            /**
-             * 如果DataServer推送异常(特征值判断)，则重启Dataserver后重新推送
-             */
-            if(null!=content&&content.contains("Access violation")){
-                if (str.startsWith(Constant.TS_URL)) {
-                    restartAndRetry();
-                }
-            }
-            JSONObject object = JSONObject.fromObject(content.trim());
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> resultList = (List<Map<String, Object>>) object.get("result");
-            if ("1".equals(String.valueOf(resultList.get(0).get("Data")))) {
-                System.out.println("推送成功");
-            } else {
-                System.out.println("推送失败");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            if (str.startsWith(Constant.TS_URL)) {
-                restartAndRetry();
-            }
-        }
+    /*  2.0版本开始，dataserver服务不再部署，防止连接超时，所以屏蔽 */
+//        //根据动作打印不同的小票
+//        URL urlobj;
+//        try {
+//            urlobj = new URL(str);
+//            URLConnection urlconn = urlobj.openConnection();
+//            urlconn.connect();
+//            InputStream myin = urlconn.getInputStream();
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(myin));
+//            String content = reader.readLine();
+//            /**
+//             * 如果DataServer推送异常(特征值判断)，则重启Dataserver后重新推送
+//             */
+//            if(null!=content&&content.contains("Access violation")){
+//                if (str.startsWith(Constant.TS_URL)) {
+//                    restartAndRetry();
+//                }
+//            }
+//            JSONObject object = JSONObject.fromObject(content.trim());
+//            @SuppressWarnings("unchecked")
+//            List<Map<String, Object>> resultList = (List<Map<String, Object>>) object.get("result");
+//            if ("1".equals(String.valueOf(resultList.get(0).get("Data")))) {
+//                System.out.println("推送成功");
+//            } else {
+//                System.out.println("推送失败");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            if (str.startsWith(Constant.TS_URL)) {
+//                restartAndRetry();
+//            }
+//        }
     }
 
     private void restartAndRetry() {

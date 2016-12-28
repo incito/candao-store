@@ -29,7 +29,7 @@ public class RunCurrMonTask {
 	@Qualifier("bOrderService")
 	private OrderService orderService;
 
-	public void cuttingpayment() throws IOException {
+	public void cuttingpayment() {
 		ClientInfo clientInfo = new ClientInfo();
 		clientInfo.setBranchId(PropertiesUtils.getValue("current_branch_id"));
 		clientInfo.setCommand("order");

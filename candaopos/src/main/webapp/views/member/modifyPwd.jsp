@@ -25,23 +25,23 @@
 					<form action="">
 						<div class="form-group form-group-base">
 							<span class="form-label">手机号:</span>
-							<input value="" name="phone"  type="text" class="form-control" autocomplete="off">
+							<input value="" name="phone" id="changPsd" type="text" readonly="readonly" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base f-oh">
 							<span class="form-label f-fl">验证码:</span>
-							<input value="" name="phone"  type="text" class="form-control f-fl" autocomplete="off" style="width: 320px; float: left; margin-right: 20px;">
-							<button class="btn-default btn-lg btn-base btn-yellow f-fl">发送</button>
+							<input value="" name="phone" id="phoneCode" type="text" class="form-control f-fl" autocomplete="off" style="width: 320px; float: left; margin-right: 20px;">
+							<button class="btn-default btn-lg btn-base btn-yellow f-fl btn-sendMsg" >发送</button>
 						</div>
 						<div class="form-group form-group-base">
 							<span class="form-label">新密码:</span>
-							<input value="" name="phone"  type="password" class="form-control" autocomplete="off">
+							<input value="" id="newPsd" maxlength="6" name="phone"  type="password" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base">
 							<span class="form-label">确认密码:</span>
-							<input value="" name="phone"  type="password" class="form-control" autocomplete="off">
+							<input value="" id="rnewPsd" maxlength="6" type="password" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base">
-							<button class="btn-default btn-lg btn-base btn-base-sm btn-yellow" style="width: 100%;">保存修改</button>
+							<button class="btn-default btn-lg btn-base btn-base-sm btn-yellow btn-changSave" style="width: 100%;">保存修改</button>
 						</div>
 					</form>
 				</div>
@@ -65,5 +65,31 @@
 		</div>
 	</div>
 </div>
+<script>
+	var valicode=null ,timer;
+	clearTimeout(timer)//清除60S倒计时
+	$('#modify-pwd-dialog #changPsd').val(loadMember.mobile)
+	$('#modify-pwd-dialog .btn-changSave').click(function () {
+		member.changePassword();
+		return false//禁止表单提交
+	})
+	$('#modify-pwd-dialog .btn-sendMsg').click(function () {
+		var phone=$.trim($('#changPsd').val())
+		if(member.isPhoneNo(phone)===true){
+			member.countDown(60);
+			member.sendVerifyCode(phone);
+		}
+		else {
+			member.errorAlert('请输入正确的手机号码')
+		}
+		return false//禁止表单提交
+	})
+	/*$('.close-win').click(function () {
+		$('#modify-pwd-dialog').modal('hide');
+		clearTimeout(timer)//清除60S倒计时
+		$('#modify-pwd-dialog').html('')
+	})*/
+
+</script>
 </body>
 </html>

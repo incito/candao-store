@@ -72,7 +72,7 @@
 	background: #FFFFFF;
 	box-shadow: 0px 1px 0px 0px #CFCFCF;
 	border-radius: 3px;
-	color:#555;
+	color:#000;
 	position: absolute;
 	top:25px;
 }
@@ -94,8 +94,16 @@
 	border-radius: 3px;
 	margin:5px 2px;
 	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	background: #fff;
 }
-
+.coupon-box .active{
+	background: #FF5803;
+	color: #fff;
+	border: 1px solid #FF5803;
+}
 /*pay-type-select 银行卡选择*/
 .pay-type-select {
 	position: absolute;
@@ -149,4 +157,83 @@
 }
 .pay-type-cnt .btn-yellow {
 	margin-right:15px;
+}
+.btn-sendMsg{
+	width: 74px;
+}
+/*优惠左右按钮*/
+.coupon-box .unclick{
+	color: #999;
+}
+/*雅座会员优惠券*/
+.discount-title {
+	line-height: 40px;
+	width: 100%;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 15px;
+}
+.discount-info{
+	width: 132px;
+	height: 70px;
+	background: #FFFFFF;
+	box-shadow: 0px 1px 0px 0px #B1B1B1;
+	border-radius: 3px;
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	padding: 6px 5px 7px;
+	color: #FF5803;
+	text-align: center;
+	font-size: 12px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+.discount-info .dish-name {
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	font-size: 14px;
+	font-weight: bold;
+}
+.discount-info hr{
+	padding: 0;
+	margin: 8px;
+}
+.discount-info .dish-price{
+	 font-size: 12px;
+	 float:left;
+	 width: 50%;
+	height: 20px;
+	line-height: 20px;
+	color: #000;
+ }
+.discount-info .dish-price-border{
+	border-right: solid #000 1px;
+}
+.ya_btn .disabled{
+	color: #999;
+}
+.ya_cardInfo{
+	margin-bottom: 10px;
+	color: #FF5803;
+	font-size: 14px;
+	display: none;
+}
+.ya_rechargeSave .modal-body {
+	padding: 30px 20px;
+	text-align: left;
+}
+.memberSucceed .modal-body {
+	padding: 30px 20px;
+	text-align: center;
+}
+/*绑定会员实体卡*/
+.bingTitle{
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 15px;
 }

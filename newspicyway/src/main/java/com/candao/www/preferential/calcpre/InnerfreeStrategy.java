@@ -2,21 +2,19 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.model.ComplexTorderDetail;
-import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
-import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
 
 /***
@@ -30,9 +28,8 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
-		String orderid = (String) paraMap.get("orderid"); // 账单号
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
 		List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid,
 				PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
@@ -45,7 +42,7 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 
 		// 定义 返回值
 		Map<String, Object> result = new HashMap<>();
-		
+
 		// 当前订单总价amountCount
 		BigDecimal amountCount = new BigDecimal(0.0);
 		for (TorderDetail d : orderDetailList) {
@@ -71,8 +68,10 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
 			if (deInfo.getPreAmount().doubleValue() > 0) {
 				amount = deInfo.getPreAmount();
-				addPreferential = this.createPreferentialBean(paraMap, amount, orderDetailList.size(), discount, 1,
-						tempMapList);
+				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+				addPreferential = this.createPreferentialBean(paraMap, amount, new BigDecimal("0"), new BigDecimal("0"),
+						orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"),
+						conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {
 					if (amountCount.compareTo(amount) == -1) {
@@ -92,14 +91,11 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
 			amount = caseAmount.multiply(new BigDecimal(preferentialNum));
 			for (int i = 0; i < preferentialNum; i++) {
-				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-				Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-				addPreferential = new TorderDetailPreferential(updateId, orderid, "", preferentialid, caseAmount,
-						String.valueOf(orderDetailList.size()), 1, 1, discount, 0, insertime);
-				// 设置优惠名称
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) tempMap.get("name"));
-				addPreferential.setActivity(activity);
+				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+				addPreferential = this.createPreferentialBean(paraMap, caseAmount, new BigDecimal("0"),
+						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP,
+						(String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
+
 				// 是否挂账，优免
 				if (can_credit.equals("0")) {
 					if (orderTempPrice.compareTo(new BigDecimal("0")) == -1) {

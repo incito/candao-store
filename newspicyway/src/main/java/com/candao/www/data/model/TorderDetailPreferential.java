@@ -64,7 +64,7 @@ public class TorderDetailPreferential implements Serializable {
 	 * @param dishNum
 	 * 菜品优惠个数
 	 * @param isGroup
-	 * 是否是全局优化
+	 * 是否是全局折扣
 	 * @param isUse
 	 * 是否使用
 	 * @param discount
@@ -76,6 +76,7 @@ public class TorderDetailPreferential implements Serializable {
 	 */
 	public TorderDetailPreferential(String id, String orderid, String dishid, String preferential, BigDecimal deAmount,
 			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom,Date insertime) {
+		this.id = id;
 		this.orderid = orderid;
 		this.preferential = preferential;
 		this.dishid = dishid;
@@ -85,7 +86,6 @@ public class TorderDetailPreferential implements Serializable {
 		this.dishNum = dishNum;
 		this.discount = discount;
 		this.isCustom = isCustom;
-		this.id = id;
 		this.insertime = insertime;
 	}
 	

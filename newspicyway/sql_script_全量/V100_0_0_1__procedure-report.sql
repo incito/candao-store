@@ -721,7 +721,6 @@ label_main:
     --   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   END$$
 
-DELIMITER ;
 DELIMITER $$
 DROP PROCEDURE IF EXISTS p_report_yyhzbxq$$
 CREATE PROCEDURE p_report_yyhzbxq(IN `pi_branchid` int(11)
@@ -3459,7 +3458,7 @@ DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `p_report_yyfx_pxxstj_column`$$
 
-CREATE PROCEDURE `p_report_yyfx_pxxstj_column`(IN  pi_branchid INT(11), 
+CREATE PROCEDURE `p_report_yyfx_pxxstj_column`(IN  pi_branchid INT(11),
                                       IN  pi_xslx     SMALLINT, 
                                       IN  pi_ksrq     DATETIME, 
                                       IN  pi_jsrq     DATETIME, 
@@ -3791,7 +3790,7 @@ DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `p_report_yyfx_pxxstj`$$
 
-CREATE PROCEDURE `p_report_yyfx_pxxstj`(IN  pi_branchid INT(11), 
+CREATE PROCEDURE `p_report_yyfx_pxxstj`(IN  pi_branchid INT(11),
                                       IN  pi_xslx     SMALLINT, 
                                       IN  pi_ksrq     DATETIME, 
                                       IN  pi_jsrq     DATETIME, 
@@ -5590,8 +5589,7 @@ BEGIN
     WHERE
       branchid = pi_branchid
       AND begintime BETWEEN v_date_start AND v_date_end 
-      AND shiftid = pi_sb
-      AND orderstatus = 3;
+      AND shiftid = pi_sb;
   ELSE
     INSERT INTO t_temp_order
     SELECT orderid
@@ -5599,8 +5597,7 @@ BEGIN
       t_order USE INDEX (IX_t_order_begintime)
     WHERE
       branchid = pi_branchid
-      AND begintime BETWEEN v_date_start AND v_date_end 
-      AND orderstatus = 3;
+      AND begintime BETWEEN v_date_start AND v_date_end;
   END IF;
   CREATE UNIQUE INDEX uix_t_temp_order_orderid ON t_temp_order (orderid);
 

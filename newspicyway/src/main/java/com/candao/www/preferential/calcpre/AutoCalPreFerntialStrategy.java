@@ -2,22 +2,20 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.model.ComplexTorderDetail;
-import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
-import com.candao.www.dataserver.util.IDUtil;
 
 /**
  * 
@@ -41,8 +39,8 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		orderDetail_params.put("orderid", orderid);
 		// 1:双拼锅 0：单品
 		List<TorderDetail> singleDishs = new ArrayList<>();
-		// 获取当前订单的鱼锅个数
-		Map<String, Boolean> fishComMap = new HashMap<>();
+		// 获取当前订单的鱼锅个数,鱼的个数(直接根据获取订单下面的鱼的个数就能知道鱼锅中的鱼)
+		Map<String, Integer> fishComMap = new HashMap<>();
 		// 记录菜品个数
 		for (ComplexTorderDetail torderDetailInfo : orderDetailList) {
 			String dishLevel = torderDetailInfo.getLevel();
@@ -50,7 +48,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			String dishId = torderDetailInfo.getDishid();
 			TorderDetail torderDetail = null;
 			if (dishLevel != null && dishLevel.equals("1")) {
-				fishComMap.put(torderDetailInfo.getPrimarykey(), false);
+				fishComMap.put(torderDetailInfo.getPrimarykey(), 0);
 			} else if (unitName != null && unitName.equals("扎")) {
 				torderDetail = new TorderDetail();
 				torderDetail.setDishid(dishId);
@@ -65,7 +63,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				int ismaster = torderDetailInfo.getIsmaster();
 				int ispot = torderDetailInfo.getIspot();
 				if (ismaster == 0 && ispot == 0) {
-					fishComMap.put(torderDetailInfo.getParentkey(), true);
+					fishComMap.put(torderDetailInfo.getParentkey(), fishComMap.get(torderDetailInfo.getParentkey())+1);
 				}
 			}
 
@@ -144,17 +142,11 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			Map<String, Object> res = pres.get(0);
 			String preferentialid = (String) res.get("preferential");
 			if (amount.doubleValue() > 0) {
-				// 把信息汇总
-				Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-				// 是否大于0
-				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
-						preferentialid, amount, "1", 0, 1, new BigDecimal(1), 2, insertime);
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) res.get("name"));
-				torder.setActivity(activity);
-				torder.setCoupondetailid((String) (pres.size() > 1 ? res.get("preferential") : res.get("id")));
-				// 设置优免金额
-				torder.setToalFreeAmount(amount);
+				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
+				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), 1, new BigDecimal("0"),Constant.CALCPRETYPE.NOGROUP, (String) res.get("name"),
+						conId,Constant.CALCPRETYPE.SYSTENUSEPRE);
+				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
 			}
 
@@ -164,17 +156,15 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		return result;
 	}
 
-	private Map<String, Object> calDoublePot(Map<String, Boolean> fishComMap,
+	private Map<String, Object> calDoublePot(Map<String, Integer> fishComMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, Map<String, Object> params, String orderid,
 			Map<String, Object> paraMap, TorderDetailPreferentialDao orderDetailPreferentialDao) {
-		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-
 		// 获取多少鱼锅可以jinx
 		int fishNo = 0;
-		Iterator<Boolean> iter = fishComMap.values().iterator();
+		Iterator<Integer> iter = fishComMap.values().iterator();
 		while (iter.hasNext()) {
-			boolean value = iter.next();
-			if (value) {
+			int value = iter.next();
+			if (value==2) {
 				fishNo = fishNo + 1;
 			}
 		}
@@ -187,23 +177,20 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		Map<String, Object> result = new HashMap<>();
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		BigDecimal amount = new BigDecimal("0");
-		BigDecimal menberAmount=new BigDecimal("0");
+		BigDecimal menberAmount = new BigDecimal("0");
 		String memberno = String.valueOf(paraMap.get("memberno"));
 		List<Map<String, Object>> pres = tbPreferentialActivityDao.findPreferentialDetail(doublePotPrams);
 		if (fishNo != 0 && !pres.isEmpty()) {
 			Map<String, Object> res = pres.get(0);
-			 menberAmount = new BigDecimal(String.valueOf(res.get("amount"))).multiply(new BigDecimal(fishNo));
+			String preferentialid = (String) res.get("preferential");
+			menberAmount = new BigDecimal(String.valueOf(res.get("amount"))).multiply(new BigDecimal(fishNo));
 			if (!memberno.isEmpty()) {
 				amount = amount.add(menberAmount);
-				TorderDetailPreferential torder = new TorderDetailPreferential(IDUtil.getID(), orderid, "",
-						(String) res.get("preferential"), amount, String.valueOf(fishNo), 0, 1, new BigDecimal(1), 2,
-						insertime);
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) res.get("name"));
-				torder.setActivity(activity);
-				torder.setCoupondetailid((String) (pres.size() > 1 ? res.get("preferential") : res.get("id")));
-				// 设置优免金额
-				torder.setToalFreeAmount(amount);
+				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
+				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), fishNo, new BigDecimal("0"), Constant.CALCPRETYPE.NOGROUP, (String) res.get("name"),
+						conId,Constant.CALCPRETYPE.SYSTENUSEPRE);
+				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
 			}
 

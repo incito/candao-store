@@ -2,7 +2,6 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +12,7 @@ import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
 import com.candao.www.data.model.ComplexTorderDetail;
-import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TorderDetailPreferential;
-import com.candao.www.dataserver.util.IDUtil;
 
 /**
  * 
@@ -26,7 +23,7 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
-			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao,List<ComplexTorderDetail> orderDetailList) {
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
 
 		// 已经优免金额
 		BigDecimal bd = new BigDecimal((String) paraMap.get("preferentialAmt"));
@@ -54,16 +51,10 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 			// 使用优惠张数
 			int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
 			for (int i = 0; i < preferentialNum; i++) {
-				// 是否是更新
-				String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-				Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-				TorderDetailPreferential torder = new TorderDetailPreferential(updateId, orderid, "",
-						(String) paraMap.get("preferentialid"), amount, "", 1, 1, discount, 5, insertime);
-
-				// 设置优惠名称
-				TbPreferentialActivity activity = new TbPreferentialActivity();
-				activity.setName((String) paraMap.get("preferentialName"));
-				torder.setActivity(activity);
+				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
+						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP,
+						(String) paraMap.get("preferentialName"), (String) paraMap.get("preferentialid"),
+						Constant.CALCPRETYPE.YAZUOUSEPRE);
 				// 设置优惠类型
 				torder.setPreType((String) paraMap.get("type"));
 				// 设置优惠名称

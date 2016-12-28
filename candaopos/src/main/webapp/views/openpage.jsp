@@ -10,14 +10,15 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>确认开业</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/login.css">
+<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/login.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+<script src="../scripts/jquery-3.1.0.min.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/common.js"></script>
+<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="../scripts/common.js"></script>
+	<script src="../lib/md5.js"></script>
 <style type="text/css">
 	article{
 		background: #FFFFFF;
@@ -101,45 +102,12 @@
   		margin-top: 20px;
   	}
 </style>
-<script type="text/javascript">
-var activeinputele;
-	$(document).ready(function(){
-		$("img.img-close").hover(function(){
-		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
-		},function(){
-			$(this).attr("src","<%=request.getContextPath()%>/images/close-sm.png");
-		});
-		
-		$("#confirm-opening-btn").click(function(){
-			$("#mg-login-dialog").modal("show");
-		});
-		
-		$(".virtual-keyboard ul li").click(function(e){
-			var keytext = $(this).text();
-			if(activeinputele != null && activeinputele != undefined){
-				if(keytext == "←"){
-					activeinputele.focus();
-					backspace();
-				}else{
-					var val = activeinputele.val();
-					val = val + keytext;
-					activeinputele.val(val);
-					activeinputele.focus();
-				}
-			}
-		});
-		$("#mg-login-dialog input").focus(function(event){
-	        activeinputele = $(this);
-		});
-	});
-	function toLogin(){
-		$("#mg-login-dialog").modal("hide");
-		window.location = "<%=request.getContextPath()%>/views/login.jsp";
-	}
-</script>
 </head>
 <body>
-	<article>
+	<div id="logoBG" style="position:absolute; left:0px; top:0px; width:100%; height:100%">
+		<img src="../images/logo_bg.png" width="100%" height="100%"/>
+	</div>
+	<article id="openTo" style="display: none">
 		<div class="content">
 			<div class="font">财源滚滚，生意兴隆</div>
 			<div style="text-align: center; margin-top: 8%;">
@@ -152,14 +120,14 @@ var activeinputele;
 			<div class="modal-content">
 				<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" data-dismiss="modal">
+	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal">
 	            </div>
 				<div class="modal-body" style="padding-top: 0px;">
 					<div class="login-form">
 						<form action="">
 							<div class="form-group" style="margin-top: 8px;">
-								<span class="span-user">员工编号:</span>
-								<input id="manager_num" value="" name="manager_num" type="text" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
+								<span class="span-user">开业授权:</span>
+								<input id="manager_num" value="" name="manager_num" type="text" class="form-control x319 in" autocomplete="off" autofocus><!-- readonly="readonly" -->
 							</div>
 							<div class="form-group" style="margin-top: 8px;">
 								<span class="span-user">权限密码:</span>
@@ -184,12 +152,14 @@ var activeinputele;
 					 <div class="btn-operate  ">
 	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="toLogin()">确认
+	                    <button class="btn btn-save in-btn135 J-submit" id="" type="button" onclick="toLogin()">确认
 	                    </button>
 	                </div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="J-btn-checkout-dialog" style="overflow: auto;"></div>
+	<script src="../scripts/openpage.js"></script>
 </body>
 </html>
