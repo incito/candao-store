@@ -1013,6 +1013,7 @@ var AddDish = {
 	 * @param dish
 	 */
 	addDish: function (dish){
+		var dish = $.extend(true,{}, dish);
 		var that = this;
 		var dishname = dish.title || dish.dishname;
 		var dishtype = dish.dishtype;
@@ -1887,9 +1888,18 @@ var AddDish = {
 		if(type === 0) {
 			num = val;
 		} else if(type === 1) {
-			num = parseFloat(num + 1).toFixed(2);
+			if(dish.temporary==='1'){
+				if(num>=99){
+					return false
+				}
+			}else {
+				num = parseFloat(num + 1);
+			}
+			//num = parseFloat(num + 1).toFixed(2);
+			num = parseFloat(num + 1);
  		} else if(type ===2 ){
-			num = parseFloat(num - 1).toFixed(2);
+			//num = parseFloat(num - 1).toFixed(2);
+			num = parseFloat(num - 1);
 		}
 
 		//if(dishtype === 2 || dishtype === 1) {
