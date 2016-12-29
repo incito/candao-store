@@ -39,12 +39,13 @@ var member = {
 
             if(me.hasClass('J-modify-storge')){
                 if (that.isClick()) {
-                    debugger
                     var card_type = loadMember.result[0].card_type,
                         cardNo= null;
+                    /*如果该会员卡是虚拟卡传递电话号码*/
                     if(card_type=='0'){
                         cardNo=loadMember.mobile
                     }
+                    /*如果该会员卡是实体卡传递卡号*/
                     else {
                         cardNo=loadMember.result[0].MCard
                     }
