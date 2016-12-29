@@ -261,60 +261,116 @@ var Order = {
                 });
                 return total;
             })();
-            var settlementAmount = cash + totalOtherPay;
+            var settlementAmount = cash + totalOtherPay + consts.moneyWipeAmount;
 
 
-            if(settlementAmount < amount) {
-                widget.modal.alert({
-                    content: '<strong>还有未收金额</strong>',
-                    btnOkTxt: '确定',
-                    btnCancelTxt: ''
-                });
-                return ;
-            } else if(settlementAmount === amount) {
-                if(hasTip) {
-                     alertIns = widget.modal.alert({
-                        content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
-                        btnOkCb: function () {
-                            alertIns.close();
-                            that.doSettlement();
-                        }
+            if (needPay > 0) {
+                if (needPay > tipAmount) {
+                    widget.modal.alert({
+                        content: '<strong>还有未收金额</strong>',
+                        btnOkTxt: '确定',
+                        btnCancelTxt: ''
                     });
-                }
-            } else {
-                if(hasTip) {
-                    if(cash < tipAmount) {
-                        if(totalOtherPay < amount) {
-                            alertIns = widget.modal.alert({
-                                content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                } else {
+                    if (!$('.tipAmount').hasClass('hide')) {
+                        if(needPay >= amount) {
+                            var alertIns = widget.modal.alert({
+                                content: '<strong>' + tipAmount + '元小费,必须使用现金结算</strong>',
                                 btnOkCb: function () {
                                     alertIns.close();
-                                    that.doSettlement();
                                 }
                             });
                         } else {
-                            alertIns = widget.modal.alert({
-                                content: '<strong>' + parseFloat($('#tip-amount').text()) + '元小费,必须使用现金结算</strong>',
-                                btnOkCb: function () {
-                                    alertIns.close();
-                                }
-                            });
-                        }
-                    } else {
-                        if(needPay <= 0) {
-                            that.doSettlement();
-                            return ;
-                        }
-                         alertIns = widget.modal.alert({
-                            content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
-                            btnOkCb: function () {
-                                alertIns.close();
-                                that.doSettlement();
+                            if (tipAmountSpan < tipAmount) {
+                                var alertIns = widget.modal.alert({
+                                    content: '<strong>还有' + (tipAmount - tipAmountSpan).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                                    btnOkCb: function () {
+                                        alertIns.close();
+                                        that.doSettlement();
+                                    }
+                                });
                             }
+                        }
+
+                    } else {
+                        widget.modal.alert({
+                            content: '<strong>还有未收金额</strong>',
+                            btnOkTxt: '确定',
+                            btnCancelTxt: ''
                         });
                     }
                 }
+            } else {
+                if (tipAmountSpan < tipAmount) {
+                    var alertIns = widget.modal.alert({
+                        content: '<strong>' + tipAmount + '元小费,必须使用现金结算</strong>',
+                        btnOkCb: function () {
+                            alertIns.close();
+                        }
+                    });
+                } else {
+                    that.doSettlement();
+                }
             }
+
+            //if(!hasTip) {
+            //    that.doSettlement();
+            //    return;
+            //}
+            //
+            //if(settlementAmount < amount) {
+            //    widget.modal.alert({
+            //        content: '<strong>还有未收金额</strong>',
+            //        btnOkTxt: '确定',
+            //        btnCancelTxt: ''
+            //    });
+            //    return ;
+            //} else if(settlementAmount === amount) {
+            //    if(hasTip) {
+            //         alertIns = widget.modal.alert({
+            //            content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+            //            btnOkCb: function () {
+            //                alertIns.close();
+            //                that.doSettlement();
+            //            }
+            //        });
+            //    } else {
+            //        that.doSettlement();
+            //    }
+            //} else {
+            //    if(hasTip) {
+            //        if(cash < tipAmount) {
+            //            if(totalOtherPay < amount) {
+            //                alertIns = widget.modal.alert({
+            //                    content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+            //                    btnOkCb: function () {
+            //                        alertIns.close();
+            //                        that.doSettlement();
+            //                    }
+            //                });
+            //            } else {
+            //                alertIns = widget.modal.alert({
+            //                    content: '<strong>' + parseFloat($('#tip-amount').text()) + '元小费,必须使用现金结算</strong>',
+            //                    btnOkCb: function () {
+            //                        alertIns.close();
+            //                    }
+            //                });
+            //            }
+            //        } else {
+            //            if(needPay <= 0) {
+            //                that.doSettlement();
+            //                return ;
+            //            }
+            //             alertIns = widget.modal.alert({
+            //                content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+            //                btnOkCb: function () {
+            //                    alertIns.close();
+            //                    that.doSettlement();
+            //                }
+            //            });
+            //        }
+            //    }
+            //}
         });
 
         //点击- +修改发票金额
@@ -1889,10 +1945,10 @@ var Order = {
                 var getAllDishes = (function getArr(data){
                     for(var i = 0, len = data.length; i < len; i++){
                         var item = data[i];
-                        if(item.dishtype === '0') {
-                            ret.push(item);
-                        } else {
+                        if(item.dishtype === '1') {
                             arguments.callee(item.dishes);
+                        } else {
+                            ret.push(item);
                         }
                     }
                 })(data);

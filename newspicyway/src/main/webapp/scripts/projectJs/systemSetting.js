@@ -1219,10 +1219,10 @@ function avoidSave() {
 		$(".addavoid-input-div").addClass("hide");
 		var htm = itemHtm("", avoid_name, $("#avoidtype").val(), false);
 		$("#avoid-add").before(htm);
-
-		if ($("#avoid-list").find(".avoid-li").not(".add-reason").length < 5) {
+		$("#avoid-add").removeClass("hide");
+		/*if ($("#avoid-list").find(".avoid-li").not(".add-reason").length < 5) {
 			$("#avoid-add").removeClass("hide");
-		}
+		}*/
 	}
 }
 /**
@@ -1235,9 +1235,11 @@ function returnDishSave() {
 		var htm = itemHtm('', reason_name, $("#reasontype").val(), false);
 		$("#reason-add").before(htm);
 
-		if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
+		$("#reason-add").removeClass("hide");
+
+		/*if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
 			$("#reason-add").removeClass("hide");
-		}
+		}*/
 	}
 }
 /**
@@ -1265,6 +1267,7 @@ function backSettleSave(obj) {
 		$(".addBackSettle-input-div",parent).addClass("hide");
 		var htm = itemHtm('', backSettle_name, $(".backSettlestype",parent).val(), false);
 		$(".backSettle-add",parent).before(htm);
+		$(".backSettle-add",parent).removeClass("hide");
 		/*
 		 if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
 		 $("#reason-add").removeClass("hide");
