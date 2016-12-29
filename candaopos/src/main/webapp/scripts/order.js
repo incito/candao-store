@@ -1889,10 +1889,10 @@ var Order = {
                 var getAllDishes = (function getArr(data){
                     for(var i = 0, len = data.length; i < len; i++){
                         var item = data[i];
-                        if(item.dishtype === '0') {
-                            ret.push(item);
-                        } else {
+                        if(item.dishtype === '1') {
                             arguments.callee(item.dishes);
+                        } else {
+                            ret.push(item);
                         }
                     }
                 })(data);
