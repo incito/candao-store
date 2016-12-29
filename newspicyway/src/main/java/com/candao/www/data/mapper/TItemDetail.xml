@@ -45,6 +45,19 @@ UNION
 		AND b.shiftid = #{shiftid}
 	</if>
 	AND b.branchid = #{branchId}
+UNION
+	SELECT IFNULL(SUM(tod_c.dishnum*tod_c.orignalprice),0) as orignalprice,
+		'餐具' as itemDesc
+	FROM t_order_detail tod_c,t_order too_c
+	WHERE tod_c.dishid = 'DISHES_98'
+	AND tod_c.orderid = too_c.orderid
+	AND too_c.orderstatus = 3 
+	AND too_c.begintime >= #{beginTime}
+	AND too_c.begintime &lt;= #{endTime}
+	<if test="shiftid != null and shiftid != -1">
+		AND too_c.shiftid = #{shiftid}
+	</if>
+	AND too_c.branchid = #{branchId}
     </select>
     <!-- 查询品项销售明细子表存储过程 -->
     <select id="itemSubDetailProcedure" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
