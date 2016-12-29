@@ -84,8 +84,18 @@ public class OrderOpServiceImpl implements OrderOpService {
                     }
                 }
             }
+            Object serviceAmount=orderJson.get(0).get("serviceAmount");
             List<Map> listJson = orderMapper.getListJson(orderId);
             reorderListJson(listJson);
+            if(null!=listJson&&null!=serviceAmount){
+            	Map<String, Object>map=new HashMap<>();
+            	map.put("title", "服务费");
+            	map.put("dishnum", "1");
+            	map.put("dishunit", "");
+            	map.put("orderprice", 0);
+            	map.put("payamount", serviceAmount);
+            	listJson.add(map);
+            }
             List<Map> jsJson = orderMapper.getJsJson(orderId);
             responseJsonData.setOrderJson(orderJson);
             responseJsonData.setListJson(listJson);

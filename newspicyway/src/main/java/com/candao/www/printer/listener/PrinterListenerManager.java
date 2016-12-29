@@ -7,6 +7,7 @@ import com.candao.print.listener.template.ListenerTemplate;
 import com.candao.www.printer.listener.namespaceHandler.SimpleNamespaceHandlerResover;
 import com.candao.www.printer.listener.template.XMLTemplateDefinition;
 import com.candao.www.printer.v2.PrinterManager;
+import com.candao.www.utils.DataServerUtil;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
@@ -196,14 +197,9 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	@Override
 	public void stop() {
 		synchronized (activeMonitor) {
-//			executor.execute(new Runnable() {
-//				@Override
-//				public void run() {
-//					stopListeners();
-//					stopConnections();
-//					running = false;
-//				}
-//			});
+            //直接
+            DataServerUtil.restart();
+
 			getCenterListener().destroy();
 			stopListeners();
 			stopConnections();
