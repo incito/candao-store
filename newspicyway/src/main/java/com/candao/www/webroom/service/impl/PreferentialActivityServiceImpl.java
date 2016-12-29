@@ -1052,7 +1052,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						result.setMes((String) resultMap.get("mes"));
 					}
 					if(resultMap.containsKey("menberAmount")){
-						result.setMemberPriceDiff((BigDecimal) resultMap.get("amount"));
+						result.setMemberPriceDiff((BigDecimal) resultMap.get("menberAmount"));
 					}
 					// 获取总的挂账，以及优免
 					String inputDebitAmount = (String) params.get("toalDebitAmount");// 上次挂账金额
