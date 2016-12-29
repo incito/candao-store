@@ -402,6 +402,7 @@ var MainPage = {
     },
 
     //定时任务
+    preData: null,
     timeTask: function () {
         var that = this;
         var running = true;
@@ -412,7 +413,10 @@ var MainPage = {
                     global: false
                 })
             ).then(function (res) {
-                Log.send(2, '定时任务 后去统计信息' + JSON.stringify(res));
+                if(JSON.stringify(that.preData) !== JSON.stringify(res)) {
+                    Log.send(2, '定时任务 后去统计信息' + JSON.stringify(res));
+                    that.preData = res;
+                }
                 if (res.code === '0') {
                     $('.custnum').text(res.data.custnum);
                     $('.dueamount').text(res.data.dueamount);

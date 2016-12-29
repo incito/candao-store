@@ -2,6 +2,7 @@ package com.candao.www.bossstore.util;
 
 import java.io.IOException;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -28,7 +29,9 @@ public class HttpUtils {
             StringEntity params = new StringEntity(requestObject.toString(), "UTF-8");
             request.addHeader("content-type", "application/json;charset=UTF-8");
             request.setEntity(params);
-            httpClient.execute(request);
+            CloseableHttpResponse response = httpClient.execute(request);
+            logger.error("status:"+response.getStatusLine());
+            response.close();
         } catch (Exception ex) {
             System.out.printf("网络出错 =?",link);
             logger.error("推送失败:"+ex.getMessage());

@@ -406,7 +406,6 @@ var checkOrder={
                 });
             }
             function _whyClear() {
-                debugger
                         var res=JSON.parse(utils.storage.getter('BACKSETTLE_REASON'));//获取反结算原因
                         var     str = '<div class="selectReason" style="text-align: left">'
                         str+=   '<div class="form-group form-group-base form-input">'

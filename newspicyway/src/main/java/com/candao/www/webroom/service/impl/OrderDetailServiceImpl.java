@@ -2739,7 +2739,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             }
             Map<String,Object> map=new HashMap<>();
             map.put("dishName",detail.get("title")+"("+detail.get("unit")+")");
-            map.put("dishCount",detail.get("num"));
+            String dishCount = detail.get("num")==null?"0":detail.get("num").toString();
+            BigDecimal dishCountDecimal = new BigDecimal(dishCount).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            map.put("dishCount",dishCountDecimal);
             map.put("totlePrice", detail.get("debitamount"));
             result.add(map);
         }
