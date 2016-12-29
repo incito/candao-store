@@ -250,6 +250,7 @@ var Order = {
             var cash = parseFloat($('input[name=cash]').val());
             var hasTip = !$('.tipAmount').hasClass('hide');
             var alertIns = null;
+            var shouldAmount = parseFloat($("#should-amount").text());
 
             var totalOtherPay = (function () {
                 var total = 0;
@@ -261,116 +262,117 @@ var Order = {
                 });
                 return total;
             })();
-            var settlementAmount = cash + totalOtherPay + consts.moneyWipeAmount;
+            var settlementAmount = cash + totalOtherPay;
+            var xf = parseFloat($('#should-amount').text()) - tipAmount;
 
 
-            if (needPay > 0) {
-                if (needPay > tipAmount) {
-                    widget.modal.alert({
-                        content: '<strong>还有未收金额</strong>',
-                        btnOkTxt: '确定',
-                        btnCancelTxt: ''
-                    });
-                } else {
-                    if (!$('.tipAmount').hasClass('hide')) {
-                        if(needPay >= amount) {
-                            var alertIns = widget.modal.alert({
-                                content: '<strong>' + tipAmount + '元小费,必须使用现金结算</strong>',
-                                btnOkCb: function () {
-                                    alertIns.close();
-                                }
-                            });
-                        } else {
-                            if (tipAmountSpan < tipAmount) {
-                                var alertIns = widget.modal.alert({
-                                    content: '<strong>还有' + (tipAmount - tipAmountSpan).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
-                                    btnOkCb: function () {
-                                        alertIns.close();
-                                        that.doSettlement();
-                                    }
-                                });
-                            }
-                        }
-
-                    } else {
-                        widget.modal.alert({
-                            content: '<strong>还有未收金额</strong>',
-                            btnOkTxt: '确定',
-                            btnCancelTxt: ''
-                        });
-                    }
-                }
-            } else {
-                if (tipAmountSpan < tipAmount) {
-                    var alertIns = widget.modal.alert({
-                        content: '<strong>' + tipAmount + '元小费,必须使用现金结算</strong>',
-                        btnOkCb: function () {
-                            alertIns.close();
-                        }
-                    });
-                } else {
-                    that.doSettlement();
-                }
-            }
-
-            //if(!hasTip) {
-            //    that.doSettlement();
-            //    return;
-            //}
+            //if (needPay > 0) {
+            //    if (needPay > tipAmount) {
+            //        widget.modal.alert({
+            //            content: '<strong>还有未收金额</strong>',
+            //            btnOkTxt: '确定',
+            //            btnCancelTxt: ''
+            //        });
+            //    } else {
+            //        if (!$('.tipAmount').hasClass('hide')) {
+            //            if(needPay >= amount) {
+            //                var alertIns = widget.modal.alert({
+            //                    content: '<strong>' + tipAmount + '元小费,必须使用现金结算</strong>',
+            //                    btnOkCb: function () {
+            //                        alertIns.close();
+            //                    }
+            //                });
+            //            } else {
+            //                if (tipAmountSpan < tipAmount) {
+            //                    var alertIns = widget.modal.alert({
+            //                        content: '<strong>还有' + (tipAmount - tipAmountSpan).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+            //                        btnOkCb: function () {
+            //                            alertIns.close();
+            //                            that.doSettlement();
+            //                        }
+            //                    });
+            //                }
+            //            }
             //
-            //if(settlementAmount < amount) {
-            //    widget.modal.alert({
-            //        content: '<strong>还有未收金额</strong>',
-            //        btnOkTxt: '确定',
-            //        btnCancelTxt: ''
-            //    });
-            //    return ;
-            //} else if(settlementAmount === amount) {
-            //    if(hasTip) {
-            //         alertIns = widget.modal.alert({
-            //            content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+            //        } else {
+            //            widget.modal.alert({
+            //                content: '<strong>还有未收金额</strong>',
+            //                btnOkTxt: '确定',
+            //                btnCancelTxt: ''
+            //            });
+            //        }
+            //    }
+            //} else {
+            //    if (tipAmountSpan < tipAmount) {
+            //        var alertIns = widget.modal.alert({
+            //            content: '<strong>' + tipAmount + '元小费,必须使用现金结算</strong>',
             //            btnOkCb: function () {
             //                alertIns.close();
-            //                that.doSettlement();
             //            }
             //        });
             //    } else {
             //        that.doSettlement();
             //    }
-            //} else {
-            //    if(hasTip) {
-            //        if(cash < tipAmount) {
-            //            if(totalOtherPay < amount) {
-            //                alertIns = widget.modal.alert({
-            //                    content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
-            //                    btnOkCb: function () {
-            //                        alertIns.close();
-            //                        that.doSettlement();
-            //                    }
-            //                });
-            //            } else {
-            //                alertIns = widget.modal.alert({
-            //                    content: '<strong>' + parseFloat($('#tip-amount').text()) + '元小费,必须使用现金结算</strong>',
-            //                    btnOkCb: function () {
-            //                        alertIns.close();
-            //                    }
-            //                });
-            //            }
-            //        } else {
-            //            if(needPay <= 0) {
-            //                that.doSettlement();
-            //                return ;
-            //            }
-            //             alertIns = widget.modal.alert({
-            //                content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
-            //                btnOkCb: function () {
-            //                    alertIns.close();
-            //                    that.doSettlement();
-            //                }
-            //            });
-            //        }
-            //    }
             //}
+
+            if(!hasTip) {
+                that.doSettlement();
+                return;
+            }
+
+            if(settlementAmount < xf) {
+                widget.modal.alert({
+                    content: '<strong>还有未收金额</strong>',
+                    btnOkTxt: '确定',
+                    btnCancelTxt: ''
+                });
+                return ;
+            } else if(settlementAmount === xf) {
+                if(hasTip) {
+                     alertIns = widget.modal.alert({
+                        content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                        btnOkCb: function () {
+                            alertIns.close();
+                            that.doSettlement();
+                        }
+                    });
+                } else {
+                    that.doSettlement();
+                }
+            } else {
+                if(hasTip) {
+                    if(cash < tipAmount) {
+                        if(totalOtherPay <= xf) {
+                            alertIns = widget.modal.alert({
+                                content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                                btnOkCb: function () {
+                                    alertIns.close();
+                                    that.doSettlement();
+                                }
+                            });
+                        } else {
+                            alertIns = widget.modal.alert({
+                                content: '<strong>' + parseFloat($('#tip-amount').text()) + '元小费,必须使用现金结算</strong>',
+                                btnOkCb: function () {
+                                    alertIns.close();
+                                }
+                            });
+                        }
+                    } else {
+                        if(needPay <= 0) {
+                            that.doSettlement();
+                            return ;
+                        }
+                         alertIns = widget.modal.alert({
+                            content: '<strong>还有' + (parseFloat($('#tip-amount').text()) - parseFloat($('.tipAmount span').text())).toFixed(2) + '元小费未结算,点击确定继续结算,点击取消取消结算</strong>',
+                            btnOkCb: function () {
+                                alertIns.close();
+                                that.doSettlement();
+                            }
+                        });
+                    }
+                }
+            }
         });
 
         //点击- +修改发票金额
@@ -983,19 +985,8 @@ var Order = {
             return total;
         })();
 
-        var _updateCash = function(val){
-            var val = val;
-            if (/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
-                val = parseInt(val);
-            }
 
-            $cash.val(val);
-
-            if (/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
-                val = parseInt(val);
-            }
-
-
+        var _updateTotal = function(val){
             var giveChange = (function () {
                 var v = 0;
                 if (totalOtherPay > shouldAmount) {
@@ -1015,11 +1006,24 @@ var Order = {
             var prefAmount = parseFloat($('#discount-amount').text());
             var tipAmountCac = (function () {
                 var v = 0;
-                if (totalOtherPay > amount) {
-                    v = val;
+                //if (totalOtherPay > amount) {
+                //    v = val;
+                //} else {
+                //    v = parseFloat(val) - (amount - totalOtherPay) + prefAmount;
+                //}
+                //var cash = parseFloat(val);
+                //var settlementAmount = parseFloat(val) + totalOtherPay;
+                var xf = shouldAmount - tipAmount;
+                //if(settlementAmount)
+                //v = parseFloat(val) - (shouldAmount - tipAmount  - totalOtherPay);
+
+                if(totalOtherPay > xf) {
+                    v =  parseFloat(val) - tipAmount;
                 } else {
-                    v = parseFloat(val) - (amount - totalOtherPay) + prefAmount;
+
+                    v = parseFloat(val) + totalOtherPay - xf
                 }
+
 
                 if (v > tipAmount) {
                     v = tipAmount
@@ -1059,6 +1063,22 @@ var Order = {
                 $paytotal.find('.payamount').find('span').text('0.00');
                 $paytotal.find('.payamount ,.giveChange').addClass('hide');
             }
+        }
+
+        var _updateCash = function(val){
+            var val = val;
+            if (/^0{1,9}[0-9]{1,4}$/g.test(me.val())) {
+                val = parseInt(val);
+            }
+
+            $cash.val(val);
+
+            if (/^[0-9]{1,5}\.0{0,2}$/g.test(me.val())) {
+                val = parseInt(val);
+            }
+
+            _updateTotal(val);
+
         };
 
         if (me.hasClass('J-pay-name')) {
@@ -1099,35 +1119,53 @@ var Order = {
                     }
                 }
             } else {
-                if (totalOtherPay >= shouldAmount) {//其他支付大于应收
-                    _updateCash('0');
-                    $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
-                    $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
-                } else {
-                    var cVal = parseFloat(shouldAmount - totalOtherPay).toFixed(2);
-                    if(utils.storage.getter('autoFill') === '1') {
+                if(utils.storage.getter('autoFill') === '1') {
+                    if (totalOtherPay >= shouldAmount) {//其他支付大于应收
+                        _updateCash('0');
+                        $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
+                        $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
+                    } else {
+                        var cVal = parseFloat(shouldAmount - totalOtherPay).toFixed(2);
                         if($('.tab-payment li[itemid=0]').length === 0) {
                             cVal = 0;
-                            _updateCash(cVal);
-                            $paytotal.find('.payamount').find('span').text(cVal);
-                            $paytotal.find('.payamount').addClass('hide');
-                        } else {
-                            _updateCash(cVal);
-                            $paytotal.find('.payamount').find('span').text(cVal);
-                            $paytotal.find('.payamount').removeClass('hide');
                         }
-                    } else {
-                        _updateCash(me.val().length ? me.val() : '0');
-
-
-                        //if(focusIpt === )
-                        //console.log(focusIpt);
-                        //cVal = 0;
-                        //_updateCash(cVal);
-                        //$paytotal.find('.payamount').find('span').text(cVal);
-                        //$paytotal.find('.payamount').addClass('hide');
+                        _updateCash(cVal);
+                        $paytotal.find('.payamount').find('span').text(cVal);
+                        $paytotal.find('.payamount').removeClass('hide');
                     }
+                } else{
+                    _updateTotal($cash.val().length > 0 ? $cash.val() : '0')
                 }
+
+                //if (totalOtherPay >= shouldAmount) {//其他支付大于应收
+                //    _updateCash('0');
+                //    $paytotal.find('.payamount,.giveChange,.needPay').find('span').text('0.00');
+                //    $paytotal.find('.payamount ,.giveChange,.needPay').addClass('hide');
+                //} else {
+                //    var cVal = parseFloat(shouldAmount - totalOtherPay).toFixed(2);
+                //    if(utils.storage.getter('autoFill') === '1') {
+                //        if($('.tab-payment li[itemid=0]').length === 0) {
+                //            cVal = 0;
+                //            _updateCash(cVal);
+                //            $paytotal.find('.payamount').find('span').text(cVal);
+                //            $paytotal.find('.payamount').addClass('hide');
+                //        } else {
+                //            _updateCash(cVal);
+                //            $paytotal.find('.payamount').find('span').text(cVal);
+                //            $paytotal.find('.payamount').removeClass('hide');
+                //        }
+                //    } else {
+                //        _updateCash(me.val().length ? me.val() : '0');
+                //
+                //
+                //        //if(focusIpt === )
+                //        //console.log(focusIpt);
+                //        //cVal = 0;
+                //        //_updateCash(cVal);
+                //        //$paytotal.find('.payamount').find('span').text(cVal);
+                //        //$paytotal.find('.payamount').addClass('hide');
+                //    }
+                //}
             }
         }
     },
