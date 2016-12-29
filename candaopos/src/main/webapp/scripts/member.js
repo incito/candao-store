@@ -39,7 +39,17 @@ var member = {
 
             if(me.hasClass('J-modify-storge')){
                 if (that.isClick()) {
-                    var _url='../member/storge.jsp?cardMember=' +$.trim($('.member_mobile').text()) + '';//传递会员电话号码
+                    var card_type = loadMember.result[0].card_type,
+                        cardNo= null;
+                    /*如果该会员卡是虚拟卡传递电话号码*/
+                    if(card_type=='0'){
+                        cardNo=loadMember.mobile
+                    }
+                    /*如果该会员卡是实体卡传递卡号*/
+                    else {
+                        cardNo=loadMember.result[0].MCard
+                    }
+                    var _url='../member/storge.jsp?cardMember=' +$.trim(cardNo) + '';//传递会员电话号码
                     window.location.href=encodeURI(encodeURI(_url));
                 }
             }
@@ -754,8 +764,8 @@ var member = {
                                 'data': memberCard, 'callback': 'member.stored_value(chooseNo)'
                             })
                             return false
-                        }*/
-                        //cardno=res.CardList[0].cardno
+                        }
+                        cardno=res.CardList[0].cardno*/
                         savevale()
                     }
                     if (res.Retcode == 1) {

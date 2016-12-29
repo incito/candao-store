@@ -67,11 +67,12 @@
 
     <root level="info">
         <appender-ref ref="candao"/>
-        <!--<appender-ref ref="STDOUT"/>-->
+        <!-- <appender-ref ref="STDOUT"/> -->
         <appender-ref ref="ErrorAppender"/>
     </root>
 
     <logger name="dao" level="DEBUG"/>
+    <logger name="org.mybatis.spring" level="DEBUG"/>
 
     <logger name="org.springframework" level="INFO"/>
 

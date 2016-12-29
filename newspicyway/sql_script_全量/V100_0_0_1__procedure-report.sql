@@ -9192,21 +9192,24 @@ DELIMITER ;
 -- 作者： 韦志芳; 
 -- 时间：2016-06-06
 DELIMITER $$
-DROP PROCEDURE IF EXISTS p_report_jzd$$
-CREATE PROCEDURE p_report_jzd (IN pi_orderid varchar(50),
-OUT po_errmsg varchar(100))
-SQL SECURITY INVOKER
-COMMENT '结账单'
+
+
+DROP PROCEDURE IF EXISTS `p_report_jzd`$$
+
+CREATE PROCEDURE `p_report_jzd`(IN pi_orderid VARCHAR(50),
+OUT po_errmsg VARCHAR(100))
+    SQL SECURITY INVOKER
+    COMMENT '结账单'
 label_main:
 BEGIN
 
-  DECLARE v_payway double(13, 2) DEFAULT 0;              -- 结算方式（四舍五入/抹零）
-  DECLARE v_pamount double(13, 2) DEFAULT 0;             -- 结算金额（四舍五入/抹零）
-  DECLARE v_totalconsumption double(13, 2) DEFAULT 0;    -- 应收金额（不含赠菜）
-  DECLARE v_paidamount double(13, 2) DEFAULT 0;          -- 实收金额
-  DECLARE v_giveamount double(13, 2) DEFAULT 0;          -- 赠菜金额
-  DECLARE v_couponamount double(13, 2) DEFAULT 0;        -- 优惠金额
-  DECLARE v_taocan double(13, 2) DEFAULT 0;              -- 套餐金额
+  DECLARE v_payway DOUBLE(13, 2) DEFAULT 0;              -- 结算方式（四舍五入/抹零）
+  DECLARE v_pamount DOUBLE(13, 2) DEFAULT 0;             -- 结算金额（四舍五入/抹零）
+  DECLARE v_totalconsumption DOUBLE(13, 2) DEFAULT 0;    -- 应收金额（不含赠菜）
+  DECLARE v_paidamount DOUBLE(13, 2) DEFAULT 0;          -- 实收金额
+  DECLARE v_giveamount DOUBLE(13, 2) DEFAULT 0;          -- 赠菜金额
+  DECLARE v_couponamount DOUBLE(13, 2) DEFAULT 0;        -- 优惠金额
+  DECLARE v_taocan DOUBLE(13, 2) DEFAULT 0;              -- 套餐金额
 
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
@@ -9230,9 +9233,9 @@ BEGIN
   FROM t_order_detail tod
   WHERE orderid = pi_orderid AND pricetype <> 1;
   #服务费
-	SELECT IFNULL(SUM(chargeAmount),0)+v_totalconsumption into v_totalconsumption
-	from t_service_charge
-	where orderid=pi_orderid and chargeOn=1;
+	SELECT IFNULL(SUM(chargeAmount),0)+v_totalconsumption INTO v_totalconsumption
+	FROM t_service_charge
+	WHERE orderid=pi_orderid AND chargeOn=1;
 
   #added by caicai
   #SELECT
@@ -9253,7 +9256,7 @@ BEGIN
   WHERE orderid = pi_orderid;
 
   SELECT
-    IFNULL(SUM(orignalprice), 0.00) INTO v_giveamount
+    IFNULL(SUM(orignalprice*dishnum), 0.00) INTO v_giveamount
   FROM t_order_detail
   WHERE orderid = pi_orderid AND pricetype = 1;
 
@@ -9263,14 +9266,14 @@ BEGIN
 
   DROP TEMPORARY TABLE IF EXISTS t_temp_res;
   CREATE TEMPORARY TABLE t_temp_res (
-    payway varchar(50),               -- 结算方式（四舍五入/抹零） 
-    payamount double(13, 2),          -- 结算金额（四舍五入/抹零)                                                                         
-    totalconsumption double(13, 2),   -- 应收金额（不含赠菜）                                                                     
-    paidamount double(13, 2),         -- 实收金额                                                                    
-    giveamount double(13, 2),         -- 赠菜金额                                                                   
-    couponamount double(13, 2),       -- 优惠金额
-    invoiceamount double(13, 2)       -- 发票金额 
-  ) ENGINE = MEMORY DEFAULT charset = utf8;
+    payway VARCHAR(50),               -- 结算方式（四舍五入/抹零） 
+    payamount DOUBLE(13, 2),          -- 结算金额（四舍五入/抹零)                                                                         
+    totalconsumption DOUBLE(13, 2),   -- 应收金额（不含赠菜）                                                                     
+    paidamount DOUBLE(13, 2),         -- 实收金额                                                                    
+    giveamount DOUBLE(13, 2),         -- 赠菜金额                                                                   
+    couponamount DOUBLE(13, 2),       -- 优惠金额
+    invoiceamount DOUBLE(13, 2)       -- 发票金额 
+  ) ENGINE = MEMORY DEFAULT CHARSET = utf8;
 
   #INSERT INTO t_temp_res (payway, payamount, totalconsumption, paidamount, giveamount, couponamount, invoiceamount)
   #VALUES (v_payway, v_pamount, v_totalconsumption - v_taocan, v_paidamount, v_giveamount, v_couponamount, 0.00);
@@ -9282,7 +9285,6 @@ BEGIN
     *
   FROM t_temp_res;
 
-END
-$$
+END$$
 
 DELIMITER ;
