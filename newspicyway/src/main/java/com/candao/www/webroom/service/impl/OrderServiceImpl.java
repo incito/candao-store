@@ -1138,6 +1138,16 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	private List<ComplexTorderDetail> orderDetailList(String orderid){
+		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
+		for(ComplexTorderDetail torderDetail :orderDetailList){
+			BigDecimal orderPrice=torderDetail.getOrderprice()==null?new  BigDecimal("0"):torderDetail.getOrderprice();
+			BigDecimal debitamount=orderPrice.multiply(new  BigDecimal(torderDetail.getDishnum()));
+			torderDetail.setDebitamount(debitamount);
+		}
+		return orderDetailList;
+	}
+
 	@Override
 	public Map<String, Object> calGetOrderInfo(Map<String, Object> params) {
 		String orderid = (String) params.get("orderid");
@@ -1146,10 +1156,10 @@ public class OrderServiceImpl implements OrderService {
 		// 获取当前账单的 菜品列表
 		Map<String, String> orderDetail_params = new HashMap<>();
 		orderDetail_params.put("orderid", String.valueOf(params.get("orderid")));
-		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
-		Map<String, Object> res =torderMapper.findOne(String.valueOf(params.get("orderid")));
-		//判断订单状态
-		if(res ==null){
+
+		Map<String, Object> res = torderMapper.findOne(String.valueOf(params.get("orderid")));
+		// 判断订单状态
+		if (res == null) {
 			return ReturnMap.getFailureMap("当前订单 不存在,您是否进行并台等操作？请重新进入餐台！");
 		}
 
@@ -1183,7 +1193,7 @@ public class OrderServiceImpl implements OrderService {
 							: String.valueOf(userOrderInfo.get("memberno"));
 			params.put("memberno", menberNo);
 
-			OperPreferentialResult result = preResult(params, orderDetailList);
+			OperPreferentialResult result = preResult(params, orderDetailList(orderid));
 
 			// 服务费信息
 			TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,

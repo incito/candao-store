@@ -44,16 +44,17 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 		// 记录菜品个数
 		for (ComplexTorderDetail torderDetailInfo : orderDetailList) {
 			String dishLevel = torderDetailInfo.getLevel();
-			String unitName = torderDetailInfo.getDishunit();
+			String dishUnit = torderDetailInfo.getDishunit();
 			String dishId = torderDetailInfo.getDishid();
 			TorderDetail torderDetail = null;
 			if (dishLevel != null && dishLevel.equals("1")) {
 				fishComMap.put(torderDetailInfo.getPrimarykey(), 0);
-			} else if (unitName != null && unitName.equals("扎")) {
+			} else if (dishUnit != null && dishUnit.equals("扎")) {
 				torderDetail = new TorderDetail();
 				torderDetail.setDishid(dishId);
 				torderDetail.setOrderprice(torderDetailInfo.getOrderprice());
 				torderDetail.setDishnum(torderDetailInfo.getDishnum());
+				torderDetail.setDishunit(dishUnit);
 				singleDishs.add(torderDetail);
 			}
 		}
