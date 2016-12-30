@@ -1085,7 +1085,6 @@ var MainPage = {
 
             }
         }
-        console.log(Date.parse(new Date(endTime))-Date.parse(new Date(time)))
     }
 };
 
