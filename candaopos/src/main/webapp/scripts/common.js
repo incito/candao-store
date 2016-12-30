@@ -429,7 +429,7 @@ var Log = (function () {
 	var data = [];
 	var options = {
 		time: 5000,//间隔时间
-		dataLen: 10
+		dataLen: 1
 	};
 	var preLength = 0;
 	//1:DEBUG 2:INFO 3:WARN 4:ERROR
