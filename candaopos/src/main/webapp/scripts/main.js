@@ -789,8 +789,9 @@ var MainPage = {
      * 清机
      */
     clearAll: function () {
+        var aUserid=$.trim($('#user').val())
         var sendInfo={
-            'aUserid':utils.storage.getter('aUserid'),
+            'aUserid':aUserid,
             'fullname':utils.storage.getter('fullname'),
             'ipaddress':utils.storage.getter('ipaddress'),
             'posid':utils.storage.getter('posid'),
@@ -806,7 +807,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner +''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
+            url: _config.interfaceUrl.Clearner +''+aUserid+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
             type: "get",
             dataType: "text",
             success: function (data) {
@@ -836,8 +837,9 @@ var MainPage = {
     },
     /*结业清机*/
     clearAllcheckOut: function () {
+        var aUserid=$.trim($('#user').val())
         var sendInfo={
-            'aUserid':utils.storage.getter('aUserid'),
+            'aUserid':$.trim($('#user').val()),
             'fullname':utils.storage.getter('fullname'),
             'ipaddress':utils.storage.getter('ipaddress'),
             'posid':utils.storage.getter('posid'),
@@ -845,8 +847,7 @@ var MainPage = {
         }
         Log.send(2, '结业清机回传参数有'+JSON.stringify(sendInfo));
         var that = this
-        $("#J-btn-checkout-dialog").modal('hide')
-        var that = this;
+        $("#J-btn-checkout-dialog").html('').modal('hide')
         widget.modal.alert({
             cls: 'fade in',
             content: '<strong>清机中，请稍后</strong>',
@@ -855,7 +856,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
+            url: _config.interfaceUrl.Clearner + '' +aUserid+ '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
             type: "get",
             dataType: "text",
             success: function (data) {
@@ -883,6 +884,10 @@ var MainPage = {
     checkout: function () {
         var that = this;
         var Uncleandata = that.getFindUncleanPosList();
+        /*if(Uncleandata.findUncleanPosList==undefined){
+            utils.printError.alert('获取未清机列表失败，请稍后再试');
+            return false
+        }*/
         var arrylength = Uncleandata.LocalArry.length - 1;
         var LocalArry = Uncleandata.LocalArry;
         $("#J-btn-checkout-dialog").modal('hide')
@@ -1017,14 +1022,14 @@ var MainPage = {
     },
     getFindUncleanPosList: function () {//获取未清机数据列表
         var findUncleanPosList, LocalArry = [], OtherArry = [];
-
+        Log.send(2, '获取未清机数据列表开始------:');
         $.ajax({
             url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
             type: "get",
             async: false,
             dataType: "text",
             success: function (data) {
-                Log.send(2, '获取未清机数据列表:' + data);
+                Log.send(2, '获取未清机数据列表结束，返回参数有:' + data);
                 findUncleanPosList = JSON.parse(data);
                 /*console.log(findUncleanPosList.detail)
                  console.log(findUncleanPosList.result)*/

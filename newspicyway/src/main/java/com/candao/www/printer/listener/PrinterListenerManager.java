@@ -198,7 +198,7 @@ public class PrinterListenerManager implements SmartLifecycle, ApplicationContex
 	public void stop() {
 		synchronized (activeMonitor) {
             //直接
-            DataServerUtil.restart();
+            DataServerUtil.stop();
 
 			getCenterListener().destroy();
 			stopListeners();
