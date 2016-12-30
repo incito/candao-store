@@ -315,10 +315,10 @@ var Order = {
             //    }
             //}
 
-            if(!hasTip) {
-                that.doSettlement();
-                return;
-            }
+            //if(!hasTip) {
+            //    that.doSettlement();
+            //    return;
+            //}
 
             if(settlementAmount < xf) {
                 widget.modal.alert({
