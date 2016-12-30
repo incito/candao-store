@@ -845,8 +845,7 @@ var MainPage = {
         }
         Log.send(2, '结业清机回传参数有'+JSON.stringify(sendInfo));
         var that = this
-        $("#J-btn-checkout-dialog").modal('hide')
-        var that = this;
+        $("#J-btn-checkout-dialog").html('').modal('hide')
         widget.modal.alert({
             cls: 'fade in',
             content: '<strong>清机中，请稍后</strong>',
@@ -883,6 +882,10 @@ var MainPage = {
     checkout: function () {
         var that = this;
         var Uncleandata = that.getFindUncleanPosList();
+        /*if(Uncleandata.findUncleanPosList==undefined){
+            utils.printError.alert('获取未清机列表失败，请稍后再试');
+            return false
+        }*/
         var arrylength = Uncleandata.LocalArry.length - 1;
         var LocalArry = Uncleandata.LocalArry;
         $("#J-btn-checkout-dialog").modal('hide')
@@ -1017,14 +1020,14 @@ var MainPage = {
     },
     getFindUncleanPosList: function () {//获取未清机数据列表
         var findUncleanPosList, LocalArry = [], OtherArry = [];
-
+        Log.send(2, '获取未清机数据列表开始------:');
         $.ajax({
             url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
             type: "get",
             async: false,
             dataType: "text",
             success: function (data) {
-                Log.send(2, '获取未清机数据列表:' + data);
+                Log.send(2, '获取未清机数据列表结束，返回参数有:' + data);
                 findUncleanPosList = JSON.parse(data);
                 /*console.log(findUncleanPosList.detail)
                  console.log(findUncleanPosList.result)*/
