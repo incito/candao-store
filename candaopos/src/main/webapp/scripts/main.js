@@ -789,8 +789,9 @@ var MainPage = {
      * 清机
      */
     clearAll: function () {
+        var aUserid=$.trim($('#user').val())
         var sendInfo={
-            'aUserid':utils.storage.getter('aUserid'),
+            'aUserid':aUserid,
             'fullname':utils.storage.getter('fullname'),
             'ipaddress':utils.storage.getter('ipaddress'),
             'posid':utils.storage.getter('posid'),
@@ -806,7 +807,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner +''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
+            url: _config.interfaceUrl.Clearner +''+aUserid+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
             type: "get",
             dataType: "text",
             success: function (data) {
@@ -836,8 +837,9 @@ var MainPage = {
     },
     /*结业清机*/
     clearAllcheckOut: function () {
+        var aUserid=$.trim($('#user').val())
         var sendInfo={
-            'aUserid':utils.storage.getter('aUserid'),
+            'aUserid':$.trim($('#user').val()),
             'fullname':utils.storage.getter('fullname'),
             'ipaddress':utils.storage.getter('ipaddress'),
             'posid':utils.storage.getter('posid'),
@@ -854,7 +856,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
+            url: _config.interfaceUrl.Clearner + '' +aUserid+ '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
             type: "get",
             dataType: "text",
             success: function (data) {

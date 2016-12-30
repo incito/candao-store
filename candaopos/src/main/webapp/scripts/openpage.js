@@ -268,7 +268,8 @@ var OpenPage = {
 
     },
     clearAllcheckOut: function () {
-        var that = this
+        var that = this;
+        var aUserid=$.trim($('#user').val())
         $("#J-btn-checkout-dialog").modal('hide')
         var that = this;
         widget.modal.alert({
@@ -278,9 +279,9 @@ var OpenPage = {
             height: 500,
             hasBtns: false,
         });
-        Log.send(2, '清机' + _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('checkout_fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/')
+        Log.send(2, '清机' + _config.interfaceUrl.Clearner + '' + aUserid + '/' + utils.storage.getter('checkout_fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/')
         $.ajax({
-            url: _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('checkout_fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
+            url: _config.interfaceUrl.Clearner + '' + aUserid + '/' + utils.storage.getter('checkout_fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
             type: "get",
             dataType: "text",
             success: function (data) {
