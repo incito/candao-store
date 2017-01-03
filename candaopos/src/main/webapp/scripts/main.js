@@ -937,14 +937,23 @@ var MainPage = {
 
     },
     checkoutCallback: function () {//结业回调
+        $("#J-btn-clear-dialog").modal('hide');
+        /*结业数据上传*/
+        widget.modal.alert({
+            cls: 'fade in',
+            content: '<strong>结业中，请稍后</strong>',
+            width: 500,
+            height: 500,
+            hasBtns: false,
+        });
         Log.send(2, '结业请求发送中');
         $.ajax({
             url: _config.interfaceUrl.EndWork,//不需要传递参数
             type: "get",
             dataType: 'text',
             success: function (data) {
-
-                $("#J-btn-checkout-dialog").modal('hide')
+                $(".modal-alert:last,.modal-backdrop:last").remove();
+                //$("#J-btn-checkout-dialog").modal('hide')
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
                 Log.send(2, '结业成功返回参数有'+JSON.stringify(data));
                 if (data.Data == '1') {
