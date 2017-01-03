@@ -891,7 +891,9 @@ var MainPage = {
         var arrylength = Uncleandata.LocalArry.length - 1;
         var LocalArry = Uncleandata.LocalArry;
         $("#J-btn-checkout-dialog").modal('hide')
+        Log.send(2, '清机判断开始-----')
         if (Uncleandata.LocalArry.length > 0) {
+            Log.send(2, '本机清机开始-----')
             $("#J-btn-checkout-dialog").load("../views/check/impower.jsp", {
                 'title': '清机授权',
                 'userNmae': Uncleandata.LocalArry[arrylength].username,
@@ -917,12 +919,14 @@ var MainPage = {
             });
         }
         if (Uncleandata.findUncleanPosList.detail.length == '0') {
+            Log.send(2, '清机完成，结业开始-----')
             $("#J-btn-checkout-dialog").load("../views/check/impower.jsp", {
                 'title': '结业授权',
                 'cbd': 'MainPage.checkoutCallback()',
                 'userRightNo': '030205'
             });
             $("#J-btn-checkout-dialog").modal('show')
+            Log.send(2, '清机完成，结业授权弹窗弹出-----')
         }
 
 
