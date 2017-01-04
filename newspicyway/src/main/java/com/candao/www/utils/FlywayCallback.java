@@ -39,7 +39,7 @@ public class FlywayCallback implements org.flywaydb.core.api.callback.FlywayCall
 
     @Override
     public void beforeMigrate(Connection connection) {
-    	afterMigrate(connection);
+
     }
 
     @Override

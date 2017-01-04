@@ -1912,11 +1912,6 @@ var AddDish = {
 		var num = parseFloat(dish.dishnum);
 		var val = dom.numDialog.find('.J-num').val() === '' ? 0 : parseFloat(dom.numDialog.find('.J-num').val());
 
-		function isPositiveNum(s){//是否为正整数
-			var re = /^[0-9]*[1-9][0-9]*$/ ;
-			return re.test(s)
-		}
-
 		if(dishtype === 1 && $tr.attr('ispot') === '0') {
 			$.each(dish.dishes, function(k, v){
 				if(v.dishid === $tr.attr('dishid')) {
@@ -1929,29 +1924,18 @@ var AddDish = {
 		if(type === 0) {
 			num = val;
 		} else if(type === 1) {
-			if(isPositiveNum(num)){
-				num =  parseFloat(num);
-			}else {
-				num =  parseFloat(num).toFixed(2);
-			}
 			if(dish.temporary==='1'){
 				if(num>=99){
 					return false
 				}
-				num = parseFloat(_.add(num,1));
 			}else {
-				num = parseFloat(_.add(num,1));
+				num = parseFloat(num + 1);
 			}
 			//num = parseFloat(num + 1).toFixed(2);
-
+			num = parseFloat(num + 1);
 		} else if(type ===2 ){
 			//num = parseFloat(num - 1).toFixed(2);
-			if(isPositiveNum(num)){
-				num =  parseFloat(num - 1);
-			}else {
-				num =  parseFloat(num - 1).toFixed(2);
-			}
-
+			num = parseFloat(num - 1);
 		}
 
 		//if(dishtype === 2 || dishtype === 1) {
