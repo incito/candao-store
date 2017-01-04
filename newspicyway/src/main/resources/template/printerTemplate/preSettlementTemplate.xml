@@ -238,23 +238,6 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
-	<!-- 服务费 -->
-	<row:row description="服务费">
-		<align description="对齐">ALIGN_LEFT</align>
-		<font description="字体大小">SMALL</font>
-		<locations description="服务费">
-			<list>
-				<value>30</value>
-				<value>10</value>
-			</list>
-		</locations>
-		<datas description="服务费">
-			<list>
-				<value>服务费</value>
-				<value>#{obj.posData.serviceCharge.reserveChargeAmout}</value>
-			</list>
-		</datas>
-	</row:row>
 	<!-- 分隔符 -->
 	<row:row description="分隔符">
 		<align description="对齐">ALIGN_LEFT</align>
