@@ -541,7 +541,7 @@ function goBack() {
 	var personnum=utils.getUrl.get('personnum');
 	var type=utils.getUrl.get('type');
 	var orderid=utils.getUrl.get('orderid');
-	var tableno=utils.getUrl.get('tableno');
+	var tableno=utils.getUrl.get('tableno')
 	/*取消外面订单*/
 	if(personnum=='0'&&type=='out'&&document.referrer.indexOf('main.jsp')>-1){
 		$.ajax({
@@ -562,12 +562,7 @@ function goBack() {
 		});
 		return false
 	}
-	if(document.referrer.indexOf('&tips')>-1){
-		window.location=document.referrer.split('&tips')[0]
-	}else {
-		window.location=document.referrer
-	}
-
+	window.location=document.referrer
 	//
 
 }

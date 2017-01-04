@@ -3215,12 +3215,7 @@ var Order = {
 
         };
         if (g_eatType === 'in') {
-            if (utils.getUrl.get('referer') === '1') {
-                window.location.href = './check/check.jsp'
-            }else {
-                window.location.href = './main.jsp'
-            }
-
+            window.location.href = './main.jsp'
         } else {
             if (utils.getUrl.get('referer') === '1') {
                 window.location.href = './check/check.jsp'

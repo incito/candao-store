@@ -1,12 +1,16 @@
 package com.candao.www.webroom.controller;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.candao.print.entity.ResultInfo4Pos;
+import com.candao.print.entity.ResultTip4Pos;
+import com.candao.print.entity.SettlementInfo4Pos;
+import com.candao.www.dataserver.controller.OrderInterfaceController;
+import com.candao.www.dataserver.controller.StoreInterfaceController;
+import com.candao.www.dataserver.util.StringUtil;
+import com.candao.www.webroom.service.OrderService;
+import com.candao.www.webroom.service.Print4POSService;
+import com.candao.www.webroom.service.impl.Print4POSServiceImpl;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -22,18 +26,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.candao.print.entity.ResultTip4Pos;
-import com.candao.print.entity.SettlementInfo4Pos;
-import com.candao.www.constant.Constant;
-import com.candao.www.data.model.TServiceCharge;
-import com.candao.www.dataserver.controller.OrderInterfaceController;
-import com.candao.www.dataserver.controller.StoreInterfaceController;
-import com.candao.www.dataserver.util.StringUtil;
-import com.candao.www.webroom.service.OrderService;
-import com.candao.www.webroom.service.Print4POSService;
-import com.candao.www.webroom.service.impl.Print4POSServiceImpl;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * POS打印业务

@@ -113,7 +113,7 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 	            	 sheet.addCell(new Label(3, rowNum, dishunit, wcfTable));
 	            	 sheet.addCell(new Label(4, rowNum, present, wcfTable)); 
 	            	 sheet.addCell(new Label(5, rowNum, discount, wcfTable));
-	            	 sheet.addCell(new Label(6, rowNum, num, wcfTable));
+	            	 sheet.addCell(new Label(6, rowNum, num.substring(0, num.length()-2), wcfTable));
 	             }
              }
              // 写入数据     
@@ -184,7 +184,7 @@ public class WaiterSaleServiceImpl implements WaiterSaleService {
 	            	 sheet.addCell(new Label(0, rowNum, begintime, wcfTable));
 	            	 sheet.addCell(new Label(1, rowNum, orderid, wcfTable));
 	            	 sheet.addCell(new Label(2, rowNum, params.get("dishunit").toString(), wcfTable));
-	            	 sheet.addCell(new Label(3, rowNum, dishnum, wcfTable));
+	            	 sheet.addCell(new Label(3, rowNum, dishnum.substring(0, dishnum.length()-2), wcfTable));
 	             }
              }
              // 写入数据     

@@ -3,17 +3,10 @@
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.candao.www.bossstore.dao.TUserDao">
 	 <!-- 查询所有的用户信息-->
-	<!-- <select id="getOpenUser" parameterType="java.util.Map"  resultType="java.util.Map">
+	<select id="getOpenUser" parameterType="java.util.Map"  resultType="java.util.Map">
 	    select u.name as name,u.mobile as mobile
 		from t_b_employee e, t_b_user u
 		where u.id = e.user_id
-		and e.branch_id = #{branchId}
-	</select> -->
-	<select id="getOpenUser" parameterType="java.util.Map"  resultType="java.util.Map">
-	    select u.name as name,u.mobile as mobile
-		from t_open_log t,t_b_employee e, t_b_user u
-		where t.username = e.job_number
-		and u.id = e.user_id
 		and e.branch_id = #{branchId}
 	</select>
 </mapper>
