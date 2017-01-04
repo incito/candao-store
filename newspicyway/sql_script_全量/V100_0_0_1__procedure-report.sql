@@ -7916,7 +7916,7 @@ BEGIN -- 返回字段说明如下
   (
     orderid VARCHAR(50),
     dishid VARCHAR(50),
-    dishnum INT,
+    dishnum DOUBLE(13,2),
     orignalprice DECIMAL(13, 2),
     begintime DATETIME,
     endtime DATETIME
