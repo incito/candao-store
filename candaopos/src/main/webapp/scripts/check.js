@@ -255,7 +255,7 @@ var checkOrder={
                                     success: function (msg) {
                                         rebackMemberinfo.TraceCode=msg.TraceCode//重新赋值TraceCode会员交易号
                                         if(msg.Retcode!=0){
-                                            utils.printError.alert('会员反结算失败')
+                                            utils.printError.alert('会员消费反结算失败：'+msg.RetInfo)
                                         }
                                         else {
                                             rebackOrderOk(rebackMemberinfo)
