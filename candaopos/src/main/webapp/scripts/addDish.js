@@ -1061,7 +1061,7 @@ var AddDish = {
 
 		var dish_avoids = dish.dish_avoids;
 		var taste = dish.taste;
-		var showname = utils.string.cutString(dishname.split('#')[0],14);
+		var showname = utils.string.cutString(dishname.split('#')[0], parseInt($('#sel-dish-table thead th').eq(0).width()/14, 10)*2)
 
 		if(taste != null && taste != ""){
 			if(dish.temporary === '1') {

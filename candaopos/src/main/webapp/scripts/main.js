@@ -65,6 +65,7 @@ var MainPage = {
 
             if (cla !== "opened") {
                 dom.openDialog.find('.J-server-name,.J-male-num,.J-female-num,.J-tableware-num').val('');
+                dom.openDialog.find('.age-type>div').removeClass('active');
                 dom.openDialog.modal("show");
                 focusIpt = dom.openDialog.find('.J-server-name')
                 return false;
