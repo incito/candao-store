@@ -366,13 +366,14 @@ public class DateUtils {
 
 
 	/**
-	 * 计算两个日期相关天数
+	 * 计算两个日期相关天数,这个方法有问题
 	 * @author weizhifang
 	 * @since 2015-11-19
 	 * @param fDate
 	 * @param oDate
 	 * @return
 	 */
+	@Deprecated
 	public static int daysOfTwo(Date fDate, Date oDate) {
         Calendar aCalendar = Calendar.getInstance();
         aCalendar.setTime(fDate);
@@ -381,7 +382,12 @@ public class DateUtils {
         int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
         return day2 - day1;
     }
-	
+	/** 
+     * 计算两个日期之间相差的天数 
+     */  
+    public final static long daysBetween(Date date1,Date date2){  
+		return (date1.getTime()-date2.getTime())/(1000*3600*24);
+    }
 	/**
 	 * 默认将日期转换为字符串，格式(yyyy-MM-dd HH:mm:ss)
 	 * 
