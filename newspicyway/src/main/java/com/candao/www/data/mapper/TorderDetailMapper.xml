@@ -734,6 +734,7 @@
 				and t.childdishtype = #{childdishtype}
 			</if>
 		</where>
+		order by t.dishid,t.dishunit
 	</select>
 	<!-- 对账单使用优惠 -->
 	<update id="updateOrderDetailWithPreferential" parameterType="java.util.List">
