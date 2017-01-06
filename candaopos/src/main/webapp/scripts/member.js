@@ -58,7 +58,7 @@ var member = {
                 if (that.isClick()) {
                     var status = $.trim($('.member_status').attr('status'));
                     if (status == 1) {
-                        var member_card = $.trim($('.member_card').text());
+                        var member_card = $.trim($('.member_card').attr('member_card'));
                         widget.modal.alert({
                             cls: 'fade in',
                             content: '<strong>确定要注销' + member_card + '吗？</strong>',
@@ -257,8 +257,10 @@ var member = {
                         return false
                     }
                     loadMember = res;
+                    $('.member_card').attr('member_card',res.result[0].MCard);
                     if(res.result[0].card_type=='0'){
                         $('.member_card').text('').attr('card_type', res.result[0].card_type)//卡号
+                        $('.member_card').attr('member_card',res.mobile);
                     }
                     else {
                         $('.member_card').text(res.result[0].MCard).attr('card_type', res.result[0].card_type)//卡号
