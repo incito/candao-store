@@ -21,8 +21,7 @@ import com.candao.www.preferential.model.PreDealInfoBean;
 
 /**
  * 
- * @author Canada
- *  手工优惠---手工优免 三种优惠方式：赠菜，折扣，优免 此类优惠需要收银员手动输入的
+ * @author Canada 手工优惠---手工优免 三种优惠方式：赠菜，折扣，优免 此类优惠需要收银员手动输入的
  */
 public class HandfreeStategy extends CalPreferentialStrategy {
 
@@ -74,22 +73,22 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				amount = deInfo.getPreAmount();
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"), conupId,
-						Constant.CALCPRETYPE.WAITERUSEPRE);
+						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP,
+						(String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.WAITERUSEPRE);
 
 				detailPreferentials.add(preSub);
 			}
 			this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
 
 		} else if (!StringUtils.isEmpty(preferentialAmout.trim()) && StringUtils.isEmpty(giveDish)
-				&& new BigDecimal(preferentialAmout).doubleValue() >0 ){
+				&& new BigDecimal(preferentialAmout).doubleValue() > 0) {
 			// 手工输入现金优免
 			BigDecimal cashprelAmout = new BigDecimal(preferentialAmout);
 			amount = cashprelAmout;
-			String conupId =(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+			String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 			TorderDetailPreferential addPreferential = this.createPreferentialBean(paraMap, amount, amount,
-					new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"), conupId,
-					Constant.CALCPRETYPE.WAITERUSEPRE);
+					new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP,
+					(String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.WAITERUSEPRE);
 			detailPreferentials.add(addPreferential);
 		} else if (!StringUtils.isEmpty(giveDish) && StringUtils.isEmpty(paraMap.get("discount"))
 				&& StringUtils.isEmpty(paraMap.get("amount"))) {
@@ -106,13 +105,25 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 			Map<String, Double> orderDishIdToDishNumMap = new HashMap<>();
 			for (TorderDetail detail : orderDetailList) {
 				String key = detail.getDishid() + detail.getDishunit();
-				orderDetailmap.put(key, detail);
-				if (orderDishIdToDishNumMap.containsKey(key)) {
-					orderDishIdToDishNumMap.put(key,
-							Double.valueOf(detail.getDishnum()) + orderDishIdToDishNumMap.get(key));
-				} else {
-					orderDishIdToDishNumMap.put(key, Double.valueOf(detail.getDishnum()));
+				if (detail.getDishtype().equals("2") && detail.getOrderprice() != null
+						&& detail.getOrderprice().doubleValue() > 0) {
+					orderDetailmap.put(key, detail);
+					if (orderDishIdToDishNumMap.containsKey(key)) {
+						orderDishIdToDishNumMap.put(key,
+								Double.valueOf(detail.getDishnum()) + orderDishIdToDishNumMap.get(key));
+					} else {
+						orderDishIdToDishNumMap.put(key, Double.valueOf(detail.getDishnum()));
+					}
+				}else if(!detail.getDishtype().equals("2")){
+					orderDetailmap.put(key, detail);
+					if (orderDishIdToDishNumMap.containsKey(key)) {
+						orderDishIdToDishNumMap.put(key,
+								Double.valueOf(detail.getDishnum()) + orderDishIdToDishNumMap.get(key));
+					} else {
+						orderDishIdToDishNumMap.put(key, Double.valueOf(detail.getDishnum()));
+					}
 				}
+			
 			}
 			// 卷对应的菜品数据（一个菜多少个卷）
 			List<TorderDetailPreferential> orderDetailToPreferList = orderDetailPreferentialDao
@@ -205,13 +216,13 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				BigDecimal orderprice = ordetail.getOrderprice() == null ? new BigDecimal("0")
 						: ordetail.getOrderprice();
 				amount = amount.add(orderprice);
-				
-				String conupId =(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
-			   addPreferential = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), 1, new BigDecimal(0), Constant.CALCPRETYPE.NOGROUP, (String) tempMap.get("name"), conupId,
+
+				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+				addPreferential = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"), 1,
+						new BigDecimal(0), Constant.CALCPRETYPE.NOGROUP, (String) tempMap.get("name"), conupId,
 						Constant.CALCPRETYPE.GIVEUSEPRE);
-			   addPreferential.setDishid(ordetail.getDishid());
-			   addPreferential.setUnit(ordetail.getDishunit());
+				addPreferential.setDishid(ordetail.getDishid());
+				addPreferential.setUnit(ordetail.getDishunit());
 			}
 		}
 		return addPreferential;
