@@ -99,7 +99,7 @@
 
 	<select id="getNoDiscountDishsByDish" parameterType="map"
 		resultType="com.candao.www.data.model.TbNoDiscountDish">
-		SELECT tpnd.* FROM t_p_no_discount_dish tpnd ,t_dish tdi
+		SELECT tpnd.*,tdi.dishtype FROM t_p_no_discount_dish tpnd ,t_dish tdi
 		WHERE
 		tdi.dishid=tpnd.dish AND tpnd.discount_ticket=#{discountId} AND
 		tdi.dishid IN

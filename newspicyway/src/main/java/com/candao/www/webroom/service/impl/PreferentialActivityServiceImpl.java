@@ -42,6 +42,7 @@ import com.candao.www.data.model.TbGroupon;
 import com.candao.www.data.model.TbHandFree;
 import com.candao.www.data.model.TbInnerFree;
 import com.candao.www.data.model.TbNoDiscountDish;
+import com.candao.www.data.model.TbOrderDetailPreInfo;
 import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.TbPreferentialActivityBranch;
 import com.candao.www.data.model.TbPreferentialActivitySpecialStamp;
@@ -1044,6 +1045,13 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 							.get("detailPreferentials");
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
+						if(row>0){
+							for(TorderDetailPreferential detailPreferential:detailPreferentials){
+								   List<TbOrderDetailPreInfo> detailPreInfos = detailPreferential.getDetailPreInfos();
+								orderDetailPreferentialDao.addBatchorderPreInfo(detailPreInfos);
+							}
+						}
+						
 					}
 					// 是否有返回状态
 					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")

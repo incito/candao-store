@@ -3,6 +3,7 @@ package com.candao.www.data.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -11,20 +12,15 @@ import java.util.Date;
 public class TorderDetailPreferential implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
-	private String dishNum;
 	private String orderid;
-	private String dishid;
 	private String preferential;
 	/**单个优惠总额：优免+挂装**/
 	private BigDecimal deAmount=new BigDecimal("0");
 	private BigDecimal discount;
-	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 4：赠送菜优惠 5 雅座优惠 **/
+	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 3：特价优惠卷 4：赠送菜优惠 5 雅座优惠 **/
 	private int isCustom;
 	private int isGroup;
-	private int isUse;
 	private Date insertime;
-	/**菜品单位*/
-	private String unit="";
 	/**优惠类型*/
     /**雅座折扣：9902 雅座优免：9903 雅座团购：9905*/
 	private String  preType="";
@@ -43,6 +39,7 @@ public class TorderDetailPreferential implements Serializable {
 	 * */
 	private BigDecimal toalDebitAmountMany=new BigDecimal("0");
 	private TbPreferentialActivity activity;
+	private List<TbOrderDetailPreInfo> detailPreInfos;
 	// 优惠子ID
 	private String coupondetailid;
 
@@ -54,18 +51,12 @@ public class TorderDetailPreferential implements Serializable {
 	 * @param id
 	 * 订单优惠关系ID
 	 * @param orderid
-	 * 订单ID
-	 * @param dishid
 	 * 菜品ID
 	 * @param preferential
 	 * 优惠
 	 * @param deAmount
-	 * 折扣钱
-	 * @param dishNum
 	 * 菜品优惠个数
 	 * @param isGroup
-	 * 是否是全局折扣
-	 * @param isUse
 	 * 是否使用
 	 * @param discount
 	 * 折扣
@@ -74,16 +65,13 @@ public class TorderDetailPreferential implements Serializable {
 	 * @param insertime
 	 * 插入时间
 	 */
-	public TorderDetailPreferential(String id, String orderid, String dishid, String preferential, BigDecimal deAmount,
-			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom,Date insertime) {
+	public TorderDetailPreferential(String id, String orderid,  String preferential, BigDecimal deAmount,
+			 int isGroup, BigDecimal discount, int isCustom,Date insertime) {
 		this.id = id;
 		this.orderid = orderid;
 		this.preferential = preferential;
-		this.dishid = dishid;
 		this.deAmount = deAmount;
 		this.isGroup = isGroup;
-		this.isUse = isUse;
-		this.dishNum = dishNum;
 		this.discount = discount;
 		this.isCustom = isCustom;
 		this.insertime = insertime;
@@ -98,13 +86,6 @@ public class TorderDetailPreferential implements Serializable {
 		this.orderid = orderid;
 	}
 
-	public String getDishid() {
-		return dishid;
-	}
-
-	public void setDishid(String dishid) {
-		this.dishid = dishid;
-	}
 
 	public String getPreferential() {
 		return preferential;
@@ -122,13 +103,6 @@ public class TorderDetailPreferential implements Serializable {
 		this.isGroup = isGroup;
 	}
 
-	public int getIsUse() {
-		return isUse;
-	}
-
-	public void setIsUse(int isUse) {
-		this.isUse = isUse;
-	}
 
 	public BigDecimal getDeAmount() {
 		return deAmount.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -138,13 +112,7 @@ public class TorderDetailPreferential implements Serializable {
 		this.deAmount = deAmount;
 	}
 
-	public String getDishNum() {
-		return dishNum;
-	}
-
-	public void setDishNum(String dishNum) {
-		this.dishNum = dishNum;
-	}
+	
 
 	public TbPreferentialActivity getActivity() {
 		return activity;
@@ -218,14 +186,7 @@ public class TorderDetailPreferential implements Serializable {
 		this.toalDebitAmountMany = toalDebitAmountMany;
 	}
 
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-
+	
 
 	public String getPreName() {
 		return preName;
@@ -241,6 +202,12 @@ public class TorderDetailPreferential implements Serializable {
 
 	public void setPreType(String preType) {
 		this.preType = preType;
+	}
+	public List<TbOrderDetailPreInfo> getDetailPreInfos() {
+		return detailPreInfos;
+	}
+	public void setDetailPreInfos(List<TbOrderDetailPreInfo> detailPreInfos) {
+		this.detailPreInfos = detailPreInfos;
 	}
 
 }

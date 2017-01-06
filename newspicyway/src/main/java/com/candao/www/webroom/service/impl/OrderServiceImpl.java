@@ -36,6 +36,7 @@ import com.candao.www.data.model.TCoupons;
 import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.data.model.TbDataDictionary;
 import com.candao.www.data.model.TbOpenBizLog;
+import com.candao.www.data.model.TbOrderDetailPreInfo;
 import com.candao.www.data.model.TbTable;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.Torder;
@@ -1177,6 +1178,7 @@ public class OrderServiceImpl implements OrderService {
 				if (menuData == null || menuData.isEmpty()) {
 					Map<String, Object> delPreFerInfoMap = new HashMap<>();
 					delPreFerInfoMap.put("orderid", orderid);
+					delPreFerInfoMap.put("clear", "1");
 					detailPreferentialDao.deleteDetilPreFerInfo(delPreFerInfoMap);
 				}
 			}
@@ -1282,8 +1284,12 @@ public class OrderServiceImpl implements OrderService {
 			setMap.put("type", branchDataSyn.getActivity().getType());
 			setMap.put("subtype", branchDataSyn.getActivity().getSubType());
 			setMap.put("preferentialNum", "1");
-			setMap.put("dishid", branchDataSyn.getDishid());
-			setMap.put("unit", branchDataSyn.getUnit());
+			if(branchDataSyn.getDetailPreInfos()!=null&&!branchDataSyn.getDetailPreInfos().isEmpty()){
+				  TbOrderDetailPreInfo tempdetailPreInfo = branchDataSyn.getDetailPreInfos().get(0);
+				setMap.put("dishid", tempdetailPreInfo.getDishID());
+				setMap.put("unit", tempdetailPreInfo.getUnit());
+			}
+			
 			setMap.put("preferentialAmt", operPreferentialResult.getAmount().toString());
 			setMap.put("isCustom", String.valueOf(branchDataSyn.getIsCustom()));
 			setMap.put("updateId", branchDataSyn.getId());

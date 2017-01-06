@@ -4,17 +4,13 @@
 	<resultMap id="TorderDetailPreferentialID"
 		type="com.candao.www.data.model.TorderDetailPreferential">
 		<result property="id" column="id" jdbcType="VARCHAR" />
-		<result property="dishNum" column="dishNum" jdbcType="VARCHAR" />
 		<result property="orderid" column="orderid" jdbcType="VARCHAR" />
-		<result property="dishid" column="dishid" jdbcType="VARCHAR" />
 		<result property="preferential" column="preferential" jdbcType="VARCHAR" />
 		<result property="deAmount" column="deAmount" jdbcType="DECIMAL" />
 		<result property="discount" column="discount" jdbcType="DECIMAL" />
 		<result property="isCustom" column="isCustom" jdbcType="TINYINT" />
 		<result property="isGroup" column="isGroup" jdbcType="TINYINT" />
-		<result property="isUse" column="isUse" jdbcType="TINYINT" />
 		<result property="insertime" column="insertime" jdbcType="TIMESTAMP" />
-		<result property="unit" column="unit" jdbcType="VARCHAR" />
 		<result property="preType" column="preType" jdbcType="VARCHAR" />
 		<result property="preName" column="preName" jdbcType="VARCHAR" />
 	</resultMap>
@@ -42,33 +38,75 @@
 		<result column="creator" property="creator" jdbcType="VARCHAR" />
 		<result column="status" property="status" jdbcType="VARCHAR" />
 	</resultMap>
+	<resultMap type="com.candao.www.data.model.TbOrderDetailPreInfo"
+		id="base_orderdetail_PreInfo">
+		<result column="todid" property="id" jdbcType="VARCHAR" />
+		<result column="ordpreid" property="ordpreid" jdbcType="VARCHAR" />
+		<result column="orderid" property="orderid" jdbcType="VARCHAR" />
+		<result column="orderidetailid" property="orderidetailid"
+			jdbcType="VARCHAR" />
+		<result column="dishID" property="dishID" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+		<result column="dishNum" property="dishNum" jdbcType="DOUBLE" />
+		<result column="depreamount" property="dePreAmount" jdbcType="DECIMAL" />
+	</resultMap>
 
 	<resultMap id="associationDetailpreferInfo"
 		type="com.candao.www.data.model.TorderDetailPreferential" extends="TorderDetailPreferentialID">
-
 		<association property="activity"
 			javaType="com.candao.www.data.model.TbPreferentialActivity"
 			resultMap="base_result_map"></association>
+
+		<collection property="detailPreInfos" javaType="java.util.List"
+			resultMap="base_orderdetail_PreInfo">
+		</collection>
 	</resultMap>
 
+	<insert id="addBatchorderPreInfo" parameterType="java.util.List">
+		INSERT INTO
+		`t_order_detail_pre_info` (
+		`id`,
+		`ordpreid`,
+		`orderid`,
+		`orderidetailid`,
+		`dishID`,
+		`unit`,
+		`dishNum`,
+		`depreamount`,
+		`insettime`
+		)
+		VALUES
+		<foreach collection="list" item="ordDetPre" index="index"
+			separator=",">
+			(
+			#{ordDetPre.id,jdbcType=VARCHAR},
+			#{ordDetPre.ordpreid,jdbcType=VARCHAR},
+			#{ordDetPre.orderid,jdbcType=VARCHAR},
+			#{ordDetPre.orderidetailid,jdbcType=VARCHAR},
+			#{ordDetPre.dishID,jdbcType=VARCHAR},
+			#{ordDetPre.unit,jdbcType=VARCHAR},
+			#{ordDetPre.dishNum,jdbcType=DOUBLE},
+			#{ordDetPre.dePreAmount,jdbcType=DECIMAL},
+			#{ordDetPre.insettime,jdbcType=TIMESTAMP}
+			)
+		</foreach>
+		ON DUPLICATE KEY UPDATE dePreAmount
+		=VALUES(dePreAmount),orderidetailid=VALUES(orderidetailid),dishNum=VALUES(dishNum)
+	</insert>
 
 	<insert id="addBatchInfo" parameterType="java.util.List">
 		INSERT INTO
 		`t_order_detail_preferential` (
 		`id`,
 		`orderid`,
-		`dishid`,
-		`dishNum`,
 		`preferential`,
 		`deAmount`,
 		`discount`,
 		`isCustom`,
 		`isGroup`,
-		`isUse`,
 		`toalFreeAmount`,
 		`toalDebitAmount`,
 		`insertime`,
-		`unit`,
 		`preType`,
 		`preName`)
 		VALUES
@@ -76,38 +114,21 @@
 			separator=",">
 			(#{ordDetPre.id,jdbcType=VARCHAR},
 			#{ordDetPre.orderid,jdbcType=VARCHAR},
-			#{ordDetPre.dishid,jdbcType=VARCHAR},
-			#{ordDetPre.dishNum,jdbcType=VARCHAR},
 			#{ordDetPre.preferential,jdbcType=VARCHAR},
 			#{ordDetPre.deAmount,jdbcType=DECIMAL},
 			#{ordDetPre.discount,jdbcType=DECIMAL},
 			#{ordDetPre.isCustom,jdbcType=DECIMAL},
 			#{ordDetPre.isGroup,jdbcType=TINYINT},
-			#{ordDetPre.isUse,jdbcType=TINYINT},
 			#{ordDetPre.toalFreeAmount,jdbcType=VARCHAR},
 			#{ordDetPre.toalDebitAmount,jdbcType=VARCHAR},
 			#{ordDetPre.insertime,jdbcType=TIMESTAMP},
-			#{ordDetPre.unit,jdbcType=VARCHAR},
 			#{ordDetPre.preType,jdbcType=VARCHAR},
 			#{ordDetPre.preName,jdbcType=VARCHAR})
 		</foreach>
 		ON DUPLICATE KEY UPDATE deAmount
-		=VALUES(deAmount),isGroup=VALUES(isGroup),dishid=VALUES(dishid),discount=VALUES(discount),toalFreeAmount=VALUES(toalFreeAmount),toalDebitAmount=VALUES(toalDebitAmount),unit=VALUES(unit)
+		=VALUES(deAmount),isGroup=VALUES(isGroup),discount=VALUES(discount),toalFreeAmount=VALUES(toalFreeAmount),toalDebitAmount=VALUES(toalDebitAmount)
 	</insert>
 
-	<insert id="addDetailPreFerInfo" parameterType="com.candao.www.data.model.TorderDetailPreferential"
-		useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO
-		`t_order_detail_preferential` (`id`,`orderid`,`dishid`,
-		`preferential`,`deAmount`, `discount`,`isCustom`,`isGroup`, `isUse`,
-		`dishNum` ,`insertime`
-		) VALUES (#{id},
-		#{orderid,jdbcType=VARCHAR},#{dishid,jdbcType=VARCHAR},#{preferential,jdbcType=VARCHAR},
-		#{deAmount,jdbcType=DECIMAL}, #{discount,jdbcType=DECIMAL},
-		#{isCustom,jdbcType=DECIMAL},
-		#{isGroup,jdbcType=TINYINT},#{isUse,jdbcType=TINYINT},#{dishNum,jdbcType=VARCHAR},#{insertime,jdbcType=TIMESTAMP})
-		ON DUPLICATE KEY UPDATE deAmount =VALUES(deAmount)
-	</insert>
 
 	<delete id="deleteDetilPreFerInfo" parameterType="map">
 		DELETE FROM t_order_detail_preferential WHERE
@@ -116,6 +137,16 @@
 			and id=#{DetalPreferentiald,jdbcType=VARCHAR}
 		</if>
 	</delete>
+	
+	<delete id="deleteDetileSubPreInfo" parameterType="map">
+			DELETE FROM t_order_detail_pre_info WHERE
+		orderid=#{orderid}
+		<if test='clear != null and clear=="0"'>
+			and ordpreid=#{DetalPreferentiald,jdbcType=VARCHAR}
+		</if>
+	</delete>
+
+
 	<delete id="deleteForXinladaoInfo" parameterType="map">
 		DELETE FROM
 		t_order_detail_preferential WHERE
@@ -126,43 +157,116 @@
 	<select id="getTorderDetailPreS" parameterType="map"
 		resultType="com.candao.www.data.model.TorderDetailPreferential">
 		SELECT * FROM t_order_detail_preferential todp WHERE
-		todp.orderid=#{orderid} AND todp.isGroup=0 AND todp.isUse=1;
+		todp.orderid=#{orderid} AND todp.isGroup=0;
 	</select>
 	<select id="queryDetailPreByGift" parameterType="map"
 		resultType="com.candao.www.data.model.TorderDetailPreferential">
 		SELECT * FROM t_order_detail_preferential todp WHERE
-		todp.orderid=#{orderid} AND todp.isGroup=0 AND todp.isUse=1 AND
+		todp.orderid=#{orderid} AND todp.isGroup=0 AND
 		todp.isCustom=4;
 	</select>
 
+	<!-- 菜品单个优惠挂钩优惠卷 -->
 	<select id="queryGiveprefer" parameterType="map" resultType="java.util.HashMap">
 		SELECT
-		COUNT(id) AS count,
-		top.dishid,
-		top.unit
+		COUNT(tordpi.id) AS count,
+		tordpi.dishid,
+		tordpi.unit
 		FROM
 		t_order_detail_preferential AS top
+		LEFT JOIN t_order_detail_pre_info as
+		tordpi
+		ON
+		top.id =tordpi.ordpreid
 		WHERE
-		orderid = #{orderid}
+		top.orderid =#{orderid}
 		AND
-		isCustom = 4
+		(isCustom = 4
+		OR
+		isCustom=3)
 		GROUP BY
-		top.dishid,top.unit;
+		tordpi.dishid,tordpi.unit;
 	</select>
 	<select id="getTorderDetailSbyOrderid" parameterType="map"
 		resultMap="associationDetailpreferInfo">
-		SELECT todp.*,tpp.type,tpp.name,tpp.sub_type FROM
-		t_order_detail_preferential todp LEFT
-		JOIN t_p_preferential_activity
-		tpp ON todp.preferential=tpp.id
+		SELECT
+		todp.*, tpp.type,
+		tpp. NAME,
+		tpp.sub_type,
+		todpi.dishID,
+		todpi.dishNum,
+		todpi.id AS todid,
+		todpi.orderidetailid,
+		todpi.unit,
+		todpi.depreamount
+		FROM
+		t_order_detail_preferential AS todp
+		LEFT JOIN
+		t_p_preferential_activity tpp ON todp.preferential = tpp.id
+		LEFT JOIN
+		t_order_detail_pre_info AS todpi ON todp.id = todpi.ordpreid
 		WHERE
-		todp.orderid=#{orderid} AND
-		todp.isUse=1 ORDER BY todp.insertime
-		ASC;
+		todp.orderid = #{orderid}
+		ORDER BY
+		todp.insertime ASC;
 	</select>
 	<select id="statisticALLDiscount" parameterType="map"
 		resultType="java.math.BigDecimal">
 		SELECT IFNULL(SUM(deAmount) ,0) FROM
 		t_order_detail_preferential WHERE orderid=#{orderid};
 	</select>
+	<!-- 查询特价卷以及赠菜卷优惠 -->
+	<select id="getPresentAndspecialPriclist" parameterType="map"
+		resultMap="associationDetailpreferInfo">
+		SELECT
+		todp.*, tpp.type,
+		tpp. NAME,
+		tpp.sub_type,
+		todpi.dishID,
+		todpi.dishNum,
+		todpi.id AS todid,
+		todpi.orderidetailid,
+		todpi.unit,
+		todpi.depreamount,
+		todpi.ordpreid
+		FROM
+		t_order_detail_preferential AS todp
+		LEFT JOIN
+		t_p_preferential_activity tpp ON todp.preferential = tpp.id
+		LEFT JOIN
+		t_order_detail_pre_info AS todpi ON todp.id = todpi.ordpreid
+		WHERE
+		todp.orderid = #{orderid}
+		AND (isCustom = 3 OR isCustom = 4)
+		ORDER BY
+		todp.insertime ASC;
+	</select>
+	
+	<!-- 查询所有优惠信息-->
+	<select id="getAllPreInfolist" parameterType="map"
+		resultMap="associationDetailpreferInfo">
+		SELECT
+		todp.*, tpp.type,
+		tpp. NAME,
+		tpp.sub_type,
+		todpi.dishID,
+		todpi.dishNum,
+		todpi.id AS todid,
+		todpi.orderidetailid,
+		todpi.unit,
+		todpi.depreamount,
+		todpi.ordpreid
+		FROM
+		t_order_detail_preferential AS todp
+		LEFT JOIN
+		t_p_preferential_activity tpp ON todp.preferential = tpp.id
+		LEFT JOIN
+		t_order_detail_pre_info AS todpi ON todp.id = todpi.ordpreid
+		WHERE
+		todp.orderid = #{orderid}
+		ORDER BY
+		todp.insertime ASC;
+	</select>
+
+
 </mapper>

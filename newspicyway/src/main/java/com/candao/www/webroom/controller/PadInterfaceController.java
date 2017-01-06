@@ -1511,8 +1511,7 @@ public class PadInterfaceController extends BaseController {
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
 		// 加载缓存
 		String orderid=String.valueOf(params.get("orderid"));
-		List<ComplexTorderDetail> orderDetailList = orderDetailService
-				.findorderByDish(orderid);
+		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
 		// 使用优惠
 		try {
 			OperPreferentialResult operPreferentialResult = this.preferentialActivityService
@@ -1934,6 +1933,7 @@ public class PadInterfaceController extends BaseController {
 
 		} catch (Exception ex) {
 			logger.error("--->", ex);
+			ex.printStackTrace();
 		}
 	}
 

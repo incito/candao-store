@@ -347,6 +347,8 @@ public class Constant {
 		public static final int WAITERUSEPRE=1;
 		/**系统使用优惠（一般指新辣道）2**/
 		public static final int SYSTENUSEPRE=2;
+		/**特价优惠卷**/
+		public static final int SPECIALUSEPRE=3;
 		/**增菜优惠卷4**/
 		public static final int GIVEUSEPRE=4;
 		/**雅座优惠卷5**/
