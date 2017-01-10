@@ -109,8 +109,20 @@ public class XmlTemplateDefinitionReader {
 			log.error("找不到模板解析类！" + namespaceUri);
 			return;
 		}
-		handler.handler(ele);
+		Element childEle = handler.handler(ele,this);
 		define.registry(handler);
+		if (childEle != null)
+			parseCustomElement(ele, define);
+	}
+
+	public XmlNameSpaceHandler getUnassembledHandle(Element ele) throws Exception{
+		String namespaceUri = getNamespaceURI(ele);
+		XmlNameSpaceHandler handler = this.xmlReaderContext.getNamespaceHandlerResolver().resolve(namespaceUri, true);
+		if (handler == null){
+			log.error("找不到模板解析类！" + namespaceUri);
+			return null;
+		}
+		return handler;
 	}
 
 	public void parseDefaultElement(Element element, XMLTemplateDefinition define) {

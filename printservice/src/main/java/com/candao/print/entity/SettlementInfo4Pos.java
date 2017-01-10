@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.candao.common.utils.Constant;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -123,27 +124,10 @@ public class SettlementInfo4Pos implements Serializable {
                 String dishnum = resolveType(it.getDishnum());
                 String dishunit = resolveType(it.getDishunit());
 
-                String[] titles = StringUtils.split(title, "#");
-                String[] dishunits = StringUtils.split(dishunit, "#");
-
-                title = (titles == null ? title : titles[0]) ;
-                if(null!=dishunit&&!dishunit.isEmpty()){
-                	title+="(" + (dishunits == null ? dishunit : dishunits[0]) + ")";
-                }
-
-                if ("1".equals(it.getPricetype())) {
-                    title += "(赠)";
-                }
-
-                if (titles != null || dishunits != null) {
-                    title += "\n";
-                    title += (titles == null ? "" : titles[1]) + (dishunits == null ? "" : "(" + dishunits[1] + ")");
-                }
+                title = com.candao.common.utils.StringUtils.resolveBilingualMark("#", title, "1".equals(it.getPricetype()) ? "(赠)" : "");
+                dishunit = com.candao.common.utils.StringUtils.resolveBilingualMark("#", dishunit);
                 it.setTitle(title);
-                String[] units=StringUtils.tokenizeToStringArray(it.getDishunit(), "#");
-                if(units.length>0){
-                	it.setDishunit(units[0]);
-                }
+                it.setDishunit(dishunit);
                 it.setDishnum(dishnum);
             }
         }

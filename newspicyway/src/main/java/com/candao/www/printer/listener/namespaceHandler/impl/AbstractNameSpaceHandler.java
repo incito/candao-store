@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.candao.www.printer.listener.XmlTemplateDefinitionReader;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -51,6 +52,8 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
 
     private final static int CLONE_LEVER = -1;
 
+    protected XmlTemplateDefinitionReader reader;
+
     /**
      * 默认解析row元素
      */
@@ -81,7 +84,7 @@ public abstract class AbstractNameSpaceHandler implements XmlNameSpaceHandler {
                         value = message;
                     } else if (info.getNodeType() == Node.ELEMENT_NODE) {
                         listNamespaceHandler.init();
-                        listNamespaceHandler.handler((Element) info);
+                        listNamespaceHandler.handler((Element) info,reader);
                         value = listNamespaceHandler.getValue();
                     } else {
                         continue;

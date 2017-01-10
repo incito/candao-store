@@ -1,6 +1,6 @@
 package com.candao.common.utils;
 
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -502,5 +502,38 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 			return "";
 		}
 		return src.toString();
+	}
+
+	/**
+	 *
+	 * @param mark 标识符
+	 * @param src 按顺序被分割组合的内容
+	 * @return
+	 */
+	public static  String resolveBilingualMark(String mark ,String...src){
+		return resolveBilingualMarkAndTokenFix(mark,"(",")",src);
+	}
+
+	public static String resolveBilingualMarkAndTokenFix(String mark, String prefix, String suffix, String... src) {
+		if (ObjectUtils.isEmpty(src) || mark == null) {
+			return "";
+		}
+		StringBuilder before = new StringBuilder();
+		StringBuilder after = new StringBuilder();
+		int index = 0;
+		for (String it : src) {
+			if (org.springframework.util.StringUtils.isEmpty(it))
+				continue;
+			String[] tokens = org.springframework.util.StringUtils.split(it, mark);
+			if (!ObjectUtils.isEmpty(tokens)) {
+				boolean flag = index++ != 0;
+				before.append(flag ? prefix + tokens[0] + suffix : tokens[0]);
+				after.append(flag ? prefix + tokens[1] + suffix : tokens[1]);
+			} else {
+				before.append(it);
+			}
+		}
+		return before.append(org.springframework.util.StringUtils.isEmpty(after.toString()) ? "" :
+				"\n" + after.toString()).toString();
 	}
 }
