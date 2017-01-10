@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.candao.common.utils.JacksonJsonMapper;
 import com.candao.www.data.model.TOrderMember;
 import com.candao.www.data.model.Torder;
@@ -24,6 +25,7 @@ import com.candao.www.utils.ReturnMap;
 import com.candao.www.webroom.service.OrderService;
 import com.candao.www.webroom.service.OrderSettleService;
 import com.candao.www.webroom.service.impl.CallWaiterServiceImpl;
+import com.candao.www.webroom.model.MemberTransModel;
 import com.candao.www.webroom.service.OrderMemberService;
 
 @Controller
@@ -192,7 +194,15 @@ public class MemberController extends BaseController{
 		
 		return JacksonJsonMapper.objectToJson(resultmap);
 	}
-	
+	@RequestMapping("/StoreCardDeposit")
+	@ResponseBody
+	public String StoreCardDeposit(@RequestBody String param){
+		try{
+			return memberService.StoreCardDeposit(param);
+		}catch(Exception e){
+			logger.error("-->",e);
+		}
+	}
 
 }
 
