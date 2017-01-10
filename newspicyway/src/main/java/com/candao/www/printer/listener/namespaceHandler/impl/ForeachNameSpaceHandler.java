@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.printer.listener.XmlTemplateDefinitionReader;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
@@ -29,7 +30,7 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 	private String value;
 
 	private String item;
-	
+
 	private List<Map<String, Object>> rowDefination;
 
 	@Override
@@ -38,10 +39,10 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 	}
 
 	@Override
-	public void handler(Element element) throws Exception {
+	public Element handler(Element element, XmlTemplateDefinitionReader reader) throws Exception {
 		if (element == null || element.getNodeType() != Node.ELEMENT_NODE
 				|| !FOREACH.equals(element.getTagName().trim())) {
-			return;
+			return null;
 		}
 		this.value = element.getAttribute(VALUE);
 		this.item = element.getAttribute(ITEM);
@@ -57,6 +58,7 @@ public class ForeachNameSpaceHandler extends AbstractNameSpaceHandler {
 				getRowDefination().add(rowMap);
 			}
 		}
+		return null;
 	}
 
 	@Override
