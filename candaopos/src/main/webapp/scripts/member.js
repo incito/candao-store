@@ -778,7 +778,8 @@ var member = {
         function savevale() {
             Log.send(2, '会员储值开始：'+JSON.stringify({
                     'url':memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
-                    'Serial':utils.storage.getter('branch_id'),
+                    /*'Serial':utils.storage.getter('branch_id'),*/
+                    'Serial':ya_Member.ya_formatDate(new Date(), "yyyyMMddHHmmssffff"),/*生成唯一编号如201701091543310804*/
                     'branch_id':utils.storage.getter('branch_id'),
                     'cardno':cardno,
                     'Amount':Amount,
@@ -787,6 +788,7 @@ var member = {
                     'preferential_id':preferential_id,
                     'giveValue':giveValue,
                     'securityCode':'',
+                    'user_id':utils.storage.getter('aUserid'),
                 }));
             $.ajax({
                 url:memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
@@ -794,7 +796,8 @@ var member = {
                 contentType: "application/json",
                 dataType: 'json',
                 data:JSON.stringify({
-                    'Serial':utils.storage.getter('branch_id'),
+                    /*'Serial':utils.storage.getter('branch_id'),*/
+                    'Serial':ya_Member.ya_formatDate(new Date(), "yyyyMMddHHmmssffff"),/*生成唯一编号如201701091543310804*/
                     'branch_id':utils.storage.getter('branch_id'),
                     'cardno':cardno,
                     'Amount':Amount,
@@ -803,6 +806,7 @@ var member = {
                     'preferential_id':preferential_id,
                     'giveValue':giveValue,
                     'securityCode':'',
+                    'user_id':utils.storage.getter('aUserid'),
                 }),
                 success: function (res) {
                     Log.send(2, '会员储值结束返回数据：'+JSON.stringify(res));
