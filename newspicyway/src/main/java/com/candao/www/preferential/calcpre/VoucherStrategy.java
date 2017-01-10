@@ -53,7 +53,7 @@ public class VoucherStrategy extends CalPreferentialStrategy {
 			String couponID=(String) (tempMapList.size() > 1 ? preMap.get("preferential") : preMap.get("id"));
 			String preName=(String) preMap.get("name");
 			TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, new BigDecimal("0"),  new BigDecimal("0"),
-					orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP, preName, couponID, Constant.CALCPRETYPE.NORMALUSEPRE);
+					 discount, Constant.CALCPRETYPE.GROUP, preName, couponID, Constant.CALCPRETYPE.NORMALUSEPRE);
 			// 如果为团购卷
 			if (String.valueOf(paraMap.get("type")).equals("05")) {
 				// 是团购又是手动输入的

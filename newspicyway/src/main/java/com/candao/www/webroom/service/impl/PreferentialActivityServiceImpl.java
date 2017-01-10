@@ -1014,7 +1014,8 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	}
 
 	@Override
-	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params,List<ComplexTorderDetail> orderDetailList) {
+	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params,
+			List<ComplexTorderDetail> orderDetailList) {
 		/** 参数解析 **/
 		String orderid = String.valueOf(params.get("orderid")); // 账单号
 		String preferentialid = String.valueOf(params.get("preferentialid")); // 优惠活动id
@@ -1040,18 +1041,22 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						params.put("preferentialAmt", staticPrice.toString());
 					}
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
-							orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao,orderDetailList);
+							orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao, orderDetailList);
 					List<TorderDetailPreferential> detailPreferentials = (List<TorderDetailPreferential>) resultMap
 							.get("detailPreferentials");
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
-						if(row>0){
-							for(TorderDetailPreferential detailPreferential:detailPreferentials){
-								   List<TbOrderDetailPreInfo> detailPreInfos = detailPreferential.getDetailPreInfos();
-								orderDetailPreferentialDao.addBatchorderPreInfo(detailPreInfos);
+						if (row > 0) {
+							for (TorderDetailPreferential detailPreferential : detailPreferentials) {
+								if (detailPreferential.getDetailPreInfos() != null
+										&& !detailPreferential.getDetailPreInfos().isEmpty()) {
+									List<TbOrderDetailPreInfo> detailPreInfos = detailPreferential.getDetailPreInfos();
+									orderDetailPreferentialDao.addBatchorderPreInfo(detailPreInfos);
+								}
+
 							}
 						}
-						
+
 					}
 					// 是否有返回状态
 					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")
@@ -1059,7 +1064,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 						result.setFalg((boolean) resultMap.get("falg"));
 						result.setMes((String) resultMap.get("mes"));
 					}
-					if(resultMap.containsKey("menberAmount")){
+					if (resultMap.containsKey("menberAmount")) {
 						result.setMemberPriceDiff((BigDecimal) resultMap.get("menberAmount"));
 					}
 					// 获取总的挂账，以及优免

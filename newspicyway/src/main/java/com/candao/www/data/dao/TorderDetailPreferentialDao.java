@@ -28,6 +28,7 @@ public interface TorderDetailPreferentialDao {
 	public int deleteDetileSubPreInfo(Map<String, Object> params);
 
 	public int deleteDetilPreFerInfo(Map<String, Object> params);
+	public int deleteSubPreInfo(Map<String,Object> params);
 
 	public int deleteForXinladao(Map<String, Object> params);
 

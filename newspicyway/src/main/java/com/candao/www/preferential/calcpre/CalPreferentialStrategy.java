@@ -146,8 +146,8 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 * @return
 	 */
 	protected TorderDetailPreferential createPreferentialBean(Map<String, Object> paraMap, BigDecimal amount,
-			BigDecimal freeAmount, BigDecimal debitAmout, double tempDishNum, BigDecimal discount, int isGroup,
-			String preName, String coupondetailid, int isCustom) {
+			BigDecimal freeAmount, BigDecimal debitAmout, BigDecimal discount, int isGroup, String preName,
+			String coupondetailid, int isCustom) {
 		String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
 		Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
 		String orderid = (String) paraMap.get("orderid");
@@ -222,14 +222,14 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 * @return 查询单品菜记录
 	 */
 	protected Map<String, Object> getUsePreInfoMap(String orderid, TorderDetailPreferentialDao detailPreferentialDao) {
-		
-		 Map<String, Object> reMap =new HashMap<>();
+
+		Map<String, Object> reMap = new HashMap<>();
 		// 赠送菜品个数
-		 Map<String, Double> beforGiftDishMap = new HashMap<>();
+		Map<String, Double> beforGiftDishMap = new HashMap<>();
 		// 已经赠送过得菜品菜品唯一标号对应菜品数据key:oredridlid Value:dishID+unit
 		Map<String, ComplexTorderDetail> beforderidetailidMap = new HashMap<>();
-		//当前菜品优惠了多少钱key:orederidetailid value:amount
-		Map<String,BigDecimal> beforAmountMap=new HashMap<>();
+		// 当前菜品优惠了多少钱key:orederidetailid value:amount
+		Map<String, BigDecimal> beforAmountMap = new HashMap<>();
 		// 卷对应的菜品数据（一个菜多少个卷）
 		List<TorderDetailPreferential> torderDetailPreferentials = this.getPresentAndspecialPriclist(orderid,
 				detailPreferentialDao);
@@ -242,24 +242,24 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 				String key = preInfo.getDishID() + preInfo.getUnit();
 
 				double getDishNum = preInfo.getDishNum();
-				  BigDecimal deAmount = preInfo.getDePreAmount();
+				BigDecimal deAmount = preInfo.getDePreAmount();
 				if (beforderidetailidMap.containsKey(preInfo.getOrderidetailid())) {
 					ComplexTorderDetail detail = beforderidetailidMap.get(preInfo.getOrderidetailid());
-					Double comDishNum=Double.valueOf(detail.getDishnum());
-					detail.setDishnum(String.valueOf(comDishNum+getDishNum));
+					Double comDishNum = Double.valueOf(detail.getDishnum());
+					detail.setDishnum(String.valueOf(comDishNum + getDishNum));
 					detail.setPreAmount(detail.getPreAmount().add(deAmount));
 					beforderidetailidMap.put(preInfo.getOrderidetailid(), detail);
 				} else {
-					ComplexTorderDetail detail= new ComplexTorderDetail();
+					ComplexTorderDetail detail = new ComplexTorderDetail();
 					detail.setDishnum(String.valueOf(getDishNum));
 					detail.setPreAmount(deAmount);
 					beforderidetailidMap.put(preInfo.getOrderidetailid(), detail);
 				}
 
-				if(beforAmountMap.containsKey(preInfo.getOrderidetailid())){
-					
+				if (beforAmountMap.containsKey(preInfo.getOrderidetailid())) {
+
 				}
-				
+
 				if (beforGiftDishMap.containsKey(key)) {
 					Double dishNum = beforGiftDishMap.get(key);
 					beforGiftDishMap.put(key, dishNum + preInfo.getDishNum());
@@ -270,42 +270,104 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 		}
 		reMap.put("orderDetailIdMap", beforderidetailidMap);
 		reMap.put("dishUnitMap", beforGiftDishMap);
-		return null;
+		return reMap;
 	}
+
 	/**
 	 * 
 	 * @param orderDetailList
 	 * @param orderid
 	 * @param detailPreferentialDao
-	 * 每一个菜品实际金额
+	 *            每一个菜品实际金额
+	 * @param string
+	 * @return
+	 * @throws CloneNotSupportedException
 	 */
-	protected void  everyorderDetailAmount(List<ComplexTorderDetail> orderDetailList,String orderid,TorderDetailPreferentialDao detailPreferentialDao){
-		
+	protected Map<String, ComplexTorderDetail> everyorderDetailAmount(List<ComplexTorderDetail> orderDetailList,
+			String orderid, TorderDetailPreferentialDao detailPreferentialDao, String updateId)
+					throws CloneNotSupportedException {
+
+		// 返回数据组合为map，便于查找，杜绝嵌套循环
+		Map<String, ComplexTorderDetail> resOrderDetailMap = new HashMap<>();
+		// 新开辟内存保存新数据,以免影响老数据
+		// List<ComplexTorderDetail> resOrderDetailList=new ArrayList<>();
+		//
+		Map<String, ComplexTorderDetail> beforderidetailidMap = (Map<String, ComplexTorderDetail>) getUsePreInfoMap(
+				orderid, detailPreferentialDao).get("orderDetailIdMap");
+		for (ComplexTorderDetail orderDetail : orderDetailList) {
+			ComplexTorderDetail resOrderDetail = orderDetail.clone();
+			BigDecimal orderPrice = resOrderDetail.getOrderprice();
+			ComplexTorderDetail beOrderDetail = beforderidetailidMap.get(resOrderDetail.getOrderdetailid());
+			if (orderPrice != null && orderPrice.doubleValue() > 0 && beOrderDetail != null) {
+				// 当前菜品总金额
+				BigDecimal totalOrderPrice = orderPrice.multiply(new BigDecimal(resOrderDetail.getDishnum()));
+				// 以及优免的金额
+				BigDecimal preAmount = beOrderDetail.getPreAmount();
+				double diffOrderPrice = totalOrderPrice.doubleValue() - preAmount.doubleValue();
+				if (diffOrderPrice > 0) {
+					resOrderDetail.setDebitamount(new BigDecimal(diffOrderPrice));
+				} else {
+					resOrderDetail.setDebitamount(new BigDecimal("0"));
+				}
+			}
+
+			resOrderDetailMap.put(resOrderDetail.getOrderdetailid(), resOrderDetail);
+		}
+
+		// 换成数据
 		List<TorderDetailPreferential> allPreInfoList = this.getAllPreInfolist(orderid, detailPreferentialDao);
-		//单一菜品优惠
-		List<TorderDetailPreferential> singleList=new ArrayList<>();
-		//多个菜品优惠
-		List<TorderDetailPreferential> manyList=new ArrayList<>();
-		//查找特价卷或者赠菜卷靠前
-		for( TorderDetailPreferential preferential:allPreInfoList){
-			if(preferential.getIsCustom()==3||preferential.getIsCustom()==4){
-				singleList.add(preferential);
-			}else{
+		// 多个菜品优惠
+		List<TorderDetailPreferential> manyList = new ArrayList<>();
+		// 查找特价卷或者赠菜卷靠前
+		for (TorderDetailPreferential preferential : allPreInfoList) {
+			if (preferential.getIsCustom() != 3 || preferential.getIsCustom() != 4) {
 				manyList.add(preferential);
 			}
 		}
-		//计算每一个菜优惠多少钱
-//		Map<String, V>
-		//合并数据
-		singleList.addAll(manyList);
-		//计算每一个菜品当前剩余价
-		for(TorderDetailPreferential allpre:singleList){
-			//优免总金额
-			BigDecimal deamount = allpre.getDeAmount();
-			List<TbOrderDetailPreInfo> detailpreInfoList = allpre.getDetailPreInfos();
-			if(allpre.getIsGroup()==1){
-				//全单折扣
+
+		for (TorderDetailPreferential many : manyList) {
+			if (updateId != null && updateId.equals(many.getId())) {
+				break;
 			}
+			int group = many.getIsGroup();
+			BigDecimal discount = many.getDiscount();
+			int custom = many.getIsCustom();
+			  BigDecimal deAmount = many.getDeAmount();
+			// 全单折扣
+			if (group == 1 && discount != null && discount.doubleValue() > 0) {
+				// 全单折扣
+				for (ComplexTorderDetail orderDetail : orderDetailList) {
+					ComplexTorderDetail resOrderDetail = resOrderDetailMap.get(orderDetail.getOrderdetailid());
+					if (resOrderDetail.getDebitamount().doubleValue() > 0) {
+						resOrderDetail.setDebitamount(
+								resOrderDetail.getDebitamount().multiply(discount).divide(new BigDecimal("10")));
+						resOrderDetailMap.put(resOrderDetail.getOrderdetailid(), resOrderDetail);
+					}
+				}
+			} else if (group == 0 && discount != null && discount.doubleValue() > 0) {
+
+				List<TbOrderDetailPreInfo> subDetailPreInfos = many.getDetailPreInfos();
+				for (TbOrderDetailPreInfo detailPreInfo : subDetailPreInfos) {
+					BigDecimal preAmount = detailPreInfo.getDePreAmount();
+					ComplexTorderDetail resOrderDetail = resOrderDetailMap.get(detailPreInfo.getOrderidetailid());
+					resOrderDetail.setDebitamount(resOrderDetail.getDebitamount().subtract(preAmount));
+				}
+
+			} else if (group == 1 && discount.doubleValue() <= 0&&custom==1) {
+				BigDecimal allDebitamount=new BigDecimal("0");
+				for(String key:resOrderDetailMap.keySet()){
+					allDebitamount=allDebitamount.add(resOrderDetailMap.get(key).getDebitamount());
+				}
+				for(String key:resOrderDetailMap.keySet()){
+					ComplexTorderDetail resOrderDetail =resOrderDetailMap.get(key);
+					//计算每一个菜品实收
+					 BigDecimal debitamount = resOrderDetail.getDebitamount().subtract(resOrderDetail.getDebitamount().divide(allDebitamount,3, BigDecimal.ROUND_HALF_UP ).multiply(deAmount));
+					 resOrderDetail.setDebitamount(debitamount);
+				}
+			}
+
 		}
+
+		return resOrderDetailMap;
 	}
 }

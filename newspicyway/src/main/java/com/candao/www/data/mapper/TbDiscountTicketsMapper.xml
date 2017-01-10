@@ -111,7 +111,7 @@
 
 	<select id="getDishidList" parameterType="java.lang.String"
 		resultType="com.candao.www.data.model.Tdish">
-		select td.dishid,td.title from t_group_detail tgd,t_dish td
+		select td.dishid,td.title,td.unit from t_group_detail tgd,t_dish td
 		where tgd.dishid
 		=#{dishid}
 		and tgd.contactdishid=td.dishid

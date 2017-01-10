@@ -171,7 +171,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 			if (amount.doubleValue() > 0) {
 				String conId = (String) (pres.size() > 1 ? res.get("preferential") : res.get("id"));
 				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), 1, new BigDecimal("0"), Constant.CALCPRETYPE.NOGROUP,
+						new BigDecimal("0"),  new BigDecimal("0"), Constant.CALCPRETYPE.NOGROUP,
 						(String) res.get("name"), conId, Constant.CALCPRETYPE.SYSTENUSEPRE);
 				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);
@@ -246,7 +246,7 @@ public class AutoCalPreFerntialStrategy extends CalPreferentialStrategy {
 				amount = amount.add(menberAmount);
 				String conId = pres.size() > 1 ? preferentialid : id;
 				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), fishNo, new BigDecimal("0"), Constant.CALCPRETYPE.NOGROUP, preName, conId,
+						new BigDecimal("0"), new BigDecimal("0"), Constant.CALCPRETYPE.NOGROUP, preName, conId,
 						Constant.CALCPRETYPE.SYSTENUSEPRE);
 				torder.setPreferential(preferentialid);
 				detailPreferentials.add(torder);

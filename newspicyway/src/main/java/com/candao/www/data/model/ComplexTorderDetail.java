@@ -1,9 +1,8 @@
 package com.candao.www.data.model;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
-public class ComplexTorderDetail extends TorderDetail {
+public class ComplexTorderDetail extends TorderDetail implements Cloneable {
 
 	/**菜品类型**/
 	private String level;
@@ -15,8 +14,6 @@ public class ComplexTorderDetail extends TorderDetail {
 	private BigDecimal preAmount;
 	/**使用优惠卷类型**/
 	private int  calcType;
-	/**当前菜品使用了什么优惠**/
-	private ArrayList<ComplexTorderDetail> listpre=new ArrayList<>();
 
 	public String getLevel() {
 		return level;
@@ -50,13 +47,6 @@ public class ComplexTorderDetail extends TorderDetail {
 		this.calcType = calcType;
 	}
 
-	public ArrayList<ComplexTorderDetail> getListpre() {
-		return listpre;
-	}
-
-	public void setListpre(ArrayList<ComplexTorderDetail> listpre) {
-		this.listpre = listpre;
-	}
 
 	public BigDecimal getPreAmount() {
 		return preAmount;
@@ -66,6 +56,9 @@ public class ComplexTorderDetail extends TorderDetail {
 		this.preAmount = preAmount;
 	}
 
-
+	@Override
+	public ComplexTorderDetail clone() throws CloneNotSupportedException {
+		return (ComplexTorderDetail) super.clone();
+	}
 
 }

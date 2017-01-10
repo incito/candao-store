@@ -1512,6 +1512,10 @@ public class PadInterfaceController extends BaseController {
 		// 加载缓存
 		String orderid=String.valueOf(params.get("orderid"));
 		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
+		for(ComplexTorderDetail complexTorderDetail:orderDetailList){
+		 BigDecimal orderPrice=	complexTorderDetail.getOrderprice()==null?new BigDecimal("0"):complexTorderDetail.getOrderprice();
+		 complexTorderDetail.setDebitamount(orderPrice.multiply(new BigDecimal(complexTorderDetail.getDishnum())));
+		}
 		// 使用优惠
 		try {
 			OperPreferentialResult operPreferentialResult = this.preferentialActivityService
@@ -1600,11 +1604,11 @@ public class PadInterfaceController extends BaseController {
 			stream.flush();
 			stream.close();
 
-        } catch (Exception ex) {
-            logger.error("--->", ex);
-            ex.printStackTrace();
-        }
-    }
+		} catch (Exception ex) {
+			logger.error("--->", ex);
+			ex.printStackTrace();
+		}
+	}
 
 	/**
 	 * 取消账单使用的优惠
@@ -1920,9 +1924,9 @@ public class PadInterfaceController extends BaseController {
 			params.put("orderid", tbTable.getOrderid());
 		}
 		try {
-		// 获取账单
-		Map<String, Object> map = orderService.calGetOrderInfo(params);
-		String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
+			// 获取账单
+			Map<String, Object> map = orderService.calGetOrderInfo(params);
+			String wholeJsonStr = JacksonJsonMapper.objectToJson(map);
 			response.reset();
 			response.setHeader("Content-Type", "application/json");
 			response.setContentType("text/json;charset=UTF-8");
@@ -2146,94 +2150,95 @@ public class PadInterfaceController extends BaseController {
 		return JacksonJsonMapper.objectToJson(mapRet);
 	}
 
-    /**
-     * 系统设置接口
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping("/getSystemSetData")
-    @ResponseBody
-    public void getSystemSetData(HttpServletRequest request, HttpServletResponse response,
-                                 @RequestBody String jsonString) {
-        Map<String, Object> resultMap=null;
-        try {
-            Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-            String type=map.get("type").toString();
-            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
-            if ("ROUNDING".equals(type)) {
-                map.clear();
-                map.put("type", "ACCURACY");
-                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
-                listFind.addAll(listFind2);
-            }
-            map.clear();
-            map.put("rows", listFind);
-            resultMap = ReturnMap.getSuccessMap(map);
-        }catch (Exception e){
-            logger.error("-->",e);
-            resultMap=ReturnMap.getFailureMap("服务器发生异常");
-        }
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(resultMap);
-        try {
-            response.reset();
-            response.setHeader("Content-Type", "application/json");
-            response.setContentType("text/json;charset=UTF-8");
-            OutputStream stream = response.getOutputStream();
-            stream.write(wholeJsonStr.getBytes("UTF-8"));
-            stream.flush();
-            stream.close();
+	/**
+	 * 系统设置接口
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/getSystemSetData")
+	@ResponseBody
+	public void getSystemSetData(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody String jsonString) {
+		Map<String, Object> resultMap = null;
+		try {
+			Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+			String type = map.get("type").toString();
+			List<Map<String, Object>> listFind = dataDictionaryService.findByParams(map);
+			if ("ROUNDING".equals(type)) {
+				map.clear();
+				map.put("type", "ACCURACY");
+				List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(map);
+				listFind.addAll(listFind2);
+			}
+			map.clear();
+			map.put("rows", listFind);
+			resultMap = ReturnMap.getSuccessMap(map);
+		} catch (Exception e) {
+			logger.error("-->", e);
+			resultMap = ReturnMap.getFailureMap("服务器发生异常");
+		}
+		String wholeJsonStr = JacksonJsonMapper.objectToJson(resultMap);
+		try {
+			response.reset();
+			response.setHeader("Content-Type", "application/json");
+			response.setContentType("text/json;charset=UTF-8");
+			OutputStream stream = response.getOutputStream();
+			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			stream.flush();
+			stream.close();
 
 		} catch (Exception ex) {
 			logger.error("--->", ex);
 			ex.printStackTrace();
 		}
 	}
-    /**
-     * 系统设置接口 多参数
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping("/getAllSystemSetData")
-    @ResponseBody
-    public void getAllSystemSetData(HttpServletRequest request, HttpServletResponse response,
-                                 @RequestBody String jsonString) {
-        Map<String, Object> resultMap=null;
-        try {
-            Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
-            List<String> types=(List<String>) map.get("type");
-            map.clear();
-            Map<String, Object> paramMap =new HashMap<>();
-            for(String type:types){
-            	paramMap.clear();
-            	paramMap.put("type", type);
-	            List<Map<String, Object>> listFind = dataDictionaryService.findByParams(paramMap);
-	            if ("ROUNDING".equals(type)) {
-	            	paramMap.clear();
-	            	paramMap.put("type", "ACCURACY");
-	                List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(paramMap);
-	                listFind.addAll(listFind2);
-	            }
-	            map.put(type, listFind);
-            }
-            map.remove("type");
-            resultMap = ReturnMap.getSuccessMap(map);
-        }catch (Exception e){
-            logger.error("-->",e);
-            resultMap=ReturnMap.getFailureMap("服务器发生异常");
-        }
-        String wholeJsonStr = JacksonJsonMapper.objectToJson(resultMap);
-        try {
-            response.reset();
-            response.setHeader("Content-Type", "application/json");
-            response.setContentType("text/json;charset=UTF-8");
-            OutputStream stream = response.getOutputStream();
-            stream.write(wholeJsonStr.getBytes("UTF-8"));
-            stream.flush();
-            stream.close();
 
-        } catch (Exception ex) {
-            logger.error("--->", ex);
-            ex.printStackTrace();
-        }
-    }
+	/**
+	 * 系统设置接口 多参数
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/getAllSystemSetData")
+	@ResponseBody
+	public void getAllSystemSetData(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody String jsonString) {
+		Map<String, Object> resultMap = null;
+		try {
+			Map<String, Object> map = JacksonJsonMapper.jsonToObject(jsonString, Map.class);
+			List<String> types = (List<String>) map.get("type");
+			map.clear();
+			Map<String, Object> paramMap = new HashMap<>();
+			for (String type : types) {
+				paramMap.clear();
+				paramMap.put("type", type);
+				List<Map<String, Object>> listFind = dataDictionaryService.findByParams(paramMap);
+				if ("ROUNDING".equals(type)) {
+					paramMap.clear();
+					paramMap.put("type", "ACCURACY");
+					List<Map<String, Object>> listFind2 = dataDictionaryService.findByParams(paramMap);
+					listFind.addAll(listFind2);
+				}
+				map.put(type, listFind);
+			}
+			map.remove("type");
+			resultMap = ReturnMap.getSuccessMap(map);
+		} catch (Exception e) {
+			logger.error("-->", e);
+			resultMap = ReturnMap.getFailureMap("服务器发生异常");
+		}
+		String wholeJsonStr = JacksonJsonMapper.objectToJson(resultMap);
+		try {
+			response.reset();
+			response.setHeader("Content-Type", "application/json");
+			response.setContentType("text/json;charset=UTF-8");
+			OutputStream stream = response.getOutputStream();
+			stream.write(wholeJsonStr.getBytes("UTF-8"));
+			stream.flush();
+			stream.close();
+
+		} catch (Exception ex) {
+			logger.error("--->", ex);
+			ex.printStackTrace();
+		}
+	}
 
 	/**
 	 * 手环登陆接口
@@ -2961,38 +2966,38 @@ public class PadInterfaceController extends BaseController {
 		return JacksonJsonMapper.objectToJson(resultMap);
 	}
 
-    /**
-     * 获取品项销售明细的打印数据
-     *
-     * @return
-     */
-    @RequestMapping("/getItemSellDetail.json")
-    @ResponseBody
-    public Map<String, Object> getItemSellDetail(@RequestBody String json) {
-        String msg = "";
-        boolean isSucess = true;
-        Map<String, Object> data = null;
-        try {
-            Assert.hasLength(json, "参数错误");
-            Map<String, Object> param = JSON.parseObject(json, Map.class);
-            if (!org.springframework.util.StringUtils.isEmpty(param.get("flag"))) {
-                String flag = String.valueOf(param.get("flag"));
-                param = getTime(flag);
-            } else if (!param.containsKey("startTime") && !param.containsKey("endTime"))
-                throw new RuntimeException("参数错误(" + json + ")");
-            List<Map<String, Object>> result = orderDetailService.itemSellDetailForPos(param);
-            data = new HashMap<>();
-            data.put("time", param);
-            data.put("data", result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("------------------>");
-            logger.error(e.getMessage());
-            msg = e.getMessage();
-            isSucess = false;
-        }
-        return getResponseStr(data, msg, isSucess);
-    }
+	/**
+	 * 获取品项销售明细的打印数据
+	 *
+	 * @return
+	 */
+	@RequestMapping("/getItemSellDetail.json")
+	@ResponseBody
+	public Map<String, Object> getItemSellDetail(@RequestBody String json) {
+		String msg = "";
+		boolean isSucess = true;
+		Map<String, Object> data = null;
+		try {
+			Assert.hasLength(json, "参数错误");
+			Map<String, Object> param = JSON.parseObject(json, Map.class);
+			if (!org.springframework.util.StringUtils.isEmpty(param.get("flag"))) {
+				String flag = String.valueOf(param.get("flag"));
+				param = getTime(flag);
+			} else if (!param.containsKey("startTime") && !param.containsKey("endTime"))
+				throw new RuntimeException("参数错误(" + json + ")");
+			List<Map<String, Object>> result = orderDetailService.itemSellDetailForPos(param);
+			data = new HashMap<>();
+			data.put("time", param);
+			data.put("data", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("------------------>");
+			logger.error(e.getMessage());
+			msg = e.getMessage();
+			isSucess = false;
+		}
+		return getResponseStr(data, msg, isSucess);
+	}
 
 	/**
 	 * 获取开始结束时间
@@ -3335,28 +3340,28 @@ public class PadInterfaceController extends BaseController {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			//上传文件跟路径
+			// 上传文件跟路径
 			String realpath = request.getSession().getServletContext().getRealPath("");
-			//实际文件路径
-			String imagelocation = realpath+File.separator+ "upload" + File.separator;
+			// 实际文件路径
+			String imagelocation = realpath + File.separator + "upload" + File.separator;
 			createDir(imagelocation);
 			//
 			MultipartHttpServletRequest multipartRq = (MultipartHttpServletRequest) request;
 			Map<String, MultipartFile> fileMap = multipartRq.getFileMap();
-			MultipartFile file ;
-			if(fileMap.get("logoimg") == null){
+			MultipartFile file;
+			if (fileMap.get("logoimg") == null) {
 				file = fileMap.get("backgroundimg");
 				map.put("type", "bg");
-			}else{
+			} else {
 				file = fileMap.get("logoimg");
 				map.put("type", "logo");
 			}
 			String fileName = null;
 			if (!file.isEmpty()) {
-				 fileName = file.getOriginalFilename();
-				imagelocation= imagelocation+fileName;
-					//存储数据到字典
-				this.fileupload(file.getInputStream(),imagelocation);
+				fileName = file.getOriginalFilename();
+				imagelocation = imagelocation + fileName;
+				// 存储数据到字典
+				this.fileupload(file.getInputStream(), imagelocation);
 			}
 
 			int imageX = Math.round(Float.valueOf(x == null || x == "" ? "0" : x));
@@ -3364,29 +3369,28 @@ public class PadInterfaceController extends BaseController {
 			int imageH = Math.round(Float.valueOf(h == null || h == "" ? "0" : h));
 			int imageW = Math.round(Float.valueOf(w == null || w == "" ? "0" : w));
 
+			String fileupload = File.separator + "upload" + File.separator;
 
-			String fileupload=File.separator+ "upload" + File.separator;
-
-			String inputDir = request.getRealPath("") +fileupload;
+			String inputDir = request.getRealPath("") + fileupload;
 			ImageCompress imageCompress = new ImageCompress();
 			String afterCatImgUrl = "";
-			String imageurl="" ;
-			if(imageH<=0||imageW<0){
-				imageurl=fileName;
-			}else{
-				imageurl=imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
+			String imageurl = "";
+			if (imageH <= 0 || imageW < 0) {
+				imageurl = fileName;
+			} else {
+				imageurl = imageCompress.imgCut(inputDir, fileName, imageX, imageY, imageW, imageH);
 			}
 			if (!"".equals(imageurl)) {
-				  afterCatImgUrl="upload" + File.separator+imageurl;
-				  if(!imageurl.equals(fileName)){
-					  this.delFile(imagelocation);
-				  }
+				afterCatImgUrl = "upload" + File.separator + imageurl;
+				if (!imageurl.equals(fileName)) {
+					this.delFile(imagelocation);
+				}
 			}
 			map.put("image", afterCatImgUrl);
 			return JacksonJsonMapper.objectToJson(map);
 		} catch (Exception e) {
-			logger.error("图片上传失败:"+e.getMessage(), "");
-			map.put("msg", "图片上传失败:"+e.getMessage());
+			logger.error("图片上传失败:" + e.getMessage(), "");
+			map.put("msg", "图片上传失败:" + e.getMessage());
 			return JacksonJsonMapper.objectToJson(map);
 		}
 	}
@@ -3526,39 +3530,41 @@ public class PadInterfaceController extends BaseController {
 		return JacksonJsonMapper.objectToJson(map);
 	}
 
-    /**
-     * pad获取配置信息
-     *
-     * @return
-     */
-    @RequestMapping("/padconfiginfos")
-    @ResponseBody
-    public String padconfiginfos() {
-        BasePadResponse<PadConfig> basePadResponse = new BasePadResponse();
-        PadConfig padConfig = padConfigService.getconfiginfos();
-        if (padConfig == null) {
-            basePadResponse.setCode(1);
-            basePadResponse.setMsg("门店没有配置相关信息");
-        } else {
-            basePadResponse.setCode(0);
-            basePadResponse.setMsg("");
-            basePadResponse.setData(padConfig);
-        }
-        return JacksonJsonMapper.objectToJson(basePadResponse);
-    }
-    @RequestMapping(value = "/log",method = RequestMethod.POST)
-    @ResponseBody
-    public String log(@RequestBody  String logs){
-        Map result;
-        try {
-            List<LogData>logDatas= (List<LogData>)JSON.parseObject(logs,new TypeReference<ArrayList<LogData>>(){});
-            h5LogService.log(logDatas);
-            result=ReturnMap.getSuccessMap();
-        }catch (Exception e){
-            result=ReturnMap.getFailureMap("系统内部错误");
-        }
-        return JSON.toJSONString(result);
-    }
+	/**
+	 * pad获取配置信息
+	 *
+	 * @return
+	 */
+	@RequestMapping("/padconfiginfos")
+	@ResponseBody
+	public String padconfiginfos() {
+		BasePadResponse<PadConfig> basePadResponse = new BasePadResponse();
+		PadConfig padConfig = padConfigService.getconfiginfos();
+		if (padConfig == null) {
+			basePadResponse.setCode(1);
+			basePadResponse.setMsg("门店没有配置相关信息");
+		} else {
+			basePadResponse.setCode(0);
+			basePadResponse.setMsg("");
+			basePadResponse.setData(padConfig);
+		}
+		return JacksonJsonMapper.objectToJson(basePadResponse);
+	}
+
+	@RequestMapping(value = "/log", method = RequestMethod.POST)
+	@ResponseBody
+	public String log(@RequestBody String logs) {
+		Map result;
+		try {
+			List<LogData> logDatas = (List<LogData>) JSON.parseObject(logs, new TypeReference<ArrayList<LogData>>() {
+			});
+			h5LogService.log(logDatas);
+			result = ReturnMap.getSuccessMap();
+		} catch (Exception e) {
+			result = ReturnMap.getFailureMap("系统内部错误");
+		}
+		return JSON.toJSONString(result);
+	}
 
 	// end config
 
@@ -3694,10 +3700,10 @@ public class PadInterfaceController extends BaseController {
 
 	private Logger loggers = org.slf4j.LoggerFactory.getLogger(PadInterfaceController.class);
 
-    @Autowired
-    private TableAreaService tableAreaService;
-    @Autowired
-    private H5LogService h5LogService;
+	@Autowired
+	private TableAreaService tableAreaService;
+	@Autowired
+	private H5LogService h5LogService;
 	@Autowired
 	private TServiceChargeService chargeService;
 

@@ -137,13 +137,18 @@
 			and id=#{DetalPreferentiald,jdbcType=VARCHAR}
 		</if>
 	</delete>
-	
+
 	<delete id="deleteDetileSubPreInfo" parameterType="map">
-			DELETE FROM t_order_detail_pre_info WHERE
+		DELETE FROM t_order_detail_pre_info WHERE
 		orderid=#{orderid}
 		<if test='clear != null and clear=="0"'>
 			and ordpreid=#{DetalPreferentiald,jdbcType=VARCHAR}
 		</if>
+	</delete>
+
+	<delete id="deleteSubPreInfo">
+		DELETE FROM t_order_detail_pre_info WHERE
+		orderid=#{orderid} and ordpreid=#{ordpreid}
 	</delete>
 
 
@@ -230,19 +235,23 @@
 		todpi.depreamount,
 		todpi.ordpreid
 		FROM
-		t_order_detail_preferential AS todp
+		t_order_detail_preferential AS
+		todp
 		LEFT JOIN
-		t_p_preferential_activity tpp ON todp.preferential = tpp.id
+		t_p_preferential_activity tpp ON todp.preferential =
+		tpp.id
 		LEFT JOIN
-		t_order_detail_pre_info AS todpi ON todp.id = todpi.ordpreid
+		t_order_detail_pre_info AS todpi ON todp.id =
+		todpi.ordpreid
 		WHERE
 		todp.orderid = #{orderid}
-		AND (isCustom = 3 OR isCustom = 4)
+		AND (isCustom = 3 OR
+		isCustom = 4)
 		ORDER BY
 		todp.insertime ASC;
 	</select>
-	
-	<!-- 查询所有优惠信息-->
+
+	<!-- 查询所有优惠信息 -->
 	<select id="getAllPreInfolist" parameterType="map"
 		resultMap="associationDetailpreferInfo">
 		SELECT
@@ -257,15 +266,19 @@
 		todpi.depreamount,
 		todpi.ordpreid
 		FROM
-		t_order_detail_preferential AS todp
+		t_order_detail_preferential AS
+		todp
 		LEFT JOIN
-		t_p_preferential_activity tpp ON todp.preferential = tpp.id
+		t_p_preferential_activity tpp ON todp.preferential =
+		tpp.id
 		LEFT JOIN
-		t_order_detail_pre_info AS todpi ON todp.id = todpi.ordpreid
+		t_order_detail_pre_info AS todpi ON todp.id =
+		todpi.ordpreid
 		WHERE
 		todp.orderid = #{orderid}
 		ORDER BY
-		todp.insertime ASC;
+		todp.insertime
+		ASC;
 	</select>
 
 

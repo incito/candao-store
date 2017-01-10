@@ -72,6 +72,10 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 		daoSupport.delete(PREFIX + ".deleteDetileSubPreInfo", params);
 		return 1;
 	}
+	@Override
+	public int deleteSubPreInfo(Map<String, Object> params) {
+		return daoSupport.delete(PREFIX + ".deleteSubPreInfo", params);
+	}
 
 	@Override
 	public int deleteDetileSubPreInfo(Map<String, Object> params) {
@@ -107,5 +111,7 @@ public class TorderDetailPreferentialDaoImpl implements TorderDetailPreferential
 	public List<TorderDetailPreferential> getAllPreInfolist(Map<String, Object> params) {
 		return  daoSupport.find(PREFIX + ".getAllPreInfolist", params);
 	}
+
+	
 
 }

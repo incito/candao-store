@@ -229,7 +229,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 		if (null != preInfo && null != menuCash && menuCash.compareTo(preInfo) > 0) {
 			// 创建根元素
 			detailPreferential = this.createPreferentialBean(paraMap, menuCash.subtract(preInfo),
-					menuCash.subtract(preInfo), new BigDecimal("0"), 1, new BigDecimal("0"),
+					menuCash.subtract(preInfo), new BigDecimal("0"),  new BigDecimal("0"),
 					Constant.CALCPRETYPE.NOGROUP, preName, dishCouponAmountMap.get(key).getCoupondetailid(),
 					Constant.CALCPRETYPE.SPECIALUSEPRE);
 

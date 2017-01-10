@@ -2,6 +2,7 @@ package com.candao.www.data.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class TorderDetailPreferential implements Serializable {
 	 * */
 	private BigDecimal toalDebitAmountMany=new BigDecimal("0");
 	private TbPreferentialActivity activity;
-	private List<TbOrderDetailPreInfo> detailPreInfos;
+	private List<TbOrderDetailPreInfo> detailPreInfos=new ArrayList<>();
 	// 优惠子ID
 	private String coupondetailid;
 

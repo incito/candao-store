@@ -52,7 +52,7 @@ public class YazuoStrategy extends CalPreferentialStrategy {
 			int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
 			for (int i = 0; i < preferentialNum; i++) {
 				TorderDetailPreferential torder = this.createPreferentialBean(paraMap, amount, amount,
-						new BigDecimal("0"), orderDetailList.size(), discount, Constant.CALCPRETYPE.GROUP,
+						new BigDecimal("0"),  discount, Constant.CALCPRETYPE.GROUP,
 						(String) paraMap.get("preferentialName"), (String) paraMap.get("preferentialid"),
 						Constant.CALCPRETYPE.YAZUOUSEPRE);
 				// 设置优惠类型

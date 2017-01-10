@@ -234,7 +234,7 @@ public class PresentDishesStrategy extends CalPreferentialStrategy {
 						: ordetail.getOrderprice();
 
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
-				addPreferential = this.createPreferentialBean(paraMap, orderprice, orderprice, new BigDecimal("0"), 1,
+				addPreferential = this.createPreferentialBean(paraMap, orderprice, orderprice, new BigDecimal("0"), 
 						new BigDecimal(0), Constant.CALCPRETYPE.NOGROUP, preName, conupId,
 						Constant.CALCPRETYPE.GIVEUSEPRE);
 			}

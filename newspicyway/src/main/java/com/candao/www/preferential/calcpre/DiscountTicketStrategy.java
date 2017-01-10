@@ -20,6 +20,7 @@ import com.candao.www.data.model.TbOrderDetailPreInfo;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
+import com.candao.www.dataserver.util.IDUtil;
 import com.candao.www.preferential.model.PreDealInfoBean;
 
 /**
@@ -36,6 +37,10 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 
 		/** 定义返回类型 **/
 		Map<String, Object> result = new HashMap<>();
+		BigDecimal amount = new BigDecimal("0");
+		// 打折总金额
+		BigDecimal countAmount = new BigDecimal("0");
+		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
 		/** 参数解析 **/
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
@@ -45,15 +50,17 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		/** 获取优惠卷信息 **/
 		List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid, branchid, tbPreferentialActivityDao);
 		Map tempMap = tempMapList.get(0);
+		String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 		BigDecimal discount = (BigDecimal) tempMap.get("discount");
 
-		// 单品优惠卷
-		Map<String, Object> usePreMap = this.getUsePreInfoMap(orderid, orderDetailPreferentialDao);
-		// 赠送菜品个数
-		Map<String, ComplexTorderDetail> orderDetailIdMap = (Map<String, ComplexTorderDetail>) usePreMap
-				.get("orderDetailIdMap");
-		// 已经赠送过得菜品菜品唯一标号对应菜品数据key:oredridlid Value:dishID+unit
-		Map<String, Double> dishUnitMap = (Map<String, Double>) usePreMap.get("dishUnitMap");
+		// 之前计算的优惠
+		Map<String, ComplexTorderDetail> resultDetail = new HashMap<>();
+		try {
+			resultDetail = this.everyorderDetailAmount(orderDetailList, orderid, orderDetailPreferentialDao,
+					(String) paraMap.get("updateId"));
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 
 		// 将菜单表转换为菜品编号(key):菜品交易详情（Value）
 		Set<String> orderDetailSet = new HashSet<>();
@@ -70,79 +77,78 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		Set<String> noDiscountDishSet = new HashSet<>();
 		// 鱼锅折扣方式
 		Set<String> fishnoDiscountDishSet = new HashSet<>();
+
 		// 根据不优惠的菜品获取菜品库的菜品信息
 		for (TbNoDiscountDish t : noDiscountDishlist) {
-			String dishID = t.getDish();
-			String dishUnit = t.getUnit();
+			String key = t.getDish() + t.getUnit();
 			int dishType = t.getDishtype();
-			// 处理鱼锅
-			if (dishType == 1 && orderDetailSet.contains(dishID + dishUnit)) {
-				List<Tdish> tdishList = tbDiscountTicketsDao.getDishidList(dishID);
-				if (tdishList.size() > 0) {
-					for (Tdish dish : tdishList) {
-						fishnoDiscountDishSet.add(dish.getDishid());
+			if (orderDetailSet.contains(key)) {
+				// 处理鱼锅
+				if (dishType == 1) {
+					List<Tdish> tdishList = tbDiscountTicketsDao.getDishidList(t.getDish());
+					if (tdishList.size() > 0) {
+						for (Tdish dish : tdishList) {
+							fishnoDiscountDishSet.add(dish.getDishid() + dish.getUnit());
+						}
+					}
+				}
+				noDiscountDishSet.add(key);
+			}
+		}
+
+		TorderDetailPreferential prantOrderDetail = null;
+		if (noDiscountDishSet.isEmpty()) {
+			/** 全单折扣优惠 **/
+			for (String key : resultDetail.keySet()) {
+				countAmount = countAmount.add(resultDetail.get(key).getDebitamount());
+			}
+			int group = resultDetail.size() == orderDetailList.size() ? Constant.CALCPRETYPE.GROUP
+					: Constant.CALCPRETYPE.NOGROUP;
+			prantOrderDetail = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"), discount,
+					group, (String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
+		} else {
+			prantOrderDetail = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"), discount, 0,
+					(String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
+			// 参与菜品的列表
+			for (int i = 0; i < orderDetailList.size(); i++) {
+				ComplexTorderDetail d = orderDetailList.get(i);
+				// KEY：dishid+unit
+				String key = d.getDishid() + d.getDishunit();
+				ComplexTorderDetail calActualDetail = resultDetail.get(d.getOrderdetailid());
+				if (calActualDetail.getDebitamount().doubleValue() > 0) {
+					if (!noDiscountDishSet.contains(key) && !fishnoDiscountDishSet.contains(key)
+							|| (fishnoDiscountDishSet.contains(key) && !d.getDishtype().equals("1"))) {
+						BigDecimal debitAmount = calActualDetail.getDebitamount();
+						BigDecimal preAmonut = debitAmount
+								.subtract(debitAmount.multiply(discount).divide(new BigDecimal("10")));
+
+						TbOrderDetailPreInfo subOrderDetail = this.createOrderDetailInfo(IDUtil.getID(),
+								prantOrderDetail, d, preAmonut);
+						prantOrderDetail.getDetailPreInfos().add(subOrderDetail);
+						countAmount = countAmount.add(debitAmount);
 					}
 				}
 			}
-			noDiscountDishSet.add(dishID + dishUnit);
-		}
-		//参与菜品的列表
-		List<ComplexTorderDetail> useOrderDetailList = new ArrayList<>();
-//		// 4.遍历账单的菜品，如果输入不进行折扣的菜品，则不处理。否则，认为是需要计算优惠。
-//		BigDecimal amount = new BigDecimal(0); // 最终优惠金额
-//		// 菜品原价
-//		BigDecimal amountCount = new BigDecimal(0.0);
-		// 优惠折扣菜单个数
-		double tempDishNum = 0;
-		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-		for (int i = 0; i < orderDetailList.size(); i++) {
-			ComplexTorderDetail d = orderDetailList.get(i);
-			ComplexTorderDetail compDetail = orderDetailIdMap.get(d.getOrderdetailid());
-			BigDecimal comPreAmount = compDetail.getPreAmount();
-			
-			// 实际价格
-//			BigDecimal orderprice = d.getOrderprice() == null ? new BigDecimal("0") : d.getOrderprice();
-//			BigDecimal realPrice = orderprice.multiply(new BigDecimal(d.getDishnum())).subtract(comPreAmount);
-			if ((compDetail == null )||(!compDetail.getDishnum().equals(d.getDishnum()))) {
-				String key = d.getDishid() + d.getDishunit();
-				// 如果在不优惠的列表中没有找到这个菜品，则认为这个菜品是可以优惠打折的。
-				if ((!noDiscountDishSet.contains(key) && !fishnoDiscountDishSet.contains(d.getDishid()))
-						|| (fishnoDiscountDishSet.contains(d.getDishid()) && !d.getDishtype().equals("1"))) {
-					
-					useOrderDetailList.add(d);
-					// 判断价格，如果菜品价格存在null的问题，
-//					if (null != d.getOrderprice()) {
-						// 如果此菜品是多份，则计算多份总的优惠价格
-//						amountCount = amountCount.add(d.getOrderprice().multiply(new BigDecimal(d.getDishnum())));
-//						tempDishNum = tempDishNum + 1;
-//					}
-				}
+			if ((String) paraMap.get("updateId") != null) {
+				Map<String, Object> deleteSubParams = new HashMap<>();
+				deleteSubParams.put("ordpreid", paraMap.get("updateId"));
+				deleteSubParams.put("orderid", orderid);
+				orderDetailPreferentialDao.deleteSubPreInfo(deleteSubParams);
 			}
 
 		}
-//		// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
-//		PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
-//		if (deInfo.getPreAmount().doubleValue() > 0) {
-//			amount = deInfo.getPreAmount();
-//			int group = tempDishNum == orderDetailList.size() ? Constant.CALCPRETYPE.GROUP
-//					: Constant.CALCPRETYPE.NOGROUP;
-//			String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
-//			TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"),
-//					tempDishNum, discount, group, (String) tempMap.get("name"), conupId,
-//					Constant.CALCPRETYPE.NORMALUSEPRE);
-//			detailPreferentials.add(preSub);
-//		} else {
-//			// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
-//			if (paraMap.containsKey("updateId")) {
-//				Map<String, Object> delMap = new HashMap<>();
-//				delMap.put("DetalPreferentiald", paraMap.get("updateId"));
-//				delMap.put("orderid", orderid);
-//				orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
-//			}
-//		}
+		if (countAmount.doubleValue() > 0) {
+			 PreDealInfoBean calPreAmount = this.calDiscount(countAmount, new BigDecimal("0"), discount);
+			amount = calPreAmount.getPreAmount();
+			prantOrderDetail.setDeAmount(amount);
+			prantOrderDetail.setToalFreeAmount(amount);
+			detailPreferentials.add(prantOrderDetail);
+
+		}
 		result.put("detailPreferentials", detailPreferentials);
-//		result.put("amount", amount);
-//		this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
+		result.put("amount", amount);
+		// this.disMes(result, amountCount, amountCount, bd,
+		// deInfo.getDistodis());
 		return result;
 	}
 
