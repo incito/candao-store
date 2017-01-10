@@ -474,6 +474,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // 鱼锅
                     List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
                     if (!CollectionUtils.isEmpty(rows)) {
+                    	List<Map<String, Object>> temp2 = parseRows(rows);
                     	//服务费
                     	Object serviceCharge=((Map)map.get("data")).get("serviceCharge");
                     	if(null!=serviceCharge){
@@ -485,10 +486,9 @@ public class Print4POSServiceImpl implements Print4POSService {
                     			serviceMap.put("dishunit", "");
                     			serviceMap.put("orderprice", 0);
                     			serviceMap.put("payamount", serviceChargeObj.getChargeAmount());
-                    			rows.add(serviceMap);
+                    			temp2.add(serviceMap);
                     		}
                     	}
-                        List<Map<String, Object>> temp2 = parseRows(rows);
                         posdata.put("rows", temp2);
                     }
                     // 优惠
