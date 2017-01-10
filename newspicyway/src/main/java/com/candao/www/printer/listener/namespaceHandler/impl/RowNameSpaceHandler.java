@@ -3,6 +3,7 @@ package com.candao.www.printer.listener.namespaceHandler.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.printer.listener.XmlTemplateDefinitionReader;
 import org.w3c.dom.Element;
 
 import com.candao.print.entity.Row;
@@ -14,9 +15,10 @@ public class RowNameSpaceHandler extends AbstractNameSpaceHandler{
 	}
 
 	@Override
-	public void handler(Element element) throws Exception {
+	public Element handler(Element element, XmlTemplateDefinitionReader reader) throws Exception {
 		defaultElement(element);
 		super.parseRow();
+		return null;
 	}
 
 	@Override

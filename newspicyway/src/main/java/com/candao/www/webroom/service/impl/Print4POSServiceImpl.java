@@ -474,6 +474,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // 鱼锅
                     List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
                     if (!CollectionUtils.isEmpty(rows)) {
+                        rows = mergeDishes(rows);
                     	//服务费
                     	Object serviceCharge=((Map)map.get("data")).get("serviceCharge");
                     	if(null!=serviceCharge){
@@ -491,6 +492,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         List<Map<String, Object>> temp2 = parseRows(rows);
                         posdata.put("rows", temp2);
                     }
+
                     // 优惠
                     Object preferentialInfo = posdata.get("preferentialInfo");
                     List<Map<String, String>> settlementInfo = null;
@@ -564,6 +566,38 @@ public class Print4POSServiceImpl implements Print4POSService {
                 }
             }
         }
+    }
+
+    private List<Map<String,Object>> mergeDishes(List<Map<String, Object>> rows) {
+        if (!CollectionUtils.isEmpty(rows)) {
+            Map<Object, Map<String, Object>> key = new HashMap<>();
+            for (Map<String, Object> it : rows) {
+                if ("0".equals(it.get("dishtype"))) {
+                    String strKey = it.get("dishid").toString().concat(it.get("dishunit").toString()).concat(it.
+                            get("pricetype").toString());
+                    if (key.get(strKey) != null) {
+                        Map<String, Object> value = key.get(strKey);
+                        value.put("dishnum", new BigDecimal(1).add(new BigDecimal(value.get("dishnum").toString()))
+                                .toString());
+                    } else {
+                        key.put(strKey, it);
+                    }
+                } else {
+                    //primarykey不一样
+
+
+                    if (key.get(it) != null) {
+                        Map<String, Object> value = key.get(it);
+                        value.put("dishnum", new BigDecimal(1).add(new BigDecimal(value.get("dishnum").toString()))
+                                .toString());
+                    } else {
+                        key.put(it, it);
+                    }
+                }
+            }
+            return (List<Map<String, Object>>) key.values();
+        }
+        return rows;
     }
 
     private Map<String, String> createItem(Object name, Object value) {
