@@ -89,7 +89,7 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 			String key = torderDetail.getDishid() + torderDetail.getDishunit();
 			double dishNum = Double.valueOf(torderDetail.getDishnum());
 			// 排除POS怎送赠菜操作
-			if (torderDetail.getPricetype().equals("1") && torderDetail.getOrderprice().doubleValue() <= 0) {
+			if ( torderDetail.getOrderprice().doubleValue() <= 0) {
 				continue;
 			}
 			if (orderMenuONumMap.containsKey(key)) {
