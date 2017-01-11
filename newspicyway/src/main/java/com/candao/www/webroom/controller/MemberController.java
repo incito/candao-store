@@ -197,11 +197,7 @@ public class MemberController extends BaseController{
 	@RequestMapping("/StoreCardDeposit")
 	@ResponseBody
 	public String StoreCardDeposit(@RequestBody String param){
-		try{
 			return memberService.StoreCardDeposit(param);
-		}catch(Exception e){
-			logger.error("-->",e);
-		}
 	}
 
 }
