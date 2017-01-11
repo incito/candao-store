@@ -18,39 +18,59 @@ var member = {
             var me = $(this);
             if (me.hasClass('J-modify-base')) {
                 if (that.isClick()) {
-                    $("#modify-base-dialog").load("../member/modifyBase.jsp");
-                    $("#modify-base-dialog").modal("show");
+                    if(that.isLossisClick()) {
+                        $("#modify-base-dialog").load("../member/modifyBase.jsp");
+                        $("#modify-base-dialog").modal("show");
+                    }
+                    else {
+                        that.errorAlert('会员卡处于挂失状态，不能修改基本信息')
+                    }
                 }
             }
 
             if (me.hasClass('J-modify-phone')) {
                 if (that.isClick()) {
-                    $("#modify-phone-dialog").load("../member/modifyPhone.jsp");
-                    $("#modify-phone-dialog").modal("show");
+                    if(that.isLossisClick()){
+                        $("#modify-phone-dialog").load("../member/modifyPhone.jsp");
+                        $("#modify-phone-dialog").modal("show");
+                    }
+                    else {
+                        that.errorAlert('会员卡处于挂失状态，不能修改手机号码')
+                    }
                 }
             }
 
             if (me.hasClass('J-modify-pwd')) {
                 if (that.isClick()) {
-                    $("#modify-pwd-dialog").load("../member/modifyPwd.jsp");
-                    $("#modify-pwd-dialog").modal("show");
+                    if(that.isLossisClick()) {
+                        $("#modify-pwd-dialog").load("../member/modifyPwd.jsp");
+                        $("#modify-pwd-dialog").modal("show");
+                    }
+                    else {
+                        that.errorAlert('会员卡处于挂失状态，不能修改消费密码')
+                    }
                 }
             }
 
             if(me.hasClass('J-modify-storge')){
                 if (that.isClick()) {
-                    var card_type = loadMember.result[0].card_type,
-                        cardNo= null;
-                    /*如果该会员卡是虚拟卡传递电话号码*/
-                    if(card_type=='0'){
-                        cardNo=loadMember.mobile
+                    if(that.isLossisClick()){
+                        var card_type = loadMember.result[0].card_type,
+                            cardNo= null;
+                        /*如果该会员卡是虚拟卡传递电话号码*/
+                        if(card_type=='0'){
+                            cardNo=loadMember.mobile
+                        }
+                        /*如果该会员卡是实体卡传递卡号*/
+                        else {
+                            cardNo=loadMember.result[0].MCard
+                        }
+                        var _url='../member/storge.jsp?cardMember=' +$.trim(cardNo) + '';//传递会员电话号码
+                        window.location.href=encodeURI(encodeURI(_url));
                     }
-                    /*如果该会员卡是实体卡传递卡号*/
                     else {
-                        cardNo=loadMember.result[0].MCard
+                        that.errorAlert('会员卡处于挂失状态，不能会员储值')
                     }
-                    var _url='../member/storge.jsp?cardMember=' +$.trim(cardNo) + '';//传递会员电话号码
-                    window.location.href=encodeURI(encodeURI(_url));
                 }
             }
 
@@ -126,6 +146,10 @@ var member = {
             if (me.hasClass('J-modify-binding')) {
                 if (that.isClick()) {
                     if (that.isClick()) {
+                        if(that.isLossisClick()==false){
+                            that.errorAlert('会员卡处于挂失状态，不能新增实体卡')
+                            return false
+                        }
                         $("#modify-binding-dialog").load("../member/bingCard.jsp", {
                             'title': '新增实体卡-请刷卡',
                             'type': '1',
@@ -140,7 +164,11 @@ var member = {
                 if (that.isClick()) {
                     if (that.isClick()) {
                         if(loadMember.result[0].card_type=='0'){
-                            that.errorAlert('该会员还没有绑定实体卡，不能修改会员卡号！');
+                            that.errorAlert('该会员还没有绑定实体卡，不能修改会员卡号');
+                            return false
+                        }
+                        if(that.isLossisClick()==false){
+                            that.errorAlert('会员卡处于挂失状态，不能修改会员卡号')
                             return false
                         }
                         $("#modify-binding-dialog").load("../member/bingCard.jsp", {
@@ -949,6 +977,16 @@ var member = {
         }
         else {
             return false
+        }
+    },
+    /*是否挂失点击*/
+    isLossisClick:function () {
+        var member_status= $.trim($('.member_status').attr('status'));
+        if(member_status!='1'){
+            return false
+        }
+        else {
+            return true
         }
     },
     /*输入的是否为金额*/
