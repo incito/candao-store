@@ -805,7 +805,8 @@ var member = {
 
         function savevale() {
             Log.send(2, '会员储值开始：'+JSON.stringify({
-                    'url':memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
+                    /*'url':memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,*/
+                    'url':_config.interfaceUrl.NweStorageCanDao,
                     /*'Serial':utils.storage.getter('branch_id'),*/
                     'Serial':ya_Member.ya_formatDate(new Date(), "yyyyMMddHHmmssffff"),/*生成唯一编号如201701091543310804*/
                     'branch_id':utils.storage.getter('branch_id'),
@@ -819,7 +820,8 @@ var member = {
                     'user_id':utils.storage.getter('aUserid'),
                 }));
             $.ajax({
-                url:memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,
+                /*url:memberAddress.vipcandaourl + _config.interfaceUrl.StorageCanDao,*/
+                url:_config.interfaceUrl.NweStorageCanDao,
                 method: 'POST',
                 contentType: "application/json",
                 dataType: 'json',
