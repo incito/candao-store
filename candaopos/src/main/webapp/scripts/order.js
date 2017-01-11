@@ -1835,7 +1835,7 @@ var Order = {
                 if (res.code === '0') {
                     that.updateTotal(res.data);
                     //更新已选优惠
-                    that.updateSelectedPref(res.data.detailPreferentials, 1);
+                    that.updateSelectedPref(res.data.detailPreferentials, res.isReFresh === '1' ? 0 : 1);
                     //更新订单信息
                     that.updateOrder()
 

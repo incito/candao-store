@@ -89,7 +89,7 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 							conupId, Constant.CALCPRETYPE.WAITERUSEPRE);
 					detailPreferentials.add(preSub);
 				}
-				this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
+//				this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}

@@ -100,23 +100,15 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 	 *            返回结果集
 	 * @param amountCount
 	 *            待优惠金额
-	 * @param amount
-	 *            支付金额
-	 * @param bd
 	 * @param disType
 	 */
-	protected void disMes(Map<String, Object> result, BigDecimal amountCount, BigDecimal amount, BigDecimal bd,
-			String disType) {
+	protected void disMes(Map<String, Object> result, BigDecimal amountCount,String disType) {
 		boolean flag = true;
 		String flagcode = "";
-		if (amountCount.doubleValue() <= 0 && amount.doubleValue() <= 0) {
+		if (amountCount.doubleValue() <= 0 ) {
 			flag = false;
 			flagcode = "2001";
-		} else if (amountCount.doubleValue() > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) == -1
-				&& disType.equals(Constant.PREDIS.DISCOUNT)) {
-			flag = false;
-			flagcode = "2002";
-		}
+		} 
 		result.put("falg", flag);
 		result.put("mes", flag ? ReturnMes.SUCCESS.getMsg() : ReturnMes.mes(flagcode));
 	}
@@ -353,7 +345,7 @@ public abstract class CalPreferentialStrategy implements CalPreferentialStrategy
 					resOrderDetail.setDebitamount(resOrderDetail.getDebitamount().subtract(preAmount));
 				}
 
-			} else if (group == 1 && discount.doubleValue() <= 0&&custom==1) {
+			} else if (group == 1 && discount.doubleValue() <= 0) {
 				BigDecimal allDebitamount=new BigDecimal("0");
 				for(String key:resOrderDetailMap.keySet()){
 					allDebitamount=allDebitamount.add(resOrderDetailMap.get(key).getDebitamount());

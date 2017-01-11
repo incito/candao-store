@@ -143,12 +143,16 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			prantOrderDetail.setDeAmount(amount);
 			prantOrderDetail.setToalFreeAmount(amount);
 			detailPreferentials.add(prantOrderDetail);
-
+		}else{
+			Map<String, Object> delMap = new HashMap<>();
+			delMap.put("DetalPreferentiald", paraMap.get("updateId"));
+			delMap.put("orderid", orderid);
+			orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
-		// this.disMes(result, amountCount, amountCount, bd,
-		// deInfo.getDistodis());
+//		 this.disMes(result, amountCount, amountCount, bd,
+//		 deInfo.getDistodis());
 		return result;
 	}
 

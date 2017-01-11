@@ -1505,35 +1505,50 @@ public class PadInterfaceController extends BaseController {
 	@RequestMapping(value = "/usePreferentialItem", method = RequestMethod.POST)
 	@ResponseBody
 	public ModelAndView usePreferentialItem(@RequestBody String body) {
-		Map<String, Object> result = new HashMap<>();
 		ModelAndView mav = new ModelAndView();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> params = JacksonJsonMapper.jsonToObject(body, Map.class);
 		// 加载缓存
-		String orderid=String.valueOf(params.get("orderid"));
+		String orderid = String.valueOf(params.get("orderid"));
 		List<ComplexTorderDetail> orderDetailList = orderDetailService.findorderByDish(orderid);
-		for(ComplexTorderDetail complexTorderDetail:orderDetailList){
-		 BigDecimal orderPrice=	complexTorderDetail.getOrderprice()==null?new BigDecimal("0"):complexTorderDetail.getOrderprice();
-		 complexTorderDetail.setDebitamount(orderPrice.multiply(new BigDecimal(complexTorderDetail.getDishnum())));
+		for (ComplexTorderDetail complexTorderDetail : orderDetailList) {
+			BigDecimal orderPrice = complexTorderDetail.getOrderprice() == null ? new BigDecimal("0")
+					: complexTorderDetail.getOrderprice();
+			complexTorderDetail.setDebitamount(orderPrice.multiply(new BigDecimal(complexTorderDetail.getDishnum())));
 		}
 		// 使用优惠
 		try {
 			OperPreferentialResult operPreferentialResult = this.preferentialActivityService
-					.updateOrderDetailWithPreferential(params,orderDetailList);
-			result.put("preferentialInfo", operPreferentialResult);
-			Map<String, Object> serParams = new HashMap<>();
-			serParams.put("orderId", String.valueOf(params.get("orderid")));
-			TServiceCharge charageService = chargeService.getChargeInfo(serParams);
-			if (charageService != null) {
-				result.put("serviceCharge", charageService);
-			}
-			if (operPreferentialResult.isFalg()) {
-				mav.addObject(ReturnMap.getSuccessMap(result));
+					.updateOrderDetailWithPreferential(params, orderDetailList);
+			String type = String.valueOf(params.get("type"));
+			String giveDish = (String) params.get("dishid");
+			if (type.equals(Constant.CouponType.SPECIAL_TICKET)
+					|| (type.equals(Constant.CouponType.HANDFREE) && !StringUtils.isEmpty(giveDish))) {
+				// 获取账单
+				Map<String, Object> serParams = new HashMap<>();
+				serParams.put("orderid", String.valueOf(params.get("orderid")));
+				Map<String, Object> map = orderService.calGetOrderInfo(serParams);
+				map.put("isReFresh", "1");
+				mav.addObject(map);
 			} else {
-				mav.addObject(ReturnMap.getFailureMap(operPreferentialResult.getMes(), result));
+				Map<String, Object> result = new HashMap<>();
+				result.put("preferentialInfo", operPreferentialResult);
+				Map<String, Object> serParams = new HashMap<>();
+				serParams.put("orderId", String.valueOf(params.get("orderid")));
+				TServiceCharge charageService = chargeService.getChargeInfo(serParams);
+				if (charageService != null) {
+					result.put("serviceCharge", charageService);
+				}
+				result.put("isReFresh", "0");
+				if (operPreferentialResult.isFalg()) {
+					mav.addObject(ReturnMap.getSuccessMap(result));
+				} else {
+					mav.addObject(ReturnMap.getFailureMap(operPreferentialResult.getMes(), result));
+				}
 			}
+
 		} catch (Exception e) {
-			mav.addObject(ReturnMap.getFailureMap(ReturnMes.SERVICE_ERROR.getMsg(), result));
+			mav.addObject(ReturnMap.getFailureMap(ReturnMes.SERVICE_ERROR.getMsg()));
 		}
 
 		return mav;
