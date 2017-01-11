@@ -504,6 +504,121 @@
 			</list>
 		</datas>
 	</row:row>
+	<!--储值信息-->
+	<foreach:foreach item="it"
+					 value="#{obj.settlementInfo4Pos.doubleJson}">
+		<row:row description="储值总额">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="位置">
+				<list>
+					<value>25</value>
+				</list>
+			</locations>
+			<datas description="储值总额">
+				<list>
+					<value>会员储值统计</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+					 value="#{obj.settlementInfo4Pos.doubleJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>25</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>储值总额</value>
+					<value>#{it.totalAmount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+					 value="#{obj.settlementInfo4Pos.doubleJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>1</value>
+					<value>24</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>-</value>
+					<value>储值赠送</value>
+					<value>#{it.addedAmount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+					 value="#{obj.settlementInfo4Pos.doubleJson}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>1</value>
+					<value>24</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>-</value>
+					<value>储值实收</value>
+					<value>#{it.realAmount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<foreach:foreach item="it"
+					 value="#{obj.settlementInfo4Pos.doubleJson.detail}">
+		<row:row description="品项">
+			<align description="对齐">ALIGN_LEFT</align>
+			<font description="字体大小">SMALL</font>
+			<locations description="品项">
+				<list>
+					<value>2</value>
+					<value>23</value>
+					<value>15</value>
+				</list>
+			</locations>
+			<datas description="品项">
+				<list>
+					<value>--</value>
+					<value>#{it.title}</value>
+					<value>#{it.realAmount}</value>
+				</list>
+			</datas>
+		</row:row>
+	</foreach:foreach>
+	<!-- 分割线 -->
+	<row:row description="分割线">
+		<align description="对齐">ALIGN_LEFT</align>
+		<font description="字体大小">SMALL</font>
+		<locations description="分割线">
+			<list>
+				<value>40</value>
+			</list>
+		</locations>
+		<datas description="分割线">
+			<list>
+				<value>---------------------------------------</value>
+			</list>
+		</datas>
+	</row:row>
 	<!-- POS信息 -->
 	<foreach:foreach item="it"
 					 value="#{obj.settlementInfo4Pos.orderJson}">

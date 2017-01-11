@@ -21,6 +21,7 @@ public class SettlementInfo4Pos implements Serializable {
     private List<PosDish> listJson;
 
     private List<OrderInfo4Pos> orderJson;
+    private Object doubleJson;
 
     private String workdate;
 
@@ -114,6 +115,14 @@ public class SettlementInfo4Pos implements Serializable {
 
     public void setSettlementInfos(List<SettlementInfo> settlementInfos) {
         this.settlementInfos = settlementInfos;
+    }
+
+    public Object getDoubleJson() {
+        return doubleJson;
+    }
+
+    public void setDoubleJson(Object doubleJson) {
+        this.doubleJson = doubleJson;
     }
 
     public void init(int type) {

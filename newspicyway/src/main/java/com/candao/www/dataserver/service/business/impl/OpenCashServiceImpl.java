@@ -121,13 +121,12 @@ public class OpenCashServiceImpl implements OpenCashService {
                 //       储值记录
                 List<Map<String, Object>> memberLogs = memberLogMapper.getStaticByUser(aUserId, vInDate, vOutDate);
                 Map<String, Object> chuzhiMap = new HashMap();
-                BigDecimal totalAmount = new BigDecimal(0);
                 BigDecimal realAmount = new BigDecimal(0);
                 BigDecimal addedAmount = new BigDecimal(0);
                 for (Map<String, Object> memberLog : memberLogs) {
-                    realAmount.add((BigDecimal) memberLog.get("realAmount"));
-                    addedAmount.add((BigDecimal) memberLog.get("addedAmount"));
-                    switch ((short) memberLog.get("payway")) {
+                    realAmount=realAmount.add((BigDecimal) memberLog.get("realAmount"));
+                    addedAmount= addedAmount.add((BigDecimal) memberLog.get("addedAmount"));
+                    switch ((int) memberLog.get("payway")) {
                         case Constant.MEMBER_PAYWAY.ALIPAY:
                             memberLog.put("title", "支付宝");
                             break;
@@ -142,8 +141,7 @@ public class OpenCashServiceImpl implements OpenCashService {
                             break;
                     }
                 }
-                totalAmount = realAmount.add(addedAmount);
-                chuzhiMap.put("totalAmount", totalAmount);
+                chuzhiMap.put("totalAmount", realAmount.add(addedAmount));
                 chuzhiMap.put("realAmount", realAmount);
                 chuzhiMap.put("addedAmount", addedAmount);
                 chuzhiMap.put("detail", memberLogs);
