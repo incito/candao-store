@@ -20,7 +20,7 @@
         select max(classno) from t_nodeclass where classno like '${preStr}%'
     </select>
     <select id="getNodeClassByNo" resultType="java.util.HashMap">
-       SELECT *,#{tipTotalAmount} AS tipTotalAmount FROM t_nodeclass WHERE  classno=#{jsOrder}
+       SELECT *,#{tipTotalAmount} AS tipTotalAmount FROM t_nodeclass WHERE  classno=#{jsOrder} limit 1
     </select>
     <select id="getTipTotalAmountByClassNo" resultType="java.lang.Integer">
         SELECT
