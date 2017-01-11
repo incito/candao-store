@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.candao.www.dataserver.mapper.MemberLogMapper">
+    <insert id="insert" parameterType="com.candao.www.webroom.model.MemberTransModel">
+        INSERT  INTO  t_member_log(`system`, `ctime`, `operator_id`, `operator_name`, `operate_type`, `order_id`,
+        `real_amount`, `added_amount`, `payway`, `serial`, `cardno`)
+        VALUE(#{system},#{ctime},#{operatorId},#{operatorName},#{operateType},#{orderId},
+        #{realAmount},#{addedAmount},#{payway},#{serial},#{cardno})
+    </insert>
+    <select id="getStaticByUser" parameterType="map" resultType="map">
+        SELECT
+            payway,
+            SUM(real_amount) AS realAmount,
+            SUM(added_amount) AS addedAmount
+        FROM
+            t_member_log
+        <where>
+            <if test="beginTime != null">
+                AND ctime BETWEEN #{beginTime,jdbcType=TIMESTAMP} AND  #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="userId !=null and userId != '' ">
+                AND  operator_id =#{userId}
+            </if>
+        </where>
+        GROUP BY
+            payway
+    </select>
+</mapper>
