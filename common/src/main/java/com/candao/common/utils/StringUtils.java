@@ -525,12 +525,12 @@ public static List<String> subString2(String src ,int num) throws UnsupportedEnc
 			if (org.springframework.util.StringUtils.isEmpty(it))
 				continue;
 			String[] tokens = org.springframework.util.StringUtils.split(it, mark);
+			boolean flag = index++ != 0;
 			if (!ObjectUtils.isEmpty(tokens)) {
-				boolean flag = index++ != 0;
 				before.append(flag ? prefix + tokens[0] + suffix : tokens[0]);
 				after.append(flag ? prefix + tokens[1] + suffix : tokens[1]);
 			} else {
-				before.append(it);
+				before.append(flag ? prefix + it + suffix : it);
 			}
 		}
 		return before.append(org.springframework.util.StringUtils.isEmpty(after.toString()) ? "" :
