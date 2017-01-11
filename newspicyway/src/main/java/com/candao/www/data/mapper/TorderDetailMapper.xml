@@ -982,16 +982,16 @@
 		SELECT SUM(tod.dishnum) as num,
 			IFNULL(SUM(tod.debitamount),0.00) as debitamount,
 			td.title as title,
-			td.unit as unit
+			tod.dishunit as unit
 		FROM t_order_detail tod
-		LEFT JOIN t_order too ON too.orderid = tod.orderid
-		LEFT JOIN t_dish td ON td.dishid = tod.dishid
-		WHERE too.orderstatus = 3
+		INNER JOIN t_order too ON too.orderid = tod.orderid
+		AND too.orderstatus = 3
 		AND too.branchid = #{branchId}
 		AND too.begintime >= #{startTime}
 		AND too.begintime &lt;= #{endTime}
-		AND (tod.dishtype != 2 OR (tod.dishtype=2 AND tod.superkey != tod.primarykey))
-		GROUP BY td.dishid
+		LEFT JOIN t_dish td ON td.dishid = tod.dishid
+		WHERE (tod.dishtype != 2 OR (tod.dishtype=2 AND tod.superkey != tod.primarykey))
+		GROUP BY td.dishid,tod.dishunit
 	</select>
 	<update id="updateOrderDetailWithPreferentialNew" parameterType="map">
 		UPDATE t_order_detail set couponid=#{preferentialid} where

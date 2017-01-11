@@ -89,12 +89,17 @@ public class SpecialTicketStrategy extends CalPreferentialStrategy {
 			String key = torderDetail.getDishid() + torderDetail.getDishunit();
 			double dishNum = Double.valueOf(torderDetail.getDishnum());
 			// 排除POS怎送赠菜操作
-			if (torderDetail.getPricetype().equals("1") && torderDetail.getOrderprice().doubleValue() <= 0) {
+			if ( torderDetail.getOrderprice().doubleValue() <= 0) {
 				continue;
 			}
 			if (orderMenuONumMap.containsKey(key)) {
 				// 如果已经存在数据做叠加菜品处理
-				TorderDetail dataOrderDetal = orderMenuONumMap.get(key);
+				TorderDetail dataOrderDetal=null;
+				try {
+					dataOrderDetal = (TorderDetail) orderMenuONumMap.get(key).clone();
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
 				String tempDishNum = dataOrderDetal.getDishnum();
 				// 重新合并(相同菜品的总个数)
 				dataOrderDetal.setDishnum(String.valueOf(Double.valueOf(tempDishNum) + dishNum));
