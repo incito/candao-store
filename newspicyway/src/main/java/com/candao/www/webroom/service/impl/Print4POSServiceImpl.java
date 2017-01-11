@@ -508,22 +508,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                     List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
                     if (!CollectionUtils.isEmpty(rows)) {
                         rows = mergeDishes(rows);
-                        //服务费
-                        Object serviceCharge = ((Map) map.get("data")).get("serviceCharge");
-                        if (null != serviceCharge) {
-                            TServiceCharge serviceChargeObj = (TServiceCharge) serviceCharge;
-                            if (com.candao.www.constant.Constant.SERVICE_CHARGE_ON.ON == serviceChargeObj.getChargeOn()) {
-                                Map<String, Object> serviceMap = new HashMap<>();
-                                serviceMap.put("dishname", "服务费");
-                                serviceMap.put("dishnum", "1");
-                                serviceMap.put("dishunit", "");
-                                serviceMap.put("orderprice", 0);
-                                serviceMap.put("payamount", serviceChargeObj.getChargeAmount());
-                                rows.add(serviceMap);
-                            }
-                        }
                         List<Map<String, Object>> temp2 = parseRows(rows,true);
-                    	List<Map<String, Object>> temp2 = parseRows(rows);
                     	//服务费
                     	Object serviceCharge=((Map)map.get("data")).get("serviceCharge");
                     	if(null!=serviceCharge){
