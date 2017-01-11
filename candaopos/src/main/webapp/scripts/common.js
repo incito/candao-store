@@ -429,7 +429,7 @@ var Log = (function () {
 	var data = [];
 	var options = {
 		time: 5000,//间隔时间
-		dataLen: 10
+		dataLen: 1
 	};
 	var preLength = 0;
 	//1:DEBUG 2:INFO 3:WARN 4:ERROR
@@ -541,7 +541,7 @@ function goBack() {
 	var personnum=utils.getUrl.get('personnum');
 	var type=utils.getUrl.get('type');
 	var orderid=utils.getUrl.get('orderid');
-	var tableno=utils.getUrl.get('tableno')
+	var tableno=utils.getUrl.get('tableno');
 	/*取消外面订单*/
 	if(personnum=='0'&&type=='out'&&document.referrer.indexOf('main.jsp')>-1){
 		$.ajax({
@@ -562,7 +562,12 @@ function goBack() {
 		});
 		return false
 	}
-	window.location=document.referrer
+	if(document.referrer.indexOf('&tips')>-1){
+		window.location=document.referrer.split('&tips')[0]
+	}else {
+		window.location=document.referrer
+	}
+
 	//
 
 }

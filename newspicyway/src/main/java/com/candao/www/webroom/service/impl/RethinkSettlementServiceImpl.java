@@ -66,7 +66,7 @@ public class RethinkSettlementServiceImpl implements RethinkSettlementService{
 					String cashierId = (String)rethinkAfter.get("cashier");
 					String cashier = tRethinkSettlementDao.queryUserNameByJobNumber(cashierId,params.get("branchId").toString());
 					//计算时间差异
-					int timedifference = DateUtils.daysOfTwo(before_clearTime, after_clearTime);
+					long timedifference = DateUtils.daysBetween(after_clearTime, before_clearTime);
 					//计算实收差异
 					BigDecimal dif = after_paidamount.subtract(before_paidamount).setScale(2,BigDecimal.ROUND_HALF_UP);
 					String paidindifference = dif.toString();

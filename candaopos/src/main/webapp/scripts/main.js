@@ -65,6 +65,7 @@ var MainPage = {
 
             if (cla !== "opened") {
                 dom.openDialog.find('.J-server-name,.J-male-num,.J-female-num,.J-tableware-num').val('');
+                dom.openDialog.find('.age-type>div').removeClass('active');
                 dom.openDialog.modal("show");
                 focusIpt = dom.openDialog.find('.J-server-name')
                 return false;
@@ -402,6 +403,7 @@ var MainPage = {
     },
 
     //定时任务
+    preData: null,
     timeTask: function () {
         var that = this;
         var running = true;
@@ -412,7 +414,10 @@ var MainPage = {
                     global: false
                 })
             ).then(function (res) {
-                Log.send(2, '定时任务 后去统计信息' + JSON.stringify(res));
+                if(JSON.stringify(that.preData) !== JSON.stringify(res)) {
+                    Log.send(2, '定时任务 后去统计信息' + JSON.stringify(res));
+                    that.preData = res;
+                }
                 if (res.code === '0') {
                     $('.custnum').text(res.data.custnum);
                     $('.dueamount').text(res.data.dueamount);
@@ -785,8 +790,9 @@ var MainPage = {
      * 清机
      */
     clearAll: function () {
+        var aUserid=$.trim($('#user').val())
         var sendInfo={
-            'aUserid':utils.storage.getter('aUserid'),
+            'aUserid':aUserid,
             'fullname':utils.storage.getter('fullname'),
             'ipaddress':utils.storage.getter('ipaddress'),
             'posid':utils.storage.getter('posid'),
@@ -802,7 +808,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner +''+utils.storage.getter('aUserid')+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
+            url: _config.interfaceUrl.Clearner +''+aUserid+'/'+utils.storage.getter('fullname')+'/'+utils.storage.getter('ipaddress')+'/'+utils.storage.getter('posid')+'/'+utils.storage.getter('checkout_fullname')+'/',
             type: "get",
             dataType: "text",
             success: function (data) {
@@ -832,8 +838,9 @@ var MainPage = {
     },
     /*结业清机*/
     clearAllcheckOut: function () {
+        var aUserid=$.trim($('#user').val())
         var sendInfo={
-            'aUserid':utils.storage.getter('aUserid'),
+            'aUserid':$.trim($('#user').val()),
             'fullname':utils.storage.getter('fullname'),
             'ipaddress':utils.storage.getter('ipaddress'),
             'posid':utils.storage.getter('posid'),
@@ -841,8 +848,7 @@ var MainPage = {
         }
         Log.send(2, '结业清机回传参数有'+JSON.stringify(sendInfo));
         var that = this
-        $("#J-btn-checkout-dialog").modal('hide')
-        var that = this;
+        $("#J-btn-checkout-dialog").html('').modal('hide')
         widget.modal.alert({
             cls: 'fade in',
             content: '<strong>清机中，请稍后</strong>',
@@ -851,7 +857,7 @@ var MainPage = {
             hasBtns: false,
         });
         $.ajax({
-            url: _config.interfaceUrl.Clearner + '' + $.trim($('#user').val()) + '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
+            url: _config.interfaceUrl.Clearner + '' +aUserid+ '/' + utils.storage.getter('fullname') + '/' + utils.storage.getter('ipaddress') + '/' + utils.storage.getter('posid') + '/' + utils.storage.getter('checkout_fullname') + '/',
             type: "get",
             dataType: "text",
             success: function (data) {
@@ -879,10 +885,16 @@ var MainPage = {
     checkout: function () {
         var that = this;
         var Uncleandata = that.getFindUncleanPosList();
+        /*if(Uncleandata.findUncleanPosList==undefined){
+            utils.printError.alert('获取未清机列表失败，请稍后再试');
+            return false
+        }*/
         var arrylength = Uncleandata.LocalArry.length - 1;
         var LocalArry = Uncleandata.LocalArry;
-        $("#J-btn-checkout-dialog").modal('hide')
+        //$("#J-btn-checkout-dialog").modal('hide')
+        Log.send(2, '清机判断开始-----')
         if (Uncleandata.LocalArry.length > 0) {
+            Log.send(2, '本机清机开始-----')
             $("#J-btn-checkout-dialog").load("../views/check/impower.jsp", {
                 'title': '清机授权',
                 'userNmae': Uncleandata.LocalArry[arrylength].username,
@@ -908,25 +920,41 @@ var MainPage = {
             });
         }
         if (Uncleandata.findUncleanPosList.detail.length == '0') {
-            $("#J-btn-checkout-dialog").load("../views/check/impower.jsp", {
+            Log.send(2, '清机完成，结业开始-----')
+            /*$("#J-btn-checkout-dialog").load("../views/check/impower.jsp", {
+                'title': '结业授权',
+                'cbd': 'MainPage.checkoutCallback()',
+                'userRightNo': '030205'
+            });*/
+            $("#J-btn-clear-dialog").load("../views/check/impower.jsp", {
                 'title': '结业授权',
                 'cbd': 'MainPage.checkoutCallback()',
                 'userRightNo': '030205'
             });
-            $("#J-btn-checkout-dialog").modal('show')
+            $("#J-btn-clear-dialog").modal('show')
+            Log.send(2, '清机完成，结业授权弹窗弹出-----')
         }
 
 
     },
     checkoutCallback: function () {//结业回调
+        $("#J-btn-clear-dialog").modal('hide');
+        /*结业数据上传*/
+        widget.modal.alert({
+            cls: 'fade in',
+            content: '<strong>结业中，请稍后</strong>',
+            width: 500,
+            height: 500,
+            hasBtns: false,
+        });
         Log.send(2, '结业请求发送中');
         $.ajax({
             url: _config.interfaceUrl.EndWork,//不需要传递参数
             type: "get",
             dataType: 'text',
             success: function (data) {
-
-                $("#J-btn-checkout-dialog").modal('hide')
+                $(".modal-alert:last,.modal-backdrop:last").remove();
+                //$("#J-btn-checkout-dialog").modal('hide')
                 var data = JSON.parse(data.substring(12, data.length - 3));//从第12个字符开始截取，到最后3位，并且转换为JSON
                 Log.send(2, '结业成功返回参数有'+JSON.stringify(data));
                 if (data.Data == '1') {
@@ -1013,14 +1041,14 @@ var MainPage = {
     },
     getFindUncleanPosList: function () {//获取未清机数据列表
         var findUncleanPosList, LocalArry = [], OtherArry = [];
-
+        Log.send(2, '获取未清机数据列表开始------:');
         $.ajax({
             url: _config.interfaceUrl.GetAllUnclearnPosInfoes,
             type: "get",
             async: false,
             dataType: "text",
             success: function (data) {
-                Log.send(2, '获取未清机数据列表:' + data);
+                Log.send(2, '获取未清机数据列表结束，返回参数有:' + data);
                 findUncleanPosList = JSON.parse(data);
                 /*console.log(findUncleanPosList.detail)
                  console.log(findUncleanPosList.result)*/
@@ -1081,7 +1109,7 @@ var MainPage = {
 
             }
         }
-        console.log(Date.parse(new Date(endTime))-Date.parse(new Date(time)))
+        /*console.log(Date.parse(new Date(endTime))-Date.parse(new Date(time)))*/
     }
 };
 

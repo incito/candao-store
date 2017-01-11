@@ -255,7 +255,7 @@ var checkOrder={
                                     success: function (msg) {
                                         rebackMemberinfo.TraceCode=msg.TraceCode//重新赋值TraceCode会员交易号
                                         if(msg.Retcode!=0){
-                                            utils.printError.alert('会员反结算失败')
+                                            utils.printError.alert('会员消费反结算失败：'+msg.RetInfo)
                                         }
                                         else {
                                             rebackOrderOk(rebackMemberinfo)
@@ -406,7 +406,6 @@ var checkOrder={
                 });
             }
             function _whyClear() {
-                debugger
                         var res=JSON.parse(utils.storage.getter('BACKSETTLE_REASON'));//获取反结算原因
                         var     str = '<div class="selectReason" style="text-align: left">'
                         str+=   '<div class="form-group form-group-base form-input">'

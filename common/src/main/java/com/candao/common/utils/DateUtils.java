@@ -354,15 +354,6 @@ public class DateUtils {
 		time = formatter.format(d); 
 		return time; 
 	}
-	public static void main(String[] args) {
-		/*Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, 2015);
-		calendar.set(Calendar.MONTH, 1);
-		calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));  
-		System.out.println(toString(calendar.getTime()));*/
-		System.out.println(weekOfFirstDay());
-		System.out.println(weekOfLastDay());
-	}
 
 
 	/**
@@ -381,7 +372,12 @@ public class DateUtils {
         int day2 = aCalendar.get(Calendar.DAY_OF_YEAR);
         return day2 - day1;
     }
-	
+	/** 
+     * 计算两个日期之间相差的天数 
+     */  
+    public final static long daysBetween(Date date1,Date date2){  
+		return (date1.getTime()-date2.getTime())/(1000*3600*24);
+    } 
 	/**
 	 * 默认将日期转换为字符串，格式(yyyy-MM-dd HH:mm:ss)
 	 * 
@@ -610,6 +606,17 @@ public class DateUtils {
 			throw new SysException(ErrorMessage.FORWARD_ERROR,Module.LOCAL_SHOP);
 		}
 	}
-	
+	public static void main(String[] args) {
+		Date date1 = new Date();
+		String str = "2016-10-31 00:00:00";
+		Date date2 = null;
+		try {
+			date2 = DateUtils.stringToDate(str);
+		} catch (SysException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(DateUtils.daysBetween(date1, date2));
+	}
 	
 }

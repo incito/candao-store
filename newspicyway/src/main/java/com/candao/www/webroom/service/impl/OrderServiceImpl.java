@@ -1211,11 +1211,13 @@ public class OrderServiceImpl implements OrderService {
 							result.getResMenuAndServeChargeAmount().add(serviceCharge.getChargeAmount()));
 				}
 				// 封装描述
+				BigDecimal tablechargeAmount = userOrderInfo.get("chargeAmount") == null ? new BigDecimal("0")
+						: (BigDecimal) userOrderInfo.get("chargeAmount");
 				List<Map<String, Object>> serviceChargelist = new ArrayList<>();
 				Map<String, Object> serviceChargeMap = new HashMap<>();
 				serviceChargeMap.put("chargeType", serviceCharge.getChargeType());
 				serviceChargeMap.put("chargeRate", serviceCharge.getChargeRate());
-				serviceChargeMap.put("chargeAmount", serviceCharge.getChargeAmount());
+				serviceChargeMap.put("chargeAmount", tablechargeAmount);
 				serviceChargeMap.put("chargeTime", serviceCharge.getChargeTime());
 				serviceChargeMap.put("chargeOn", serviceCharge.getChargeOn());
 				serviceChargelist.add(serviceChargeMap);

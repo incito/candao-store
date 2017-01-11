@@ -24,7 +24,19 @@
 
     <appender name="printAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/print_log/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_HOME}/print_log/print.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>160</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="msgAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/msg/msg.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>160</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
@@ -36,7 +48,7 @@
     </appender>
     <appender name="h5POSAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/h5pos/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_HOME}/h5pos/h5pos.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>10</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
@@ -67,11 +79,12 @@
 
     <root level="info">
         <appender-ref ref="candao"/>
-        <!--<appender-ref ref="STDOUT"/>-->
+        <!-- <appender-ref ref="STDOUT"/> -->
         <appender-ref ref="ErrorAppender"/>
     </root>
 
     <logger name="dao" level="DEBUG"/>
+    <logger name="org.mybatis.spring" level="DEBUG"/>
 
     <logger name="org.springframework" level="INFO"/>
 
@@ -80,7 +93,11 @@
         <appender-ref ref="printAppender"/>
         <!--<appender-ref ref="STDOUT"/>-->
     </logger>
-
+	<!--消息通知日志输出-->
+    <logger name="com.candao.www.dataserver.service.msghandler" additivity="false" level="INFO">
+        <appender-ref ref="msgAppender"/>
+        <!--<appender-ref ref="STDOUT"/>-->
+    </logger>
     <logger name="com.candao.print" additivity="false" level="INFO">
         <appender-ref ref="printAppender"/>
         <!--<appender-ref ref="STDOUT"/>-->

@@ -28,9 +28,8 @@
 			vr.itemid AS itemId,
 			vr.itemDesc AS itemDesc
 		FROM t_settlement_detail AS tsd
-		LEFT JOIN t_order AS too ON too.orderid = tsd.orderid
-		RIGHT JOIN v_revenuepayway AS vr ON vr.itemid = tsd.payway
-		WHERE too.branchid = #{branchId}
+		INNER JOIN t_order AS too ON too.orderid = tsd.orderid
+		AND too.branchid = #{branchId}
 		AND too.begintime >= #{beginTime}
 		AND too.begintime &lt;= #{endTime}
 		AND too.orderstatus = 3
@@ -43,15 +42,15 @@
 		<if test="orderType != null">
 		AND too.ordertype>0
 		</if>
-		GROUP BY tsd.payway 
-		ORDER BY vr.itemSort ASC
+		RIGHT JOIN v_revenuepayway AS vr ON vr.itemid = tsd.payway
+		GROUP BY tsd.payway
 	</select>
 	<select id="getOrderInflate" parameterType="java.util.Map" resultType="java.util.Map"> 
 		SELECT IFNULL(SUM(tom.Inflated),0) AS inflated,
 			IFNULL(SUM(CASE ordertype WHEN 0 THEN 0 ELSE tom.Inflated END), 0) AS waimaiInflated
 		FROM t_order_member tom 
-		LEFT JOIN t_order AS too ON too.orderid = tom.orderid
-		WHERE too.branchid = #{branchId}
+		INNER JOIN t_order AS too ON too.orderid = tom.orderid
+		AND too.branchid = #{branchId}
 		AND too.begintime >= #{beginTime}
 		AND too.begintime &lt;= #{endTime}
 		AND too.orderstatus = 3
@@ -66,8 +65,8 @@
 	<select id="getthActualAmount" parameterType="java.util.Map" resultType="java.util.Map"> 
 		SELECT IFNULL(SUM(tsd.payamount),0) AS actualAmount
 		FROM t_settlement_detail AS tsd
-		LEFT JOIN t_order AS too ON too.orderid = tsd.orderid
-		WHERE too.branchid = #{branchId}
+		INNER JOIN t_order AS too ON too.orderid = tsd.orderid
+		AND too.branchid = #{branchId}
 		AND too.begintime >= #{beginTime}
 		AND too.begintime &lt;= #{endTime}
 		AND too.orderstatus = 3
@@ -77,7 +76,7 @@
 	    <if test="shiftid!=-1">
 		AND too.shiftid = #{shiftid}
 		</if>
-		AND tsd.payway = 1
+		WHERE tsd.payway = 1
 		AND tsd.membercardno != '1'
 	</select>
 

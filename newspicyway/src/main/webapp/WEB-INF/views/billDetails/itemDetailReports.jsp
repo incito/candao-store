@@ -141,7 +141,7 @@
 	</div>
 	</div>
 	<div class="modal fade report-details-dialog in " id="item-details-dialog" data-backdrop="static">
-	<div class="modal-dialog">
+	<div class="modal-dialog" style="width:850px;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<div class="modal-title">

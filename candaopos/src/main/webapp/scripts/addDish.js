@@ -78,64 +78,64 @@ var AddDish = {
 		});
 		/*已点菜品按名称排序 dishType: 0为升序，1为降序*/
 		/*$('#sel-dish-table-title').click(function () {
-			if(dishCartMap.values().length<1){
-				return false
-			}
-			var dishType=$(this).attr('dishType'),
-				abc=null;
-			if(dishType=='0'){
-				var a=dishCartMap.values()
-				for(var i=0;i<a.length;i++){
-					var FirstLetter=pinyinUtil.getFirstLetter(a[i].title)
-					a[i]['FirstLetter']=FirstLetter
-				}
-				abc=_.sortByOrder(a, ['FirstLetter'], ['asc']);
-				$(this).attr('dishType','1')
-			}
-			else {
-				abc=_.sortByOrder(dishCartMap.values(), ['py'], ['desc'])
-				$(this).attr('dishType','0')
-			}
-			that.initComboDishModal(abc)
-		})
-		/!*已点菜品按数量排序*!/
-		$('#sel-dish-table-dishnum').click(function () {
-			if(dishCartMap.values().length<1){
-				return false
-			}
-			var dishType=$(this).attr('dishType'),
-				abc=null;
-			if(dishType=='0'){
-				abc=_.sortByOrder(dishCartMap.values(), ['dishnum'], ['asc']);
-				$(this).attr('dishType','1')
-			}
-			else {
-				abc=_.sortByOrder(dishCartMap.values(), ['dishnum'], ['desc']);
-				$(this).attr('dishType','0')
-			}
-			$(this).attr('dishType',dishType)
+		 if(dishCartMap.values().length<1){
+		 return false
+		 }
+		 var dishType=$(this).attr('dishType'),
+		 abc=null;
+		 if(dishType=='0'){
+		 var a=dishCartMap.values()
+		 for(var i=0;i<a.length;i++){
+		 var FirstLetter=pinyinUtil.getFirstLetter(a[i].title)
+		 a[i]['FirstLetter']=FirstLetter
+		 }
+		 abc=_.sortByOrder(a, ['FirstLetter'], ['asc']);
+		 $(this).attr('dishType','1')
+		 }
+		 else {
+		 abc=_.sortByOrder(dishCartMap.values(), ['py'], ['desc'])
+		 $(this).attr('dishType','0')
+		 }
+		 that.initComboDishModal(abc)
+		 })
+		 /!*已点菜品按数量排序*!/
+		 $('#sel-dish-table-dishnum').click(function () {
+		 if(dishCartMap.values().length<1){
+		 return false
+		 }
+		 var dishType=$(this).attr('dishType'),
+		 abc=null;
+		 if(dishType=='0'){
+		 abc=_.sortByOrder(dishCartMap.values(), ['dishnum'], ['asc']);
+		 $(this).attr('dishType','1')
+		 }
+		 else {
+		 abc=_.sortByOrder(dishCartMap.values(), ['dishnum'], ['desc']);
+		 $(this).attr('dishType','0')
+		 }
+		 $(this).attr('dishType',dishType)
 
-			that.initComboDishModal(abc)
-		})
-		/!*已点菜品按价格排序*!/
-		$('#sel-dish-table-price').click(function () {
-			if(dishCartMap.values().length<1){
-				return false
-			}
-			var dishType=$(this).attr('dishType'),
-				abc=null;
-			if(dishType=='0'){
-				abc=_.sortByOrder(dishCartMap.values(), ['price'], ['asc']);
-				$(this).attr('dishType','1')
-			}
-			else {
-				abc=_.sortByOrder(dishCartMap.values(), ['price'], ['desc']);
-				$(this).attr('dishType','0')
-			}
-			$(this).attr('dishType',dishType)
+		 that.initComboDishModal(abc)
+		 })
+		 /!*已点菜品按价格排序*!/
+		 $('#sel-dish-table-price').click(function () {
+		 if(dishCartMap.values().length<1){
+		 return false
+		 }
+		 var dishType=$(this).attr('dishType'),
+		 abc=null;
+		 if(dishType=='0'){
+		 abc=_.sortByOrder(dishCartMap.values(), ['price'], ['asc']);
+		 $(this).attr('dishType','1')
+		 }
+		 else {
+		 abc=_.sortByOrder(dishCartMap.values(), ['price'], ['desc']);
+		 $(this).attr('dishType','0')
+		 }
+		 $(this).attr('dishType',dishType)
 
-			that.initComboDishModal(abc)
-		})*/
+		 that.initComboDishModal(abc)
+		 })*/
 
 
 		/**
@@ -570,15 +570,15 @@ var AddDish = {
 		var _setSubmitStatus = function(){
 			var btn = $('.fishpot-dialog .btn-base.ok');
 			//var numInpStatus = (function(){
-			//	var status = false;
-			//	$('.fishpot-dialog .num-inp').each(function(){
-			//		if(parseInt($(this).val(), 10) > 0) {
-			//			status = true;
-			//			return false;
-			//		}
-			//	});
-            //
-			//	return  status;
+			//  var status = false;
+			//  $('.fishpot-dialog .num-inp').each(function(){
+			//      if(parseInt($(this).val(), 10) > 0) {
+			//          status = true;
+			//          return false;
+			//      }
+			//  });
+			//
+			//  return  status;
 			//})();
 			if($('.fishpot-dialog .taste li').length > 0) {
 				if($('.fishpot-dialog .taste li.active').length > 0) {
@@ -671,12 +671,14 @@ var AddDish = {
 
 	},
 
+	currentCoboDish: null,
 	initComboDishModal:  function(data){
 		var that = this;
 		var pid = data.pid;
 		var dish = dishesMap.get(pid);
 		var comboStr = '';
 		var onlyStr = '';
+		that.currentCoboDish = data;
 
 		var _setSubmitStatus = function(){
 			var btn = dom.combodishialog.find('.btn-save');
@@ -690,11 +692,11 @@ var AddDish = {
 		dom.combodishialog.find('.dishname').text(dish.title.split('#')[0]);
 
 		$.each(data.rows[0].combo, function(k, v){
-			comboStr += '<h4 class="group-title" groupid="' + v.id + '" startnum="' + v.startnum + '" endnum="' + v.endnum + '">凉菜（' + v.startnum + '选' + v.endnum + '）已选<span class="selnum">0</span></h4>';
+			comboStr += '<h4 class="group-title"  combokey="' + k+ '" groupid="' + v.id + '" startnum="' + v.startnum + '" endnum="' + v.endnum + '">' + v.columnname + '（' + v.startnum + '选' + v.endnum + '）已选<span class="selnum">0</span></h4>';
 			$.each(v.alldishes, function(key, value){
-				comboStr += '<div class="form-group" groupid="' + value.groupid + '">'+
+				comboStr += '<div class="form-group" disheskey="' + key + '" groupid="' + value.groupid + '">'+
 					'<div class="col-xs-7">' + value.contactdishname + '(<span class="unit">' + value.dishunitid + '</span>)</div>'+
-					'<div class="col-xs-5"><input class="form-control num-inp" type="text" price="' + value.price + '" dishid="' + value.contactdishid + '" dishtype="' + value.dishtype + '"  unit="' + value.dishunitid +  '" contactdishname="' + value.contactdishname + '"></div>'+
+					'<div class="col-xs-5"><input class="form-control num-inp"  type="text" price="' + value.price + '" dishid="' + value.contactdishid + '" dishtype="' + value.dishtype + '"  unit="' + value.dishunitid +  '" contactdishname="' + value.contactdishname + '"></div>'+
 					'</div>';
 			});
 		});
@@ -783,7 +785,7 @@ var AddDish = {
 			_setSubmitStatus();
 		});
 
-		dom.combodishialog.undelegate('.btn-save','click').delegate('.btn-save','click', function(){
+		dom.combodishialog.undelegate('.btn-save','click').delegate('.btn-save','click',data, function(){
 			var row = {};
 			var groupid = getUuid();
 
@@ -813,12 +815,17 @@ var AddDish = {
 				groupid: groupid
 			};
 
-
 			//添combo
-			dom.combodishialog.find('.num-inp').each(function(){
+			$.each(dom.combodishialog.find('.num-inp'), function(){
 				var me = $(this);
 				var numIpt = parseInt(me.val(), 10);
 				if(numIpt > 0) {
+					var parent = me.parents('.form-group');
+					var dishtype = me.attr('dishtype');
+					var groupid = parent.attr('groupid')
+					var combokey = me.parents('.combo-group').find('h4[groupid=' + groupid + ']').attr('combokey')
+					var disheskey = parent.attr('disheskey');//与 getUuid()设置的id不一样
+					var subDishes = AddDish.currentCoboDish.rows[0].combo[combokey].alldishes[disheskey].dishes
 					row.dishes.push({
 						"printtype": "0",
 						"pricetype": "0",
@@ -830,6 +837,33 @@ var AddDish = {
 						groupid: groupid,
 						dishunit: me.attr('unit'),
 						dishtype: me.attr('dishtype'),
+						dishes: (function(){
+							var ret = [];
+							if(parseInt(dishtype, 10) === 0) {
+								return null;
+							} else {
+								$.each(subDishes, function(k,v){
+									ret.push(
+										{
+											printtype: "0",
+											pricetype: "0",
+											dishid: v.contactdishid,
+											dishname: v.contactdishname,
+											dishunit: v.dishunitid,
+											orignalprice: v.price,
+											price: 0,
+											dishtype: v.dishtype,
+											dishnum: v.dishnum,
+											dishnote: "",
+											ispot: v.ispot === undefined ? '0' : v.ispot,
+											weight: v.weight,
+											groupid: groupid,
+										}
+									)
+								})
+								return ret;
+							}
+						})(),
 					});
 				}
 			});
@@ -932,7 +966,7 @@ var AddDish = {
 
 	/**
 	 * 渲染菜品信息
-	 * @param id	菜品分类id (-1, 全部分类)
+	 * @param id    菜品分类id (-1, 全部分类)
 	 * @param key 搜索字符串(不传时,需直接从dom中获取key)
 	 */
 	renderDishes: function (id, key) {
@@ -1013,10 +1047,11 @@ var AddDish = {
 	 * @param dish
 	 */
 	addDish: function (dish){
+		var dish = $.extend(true,{}, dish);
 		var that = this;
 		var dishname = dish.title || dish.dishname;
 		var dishtype = dish.dishtype;
-		var price = dish.price;
+		var price = parseFloat(dish.price).toFixed(2);
 		var dishnum = dish.dishnum;
 		var dishnote = dish.dishnote;
 		var groupid = dish.groupid;
@@ -1026,7 +1061,7 @@ var AddDish = {
 
 		var dish_avoids = dish.dish_avoids;
 		var taste = dish.taste;
-		var showname = utils.string.cutString(dishname.split('#')[0],14);
+		var showname = utils.string.cutString(dishname.split('#')[0], parseInt($('#sel-dish-table thead th').eq(0).width()/14, 10)*2)
 
 		if(taste != null && taste != ""){
 			if(dish.temporary === '1') {
@@ -1340,12 +1375,12 @@ var AddDish = {
 		var n2 = "";
 		var dish_avoids = [];
 		var $orderNote= $("#order-note");
-			$("#note-dialog .avoid.active").each(function(){
-				var avoid = $(this).text();
-				dish_avoids.push(avoid);
-				n1 += avoid+";";
-				n2 += avoid+"|";
-			});
+		$("#note-dialog .avoid.active").each(function(){
+			var avoid = $(this).text();
+			dish_avoids.push(avoid);
+			n1 += avoid+";";
+			n2 += avoid+"|";
+		});
 		var note1 = n1+note;
 		//note1 = note1.substring(0, note1.length-1);
 		var type = dom.noteDialog.attr('notetype');
@@ -1563,8 +1598,8 @@ var AddDish = {
 					//如果是套餐
 					if(dish.dishtype === 2) {
 						row = $.extend(row,{
-							"orderprice": dish.price,//菜品价格
-							"orignalprice": dish.price,//菜品单价
+							//"orderprice": dish.price,//菜品价格
+							//"orignalprice": dish.price,//菜品单价
 							"dishes": []
 						});
 
@@ -1658,6 +1693,8 @@ var AddDish = {
 						"dishes": null
 					});
 				}
+				//debugger;
+				//return false;
 
 				Log.send(2, '下单:' + url);
 				Log.send(2, '下单参数:' + JSON.stringify({
@@ -1764,7 +1801,7 @@ var AddDish = {
 	/**
 	 * 控制操作按钮是否可点击
 	 * @param loadPager (true:重新加载分页)
-     */
+	 */
 	controlBtns: function(){
 
 		if($("#sel-dish-table tbody tr.selected").length > 0){
@@ -1866,7 +1903,7 @@ var AddDish = {
 	 * 修改菜品数量
 	 * @param type 0:通过对话框修改 1:add 2:reduce
 	 * @returns {boolean}
-     */
+	 */
 	doUpdateNum: function(type){
 		var $tr = dom.selDishable.find("tbody tr.selected");
 		var cid = $tr.attr("cid");
@@ -1874,6 +1911,11 @@ var AddDish = {
 		var dishtype = dish.dishtype;
 		var num = parseFloat(dish.dishnum);
 		var val = dom.numDialog.find('.J-num').val() === '' ? 0 : parseFloat(dom.numDialog.find('.J-num').val());
+
+		function isPositiveNum(s){//是否为正整数
+			var re = /^[0-9]*[1-9][0-9]*$/ ;
+			return re.test(s)
+		}
 
 		if(dishtype === 1 && $tr.attr('ispot') === '0') {
 			$.each(dish.dishes, function(k, v){
@@ -1887,46 +1929,66 @@ var AddDish = {
 		if(type === 0) {
 			num = val;
 		} else if(type === 1) {
-			num = parseFloat(num + 1).toFixed(2);
- 		} else if(type ===2 ){
-			num = parseFloat(num - 1).toFixed(2);
+			if(isPositiveNum(num)){
+				num =  parseFloat(num);
+			}else {
+				num =  parseFloat(num).toFixed(2);
+			}
+			if(dish.temporary==='1'){
+				if(num>=99){
+					return false
+				}
+				num = parseFloat(_.add(num,1));
+			}else {
+				num = parseFloat(_.add(num,1));
+			}
+			//num = parseFloat(num + 1).toFixed(2);
+
+		} else if(type ===2 ){
+			//num = parseFloat(num - 1).toFixed(2);
+			if(isPositiveNum(num)){
+				num =  parseFloat(num - 1);
+			}else {
+				num =  parseFloat(num - 1).toFixed(2);
+			}
+
 		}
 
 		//if(dishtype === 2 || dishtype === 1) {
-		//	if(num > 0) {
-		//		if(dishtype === 2 || (dishtype === 1 && $tr.attr('ispot') === '1' ) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
-		//			widget.modal.alert({
-		//				content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
-		//				btnOkTxt: '',
-		//				btnCancelTxt: '确定'
-		//			});
-		//			return false;
-		//		} else {
-		//			//可以修改的为鱼锅的鱼
-		//			$tr.find("td.num").text(num);
-		//			$.each(dish.dishes, function(k, v){
-		//				console.log(k);
-		//				if(v.dishid === $tr.attr('dishid')) {
-		//					v.dishnum = num;
-		//				}
-		//			});
-		//			Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
-		//			dishCartMap.put(cid, dish);
-		//		}
-		//	} else {
-		//		if((dishtype === 2 && $tr.hasClass('main-combo')) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
-		//			dom.selDishable.find('[cid=' + cid  +']').remove();
-		//			dishCartMap.remove(cid);
-		//			dom.selDishable.find("tbody tr").eq(0).addClass('selected');
-		//		} else {
-		//			widget.modal.alert({
-		//				content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
-		//				btnOkTxt: '',
-		//				btnCancelTxt: '确定'
-		//			});
-		//			return false;
-		//		}
-		//	}
+		//  if(num > 0) {
+		//      if(dishtype === 2 || (dishtype === 1 && $tr.attr('ispot') === '1' ) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+		//          widget.modal.alert({
+		//              content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+		//              btnOkTxt: '',
+		//              btnCancelTxt: '确定'
+		//          });
+		//          return false;
+		//      } else {
+		//          //可以修改的为鱼锅的鱼
+		//          $tr.find("td.num").text(num);
+		//          $.each(dish.dishes, function(k, v){
+		//              console.log(k);
+		//              if(v.dishid === $tr.attr('dishid')) {
+		//                  v.dishnum = num;
+		//              }
+		//          });
+		//          Log.send(2, '修改菜品数量:' + JSON.stringify(dish));
+		//          dishCartMap.put(cid, dish);
+		//      }
+		//  } else {
+		//      if((dishtype === 2 && $tr.hasClass('main-combo')) || (dishtype === 1 && $tr.hasClass('main-pot'))) {
+		//          dom.selDishable.find('[cid=' + cid  +']').remove();
+		//          dishCartMap.remove(cid);
+		//          dom.selDishable.find("tbody tr").eq(0).addClass('selected');
+		//      } else {
+		//          widget.modal.alert({
+		//              content:'<strong>套餐和鱼锅不能直接修改数量</strong>',
+		//              btnOkTxt: '',
+		//              btnCancelTxt: '确定'
+		//          });
+		//          return false;
+		//      }
+		//  }
 		//} else
 		if(dishtype === 1) {
 			if($tr.attr('ispot') === '1' || $tr.hasClass('main-pot')) {
@@ -2067,7 +2129,7 @@ var AddDish = {
 	 * 菜品是否存在购物车 如果存在 返回购物车商品id(cid)
 	 * @param dish
 	 * @returns {string}
-     */
+	 */
 	isExit: function(dish){
 		var  f = [];
 		var cartDish = null;
@@ -2138,7 +2200,7 @@ var AddDish = {
 		console.log(abc)
 		var abc=JSON.parse(abc),
 			that=this,
-		    str=''
+			str=''
 		$("#sel-dish-table tbody").html('');
 		for( var i=0;i<abc.length;i++){
 			str+='<tr class="" cid="'+abc[i].cid+'">' +
