@@ -1522,7 +1522,8 @@ public class PadInterfaceController extends BaseController {
 					.updateOrderDetailWithPreferential(params, orderDetailList);
 			String type = String.valueOf(params.get("type"));
 			String giveDish = (String) params.get("dishid");
-			if (type.equals(Constant.CouponType.SPECIAL_TICKET)
+			boolean isFalg=operPreferentialResult.isFalg();
+			if (isFalg&&type.equals(Constant.CouponType.SPECIAL_TICKET)
 					|| (type.equals(Constant.CouponType.HANDFREE) && !StringUtils.isEmpty(giveDish))) {
 				// 获取账单
 				Map<String, Object> serParams = new HashMap<>();

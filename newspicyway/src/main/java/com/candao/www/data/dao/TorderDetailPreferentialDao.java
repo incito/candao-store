@@ -31,6 +31,7 @@ public interface TorderDetailPreferentialDao {
 	public int deleteSubPreInfo(Map<String,Object> params);
 
 	public int deleteForXinladao(Map<String, Object> params);
+	public int deleteForXinladaoSubInfo(Map<String, Object> params);
 
 	public List<TorderDetailPreferential> getTorderDetailSbyOrderid(Map<String, Object> params);
 

@@ -95,7 +95,9 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 				noDiscountDishSet.add(key);
 			}
 		}
-
+		// 部分折扣是否包含
+		boolean isPart = false;
+		// 计算
 		TorderDetailPreferential prantOrderDetail = null;
 		if (noDiscountDishSet.isEmpty()) {
 			/** 全单折扣优惠 **/
@@ -110,22 +112,21 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 			prantOrderDetail = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"), discount, 0,
 					(String) tempMap.get("name"), conupId, Constant.CALCPRETYPE.NORMALUSEPRE);
 			// 参与菜品的列表
-			for (int i = 0; i < orderDetailList.size(); i++) {
-				ComplexTorderDetail d = orderDetailList.get(i);
+			for (String orderdetailid : resultDetail.keySet()) {
+				ComplexTorderDetail d = resultDetail.get(orderdetailid);
 				// KEY：dishid+unit
 				String key = d.getDishid() + d.getDishunit();
-				ComplexTorderDetail calActualDetail = resultDetail.get(d.getOrderdetailid());
-				if (calActualDetail.getDebitamount().doubleValue() > 0) {
+				if (d.getDebitamount().doubleValue() > 0) {
 					if (!noDiscountDishSet.contains(key) && !fishnoDiscountDishSet.contains(key)
 							|| (fishnoDiscountDishSet.contains(key) && !d.getDishtype().equals("1"))) {
-						BigDecimal debitAmount = calActualDetail.getDebitamount();
+						BigDecimal debitAmount = d.getDebitamount();
 						BigDecimal preAmonut = debitAmount
 								.subtract(debitAmount.multiply(discount).divide(new BigDecimal("10")));
-
 						TbOrderDetailPreInfo subOrderDetail = this.createOrderDetailInfo(IDUtil.getID(),
 								prantOrderDetail, d, preAmonut);
 						prantOrderDetail.getDetailPreInfos().add(subOrderDetail);
 						countAmount = countAmount.add(debitAmount);
+						isPart = true;
 					}
 				}
 			}
@@ -138,21 +139,22 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 
 		}
 		if (countAmount.doubleValue() > 0) {
-			 PreDealInfoBean calPreAmount = this.calDiscount(countAmount, new BigDecimal("0"), discount);
+			PreDealInfoBean calPreAmount = this.calDiscount(countAmount, new BigDecimal("0"), discount);
 			amount = calPreAmount.getPreAmount();
 			prantOrderDetail.setDeAmount(amount);
 			prantOrderDetail.setToalFreeAmount(amount);
 			detailPreferentials.add(prantOrderDetail);
-		}else{
-			Map<String, Object> delMap = new HashMap<>();
-			delMap.put("DetalPreferentiald", paraMap.get("updateId"));
-			delMap.put("orderid", orderid);
-			orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
+		} else {
+			if ((String) paraMap.get("updateId") != null) {
+				Map<String, Object> delMap = new HashMap<>();
+				delMap.put("DetalPreferentiald", paraMap.get("updateId"));
+				delMap.put("orderid", orderid);
+				orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
+			}
+			this.disMes(result, countAmount, Constant.CouponType.DISCOUNT_TICKET);
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
-//		 this.disMes(result, amountCount, amountCount, bd,
-//		 deInfo.getDistodis());
 		return result;
 	}
 

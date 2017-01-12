@@ -79,17 +79,29 @@ public class HandfreeStategy extends CalPreferentialStrategy {
 				for (String key : resultDetail.keySet()) {
 					countAmount = countAmount.add(resultDetail.get(key).getDebitamount());
 				}
-				PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
-				if (deInfo.getPreAmount().doubleValue() > 0) {
-					amount = deInfo.getPreAmount();
-					String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential")
-							: tempMap.get("id"));
-					TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount,
-							new BigDecimal("0"), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"),
-							conupId, Constant.CALCPRETYPE.WAITERUSEPRE);
-					detailPreferentials.add(preSub);
+				if(countAmount.doubleValue()<=0){
+					// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
+					if ((String) paraMap.get("updateId") != null) {
+						Map<String, Object> deleteSubParams = new HashMap<>();
+						deleteSubParams.put("ordpreid", paraMap.get("updateId"));
+						deleteSubParams.put("orderid", orderid);
+						orderDetailPreferentialDao.deleteDetilPreFerInfo(deleteSubParams);
+					}
+					this.disMes(result, countAmount, Constant.CouponType.HANDFREE);
+				}else{
+					PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
+					if (deInfo.getPreAmount().doubleValue() > 0) {
+						amount = deInfo.getPreAmount();
+						String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential")
+								: tempMap.get("id"));
+						TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount,
+								new BigDecimal("0"), discount, Constant.CALCPRETYPE.GROUP, (String) tempMap.get("name"),
+								conupId, Constant.CALCPRETYPE.WAITERUSEPRE);
+						detailPreferentials.add(preSub);
+					}
 				}
-//				this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
+			
+
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}

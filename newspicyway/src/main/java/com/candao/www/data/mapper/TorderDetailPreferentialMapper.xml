@@ -158,6 +158,20 @@
 		orderid=#{orderid} and
 		isCustom=#{custom};
 	</delete>
+	<delete id="deleteForXinladaoSubInfo" parameterType="map">
+		DELETE
+		FROM
+		t_order_detail_pre_info 
+		WHERE
+		ordpreid IN (
+		SELECT
+		id
+		FROM
+		t_order_detail_preferential
+		WHERE
+		orderid = #{orderid} and
+		isCustom = #{custom})
+	</delete>
 
 	<select id="getTorderDetailPreS" parameterType="map"
 		resultType="com.candao.www.data.model.TorderDetailPreferential">

@@ -29,13 +29,13 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
 			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
-		
-		/**获取优惠卷信息**/
+
+		/** 获取优惠卷信息 **/
 		List<Map<String, Object>> tempMapList = this.discountInfo(preferentialid,
 				PropertiesUtils.getValue("current_branch_id"), tbPreferentialActivityDao);
 		Map tempMap = tempMapList.get(0);
 
-		/**参数解析**/
+		/** 参数解析 **/
 		BigDecimal discount = (BigDecimal) tempMap.get("discount");// discount大于0为折扣优免
 		BigDecimal caseAmount = (BigDecimal) tempMap.get("amount");// amount大于0为现金优免
 		String orderid = (String) paraMap.get("orderid"); // 账单号
@@ -83,8 +83,16 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 						addPreferential.setToalFreeAmount(amount);
 					}
 					detailPreferentials.add(addPreferential);
+				} else {
+					if ((String) paraMap.get("updateId") != null) {
+						Map<String, Object> deleteSubParams = new HashMap<>();
+						deleteSubParams.put("ordpreid", paraMap.get("updateId"));
+						deleteSubParams.put("orderid", orderid);
+						orderDetailPreferentialDao.deleteDetilPreFerInfo(deleteSubParams);
+					}
+					this.disMes(result, countAmount, Constant.CouponType.INNERFREE);
 				}
-//				this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
+
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
@@ -92,7 +100,7 @@ public class InnerfreeStrategy extends CalPreferentialStrategy {
 		} else if (caseAmount != null && caseAmount.doubleValue() > 0) {
 			// 获取优惠卷个数(如果POS选择多张优惠卷，后台会在数据库写入多个数据，所以要拆分优惠卷)
 			int preferentialNum = Integer.valueOf((String) paraMap.get("preferentialNum"));
-			amount=caseAmount.multiply(new BigDecimal(preferentialNum));
+			amount = caseAmount.multiply(new BigDecimal(preferentialNum));
 			for (int i = 0; i < preferentialNum; i++) {
 				String conupId = (String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
 				addPreferential = this.createPreferentialBean(paraMap, caseAmount, new BigDecimal("0"),

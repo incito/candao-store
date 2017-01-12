@@ -5,9 +5,10 @@ public enum ReturnMes {
     ERROR("0001","使用优惠失败!"),
     CACHE_ERROR("0002","缓存加载失败请退出重试！"),
     SERVICE_ERROR("0003","抱歉，服务器内部错误请重新进去餐台！"),
-	SPECIAL_FAIL("1001","当前特价卷没有包含此订单内的菜品!"),
-	DISCOUNT_FAIL("2001","当前订单菜品不在此优惠之中！"),
-	DISCOUNT_FAIL_AMOUNT("2002","当前订单可优惠金额不足,不能使用此卷！");
+    NOT_SUFFICIENT_EORROR("0004","哎呀呀，参与当前优惠卷的菜品不满足此卷，不能使用此优惠!"),
+	SPECIAL_FAIL("1001","哎呀呀，没有菜品能够满足特价优惠哟！"),
+	DISCOUNT_FAIL("2001","当前订单菜品不在此优惠之中！");
+
 	
 	private String code;
 	private String msg;
