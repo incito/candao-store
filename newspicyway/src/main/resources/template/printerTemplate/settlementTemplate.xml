@@ -14,7 +14,7 @@
 		</locations>
 		<datas description="分店名">
 			<list>
-				<value>#{obj.settlementInfo4Pos.branchName}</value>
+				<value>#{obj.posData.branchName}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -35,7 +35,7 @@
 	</row:row>
 
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
+		value="#{obj.posData.OrderJson}">
 		<row:row description="单号">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -54,7 +54,7 @@
 		</row:row>
 	</foreach:foreach>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
+		value="#{obj.posData.OrderJson}">
 		<row:row description="餐台">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -77,7 +77,7 @@
 		</row:row>
 	</foreach:foreach>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
+		value="#{obj.posData.OrderJson}">
 		<row:row description="服务员">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -100,7 +100,7 @@
 		</row:row>
 	</foreach:foreach>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
+		value="#{obj.posData.OrderJson}">
 		<row:row description="开始时间">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -119,7 +119,7 @@
 		</row:row>
 	</foreach:foreach>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.orderJson}">
+		value="#{obj.posData.OrderJson}">
 		<row:row description="结束时间">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -184,7 +184,7 @@
 		</datas>
 	</row:row>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.listJson}">
+		value="#{obj.posData.ListJson}">
 		<row:row description="品项">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -250,7 +250,7 @@
 		</datas>
 	</row:row>
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.jSJson}">
+		value="#{obj.posData.JSJson}">
 		<row:row description="结算方式">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -304,7 +304,7 @@
 	</row:row>
 	<!-- 结算备注 -->
 	<foreach:foreach item="it"
-		value="#{obj.settlementInfo4Pos.settlementInfos}">
+		value="#{obj.posData.settlementInfos}">
 		<row:row description="结算备注">
 			<align description="对齐">ALIGN_LEFT</align>
 			<font description="字体大小">SMALL</font>
@@ -350,7 +350,7 @@
 		<datas description="电话">
 			<list>
 				<value>电话：</value>
-				<value>#{obj.settlementInfo4Pos.tel}</value>
+				<value>#{obj.posData.tel}</value>
 			</list>
 		</datas>
 	</row:row>
@@ -366,7 +366,7 @@
 		<datas description="地址">
 			<list>
 				<value>地址：</value>
-				<value>#{obj.settlementInfo4Pos.address}</value>
+				<value>#{obj.posData.address}</value>
 			</list>
 		</datas>
 	</row:row>

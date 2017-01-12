@@ -98,8 +98,8 @@ public class Print4POSController {
                 res = parse("getOrderInfo", orderInfo, new Class[]{String.class, String.class, String.class},
                         aUserId, orderId, printType);
                 res = parseDSJson(res);
-                List<SettlementInfo4Pos> settlementInfos = new ArrayList<>();
-                settlementInfos.add(JSON.parseObject(res, SettlementInfo4Pos.class));
+                List<JSONObject> settlementInfos = new ArrayList<>();
+                settlementInfos.add(JSON.parseObject(res));
                 print4posService.print(settlementInfos, printType, deviceid);
             }
         } catch (Exception e) {

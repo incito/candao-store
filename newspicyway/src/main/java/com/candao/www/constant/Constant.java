@@ -446,4 +446,53 @@ public class Constant {
 		 */
 		short OFF=0;
 	}
+	/**
+	 * 会员系统标示
+	 * @author lenovo
+	 *
+	 */
+	public static interface MEMBER_SYSYTEM{
+		/**
+		 * 餐道
+		 */
+		short CANDAO=1;
+		/**
+		 * 雅座
+		 */
+		short YAZUO=2;
+	}
+	/**
+	 * 会员操作
+	 * @author lenovo
+	 *
+	 */
+	public static interface MEMBER_OPER{
+		/**
+		 * 储值
+		 */
+		short CHUZHI=1;
+	}
+	/**
+	 * 会员操作
+	 * @author lenovo
+	 *
+	 */
+	public static interface MEMBER_PAYWAY{
+		/**
+		 * 现金
+		 */
+		short CASH=0;
+		/**
+		 * 银行卡
+		 */
+		short CARD=1;
+		/**
+		 * 支付宝
+		 */
+		short ALIPAY=2;
+		/**
+		 * 微信支付
+		 */
+		short WEPAY=3;
+	}
 }

@@ -1,5 +1,7 @@
 package com.candao.www.dataserver.service.member;
 
+import com.candao.www.webroom.model.MemberTransModel;
+
 /**
  * 会员业务接口
  * Created by lenovo on 2016/3/21.
@@ -32,4 +34,10 @@ public interface MemberService {
      * @return
      */
     String revertMemberPrice2(String userId, String orderId, String ip);
+    /**
+     * 会员储值
+     * @param memberTrans
+     * @return
+     */
+    String StoreCardDeposit(String memberTrans);
 }

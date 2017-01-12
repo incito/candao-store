@@ -2,17 +2,11 @@ package com.candao.www.webroom.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.candao.print.entity.*;
 import com.candao.www.data.model.*;
@@ -89,30 +83,28 @@ public class Print4POSServiceImpl implements Print4POSService {
     private TPrinterDeviceprinterMapper tPrinterDeviceprinterMapper;
 
     @Override
-    public void print(List<SettlementInfo4Pos> settlementInfos, String printType, String deviceid) throws Exception {
+    public void print(List<JSONObject> settlementInfos, String printType, String deviceid) throws Exception {
         if (CollectionUtils.isEmpty(settlementInfos) || StringUtils.isEmpty(printType)) {
             return;
         }
         PrintObj obj = new PrintObj();
+        JSONObject settlement = settlementInfos.get(0);
         // 三种类型类型单据
         switch (printType.trim()) {
             case SETTLEMENT:
                 obj.setListenerType(Constant.ListenerType.SettlementDishListener);
                 break;
-            case PRESETTLEMENT:
-                obj.setListenerType(Constant.ListenerType.PreSettlementTemplate);
-                break;
             case CUSTTEMPLATE: {
-                SettlementInfo4Pos settlement = settlementInfos.get(0);
-                if (!CollectionUtils.isEmpty(settlement.getOrderJson())) {
-                    OrderInfo4Pos orderinfo = settlement.getOrderJson().get(0);
-                    orderDetail.printCust(orderinfo.getOrderid(), true);
+                if (!CollectionUtils.isEmpty(settlement.getJSONArray("OrderJson"))) {
+                    JSONObject order = settlement.getJSONArray("OrderJson").getJSONObject(0);
+                    orderDetail.printCust(order.getString("orderid"), true);
                 }
                 return;
             }
             default:
                 return;
         }
+        List<Map<String, Object>> dishes = settlement.getObject("ListJson", List.class);
         Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
         Map<String, Object> param = new HashMap<>();
         param.clear();
@@ -120,18 +112,59 @@ public class Print4POSServiceImpl implements Print4POSService {
         param.put("type", "ROUNDING");
         List<Map<String, Object>> resultmap = dataDictionaryService.findByParams(param);
         if (!CollectionUtils.isEmpty(resultmap)) {
-            for (SettlementInfo4Pos it : settlementInfos) {
-                it.init(Integer.parseInt(String.valueOf(resultmap.get(0).get("itemid"))));
+            // 品项初始化
+            if (!CollectionUtils.isEmpty(dishes)) {
+                dishes = parseRows(mergeDishes(prepareMerge(dishes)), false);
+                for (Map<String, Object> it : dishes) {
+                    String title = resolveNullType(it.get("title"));
+                    String dishnum = resolveNullType(it.get("dishnum"));
+                    String dishunit = resolveNullType(it.get("dishunit"));
+                    title = com.candao.common.utils.StringUtils.resolveBilingualMark("#", title, dishunit, "1".equals(it.get("pricetype")) ? "(赠)" : "");
+                    it.put("title", title);
+                    it.put("dishnum", dishnum);
+                    it.put("dishunit", dishunit);
+                }
+            }
+            // 结算信息初始化
+            if (!CollectionUtils.isEmpty(settlement.getJSONArray("OrderJson"))) {
+                List<Map<String, String>> settlements = new ArrayList<>();
+                JSONObject orderinfo = settlement.getJSONArray("OrderJson").getJSONObject(0);
+                String dueamount = orderinfo.getString("dueamount");
+                if (!StringUtils.isEmpty(dueamount)) {
+                    settlements.add(createItem("总额:", "￥" + dueamount));
+                }
+                switch (Integer.parseInt(String.valueOf(resultmap.get(0).get("itemid")))) {
+                    case 1: {
+                        if (!StringUtils.isEmpty(orderinfo.get("payamount2")) && 0 != orderinfo.getBigDecimal("payamount2").compareTo(new BigDecimal("0")))
+                            settlements.add(createItem("四舍五入:", "￥" + orderinfo.getString("payamount2")));
+                        break;
+                    }
+                    case 2: {
+                        if (!StringUtils.isEmpty(orderinfo.get("payamount")) && 0 != orderinfo.getBigDecimal("payamount").compareTo(new BigDecimal("0")))
+                            settlements.add(createItem("抹零:", "￥" + orderinfo.getString("payamount")));
+                        break;
+                    }
+                    default:
+                        break;
+                }
+                if (!StringUtils.isEmpty(orderinfo.get("tipPaid")) && 0 != orderinfo.getBigDecimal("tipPaid").compareTo(new BigDecimal("0"))) {
+                    settlements.add(createItem("小费:", "￥" + orderinfo.getString("tipPaid")));
+                }
+                if (!StringUtils.isEmpty(orderinfo.get("zdAmount")) && 0 != orderinfo.getBigDecimal("zdAmount").compareTo(new BigDecimal("0"))) {
+                    settlements.add(createItem("赠送金额:", "￥" + orderinfo.getString("zdAmount")));
+                }
+                String amount = orderinfo.getBigDecimal("dueamount").subtract(orderinfo.getBigDecimal("ssamount")).toString();
+                //总优惠默认显示
+                settlements.add(createItem("总优惠:", "￥" + (StringUtils.isEmpty(amount) ? "0.00" : amount)));
+                settlements.add(createItem("实收:", "￥" + orderinfo.getString("ssamount")));
+                settlement.put("settlementInfos", settlements);
             }
         }
-        SettlementInfo4Pos settlementInfo4Pos = settlementInfos.get(0);
-        settlementInfo4Pos.setBranchName(
-                String.valueOf(branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname")));
-        settlementInfo4Pos
-                .setTel(String.valueOf(branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel")));
-        settlementInfo4Pos.setAddress(
-                String.valueOf(branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress")));
-        obj.setSettlementInfo4Pos(settlementInfo4Pos);
+        settlement.put("ListJson", dishes);
+        settlement.put("branchName", String.valueOf(branchInfo.get("branchname") == null ? "" : branchInfo.get("branchname")));
+        settlement.put("tel", String.valueOf(branchInfo.get("managertel") == null ? "" : branchInfo.get("managertel")));
+        settlement.put("address", String.valueOf(branchInfo.get("branchaddress") == null ? "" : branchInfo.get("branchaddress")));
+        obj.setPosData(settlement);
         // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
@@ -474,6 +507,8 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // 鱼锅
                     List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
                     if (!CollectionUtils.isEmpty(rows)) {
+                        rows = mergeDishes(rows);
+                        List<Map<String, Object>> temp2 = parseRows(rows,true);
                     	//服务费
                     	Object serviceCharge=((Map)map.get("data")).get("serviceCharge");
                     	if(null!=serviceCharge){
@@ -485,12 +520,12 @@ public class Print4POSServiceImpl implements Print4POSService {
                     			serviceMap.put("dishunit", "");
                     			serviceMap.put("orderprice", 0);
                     			serviceMap.put("payamount", serviceChargeObj.getChargeAmount());
-                    			rows.add(serviceMap);
+                    			temp2.add(serviceMap);
                     		}
                     	}
-                        List<Map<String, Object>> temp2 = parseRows(rows);
                         posdata.put("rows", temp2);
                     }
+
                     // 优惠
                     Object preferentialInfo = posdata.get("preferentialInfo");
                     List<Map<String, String>> settlementInfo = null;
@@ -502,7 +537,8 @@ public class Print4POSServiceImpl implements Print4POSService {
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
                         String[] value = {resolveNullType(prefer.get("resMenuAndServeChargeAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
-                                stringAdd(resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
+                                stringAdd(resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("moneyWipeAmount"))),
+                                resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
                             Map<String, String> tempMap = new HashMap<>();
                             if (i > 0 && i < 3) {
@@ -537,7 +573,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         posdata.put("pxFee", pxFee);
                         //小费
                         String tip = resolveNullType(prefer.get("tipAmount"));
-                        posdata.put("tip",tip);
+                        posdata.put("tip", tip);
                     }
                     //结算备注
                     posdata.put("settlementInfo", settlementInfo);
@@ -559,11 +595,112 @@ public class Print4POSServiceImpl implements Print4POSService {
                     param.put("printertype", "10");
                     param.put("deviceid", params[2]);
                     sendToPrint(param, obj);
-//                    // 更新打印数量
-//                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
+                    //                    // 更新打印数量
+                    //                    updatePresettelmentCount((Map<String, Object>) posdata.get("userOrderInfo"));
                 }
             }
         }
+    }
+
+    /**
+     * 合并同类菜品
+     * @param rows
+     * @return
+     */
+    private List<Map<String,Object>> mergeDishes(List<Map<String, Object>> rows) {
+        if (!CollectionUtils.isEmpty(rows)) {
+            //key:dishid+dishunit+pricetype,考虑使用orderprice,套餐内dishnum?
+            String[] keyFields = {"dishid", "dishunit", "pricetype"};
+            Map<Object, Map<String, Object>> keyMap = new HashMap<>();
+            for (Map<String, Object> it : rows) {
+                Map<String, Object> key = this.generateKey(it, keyFields);
+                if (keyMap.get(key) != null) {
+                    Map<String, Object> value = keyMap.get(key);
+                    //是否要递归改dishnum?
+                    value.put("dishnum", new BigDecimal(it.get("dishnum").toString()).add(new BigDecimal(value.get("dishnum").toString()))
+                            .toString());
+                } else {
+                    keyMap.put(key, it);
+                }
+            }
+            return JSON.parseObject(JSON.toJSONString(keyMap.values()),List.class);
+        }
+        return rows;
+    }
+
+    /**
+     * 利用dish的keyField生成key
+     * @param dishes
+     * @param keyFields
+     * @return
+     */
+    private Map<String, Object> generateKey(Map<String, Object> dishes, String... keyFields) {
+        if (MapUtils.isEmpty(dishes))
+            return null;
+        Map<String, Object> finalKey = new HashMap<>();
+        for (String keyField : keyFields) {
+            finalKey.put(keyField, dishes.get(keyField));
+        }
+        //套餐，鱼锅
+        if (dishes.containsKey("dishes")) {
+            List<Map<String, Object>> childDishes = (List<Map<String, Object>>) dishes.get("dishes");
+            if (!CollectionUtils.isEmpty(childDishes)) {
+                List<Map<String,Object>> dishitrate = new ArrayList<>();
+                for (Map<String, Object> it : childDishes) {
+                    //针对套餐鱼锅 几是否考虑增加keyfield，比如dishnum
+                    dishitrate.add(this.generateKey(it, keyFields));
+                }
+                finalKey.put("dishes", dishitrate);
+            }
+        }
+        return finalKey;
+    }
+
+    private List<Map<String,Object>> prepareMerge(List<Map<String, Object>> dishes) {
+        if (CollectionUtils.isEmpty(dishes))
+            return dishes;
+        List<Map<String, Object>> res = new ArrayList<>();
+        List<Map<String, Object>> temp = new ArrayList<>();
+        for (Map<String, Object> dish : dishes) {
+            if (String.valueOf(dish.get("primarykey")).equals(String.valueOf(dish.get("superkey")))) {
+                if (StringUtils.isEmpty(dish.get("dishtype")) || "0".equals(dish.get("dishtype")))
+                    res.add(dish);
+                else
+                    temp.add(dish);
+            }
+        }
+        dishes.removeAll(res);
+        if (!CollectionUtils.isEmpty(temp)) {
+            dishes.removeAll(temp);
+            for (Map<String, Object> it : temp) {
+                res.add(extractChild(it,dishes));
+            }
+        }
+        return res;
+    }
+
+    private Map<String,Object> extractChild(Map<String,Object> parent,List<Map<String,Object>> total){
+        String parentKey = String.valueOf(parent.get("parentkey"));
+        List<Map<String,Object>> dishes = new ArrayList<>();
+        List<Map<String,Object>> temp = new ArrayList<>();
+        for (Map<String, Object> dish : total) {
+            if (String.valueOf(dish.get("parentkey")).equals(parentKey)){
+                if ("0".equals(String.valueOf(dish.get("childdishtype")))){
+                    dishes.add(dish);
+                }else {
+                    temp.add(dish);
+                }
+            }
+        }
+        total.removeAll(dishes);
+        if (!CollectionUtils.isEmpty(temp)){
+            total.removeAll(temp);
+            for (Map<String, Object> it : temp) {
+                dishes.add(extractChild(it,total));
+            }
+        }
+        parent.put("dishes",dishes);
+        return parent;
     }
 
     private Map<String, String> createItem(Object name, Object value) {
@@ -583,15 +720,17 @@ public class Print4POSServiceImpl implements Print4POSService {
      * @param rows
      * @return
      */
-    private List<Map<String, Object>> parseRows(List<Map<String, Object>> rows) {
+    private List<Map<String, Object>> parseRows(List<Map<String, Object>> rows,boolean isSpecialRequire) {
         List<Map<String, Object>> res = new ArrayList<>();
         for (Map<String, Object> it : rows) {
-            resolveSpecialRequire(it);
+            if (isSpecialRequire)
+                resolveSpecialRequire(it);
             res.add(it);
             if (it.get("dishes") != null) {
                 List<Map<String, Object>> temp3 = (List<Map<String, Object>>) it.get("dishes");
                 for (Map<String, Object> item : temp3) {
-                    resolveSpecialRequire(item);
+                    if (isSpecialRequire)
+                        resolveSpecialRequire(item);
                     res.add(item);
                 }
             }
