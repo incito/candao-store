@@ -475,7 +475,6 @@
 			 <if test="primarykey != null ">
 			  and 	primarykey  =#{primarykey,jdbcType=VARCHAR}
 			</if>
-			 group by parentkey
 	 </select>
 	 
   <select id="findDishExceptNow" parameterType="map" resultType="com.candao.print.entity.PrintDish">
