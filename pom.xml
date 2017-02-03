@@ -389,6 +389,7 @@
   	<module>userservcie</module>
   	<module>printservice</module>
   	<module>newspicyway</module>
-	  <module>candaopos</module>
+    <module>candaopos</module>
+     <module>inorder</module>
   </modules>
 </project>

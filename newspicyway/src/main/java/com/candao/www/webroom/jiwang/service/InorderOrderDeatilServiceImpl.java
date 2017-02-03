@@ -2,7 +2,10 @@ package com.candao.www.webroom.jiwang.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,7 +57,9 @@ import com.candao.www.webroom.service.impl.OrderDetailServiceImpl;
 
 @Service
 public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
-	private Logger logger = LoggerFactory.getLogger(InorderOrderDeatilServiceImpl.class);
+	private static final String[] NO_DISCOUNT_DISHES = {"101005","103001","103002","103003","103005","103006","103007","103008","103010","103012","103014","103015","103016","103017","103018","104001","105012","106005","107001","110001","110021","110022","111005","120001","120002","120003","120004","120005","120006","120007","120008","120009","120011","120021","120022","120023","120024","120025","120026","120027","120028","120030","120031","121003","121007","121016","121017","122001","122002","122005","122006","122007","122008","122009","123001","123002","123003","123004","123005","123006","124001","124002","124003","124004","124005","124006","124007","124009","124011","124012","124013","124014","103013"};
+	
+	private static Logger logger = LoggerFactory.getLogger(InorderOrderDeatilServiceImpl.class);
 	/** 订单信息 **/
 	@Autowired
 	private InorderCheckTableDao checkTableDao;
@@ -252,6 +257,11 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 					buffer.append("\r\n");
 					buffer.append("L2,F3,AL		|" + empBean.getMenuNum() + "  " + empBean.getMenuName());
 					if ((i + 1) < beanSize) {
+						if (empBean.getDoMethod() != null && !empBean.getDoMethod().isEmpty()) {
+							buffer.append("\r\n");
+							buffer.append("L2,F3,AL		|");
+							buffer.append(empBean.getDoMethod());
+						}
 						buffer.append("\r\n");
 						buffer.append("^,Xblack_color|**Change to black Color**");
 					}else{
@@ -326,7 +336,7 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 
 			// 拼接打印做法
 			// 如果为上菜单不打印做法
-			if (!queueNo.trim().equals("10")) {
+//			if (!queueNo.trim().equals("10")) {
 
 				StringBuffer sb = new StringBuffer();
 				// 判断是是否是有多规格菜品
@@ -352,7 +362,7 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 					sb.insert(0, "*");
 					empBean.setDoMethod(sb.toString());
 				}
-			}
+//			}
 
 			if (!printMes.containsKey(queueNo)) {
 				List<LinuxPrintEmpBean> beans = new ArrayList<LinuxPrintEmpBean>();
@@ -428,7 +438,6 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 			if (orders.getRows() != null && !orders.getRows().isEmpty()) {
 				// 菜品总金额
 				double allItemtot = 0;
-				double alltRvItemtot = 0;
 				/** 营业时间 **/
 				int priodo = checkPeriodDao.queryCurrentPeriod().getPeriodno();
 				// 保存数据
@@ -437,19 +446,87 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 				Map<String, Object> singleMap = createCheckItem(checkInfo,
 						inorderItems.toArray(new String[inorderItems.size()]), orders, candaoDishMap,
 						canDaoToInorderMap);
-				items.addAll((Collection<? extends TblItem>) singleMap.get("items"));
-				allItemtot += ((double) singleMap.get("allItemtot"));
-				alltRvItemtot += ((double) singleMap.get("alltRvItemtot"));
+				Collection<? extends TblItem> dishItems = (Collection<? extends TblItem>) singleMap.get("items");
+				items.addAll(dishItems);
+				allItemtot += getAllItemtot(dishItems);
 				int restatus = itemDao.addbatchItem(items);
 				result.put("addStatus", restatus);
 				result.put("allItemtot", allItemtot);
-				result.put("alltRvItemtot", alltRvItemtot);
+				result.put("alltRvItemtot", allItemtot);
 			}
 		} catch (Exception e) {
 			logger.error("----addItemStatus-->", e.getStackTrace());
 		}
 		return result;
 
+	}
+
+	/**
+	 * 计算菜品总金额
+	 * @param dishItems
+	 * @return
+	 */
+	private double getAllItemtot(Collection<? extends TblItem> dishItems) {
+		double allItemtot = 0;
+		for (TblItem tblItem : dishItems) {
+			allItemtot += tblItem.getPrice();
+		}
+		return allItemtot;
+	}
+
+	/**
+	 * <pre>
+ 根据时间段计算菜品折扣：
+	1.星期一至星期五 
+	午市：09:00:00—14:25:59  （88折）
+	下午茶： 14:26:00--16:00:00  （78折）
+	晚市：  16:00:01 – 23:00:00   （原价）
+	 
+	2.星期六、星期日
+	午市：09:00:00—14:25:59  （原价）
+	下午茶： 14:26:00--16:00:00  （78折）
+	晚市：  16:00:01 – 23:00:00 （原价）
+		</pre>
+	 * @param dishItems
+	 * @return 
+	 */
+	private Collection<? extends TblItem> autoCalcDishDiscount(Collection<? extends TblItem> dishItems) {
+		Calendar cal = Calendar.getInstance();
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int minute = cal.get(Calendar.MINUTE);
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+
+		boolean afternoonTeaTime = (hour == 14 && minute >= 26) || (hour > 14 && hour < 16); //下午茶
+		boolean middayTime = (hour == 14 && minute < 26) || (hour >= 9 && hour < 14);   //午市
+		
+		String[] split = PropertiesUtils.getValue("NO_DISCOUNT_DISHES").split(",");
+		List<String> noDiscountList = Arrays.asList(split);
+		String datetime = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss").format(cal.getTime());
+		for (TblItem tblItem : dishItems) {
+			String dishNo = tblItem.getItem();
+			if(noDiscountList.contains(dishNo)){
+				logger.info("-------------------------<不打折的菜品编号：" + dishNo + ",下单时间：" + datetime+ ">-------------------------");
+				continue;
+			}
+			Double price = tblItem.getPrice();
+			double sevenPointEight = Math.rint(price * Double.valueOf(PropertiesUtils.getValue("afternoon_tea_dis")));
+			double eightPointEight = Math.rint(price * Double.valueOf(PropertiesUtils.getValue("breakfast_tad_dis")));
+			if(afternoonTeaTime){
+				tblItem.setPrice(sevenPointEight);
+				tblItem.setItemtot(sevenPointEight);
+				tblItem.setRvitemtot(sevenPointEight);
+			}else{
+				//周一到周五
+				if(dayOfWeek > 1 && dayOfWeek < 7){
+					if(middayTime){
+						tblItem.setPrice(eightPointEight);
+						tblItem.setItemtot(eightPointEight);
+						tblItem.setRvitemtot(eightPointEight);
+					}
+				}
+			}
+		}
+		return dishItems;
 	}
 
 	/**
@@ -548,7 +625,7 @@ public class InorderOrderDeatilServiceImpl extends OrderDetailServiceImpl {
 
 			resultMap.put("allItemtot", allItemtot);
 			resultMap.put("alltRvItemtot", alltRvItemtot);
-			resultMap.put("items", items);
+			resultMap.put("items", autoCalcDishDiscount(items));
 		} catch (Exception e) {
 			logger.error("方法：createCheckItem---》" + e.getStackTrace());
 		}
