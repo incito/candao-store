@@ -248,34 +248,32 @@ public class Print4POSServiceImpl implements Print4POSService {
     }
 
     @Override
-    public void printItemSellDetail(ResultInfo4Pos resultInfo4Pos, String deviceid) throws Exception {
-        if (resultInfo4Pos == null) {
-            return;
-        }
+    public void printItemSellDetail(Map<String, Object> data, String deviceid) throws Exception {
+        Assert.notEmpty(data, "参数错误");
+        //分店名称
         Map<String, Object> branchInfo = tbBranchDao.getBranchInfo();
         if (!MapUtils.isEmpty(branchInfo)) {
-            resultInfo4Pos.setBranname(String.valueOf(branchInfo.get("branchname")));
+            data.put("branchname", String.valueOf(branchInfo.get("branchname")));
         }
-
+        //打印时间
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        resultInfo4Pos.setDatetime(sdf.format(date));
+        data.put("datetime", sdf.format(date));
+        //总额
         String total = "0";
-
-        if (!CollectionUtils.isEmpty(resultInfo4Pos.getData())) {
+        List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("data");
+        if (!CollectionUtils.isEmpty(items)) {
             int index = 0;
-            for (DishItem it : resultInfo4Pos.getData()) {
-                it.setIndex(++index + "");
-                total = stringAdd(total, StringUtils.isEmpty(it.getTotlePrice()) ? "0" : it.getTotlePrice());
+            for (Map<String, Object> it : items) {
+                it.put("index", ++index + "");
+                total = stringAdd(total, StringUtils.isEmpty(it.get("totlePrice")) ? "0" : String.valueOf(it.get("totlePrice")));
             }
         }
-        resultInfo4Pos.setTotal(total);
+        data.put("total", total);
 
         PrintObj obj = new PrintObj();
-        obj.setItem(resultInfo4Pos);
+        obj.setPosData(data);
         obj.setListenerType(Constant.ListenerType.ItemSellDetailTemplate);
-
-        // TODO
         Map<String, Object> params = new HashMap<>();
         params.put("printertype", "10");
         params.put("deviceid", deviceid);
@@ -430,9 +428,9 @@ public class Print4POSServiceImpl implements Print4POSService {
     private List<Map<String, Object>> generatePreferList(Map<String, Object> map) {
         Assert.notEmpty(map, "固定优惠不能为空");
         List<Map<String, Object>> res = new LinkedList<>();
-        String[] name = {"优免", "会员积分消费", "会员券消费", "会员优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增"};
+        String[] name = {"优免", "会员积分消费", "会员券消费", "会员优惠", "抹零", "赠送金额", "四舍五入", "会员储值消费虚增","套餐优惠"};
         String[] valueName = {"bastfree", "integralconsum", "meberTicket", "memberDishPriceFree", "fraction", "give",
-                "roundoff", "mebervalueadd"};
+                "roundoff", "mebervalueadd","taocanyouhui"};
         for (int i = 0; i < name.length; i++) {
             Map<String, Object> temp = new HashMap<>();
             temp.put("name", name[i]);
@@ -476,10 +474,23 @@ public class Print4POSServiceImpl implements Print4POSService {
                     // 鱼锅
                     List<Map<String, Object>> rows = (List<Map<String, Object>>) posdata.get("rows");
                     if (!CollectionUtils.isEmpty(rows)) {
-                        List<Map<String, Object>> temp2 = parseRows(rows);
+                    	List<Map<String, Object>> temp2 = parseRows(rows);
+                    	//服务费
+                    	Object serviceCharge=((Map)map.get("data")).get("serviceCharge");
+                    	if(null!=serviceCharge){
+                    		TServiceCharge serviceChargeObj=(TServiceCharge)serviceCharge;
+                    		if(com.candao.www.constant.Constant.SERVICE_CHARGE_ON.ON==serviceChargeObj.getChargeOn()){
+                    			Map<String, Object>serviceMap=new HashMap<>();
+                    			serviceMap.put("dishname", "服务费");
+                    			serviceMap.put("dishnum", "1");
+                    			serviceMap.put("dishunit", "");
+                    			serviceMap.put("orderprice", 0);
+                    			serviceMap.put("payamount", serviceChargeObj.getChargeAmount());
+                    			temp2.add(serviceMap);
+                    		}
+                    	}
                         posdata.put("rows", temp2);
                     }
-
                     // 优惠
                     Object preferentialInfo = posdata.get("preferentialInfo");
                     List<Map<String, String>> settlementInfo = null;
@@ -489,7 +500,7 @@ public class Print4POSServiceImpl implements Print4POSService {
                         //组合结算备注
                         settlementInfo = new ArrayList<>();
                         String[] name = {"合计：", resolveNullType(prefer.get("moneyWipeName")) + ":", "赠送金额:", "总优惠:", "应收:"};
-                        String[] value = {resolveNullType(prefer.get("menuAmount")),
+                        String[] value = {resolveNullType(prefer.get("resMenuAndServeChargeAmount")),
                                 resolveNullType(prefer.get("moneyWipeAmount")), resolveNullType(prefer.get("zdAmount")),
                                 stringAdd(resolveNullType(prefer.get("toalFreeAmount")), resolveNullType(prefer.get("moneyWipeAmount"))), resolveNullType(prefer.get("reserveAmout"))};
                         for (int i = 0; i < name.length; i++) {
@@ -599,7 +610,7 @@ public class Print4POSServiceImpl implements Print4POSService {
         String[] dishnames = StringUtils.split(dishname, "#");
         String[] dishunits = StringUtils.split(dishunit, "#");
 
-        dishname = (dishnames == null ? dishname : dishnames[0]) + "(" + (dishunits == null ? dishunit : dishunits[0]) + ")";
+        dishname = (dishnames == null ? dishname : dishnames[0]) + (dishunits == null ? dishunit : "(" + dishunits[0] + ")");
         if (FREE_DISH_TYPE.equals(it.get("pricetype"))) {
             dishname += "(赠)";
         }

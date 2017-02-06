@@ -61,7 +61,8 @@ public class BusinessReport1 {
 	private String kaitaishu = "0"; //开台数
 	private String shouldamountTakeout="0";  //   外卖统计(应收）
 	private String taocanyouhui = "0";
-	
+	private String serviceAmount = "0"; //服务费
+
 	public String getTaocanyouhui() {
 		return taocanyouhui;
 	}
@@ -464,6 +465,13 @@ public class BusinessReport1 {
 	public void setFraction(String fraction) {
 		this.fraction = fraction;
 	}
-    
+
+	public String getServiceAmount() {
+		return serviceAmount;
+	}
+
+	public void setServiceAmount(String serviceAmount) {
+		this.serviceAmount = serviceAmount;
+	}
 }
 

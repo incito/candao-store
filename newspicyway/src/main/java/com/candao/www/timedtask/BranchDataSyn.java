@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.candao.www.webroom.service.DataDictionaryService;
 import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,8 @@ public class BranchDataSyn {
 	// 保存压缩文件到磁盘的线程池,上传失败短信发送通知现场
 	private ExecutorService singleThreadPool = Executors
 			.newSingleThreadExecutor();
+	@Autowired
+	private DataDictionaryService dataDictionaryService;
 
 	// 存储压缩包的压缩包名
 	private final String SQL_FILE_NAME = "sql.gz";
@@ -628,19 +631,24 @@ public class BranchDataSyn {
 	}
 	/**
 	 * 
-	 * @Description:从云端获取需要同步的数据库表
+	 * @Description:从配置获取需要同步的数据库表
 	 * @create: 余城序
 	 * @Modification:
 	 * @return String[]
 	 * @throws SysException 
 	 */
 	private String[] getSynTablesFromMaster() throws SysException{
-		String masterUrl = PropertiesUtils.getValue("cloud.host");
-		String webname=PropertiesUtils.getValue("cloud.webroot");
-		masterUrl = "http://"+masterUrl +"/"+webname+ CONTROLLER + "/synTables.do";
-		String tables = HttpOperate.post(masterUrl,null);
+		List<Map<String, Object>> datasByType = dataDictionaryService.getDatasByType("SYNTABLES");
+		String[] tables=null;
+		if(null!=datasByType){
+			tables=new String[datasByType.size()];
+			for(int i=0;i<datasByType.size();i++){
+//				格式 表名:条件字段
+				tables[i]=datasByType.get(i).get("itemValue").toString();
+			}
+		}
 		logger.info("获取需要同步的表:" + tables);
-		return tables.split(",");
+		return tables;
 	}
 
 	// 添加同步记录
@@ -650,21 +658,21 @@ public class BranchDataSyn {
 		mapValue.put("datapath", "暂时不用");
 		return branchDataSynDao.insertSynRecord(mapValue);
 	}
-	
 	private Map<String,List<Map<String,String>>> getSynData(String[] tables,String startDate,String endDate) throws SysException{
 		Map<String,List<Map<String,String>>> tableMap = new HashMap<String,List<Map<String,String>>>(32);
 		List<Map<String,String>> datas = new ArrayList<Map<String,String>>();
 		for (String table : tables) {
+			String[] tableColumn=table.split(":");
 			try{
-				datas = branchDataSynDao.getSynData(table,
-						SynDataTools.getConditionSql(table, startDate, endDate));
+				datas = branchDataSynDao.getSynData(tableColumn[0],
+						SynDataTools.getConditionSql1(tableColumn.length>1?tableColumn[1]:"", startDate, endDate));
 			}catch(SysException e){
 				if(e.getCode().equals(ErrorMessage.SQLEXE_ERROR))
 					logger.info("数据库表不存在",e);
 				else
 					throw e;
 			}
-			tableMap.put(table, datas);
+			tableMap.put(tableColumn[0], datas);
 		}
 		return tableMap;
 	}

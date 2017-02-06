@@ -20,6 +20,7 @@ public interface OrderOpMapper {
     List<Map> getListJson(String orderId);
 
     List<Map> getJsJson(String orderId);
+    List<Map> getPreferentialDish(String orderId);
 
     void updateOrderTypeById(@Param("orderId") String orderId, @Param("orderType") String orderType);
 

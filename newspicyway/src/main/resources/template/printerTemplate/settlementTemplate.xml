@@ -212,6 +212,7 @@
 			</datas>
 		</row:row>
 	</foreach:foreach>
+	
 	<row:row description="分割线">
 		<align description="对齐">ALIGN_LEFT</align>
 		<font description="字体大小">SMALL</font>

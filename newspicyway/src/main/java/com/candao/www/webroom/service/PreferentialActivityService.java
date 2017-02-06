@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.candao.common.page.Page;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TbHandFree;
 import com.candao.www.data.model.TbInnerFree;
 import com.candao.www.data.model.TbPreferentialActivity;
@@ -228,6 +229,7 @@ public interface PreferentialActivityService {
    
    /**
     * 对账单使用优惠
+ * @param orderDetailList 
     * @param type  类型
     * @param sub_type 子类型（当类型为 更多优惠 06的时候，这里用子类型区分是 哪个优惠）
     * @param orderid  账单id
@@ -235,7 +237,7 @@ public interface PreferentialActivityService {
     * @param disrate  默认0（手工折扣类会上传一个>0的折扣）
     * @return
     */
-   public OperPreferentialResult updateOrderDetailWithPreferential (Map<String, Object> params);
+   public OperPreferentialResult updateOrderDetailWithPreferential (Map<String, Object> params, List<ComplexTorderDetail> orderDetailList);
    
    /**
     * 取消 账单使用的优惠

@@ -6,8 +6,6 @@ body{
 .in-btn135 {
     width: 80px;
 }
-
-
 .counter-content{
 	margin-top:20px;
 	position:relative;
@@ -27,12 +25,12 @@ body{
 	border:1px solid #ECECEC;
 	color:#ffce52;
 	cursor: pointer;
-	background: #fff;
+    background: #fff;
 }
 .counter-add.counter-type-add{
 	margin-top:-10px;
 	border:1px solid #ececec;
-	color:#c8c8c8;
+	/*color:#c8c8c8;*/
 	float:right;
 }
 
@@ -40,7 +38,7 @@ body{
 .nav-counter{
 	padding:0px;
 	height: 32px;
-	width:99%;	
+	width:98%;
 	white-space: nowrap;
 	overflow: hidden;
 	display: inline-block;
@@ -56,6 +54,7 @@ body{
 /*	width:10%;*/
 	position: relative;
 	width: 8.3%;
+    cursor: pointer;
 /* 	页面小数运算，存在偏差 */
 /* box-sizing: border-box;有时会对其有影响？ */
 } 
@@ -68,13 +67,20 @@ ul.nav-counter li:last-child {
 }
 
 .nav-counter li.active{
- 	color:#ffce52;
+ 	/*color:#ffce52;*/
  	border-bottom:none;
  	background:url(../images/counter-type.png) repeat-x,url(../images/counter-arrow.png) no-repeat 50% 8%;
  	background-size: auto 30px,auto auto;
  	cursor: pointer;
  }
- 
+
+.tables-type-active{
+    color:#ffce52;
+    border-bottom:none;
+    background:url(../images/counter-type.png) repeat-x,url(../images/counter-arrow.png) no-repeat 50% 8%;
+    background-size: auto 30px,auto auto;
+    cursor: pointer;
+}
   
  
 .nav-counter li i.icon-remove{
@@ -133,6 +139,12 @@ ul.nav-counter li:last-child {
 	font-size: 12px;
 }
 .counter-detail-box:hover{
+	border:1px solid #ffce52;
+	color:#ffce52;
+	cursor: pointer;
+	background-color:#fff;
+}
+.counter-detailService-box{
 	border:1px solid #ffce52;
 	color:#ffce52;
 	cursor: pointer;

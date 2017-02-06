@@ -22,7 +22,14 @@
 		<result property="tableName" column="tableName" />
 		<result property="orderid" column="orderid" />
 		<result property="custPrinter" column="custPrinter" />
-		
+		<result property="modifytime" column="modifytime" />
+		<result property="chargeOn" column="chargeOn" />
+		<result property="chargeType" column="chargeType" />
+		<result property="chargeRateRule" column="chargeRateRule" />
+		<result property="chargeRate" column="chargeRate" />
+		<result property="chargeTime" column="chargeTime" />
+		<result property="chargeAmount" column="chargeAmount" />
+
 	</resultMap>
 	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="tbTableResultMap"></resultMap>
 	<resultMap id="findResultMap"  type="java.util.HashMap" extends="tbTableResultMap"></resultMap>
@@ -45,6 +52,13 @@
 		 ,tableName
 		 ,orderid
 		 ,custPrinter
+		 ,modifytime
+		 ,chargeOn
+		 ,chargeType
+		 ,chargeRateRule
+		 ,chargeRate
+		 ,chargeTime
+		 ,chargeAmount
   </sql>
 
 	<insert id="insert" parameterType="com.candao.www.data.model.TbTable">
@@ -65,7 +79,13 @@
 	    tableName,
 	    status,
 	    custPrinter,
-	    modifytime
+	    modifytime,
+		chargeOn
+		,chargeType
+		,chargeRateRule
+		,chargeRate
+		,chargeTime
+		,chargeAmount
 	     
 	   )values (
 	     #{tableid},
@@ -79,7 +99,13 @@
 	     #{tableName},
 	     #{status},
 	     #{custPrinter},
-	     now()
+	     now(),
+		 #{chargeOn},
+		#{chargeType},
+		#{chargeRateRule},
+		#{chargeRate},
+		#{chargeTime},
+		#{chargeAmount}
 	   )
 	
 	   
@@ -137,9 +163,17 @@
 	      <if test="custPrinter != null ">
 	       custPrinter=#{custPrinter},
 	     </if>	
-	     modifytime = now()	     
-	    </set> 
-	   where 
+	     modifytime = now(),
+			   chargeOn=#{chargeOn},
+			   chargeType=#{chargeType},
+			   chargeRateRule=#{chargeRateRule},
+			   chargeRate=#{chargeRate},
+			   chargeTime=#{chargeTime},
+			   chargeAmount=#{chargeAmount}
+	   </set>
+	   where
+		(status IS NULL OR status != 5)
+		AND
 	    tableid=#{tableid} 
 	</update>
 	<delete id="delete" parameterType="map">
@@ -182,19 +216,47 @@
 	
 	<select id="findTableDetail" parameterType="map" resultMap="findResultMap">
 	   select 
-	    <include refid="Base_Column_List"/>
-		,modifytime
-	   from t_table
+           t.tableid
+		 ,t.`position`
+		 ,t.status
+		 ,t.restaurantId
+		 ,t.isVip
+		 ,t.iscompartment
+		 ,t.isavailable
+		 ,t.buildingNo
+		 ,t.minprice
+		 ,t.fixprice
+		 ,t.tableNo
+		 ,t.personNum
+		 ,t.tabletype
+		 ,t.areaid
+		 ,t.tableName
+		 ,t.orderid
+		 ,t.custPrinter
+		 ,t.modifytime
+		 ,t.chargeOn
+		 ,t.chargeType
+		 ,t.chargeRateRule
+		 ,t.chargeRate
+		 ,t.chargeTime
+		 ,t.chargeAmount
+		,d.itemDesc AS chargeName
+		,d.itemid AS chargeID
+	   from t_table t
+		LEFT JOIN t_dictionary d ON (t.chargeType = d.itemid AND d.type = 'TABLECHARGE')
 	   where 
-	    areaid=#{areaid} and status !=5
-	    order by CASE WHEN tabletype = 2
-		THEN  1 WHEN tabletype = 3 THEN 2
-		ELSE  -9999 + CAST(IFNULL(position,9999) AS signed) END ASC ,modifytime ASC ,tableNo ASC
+	    t.areaid=#{areaid} and t.status !=5
+	    order by CASE WHEN t.tabletype = 2
+		THEN  1 WHEN t.tabletype = 3 THEN 2
+		ELSE  -9999 + CAST(IFNULL(t.position,9999) AS signed) END ASC ,t.modifytime ASC ,t.tableNo ASC
 	</select>
 
 
 	   <select id="menuInfoByorderidToCount" parameterType="map" resultType="java.lang.Long">
-	    select COUNT(orderid) FROM t_order_detail WHERE orderid =#{orderid}
+	    select COUNT(orderid) FROM t_order_detail
+	    <if test="orderid !=null and orderid !=''">
+	       WHERE orderid =#{orderid}
+	    </if>
 	   </select>
 
 	<select id="find" parameterType="map" resultMap="findResultMap">
@@ -212,7 +274,15 @@
 	       ELSE
 	         sum(d.dishnum * d.orderprice)
 	       END as amount
-		,b.areaSort,a.modifytime
+			,b.areaSort
+			,a.modifytime
+			,ifnull(a.chargeOn,0) as chargeOn
+			,a.chargeType
+			,a.chargeRateRule
+			,a.chargeRate
+			,a.chargeTime
+			,a.chargeAmount
+			,td.itemDesc AS chargeName
 		    from t_table a
 	   		LEFT JOIN t_tablearea b
 			ON a.areaid = b.areaid
@@ -221,6 +291,7 @@
 			ON a.orderid = c.orderid
 			LEFT JOIN t_order_detail d
 			ON c.orderid = d.orderid
+			LEFT JOIN t_dictionary td ON (a.chargeType = td.itemid AND td.type = 'TABLECHARGE')
 	   <where>
 			  a.status != 5
 	     <if test="tableid != null and tableid != ''">
@@ -289,8 +360,24 @@
             #{item}  
        		</foreach> 
 	     </if>
-	     
-	     
+		   <if test="chargeOn != null ">
+			   AND a.chargeOn=#{chargeOn}
+		   </if>
+		   <if test="chargeType != null ">
+			   AND a.chargeType=#{chargeType}
+		   </if>
+		   <if test="chargeRateRule != null ">
+			   AND a.chargeRateRule=#{chargeRateRule}
+		   </if>
+		   <if test="chargeRate != null ">
+			   AND a.chargeRate=#{chargeRate}
+		   </if>
+		   <if test="chargeTime != null ">
+			   AND a.chargeTime=#{chargeTime}
+		   </if>
+		   <if test="chargeAmount != null ">
+			   AND a.chargeAmount=#{chargeAmount}
+		   </if>
 	   </where>
 	    GROUP BY
 			  a.tableid
@@ -307,34 +394,62 @@
 	</select>
 	
 	<select id="page" parameterType="map" resultMap="pageResultMap">
-	select    tt.areaname,    t.tableid,       t.position,       t.status,       t.restaurantId,       
-	t.isVip,       t.iscompartment,       t.isavailable,       t.buildingNo,      t.minprice,       
-	t.fixprice,       t.tableNo,       t.personNum,       t.tabletype,      t. areaid,       t.tableName
-	,t.custPrinter,t.modifytime
-     from t_table t,   t_tablearea tt      
-	    <where>
-	   <!-- ??? -->
-	    t.areaid=tt.areaid and t.status != 5 and tt.status=1
-	     <if test="personNum != null and personNum != ''">
-	        and t.personNum=#{personNum}
-	     </if>
-	     <if test="tabletype != null and tabletype != ''">
-	        and t.tabletype=#{tabletype}
-	     </if>
-	     <if test="areaid != null and areaid != ''">
-	        and t.areaid=#{areaid}
-	     </if>
-	      <if test="minprice != null and minprice != ''">
-	        and t.minprice=#{minprice}
-	     </if>
-	     <if test="custPrinter != null and custPrinter != ''">
-	        and t.custPrinter=#{custPrinter}
-	     </if>
-	     </where>
+		select tt.areaname, t.tableid, t.position, t.status, t.restaurantId,
+		t.isVip, t.iscompartment, t.isavailable, t.buildingNo, t.minprice,
+		t.fixprice, t.tableNo, t.personNum, t.tabletype, t. areaid, t.tableName
+		,t.custPrinter,t.modifytime
+		,t.chargeOn
+		,t.chargeType
+		,t.chargeRateRule
+		,t.chargeRate
+		,t.chargeTime
+		,t.chargeAmount
+		,td.itemDesc AS chargeName
+		,td.itemid AS chargeID
+		from t_table t
+		INNER JOIN t_tablearea tt
+		LEFT JOIN t_dictionary td ON (t.chargeType = td.itemid AND td.type = 'TABLECHARGE')
+		<where>
+			<!-- ??? -->
+			t.areaid=tt.areaid and t.status != 5 and tt.status=1
+			<if test="personNum != null and personNum != ''">
+				and t.personNum=#{personNum}
+			</if>
+			<if test="tabletype != null and tabletype != ''">
+				and t.tabletype=#{tabletype}
+			</if>
+			<if test="areaid != null and areaid != ''">
+				and t.areaid=#{areaid}
+			</if>
+			<if test="minprice != null and minprice != ''">
+				and t.minprice=#{minprice}
+			</if>
+			<if test="custPrinter != null and custPrinter != ''">
+				and t.custPrinter=#{custPrinter}
+			</if>
+			<if test="chargeOn != null ">
+				and t.chargeOn=#{chargeOn}
+			</if>
+			<if test="chargeType != null ">
+				and t.chargeType=#{chargeType}
+			</if>
+			<if test="chargeRateRule != null ">
+				and t.chargeRateRule=#{chargeRateRule}
+			</if>
+			<if test="chargeRate != null ">
+				and t.chargeRate=#{chargeRate}
+			</if>
+			<if test="chargeTime != null ">
+				and t.chargeTime=#{chargeTime}
+			</if>
+			<if test="chargeAmount != null ">
+				and t.chargeAmount=#{chargeAmount}
+			</if>
+		</where>
 		order by CASE WHEN t.tabletype = 2
-		THEN  1 WHEN t.tabletype = 3 THEN 2
-		ELSE  -9999 + CAST(IFNULL(t.position,9999) AS signed) END ASC ,t.modifytime ASC ,t.tableNo ASC
-<!-- 	     将varchar 转为int 用 cast(a as signed) -->
+		THEN 1 WHEN t.tabletype = 3 THEN 2
+		ELSE -9999 + CAST(IFNULL(t.position,9999) AS signed) END ASC ,t.modifytime ASC ,t.tableNo ASC
+		<!--  将varchar 转为int 用 cast(a as signed) -->
 	</select>
 	
 	<select id="getTableTag"  resultMap="findResultMap">
@@ -366,7 +481,7 @@
  </select>
 	
  <update id="updateStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status},orderid =#{orderid} where    tableid=#{tableid}
+	   update t_table set status = #{status},orderid =#{orderid} where  (status IS NULL OR status != 5) AND tableid=#{tableid}
  </update>
  
  <update id="updateTableById" parameterType="java.util.Map">
@@ -377,7 +492,9 @@
 	 	,status = #{status}
 	 	</if>
     </set>
- 	where tableid=#{tableid}
+ 	where
+	 (status IS NULL OR status != 5)
+	 AND tableid=#{tableid}
  </update>
  
  <update id="updateTableByOrderId" parameterType="java.util.Map">
@@ -388,27 +505,29 @@
 	 	,status = #{status}
 	 	</if>
     </set>
- 	where orderid=#{oldorderid}
+ 	where
+	 (status IS NULL OR status != 5)
+	 AND orderid=#{oldorderid}
  </update>
  
  
   <update id="updateSettleStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status}  where    orderid =#{orderid}
+	   update t_table set status = #{status}  where  (status IS NULL OR status != 5) AND orderid =#{orderid}
  </update>
  
   <update id="updateCleanStatus" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status},orderid= null  where    tableid=#{tableid} or
-	   orderid = #{orderid}
+	   update t_table set status = #{status},orderid= null  where (status IS NULL OR status != 5) and (tableid=#{tableid} or
+	   orderid = #{orderid})    
  </update>
  
   <update id="updateStatusByNo" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set status = #{status} where    orderid =#{orderid}
+	   update t_table set status = #{status} where  (status IS NULL OR status != 5) AND orderid =#{orderid}
  </update>
  
   <update id="updateAllStatus" parameterType="java.util.Map">
 	    <if test="ids != null and ids.size !=0">
 	      update t_table set status = #{status} ,orderid = #{orderid}
-	       where    tableid in 	          
+	       where (status IS NULL OR status != 5) AND tableid in
 	       <foreach item="item" index="index" collection="ids" 
                          open="(" separator="," close=")">
                         #{item}
@@ -417,7 +536,7 @@
  </update>
  
    <update id="updateSettleOrderNull" parameterType="com.candao.www.data.model.TbTable">
-	   update t_table set orderid = null ,status ='0'  where    tableid !=#{tableid} and orderid = #{orderid}
+	   update t_table set orderid = null ,status ='0' where (status IS NULL OR status != 5) AND tableid !=#{tableid} and orderid = #{orderid}
  </update>
  <update id="updateByOrderNo" parameterType="map">
  		UPDATE t_table

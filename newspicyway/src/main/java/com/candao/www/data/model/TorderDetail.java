@@ -7,7 +7,7 @@ import java.util.List;
 import com.candao.www.constant.Constant;
 import com.candao.www.utils.OrderDetailParse;
 
-public class TorderDetail {
+public class TorderDetail implements Cloneable {
 	
 	private String orderdetailid;
 
@@ -487,6 +487,10 @@ public class TorderDetail {
 		//赠菜原因
 		setFreereason(OrderDetailParse.getFreeReason(sperequire));
 		return this;
+	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return (TorderDetail)super.clone();
 	}
 	
 }

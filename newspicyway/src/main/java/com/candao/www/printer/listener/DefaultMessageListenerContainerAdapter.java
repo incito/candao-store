@@ -22,4 +22,8 @@ public class DefaultMessageListenerContainerAdapter extends DefaultMessageListen
         this.shutdown();
         callback.run();
     }
+
+//    @Override
+//    public void stop() {
+//    }
 }

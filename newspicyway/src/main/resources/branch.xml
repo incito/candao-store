@@ -94,7 +94,7 @@
 		</property>
 		<property name="baselineVersion">
 			<bean class="org.flywaydb.core.api.MigrationVersion" factory-method="fromVersion">
-				<constructor-arg value="2.1.1" />
+				<constructor-arg value="2.1" />
 			</bean>
 		</property>
 	</bean>
@@ -150,7 +150,7 @@
     <aop:config>  
         <aop:aspect id="WorkLogAdvice" ref="aoplogbean">  
             <aop:pointcut id="businessService"  
-                expression="execution(* com.candao.www.*.service.*.*(..))" />  
+                expression="execution(* com.candao.www.*.service.*.*(..)) and !execution(* com.candao.www.webroom.service.impl.H5LogServiceImpl.*(..))" />
             <aop:before pointcut-ref="businessService" method="doBefore"/>  
             <aop:after pointcut-ref="businessService" method="doAfter"/>  
             <aop:around pointcut-ref="businessService" method="doAround"/>  
@@ -269,6 +269,11 @@
 		<property name="basePackage" value="com.candao.www.data.pos" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
 	</bean>
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean id="serviceChargeDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.candao.www.data.dao.TServiceChargeDao" />
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
 
 	<!-- 当Spring容器启动完成后执行下面的这个Bean -->
 	<bean class="com.candao.www.spring.InitBranchId"/>

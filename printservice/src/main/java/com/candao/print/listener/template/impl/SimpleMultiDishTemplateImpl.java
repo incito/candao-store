@@ -76,7 +76,7 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate {
 
     @Override
     public String[] getTableMsg(PrintObj obj) throws Exception {
-        String[] tableName = {obj.getTableNo(), " " , "人数:" + obj.getCustnum()};
+        String[] tableName = {obj.getTableNo(), " ", "人数:" + obj.getCustnum()};
         Integer[] tableLength = template.getTableLength();
         String[] table = StringUtils.getLineFeedText(tableName, tableLength);
         trim(table);
@@ -139,6 +139,8 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate {
 
         for (PrintDish it : list) {
             // 校验名称
+            logger.info("----------------------->");
+            logger.info("打印菜品：" + String.valueOf(it.getDishName()));
             String dishName = it.getDishName() == null ? "" : it.getDishName();
             String dishNum = it.getDishNum() == null ? "" : it.getDishNum();
             String dishUnit = it.getDishUnit() == null ? "" : it.getDishUnit();
@@ -166,19 +168,19 @@ public class SimpleMultiDishTemplateImpl implements ListenerTemplate {
         public Template(int size) {
             switch (size) {
                 case 1:
-                    this.tableLength = new Integer[]{32,1, 8};
+                    this.tableLength = new Integer[]{32, 1, 8};
                     this.noteLength = 38;
                     this.bodyLength = new Integer[]{25, 8, 8};
                     this.tailLength = new Integer[]{9, 24, 8};
                     break;
                 case 2:
-                    this.tableLength = new Integer[]{32,1, 8};
+                    this.tableLength = new Integer[]{32, 1, 8};
                     this.noteLength = 38;
                     this.bodyLength = new Integer[]{25, 8, 8};
                     this.tailLength = new Integer[]{9, 24, 8};
                     break;
                 case 3:
-                    this.tableLength = new Integer[]{12,1, 8};
+                    this.tableLength = new Integer[]{12, 1, 8};
                     this.noteLength = 19;
                     this.bodyLength = new Integer[]{12, 5, 4};
                     this.tailLength = new Integer[]{5, 8, 8};

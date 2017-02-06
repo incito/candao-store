@@ -277,7 +277,7 @@
 						<div class="addavoid-input-div hide" id="addavoid-input">
 							<div class="col-xs-3 no-left-padding">
 								<input type="text" class="form-control" id="avoid_name" name=""
-									maxlength="5" required="required" onblur="avoidSave();" />
+									maxlength="45" required="required" onblur="avoidSave();" />
 							</div>
 						</div>
 					</div>
@@ -303,7 +303,7 @@
 						<div class="addreason-input-div hide" id="addreason-input">
 							<div class="col-xs-3 no-left-padding">
 								<input type="text" class="form-control" id="reason_name" name=""
-									maxlength="5" required="required" onblur="returnDishSave();" />
+									maxlength="45" required="required" onblur="returnDishSave();" />
 							</div>
 						</div>
 					</div>
@@ -330,7 +330,7 @@
 						<div class="addcomplaint-input-div hide" id="complaint-input">
 							<div class="col-xs-3 no-left-padding">
 								<input type="text" class="form-control" id="complaint_name"
-									name="" maxlength="4" required="required"
+									name="" maxlength="45" required="required"
 									onblur="complaintSave();" />
 							</div>
 						</div>
@@ -338,6 +338,60 @@
 				</div>
 			</div>
 		</div>
+		<div class="setup_div textEdit">
+			<div style="height: 30px;">
+				<div class="system-setup-title" style="">反结算原因</div>
+				<button type="button"  class="btn btn-default editBackSettle">编辑</button>
+				<button type="button"
+						class="btn btn-default hide saveBackSettle">保存</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+			<div class="form-horizontal " >
+				<div class="form-group">
+					<input type="hidden" class="backSettlestype" value="BACKSETTLE_REASON" />
+					<div class="avoid-tag-table col-xs-10 backSettle-list"
+						 style="overflow: auto;">
+						<div class="add-reason avoid-li btn btn-default hide backSettle-add">
+							<i class="icon-plus"></i>添加原因
+						</div>
+						<div class="addBackSettle-input-div hide backSettle-input">
+							<div class="col-xs-3 no-left-padding">
+								<input type="text" class="form-control backSettle_name"
+									   name="" maxlength="45" required="required"
+									   onblur="backSettleSave(this);" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="setup_div textEdit">
+			<div style="height: 30px;">
+				<div class="system-setup-title" style="">赠菜原因</div>
+				<button type="button"  class="btn btn-default editBackSettle">编辑</button>
+				<button type="button"
+						class="btn btn-default hide saveBackSettle">保存</button>
+			</div>
+			<hr style="margin: 5px 0px;" />
+			<div class="form-horizontal " >
+				<div class="form-group">
+					<input type="hidden" class="backSettlestype" value="GIFT_REASON" />
+					<div class="avoid-tag-table col-xs-10 backSettle-list"
+						 style="overflow: auto;">
+						<div class="add-reason avoid-li btn btn-default hide backSettle-add">
+							<i class="icon-plus"></i>添加原因
+						</div>
+						<div class="addBackSettle-input-div hide backSettle-input">
+							<div class="col-xs-3 no-left-padding">
+								<input type="text" class="form-control backSettle_name"
+									   name="" maxlength="45" required="required"
+									   onblur="backSettleSave(this);" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	
 		<!--div class="setup_div">
 			<div style="height: 30px;">
 				<div class="system-setup-title" style="">呼叫服务类型设置</div>
@@ -564,6 +618,15 @@
 						<select class="form-control" disabled  name="viptype">
 							<option value="1" class="form-control" selected="selected">餐道会员</option>
 							<option value="2" class="form-control">雅座会员</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group viptype-box">
+					<label class="col-xs-2 control-label">PAD注册会员开关：</label>
+					<div class="col-xs-3">
+						<select class="form-control" disabled  name="registerswitch">
+							<option value="1" class="form-control" selected="selected">启用</option>
+							<option value="0" class="form-control">关闭</option>
 						</select>
 					</div>
 				</div>

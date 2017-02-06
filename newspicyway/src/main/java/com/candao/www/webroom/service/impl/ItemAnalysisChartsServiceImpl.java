@@ -208,9 +208,9 @@ public class ItemAnalysisChartsServiceImpl implements ItemAnalysisChartsService 
 				continue;
 			}
 			int custnum = parseInt(String.valueOf(orderInfoMap.get("custnum")));
-			if(custnum<=0){
+			/*if(custnum<=0){
 				continue;
-			}
+			}*/
 			String time = "";
 			if(String.valueOf(params.get("dateType")).equals("0")){//天
 				time = begintime.substring(0, 10);

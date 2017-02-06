@@ -28,14 +28,33 @@
     </select>
     
     <select id="getAllOrderInfo" parameterType="java.util.Map"  resultType="java.util.Map">
-       select ord.dishid,sum(ord.dishnum) as dishnum ,od.custnum,od.begintime from t_order_detail ord left join t_order od  on od.orderid = ord.orderid LEFT JOIN t_dish_dishtype dt on ord.dishid = dt.dishid
-       where od.orderstatus in (3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime} and dt.columnid = #{columnid} and od.branchid = #{branchId} and  ( ord.superkey = ord.primarykey or ord.dishtype &lt;&gt; 2 ) group by ord.dishid,ord.orderid
+       select ord.dishid,
+       	sum(ord.dishnum) as dishnum ,
+       	ifnull(od.custnum,0) as custnum,
+       	od.begintime 
+       from t_order_detail ord 
+       left join t_order od  on od.orderid = ord.orderid 
+       LEFT JOIN t_dish_dishtype dt on ord.dishid = dt.dishid
+       where od.orderstatus in (3)
+        and  od.begintime &gt;= #{beginTime} 
+        and od.begintime &lt;= #{endTime} 
+        and dt.columnid = #{columnid}
+        and od.branchid = #{branchId}
+        and  ( ord.superkey = ord.primarykey or ord.dishtype &lt;&gt; 2 )
+       group by ord.dishid,ord.orderid
     </select>
     <select id="getAllOrderCustnum" parameterType="java.util.Map"  resultType="java.util.Map">
-       select sum(od.custnum) as custnum,DATE_FORMAT(od.begintime,"%Y-%m-%d") as time  from t_order od  where od.orderstatus in (3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime}  and od.branchid = #{branchId} group by time 
+       select ifnull(sum(od.custnum),0) as custnum, 
+       	DATE_FORMAT(od.begintime,"%Y-%m-%d") as time 
+       from t_order od 
+       where od.orderstatus in (3) 
+       and  od.begintime &gt;= #{beginTime} 
+       and od.begintime &lt;= #{endTime} 
+       and od.branchid = #{branchId} 
+       group by time 
     </select>
     
     <select id="getAllOrderCustnumOfMonth" parameterType="java.util.Map"  resultType="java.util.Map">
-       select sum(od.custnum) as custnum,DATE_FORMAT(od.begintime,"%Y-%m") as time  from t_order od  where od.orderstatus in (3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime}  and od.branchid = #{branchId} group by time 
+       select ifnull(sum(od.custnum),0) as custnum,DATE_FORMAT(od.begintime,"%Y-%m") as time  from t_order od  where od.orderstatus in (3) and  od.begintime &gt;= #{beginTime} and od.begintime &lt;= #{endTime}  and od.branchid = #{branchId} group by time 
     </select>
 </mapper>

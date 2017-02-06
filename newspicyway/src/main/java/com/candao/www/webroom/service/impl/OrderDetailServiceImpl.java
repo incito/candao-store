@@ -74,7 +74,57 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         return Constant.SUCCESSMSG;
     }
+    
+     /***
+      * 获取有关订单的餐台信息
+      */
+	@Override
+	public Map<String, Object> findOrderByInfo(String orderid) {
+		// orderInvoiceTitle 发票抬头
+				// orderStatus; 订单状态
+				// tableStatus 餐桌状态
+				// customerNumber 多少人
+				Map<String, Object> outresultMap = new HashMap<>();
+				List<Map<String, Object>> resultMapList = torderDetailMapper.findOrderByInfo(orderid);
+				if (resultMapList != null && !resultMapList.isEmpty()) {
+					List<Object> tipMapList = torderDetailMapper.findOrderByTip(orderid);
+					Map<String, Object> resultMap = resultMapList.get(0);
+					Map<String, Object> tipMap = !tipMapList.isEmpty() ? (Map<String, Object>) tipMapList.get(0) : null;
+					outresultMap.put("orderInvoiceTitle", resultMap.get("invoice_title"));
+					outresultMap.put("orderStatus", resultMap.get("orderstatus"));
+					outresultMap.put("tableStatus", resultMap.get("status"));
+					outresultMap.put("isFree", (Boolean) resultMap.get("isfree") ? "1" : "0");
+					outresultMap.put("numOfMeals", resultMap.get("num_of_meals"));
+					outresultMap.put("customerNumber", resultMap.get("custnum"));
+					outresultMap.put("womanNum", resultMap.get("womanNum"));
+					outresultMap.put("childNum", resultMap.get("childNum"));
+					outresultMap.put("mannum", resultMap.get("mannum"));
+					outresultMap.put("memberno", resultMap.get("memberno"));
+					outresultMap.put("begintime", DateUtils.formatDateToString((Date) resultMap.get("begintime")));
+					Date date = (Date) resultMap.get("endtime");
+					outresultMap.put("endtime", date == null ? "" : DateUtils.formatDateToString(date));
+					outresultMap.put("areaname", resultMap.get("areaname"));
+					outresultMap.put("tableName", resultMap.get("tableName"));
+					outresultMap.put("fullName", resultMap.get("userid"));
+					outresultMap.put("waiterName", resultMap.get("name"));
+					// 小费相关
+					outresultMap.put("tipWaiterNum", tipMap != null ? tipMap.get("waiter_number") : "");
+					outresultMap.put("tipWaiterName", tipMap != null ? tipMap.get("name") : "");
+					/** 预打印 **/
+					int printcount = Integer.valueOf(String.valueOf(resultMap.get("befprintcount")));
+					outresultMap.put("befprintcount", printcount + 1);
 
+					/** 服务费 **/
+					outresultMap.put("chargeOn", resultMap.get("chargeOn"));
+					outresultMap.put("chargeType", resultMap.get("chargeType"));
+					outresultMap.put("chargeRateRule", resultMap.get("chargeRateRule"));
+					outresultMap.put("chargeRate", resultMap.get("chargeRate"));
+					outresultMap.put("chargeAmount", resultMap.get("chargeAmount"));
+					outresultMap.put("chargeTime", resultMap.get("chargeTime"));
+				}
+				outresultMap.put("orderid", orderid);
+				return outresultMap;
+	}
     /**
      * 清台接口
      * 包含咖啡模式清台和正常模式清台
@@ -550,7 +600,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 transactionManager.rollback(status);
             }
 //            return getResult("3", "服务器异常 ", "");
-            return ReturnMap.getFailureMap("服务器异常，请联系餐到管理员");
+            return ReturnMap.getFailureMap("服务器异常，请联系餐道管理员");
         }
 
     }
@@ -891,6 +941,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         printCustDish(printObj, isRepeat);
     }
+    
+    @Override
+	public List<ComplexTorderDetail> findorderByDish(String orderId) {
+		return torderDetailMapper.findorderByDish(orderId);
+	}
+
 
     /**
      * flag 0 初次下菜单 1 加菜单
@@ -1356,8 +1412,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         convertPrintDish(listPrint);
         Collections.sort(listPrint);
         printObj.setList(listPrint);
-        logger.error("------------------------", "");
-        logger.error("封装数据开始，订单号：" + printObj.getOrderNo() + "*菜品数量：" + listPrint.size(), "");
+        logger.info("------------------------", "");
+        logger.info("封装数据开始，订单号：" + printObj.getOrderNo() + "*菜品数量：" + listPrint.size(), "");
         // 得到区域
         // 1. 厨打单
         // 2. 客用单
@@ -1423,8 +1479,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         String groupSequence = getDishGroupSequence(pd, tbPrinter);
                         if (groupSequence != null) {
                             List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
-                            logger.error("------------------------", "");
-                            logger.error("进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
+                            logger.info("------------------------", "");
+                            logger.info("进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
                             // 有两个及以上的菜才需要合并
                             //modified by caicai
                             if (findPrintDetail.size() > 1) {
@@ -1465,9 +1521,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     printObj.setPrintName(tbPrinter.getPrintername());
                     printObj.setPrinterid(tbPrinter.getPrinterid());
                     printObj.setRePeatID(UUID.randomUUID().toString());
-                    logger.error("------------------------,菜品数量" + pdList.size(), "");
+                    logger.info("------------------------,菜品数量" + pdList.size(), "");
                     for (PrintDish printDish : pdList) {
-                    	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
+                    	logger.info("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
 					}
                     //加入打印队列
                     new Thread(new PrintThread(printObj)).run();
@@ -2251,14 +2307,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 printMutilDish(map0, printObj, 1, null);
             }
 
-            torderDetailMapper.insertDiscardDishOnce(orderId);
-            TorderDetail orderDetail = new TorderDetail();
-            orderDetail.setOrderid(orderId);
-            orderDetail.setDiscardUserId(discardUserId);
-            orderDetail.setDiscardReason(discardReason);
-            orderDetail.setUserName(userName);
-            torderDetailMapper.updateDiscardDishUserIdOnce(orderDetail);
-
+            torderDetailMapper.insertDiscardDishOnce(orderId,discardUserId,userName,discardReason);
             Map<String, Object> deleteMap = new HashMap<String, Object>();
             deleteMap.put("orderid", orderId);
             torderDetailMapper.deleteDish(deleteMap);
@@ -2525,8 +2574,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                        String groupSequence = getDishGroupSequence(pd, tbPrinter);
 		                        if (groupSequence != null) {
 		                            List<TbPrinterDetail> findPrintDetail = getSameGroupDishList(tbPrinter, groupSequence);
-		                            logger.error("------------------------", "");
-		                            logger.error("起菜（催菜）进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
+		                            logger.info("------------------------", "");
+		                            logger.info("起菜（催菜）进入组合打印的逻辑，订单号：" + printObj.getOrderNo() + "*组合数量：" + findPrintDetail.size(), "");
 		                            // 有两个及以上的菜才需要合并
 		                            //modified by caicai
 		                            if (findPrintDetail.size() > 1) {
@@ -2561,9 +2610,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		                    printObj.setPrintName(tbPrinter.getPrintername());
 		                    printObj.setPrinterid(tbPrinter.getPrinterid());
 		                    printObj.setRePeatID(UUID.randomUUID().toString());
-		                    logger.error("------------------------,菜品数量" + pdList.size(), "");
+		                    logger.info("------------------------,菜品数量" + pdList.size(), "");
 		                    for (PrintDish printDish : pdList) {
-		                    	logger.error("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
+		                    	logger.info("封装数据结束，订单号：" + printObj.getOrderNo() + "*菜品名称：" + printDish.getDishName(), "");
 							}
 		                    //加入打印队列
 		                    new Thread(new PrintThread(printObj)).run();
@@ -2675,6 +2724,29 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
 
+    @Override
+    public List<Map<String, Object>> itemSellDetailForPos(Map<String, Object> timeMap){
+    	timeMap.put("branchId",Constant.BRANCH.BRANCH_ID);
+        List<Map<String, Object>> itemSellDetail = torderDetailMapper.getItemSellDetailForPos(timeMap);
+      //数据适配
+        if(null==itemSellDetail){
+            return itemSellDetail;
+        }
+        List<Map<String, Object>> result=new ArrayList<>();
+        for(Map<String,Object> detail:itemSellDetail){
+            if(null==detail){
+                continue;
+            }
+            Map<String,Object> map=new HashMap<>();
+            map.put("dishName",detail.get("title")+"("+detail.get("unit")+")");
+            String dishCount = detail.get("num")==null?"0":detail.get("num").toString();
+            BigDecimal dishCountDecimal = new BigDecimal(dishCount).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+            map.put("dishCount",dishCountDecimal);
+            map.put("totlePrice", detail.get("debitamount"));
+            result.add(map);
+        }
+        return result;
+    }
     /**
      * 获取品项销售明细
      */
@@ -2869,5 +2941,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private TbTableDao tableDao;
     @Autowired
     private UserDao userDao;
+
+	
+
 
 }

@@ -8,6 +8,7 @@
 		  	tsdh.orderid,
 			too.endtime as before_cleartime,
 			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail_history tod where tod.orderid = too.orderid)
+			+too.dueamount-(select IFNULL(sum(payamount),0)  from t_order_detail_history where   status!=5 and  orderid=tsh.orderid  )
 			-(SELECT IFNULL(sum(dishnum*orignalprice),0) FROM t_order_detail_history WHERE orderid = too.orderid and dishtype = 2 and superkey = primarykey) as before_shouldamount,
 			IFNULL(sum(tsdh.payamount),0)-IFNULL(tsh.Inflated,0) as before_paidamount,
 			too.userid as waiter,
@@ -55,6 +56,7 @@
 		  	tsd.orderid,
 			too.endtime as after_cleartime,
 			(select IFNULL(sum(tod.dishnum*tod.orignalprice),0) from t_order_detail tod where tod.orderid = too.orderid)
+			+(SELECT IFNULL(sum(chargeAmount),0) FROM t_service_charge where orderid=#{orderid} and chargeOn=1)
 			-(SELECT IFNULL(sum(dishnum*orignalprice),0) FROM t_order_detail WHERE orderid = too.orderid and dishtype = 2 and superkey = primarykey and orderid = #{orderid}) as after_shouldamount,
 			IFNULL(sum(tsd.payamount),0) as after_paidamount,
 			ts.userid as cashier
@@ -103,7 +105,7 @@
     <select id="queryOrderDetail" parameterType="map" resultType="map">
         SELECT
 			td.title AS itemdesc,
-			round(sum(tod.dishnum)) AS count,
+			sum(tod.dishnum) AS count,
 			tod.dishunit AS dishunit,
 			IFNULL(round(tod.orderprice,2), 0.00) AS price,
 			IFNULL(round(tod.orderprice * sum(tod.dishnum),2),0.00)  AS amount
@@ -116,6 +118,8 @@
             AND tod.orderid = #{orderid}
         </if>
         group by tod.dishid,tod.dishunit,tod.orderprice
+		UNION ALL
+		SELECT '服务费',1,'',0,chargeAmount FROM t_service_charge where orderid = #{orderid} AND chargeOn=1
     </select>
     
     <!-- 查询优惠信息 -->

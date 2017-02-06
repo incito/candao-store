@@ -180,7 +180,17 @@ public class OrderInfo4Pos implements Serializable,Cloneable{
     private String ymamount;
 
     private String zdAmount;
-    
+
+    private String serviceAmount;
+
+    public String getServiceAmount() {
+        return serviceAmount;
+    }
+
+    public void setServiceAmount(String serviceAmount) {
+        this.serviceAmount = serviceAmount;
+    }
+
     private String accountsReceivableSubtotal;
 
     public List<Map<String, Object>> getPrefers() {

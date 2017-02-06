@@ -8,7 +8,7 @@
 		SELECT too.orderid AS orderId,
 			tt.tableNo AS tableNo,
 			too.custnum AS custNum,
-			SUM(tod.dishnum*tod.orignalprice) AS shouldAmount
+			SUM(tod.dishnum*tod.orignalprice)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid=too.orderid and chargeOn=1) AS shouldAmount
  		FROM t_order_detail tod
  		LEFT JOIN t_order too ON tod.orderid = too.orderid
  		LEFT JOIN t_table AS tt ON tt.tableid = too.currenttableid
@@ -92,6 +92,7 @@
 		FROM t_settlement_detail AS tsd 
 		LEFT JOIN t_order AS too ON tsd.orderid = too.orderid
 		LEFT JOIN t_dictionary td ON td.itemid = tsd.payway
+		INNER JOIN t_b_employee em ON too.userid = em.job_number 
 		WHERE too.branchid = #{branchId}
 		AND too.begintime >= #{beginTime}
 		AND too.begintime &lt;= #{endTime}
@@ -112,7 +113,7 @@
 		FROM (SELECT tooo.userid AS waiterId,
 				us.name AS waiterName,
 				COUNT(DISTINCT(tooo.orderid)) AS tableNum,
-				SUM(tod.dishnum*tod.orignalprice) AS shouldAmount
+				SUM(tod.dishnum*tod.orignalprice)+(select IFNULL(SUM(chargeAmount),0) from t_service_charge where FIND_IN_SET(orderid,GROUP_CONCAT(tooo.orderid)) and chargeOn=1) AS shouldAmount
 			  FROM (SELECT * FROM t_order as too 
 			  		WHERE too.branchid = #{branchId}
 			  		AND too.begintime >= #{beginTime}
@@ -146,6 +147,7 @@
 			 GROUP BY ttoo.userid
 			) AS S2 
 		ON S1.waiterId = S2.waiterId
+		where S1.waiterName IS NOT NULL
 		order by S1.waiterId
     </select>
 

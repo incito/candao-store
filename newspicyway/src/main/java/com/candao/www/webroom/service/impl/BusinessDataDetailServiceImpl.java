@@ -220,6 +220,12 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
                     if(businessR.get(i).get("kaitaishu") != null){  //开台数
                     	businssRport.setKaitaishu(ToolsUtil.formatTwoDecimal(businessR.get(i).get("kaitaishu").toString()));
                     }
+					if(businessR.get(i).get("serviceAmount") != null){  //服务费
+                    	businssRport.setServiceAmount(ToolsUtil.formatTwoDecimal(businessR.get(i).get("serviceAmount").toString()));
+                    }
+					if(businessR.get(i).get("paidinaverage") != null){
+                    	businssRport.setPaidinaverage(ToolsUtil.formatTwoDecimal(businessR.get(i).get("paidinaverage").toString()));
+                    }
                     //应收总额
                     String shouldAmount = businessR.get(i).get("shouldamount")+"";
                     BigDecimal shouldAmountDecimal = new BigDecimal(shouldAmount).setScale(2, BigDecimal.ROUND_HALF_DOWN);
@@ -251,9 +257,9 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					List<String> settlements = (List<String>) actualAmountMap.get("settlements");
 					settlements.set(settlementSort.get("8"), hykAmountDecimal.subtract(inflateDecimal)+"");
                     //平均实收
-                    BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
+                    /*BigDecimal cusNumDecimal = new BigDecimal(businssRport.getSettlementnum()).setScale(2);
                     BigDecimal actualPre = actualTotalAmountPure.divide(cusNumDecimal.intValue()==0?new BigDecimal(1):cusNumDecimal,2);
-					businssRport.setPaidinaverage(actualPre+"");
+					businssRport.setPaidinaverage(actualPre+"");*/
 					//封装
 					businssRport.setSettlementDescList(settlementDescList);
 					businssRport.setSettlements((List<String>)actualAmountMap.get("settlements"));
@@ -683,6 +689,12 @@ public class BusinessDataDetailServiceImpl implements BusinessDataDetailService 
 					map.put("key", "堂食应收");
 					map.put("title", "营业数据统计");
 					map.put("value",businessR.get(i).getShouldamountNormal());
+					mapList.add(map);
+					//服务费
+					map = new HashMap<>();
+					map.put("key", "服务费");
+					map.put("title", "营业数据统计");
+					map.put("value",businessR.get(i).getServiceAmount());
 					mapList.add(map);
 
 //					外卖统计(应收）

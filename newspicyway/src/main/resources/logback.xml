@@ -11,33 +11,80 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
         </encoder>
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
         </encoder>
     </appender>
 
     <appender name="printAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/print_log/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_HOME}/print_log/print.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>160</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
         </encoder>
+    </appender>
+    <appender name="msgAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/msg/msg.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>160</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="h5POSAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/h5pos/h5pos.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/error_log/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>160</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-0level %logger{40} - %msg%n</pattern>
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+        <!-- 过滤错误级别 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
     </appender>
 
     <root level="info">
         <appender-ref ref="candao"/>
-        <appender-ref ref="STDOUT"/>
+        <!-- <appender-ref ref="STDOUT"/> -->
+        <appender-ref ref="ErrorAppender"/>
     </root>
 
     <logger name="dao" level="DEBUG"/>
+    <logger name="org.mybatis.spring" level="DEBUG"/>
 
     <logger name="org.springframework" level="INFO"/>
 
@@ -46,10 +93,18 @@
         <appender-ref ref="printAppender"/>
         <!--<appender-ref ref="STDOUT"/>-->
     </logger>
-
+	<!--消息通知日志输出-->
+    <logger name="com.candao.www.dataserver.service.msghandler" additivity="false" level="INFO">
+        <appender-ref ref="msgAppender"/>
+        <!--<appender-ref ref="STDOUT"/>-->
+    </logger>
     <logger name="com.candao.print" additivity="false" level="INFO">
         <appender-ref ref="printAppender"/>
         <!--<appender-ref ref="STDOUT"/>-->
     </logger>
-
+    <!--H5POS日志输出-->
+    <logger name="com.candao.www.webroom.service.impl.H5LogServiceImpl" additivity="false" level="DEBUG">
+        <appender-ref ref="h5POSAppender"/>
+        <!--<appender-ref ref="STDOUT"/>-->
+    </logger>
 </configuration>

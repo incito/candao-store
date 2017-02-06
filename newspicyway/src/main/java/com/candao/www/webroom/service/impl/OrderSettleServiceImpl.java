@@ -532,7 +532,7 @@ public class OrderSettleServiceImpl implements OrderSettleService{
 			// //桌子空閒 0 空闲 1 就餐 3 预定 4 已结账
 			//外卖和咖啡外卖自动清台
 			TbTable tbTable = new TbTable();
-			if (StringUtils.isEmpty(tbTable) || (!TABLETYPE.TAKEOUT.equals(tabletype) && !TABLETYPE.TAKEOUT_COFFEE.equals(tabletype))) {
+			if (!TABLETYPE.TAKEOUT.equals(tabletype) && !TABLETYPE.TAKEOUT_COFFEE.equals(tabletype)) {
 				tbTable.setStatus(1);
 			} else {
 				tbTable.setStatus(0);

@@ -2,7 +2,6 @@ package com.candao.www.preferential.calcpre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,18 +9,17 @@ import java.util.Map;
 import java.util.Set;
 
 import com.candao.common.utils.PropertiesUtils;
+import com.candao.www.constant.Constant;
 import com.candao.www.data.dao.TbDiscountTicketsDao;
 import com.candao.www.data.dao.TbPreferentialActivityDao;
 import com.candao.www.data.dao.TdishDao;
-import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TbNoDiscountDish;
-import com.candao.www.data.model.TbPreferentialActivity;
 import com.candao.www.data.model.Tdish;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailPreferential;
-import com.candao.www.dataserver.util.IDUtil;
-import com.candao.www.utils.ReturnMes;
+import com.candao.www.preferential.model.PreDealInfoBean;
 
 /**
  * 
@@ -31,9 +29,9 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 
 	@Override
 	public Map<String, Object> calPreferential(Map<String, Object> paraMap,
-			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailMapper torderDetailDao,
-			TorderDetailPreferentialDao orderDetailPreferentialDao, TbDiscountTicketsDao tbDiscountTicketsDao,
-			TdishDao tdishDao) {
+			TbPreferentialActivityDao tbPreferentialActivityDao, TorderDetailPreferentialDao orderDetailPreferentialDao,
+			TbDiscountTicketsDao tbDiscountTicketsDao, TdishDao tdishDao, List<ComplexTorderDetail> orderDetailList) {
+		// 错误提示
 		String orderid = (String) paraMap.get("orderid"); // 账单号
 		String preferentialid = (String) paraMap.get("preferentialid"); // 优惠活动id
 		String branchid = PropertiesUtils.getValue("current_branch_id");
@@ -44,10 +42,6 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 
 		// 获取当前账单的 菜品列表
 		Map<String, Object> result = new HashMap<>();
-		Map<String, String> orderDetail_params = new HashMap<>();
-		orderDetail_params.put("orderid", orderid);
-		List<TorderDetail> orderDetailList = torderDetailDao.find(orderDetail_params);
-
 		// 将菜单表转换为菜品编号(key):菜品交易详情（Value）
 		Set<String> orderDetailSet = new HashSet<>();
 		for (TorderDetail detail : orderDetailList) {
@@ -86,42 +80,29 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 		// 优惠折扣菜单个数
 		double tempDishNum = 0;
 		List<TorderDetailPreferential> detailPreferentials = new ArrayList<>();
-		for (TorderDetail d : orderDetailList) {
+		for(int i=0;i<orderDetailList.size();i++){
+			TorderDetail d =orderDetailList.get(i);
 			String key = d.getDishid() + d.getDishunit();
 			// 如果在不优惠的列表中没有找到这个菜品，则认为这个菜品是可以优惠打折的。
-			if ((!noDiscountDishSet.contains(key)&&!fishnoDiscountDishSet.contains(d.getDishid()))
-				  ||(fishnoDiscountDishSet.contains(d.getDishid())&&!d.getDishtype().equals("1"))	
-					) {
+			if ((!noDiscountDishSet.contains(key) && !fishnoDiscountDishSet.contains(d.getDishid()))
+					|| (fishnoDiscountDishSet.contains(d.getDishid()) && !d.getDishtype().equals("1"))) {
 				// 判断价格，如果菜品价格存在null的问题，
 				if (null != d.getOrderprice()) {
 					// 如果此菜品是多份，则计算多份总的优惠价格
 					amountCount = amountCount.add(d.getOrderprice().multiply(new BigDecimal(d.getDishnum())));
-					tempDishNum += Double.valueOf(d.getDishnum());
+					tempDishNum = tempDishNum+1;
 				}
-			} 
+			}
 		}
 		// 如果需要折扣的菜品的总价不大于0或者小于已经折扣掉的金额，则不计算本次折扣金额
-		if (amountCount.compareTo(BigDecimal.ZERO) > 0 && (amountCount.subtract(bd).compareTo(BigDecimal.ZERO)) != -1) {
-			amount = amountCount.subtract(bd)
-					.multiply(new BigDecimal("1").subtract(discount.divide(new BigDecimal(10))));
-			// 是重新计算优惠还是，新加优惠
-
-			String updateId = paraMap.containsKey("updateId") ? (String) paraMap.get("updateId") : IDUtil.getID();
-			Date insertime = (paraMap.containsKey("insertime") ? (Date) paraMap.get("insertime") : new Date());
-			TorderDetailPreferential addPreferential = new TorderDetailPreferential(updateId, orderid, "",
-					preferentialid, amount, String.valueOf(tempDishNum), 1, 1, discount, 0, insertime);
-			// 设置优惠名称
-			TbPreferentialActivity activity = new TbPreferentialActivity();
-			activity.setName((String) tempMap.get("name"));
-			addPreferential.setActivity(activity);
-			addPreferential.setCoupondetailid(
-					(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id")));
-
-			// 设置优免金额
-			addPreferential.setToalFreeAmount(amount);
-
-			detailPreferentials.add(addPreferential);
-
+		PreDealInfoBean deInfo = this.calDiscount(amountCount, bd, discount);
+		if (deInfo.getPreAmount().doubleValue() > 0) {
+			amount = deInfo.getPreAmount();
+			int group = tempDishNum == orderDetailList.size() ? Constant.CALCPRETYPE.GROUP :Constant.CALCPRETYPE.NOGROUP;
+			String conupId=(String) (tempMapList.size() > 1 ? tempMap.get("preferential") : tempMap.get("id"));
+			TorderDetailPreferential preSub = this.createPreferentialBean(paraMap, amount, amount, new BigDecimal("0"),
+					tempDishNum, discount, group,  (String) tempMap.get("name"), conupId,Constant.CALCPRETYPE.NORMALUSEPRE);
+			detailPreferentials.add(preSub);
 		} else {
 			// 如果为空说明当前已经删除了此菜品，那么就应该删除此优惠卷
 			if (paraMap.containsKey("updateId")) {
@@ -130,16 +111,10 @@ public class DiscountTicketStrategy extends CalPreferentialStrategy {
 				delMap.put("orderid", orderid);
 				orderDetailPreferentialDao.deleteDetilPreFerInfo(delMap);
 			}
-
 		}
 		result.put("detailPreferentials", detailPreferentials);
 		result.put("amount", amount);
-		boolean flag=true;
-		if(!paraMap.containsKey("updateId")&&detailPreferentials.isEmpty()&& amount.doubleValue()<=0){
-			flag=false;
-		}
-		result.put("falg", flag);
-		result.put("mes", flag?ReturnMes.SUCCESS.getMsg():ReturnMes.DISCOUNT_FAIL.getMsg());
+		this.disMes(result, amountCount, amountCount, bd, deInfo.getDistodis());
 		return result;
 	}
 

@@ -85,11 +85,12 @@ $("#test").click(function(){
 	$("#editAvoid").click(function() {
 		$(this).addClass("hide");
 		$("#saveAvoid").removeClass("hide");
+		$("#avoid-add").removeClass("hide");
 		$("#avoid-list .avoid-li").attr("disabled", false);
-		if($("#avoid-list .avoid-li").not("#avoid-add").length < 5){
+		/*if($("#avoid-list .avoid-li").not("#avoid-add").length < 5){
 			//最多只能添加5个忌口
 			$("#avoid-add").removeClass("hide");
-		}
+		}*/
 	});
 	
 	// 点击退菜原因设置 编辑
@@ -97,16 +98,31 @@ $("#test").click(function(){
 		$(this).addClass("hide");
 		$("#saveReturn").removeClass("hide");
 		$("#reason-list .avoid-li").attr("disabled", false);
-		if($("#reason-list .avoid-li").not("#reason-add").length < 5){
+		$("#reason-add").removeClass("hide");
+		/*if($("#reason-list .avoid-li").not("#reason-add").length < 5){
 			//最多只能添加5个退菜原因
 			$("#reason-add").removeClass("hide");
-		}
+		}*/
 	});
 	//点击投诉原因 编辑
 	$("#editComplaint").click(function() {
 		$(this).addClass("hide");
 		$("#saveComplaint").removeClass("hide");
 		$("#complaint-list .avoid-li").attr("disabled", false);
+	});
+	//点击反结算原因 编辑
+	$(".textEdit .editBackSettle").click(function() {
+		var parent=$(this).parent().parent();
+		$(this).addClass("hide");
+		$(".saveBackSettle",parent).removeClass("hide");
+		$(".backSettle-list .avoid-li",parent).attr("disabled", false);
+		$(".backSettle-add",parent).removeClass("hide");
+	});
+	$(".backSettle-add").click(function() {
+		var div=$(this).parents(".textEdit");
+		$(".backSettle_name",div).val("");
+		$(".addBackSettle-input-div",div).removeClass("hide");
+		$(".backSettle-add",div).addClass("hide");
 	});
 	
 	$("#reason-add").click(function() {
@@ -295,6 +311,33 @@ $("#test").click(function(){
 			}
 		});
 	});
+	/**
+	 * 修改反结算原因
+	 */
+	$(".textEdit .saveBackSettle").click(function() {
+		var parent=$(this).parent().parent();
+		var type = $(".backSettlestype",parent).val();
+		var reasonArr = [];
+		$(".backSettle-list .avoid-li",parent).not(".backSettle-add").each(function(){
+			var dictid = $(this).attr("dictid");
+			var text = $(this).text();
+			var reason = {
+					dictid: dictid,
+					item_desc: text,
+					itemSort:$(this).index()
+			};
+			reasonArr.push(reason);
+		});
+		doPost(type, reasonArr, function(data){
+			$("backSettle-list",parent).find(".dishTasteUl").last().attr("dictid",data[type][data[type].length-1] && data[type][data[type].length-1].dictid);
+			$(".saveBackSettle",parent).addClass("hide");
+			$(".editBackSettle",parent).removeClass("hide");
+			$(".backSettle-list .avoid-li",parent).attr("disabled", true);
+			$(".backSettle-add",parent).addClass("hide");
+			$(".addBackSettle-input-div",parent).addClass("hide");
+		});
+	});
+	
 	/**
 	 * 修改服务员响应时间
 	 */
@@ -728,7 +771,8 @@ $("#test").click(function(){
 				url : global_Path + "/padinterface/saveorupdate",
 			    data: {
 			    	"vipstatus" : $('select[name=vipstatus]').val() === '0' ? true : false,
-			    	"viptype" : $('select[name=viptype]').val()
+			    	"viptype" : $('select[name=viptype]').val(),
+			    	"registerswitch":$('select[name=registerswitch]').val()
 			    },
 				success : function(result) {
 					if (result.code == "0") {
@@ -756,6 +800,7 @@ $("#test").click(function(){
 			$target.addClass('active');
 		} else {
 			$target.removeClass('active');
+			
 		}
 	})
 
@@ -926,6 +971,7 @@ function doGetPadData(){
 			//会员设置
 			$('select[name=vipstatus]').val(data.vipstatus ? "0" :"1");
 			$('select[name=viptype]').val(data.viptype);
+			$('select[name=registerswitch]').val(data.registerswitch);
 			if(data.vipstatus) {
 				$('.setup_div_member').addClass('active');
 			};
@@ -1069,17 +1115,21 @@ function delHidden(e) {
  * 编辑忌口、退菜原因
  * @param e
  */
-function editItem(e){
+function editItem(e,maxLength){
 	var dictid = $(e).attr("dictid");
 	var type = $(e).attr("type");
 	var text = $(e).text();
 	$next = $(e).next();
 	$(e).remove();
 	var inp = '<div class="col-xs-2 no-left-padding">';
+	var len=45;
+	if(maxLength!=undefined){
+	    len=maxLength;
+	}
 	if(type == "COMPLAINT"){
-		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="complaint_name" value="'+text+'" maxlength="4" required="required" onblur="updateItem(this);" /></div>';
+		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="complaint_name" value="'+text+'" maxlength="'+len+'" required="required" onblur="updateItem(this);" /></div>';
 	}else{
-		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="reason_name" value="'+text+'" maxlength="5" required="required" onblur="updateItem(this);" /></div>';
+		inp += '<input type="text" dictid="'+dictid+'" _type="'+type+'" class="form-control" id="reason_name" value="'+text+'" maxlength="'+len+'" required="required" onblur="updateItem(this);" /></div>';
 	}
 	$next.before(inp);
 }
@@ -1106,13 +1156,13 @@ function delItem(e){
 		$(e).parent().remove();
 		showAddBtn($o);
 	}else{
-		$.post(global_Path+"/system/deleteDate", {dictid: dictid}, function(result){
-			if(result.code == "SUCCESS"){
+//		$.post(global_Path+"/system/deleteDate", {dictid: dictid}, function(result){
+//			if(result.code == "SUCCESS"){
 				var $o = $(e).parent().parent();
 				$(e).parent().remove();
 				showAddBtn($o);
-			}
-		},'json');
+//			}
+//		},'json');
 	}
 }
 /**
@@ -1130,8 +1180,12 @@ function showAddBtn($o){
 		}
 	}
 }
-function itemHtm(dictid, itemdesc, type, dis) {
+function itemHtm(dictid, itemdesc, type, dis,maxLength) {
 	var disable = "";
+	var len=45;
+	if(maxLength!=undefined){
+	    len=maxLength;
+	}
 	if(dis){
 		disable = "disabled";
 	}
@@ -1141,7 +1195,7 @@ function itemHtm(dictid, itemdesc, type, dis) {
 			+ dictid
 			+ '" type="'
 			+ type
-			+ '" ondblclick="editItem(this)" class="avoid-li btn btn-default canClick dishTasteUl">'
+			+ '" ondblclick="editItem(this,'+len+')" class="avoid-li btn btn-default canClick dishTasteUl">'
 			+ itemdesc
 			+ '</div>';
 	}else{
@@ -1149,7 +1203,7 @@ function itemHtm(dictid, itemdesc, type, dis) {
 			+ dictid
 			+ '" type="'
 			+ type
-			+ '" ondblclick="editItem(this)" onmouseout="delHidden(this)" onmouseover="delDisplay(this)" class="avoid-li btn btn-default canClick dishTasteUl">'
+			+ '" ondblclick="editItem(this,'+len+')" onmouseout="delHidden(this)" onmouseover="delDisplay(this)" class="avoid-li btn btn-default canClick dishTasteUl">'
 			+ itemdesc
 			+ '<i class="icon-remove hidden" onclick="delItem(this)"></i>'
 			+ '</div>';
@@ -1165,10 +1219,10 @@ function avoidSave() {
 		$(".addavoid-input-div").addClass("hide");
 		var htm = itemHtm("", avoid_name, $("#avoidtype").val(), false);
 		$("#avoid-add").before(htm);
-
-		if ($("#avoid-list").find(".avoid-li").not(".add-reason").length < 5) {
+		$("#avoid-add").removeClass("hide");
+		/*if ($("#avoid-list").find(".avoid-li").not(".add-reason").length < 5) {
 			$("#avoid-add").removeClass("hide");
-		}
+		}*/
 	}
 }
 /**
@@ -1181,9 +1235,11 @@ function returnDishSave() {
 		var htm = itemHtm('', reason_name, $("#reasontype").val(), false);
 		$("#reason-add").before(htm);
 
-		if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
+		$("#reason-add").removeClass("hide");
+
+		/*if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
 			$("#reason-add").removeClass("hide");
-		}
+		}*/
 	}
 }
 /**
@@ -1199,6 +1255,23 @@ function complaintSave() {
 		if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
 			$("#reason-add").removeClass("hide");
 		}*/
+	}
+}
+/**
+ * 添加一个反结算原因
+ */
+function backSettleSave(obj) {
+	var parent=$(obj).parents(".textEdit");
+	var backSettle_name = dellrTrim($(".backSettle_name",parent).val());
+	if (backSettle_name != null && backSettle_name != "") {
+		$(".addBackSettle-input-div",parent).addClass("hide");
+		var htm = itemHtm('', backSettle_name, $(".backSettlestype",parent).val(), false);
+		$(".backSettle-add",parent).before(htm);
+		$(".backSettle-add",parent).removeClass("hide");
+		/*
+		 if ($("#reason-list").find(".avoid-li").not(".add-reason").length < 5) {
+		 $("#reason-add").removeClass("hide");
+		 }*/
 	}
 }
 /**
@@ -1399,7 +1472,23 @@ function initData(data, type){
 			}
 		});
 	}
-	
+if(type==null) {
+	//文本编辑
+	var textEdit = $(".textEdit");
+	textEdit.each(function () {
+		var thisDiv = this;
+		var typeData = $(".backSettlestype", this).val();
+		var list = data[typeData];
+		if (null != list) {
+			$.each(list, function (i, item) {
+				var itemDesc = item.itemDesc;
+				var htm = itemHtm(item.dictid, itemDesc, $(".backSettlestype", thisDiv).val(), true,45);
+				$(".backSettle-add", thisDiv).before(htm);
+			});
+		}
+	})
+}
+
 	if(type == null){
 		var imgs = data.PADIMG;
 

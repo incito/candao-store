@@ -163,7 +163,11 @@
 	   where 
 	    dictid=#{dishTasteId} 
 	</delete>
-
+	<delete id="deleteByType" parameterType="map">
+	   delete from t_dictionary
+	   where 
+	    type=#{type} 
+	</delete>
     <select id="get" parameterType="map" resultMap="tbDataDictionaryResultMap">
 	   select 
 	    dictid,
@@ -327,7 +331,8 @@ FROM
 	t_dictionary t
 
 
-where type in ('JI_KOU_SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY","PADIMG","ONEPAGETYPE")
+where type in ('JI_KOU_SPECIAL','BIZPERIODDATE','DISHES','RETURNDISH','PASSWORD',"CALLTYPE","ROUNDING","ACCURACY","PADIMG"
+,"ONEPAGETYPE",'BACKSETTLE_REASON','GIFT_REASON')
 order by t.type, 
 t.itemSort ASC
 

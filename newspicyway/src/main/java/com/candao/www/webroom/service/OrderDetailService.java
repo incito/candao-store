@@ -3,6 +3,7 @@ package com.candao.www.webroom.service;
 import java.util.List;
 import java.util.Map;
 
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.ToperationLog;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.webroom.model.Order;
@@ -40,7 +41,12 @@ public interface OrderDetailService {
 	 * @return
 	 */
 	public List<Map<String, Object>> itemSellDetail(Map<String, Object> timeMap) throws Exception;
-
+	/**
+	 * 获取品项销售明细
+	 * @param timeMap
+	 * @return
+	 */
+	public List<Map<String, Object>> itemSellDetailForPos(Map<String, Object> timeMap);
 	public Map<String, Object> placeOrder(Order order);
 
 	public void   afterprint(String orderid);
@@ -53,4 +59,14 @@ public interface OrderDetailService {
 	public String cleantableSimply(Table table);
 	
 	public int deleteordreDetailByOrderid(String orderid);
+	 Map<String, Object> findOrderByInfo(String orderid);
+	 
+	 /**
+	  * 
+	  * @param orderId
+	  * @return
+	  * 查询订单里面包含菜品名称
+	  */
+	 public List<ComplexTorderDetail> findorderByDish(String orderId);
+	
 }

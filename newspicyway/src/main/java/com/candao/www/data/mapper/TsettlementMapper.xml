@@ -285,6 +285,11 @@
      insert into t_order_history select * from t_order where orderid = #{orderid}
   </insert>
   
+  <!-- 查询反结算数据 -->
+  <select id="rePay" parameterType="map" resultType="java.lang.Long">
+  	SELECT COUNT(*)  FROM t_order_history where orderid = #{orderid}
+  </select>
+  
   <!-- 保存订单详情历史记录 -->
   <insert id="insertOrderDetailHistory" parameterType="map">
      insert into t_order_detail_history select * from t_order_detail where orderid = #{orderid} 

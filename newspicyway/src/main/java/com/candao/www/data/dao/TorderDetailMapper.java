@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.candao.common.page.Page;
+import com.candao.www.data.model.ComplexTorderDetail;
 import com.candao.www.data.model.TorderDetail;
 import com.candao.www.data.model.TorderDetailSimple;
 
@@ -17,7 +18,7 @@ public interface TorderDetailMapper {
 	public <T, K, V>T findOne(Map<K, V> params);
 	
 	public <T, K, V> List<T> find(Map<K, V> params);
-	public  <T, K, V> List<T> findorderByDish(String orderId);
+	public   List<ComplexTorderDetail> findorderByDish(String orderId);
 	
 	public <T, K, V> List<T> findTemp(Map<K, V> params);
 	/**
@@ -94,7 +95,7 @@ public interface TorderDetailMapper {
 	 * @author tom_zhao
 	 * @param orderId
 	 */
-	public void insertDiscardDishOnce(String orderId);
+	public void insertDiscardDishOnce(String orderId,String userId,String userName,String reason);
 
 	/**
 	 * 更新退菜授权人
@@ -157,7 +158,7 @@ public interface TorderDetailMapper {
 	public Map<String, Object> selectorderinfos(String orderid);
 	
 	public List<Map<String, Object>> getItemSellDetail(Map<String, Object> timeMap);
-
+	public List<Map<String, Object>> getItemSellDetailForPos(Map<String, Object> timeMap);
 	public int updateOrderDetailWithPreferentialNew(String dishids, String orderid, String preferentialid);
 
 	public void deleteTemp(String orderid);

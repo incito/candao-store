@@ -11,23 +11,21 @@
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
 	<title>会员储值</title>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+	<link rel="stylesheet" href="../../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/common.css">
+	<link rel="stylesheet" href="../../css/main.css">
 	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-	<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+	<script src="../../scripts/jquery-3.1.0.min.js"></script>
 	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-	<script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/common.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/page.js"></script>
-	<script src="<%=request.getContextPath()%>/scripts/main.js"></script>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/member.css">
+	<script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+	<script src="../../scripts/common.js"></script>
+	<link rel="stylesheet" href="../../css/member.css">
 </head>
 <body>
 
 
 <header>
-	<div class="fl">餐道</div>
+	<div class="fl logo">餐道</div>
 	<div class="fr" onclick="goBack();" >返回</div>
 </header>
 <article>
@@ -41,39 +39,18 @@
 			</div>
 		</div>
 
-		<div class="block-shadow block-radius " style="display: none">
-			<ul class="member-info-list">
-				<li>卡号：<span>827375738</span></li>
-				<li>手机号码：<span>827375738</span></li>
-				<li>姓名：<span>张晓东</span></li>
-				<li>会员卡等级：<span>储值卡</span></li>
-				<li>生日：<span>87/02/09</span></li>
-				<li>性别：<span>女</span></li>
-				<li>余额：<span>88.00</span></li>
-				<li>积分：<span>88</span></li>
-				<li>卡状态：<span>正常</span></li>
-			</ul>
-		</div>
-
 		<div class="coupon-box">
-			<div class="prev">&lt;</div>
-			<div class="coupon-cnt">
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
-				<div class="coupon-item">美团88抵100</div>
+			<div class="prev unclick">&lt;</div>
+			<div class="coupon-cnt coupon-List" style="height: 116px;overflow:hidden;">
+				<%--优惠列表list--%>
 			</div>
-			<div class="next">&gt;</div>
+			<div class="next unclick">&gt;</div>
 		</div>
 
 		<div class="pay-type-select">
 			<ul class="cnt">
-				<li class="active">现金</li>
-				<li>银行卡</li>
+				<li class="active" ChargeType="0">现金</li>
+				<li ChargeType="1">银行卡</li>
 			</ul>
 		</div>
 
@@ -84,23 +61,23 @@
 				<div class="form-group form-group-nor" >
 					<span class="form-label">手机号/会员卡号:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd"  type="password" class="form-control" autocomplete="off">
+						<input value="" name="repwd" placeholder="输入手机号/会员卡号" id="rechargeMoblie"  type="text" class="form-control"  >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
-					<span class="form-label">赠送金额:</span>
+					<span class="form-label">充值金额:</span>
 					<div class="form-group-info">
-						<input value="" name="repwd"  type="password" class="form-control" autocomplete="off">
+						<input value=""   name="repwd" id="rechargeMoney"  type="text" class="form-control" >
 					</div>
 				</div>
 				<div class="form-group form-group-nor" >
 					<span class="form-label">赠送:</span>
-					<div class="form-group-info">
+					<div class="form-group-info giveMoney">
 						0
 					</div>
 				</div>
-				<button class="btn-base btn-yellow btn-base-sm">确定重置</button>
-				<button class="btn-base btn-base-sm ">取消</button>
+				<button class="btn-base btn-yellow btn-base-sm btn-Save">确定充值</button>
+				<button class="btn-base btn-base-sm btn_cancel">取消</button>
 			</div>
 		</div>
 
@@ -124,9 +101,80 @@
 		</div>
 	</div>
 </article>
-<footer class="footer-min">
-	<div class="info"><span>店铺编号：</span><span>0012</span><span>&nbsp;登录员工：</span><span>&nbsp;收银员(008)</span><span>&nbsp;当前时间：</span><span>2016-08-19 12:00:00</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+<footer>
+	<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
 </footer>
-<script type="text/javascript" src="<%=request.getContextPath()%>/scripts/member.js"></script>
+<script type="text/javascript" src="../../scripts/member.js"></script>
+<script>
+	//加载虚拟键盘组件
+	widget.keyboard({
+		target: '.virtual-keyboard-base'
+	});
+	member.getCouponList();
+	$('.pay-type-select li').click(function () {
+		$(this).addClass('active').siblings('li').removeClass('active');
+	});
+	$('.btn-Save,.virtual-keyboard-ok').click(function () {
+		member.stored_value()
+	})
+	$('#rechargeMoney').on('input propertychange focus', function(){
+		var rechargeMoney=$.trim($('#rechargeMoney').val());
+		var presentvalue=$.trim($('.coupon-List .active').attr('presentvalue'));//赠送比例
+		var dealvalue=$.trim($('.coupon-List .active').attr('dealvalue'));//满多少赠送
+		if(member.ismoney(rechargeMoney)===true && presentvalue!=''){
+			if(dealvalue){
+				$('.giveMoney').text(parseInt(rechargeMoney/dealvalue)*presentvalue)
+			}
+			else {
+				$('.giveMoney').text(presentvalue)
+			}
+		}
+		else {
+			$('.giveMoney').text(0)
+		}
+		/*只能输入两位小数*/
+		if(member.ismoney(rechargeMoney)===false){
+		if(rechargeMoney.indexOf('.')>-1){
+			var a= rechargeMoney.split('.').length;
+			if(rechargeMoney.split('.')[0]==''){
+				$(this).val('');
+				return
+			}
+			if(a<=2){
+				if(rechargeMoney.split('.')[1].length>2){
+					$(this).val(rechargeMoney.substring(0,rechargeMoney.length-1))
+				}
+			}
+			else {
+				var b=rechargeMoney.split('.')[0]+'.'+rechargeMoney.split('.')[1]
+				$(this).val(b)
+			}
+		}
+		else {
+				$(this).val('')
+
+		}
+		}
+
+
+
+	});
+	var getUrlcardMember=utils.getUrl.get('cardMember');
+	if(getUrlcardMember){
+		$('#rechargeMoblie').val(getUrlcardMember).attr('readonly',true)
+	}
+	else {
+		$('#rechargeMoblie').val('').attr('readonly',false)
+	}
+	$('.btn_cancel').click(function () {
+		Log.upload();
+		if(getUrlcardMember){
+			window.location.href='../member/view.jsp?cardMember='+getUrlcardMember+'';
+		}
+		else {
+			goBack();
+		}
+	})
+</script>
 </body>
 </html>

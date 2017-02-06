@@ -64,7 +64,7 @@ public class ExportItemDetailService {
              jxl.write.Label labelTitle1 = new jxl.write.Label(0, 0, title1);
              labelTitle1.setCellFormat(wcfTitle); 
              sheet1.addCell(labelTitle1);// 放入工作簿  
-             String text1 [] = {"品类","数量","千 次" ,"实收金额","应收金额" ,"营业额占比(%)"};
+             String text1 [] = {"品类","数量","千 次" ,"应收金额" ,"实收金额","营业额占比(%)"};
              for(int i=0;i<text1.length;i++){
             	 sheet1.setColumnView(i,25);
             	 sheet1.addCell(new Label(i,1,text1[i],wcfHead));  

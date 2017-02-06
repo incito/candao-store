@@ -48,7 +48,7 @@
 		)
 	</select>
 	<select id="getFlowData" parameterType="java.util.Map"  resultType="java.util.Map">
-		SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0) showldamount,
+		SELECT IFNULL(sum(tod.orignalprice * tod.dishnum),0)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid=o.orderid and chargeOn=1) as showldamount,
 		 DATE_FORMAT(o.begintime,'%Y-%m-%d %H:%i') beginTime,
 		 t.tableName tableName
 		 FROM t_order o 
@@ -60,6 +60,7 @@
 		 AND STR_TO_DATE(#{endTime},'%Y-%m-%d %H:%i:%s')
 		 and o.orderstatus=3 
 		 and o.branchid=#{branchId}
+		 and (tod.dishtype != 2 or (tod.dishtype = 2 and tod.superkey != tod.primarykey))
 		 GROUP BY o.orderid
 		 order by o.begintime desc
 	</select>
@@ -87,9 +88,10 @@
 		 	order by o.begintime desc
 	</select>
 	<select id="getShouldAmountByOrderId" parameterType="java.util.Map"  resultType="java.util.Map">
-		select sum(tod.dishnum*tod.orignalprice) as finalPrice
+		select sum(tod.dishnum*tod.orignalprice)+(select ifnull(sum(chargeAmount),0) from t_service_charge where orderid=tod.orderid and chargeOn=1) as finalPrice
 			from t_order_detail tod
 			where tod.orderid=#{orderId}
+		 and (tod.dishtype != 2 or (tod.dishtype = 2 and tod.superkey != tod.primarykey))
 	</select>
 	<select id="getOrderCom" parameterType="java.util.Map"  resultType="java.util.Map">
 		SELECT u. NAME as name,

@@ -19,7 +19,7 @@ import com.candao.print.listener.template.ListenerTemplate;
 public class MultiDishListener extends AbstractQueueListener {
 
     public PrintData receiveMessage(PrintObj object, ListenerTemplate template) throws Exception {
-        System.out.println("MultiDishListener receive message");
+        log.info("MultiDishListener receive message: " + String.valueOf(object.getOrderNo()));
         return prepareData(object, new PrintData(), template);
     }
 

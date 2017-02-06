@@ -289,8 +289,7 @@ public class BusinessController {
     }
 
     public static void main(String[] args) {
-        String str = "/werwer/werwer/ /werwer";
-        String[] a = StringUtils.tokenizeToStringArray(str, "/", false, true);
-        System.out.println();
+        String str = "werwerwer'werwer";
+        System.out.println(str.replaceAll("e","\\\\'"));
     }
 }

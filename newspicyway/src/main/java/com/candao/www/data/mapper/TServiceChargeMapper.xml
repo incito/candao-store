@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.candao.www.data.dao.TServiceChargeDao">
+	<insert id="insertChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `t_service_charge` 
+		( `orderid`, `chargeOn`,`chargeType`,
+		 `chargeRateRule`, `chargeRate`, `chargeTime`,
+		`chargeAmount`, `isCustom`, `autho`, 
+		 `ctime`) VALUES 
+		(#{orderid,jdbcType=VARCHAR}, #{chargeOn,jdbcType=TINYINT}, #{chargeType,jdbcType=TINYINT},
+		#{chargeRateRule,jdbcType=TINYINT},#{chargeRate,jdbcType=SMALLINT},#{chargeTime,jdbcType=VARCHAR},
+		#{chargeAmount,jdbcType=DECIMAL},#{isCustom,jdbcType=TINYINT}, #{autho,jdbcType=VARCHAR},
+		 now());
+	</insert>
+	<update id="updateChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge">
+		UPDATE `t_service_charge`
+		<set>
+			<if test="orderid != null">
+				orderid=#{orderid},
+			</if>
+			<if test="chargeOn != null">
+				chargeOn=#{chargeOn},
+			</if>
+			<if test="chargeType != null">
+				chargeType=#{chargeType},
+			</if>
+			<if test="chargeRateRule != null">
+				chargeRateRule=#{chargeRateRule},
+			</if>
+			<if test="chargeRate != null">
+				chargeRate=#{chargeRate},
+			</if>
+			<if test="chargeTime != null">
+				chargeTime=#{chargeTime},
+			</if>
+			<if test="chargeAmount != null">
+				chargeAmount=#{chargeAmount},
+			</if>
+			<if test="isCustom != null">
+				isCustom=#{isCustom},
+			</if>
+			<if test="autho != null">
+				autho=#{autho},
+			</if>
+			mtime=now()
+		</set>
+		 <where>
+		 	orderid=#{orderid}
+		 </where>
+	</update>
+	
+	<update id="changChargeInfo" parameterType="com.candao.www.data.model.TServiceCharge">
+		UPDATE `t_service_charge`
+		<set>
+			<if test="chargeOn != null">
+				chargeOn=#{chargeOn},
+			</if>
+			<if test="chargeAmount != null and isCustom == 1">
+				chargeAmount=#{chargeAmount},
+			</if>
+			<if test="isCustom != null">
+				isCustom=#{isCustom},
+			</if>
+			<if test="autho != null">
+				autho=#{autho},
+			</if>
+			mtime=now()
+		</set>
+		 <where>
+		 	orderid=#{orderid}
+		 </where>
+	</update>
+	
+    
+	<select id="getChargeInfo" parameterType="map"
+		resultType="com.candao.www.data.model.TServiceCharge">
+		SELECT * FROM t_service_charge 
+		<where>
+			<if test="id != null">
+				id=#{id}
+			</if>
+			<if test="orderId !=null">
+				orderid=#{orderId}
+			</if>
+		</where>
+	</select>
+
+</mapper>

@@ -47,7 +47,14 @@
 		<result column="dishnum" property="dishnum" jdbcType="VARCHAR" />
 		<result column="dishunit" property="dishunit" jdbcType="VARCHAR" />
 	</resultMap>
-
+	 <resultMap type="com.candao.www.data.model.Ttable" id="tableInfoMap"></resultMap>
+     <resultMap type="java.util.HashMap" id="serviceChargeMap"  extends="tableInfoMap" >
+         <result column="chargeOn"  property="chargeOn" javaType="INTEGER" />
+         <result column="chargeType"  property="chargeType" javaType="INTEGER"/>
+         <result column="chargeRateRule" property="chargeRateRule" javaType="INTEGER" />
+         <result column="chargeRate" property="chargeRate" javaType="INTEGER"/>
+     </resultMap>
+  
 	<resultMap id="findResultMap" type="java.util.HashMap"
 		extends="BaseResultMap"></resultMap>
 
@@ -601,9 +608,9 @@
 		</foreach>
 	</select>
 
-	<select id="findorderByDish" parameterType="map" resultType="java.util.HashMap">
+	<select id="findorderByDish" parameterType="map" resultType="com.candao.www.data.model.ComplexTorderDetail">
 		SELECT
-		tod.*, tdi.`level`
+		tod.*, tdi.`level`,tdi.title
 		FROM
 		t_order_detail tod
 		LEFT JOIN t_dish tdi ON
@@ -771,7 +778,8 @@
 
 	<update id="insertDiscardDishOnce" parameterType="map">
 
-		insert into t_order_detail_discard select * from t_order_detail where
+		insert into t_order_detail_discard select `orderid`,`dishid`, `dishstatus`, `begintime`, `endtime`, `sperequire`, `dishnum`, #{userName}, `orderprice`, `discountrate`, `discountamount`, `fishcode`, `dishtype`, `status`, `dishunit`, `payamount`, `predisamount`, `couponid`, `disuserid`, `orignalprice`, `pricetype`, `orderseq`, `orderdetailid`, `relatedishid`, `ordertype`, `parentkey`, `superkey`, `ismaster`, `primarykey`, `islatecooke`, `isadddish`, `childdishtype`, `ispot`, `relateorderid`, #{userId}, #{reason}, `debitamount`
+		from t_order_detail where
 		orderid=#{orderid}
 		<if test="superkey != null">
 			and superkey = #{superkey}
@@ -901,7 +909,7 @@
 		orderid=#{orderno}
 	</update>
 
-	<select id="findOrderByInfo" parameterType="map" resultType="java.util.HashMap">
+	<select id="findOrderByInfo" parameterType="map" resultMap="serviceChargeMap">
 		SELECT
 		tor.userid,
 		tor.begintime,
@@ -918,6 +926,12 @@
 		tor.childNum,
 		tor.mannum,
 		tab.`status`,
+		tab.`chargeOn`,
+		tab.`chargeType`,
+		tab.`chargeRateRule`,
+		tab.`chargeRate`,
+		tab.`chargeTime`,
+		tab.`chargeAmount`,
 		tbue.`name`,
 		tinv.invoice_title
 		FROM
@@ -962,6 +976,21 @@
             #{result,jdbcType=VARCHAR,mode=OUT}
           )
         }
+	</select>
+	<select id="getItemSellDetailForPos" parameterType="map" resultType="java.util.HashMap" >
+		SELECT SUM(tod.dishnum) as num,
+			IFNULL(SUM(tod.debitamount),0.00) as debitamount,
+			td.title as title,
+			tod.dishunit as unit
+		FROM t_order_detail tod
+		INNER JOIN t_order too ON too.orderid = tod.orderid
+		AND too.orderstatus = 3
+		AND too.branchid = #{branchId}
+		AND too.begintime >= #{startTime}
+		AND too.begintime &lt;= #{endTime}
+		LEFT JOIN t_dish td ON td.dishid = tod.dishid
+		WHERE (tod.dishtype != 2 OR (tod.dishtype=2 AND tod.superkey != tod.primarykey))
+		GROUP BY td.dishid,tod.dishunit
 	</select>
 	<update id="updateOrderDetailWithPreferentialNew" parameterType="map">
 		UPDATE t_order_detail set couponid=#{preferentialid} where

@@ -35,6 +35,8 @@ import com.candao.www.data.dao.TbVoucherDao;
 import com.candao.www.data.dao.TdishDao;
 import com.candao.www.data.dao.TorderDetailMapper;
 import com.candao.www.data.dao.TorderDetailPreferentialDao;
+import com.candao.www.data.model.ComplexTorderDetail;
+import com.candao.www.data.model.TServiceCharge;
 import com.candao.www.data.model.TbDiscountTickets;
 import com.candao.www.data.model.TbGroupon;
 import com.candao.www.data.model.TbHandFree;
@@ -61,7 +63,9 @@ import com.candao.www.webroom.model.OperPreferentialResult;
 import com.candao.www.webroom.model.PreferentialActivitySpecialStampVO;
 import com.candao.www.webroom.model.VoucherVo;
 import com.candao.www.webroom.service.DataDictionaryService;
+import com.candao.www.webroom.service.OrderDetailService;
 import com.candao.www.webroom.service.PreferentialActivityService;
+import com.candao.www.webroom.service.TServiceChargeService;
 
 /**
  * @author zhao
@@ -94,11 +98,16 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	private DataDictionaryService dataDictionaryService;
 
 	@Autowired
-	private OrderMapper orderMapper;
-	
-	@Autowired
-	OrderOpMapper  orderOpMapper;
+	private OrderDetailService orderDetailService;
 
+	@Autowired
+	private TServiceChargeService chargeService;
+
+	@Autowired
+	private OrderMapper orderMapper;
+
+	@Autowired
+	OrderOpMapper orderOpMapper;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -199,7 +208,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		}
 		return tbPreferentialActivityDao.update(preferentialActivity) == 1;
 	}
-
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -878,7 +886,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		return ret;
 	}
 
-
 	@Override
 	public boolean updateInnerFree(TbInnerFree innerfree) {
 		if (!StringUtils.isBlank(innerfree.getCompany_name())) {
@@ -994,7 +1001,6 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 		return list;
 	}
 
-
 	/**
 	 * 查询所有的可挂账的合作单位
 	 *
@@ -1007,7 +1013,7 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 	}
 
 	@Override
-	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params) {
+	public OperPreferentialResult updateOrderDetailWithPreferential(Map<String, Object> params,List<ComplexTorderDetail> orderDetailList) {
 		/** 参数解析 **/
 		String orderid = String.valueOf(params.get("orderid")); // 账单号
 		String preferentialid = String.valueOf(params.get("preferentialid")); // 优惠活动id
@@ -1025,39 +1031,44 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 				CalPreferentialStrategyInterface straFactory = StrategyFactory.INSTANCE.buildAnimal(type);
 				if (straFactory == null) {
 					result.setAmount(new BigDecimal(0).setScale(2, RoundingMode.HALF_UP));
-					 return result;
+					return result;
 				} else {
-					if(params.containsKey("preferentialAmt")&&!params.containsKey("resultAmount")){
-						 BigDecimal staticPrice = orderDetailPreferentialDao.statisticALLDiscount((String) params.get("orderid"));
-						 params.put("preferentialAmt", staticPrice.toString());
+					if (params.containsKey("preferentialAmt") && !params.containsKey("resultAmount")) {
+						BigDecimal staticPrice = orderDetailPreferentialDao
+								.statisticALLDiscount((String) params.get("orderid"));
+						params.put("preferentialAmt", staticPrice.toString());
 					}
 					Map<String, Object> resultMap = straFactory.calPreferential(params, tbPreferentialActivityDao,
-							torderDetailDao, orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao);
+							orderDetailPreferentialDao, tbDiscountTicketsDao, tdishDao,orderDetailList);
 					List<TorderDetailPreferential> detailPreferentials = (List<TorderDetailPreferential>) resultMap
 							.get("detailPreferentials");
 					if (!detailPreferentials.isEmpty()) {
 						int row = orderDetailPreferentialDao.addBatchInfo(detailPreferentials);
 					}
-					//是否有返回状态
-					if(resultMap.containsKey("falg") && resultMap.containsKey("mes")){
+					// 是否有返回状态
+					if (resultMap.containsKey("falg") && resultMap.containsKey("mes")
+							&& !params.containsKey("updateId")) {
 						result.setFalg((boolean) resultMap.get("falg"));
 						result.setMes((String) resultMap.get("mes"));
 					}
+					if(resultMap.containsKey("menberAmount")){
+						result.setMemberPriceDiff((BigDecimal) resultMap.get("menberAmount"));
+					}
 					// 获取总的挂账，以及优免
-					String inputDebitAmount = (String) params.get("toalDebitAmount");//上次挂账金额
-					String inputFreeAmount = (String) params.get("toalFreeAmount");//上次优免金额
-					//获取挂账多收
-					String inputToalDebitAmountMany=(String) params.get("toalDebitAmountMany");//挂账多收总金额
-					BigDecimal toalDebitAmountMany = new BigDecimal(inputToalDebitAmountMany == null ? "0" : inputToalDebitAmountMany);
+					String inputDebitAmount = (String) params.get("toalDebitAmount");// 上次挂账金额
+					String inputFreeAmount = (String) params.get("toalFreeAmount");// 上次优免金额
+					// 获取挂账多收
+					String inputToalDebitAmountMany = (String) params.get("toalDebitAmountMany");// 挂账多收总金额
+					BigDecimal toalDebitAmountMany = new BigDecimal(
+							inputToalDebitAmountMany == null ? "0" : inputToalDebitAmountMany);
 					BigDecimal toalDebitAmount = new BigDecimal(inputDebitAmount == null ? "0" : inputDebitAmount);
 					BigDecimal toalFreeAmount = new BigDecimal(inputFreeAmount == null ? "0" : inputFreeAmount);
 					for (TorderDetailPreferential detailPreferential : detailPreferentials) {
 						toalDebitAmount = toalDebitAmount.add(detailPreferential.getToalDebitAmount());
 						toalFreeAmount = toalFreeAmount.add(detailPreferential.getToalFreeAmount());
-						toalDebitAmountMany=toalDebitAmountMany.add(detailPreferential.getToalDebitAmountMany());
+						toalDebitAmountMany = toalDebitAmountMany.add(detailPreferential.getToalDebitAmountMany());
 					}
-			
-					
+
 					result.setToalDebitAmount(toalDebitAmount);
 					result.setToalFreeAmount(toalFreeAmount);
 					result.setToalDebitAmountMany(toalDebitAmountMany);
@@ -1067,8 +1078,18 @@ public class PreferentialActivityServiceImpl implements PreferentialActivityServ
 					if (!params.containsKey("resultAmount")) {
 						BigDecimal bd = new BigDecimal((String) params.get("preferentialAmt"));
 						result.setAmount(bd.add((BigDecimal) resultMap.get("amount")));
-						StrategyFactory.INSTANCE.calcAmount(orderDetailPreferentialDao,caleTableAmountMapper, orderid, dataDictionaryService,
-								result, orderMapper,orderOpMapper,(String) params.get("itemid"));
+						StrategyFactory.INSTANCE.calcAmount(chargeService, orderDetailPreferentialDao,
+								caleTableAmountMapper, orderid, dataDictionaryService, result, orderMapper,
+								orderOpMapper, (String) params.get("itemid"));
+
+						Map<String, Object> userOrderInfo = orderDetailService.findOrderByInfo(orderid);
+						TServiceCharge serviceCharge = chargeService.serviceCharge(orderid, userOrderInfo,
+								result.getPayamount().subtract(result.getTipAmount()), result.getMenuAmount(),
+								(String) params.get("itemid"));
+						if (serviceCharge != null && serviceCharge.getChargeOn() != 0) {
+							result.setPayamount(result.getPayamount().add(serviceCharge.getChargeAmount()));
+						}
+
 					}
 
 				}

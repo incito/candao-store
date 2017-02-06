@@ -79,6 +79,6 @@ public class WorkLogAdvice{
     	    		builder.append(JacksonJsonMapper.objectToJson(obj)).append(";");
     	    	}
     	    }
-    	    logger.info("参数有:"+builder.toString());
+    	    logger.error("参数有:"+builder.toString());
     }  
 }

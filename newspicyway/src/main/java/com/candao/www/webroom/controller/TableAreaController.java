@@ -130,7 +130,7 @@ public class TableAreaController extends BaseController{
 		if (b) {
 			mav.addAllObjects(getResponseStr(null,"删除成功",true));
 		} else {
-			mav.addAllObjects(getResponseStr(null,"删除失败",false));
+			mav.addAllObjects(getResponseStr(null,"删除失败,请确认餐台是否正在使用",false));
 		}
 		return mav;
 	}

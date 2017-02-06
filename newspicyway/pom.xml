@@ -57,6 +57,13 @@
             <artifactId>flyway-core</artifactId>
             <version>4.0.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.candao</groupId>
+            <artifactId>candaopos</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>newspicyway</finalName>
@@ -93,6 +100,17 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
+                    <!-- 合并多个war -->
+                    <overlays>
+                        <overlay>
+                            <groupId>com.candao</groupId>
+                            <artifactId>candaopos</artifactId>
+                            <targetPath>pos</targetPath>
+                            <excludes>
+                                <exclude>WEB-INF/</exclude>
+                            </excludes>
+                        </overlay>
+                    </overlays>
                     <encoding>UTF-8</encoding>
                     <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
                     <warName>newspicyway</warName>
@@ -130,7 +148,6 @@
                     <!-- 指定编码格式，否则在DOS下运行mvn命令时当发生文件资源copy时将使用系统默认使用GBK编码 -->
                 </configuration>
             </plugin>
-
         </plugins>
 
         <resources>

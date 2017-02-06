@@ -826,7 +826,8 @@
 	</sql>
 	<select id="findPreferentialDetailList" parameterType="map"
 		resultType="java.util.HashMap">
-		SELECT tpa.`name`,tpa.id,tpd.dish,tpd.price FROM
+		
+		SELECT tpa.`name`,tpa.type,tpd.* FROM
 		t_p_preferential_activity tpa LEFT JOIN t_p_preferential_detail tpd
 		on
 		tpd.preferential=tpa.id

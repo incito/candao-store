@@ -23,8 +23,9 @@ public interface OrderService {
 	 * 获取订单信息包含菜品信息
 	 * @param params
 	 * @return
+	 * @throws Exception 
 	 */
-	public  Map<String, Object> calGetOrderInfo(Map<String,Object> params); 
+	public  Map<String, Object> calGetOrderInfo(Map<String,Object> params) ; 
 	
 	
 	public int update(Torder order);

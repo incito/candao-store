@@ -196,4 +196,12 @@ public class TsettlementDaoImpl implements TsettlementMapper {
 	public Map<String, Object> fingHistory(Map<String, Object> param) {
 		return dao.get(PREFIX + ".fingHistory", param);
 	}
+
+	@Override
+	public boolean rePay(String orderid) {
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("orderid", orderid);
+		long count =dao.get(PREFIX+ ".rePay", params);
+		return count==0?false:true;
+	}
 }

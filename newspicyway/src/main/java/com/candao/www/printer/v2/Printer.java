@@ -384,7 +384,7 @@ public class Printer {
             return;
         }
         try {
-            logger.error("[" + ip + "]尝试发起状态检查");
+            logger.info("[" + ip + "]尝试发起状态检查");
             boolean tryLock = printLock.tryLock(4000, TimeUnit.MILLISECONDS);
             if (tryLock) {
                 logger.info("[" + ip + "]开始状态检查");

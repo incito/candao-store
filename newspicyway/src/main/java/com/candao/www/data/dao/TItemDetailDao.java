@@ -19,7 +19,15 @@ public interface TItemDetailDao {
 	 * @param params
 	 * @return
 	 */
-	public List<Map<String,Object>> itemDetailProcedure(Map<String, Object> params);
+	public List<Map<String,Object>> itemDetailProcedure(Map<String, Object> params)
+	;/**
+	 * 营业数据明细表打印品项
+	 * @author weizhifang
+	 * @since 2015-7-3
+	 * @param params
+	 * @return
+	 */
+	public List<Map<String,Object>> itemDetailProcedureForPos(Map<String, Object> params);
 	
 	/**
 	 * 查询品项销售明细子表存储过程

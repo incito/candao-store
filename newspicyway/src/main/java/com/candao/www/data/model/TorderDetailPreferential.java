@@ -15,6 +15,7 @@ public class TorderDetailPreferential implements Serializable {
 	private String orderid;
 	private String dishid;
 	private String preferential;
+	/**单个优惠总额：优免+挂装**/
 	private BigDecimal deAmount=new BigDecimal("0");
 	private BigDecimal discount;
 	/** 0:使用优惠 1：服务员优惠 2：系统自动查找优惠 4：赠送菜优惠 5 雅座优惠 **/
@@ -48,29 +49,6 @@ public class TorderDetailPreferential implements Serializable {
 	public TorderDetailPreferential() {
 
 	}
-
-	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, String dishid) {
-		this.orderid = orderid;
-		this.preferential = preferential;
-		this.deAmount = deAmount;
-		this.dishid = dishid;
-	}
-
-	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, int isGroup) {
-		this.orderid = orderid;
-		this.preferential = preferential;
-		this.deAmount = deAmount;
-		this.isGroup = isGroup;
-	}
-
-	public TorderDetailPreferential(String orderid, String preferential, BigDecimal deAmount, int isGroup, int isUse) {
-		this.orderid = orderid;
-		this.preferential = preferential;
-		this.deAmount = deAmount;
-		this.isGroup = isGroup;
-		this.isUse = isUse;
-	}
-
 	/**
 	 * 
 	 * @param id
@@ -86,7 +64,7 @@ public class TorderDetailPreferential implements Serializable {
 	 * @param dishNum
 	 * 菜品优惠个数
 	 * @param isGroup
-	 * 是否是全局优化
+	 * 是否是全局折扣
 	 * @param isUse
 	 * 是否使用
 	 * @param discount
@@ -98,6 +76,7 @@ public class TorderDetailPreferential implements Serializable {
 	 */
 	public TorderDetailPreferential(String id, String orderid, String dishid, String preferential, BigDecimal deAmount,
 			String dishNum, int isGroup, int isUse, BigDecimal discount, int isCustom,Date insertime) {
+		this.id = id;
 		this.orderid = orderid;
 		this.preferential = preferential;
 		this.dishid = dishid;
@@ -107,9 +86,9 @@ public class TorderDetailPreferential implements Serializable {
 		this.dishNum = dishNum;
 		this.discount = discount;
 		this.isCustom = isCustom;
-		this.id = id;
 		this.insertime = insertime;
 	}
+	
 
 	public String getOrderid() {
 		return orderid;

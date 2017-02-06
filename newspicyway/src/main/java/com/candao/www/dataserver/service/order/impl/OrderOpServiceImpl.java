@@ -52,6 +52,8 @@ public class OrderOpServiceImpl implements OrderOpService {
         LOGGER.info("###getOrderInfo aUserId={},orderId={},printType={}###", aUserId, orderId, printType);
         ResponseJsonData responseJsonData = new ResponseJsonData();//获取小费
         String tipMoney ="0";
+//        赠菜劵赠送的菜品
+        List<Map> preferentialDish=null;
         try {
             switch (printType) {
                 case PrintType.BEF_PRINT:
@@ -61,6 +63,7 @@ public class OrderOpServiceImpl implements OrderOpService {
                 case PrintType.PRINT:
                     orderMapper.updatePrintCount(orderId);
                     tipMoney = tipService.getTipMoney(orderId,true);
+                    preferentialDish = orderMapper.getPreferentialDish(orderId);
                     break;
             }
             float zdAmount = orderMapper.getZdAmountByOrderId(orderId);
@@ -81,12 +84,24 @@ public class OrderOpServiceImpl implements OrderOpService {
                     }
                 }
             }
+            Object serviceAmount=orderJson.get(0).get("serviceAmount");
             List<Map> listJson = orderMapper.getListJson(orderId);
             reorderListJson(listJson);
+            if(null!=listJson&&null!=serviceAmount){
+            	Map<String, Object>map=new HashMap<>();
+            	map.put("title", "服务费");
+            	map.put("dishnum", "1");
+            	map.put("dishunit", "");
+            	map.put("orderprice", 0);
+            	map.put("payamount", serviceAmount);
+            	listJson.add(map);
+            }
             List<Map> jsJson = orderMapper.getJsJson(orderId);
             responseJsonData.setOrderJson(orderJson);
             responseJsonData.setListJson(listJson);
             responseJsonData.setJsJson(jsJson);
+//            赠菜列表
+            responseJsonData.setDoubleJson(preferentialDish);
         } catch (Exception e) {
             responseJsonData.setData("0");
             responseJsonData.setInfo("查询异常");

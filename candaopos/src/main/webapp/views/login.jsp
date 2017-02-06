@@ -10,74 +10,24 @@
 <!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 <meta name="renderer" content="webkit">
 <title>登录</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/common.css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/login.css">
+<link rel="stylesheet" href="../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/login.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="<%=request.getContextPath()%>/scripts/jquery-3.1.0.min.js"></script>
+<script src="../scripts/jquery-3.1.0.min.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="<%=request.getContextPath()%>/tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="<%=request.getContextPath()%>/scripts/common.js"></script>
-<script type="text/javascript">
-var activeinputele;
-	$(document).ready(function(){
-		$("img.img-close").hover(function(){
-		 	$(this).attr("src","<%=request.getContextPath()%>/images/close-active.png");	 
-		},function(){
-			$(this).attr("src","<%=request.getContextPath()%>/images/close-sm.png");
-		});
-		$(".virtual-keyboard ul li").click(function(e){
-			var keytext = $(this).text();
-			if(activeinputele != null && activeinputele != undefined){
-				if(keytext == "←"){
-					activeinputele.focus();
-					backspace();
-				}else if(keytext == "."){
-					return false;
-				}else{
-					var val = activeinputele.val();
-					val = val + keytext;
-					activeinputele.val(val);
-					activeinputele.focus();
-				}
-			}
-			keyUp("#change_val");
-		});
-		$("input").focus(function(event){
-	        activeinputele = $(this);
-		});
-		
-		$("#submit_btn").click(function(e){
-			$("#change_val").val("");
-			$("#thechange-dialog").modal("show");
-		});
-		
-		$("#ok_btn").click(function(e){
-			$("#confirm-change-val").text($("#change_val").val());
-			$("#confirm-dialog").modal("show");
-		});
-	});
-	function keyUp(o){
-		if($(o).val() != null && $(o).val() != ""){
-			$("#ok_btn").attr("disabled", false);
-		}else{
-			$("#ok_btn").attr("disabled", true);
-		}
-	}
-	function toMain(){
-		window.location = "<%=request.getContextPath()%>/views/main.jsp";
-	}
-</script>
+<script src="../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+
 </head>
 <body>
 	<header>
-		<div class="fl">餐道</div>
+		<div class="fl logo">餐道</div>
 		<div class="fr">欢迎登录餐道POS收银系统</div>
 	</header>
 	<article>
 		<div class="content">
 			<div class="login-form">
-				<form action="">
+				<form action="" class="J-login-form">
 					<div class="form-group" style="margin-top: 8px;">
 						<span class="span-user">用户:</span>
 						<input id="user" value="" name="user" type="text" placeholder="" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
@@ -87,12 +37,12 @@ var activeinputele;
 						<input id="pwd" value="" name="pwd" type="password" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
 					</div>
 					<div class="form-group">
-						<label for="j_remember" class="m">
-						<input id="j_remember" type="checkbox" value="true">&nbsp;保存登录信息</label>
+						<label for="J_remember_pwd" class="m">
+						<input id="J_remember_pwd" type="checkbox" value="true">&nbsp;保存登录信息</label>
 					</div>
 					<div class="form-group space">
-						<input type="button" value="&nbsp;取&nbsp;消&nbsp;" class="btn btn-default btn-lg">
-						<button type="button"  id="submit_btn" class="btn btn-primary btn-lg">&nbsp;登&nbsp;录&nbsp </button>
+						<%--<input type="button" value="&nbsp;取&nbsp;消&nbsp;" class="btn btn-default btn-lg">--%>
+						<button type="button" style="width: 99%" class="btn btn-primary btn-lg J-login-form-submit">&nbsp;登&nbsp;录&nbsp </button>
 					</div>
 				</form>
 			</div>
@@ -117,7 +67,7 @@ var activeinputele;
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<div class="fl">餐道</div>
+					<div class="fl logo">餐道</div>
 					<div class="fr">零找金输入</div>
 				</div>
 				<div class="modal-body" style="padding-top: 0px;">
@@ -125,11 +75,11 @@ var activeinputele;
 						<form action="">
 							<div class="form-group" style="margin-top: 8px;">
 								<span class="span-user">零找金金额:</span>
-								<input id="change_val" value="" name="change_val" onkeyup="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; keyUp(this)" type="text" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
+								<input id="change_val" value="" autofocus name="change_val" onfocus="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; Login.keyUp(this)" onkeyup="this.value= this.value.match(/\d+/) ? this.value.match(/\d+/) : ''; Login.keyUp(this)" type="text" class="form-control x319 in" autocomplete="off" ><!-- readonly="readonly" -->
 							</div>
 							<div class="form-group space" style="margin-top: 138px;">
 								<input type="button" value="&nbsp;取&nbsp;消&nbsp;" data-dismiss="modal" class="btn btn-default btn-lg">
-								<button type="button"  id="ok_btn" class="btn btn-primary btn-lg" disabled="disabled">&nbsp;确&nbsp;定&nbsp; </button>
+								<button type="button"  id="J-thechange-submit" class="btn btn-primary btn-lg" disabled="disabled">&nbsp;确&nbsp;定&nbsp; </button>
 							</div>
 						</form>
 					</div>
@@ -158,7 +108,7 @@ var activeinputele;
 	        <div class="modal-content">
 	        	<div class="dialog-sm-header">
 	        		<div class="modal-title"></div>
-	                <img src="<%=request.getContextPath()%>/images/close-sm.png" class="img-close" data-dismiss="modal">
+	                <img src="../images/close-sm.png" class="img-close" data-dismiss="modal" >
 	            </div>
 	            <div class="modal-body">
 	            	<!-- 仅存在一个分类中-->
@@ -167,14 +117,17 @@ var activeinputele;
 	                    </p>
 	                </div>
 	                <div class="btn-operate  ">
-	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal">取消
+	                    <button class="btn btn-cancel in-btn135" type="button" data-dismiss="modal"  >取消
 	                    </button>
-	                    <button class="btn btn-save in-btn135" id="" type="button" onclick="toMain()">确认
+	                    <button class="btn btn-save in-btn135J-cash-conmifr" id="J-thechange-comfirm"  type="button" onclick="Login.toMain()">确认
 	                    </button>
 	                </div>
 	            </div>
 	        </div>
 	    </div>
 	</div>
+	<script src="../scripts/common.js"></script>
+	<script src="../lib/md5.js"></script>
+	<script src="../scripts/login.js"></script>
 </body>
 </html>

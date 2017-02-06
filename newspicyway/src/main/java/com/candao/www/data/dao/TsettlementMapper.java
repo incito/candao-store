@@ -91,4 +91,6 @@ public interface TsettlementMapper {
 		
 		public Map<String, Object> fingHistory(Map<String, Object> param);
 		
+		public boolean rePay(String orderid);
+		
 }

@@ -11,42 +11,52 @@
 	<!-- 让部分国产浏览器默认采用高速模式渲染页面 -->
 	<meta name="renderer" content="webkit">
 	<title>会员注册</title>
+	<link rel="stylesheet" href="../../tools/bootstrap-3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/common.css">
+	<link rel="stylesheet" href="../../css/main.css">
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script src="../../scripts/jquery-3.1.0.min.js"></script>
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="../../tools/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+	<script src="../../scripts/common.js"></script>
+	<link rel="stylesheet" href="../../css/member.css">
+	<script type="text/javascript" src="../../lib/jedate/jedate.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="../../lib/jedate/skin/jedate.css">
 </head>
 <body>
-<div class="modal-dialog" style="width: 760px;">
-	<div class="modal-content">
-		<div class="modal-header">
-			<div class="fl">餐道</div>
-			<div class="fr close-win" data-dismiss="modal">关闭</div>
-		</div>
-		<div class="modal-body">
+<header>
+	<div class="fl logo">餐道</div>
+	<div class="fr" onclick="goBack();" >返回</div>
+</header>
+<article>
+	<div class="member-view"  style="width: 740px;margin:30px auto;">
 			<div class="row">
 				<div class="col-md-7">
-					<form action="">
 						<div class="form-group form-group-base">
 							<span class="form-label">手机号码:</span>
-							<input value="" name="phone"  type="text" class="form-control" autocomplete="off">
+							<input value="" id="phone" name="phone" maxlength="11" type="text" class="form-control" autocomplete="off">
 						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label form-group-base">验证码:</span>
-							<input value="" name="code"  type="text" class="form-control" autocomplete="off">
-						</div>
-						<div class="form-group form-group-base" >
-							<span class="form-label">姓名:</span>
-							<input value="" name="name"  type="text" class="form-control" autocomplete="off">
+						<div class="form-group form-group-base f-oh">
+							<span class="form-label f-fl">验证码:</span>
+							<input value="" name="phone" id="phoneCode" type="text" class="form-control f-fl" autocomplete="off" style="width: 320px; float: left; margin-right: 20px;">
+							<button class="btn-default btn-lg btn-base btn-yellow f-fl btn-sendMsg" >发送</button>
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">姓名:</span>
-							<div class="form-info">
+							<input value="" id="nmae" validType='noPecial2' maxlength="5" name="name"  type="text" class="form-control" autocomplete="off">
+						</div>
+						<div class="form-group form-group-base" >
+							<span class="form-label">姓别:</span>
+							<div class="form-info" id="gender">
 								<div class="radio-box">
 									<label>
-										<input type="radio" name="sex">&nbsp;男
+										<input type="radio" value="0" name="gender" checked="checked">&nbsp;男
 									</label>
 									&nbsp;
 									&nbsp;
 									&nbsp;
 									<label>
-										<input type="radio"  name="sex">&nbsp;女
+										<input type="radio" name="gender"  value="1">&nbsp;女
 									</label>
 								</div>
 							</div>
@@ -54,28 +64,31 @@
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">生日:</span>
-							<input value="" name="birthday"  type="date" class="form-control" autocomplete="off">
+							<input value="" id="birthday" name="birthday"  type="text" readonly="readonly" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">密码:</span>
-							<input value="" name="pwd"  type="password" class="form-control" autocomplete="off">
+							<input value="" id="psd" name="pwd"  type="password" class="form-control" autocomplete="off">
 						</div>
 						<div class="form-group form-group-base" >
 							<span class="form-label">确认密码:</span>
-							<input value="" name="repwd"  type="password" class="form-control" autocomplete="off">
+							<input value="" id="rpsd" name="repwd"  type="password" class="form-control" autocomplete="off">
 						</div>
-						<div class="form-group form-group-base" >
+						<div class="form-group form-group-base" id="shitcard_info">
 							<span class="form-label">实体会员卡:</span>
 							<div class="form-info" style="padding-left:100px;">
-								<button class="btn-default btn-lg btn-base">绑定实体卡</button>
+								<button class="btn-default btn-lg btn-base"id="bingd">绑定实体卡</button>
 								可绑定IC卡, ID卡, 磁条卡
 							</div>
 						</div>
+					<div class="form-group form-group-base" id="shitcard_input"  style="display: none">
+						<span class="form-label">会员卡号:</span>
+						<input value="" id="sitiCard" name="repwd" readonly="readonly" type="text" class="form-control" >
+					</div>
 						<div class="form-group form-group-base">
-							<button class="btn-default btn-lg btn-base btn-base-flex2">取消</button>
-							<button class="btn-default btn-lg btn-base btn-base-flex2">注册</button>
+							<button class="btn-default btn-lg btn-base btn-base-flex2" onclick="goBack();">取消</button>
+							<button class="btn-default btn-lg btn-base btn-base-flex2 btn-save">注册</button>
 						</div>
-					</form>
 				</div>
 				<div class="col-md-5">
 					<div class="virtual-keyboard-base" style="position: absolute;top:0;right:10px;">
@@ -95,7 +108,70 @@
 				</div>
 			</div>
 		</div>
-	</div>
-</div>
+	</article>
+<footer>
+	<div class="info J-sys-info"><span>店铺编号：</span><span class="branch-num">- -</span><span>&nbsp;登录员工：</span><span>&nbsp;<span class="user-info">- -</span></span><span>&nbsp;当前时间：</span><span class="time">- -</span><span>&nbsp;版本号：</span><span>1.01</span></div>
+</footer>
+<div class="modal fade in dialog-normal bg-gray" data-backdrop="static" id="modify-binding-dialog" style="overflow: auto;"></div>
+<script src="../../scripts/member.js"></script>
+<script>
+	$(function(){
+		//加载虚拟键盘组件
+		widget.keyboard({
+			target: '.virtual-keyboard-base'
+		});
+
+	});
+	var start = {
+		dateCell: '#birthday',//input选择框
+		skinCell:"jedateorange",//橙色风格
+		format: 'YYYY-MM-DD',
+		festival:true,//是否显示节日
+		maxDate: jeDate.now(0), //设定最大日期为当前日期
+		choosefun: function(elem,datas){
+
+		}
+	};
+	jeDate(start);
+	var valicode=null ,timer;
+	clearTimeout(timer)//清除60S倒计时
+	$('.btn-save').click(function () {
+		member.register();
+		return false//禁止表单提交
+	})
+	$('.btn-sendMsg').click(function () {
+		var moblie=$.trim($('#phone').val());
+		if(member.isPhoneNo(moblie)===true){
+			if(member.isPhoneRepeat(moblie)===false){
+				member.errorAlert('该手机号码已注册，请重新输入新的手机号码');
+				return false
+			}
+			else {
+				member.countDown(60);
+				member.sendVerifyCode(moblie);
+			}
+
+		}
+		else {
+			member.errorAlert('请输入正确的手机号码')
+		}
+		return false//禁止表单提交
+	});
+	$('#bingd').click(function () {
+		$("#modify-binding-dialog").load("../member/bingCard.jsp", {
+			'title': '新增实体卡-请刷卡',
+			'type': '1',
+			'cbd': 'member_resBingdcard()',
+		});
+		$("#modify-binding-dialog").modal("show");
+	})
+	function member_resBingdcard() {
+		$('#shitcard_info').hide();
+		$('#shitcard_input').show();
+		$('#sitiCard').val(inputVal);
+		$("#modify-binding-dialog").modal("hide").html("");
+	}
+
+</script>
 </body>
 </html>

@@ -235,8 +235,8 @@
 	</foreach>
 	</update>
 	<select id="findTableCountAndAreaname"  resultMap="findResultMap">
-		SELECT distinct tt.areaid,tt.areaname,count(t.tableid) 'tableCount' FROM  t_tablearea tt LEFT JOIN 
-		`t_table` t on t.areaid=tt.areaid where  tt.status =1 and (t.`status` is null or t.`status`!=5)
-		GROUP BY tt.areaid order by IFNULL(tt.areaSort,0) ASC ,tt.modifytime ASC,tt.areaname ASC
+		SELECT DISTINCT tt.areaid,tt.areaname,count(t.tableid) tableCount FROM t_tablearea tt
+		LEFT JOIN (SELECT tableid,areaid FROM `t_table` WHERE `status` IS NULL OR `status` != 5) t ON t.areaid = tt.areaid
+		WHERE tt. STATUS = 1 GROUP BY tt.areaid ORDER BY IFNULL(tt.areaSort, 0) ASC,tt.modifytime ASC,tt.areaname ASC
  	</select>
 </mapper> 
